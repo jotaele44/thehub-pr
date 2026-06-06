@@ -21,16 +21,16 @@ producers:
     repo: jotaele44/aguayluz-pr
     role: water_grid_monitoring_node
     federation_manifest: federation.json
-    status: pending                    # scaffolding uncommitted; federation.json TBD
+    status: ready_for_discovery        # federation.json on main; emits Base44 summary envelope (stream-mapping TBD)
 
   - program_id: prufon-pr
     repo: jotaele44/PRUFON
     role: anomaly_intelligence_node
     federation_manifest: federation.json
-    status: pending                    # CI + federation.json TBD
+    status: ready_for_discovery        # federation.json on main; emits PRUFON case ledgers (stream-mapping TBD)
 
   - program_id: skywatcher-pr
     repo: jotaele44/skywatcher-pr
     role: airspace_intelligence_node
     federation_manifest: federation.json
-    status: planned                    # new repo, seeded from airspace engine + salvage contract
+    status: ready_for_discovery        # federation.json on main; emits airspace observation packages (stream-mapping TBD)

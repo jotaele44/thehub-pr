@@ -13,6 +13,7 @@ import sys
 from typing import List, Optional
 
 from .aggregate import aggregate, discover_packages
+from .bridge import write_manifest
 from .manifest import load_and_validate_manifest
 from .registry import load_registry
 from .validate import validate_package
@@ -38,6 +39,15 @@ def _build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--root", default=".", help="workspace root containing producer checkouts")
     ap.add_argument("--out", default="data/aggregate")
     ap.add_argument("--non-strict", action="store_true", help="aggregate even invalid packages")
+
+    wb = sub.add_parser(
+        "wrap-bridge",
+        help="generate a Hub-conformant manifest.json for a directory of canonical JSONL streams",
+    )
+    wb.add_argument("path")
+    wb.add_argument("--producer", required=True, help="producer program_id (e.g. moneysweep-pr)")
+    wb.add_argument("--mode", default="test", choices=["test", "production"])
+    wb.add_argument("--created-at", default="1970-01-01T00:00:00Z", help="ISO timestamp (kept out of band for deterministic package_id)")
     return p
 
 
@@ -86,6 +96,23 @@ def main(argv: Optional[List[str]] = None) -> int:
         if bad:
             print("producers with validation errors:", ", ".join(bad))
             return 1
+        return 0
+
+    if args.cmd == "wrap-bridge":
+        manifest = write_manifest(
+            args.path, args.producer, mode=args.mode, created_at=args.created_at
+        )
+        print(
+            f"wrote {args.path}/manifest.json — package_id={manifest['package_id']} "
+            f"({len(manifest['files'])} streams)"
+        )
+        errs = validate_package(args.path)
+        if errs:
+            print(f"WARNING: package still invalid — {len(errs)} error(s):")
+            for e in errs[:20]:
+                print("  -", e)
+            return 1
+        print("VALID package")
         return 0
 
     return 2

@@ -220,3 +220,7 @@ __marimo__/
 # macOS + session junk
 .DS_Store
 .remember/
+
+# generated aggregate outputs (keep the dir, not its contents)
+data/aggregate/*.jsonl
+data/aggregate/graph_summary.json
