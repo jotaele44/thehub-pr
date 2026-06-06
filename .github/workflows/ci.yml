@@ -1,0 +1,27 @@
+name: Hub CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Schemas are well-formed JSON
+        run: python -c "import json, glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')"
+      - name: Registry loads
+        run: python -m hub list --registry registry/producers.yaml
+      - name: Tests
+        run: pytest -q
