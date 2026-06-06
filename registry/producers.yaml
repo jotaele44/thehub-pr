@@ -1,0 +1,36 @@
+# PRII Federation — producer registry
+# The Hub (thehub-pr) reads this to discover producer nodes, fetch their
+# federation.json manifests, validate their export packages, and aggregate.
+schema_version: hub_registry_v1
+hub: thehub-pr
+
+producers:
+  - program_id: moneysweep-pr
+    repo: jotaele44/Contract-Sweeper
+    role: public_money_intelligence_node
+    federation_manifest: federation.json
+    status: ready_for_discovery        # federation.json + canonical_v1 bridge live on main
+
+  - program_id: spiderweb-pr
+    repo: jotaele44/spiderweb-pr
+    role: spatial_operational_query_hub
+    federation_manifest: federation.json
+    status: pending                    # has federation/ envelope; federation.json TBD
+
+  - program_id: aguayluz-pr
+    repo: jotaele44/aguayluz-pr
+    role: water_grid_monitoring_node
+    federation_manifest: federation.json
+    status: pending                    # scaffolding uncommitted; federation.json TBD
+
+  - program_id: prufon-pr
+    repo: jotaele44/PRUFON
+    role: anomaly_intelligence_node
+    federation_manifest: federation.json
+    status: pending                    # CI + federation.json TBD
+
+  - program_id: skywatcher-pr
+    repo: jotaele44/skywatcher-pr
+    role: airspace_intelligence_node
+    federation_manifest: federation.json
+    status: planned                    # new repo, seeded from airspace engine + salvage contract
