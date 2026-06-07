@@ -16,22 +16,22 @@ producers:
     repo: jotaele44/spiderweb-pr
     role: spatial_operational_query_hub
     federation_manifest: federation.json
-    status: pending                    # has federation/ envelope; federation.json TBD
+    status: ready_for_discovery        # federation.json + canonical export adapter + query-hub (temporal/name/spatial/external_id) live on main
 
   - program_id: aguayluz-pr
     repo: jotaele44/aguayluz-pr
     role: water_grid_monitoring_node
     federation_manifest: federation.json
-    status: ready_for_discovery        # federation.json on main; emits Base44 summary envelope (stream-mapping TBD)
+    status: ready_for_live             # federation.json + canonical adapter on main; real power/PREPS data wired; ready_for_hub_live_execution=true
 
   - program_id: prufon-pr
     repo: jotaele44/PRUFON
     role: anomaly_intelligence_node
     federation_manifest: federation.json
-    status: ready_for_discovery        # federation.json on main; emits PRUFON case ledgers (stream-mapping TBD)
+    status: ready_for_discovery        # federation.json + canonical export adapter on main; placeholder case ledger (awaiting real case data)
 
   - program_id: skywatcher-pr
     repo: jotaele44/skywatcher-pr
     role: airspace_intelligence_node
     federation_manifest: federation.json
-    status: ready_for_discovery        # federation.json on main; emits airspace observation packages (stream-mapping TBD)
+    status: ready_for_discovery        # federation.json + canonical export adapter on main; observation stream synthetic (awaiting FlightRadar24 capture)
