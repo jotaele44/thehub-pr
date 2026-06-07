@@ -15,6 +15,7 @@ class Producer:
     role: str
     status: str = "pending"
     federation_manifest: str = "federation.json"
+    export_path: str = "exports/federation"
     local_path: Optional[str] = None
 
     @property

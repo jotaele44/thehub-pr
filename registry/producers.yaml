@@ -9,6 +9,7 @@ producers:
     repo: jotaele44/Contract-Sweeper
     role: public_money_intelligence_node
     federation_manifest: federation.json
+    export_path: data/exports/canonical_v1_federation   # canonical_v1 bridge streams (auto-wrapped by the Hub)
     status: ready_for_discovery        # federation.json + canonical_v1 bridge live on main
 
   - program_id: spiderweb-pr
