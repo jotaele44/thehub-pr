@@ -16,7 +16,7 @@ straight from GitHub, so aggregation no longer assumes local checkouts.
 | `thehub-pr` | Hub (registry+validator+aggregator) | — | — | — | not a producer |
 | `moneysweep-pr` (Contract-Sweeper) | public-money | ✅ | ⛔ | n/a (no point coords) | needs API keys + Tranche-B (below) |
 | `spiderweb-pr` | spatial/operational query-hub | ✅ | ⛔ | ✅ records project geometry | needs real (non-synthetic) envelope rows |
-| `aguayluz-pr` | water/grid | ✅ | ✅ | ✅ 39/39 assets | power+PREPS live; water assets = Z5 |
+| `aguayluz-pr` | water/grid | ✅ | ✅ | ✅ 273/273 assets | power + PREPS + water/wastewater live |
 | `prufon-pr` (PRUFON) | anomaly/UAP | ✅ | ⛔ | n/a | placeholder ledger — needs real cases |
 | `skywatcher-pr` | airspace | ✅ | ⛔ | ✅ observations | synthetic — needs FR24 capture |
 
@@ -38,11 +38,15 @@ airport reference).
 - **Z3 — `hub fetch`.** Clone/refresh producers into a workspace and optionally
   run their `export_canonical`, so `hub fetch --run && hub aggregate` rebuilds the
   aggregate from clean GitHub clones.
+- **Z5 — aguayluz water/wastewater assets.** `scripts/ingest_water.py` loads the
+  public PR_Geodata OSM layers (water treatment / wastewater / pumping / reservoir)
+  → 234 `utility_assets` merged with the 39 power assets = **273 total**; centroids
+  carried as entity `location` (review_status=needs_review, T3).
 
 **Cross-producer spatial intelligence now works** (the Z2 payoff). Aggregating the
-four live producers yields 173 entities / 49 with `location`; feeding them through
-spiderweb's `correlate_spatial` produces **6 cross-producer spatial links at 5 km,
-36 at 15 km** — e.g. a spiderweb airspace event ↔ aguayluz "San Juan Combined Cycle
+four live producers yields **411 entities / 283 with `location`**; feeding them
+through spiderweb's `correlate_spatial` produces **25 cross-producer spatial links
+at 5 km** — e.g. a spiderweb airspace event ↔ aguayluz "San Juan Combined Cycle
 (PREPA)" substation. Before Z2 the entities were location-less and this join was
 impossible.
 
@@ -67,9 +71,6 @@ Each item below is **code-ready**; only the named input is missing.
   the router + raw-intake subsystem; the missing piece is the cross-repo *delivery*
   (write spiderweb's `data/normalized/spatial_intake_items.csv` + open the PR).
   Medium-large; not an empty pipe.
-- **Z5 — aguayluz water/wastewater assets.** `ingest_water.py` from the PR water
-  layers → `utility_assets` (mirrors `ingest_power.py`). Gated on confirming the
-  real layer filenames via `PR_Geodata/00_MASTER_CATALOG.xlsx`.
 - **Z6 — federal publications → canonical_v1.** Fold `data/sources/
   federal_publications.jsonl` (4,248 sources) into Contract-Sweeper's canonical_v1
   evidence layer. Deferred: large CI surface, 18×-es the aggregate source count,
