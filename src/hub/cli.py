@@ -3,6 +3,7 @@
     hub list                         list registered producers
     hub validate-manifest <path>     validate a producer federation.json
     hub validate-package <dir>       validate an export package directory
+    hub fetch [--root ws] [--run]    clone/refresh producers (optionally export)
     hub aggregate [--root .]         discover + aggregate producer packages
 """
 from __future__ import annotations
@@ -14,6 +15,7 @@ from typing import List, Optional
 
 from .aggregate import aggregate, discover_packages
 from .bridge import write_manifest
+from .fetch import fetch_all
 from .manifest import load_and_validate_manifest
 from .registry import load_registry
 from .validate import validate_package
@@ -33,6 +35,12 @@ def _build_parser() -> argparse.ArgumentParser:
 
     vp = sub.add_parser("validate-package", help="validate an export package dir")
     vp.add_argument("path")
+
+    fp = sub.add_parser("fetch", help="clone/refresh producers into a workspace (optionally run their export)")
+    fp.add_argument("--registry", default=DEFAULT_REGISTRY)
+    fp.add_argument("--root", default="workspace", help="workspace dir to clone producers into")
+    fp.add_argument("--run", action="store_true", help="also run each producer's export_canonical command")
+    fp.add_argument("--depth", type=int, default=1, help="git clone depth")
 
     ap = sub.add_parser("aggregate", help="aggregate producer export packages")
     ap.add_argument("--registry", default=DEFAULT_REGISTRY)
@@ -81,6 +89,17 @@ def main(argv: Optional[List[str]] = None) -> int:
                 print(f"  … and {len(errs) - 50} more")
             return 1
         print("VALID package")
+        return 0
+
+    if args.cmd == "fetch":
+        reg = load_registry(args.registry)
+        results = fetch_all(reg, args.root, run_export=args.run)
+        for r in results:
+            print(f"{r['program_id']:16} {r['action']:8} export={'yes' if r['exported'] else 'no '}  {r['base']}")
+        print(
+            f"fetched {len(results)} producer(s) into {args.root!r}; "
+            f"run `hub aggregate --root {args.root}` next"
+        )
         return 0
 
     if args.cmd == "aggregate":
