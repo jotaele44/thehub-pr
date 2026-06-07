@@ -48,3 +48,38 @@ def test_record_count_mismatch_is_caught(valid_package):
     (valid_package / "manifest.json").write_text(json.dumps(manifest))
     errors = validate_package(valid_package)
     assert any("record_count mismatch" in e for e in errors)
+
+
+def _rewrite_first_entity(pkg, mutate):
+    """Apply `mutate` to entities.jsonl row 0 and re-sync its manifest sha256."""
+    import hashlib
+
+    rows = (pkg / "entities.jsonl").read_text().splitlines()
+    obj = json.loads(rows[0])
+    mutate(obj)
+    rows[0] = json.dumps(obj, sort_keys=True)
+    (pkg / "entities.jsonl").write_text("\n".join(rows) + "\n")
+    manifest = json.loads((pkg / "manifest.json").read_text())
+    for f in manifest["files"]:
+        if f["filename"] == "entities.jsonl":
+            f["sha256"] = hashlib.sha256((pkg / "entities.jsonl").read_bytes()).hexdigest()
+    (pkg / "manifest.json").write_text(json.dumps(manifest))
+
+
+def test_entity_location_accepted(valid_package):
+    # an optional WGS84 location (lat/lon + municipality) must validate (Z2)
+    _rewrite_first_entity(
+        valid_package,
+        lambda o: o.__setitem__("location", {"lat": 18.4373, "lon": -66.0018, "municipality": "San Juan"}),
+    )
+    assert validate_package(valid_package) == []
+
+
+def test_entity_location_out_of_range_lat_caught(valid_package):
+    # lat outside [-90, 90] must be rejected by the location sub-schema (Z2)
+    _rewrite_first_entity(
+        valid_package,
+        lambda o: o.__setitem__("location", {"lat": 999.0, "lon": -66.0}),
+    )
+    errors = validate_package(valid_package)
+    assert any("entities.jsonl" in e and "lat" in e for e in errors)
