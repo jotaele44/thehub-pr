@@ -40,9 +40,13 @@ make setup                                   # pip install -e ".[dev]"
 hub list                                      # show registered producers
 hub validate-manifest ../Contract-Sweeper/federation.json
 hub validate-package <export-dir>            # check a producer export package
+hub fetch --run --root ws                     # clone/refresh producers from GitHub (+ run their export)
 hub aggregate --root .. --out data/aggregate # merge all discoverable producer packages
 make test
 ```
+
+See [docs/FEDERATION_STATUS.md](docs/FEDERATION_STATUS.md) for the gap-closure status —
+what's live, what's blocked, and each blocked gap's unblock requirement.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the topology, node roles, and the producer
 registration protocol.
