@@ -35,20 +35,32 @@ airport reference).
   an optional WGS84 `location {lat, lon, municipality?}`. Producers that carry
   coordinates populate it: aguayluz (39/39 assets), spiderweb (observations/
   events/tracks project their GeoJSON point), skywatcher (observations).
-- **Z3 — `hub fetch`.** Clone/refresh producers into a workspace and optionally
-  run their `export_canonical`, so `hub fetch --run && hub aggregate` rebuilds the
-  aggregate from clean GitHub clones.
 - **Z5 — aguayluz water/wastewater assets.** `scripts/ingest_water.py` loads the
   public PR_Geodata OSM layers (water treatment / wastewater / pumping / reservoir)
   → 234 `utility_assets` merged with the 39 power assets = **273 total**; centroids
   carried as entity `location` (review_status=needs_review, T3).
+- **Z3 — `hub fetch`.** Clone/refresh producers into a workspace and optionally
+  run their `export_canonical`. **Exercised this session:** the clone path —
+  `hub fetch --root ws` cloned all 5 producers from live GitHub (each with its
+  `federation.json`). **Not yet exercised end-to-end:** the `--run` path (clone →
+  run each producer's `export_canonical` → aggregate) — it is implemented and
+  unit-tested with an injected runner, but the live chain needs each producer's
+  deps installed. Note `exports/federation` is gitignored, so a clean clone has no
+  package until the adapter (or `--run`) materialises it; aggregation therefore
+  runs against a workspace where each producer's export already exists.
 
 **Cross-producer spatial intelligence now works** (the Z2 payoff). Aggregating the
-four live producers yields **411 entities / 283 with `location`**; feeding them
-through spiderweb's `correlate_spatial` produces **25 cross-producer spatial links
-at 5 km** — e.g. a spiderweb airspace event ↔ aguayluz "San Juan Combined Cycle
-(PREPA)" substation. Before Z2 the entities were location-less and this join was
-impossible.
+four live producers — with each producer's `exports/federation` materialised
+locally by running its adapter — yields **411 entities / 283 with `location`**;
+feeding them through spiderweb's `correlate_spatial` produces **25 cross-producer
+spatial links at 5 km** — e.g. a spiderweb airspace event ↔ aguayluz "San Juan
+Combined Cycle (PREPA)" substation. Before Z2 the entities were location-less and
+this join was impossible.
+
+> Known caveat: Z5's 234 water rows are OSM-derived — many unnamed (e.g.
+> "Reservoir 7"), `municipality: unknown`, `needs_review`/T3 (124 are reservoirs).
+> They enrich the spatial layer but are not verified assets; filtering reservoirs
+> or backfilling municipalities is a future option.
 
 ## Blocked gaps — fully specified, waiting on a named external input
 
@@ -83,9 +95,16 @@ Each item below is **code-ready**; only the named input is missing.
 ## Reproduce
 
 ```bash
-# from a parent dir holding the producer checkouts (by repo name):
+# Aggregate from local checkouts. Each producer's exports/federation must exist —
+# materialise it first by running that producer's `export_canonical` (the gitignored
+# package is not in a fresh clone).
 PYTHONPATH=src python3 -m hub aggregate --root <parent> --out /tmp/prii_agg
-# or pull fresh from GitHub first:
+
+# Clone-only fetch (validated): clones all producers from GitHub into ws/.
+PYTHONPATH=src python3 -m hub fetch --root ws
+
+# Clone + run each producer's export, then aggregate (needs each producer's deps
+# installed; implemented + unit-tested, not yet exercised end-to-end):
 PYTHONPATH=src python3 -m hub fetch --run --root ws && \
 PYTHONPATH=src python3 -m hub aggregate --root ws --out /tmp/prii_agg
 ```
