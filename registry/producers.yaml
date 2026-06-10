@@ -14,9 +14,9 @@ producers:
 
   - program_id: spiderweb-pr
     repo: jotaele44/spiderweb-pr
-    role: spatial_operational_query_hub
+    role: spatial_operational_producer
     federation_manifest: federation.json
-    status: ready_for_discovery        # federation.json + canonical export adapter + query-hub (temporal/name/spatial/external_id) live on main
+    status: ready_for_discovery        # federation.json + canonical export adapter live on main; producer-only (query-hub retired to docs/legacy; cross-producer correlation now lives in the Hub's `hub correlate`)
 
   - program_id: aguayluz-pr
     repo: jotaele44/aguayluz-pr
