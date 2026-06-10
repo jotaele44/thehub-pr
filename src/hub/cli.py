@@ -5,6 +5,7 @@
     hub validate-package <dir>       validate an export package directory
     hub fetch [--root ws] [--run]    clone/refresh producers (optionally export)
     hub aggregate [--root .]         discover + aggregate producer packages
+    hub correlate [--in d --out d]   derive cross-producer correlation relationships
 """
 from __future__ import annotations
 
@@ -15,6 +16,7 @@ from typing import List, Optional
 
 from .aggregate import aggregate, discover_packages
 from .bridge import write_manifest
+from .correlate import correlate
 from .fetch import fetch_all
 from .manifest import load_and_validate_manifest
 from .registry import load_registry
@@ -56,6 +58,12 @@ def _build_parser() -> argparse.ArgumentParser:
     wb.add_argument("--producer", required=True, help="producer program_id (e.g. moneysweep-pr)")
     wb.add_argument("--mode", default="test", choices=["test", "production"])
     wb.add_argument("--created-at", default="1970-01-01T00:00:00Z", help="ISO timestamp (kept out of band for deterministic package_id)")
+
+    cp = sub.add_parser("correlate", help="derive cross-producer correlation relationships from an aggregate")
+    cp.add_argument("--in", dest="in_dir", default="data/aggregate", help="aggregate dir to read (entities/funding_awards/transactions.jsonl)")
+    cp.add_argument("--out", default="data/aggregate", help="dir to write correlations.jsonl")
+    cp.add_argument("--window-days", type=int, default=7, help="temporal-proximity window")
+    cp.add_argument("--threshold-km", type=float, default=1.0, help="spatial-proximity threshold")
     return p
 
 
@@ -115,6 +123,15 @@ def main(argv: Optional[List[str]] = None) -> int:
         if bad:
             print("producers with validation errors:", ", ".join(bad))
             return 1
+        return 0
+
+    if args.cmd == "correlate":
+        summary = correlate(
+            args.in_dir, args.out,
+            window_days=args.window_days, threshold_km=args.threshold_km,
+        )
+        print(f"wrote {summary['correlations']} correlation(s) -> {args.out}/correlations.jsonl")
+        print(json.dumps(summary["by_type"], indent=2, sort_keys=True))
         return 0
 
     if args.cmd == "wrap-bridge":
