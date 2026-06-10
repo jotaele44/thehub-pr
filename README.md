@@ -2,8 +2,10 @@
 
 The central node of the **Puerto Rico Integrated Intelligence (PRII) federation**.
 The Hub does not collect data itself. It **discovers** producer nodes, **validates**
-that their exports conform to the shared federation contract, and **aggregates** them
-into one cross-domain graph.
+that their exports conform to the shared federation contract, **aggregates** them
+into one cross-domain graph, and **correlates** entities across producers (shared
+normalized-name / external-id / location / funding-date) into derived
+`federation_relationship` edges.
 
 ```
             ┌──────────────────────────── thehub-pr (this repo) ───────────────────────────┐
@@ -42,6 +44,7 @@ hub validate-manifest ../Contract-Sweeper/federation.json
 hub validate-package <export-dir>            # check a producer export package
 hub fetch --run --root ws                     # clone/refresh producers from GitHub (+ run their export)
 hub aggregate --root .. --out data/aggregate # merge all discoverable producer packages
+hub correlate --in data/aggregate            # derive cross-producer relationship edges
 make test
 ```
 

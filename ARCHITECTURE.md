@@ -4,7 +4,7 @@
 
 | Role | Repos | Responsibility |
 |------|-------|----------------|
-| **Hub** | `thehub-pr` (this repo) | Owns canonical schemas; discovers producers; validates + aggregates their exports. |
+| **Hub** | `thehub-pr` (this repo) | Owns canonical schemas; discovers producers; validates + aggregates their exports; correlates entities across producers into derived relationship edges. |
 | **Producer** | `Contract-Sweeper` (moneysweep-pr), `spiderweb-pr`, `aguayluz-pr`, `PRUFON` (prufon-pr), `skywatcher-pr` | Domain node. Emits `federation.json` + an export package of JSONL streams. |
 | **Consumer** | `Puerto-Rico-Integrated-Intelligence-System` (PRIIS) | Downstream analytics. Reads Hub aggregate outputs to rank leads. **Not** the hub. |
 
@@ -25,6 +25,11 @@ exports/…/manifest.json + *.jsonl ─(fetch)──▶ hub.validate.validate_pa
                                        ▼
                             data/aggregate/{sources,entities,relationships,…}.jsonl
                             data/aggregate/graph_summary.json
+                                       │
+                                  hub.correlate.correlate
+                                       │  link cross-producer entities (name / external-id / location / funding-date)
+                                       ▼
+                            data/aggregate/correlations.jsonl  (derived federation_relationship rows)
 ```
 
 ## Canonical streams & id namespaces
