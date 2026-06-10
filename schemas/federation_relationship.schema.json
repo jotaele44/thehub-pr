@@ -25,6 +25,8 @@
     "relationship_type": {"type": "string"},
     "evidence_source_id": {"type": "string", "pattern": "^src_[a-f0-9]{32}$"},
     "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+    "match_basis": {"type": "string", "description": "Optional. How a Hub-derived correlation was matched (normalized_name | location | external_id:<key> | award_transaction_date)."},
+    "explanation": {"type": "string", "description": "Optional human-readable basis for the relationship."},
     "lineage": {"$ref": "#/definitions/lineage"},
     "synthetic": {"type": "boolean"},
     "created_at": {"type": "string", "format": "date-time"},
