@@ -169,23 +169,78 @@ def correlate_by_external_id(entities: Sequence[Dict[str, Any]]) -> List[Dict[st
 
 def correlate_spatial(entities: Sequence[Dict[str, Any]],
                       threshold_km: float = 1.0) -> List[Dict[str, Any]]:
-    """Link cross-producer entities whose locations fall within ``threshold_km``."""
+    """Link cross-producer entities whose locations fall within ``threshold_km``.
+
+    Indexed with a lat/lon grid: points are binned into ~``threshold_km``-sized
+    cells and each point is only compared against points in its own and the 8
+    adjacent cells, so no within-threshold pair is missed while the all-pairs
+    O(n²) scan collapses to roughly O(n) for sparsely populated grids.
+
+    The emitted links are byte-identical to the naive all-pairs version: each
+    unordered pair is examined under the same ``entity_id``/``_disjoint``/
+    ``haversine <= threshold`` filter, the haversine distance is symmetric under
+    argument swap, and there is no within-pair tie that emission order could
+    break differently. Over-inclusion of candidates is harmless (the filter is
+    identical); only *missing* a true pair would change output, which the
+    cell-coverage guarantee below prevents.
+
+    Scope: the grid treats longitude as planar — it does **not** wrap across the
+    ±180° antimeridian, nor does adjacency hold across the poles. A within-
+    threshold pair straddling those discontinuities (e.g. lon 179.999 vs
+    -179.999) would be binned into non-adjacent cells and missed. This is a
+    deliberate non-goal: the Hub's data is PR-domain (lon ≈ -66), nowhere near
+    those edges, so wraparound adjacency would be unused complexity. Revisit if
+    a producer ever emits points near the antimeridian or a pole.
+    """
     pts = [(ent, _point(ent)) for ent in entities]
     pts = [(ent, pt) for ent, pt in pts if pt is not None]
 
+    # Degrees-per-km vary with latitude: one degree of latitude is ~110.574 km
+    # everywhere, but one degree of longitude shrinks to ~111.320*cos(lat) km.
+    # Bin lat with a fixed cell height and lon with a *wider* cell so that any
+    # two points within ``threshold_km`` always land in the same or an adjacent
+    # cell. We size cells from the most extreme latitude in the set (largest
+    # |lat| → smallest cos → widest lon cell needed) and round generously: the
+    # grid only groups candidates, it never produces an output value, so erring
+    # large just adds harmless comparisons.
+    KM_PER_DEG_LAT = 110.574
+    KM_PER_DEG_LON_EQUATOR = 111.320
+    lat_cell = threshold_km / KM_PER_DEG_LAT
+    if pts:
+        max_abs_lat = max(abs(pt[0]) for _, pt in pts)
+    else:
+        max_abs_lat = 0.0
+    cos_lat = math.cos(math.radians(min(max_abs_lat, 89.9)))
+    cos_lat = max(cos_lat, 1e-9)  # guard against division blow-up near the poles
+    lon_cell = threshold_km / (KM_PER_DEG_LON_EQUATOR * cos_lat)
+
+    # Bucket points by integer (lat_cell, lon_cell) index, preserving input order
+    # within each bucket so candidate enumeration is deterministic.
+    grid: Dict[Tuple[int, int], List[int]] = {}
+    cells: List[Tuple[int, int]] = []
+    for idx, (_, pt) in enumerate(pts):
+        cell = (int(math.floor(pt[0] / lat_cell)), int(math.floor(pt[1] / lon_cell)))
+        cells.append(cell)
+        grid.setdefault(cell, []).append(idx)
+
     links: List[Dict[str, Any]] = []
     for i in range(len(pts)):
-        for j in range(i + 1, len(pts)):
-            a, pa = pts[i]
-            b, pb = pts[j]
-            if a["entity_id"] == b["entity_id"] or not _disjoint(a, b):
-                continue
-            dist = _haversine_km(pa[0], pa[1], pb[0], pb[1])
-            if dist > threshold_km:
-                continue
-            conf = round(max(0.0, 1.0 - dist / threshold_km), 3)
-            links.append(_link(a["entity_id"], b["entity_id"], "spatial_proximity",
-                               "location", conf, f"Entities within {round(dist, 2)} km."))
+        ci, cj = cells[i]
+        for dci in (-1, 0, 1):
+            for dcj in (-1, 0, 1):
+                for j in grid.get((ci + dci, cj + dcj), ()):  # type: ignore[arg-type]
+                    if j <= i:
+                        continue  # only consider each unordered pair once, i<j
+                    a, pa = pts[i]
+                    b, pb = pts[j]
+                    if a["entity_id"] == b["entity_id"] or not _disjoint(a, b):
+                        continue
+                    dist = _haversine_km(pa[0], pa[1], pb[0], pb[1])
+                    if dist > threshold_km:
+                        continue
+                    conf = round(max(0.0, 1.0 - dist / threshold_km), 3)
+                    links.append(_link(a["entity_id"], b["entity_id"], "spatial_proximity",
+                                       "location", conf, f"Entities within {round(dist, 2)} km."))
     return links
 
 
@@ -207,20 +262,39 @@ def correlate_temporal(awards: Sequence[Dict[str, Any]],
         if isinstance(ent, str) and when is not None:
             anchored.append((ent, when, txn))
 
-    links: List[Dict[str, Any]] = []
-    for i in range(len(anchored)):
-        for j in range(i + 1, len(anchored)):
-            ent_a, date_a, row_a = anchored[i]
-            ent_b, date_b, row_b = anchored[j]
+    # Sorted-by-date sweep instead of an all-pairs O(n²) scan: order rows by date
+    # and, for each row, only walk forward while the next row is within
+    # ``window_days``. Because the rows are date-sorted the forward window stops
+    # early, so a row is compared against only its near-in-time neighbours.
+    #
+    # Byte-identity vs. the naive all-pairs loop: the surviving link for a pair is
+    # its min-delta (= max-confidence) one, and ``conf``/``explanation`` are pure
+    # functions of ``delta``, so *which* row wins is order-independent — except
+    # that two distinct deltas could (for a very large window) round to the same
+    # confidence, where ``_dedupe_links`` first-wins would pick by emission order.
+    # To depend on nothing, we tag every emitted link with the unordered pair of
+    # the rows' *original* indices and re-sort by it before returning, reproducing
+    # the naive ``(i, j)`` emission order exactly regardless of window size.
+    order = sorted(range(len(anchored)), key=lambda k: anchored[k][1])
+    tagged: List[Tuple[Tuple[int, int], Dict[str, Any]]] = []
+    for si in range(len(order)):
+        oi = order[si]
+        ent_a, date_a, row_a = anchored[oi]
+        for sj in range(si + 1, len(order)):
+            oj = order[sj]
+            ent_b, date_b, row_b = anchored[oj]
+            delta = (date_b - date_a).days  # >= 0, rows are date-sorted ascending
+            if delta > window_days:
+                break  # all further rows are even later → out of window
             if ent_a == ent_b or not _disjoint(row_a, row_b):
                 continue
-            delta = abs((date_a - date_b).days)
-            if delta > window_days:
-                continue
             conf = round(max(0.0, 1.0 - 0.5 * (delta / window_days)), 3)
-            links.append(_link(ent_a, ent_b, "temporal_proximity", "award_transaction_date",
-                               conf, f"Cross-producer funding activity within {delta} day(s)."))
-    return links
+            link = _link(ent_a, ent_b, "temporal_proximity", "award_transaction_date",
+                         conf, f"Cross-producer funding activity within {delta} day(s).")
+            tagged.append(((min(oi, oj), max(oi, oj)), link))
+
+    tagged.sort(key=lambda t: t[0])
+    return [link for _, link in tagged]
 
 
 # --------------------------------------------------------------------------
