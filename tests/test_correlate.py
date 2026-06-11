@@ -11,6 +11,13 @@ from hub._schemas import load_schema
 from hub.aggregate import aggregate
 from hub.bridge import write_manifest
 from hub.correlate import (
+    _dedupe_links,
+    _disjoint,
+    _haversine_km,
+    _link,
+    _parse_date,
+    _point,
+    _to_relationship,
     correlate,
     correlate_by_external_id,
     correlate_entities,
@@ -169,3 +176,177 @@ def test_aggregate_then_correlate_links_cross_producer(tmp_path):
     rel = json.loads(lines[0])
     assert {rel["source_entity_id"], rel["target_entity_id"]} == {ENT_A, ENT_B}
     assert rel["source_id"] == rel["evidence_source_id"]  # both point at the correlator source
+
+
+# ── indexing equivalence: grid + sweep must match the naive all-pairs scan ────
+#
+# The spatial grid (correlate_spatial) and the date-sorted sweep
+# (correlate_temporal) are pure optimizations: they must emit a set of links
+# whose post-dedupe/post-sort relationship rows are *byte-identical* to the
+# original O(n²) all-pairs versions. The reference loops below are verbatim
+# copies of that pre-index logic; we run a dataset large enough to span many
+# grid cells (in both lat AND lon, including longitude-dominated near-threshold
+# pairs and high latitudes where lon cells must widen) and a wide date range
+# (most pairs outside the window, so the sweep's early-exit fires) through both
+# the indexed function and the reference, then assert the final rows match.
+
+def _naive_spatial(entities, threshold_km=1.0):
+    pts = [(e, _point(e)) for e in entities]
+    pts = [(e, p) for e, p in pts if p is not None]
+    links = []
+    for i in range(len(pts)):
+        for j in range(i + 1, len(pts)):
+            a, pa = pts[i]
+            b, pb = pts[j]
+            if a["entity_id"] == b["entity_id"] or not _disjoint(a, b):
+                continue
+            dist = _haversine_km(pa[0], pa[1], pb[0], pb[1])
+            if dist > threshold_km:
+                continue
+            conf = round(max(0.0, 1.0 - dist / threshold_km), 3)
+            links.append(_link(a["entity_id"], b["entity_id"], "spatial_proximity",
+                               "location", conf, f"Entities within {round(dist, 2)} km."))
+    return links
+
+
+def _naive_temporal(awards, transactions, window_days=7):
+    anchored = []
+    for awd in awards:
+        ent = awd.get("recipient_entity_id")
+        when = _parse_date(awd.get("award_date"))
+        if isinstance(ent, str) and when is not None:
+            anchored.append((ent, when, awd))
+    for txn in transactions:
+        ent = txn.get("payee_entity_id")
+        when = _parse_date(txn.get("transaction_date"))
+        if isinstance(ent, str) and when is not None:
+            anchored.append((ent, when, txn))
+    links = []
+    for i in range(len(anchored)):
+        for j in range(i + 1, len(anchored)):
+            ea, da, ra = anchored[i]
+            eb, db, rb = anchored[j]
+            if ea == eb or not _disjoint(ra, rb):
+                continue
+            delta = abs((da - db).days)
+            if delta > window_days:
+                continue
+            conf = round(max(0.0, 1.0 - 0.5 * (delta / window_days)), 3)
+            links.append(_link(ea, eb, "temporal_proximity", "award_transaction_date",
+                               conf, f"Cross-producer funding activity within {delta} day(s)."))
+    return links
+
+
+def _rows(links):
+    """Drive links through the real dedupe + emit + sort pipeline → final rows."""
+    rels = [_to_relationship(link) for link in _dedupe_links(links)]
+    rels.sort(key=lambda r: (r["relationship_type"],
+                             r["source_entity_id"], r["target_entity_id"]))
+    return rels
+
+
+def _eid(n):
+    return "ent_" + f"{n:032d}"
+
+
+def test_spatial_grid_matches_naive_allpairs():
+    # ~60 points spread over several lat/lon hot-spots, each a tight cluster so
+    # many fall inside the 1 km threshold; some clusters are separated mainly in
+    # longitude and sit at high latitude (where the lon cell must be widened).
+    spots = [
+        (0.0, 0.0), (18.4000, -66.1000), (18.4005, -66.0990),  # near-equator + PR
+        (45.0000, 7.0000), (45.0000, 7.00010),                  # lon-dominated pair
+        (64.0000, -21.9000), (64.00005, -21.89980),             # high-lat lon-dominated
+        (-33.8688, 151.2093),                                   # southern hemisphere
+    ]
+    ents = []
+    n = 0
+    for si, (blat, blon) in enumerate(spots):
+        for k in range(8):
+            jitter_lat = blat + (k - 4) * 0.0009          # ~0.1 km steps in lat
+            jitter_lon = blon + (k - 4) * 0.0009
+            ents.append({"entity_id": _eid(n),
+                         "location": {"lat": jitter_lat, "lon": jitter_lon},
+                         "_producers": [f"p{(si + k) % 5}"]})
+            n += 1
+
+    # A discriminating longitude-dominated pair at high latitude: ~0.90 km apart
+    # (well within 1 km) but separated by ~2 *un-widened* lon cells, so it is
+    # ONLY found when the grid widens lon cells by 1/cos(lat). Without the
+    # widening this pair is missed → the test fails, pinning the trap.
+    ents.append({"entity_id": _eid(n),
+                 "location": {"lat": 64.0, "lon": 30.00000}, "_producers": ["p0"]})
+    n += 1
+    ents.append({"entity_id": _eid(n),
+                 "location": {"lat": 64.0, "lon": 30.01850}, "_producers": ["p1"]})
+    n += 1
+
+    for thr in (0.5, 1.0, 2.0):
+        got = _rows(correlate_spatial(ents, threshold_km=thr))
+        exp = _rows(_naive_spatial(ents, threshold_km=thr))
+        assert got == exp, f"spatial grid != naive at threshold_km={thr}"
+    # sanity: the dataset actually produced cross-producer spatial links
+    assert _rows(correlate_spatial(ents, threshold_km=1.0))
+
+
+def test_temporal_sweep_matches_naive_allpairs():
+    # ~40 awards across a year so most pairs fall OUTSIDE a 7-day window (the
+    # sweep's forward early-exit must fire), with deliberate same-day and
+    # within-window clusters that DO link, across multiple producers.
+    from datetime import date, timedelta
+
+    base = date(2026, 1, 1)
+    day_offsets = []
+    # three tight clusters (days 0-4, 100-103, 300-302) + scattered singletons
+    day_offsets += [0, 1, 2, 3, 4, 4]
+    day_offsets += [100, 101, 102, 103]
+    day_offsets += [300, 300, 301, 302]
+    day_offsets += list(range(10, 300, 17))  # scattered, mostly isolated
+    awards = []
+    for k, off in enumerate(day_offsets):
+        awards.append({
+            "recipient_entity_id": _eid(k % 11),           # reused ids → some self-pairs
+            "award_date": (base + timedelta(days=off)).isoformat(),
+            "_producers": [f"p{k % 4}"],
+        })
+    # Pairs landing EXACTLY on each window edge (delta == window_days), distinct
+    # ids + disjoint producers, so the boundary comparison (``> window`` vs
+    # ``>= window``) is exercised: these must link at the named window.
+    for anchor, win in ((500, 7), (600, 30), (700, 120), (900, 365)):
+        awards.append({"recipient_entity_id": _eid(50 + win),
+                       "award_date": (base + timedelta(days=anchor)).isoformat(),
+                       "_producers": ["pa"]})
+        awards.append({"recipient_entity_id": _eid(51 + win),
+                       "award_date": (base + timedelta(days=anchor + win)).isoformat(),
+                       "_producers": ["pb"]})
+
+    for win in (7, 30, 120, 365):
+        got = _rows(correlate_temporal(awards, [], window_days=win))
+        exp = _rows(_naive_temporal(awards, [], window_days=win))
+        assert got == exp, f"temporal sweep != naive at window_days={win}"
+    # sanity: the clusters did produce cross-producer temporal links
+    assert _rows(correlate_temporal(awards, [], window_days=7))
+
+
+def test_temporal_sweep_byte_identical_with_mixed_streams():
+    """Awards + transactions mixed, wide window — full derive_relationships
+    output must be byte-identical to the naive reference end-to-end."""
+    from datetime import date, timedelta
+
+    base = date(2026, 5, 1)
+    awards = [
+        {"recipient_entity_id": _eid(k % 7),
+         "award_date": (base + timedelta(days=d)).isoformat(),
+         "_producers": [f"p{k % 3}"]}
+        for k, d in enumerate([0, 2, 5, 9, 40, 41, 80])
+    ]
+    txns = [
+        {"payee_entity_id": _eid(k % 7),
+         "transaction_date": (base + timedelta(days=d)).isoformat(),
+         "_producers": [f"q{k % 3}"]}
+        for k, d in enumerate([1, 3, 6, 42, 81, 82])
+    ]
+    got = derive_relationships([], awards, txns, window_days=90)
+    exp = _rows(_naive_temporal(awards, txns, window_days=90))
+    assert json.dumps(got, sort_keys=True) == json.dumps(exp, sort_keys=True)
+    assert got  # the mixed streams produced temporal links
