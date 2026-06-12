@@ -1,110 +1,96 @@
 # PRII Federation — Gap-Closure Status
 
 _Authoritative status of the Puerto Rico Integrated Intelligence (PRII) federation._
-_Last updated: 2026-06-07 (Part 4 — Full Gap Closure, phases Z1–Z3 landed)._
+_Last updated: 2026-06-12 (Docs link + schema gate sweep)._ 
 
 The federation is **artifact-based**: producers emit a discovery manifest
 (`federation.json`) plus a canonical export package (`sources/entities/
 relationships.jsonl` + `manifest.json`); the Hub (`thehub-pr`) discovers,
-validates, and aggregates them. `hub fetch` can now populate a workspace
-straight from GitHub, so aggregation no longer assumes local checkouts.
+validates, and aggregates them. `hub fetch` can populate a workspace straight
+from GitHub, so aggregation no longer assumes local checkouts.
 
 ## Node status
 
 | Node (program_id) | Role | Discovery | Live exec | Canonical `location` | Notes |
 |---|---|:--:|:--:|:--:|---|
 | `thehub-pr` | Hub (registry+validator+aggregator) | — | — | — | not a producer |
-| `moneysweep-pr` (Contract-Sweeper) | public-money | ✅ | ⛔ | n/a (no point coords) | needs API keys + Tranche-B (below) |
-| `spiderweb-pr` | spatial/operational query-hub | ✅ | ⛔ | ✅ records project geometry | needs real (non-synthetic) envelope rows |
-| `aguayluz-pr` | water/grid | ✅ | ✅ | ✅ 273/273 assets | power + PREPS + water/wastewater live |
-| `prufon-pr` (PRUFON) | anomaly/UAP | ✅ | ⛔ | n/a | placeholder ledger — needs real cases |
-| `skywatcher-pr` | airspace | ✅ | ⛔ | ✅ observations | synthetic — needs FR24 capture |
+| `moneysweep-pr` (Contract-Sweeper) | public-money | ✅ | ⛔ | n/a (no point coords) | needs API keys + Tranche-B materialization |
+| `spiderweb-pr` | spatial/operational producer | ✅ | ⛔ | ✅ records project geometry | FR24 ownership moved to `skywatcher-pr`; needs non-synthetic spatial/operational envelope rows for production promotion |
+| `aguayluz-pr` | water/grid | ✅ | ✅ | ✅ 273/273 assets | power + PREPS + water/wastewater live; outage granularity remains caveated |
+| `prufon-pr` (PRUFON) | historical case corpus | ✅ | ⛔ | n/a | placeholder ledger — needs real cases |
+| `skywatcher-pr` | airspace | ✅ | ⛔ | ✅ observations | synthetic package only — needs real FR24 capture/export |
 
 ## What is closed
 
 **Parts 1–3** built every producer + the Hub, closed the producer↔Hub↔consumer
-communication paths, and wired real data (aguayluz power+PREPS, PRIIS spiderweb
-layers + satellite manifest, Contract-Sweeper federal publications, skywatcher
-airport reference).
+communication paths, and wired real data where available (aguayluz power+PREPS,
+Contract-Sweeper federal publications, skywatcher airport reference, and retained
+spatial layers).
 
-**Part 4 — Full Gap Closure (this round):**
+**Part 4 — Full Gap Closure:**
 - **Z1 — state reconciliation.** Hub registry statuses + spiderweb readiness gate
-  now reflect reality (removed the stale "spatial correlation is a follow-up"
-  condition; G3-C2 shipped `correlate_spatial`/`correlate_by_external_id`).
+  reflect the producer-only boundary. Cross-producer correlation is owned by the
+  Hub's `hub correlate` path, not by Spiderweb.
 - **Z2 — geometry on canonical entities.** `federation_entity.schema.json` carries
   an optional WGS84 `location {lat, lon, municipality?}`. Producers that carry
-  coordinates populate it: aguayluz (39/39 assets), spiderweb (observations/
-  events/tracks project their GeoJSON point), skywatcher (observations).
+  coordinates populate it: aguayluz assets, spiderweb retained spatial records,
+  and skywatcher observations.
 - **Z5 — aguayluz water/wastewater assets.** `scripts/ingest_water.py` loads the
   public PR_Geodata OSM layers (water treatment / wastewater / pumping / reservoir)
-  → 234 `utility_assets` merged with the 39 power assets = **273 total**; centroids
-  carried as entity `location` (review_status=needs_review, T3).
+  into review-grade utility assets. These rows enrich the spatial layer but retain
+  source-tier and review caveats.
 - **Z3 — `hub fetch`.** Clone/refresh producers into a workspace and optionally
-  run their `export_canonical`. **Exercised this session:** the clone path —
-  `hub fetch --root ws` cloned all 5 producers from live GitHub (each with its
-  `federation.json`). **Not yet exercised end-to-end:** the `--run` path (clone →
-  run each producer's `export_canonical` → aggregate) — it is implemented and
-  unit-tested with an injected runner, but the live chain needs each producer's
-  deps installed. Note `exports/federation` is gitignored, so a clean clone has no
-  package until the adapter (or `--run`) materialises it; aggregation therefore
-  runs against a workspace where each producer's export already exists.
+  run their `export_canonical`. The clone path has been exercised; the `--run`
+  path remains dependent on each producer's local dependencies and external inputs.
 
-**Cross-producer spatial intelligence now works** (the Z2 payoff). Aggregating the
-four live producers — with each producer's `exports/federation` materialised
-locally by running its adapter — yields **411 entities / 283 with `location`**;
-feeding them through spiderweb's `correlate_spatial` produces **25 cross-producer
-spatial links at 5 km** — e.g. a spiderweb airspace event ↔ aguayluz "San Juan
-Combined Cycle (PREPA)" substation. Before Z2 the entities were location-less and
-this join was impossible.
-
-> Known caveat: Z5's 234 water rows are OSM-derived — many unnamed (e.g.
-> "Reservoir 7"), `municipality: unknown`, `needs_review`/T3 (124 are reservoirs).
-> They enrich the spatial layer but are not verified assets; filtering reservoirs
-> or backfilling municipalities is a future option.
+**Part 5 — README/link/schema gate sweep:**
+- Top-level README boundaries were realigned across the connected repos.
+- The Hub README producer map now matches `registry/producers.yaml`.
+- `skywatcher-pr` owns the airspace / FR24 role; `spiderweb-pr` remains the
+  spatial / operational producer.
+- Schema-gate drift is being closed so producer identity, sample package manifests,
+  and validators use the active federation ids.
 
 ## Blocked gaps — fully specified, waiting on a named external input
 
-Each item below is **code-ready**; only the named input is missing.
+Each item below is **code-ready** unless noted; the missing item is named.
 
 | Gap | Node | Unblock requirement |
 |---|---|---|
-| Live observations | skywatcher | Real FlightRadar24 capture → ILAP intake; the adapter + ILAP bridge then run in production (no FR24 data exists in `/Documents/Data`). |
-| Real cases | PRUFON | Real UAP case records → `data/master/master_cases.jsonl` (replace the placeholder); the export adapter is ready. |
-| Live exec | Contract-Sweeper | Tranche-B manual source exports + PR-gov scraper queue + runtime API keys (`FEC_API_KEY`, `SAM_API_KEY`, `HIGHERGOV_API_KEY`, `LDA_API_KEY`, `OPENCORPORATES_API_TOKEN`) supplied locally. (Issue #87 depends on these.) |
-| Production export | spiderweb | Real (non-synthetic) envelope rows from its FR24/ILAP pipeline. |
-| Per-asset outage attribution | aguayluz | A finer outage feed; PREPS is island-wide aggregate. |
-| ECW photomosaic extents | PRIIS | A GDAL ECW driver/plugin (or external ECW→GeoTIFF), then `ingest_satellite_mosaics.py` extracts the remaining ~22 mosaics (3/75 done via KMZ). |
-| Repo deletion | `jotaele44/Aerospace-Intelligence-Tool` | `gh auth refresh -s delete_repo` then `gh repo delete … --yes`. Content preserved as `archive/aerospace-intelligence-tool/*` tags in skywatcher-pr. |
-| Repo deletion | `jorgegonzalez44/Puerto-Rico-Airspace-Intelligence-Tool` | Delete from the **jorgegonzalez44** account (its contract is already in skywatcher-pr). |
+| Live observations | skywatcher | Real FlightRadar24 capture → FR24/ILAP intake; the adapter + ILAP bridge then run in production mode. |
+| Real cases | PRUFON | Real UAP/anomalous-event case records → `data/master/master_cases.jsonl` replacing the placeholder row. |
+| Live exec | Contract-Sweeper | Tranche-B manual source exports + PR-gov scraper queue + runtime API keys (`FEC_API_KEY`, `SAM_API_KEY`, `HIGHERGOV_API_KEY`, `LDA_API_KEY`, `OPENCORPORATES_API_TOKEN`) supplied locally. |
+| Production export | spiderweb | Real, non-synthetic spatial/operational evidence-envelope rows from the retained producer pipeline; FR24-specific live observations belong to `skywatcher-pr`. |
+| Per-asset outage attribution | aguayluz | A finer outage feed; PREPS is island-wide aggregate and third-party outage snapshots remain review-grade until promoted. |
+| ECW photomosaic extents | PRIIS | A GDAL ECW driver/plugin or external ECW→GeoTIFF conversion before remaining mosaics can be ingested. |
+| Repo deletion | `jotaele44/Aerospace-Intelligence-Tool` | `gh auth refresh -s delete_repo` then `gh repo delete … --yes`. Content preserved in `skywatcher-pr` archive/provenance notes. |
+| Repo deletion | `jorgegonzalez44/Puerto-Rico-Airspace-Intelligence-Tool` | Delete from the **jorgegonzalez44** account after confirming no unsalvaged material remains. |
 
-## Remaining code-closable (deferred this round)
+## Remaining code-closable
 
-- **Z4 — cross-repo intake-lane delivery (#114/#41).** Contract-Sweeper already has
-  the router + raw-intake subsystem; the missing piece is the cross-repo *delivery*
-  (write spiderweb's `data/normalized/spatial_intake_items.csv` + open the PR).
-  Medium-large; not an empty pipe.
-- **Z6 — federal publications → canonical_v1.** Fold `data/sources/
-  federal_publications.jsonl` (4,248 sources) into Contract-Sweeper's canonical_v1
-  evidence layer. Deferred: large CI surface, 18×-es the aggregate source count,
-  no identified downstream consumer (PRIIS scores award/transaction streams).
-- **Skywatcher engine port** (GEBCO/mission/satellite from the archive tag) — does
-  not unblock the node (FR24-blocked regardless); left in the archive tag.
-- **Carve-out branches** (CS ×3, spiderweb ×6) — kept as deliberate salvage-first;
-  each is archive-tagged. Delete only after a per-branch salvage review.
+- **Cross-repo intake-lane delivery.** Contract-Sweeper has the router + raw-intake
+  subsystem; the missing piece is delivery into Spiderweb's normalized intake lane
+  and PR automation.
+- **Federal publications → canonical_v1.** Fold `data/sources/federal_publications.jsonl`
+  into Contract-Sweeper's canonical_v1 evidence layer when a downstream consumer
+  needs the expanded source count.
+- **Skywatcher engine port.** Optional terrain / mission / satellite components are
+  not the live-execution blocker; real FR24 input is.
+- **Carve-out branches.** Keep archive/salvage branches until a per-branch salvage
+  review confirms they are safe to delete.
 
 ## Reproduce
 
 ```bash
 # Aggregate from local checkouts. Each producer's exports/federation must exist —
-# materialise it first by running that producer's `export_canonical` (the gitignored
-# package is not in a fresh clone).
+# materialise it first by running that producer's export_canonical command.
 PYTHONPATH=src python3 -m hub aggregate --root <parent> --out /tmp/prii_agg
 
-# Clone-only fetch (validated): clones all producers from GitHub into ws/.
+# Clone-only fetch.
 PYTHONPATH=src python3 -m hub fetch --root ws
 
-# Clone + run each producer's export, then aggregate (needs each producer's deps
-# installed; implemented + unit-tested, not yet exercised end-to-end):
+# Clone + run each producer's export, then aggregate.
+# Requires each producer's dependencies and external inputs where applicable.
 PYTHONPATH=src python3 -m hub fetch --run --root ws && \
 PYTHONPATH=src python3 -m hub aggregate --root ws --out /tmp/prii_agg
 ```
