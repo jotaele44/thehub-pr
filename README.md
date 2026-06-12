@@ -51,6 +51,8 @@ Every row should carry deterministic ids, lineage, confidence, synthetic/test fl
 ```bash
 make setup                                   # pip install -e ".[dev]"
 hub list                                     # show registered producers
+hub validate-federation --root ..            # roll up all producer manifests/packages
+hub validate-federation --root .. --json     # machine-readable readiness report
 hub validate-manifest ../Contract-Sweeper/federation.json
 hub validate-package <export-dir>            # validate producer export package
 hub fetch --run --root ws                    # clone/refresh producers and run exports when allowed
@@ -64,7 +66,7 @@ make test
 | Rule | Meaning |
 |---|---|
 | Producers collect and normalize | Domain repos own data acquisition and local validation |
-| Hub validates and aggregates | Hub owns federation schemas, registry, package validation, and aggregate graph generation |
+| Hub validates and aggregates | Hub owns federation schemas, registry, package validation, readiness rollup, and aggregate graph generation |
 | Hub correlates across producers | Cross-domain joins belong here, not inside individual producer repos |
 | Consumers rank and analyze | Analytical systems consume Hub outputs; they do not replace the Hub |
 
