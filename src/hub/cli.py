@@ -3,6 +3,7 @@
     hub list                         list registered producers
     hub validate-manifest <path>     validate a producer federation.json
     hub validate-package <dir>       validate an export package directory
+    hub validate-federation          roll up producer readiness from a workspace
     hub fetch [--root ws] [--run]    clone/refresh producers (optionally export)
     hub aggregate [--root .]         discover + aggregate producer packages
     hub correlate [--in d --out d]   derive cross-producer correlation relationships
@@ -17,6 +18,7 @@ from typing import List, Optional
 from .aggregate import aggregate, discover_packages
 from .bridge import write_manifest
 from .correlate import correlate
+from .federation_status import validate_federation
 from .fetch import fetch_all
 from .manifest import load_and_validate_manifest
 from .registry import load_registry
@@ -37,6 +39,11 @@ def _build_parser() -> argparse.ArgumentParser:
 
     vp = sub.add_parser("validate-package", help="validate an export package dir")
     vp.add_argument("path")
+
+    vf = sub.add_parser("validate-federation", help="roll up producer readiness from a workspace")
+    vf.add_argument("--registry", default=DEFAULT_REGISTRY)
+    vf.add_argument("--root", default=".", help="workspace root containing producer checkouts")
+    vf.add_argument("--json", action="store_true", help="emit machine-readable JSON")
 
     fp = sub.add_parser("fetch", help="clone/refresh producers into a workspace (optionally run their export)")
     fp.add_argument("--registry", default=DEFAULT_REGISTRY)
@@ -98,6 +105,23 @@ def main(argv: Optional[List[str]] = None) -> int:
             return 1
         print("VALID package")
         return 0
+
+    if args.cmd == "validate-federation":
+        reg = load_registry(args.registry)
+        summary = validate_federation(reg, args.root)
+        if args.json:
+            print(json.dumps(summary, indent=2, sort_keys=True))
+        else:
+            print(
+                f"# {summary['hub']} ({summary['schema_version']}) — "
+                f"{summary['ready_count']}/{summary['producer_count']} ready"
+            )
+            for producer in summary["producers"]:
+                print(
+                    f"{producer['program_id']:16} {producer['blocker_class']:24} "
+                    f"declared={producer['declared_status']:20} {producer['repo']}"
+                )
+        return 0 if summary["ready_count"] == summary["producer_count"] else 1
 
     if args.cmd == "fetch":
         reg = load_registry(args.registry)
