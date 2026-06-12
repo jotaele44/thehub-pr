@@ -1,55 +1,73 @@
-# thehub-pr — the PRII Federation Hub
+# thehub-pr — PRII Federation Hub
 
-The central node of the **Puerto Rico Integrated Intelligence (PRII) federation**.
-The Hub does not collect data itself. It **discovers** producer nodes, **validates**
-that their exports conform to the shared federation contract, **aggregates** them
-into one cross-domain graph, and **correlates** entities across producers (shared
-normalized-name / external-id / location / funding-date) into derived
-`federation_relationship` edges.
+`thehub-pr` is the central control-plane and aggregation node for the Puerto Rico Integrated Intelligence (PRII) federation.
 
-```
-            ┌──────────────────────────── thehub-pr (this repo) ───────────────────────────┐
-            │  registry/producers.yaml → fetch federation.json → validate export → aggregate │
-            └───────────────▲───────────────▲───────────────▲───────────────▲───────────────┘
+The Hub does not own domain data collection. It discovers producer repositories, validates their manifests and export packages, aggregates canonical streams, and derives cross-producer relationships from normalized names, external identifiers, locations, dates, source lineage, and confidence metadata.
+
+```text
+            ┌──────────────────────────── thehub-pr ────────────────────────────┐
+            │ registry → fetch federation.json → validate exports → aggregate    │
+            │ aggregate → correlate → publish federation graph                   │
+            └───────────────▲───────────────▲───────────────▲───────────────▲────┘
                             │               │               │               │
               moneysweep-pr │   spiderweb-pr│    aguayluz-pr│    prufon-pr  │  skywatcher-pr
-            (Contract-Sweeper)  (spatial/ops)  (water/grid)   (anomaly)       (airspace)
-                  PRODUCERS  ──────────────  emit federation.json + JSONL export packages
+            (Contract-Sweeper) (spatial/ops)  (water/grid)   (case corpus)    (airspace)
+                   PRODUCERS emit federation.json + canonical export packages
 ```
 
-A separate **analytical consumer** (`Puerto-Rico-Integrated-Intelligence-System`) reads the
-Hub's aggregate outputs to rank leads. It is *not* the Hub.
+A separate analytical consumer may read Hub aggregate outputs to rank leads. It is not the Hub.
 
-## The contract (what a producer must satisfy)
+## Active producer map
 
-1. A root **`federation.json`** conforming to [`schemas/repo_federation_manifest.schema.json`](schemas/repo_federation_manifest.schema.json):
-   `schema_version: repo_federation_manifest_v1`, `hub_parent: thehub-pr`, offline-safe
-   `hub_callable_commands` (`setup`, `test_suite`), `canonical_outputs`, and a
-   `federation_readiness_gate`.
-2. An **export package** — a directory with `manifest.json`
-   ([`federation_export_manifest.schema.json`](schemas/federation_export_manifest.schema.json))
-   plus JSONL streams (`sources`, `entities`, `relationships`, optionally
-   `funding_awards`, `transactions`, `observations`). Every row carries a deterministic id
-   (`src_/ent_/rel_/awd_/txn_…`), a `lineage` object, `confidence`, `synthetic`, and ISO
-   timestamps. The manifest records each file's `sha256` and `record_count`.
+| Federation id | Repository | Domain | Hub stance |
+|---|---|---|---|
+| `moneysweep-pr` | [`Contract-Sweeper`](https://github.com/jotaele44/Contract-Sweeper) | Public money, procurement, grants, recovery, influence, fiscal-control records | Producer; not production-certified master dataset until gates pass |
+| `spiderweb-pr` | [`spiderweb-pr`](https://github.com/jotaele44/spiderweb-pr) | Spatial / operational evidence and GIS bridge exports | Producer; no longer active FR24 owner |
+| `aguayluz-pr` | [`aguayluz-pr`](https://github.com/jotaele44/aguayluz-pr) | Water, wastewater, power, outage, and recovery-project monitoring | Real-data partial producer |
+| `prufon-pr` | [`PRUFON`](https://github.com/jotaele44/PRUFON) | Puerto Rico historical case corpus | Case-corpus producer |
+| `skywatcher-pr` | [`skywatcher-pr`](https://github.com/jotaele44/skywatcher-pr) | Airspace / aircraft intelligence and FR24 ingestion | Airspace producer; live execution blocked until non-synthetic observation export exists |
 
-The Hub owns the canonical schemas under [`schemas/`](schemas/); producers conform to them.
+## The producer contract
+
+1. Root `federation.json` conforming to [`schemas/repo_federation_manifest.schema.json`](schemas/repo_federation_manifest.schema.json).
+2. Offline-safe `hub_callable_commands` such as `setup`, `test_suite`, and export commands.
+3. `canonical_outputs` describing where export packages and reports are emitted.
+4. A `federation_readiness_gate` stating discovery/live-execution status and blockers.
+5. Export package with `manifest.json` plus JSONL streams such as:
+
+```text
+sources.jsonl
+entities.jsonl
+relationships.jsonl
+funding_awards.jsonl
+transactions.jsonl
+observations.jsonl
+```
+
+Every row should carry deterministic ids, lineage, confidence, synthetic/test flags where applicable, and ISO timestamps. The package manifest records each file's SHA-256 and record count.
 
 ## Usage
 
 ```bash
 make setup                                   # pip install -e ".[dev]"
-hub list                                      # show registered producers
+hub list                                     # show registered producers
 hub validate-manifest ../Contract-Sweeper/federation.json
-hub validate-package <export-dir>            # check a producer export package
-hub fetch --run --root ws                     # clone/refresh producers from GitHub (+ run their export)
-hub aggregate --root .. --out data/aggregate # merge all discoverable producer packages
+hub validate-package <export-dir>            # validate producer export package
+hub fetch --run --root ws                    # clone/refresh producers and run exports when allowed
+hub aggregate --root .. --out data/aggregate # merge discoverable packages
 hub correlate --in data/aggregate            # derive cross-producer relationship edges
 make test
 ```
 
-See [docs/FEDERATION_STATUS.md](docs/FEDERATION_STATUS.md) for the gap-closure status —
-what's live, what's blocked, and each blocked gap's unblock requirement.
+## Boundary rules
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the topology, node roles, and the producer
-registration protocol.
+| Rule | Meaning |
+|---|---|
+| Producers collect and normalize | Domain repos own data acquisition and local validation |
+| Hub validates and aggregates | Hub owns federation schemas, registry, package validation, and aggregate graph generation |
+| Hub correlates across producers | Cross-domain joins belong here, not inside individual producer repos |
+| Consumers rank and analyze | Analytical systems consume Hub outputs; they do not replace the Hub |
+
+## Status docs
+
+See [docs/FEDERATION_STATUS.md](docs/FEDERATION_STATUS.md) for gap-closure status and [ARCHITECTURE.md](ARCHITECTURE.md) for topology, node roles, and producer registration protocol.
