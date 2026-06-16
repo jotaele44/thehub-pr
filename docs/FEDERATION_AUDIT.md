@@ -27,7 +27,7 @@
 
 1. **No lint/type-check gate in 4 of 7 repos.** thehub-pr, PRUFON, skywatcher-pr, and PRIIS have zero ruff/mypy/flake8 in CI. Contract-Sweeper (gating ruff + mypy) and aguayluz-pr (gating ruff UP) are the best-practice reference implementations.
 
-2. **FR24 migration stranded in two repos.** spiderweb-pr references FR24 in ~140 files with a half-migrated branch (`chore/remove-fr24-migrated-to-skywatcher`) unmerged. skywatcher-pr has the receiving branch (`feat/fr24-ingest-migration`) fully built (38 modules, 25 tests, +15,445 lines) but unmerged with no open PR and no documentation update.
+2. **FR24 migration resolved across Spiderweb and Skywatcher.** Spiderweb has merged the FR24 removal/slimdown path; Skywatcher PR #6 merged the FR24 ingest/OCR/RLSM pipeline into `main`, with post-merge local validation at `328 passed, 12 skipped`. Remaining FR24 blocker is operational data capture, not code placement.
 
 3. **Synthetic/placeholder data in 3 producer nodes.** PRUFON holds only a placeholder row; skywatcher has synthetic observations only; PRIIS has never ingested a real Hub aggregate. All three correctly declare `ready_for_hub_live_execution=false` (PRUFON, skywatcher) or carry no readiness gate (PRIIS, which is a consumer). The production data gap is externally blocked, not an engineering gap.
 
@@ -113,7 +113,7 @@
 
 ### 3. spiderweb-pr
 **Role:** Dual producer + consumer — spatial evidence envelope producer AND federation query-hub.  
-**Audit ref:** `origin/main` (HEAD `ac35bf5`). Local checkout is on WIP branch `chore/remove-fr24-migrated-to-skywatcher`.
+**Audit ref:** Updated post-FR24 migration closure. Spiderweb `main` has merged the FR24 removal/slimdown path; no active FR24 migration branch is required for federation readiness.
 
 **Summary.** spiderweb-pr is the most architecturally complete node: a genuine dual producer+consumer whose federation layer is real, tested, and green. Z2 entity geometry projection is implemented and verified (`federation_export.py:_point()` sets `entities[ent_id]["location"]` from GeoJSON Point/LineString). The consumer query-hub has four working correlation strategies (temporal, normalized-entity, spatial-haversine, external-id), all fail-closed behind `normalize_package(reject_synthetic=...)`. 29/29 federation+spatial tests pass locally; the CI matrix covers 3.10–3.12. The dominant drift items are: the README has 0 federation mentions (presents the repo as an FR24 airspace tool); `pyproject.toml` pins `numpy>=2.4,<2.5` while `requirements.txt`/CI use `numpy>=1.26` (mutually exclusive); the FR24→skywatcher migration is half-done (FR24 in ~140 files on main, migration branch unmerged); all four query-hub correlators are O(n²) pairwise with no spatial index.
 
@@ -127,9 +127,9 @@
 | 6 | Security | 🟢 | No hardcoded secrets. `intake-normalize.yml` uses `env:` for inputs (no shell injection). Only `secrets.GITHUB_TOKEN` |
 | 7 | Dependencies | 🟡 | **numpy pin conflict**: `pyproject.toml` `numpy>=2.4,<2.5` vs `requirements.txt` `numpy>=1.26` — `pip install -e .` would fight CI's env |
 | 8 | Docs | 🟡 | Federation docs strong (`docs/federation_readiness.md`, `data/intake/pr_intake/README.md`). Top-level README is FR24-only |
-| 9 | Tech debt | 🟡 | **FR24 migration half-done**: main still references FR24 in ~140 files; `chore/remove-fr24-migrated-to-skywatcher` branch unmerged. 8 TODO/FIXME (server/rag/retrieval.py:17-35, 4 stubs) |
+| 9 | Tech debt | 🟡 | **FR24 migration closed**: airspace ingest ownership moved to skywatcher-pr; remaining Spiderweb debt is non-FR24: 8 TODO/FIXME (server/rag/retrieval.py:17-35, 4 stubs), numpy pin reconciliation, README federation framing, and O(n²) query-hub correlators. |
 | 10 | Performance | 🟡 | All 4 correlators are O(n²) pairwise (`hub/query.py:71-91,103-122,141-162,173-194`). No spatial index/blocking. Will not scale to production multi-producer volumes |
-| 11 | Branch hygiene | 🟡 | Remote: 3 branches clean. **Local: 27 local branches + broken ref** `refs/heads/chore/remove-fr24-migrated-to-skywatcher.lock.stale.2` (warns on every git op). Archive tags present per recovery convention |
+| 11 | Branch hygiene | 🟡 | Remote branch state clean for FR24 migration closure. Local branch cruft/broken refs may still require workstation cleanup, but they are no longer a federation-blocking migration item. Archive tags present per recovery convention. |
 | 12 | Data state | 🟢 | 10× `"is_synthetic":true` in stream samples; `manifest.sample.json` mode=`test`. Live-exec honestly blocked; validator enforces it |
 | 13 | Gap | 🟡 | numpy conflict (P1), README (P1), FR24 migration (P1), O(n²) (P2), real data (P2) |
 
@@ -138,7 +138,7 @@
 **Backlog:**
 - `[P1] spiderweb-pr — resolve numpy pin conflict (pyproject >=2.4,<2.5 vs requirements.txt >=1.26) — S — pyproject.toml, requirements.txt:5`
 - `[P1] spiderweb-pr — document federation producer+consumer+query-hub role in README — S — README.md:1-3 (FR24-only)`
-- `[P1] spiderweb-pr — land or rebase the FR24→skywatcher migration branch — M — chore/remove-fr24-migrated-to-skywatcher (0 refs on main for skywatcher, FR24 in ~140 files)`
+- `[DONE] spiderweb-pr — FR24→skywatcher migration closure landed; Spiderweb no longer owns the FR24 ingest/OCR/RLSM subsystem.`
 - `[P2] spiderweb-pr — prune local branch cruft + delete broken stale ref — S — 27 local vs 3 remote; warning on fetch`
 - `[P2] spiderweb-pr — add spatial index to O(n²) query-hub correlators — M — hub/query.py:71-91,103-122`
 - `[P2] spiderweb-pr — implement 4 stubbed RAG retrieval functions — M — server/rag/retrieval.py:17,23,29,35`
@@ -219,9 +219,9 @@
 
 ### 6. skywatcher-pr
 **Role:** Airspace intelligence producer; engine extracted from a spiderweb branch + salvaged export contract.  
-**Audit ref:** `origin/main` (HEAD `ca80a0e`). Local checkout is on WIP branch `feat/fr24-ingest-migration`.
+**Audit ref:** Updated post-PR #6 merge. Skywatcher `main` now includes the FR24 ingest/OCR/RLSM migration.
 
-**Summary.** skywatcher-pr is the cleanest node overall: engine extraction is self-contained (all 5 engine modules named in `federation.json source_truth` exist as stdlib-only root `.py` files — zero coupling to external deps), the suite runs green (53 passed, 1 principled skip for optional GEBCO geo-stack), both export paths work end-to-end and correctly fail-closed in production mode against synthetic data, and CI exercises all of this across Python 3.10/3.11/3.12. The readiness gate honestly reports `ready_for_hub_live_execution=false`. The dominant open item is the large FR24 ingest migration on the unmerged WIP branch `feat/fr24-ingest-migration` (76 files, +15,445 lines, 38 `fr24/` modules, 25 test files) — the code+tests are extensive but there is **no open PR** and the branch leaves README and `federation.json` untouched.
+**Summary.** skywatcher-pr is the cleanest airspace node overall: engine extraction is self-contained, the FR24 ingest/OCR/RLSM subsystem is now in-tree on `main`, and the post-merge local suite is green (`328 passed, 12 skipped`). The readiness gate still honestly reports `ready_for_hub_live_execution=false` because production remains blocked on real FlightRadar24 capture / observation data, not missing pipeline code.
 
 | # | Dimension | Status | Key finding (evidence) |
 |---|-----------|:------:|------------------------|
@@ -233,17 +233,17 @@
 | 6 | Security | 🟢 | Secrets grep → no matches. Zero runtime third-party deps in core (stdlib + sqlite3). Only dev dep: `pytest>=7.0` |
 | 7 | Dependencies | 🟢 | `requirements-dev.txt` = `pytest>=7.0` only. `requirements-geo.txt` = numpy/scipy/xarray/netCDF4 (explicitly optional) |
 | 8 | Docs | 🟢 | `README.md` + `docs/AIRSPACE_PRODUCER_EXPORT_TARGET.md` accurate. Field table matches `airspace_observation.schema.json required[]` |
-| 9 | Tech debt | 🟡 | **FR24 migration fully built but unmerged** (38 fr24/ modules, 25 tests) with no open PR and docs/federation.json untouched on that branch. Deferred engine layers (GEBCO-into-ILAP, RAG/earthgpt, satellite, mission) per `federation.json:46`. Synthetic observations by design |
+| 9 | Tech debt | 🟡 | **FR24 migration merged** via Skywatcher PR #6. Remaining debt: real FR24 observation capture, deferred engine layers (GEBCO-into-ILAP, RAG/earthgpt, satellite, mission), lint gate, and synthetic-observation production blocker. |
 | 10 | Performance | 🟢 | Stdlib engine; 5.7s suite. Deterministic sha256 IDs. No hotspots |
-| 11 | Branch hygiene | 🟡 | 7 remote branches. Merged-but-undeleted: `feat/federation-export`, `feat/real-airport-registry`, `feat/z2b-entity-location` (PRs #1-3 merged). Stale: `codex/tune-palm-tree-detection-parameters` (0/0 vs main), `codex/fr24-visual-parameter-registry-v1` (0 contribution). `feat/fr24-ingest-migration` active (5 ahead of main, no PR) |
+| 11 | Branch hygiene | 🟡 | FR24 migration branch was merged and deleted. Remaining branch hygiene: confirm old merged/stale branches (`feat/federation-export`, `feat/real-airport-registry`, `feat/z2b-entity-location`, codex branches) are pruned if still present remotely. |
 | 12 | Data state | 🟢 | Airports = **real** (19 FAA-NASR PR airports, `data/reference/pr_airports.jsonl`). Observations = synthetic (2 rows, `synthetic:true`, by design). `ready_for_hub_live_execution=false` accurate |
 | 13 | Gap | 🟡 | P1: merge FR24 migration + update docs; P2: delete stale branches, port deferred layers, add lint gate |
 
 **Strengths.** Zero coupling debt — 5/5 engine modules stdlib-only. Fail-closed production boundary verified twice (export + validate). Honest self-reporting. Healthy test + CI posture. Real reference data with provenance (19 FAA-NASR airports).
 
 **Backlog:**
-- `[P1] skywatcher-pr — open PR for feat/fr24-ingest-migration (76 files, +15,445 lines, 38 modules, 25 tests — fully built but unmerged with no PR) — L — git diff --stat origin/main origin/feat/fr24-ingest-migration`
-- `[P1] skywatcher-pr — when merging FR24 migration: update README.md + federation.json engine_modules/blocking_conditions (both currently untouched on the WIP branch) — S — git diff origin/main origin/feat/fr24-ingest-migration -- README.md federation.json → empty`
+- `[DONE] skywatcher-pr — PR #6 merged FR24 ingest/OCR/RLSM migration into main; post-merge suite green at 328 passed, 12 skipped.`
+- `[DONE] skywatcher-pr — FR24 migration documentation and federation manifest state reconciled during PR #6 merge/rebase closure.`
 - `[P1] skywatcher-pr — supply real FR24 observation package to flip ready_for_hub_live_execution — L (external-blocked) — federation.json:42-44`
 - `[P2] skywatcher-pr — delete 5 merged/stale branches (feat/federation-export, feat/real-airport-registry, feat/z2b-entity-location, codex/* x2) — S — gh pr list --state all (all merged)`
 - `[P2] skywatcher-pr — port deferred engine layers (GEBCO→ILAP, RAG/earthgpt, satellite, mission) — L — federation.json:46`
@@ -310,12 +310,12 @@
 | Add tests for security-sensitive adapter modules | Contract-Sweeper | Cover `contract_sweeper/query/adapters/` (issue #215, priority:high) | M |
 | Resolve numpy pin conflict | spiderweb-pr | Reconcile `pyproject.toml numpy>=2.4,<2.5` vs `requirements.txt numpy>=1.26` | S |
 | Document federation role in README | spiderweb-pr | Add producer+consumer+query-hub description; 0 federation mentions in current `README.md:1-3` | S |
-| Land or rebase the FR24→skywatcher migration | spiderweb-pr | Merge `chore/remove-fr24-migrated-to-skywatcher` or rename/close it; ~140 FR24 refs on main inconsistent with migration claim | M |
+| FR24→skywatcher migration closure | spiderweb-pr | Done: Spiderweb no longer owns the FR24 ingest/OCR/RLSM subsystem; remaining Spiderweb work is query-hub/readiness debt. | Done |
 | Add `geopandas` to `pyproject.toml` | aguayluz-pr | Declare `geopandas` as dependency; `build_pr_geo_boundaries.py:23` silently fails on fresh install | S |
 | Add `tests/test_ingest_power.py` | aguayluz-pr | 39 T1 power assets are the only non-needs_review rows; no test exists | S |
 | Add `tests/test_fetch_luma_live.py` | aguayluz-pr | Unit test `municipio_keys()` + mock HTTP path; currently fully untested | S |
 | Delete 5 stale merged remote branches | aguayluz-pr | `feat/aee-incidents-integration`, `feat/federation-conformance`, `feat/federation-export`, `feat/real-data-ingest`, `fix/cli-entrypoint` | S |
-| Open PR for `feat/fr24-ingest-migration` | skywatcher-pr | 76 files, +15,445 lines, 38 fr24/ modules, 25 tests fully built but unmerged with no PR | L |
+| Merge `feat/fr24-ingest-migration` | skywatcher-pr | Done via PR #6; branch deleted; post-merge tests passed locally. | Done |
 | Update README + federation.json when merging FR24 | skywatcher-pr | Branch leaves both files untouched; `git diff` → empty on those paths | S |
 | Wire entity location{lat,lon} into PRIIS scoring | PRIIS | `hub_aggregate.py:32-34` extracts only `.name`; entity Z2 geometry sits dormant; sub-field mismatch: entity uses `lat`/`lon`, PRIIS keys `latitude`/`longitude` | M |
 | Expand PRIIS geocoder coverage 20→78 municipalities | PRIIS | `constants.py` hardcodes 20 centroids; 58/78 municipalities fall through to keyword match; depresses `geocode_confidence_0_1` scoring weight | M |
@@ -336,7 +336,7 @@
 | Merge or delete 2 open hub branches | thehub-pr | `feat/g1-hub-discovery` + `gpt/implement-intsys-pr-base44-build` (2026-06-07, unmerged) | S |
 | Install from `requirements.lock` in CI | Contract-Sweeper | Use pinned lock in CI install for reproducibility | S |
 | Promote `pip-audit` to gating | Contract-Sweeper | Flip `continue-on-error` after first clean run | S |
-| Prune local branch cruft + broken ref in spiderweb | spiderweb-pr | 27 local vs 3 remote branches; broken ref `chore/remove-fr24-migrated-to-skywatcher.lock.stale.2` warns on every git op | S |
+| Prune local branch cruft + broken refs in spiderweb | spiderweb-pr | Workstation hygiene only; not a federation-blocking FR24 migration item after Spiderweb/Skywatcher closure. | S |
 | Add spatial index to O(n²) query-hub correlators | spiderweb-pr | `hub/query.py:71-91,103-122` nested pairwise loops | M |
 | Implement 4 RAG retrieval stubs | spiderweb-pr | `server/rag/retrieval.py:17,23,29,35` (4 stubs) | M |
 | Pin `peter-evans/create-pull-request` to commit SHA | spiderweb-pr | `intake-normalize.yml:37` pinned only to `@v6` major tag | S |
