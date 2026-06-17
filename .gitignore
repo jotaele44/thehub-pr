@@ -224,3 +224,12 @@ __marimo__/
 # generated aggregate outputs (keep the dir, not its contents)
 data/aggregate/*.jsonl
 data/aggregate/graph_summary.json
+
+# server entity database (runtime-generated)
+data/hub.db
+
+# frontend workspace (inside thehub-pr)
+server/frontend/node_modules/
+server/frontend/export-standalone/
+server/frontend/.env.local
+server/frontend/dist/
