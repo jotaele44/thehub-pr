@@ -52,28 +52,136 @@ def test_export_command_none_when_missing(tmp_path):
     assert export_command(tmp_path) is None  # no export_canonical key
 
 
-def test_safe_cmd_allows_known_interpreters(tmp_path):
-    for exe in ("python", "python3", "poetry", "make", "uv"):
-        cmd = _safe_cmd([exe, "run", "something.py"], tmp_path)
-        assert cmd[0] == exe
-
-
-def test_safe_cmd_allows_relative_script_inside_base(tmp_path):
-    script = tmp_path / "scripts" / "export.py"
-    script.parent.mkdir()
+def _make_script(base, rel="scripts/federation_export.py"):
+    """Create an in-tree script file under *base* and return its relative path."""
+    script = base / rel
+    script.parent.mkdir(parents=True, exist_ok=True)
     script.touch()
-    cmd = _safe_cmd(["scripts/export.py", "--mode", "prod"], tmp_path)
-    assert cmd[0] == "scripts/export.py"
+    return rel
+
+
+def test_safe_cmd_accepts_real_producer_command(tmp_path):
+    # The exact shape every real producer uses for export_canonical.
+    _make_script(tmp_path)
+    cmd = _safe_cmd(["python3", "scripts/federation_export.py", "--mode", "test"], tmp_path)
+    assert cmd == ["python3", "scripts/federation_export.py", "--mode", "test"]
+    # `python` (not just python3) running an in-tree script is also fine.
+    assert _safe_cmd(["python", "scripts/federation_export.py"], tmp_path)[0] == "python"
+
+
+def test_safe_cmd_allows_in_tree_script_invoked_by_path(tmp_path):
+    rel = _make_script(tmp_path, "scripts/export.sh")
+    cmd = _safe_cmd([rel, "--mode", "prod"], tmp_path)
+    assert cmd[0] == rel
 
 
 def test_safe_cmd_rejects_arbitrary_system_binary(tmp_path):
-    with pytest.raises(ValueError, match="not in the allowed list"):
+    with pytest.raises(ValueError, match="must be a Python interpreter"):
         _safe_cmd(["rm", "-rf", "/"], tmp_path)
 
 
 def test_safe_cmd_rejects_path_traversal(tmp_path):
-    with pytest.raises(ValueError, match="not in the allowed list"):
+    with pytest.raises(ValueError, match="must be a Python interpreter"):
         _safe_cmd(["../other-repo/malicious.sh"], tmp_path)
+
+
+def test_safe_cmd_rejects_absolute_path_interpreter(tmp_path):
+    # Basename trick: "/tmp/python" must NOT pass just because its name is "python".
+    with pytest.raises(ValueError, match="must be a Python interpreter"):
+        _safe_cmd(["/tmp/python", "evil.py"], tmp_path)
+
+
+def test_safe_cmd_rejects_system_binary_via_decoy_file(tmp_path):
+    # The PATH-lookup bypass: a committed regular file named "perl" satisfies an
+    # in-tree-file check, but subprocess would run the *system* /usr/bin/perl because
+    # the slashless name triggers a $PATH lookup. A bare (separator-less) head must
+    # be rejected even when a like-named file exists in the repo.
+    (tmp_path / "perl").write_text("decoy")
+    with pytest.raises(ValueError, match="must be a Python interpreter"):
+        _safe_cmd(["perl", "payload.pl"], tmp_path)
+
+
+def test_safe_cmd_rejects_general_purpose_runners(tmp_path):
+    # poetry / uv / make are general runners that can launch arbitrary programs —
+    # not allowed as the program.
+    for argv in (
+        ["uv", "run", "anybin"],
+        ["poetry", "run", "anybin"],
+        ["make", "export"],
+    ):
+        with pytest.raises(ValueError, match="must be a Python interpreter"):
+            _safe_cmd(argv, tmp_path)
+
+
+def test_safe_cmd_rejects_inline_code_execution(tmp_path):
+    # -c / -e / --command / --eval execute arbitrary inline code.
+    for argv in (
+        ["python", "-c", "<inline payload>"],
+        ["python", "-e", "<inline payload>"],
+        ["python3", "--command", "<inline payload>"],
+        ["python3", "--eval=<inline payload>"],
+    ):
+        with pytest.raises(ValueError, match="code/module-exec flag"):
+            _safe_cmd(argv, tmp_path)
+
+
+def test_safe_cmd_rejects_module_execution(tmp_path):
+    # -m runs an arbitrary module (a code/package-execution vector). Bare, attached
+    # (-mNAME) and combined (-Im) forms must all be caught.
+    for argv in (
+        ["python", "-m", "anymod"],
+        ["python", "-manymod"],
+        ["python", "-Im", "anymod"],
+        ["python", "-m", "timeit", "-s", "<setup>", "<stmt>"],
+    ):
+        with pytest.raises(ValueError, match="code/module-exec flag"):
+            _safe_cmd(argv, tmp_path)
+
+
+def test_safe_cmd_rejects_attached_and_combined_exec_flags(tmp_path):
+    for argv in (
+        ["python", "-c<inline payload>"],
+        ["python", "-Ic", "<inline payload>"],
+        ["python", "-Ic<inline payload>"],
+    ):
+        with pytest.raises(ValueError, match="code/module-exec flag"):
+            _safe_cmd(argv, tmp_path)
+
+
+def test_safe_cmd_rejects_stdin_program(tmp_path):
+    # `python -` reads the program from stdin.
+    with pytest.raises(ValueError, match="code/module-exec flag"):
+        _safe_cmd(["python3", "-"], tmp_path)
+
+
+def test_safe_cmd_rejects_interpreter_without_in_tree_script(tmp_path):
+    # A bare interpreter (REPL) or one whose args reference no in-tree file.
+    with pytest.raises(ValueError, match="does not run a script"):
+        _safe_cmd(["python3"], tmp_path)
+    with pytest.raises(ValueError, match="does not run a script"):
+        _safe_cmd(["python3", "--mode", "test"], tmp_path)
+
+
+def test_safe_cmd_does_not_mistake_benign_flags_for_exec(tmp_path):
+    # Uppercase/other short flags and long flags that merely contain c/e/m letters
+    # must NOT be mistaken for code-exec flags.
+    _make_script(tmp_path, "scripts/x.py")
+    for argv in (
+        ["python3", "-O", "scripts/x.py", "--mode", "export"],
+        ["python3", "scripts/x.py", "--compute", "--emit"],
+    ):
+        assert _safe_cmd(argv, tmp_path)[0] == "python3"
+
+
+def test_safe_cmd_rejects_absolute_path_argument(tmp_path):
+    _make_script(tmp_path, "scripts/x.py")
+    with pytest.raises(ValueError, match="escapes the producer directory"):
+        _safe_cmd(["python", "scripts/x.py", "--out", "/etc/evil"], tmp_path)
+
+
+def test_safe_cmd_rejects_traversal_argument(tmp_path):
+    with pytest.raises(ValueError, match="escapes the producer directory"):
+        _safe_cmd(["python", "../../evil.py"], tmp_path)
 
 
 def test_fetch_all_refuses_disallowed_export_command(tmp_path):
@@ -86,7 +194,21 @@ def test_fetch_all_refuses_disallowed_export_command(tmp_path):
     }))
     runner = FakeRunner()
     reg = _registry(Producer(program_id="badprod", repo="o/badprod", role="x"))
-    with pytest.raises(ValueError, match="not in the allowed list"):
+    with pytest.raises(ValueError, match="must be a Python interpreter"):
+        fetch_all(reg, ws, run_export=True, runner=runner)
+
+
+def test_fetch_all_refuses_inline_exec_export_command(tmp_path):
+    ws = tmp_path / "ws"
+    base = ws / "sneaky"
+    base.mkdir(parents=True)
+    (base / ".git").mkdir()
+    (base / "federation.json").write_text(json.dumps({
+        "hub_callable_commands": {"export_canonical": "python -c \"<inline payload>\""}
+    }))
+    runner = FakeRunner()
+    reg = _registry(Producer(program_id="sneaky", repo="o/sneaky", role="x"))
+    with pytest.raises(ValueError, match="code/module-exec flag"):
         fetch_all(reg, ws, run_export=True, runner=runner)
 
 
@@ -100,6 +222,8 @@ def test_fetch_all_clones_and_runs_export(tmp_path):
     base = ws / "aguayluz-pr"
     base.mkdir(parents=True)
     (base / ".git").mkdir()  # already present -> pull path
+    (base / "scripts").mkdir()
+    (base / "scripts" / "federation_export.py").touch()  # in-tree export script
     (base / "federation.json").write_text(json.dumps({
         "hub_callable_commands": {"export_canonical": "python3 scripts/federation_export.py --mode production"}
     }))
