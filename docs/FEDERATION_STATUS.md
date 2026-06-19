@@ -35,6 +35,11 @@ spatial layers).
   an optional WGS84 `location {lat, lon, municipality?}`. Producers that carry
   coordinates populate it: aguayluz assets, spiderweb retained spatial records,
   and skywatcher observations.
+- **INTSYS-PR UI + FastAPI backend.** `server/backend/main.py` (FastAPI, SQLite
+  entity CRUD) + `server/frontend/` (React/Vite, 26 pages, 100+ components)
+  shipped in `feat/thehub-online`. Diagnostic-mode stubs for agents/functions/
+  file-storage return graceful errors; all producer entities are browsable
+  through the dashboard.
 - **Z5 — aguayluz water/wastewater assets.** `scripts/ingest_water.py` loads the
   public PR_Geodata OSM layers (water treatment / wastewater / pumping / reservoir)
   into review-grade utility assets. These rows enrich the spatial layer but retain

@@ -28,6 +28,33 @@ GIT_URL = "https://github.com/{repo}.git"
 # A runner takes a command (token list) and an optional cwd, and runs it.
 Runner = Callable[[Sequence[str], Optional[str]], Any]
 
+# Executables allowed in export_canonical commands from producer federation.json files.
+_ALLOWED_EXECUTABLES = {"python", "python3", "poetry", "make", "uv"}
+
+
+def _safe_cmd(cmd: List[str], base: Path) -> List[str]:
+    """Validate that *cmd* is safe to execute.
+
+    Accepts commands whose first token is an allowed interpreter name or a
+    path that resolves inside *base* (i.e. the cloned producer directory).
+    Raises ValueError for anything else so that a compromised federation.json
+    cannot execute arbitrary system binaries.
+    """
+    if not cmd:
+        raise ValueError("Empty command")
+    exe = Path(cmd[0])
+    if exe.name in _ALLOWED_EXECUTABLES:
+        return cmd
+    if not exe.is_absolute():
+        resolved = (base / exe).resolve()
+        if resolved.is_relative_to(base.resolve()) and resolved.is_file():
+            return cmd
+    raise ValueError(
+        f"export_canonical command {cmd[0]!r} is not in the allowed list "
+        f"({', '.join(sorted(_ALLOWED_EXECUTABLES))}) and does not resolve "
+        f"inside the producer directory. Refusing to execute."
+    )
+
 
 def _subprocess_runner(cmd: Sequence[str], cwd: Optional[str] = None):
     """Default runner: run `cmd`, raising CalledProcessError on non-zero exit."""
@@ -89,7 +116,7 @@ def fetch_all(
         if run_export:
             cmd = export_command(base)
             if cmd:
-                runner(cmd, str(base))
+                runner(_safe_cmd(cmd, base), str(base))
                 exported = True
 
         results.append(

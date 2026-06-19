@@ -1,11 +1,14 @@
-.PHONY: setup test list validate-cs aggregate clean
+.PHONY: setup test lint list validate-cs aggregate clean
 
 PY ?= python3
 
 setup:
 	$(PY) -m pip install -e ".[dev]"
 
-test:
+lint:
+	$(PY) -m ruff check src tests
+
+test: lint
 	$(PY) -m pytest -q
 
 list:

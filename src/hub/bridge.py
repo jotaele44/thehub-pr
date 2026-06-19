@@ -13,7 +13,6 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import List, Optional
 
 from ._schemas import STREAM_SCHEMA
 
