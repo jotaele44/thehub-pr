@@ -6,9 +6,10 @@ workspace checkout.
 """
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass
+import json
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from .manifest import load_and_validate_manifest
 from .registry import Producer, Registry
@@ -29,6 +30,9 @@ class ProducerReadiness:
     package_path: str
     package_present: bool
     package_valid: bool
+    live_execution_ready: bool
+    callable_commands: List[str]
+    last_package_timestamp: Optional[str]
     blocker_class: str
     errors: List[str]
 
@@ -46,6 +50,7 @@ def _blocker_class(
     manifest_valid: bool,
     package_present: bool,
     package_valid: bool,
+    live_execution_ready: bool,
     declared_status: str,
 ) -> str:
     if not checkout_present:
@@ -58,9 +63,19 @@ def _blocker_class(
         return "missing_export_package"
     if not package_valid:
         return "invalid_export_package"
+    if not live_execution_ready:
+        return "declared_not_live"
     if declared_status in {"blocked", "diagnostic", "synthetic_only"}:
         return "declared_not_live"
     return "ready"
+
+
+def _read_federation_json(manifest_path: Path) -> Dict[str, Any]:
+    """Parse a producer's federation.json; return {} on any failure."""
+    try:
+        return json.loads(manifest_path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return {}
 
 
 def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str, Any]:
@@ -77,6 +92,9 @@ def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str,
         checkout_present = base.exists()
         manifest_present = manifest_path.exists()
         manifest_valid = False
+        live_execution_ready = False
+        callable_commands: List[str] = []
+
         if manifest_present:
             _, manifest_errors = load_and_validate_manifest(manifest_path)
             if manifest_errors:
@@ -84,8 +102,15 @@ def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str,
             else:
                 manifest_valid = True
 
+            fed_data = _read_federation_json(manifest_path)
+            gate = fed_data.get("federation_readiness_gate", {})
+            live_execution_ready = bool(gate.get("ready_for_hub_live_execution", False))
+            callable_commands = sorted(fed_data.get("hub_callable_commands", {}).keys())
+
         package_present = package_path.exists()
         package_valid = False
+        last_package_timestamp: Optional[str] = None
+
         if package_present:
             package_errors = validate_package(package_path)
             if package_errors:
@@ -95,12 +120,21 @@ def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str,
             else:
                 package_valid = True
 
+            pkg_manifest_path = package_path / "manifest.json"
+            if pkg_manifest_path.exists():
+                try:
+                    pkg_manifest = json.loads(pkg_manifest_path.read_text())
+                    last_package_timestamp = pkg_manifest.get("created_at")
+                except (OSError, json.JSONDecodeError):
+                    pass
+
         blocker_class = _blocker_class(
             checkout_present=checkout_present,
             manifest_present=manifest_present,
             manifest_valid=manifest_valid,
             package_present=package_present,
             package_valid=package_valid,
+            live_execution_ready=live_execution_ready,
             declared_status=producer.status,
         )
         producers.append(
@@ -117,6 +151,9 @@ def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str,
                 package_path=str(package_path),
                 package_present=package_present,
                 package_valid=package_valid,
+                live_execution_ready=live_execution_ready,
+                callable_commands=callable_commands,
+                last_package_timestamp=last_package_timestamp,
                 blocker_class=blocker_class,
                 errors=errors,
             )

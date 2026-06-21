@@ -1,6 +1,9 @@
 # PRII Federation — producer registry
 # The Hub (thehub-pr) reads this to discover producer nodes, fetch their
 # federation.json manifests, validate their export packages, and aggregate.
+# Live-execution readiness is gated by ready_for_hub_live_execution in each
+# producer's own federation.json (authoritative); status here reflects the
+# Hub's view of the producer's current integration tier.
 schema_version: hub_registry_v1
 hub: thehub-pr
 
@@ -10,28 +13,28 @@ producers:
     role: public_money_intelligence_node
     federation_manifest: federation.json
     export_path: data/exports/canonical_v1_federation   # canonical_v1 bridge streams (auto-wrapped by the Hub)
-    status: ready_for_discovery        # federation.json + canonical_v1 bridge live on main
+    status: ready_for_discovery        # canonical_v1 bridge live on main; live exec blocked: API keys (FEC/SAM/HigherGov/LDA/OpenCorporates) + Tranche-B manual exports not yet supplied (Contract-Sweeper issue #87)
 
   - program_id: spiderweb-pr
     repo: jotaele44/spiderweb-pr
     role: spatial_operational_producer
     federation_manifest: federation.json
-    status: ready_for_discovery        # federation.json + canonical export adapter live on main; producer-only (query-hub retired to docs/legacy; cross-producer correlation now lives in the Hub's `hub correlate`)
+    status: ready_for_discovery        # canonical export adapter live on main; live exec blocked: needs non-synthetic spatial/operational evidence-envelope rows for production promotion
 
   - program_id: aguayluz-pr
     repo: jotaele44/aguayluz-pr
     role: water_grid_monitoring_node
     federation_manifest: federation.json
-    status: ready_for_live             # federation.json + canonical adapter on main; real power/PREPS data wired; ready_for_hub_live_execution=true
+    status: ready_for_live             # real power/PREPS/water data wired; ready_for_hub_live_execution=true; outage granularity caveated (snapshot-grade until MiLUMA data-sharing resolved)
 
   - program_id: prufon-pr
     repo: jotaele44/PRUFON
     role: anomaly_intelligence_node
     federation_manifest: federation.json
-    status: ready_for_discovery        # federation.json + canonical export adapter on main; placeholder case ledger (awaiting real case data)
+    status: ready_for_discovery        # scaffold on main; live exec blocked: needs real case records in data/master/master_cases.jsonl (placeholder row only)
 
   - program_id: skywatcher-pr
     repo: jotaele44/skywatcher-pr
     role: airspace_intelligence_node
     federation_manifest: federation.json
-    status: ready_for_discovery        # federation.json + canonical export adapter on main; observation stream synthetic (awaiting FlightRadar24 capture)
+    status: ready_for_discovery        # FR24 ingest/OCR/RLSM pipeline on main; live exec blocked: needs real FlightRadar24 capture to flip ready_for_hub_live_execution

@@ -20,6 +20,7 @@ from .bridge import write_manifest
 from .correlate import correlate
 from .federation_status import validate_federation
 from .fetch import fetch_all
+from .graph_report import graph_report
 from .manifest import load_and_validate_manifest
 from .registry import load_registry
 from .validate import validate_package
@@ -71,6 +72,11 @@ def _build_parser() -> argparse.ArgumentParser:
     cp.add_argument("--out", default="data/aggregate", help="dir to write correlations.jsonl")
     cp.add_argument("--window-days", type=int, default=7, help="temporal-proximity window")
     cp.add_argument("--threshold-km", type=float, default=1.0, help="spatial-proximity threshold")
+
+    gr = sub.add_parser("graph-report", help="quality report for an aggregate directory")
+    gr.add_argument("--in", dest="in_dir", default="data/aggregate", help="aggregate dir to read")
+    gr.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+
     return p
 
 
@@ -116,10 +122,14 @@ def main(argv: Optional[List[str]] = None) -> int:
                 f"# {summary['hub']} ({summary['schema_version']}) — "
                 f"{summary['ready_count']}/{summary['producer_count']} ready"
             )
-            for producer in summary["producers"]:
+            for p in summary["producers"]:
+                ts = p["last_package_timestamp"] or "—"
+                cmds = len(p["callable_commands"])
+                live = "yes" if p["live_execution_ready"] else "no"
                 print(
-                    f"{producer['program_id']:16} {producer['blocker_class']:24} "
-                    f"declared={producer['declared_status']:20} {producer['repo']}"
+                    f"{p['program_id']:16} {p['blocker_class']:24} "
+                    f"declared={p['declared_status']:20} "
+                    f"live={live}  cmds={cmds}  ts={ts}"
                 )
         return 0 if summary["ready_count"] == summary["producer_count"] else 1
 
@@ -173,6 +183,34 @@ def main(argv: Optional[List[str]] = None) -> int:
                 print("  -", e)
             return 1
         print("VALID package")
+        return 0
+
+    if args.cmd == "graph-report":
+        report = graph_report(args.in_dir)
+        if args.json:
+            print(json.dumps(report, indent=2, sort_keys=True))
+        else:
+            print(f"# graph-report: {report['aggregate_dir']}")
+            print(f"  entities:         {report['entity_count']}")
+            print(f"  relationships:    {report['relationship_count']}")
+            print(f"  correlations:     {report['correlation_count']}")
+            print(f"  orphan entities:  {report['orphan_entities']}")
+            print(f"  low-conf edges:   {report['low_confidence_edges']}")
+            dupes = report["duplicate_external_ids"]
+            print(f"  duplicate ext-IDs:{len(dupes)}")
+            if dupes:
+                for ext_id, eids in list(dupes.items())[:10]:
+                    print(f"    {ext_id}: {eids}")
+            pairs = report["producer_pair_counts"]
+            if pairs:
+                print("  producer pairs:")
+                for pair, count in pairs.items():
+                    print(f"    {pair}: {count}")
+            basis = report["match_basis_distribution"]
+            if basis:
+                print("  match basis:")
+                for b, count in basis.items():
+                    print(f"    {b}: {count}")
         return 0
 
     return 2
