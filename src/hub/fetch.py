@@ -25,6 +25,20 @@ from typing import Any, Callable, Dict, List, Optional, Sequence
 
 GIT_URL = "https://github.com/{repo}.git"
 
+# Executables the Hub will accept as the first token of a hub_callable_commands
+# value. Operators may extend this list; it must never include shell built-ins
+# or interpreters that trivially escape sandboxing (e.g. perl, ruby, node).
+_ALLOWED_EXECUTABLES = frozenset({
+    "bash", "make", "mypy", "pytest", "python", "python3", "ruff", "sh", "uv",
+})
+
+# Characters that would allow shell injection if passed to a subprocess runner
+# that re-invokes a shell (sh -c, os.system, etc.).
+_SHELL_METACHAR = frozenset(";|&`$><\\\n\r")
+
+# Shell interpreters that accept -c <string> for arbitrary code execution.
+_SHELL_EVAL_INTERPRETERS = frozenset({"bash", "sh"})
+
 # A runner takes a command (token list) and an optional cwd, and runs it.
 Runner = Callable[[Sequence[str], Optional[str]], Any]
 
@@ -51,9 +65,29 @@ def clone_or_pull(
     return "cloned"
 
 
+def _validate_command(cmd: str) -> Optional[List[str]]:
+    """Split and allowlist-check a producer command string.
+
+    Returns the token list when the command is safe, None otherwise.
+    Safety requires: no shell metacharacters, and the first token's basename
+    must be in _ALLOWED_EXECUTABLES.
+    """
+    if any(c in _SHELL_METACHAR for c in cmd):
+        return None
+    tokens = shlex.split(cmd)
+    if not tokens:
+        return None
+    executable = Path(tokens[0]).name
+    if executable not in _ALLOWED_EXECUTABLES:
+        return None
+    if executable in _SHELL_EVAL_INTERPRETERS and "-c" in tokens[1:]:
+        return None
+    return tokens
+
+
 def export_command(base) -> Optional[List[str]]:
     """Return the producer's ``export_canonical`` command as token list, read from
-    ``<base>/federation.json``. ``None`` when the file or command is absent."""
+    ``<base>/federation.json``. ``None`` when the file, command, or allowlist check is absent."""
     fed = Path(base) / "federation.json"
     if not fed.is_file():
         return None
@@ -62,7 +96,7 @@ def export_command(base) -> Optional[List[str]]:
     except (ValueError, OSError):
         return None
     cmd = (data.get("hub_callable_commands") or {}).get("export_canonical")
-    return shlex.split(cmd) if cmd else None
+    return _validate_command(cmd) if cmd else None
 
 
 def fetch_all(

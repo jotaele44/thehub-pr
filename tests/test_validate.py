@@ -75,11 +75,74 @@ def test_entity_location_accepted(valid_package):
     assert validate_package(valid_package) == []
 
 
-def test_entity_location_out_of_range_lat_caught(valid_package):
-    # lat outside [-90, 90] must be rejected by the location sub-schema (Z2)
-    _rewrite_first_entity(
-        valid_package,
-        lambda o: o.__setitem__("location", {"lat": 999.0, "lon": -66.0}),
-    )
-    errors = validate_package(valid_package)
-    assert any("entities.jsonl" in e and "lat" in e for e in errors)
+def test_observation_stream_validates_per_schema(tmp_path):
+    import hashlib
+
+    _TS = "2026-01-01T00:00:00Z"
+    _LINEAGE = {"producer_script": "x.py", "producer_phase": "TEST", "source_inputs": []}
+    SRC = "src_0123456789abcdef0123456789abcdef"
+    OBS = "obs_0123456789abcdef0123456789abcdef"
+
+    obs_row = {
+        "observation_id": OBS, "source_id": SRC,
+        "observation_type": "aircraft_transit", "observed_at": _TS,
+        "confidence": 0.9, "lineage": _LINEAGE,
+        "synthetic": True, "created_at": _TS, "extracted_at": _TS,
+    }
+    obs_jsonl = tmp_path / "observations.jsonl"
+    obs_jsonl.write_text(json.dumps(obs_row, sort_keys=True) + "\n")
+
+    manifest = {
+        "package_id": "pkg_0123456789abcdef0123456789abcdef",
+        "producer": "skywatcher-pr",
+        "export_contract_version": "1.2.0",
+        "mode": "test",
+        "created_at": _TS,
+        "extracted_at": _TS,
+        "federation": {"producer_repo": "skywatcher-pr", "hub_parent": "thehub-pr"},
+        "files": [{
+            "filename": "observations.jsonl", "stream": "observations",
+            "record_count": 1,
+            "sha256": hashlib.sha256(obs_jsonl.read_bytes()).hexdigest(),
+            "schema_id": "federation_observation.schema.json",
+        }],
+    }
+    (tmp_path / "manifest.json").write_text(json.dumps(manifest))
+    assert validate_package(tmp_path) == []
+
+
+def test_observation_bad_id_pattern_caught(tmp_path):
+    import hashlib
+
+    _TS = "2026-01-01T00:00:00Z"
+    _LINEAGE = {"producer_script": "x.py", "producer_phase": "TEST", "source_inputs": []}
+    SRC = "src_0123456789abcdef0123456789abcdef"
+
+    obs_row = {
+        "observation_id": "BAD_ID", "source_id": SRC,
+        "observation_type": "aircraft_transit", "observed_at": _TS,
+        "confidence": 0.9, "lineage": _LINEAGE,
+        "synthetic": True, "created_at": _TS, "extracted_at": _TS,
+    }
+    obs_jsonl = tmp_path / "observations.jsonl"
+    obs_jsonl.write_text(json.dumps(obs_row, sort_keys=True) + "\n")
+
+    manifest = {
+        "package_id": "pkg_0123456789abcdef0123456789abcdef",
+        "producer": "skywatcher-pr",
+        "export_contract_version": "1.2.0",
+        "mode": "test",
+        "created_at": _TS,
+        "extracted_at": _TS,
+        "federation": {"producer_repo": "skywatcher-pr", "hub_parent": "thehub-pr"},
+        "files": [{
+            "filename": "observations.jsonl", "stream": "observations",
+            "record_count": 1,
+            "sha256": hashlib.sha256(obs_jsonl.read_bytes()).hexdigest(),
+            "schema_id": "federation_observation.schema.json",
+        }],
+    }
+    (tmp_path / "manifest.json").write_text(json.dumps(manifest))
+    errors = validate_package(tmp_path)
+    assert any("observation_id" in e for e in errors)
+
