@@ -121,6 +121,18 @@ def test_export_command_rejects_disallowed_executable(tmp_path):
     assert export_command(tmp_path) is None
 
 
+def test_fetch_run_real_subprocess(tmp_path):
+    """End-to-end: allowlist + real subprocess.run without network or mocks."""
+    base = tmp_path / "producer"
+    base.mkdir()
+    (base / "federation.json").write_text(json.dumps({
+        "hub_callable_commands": {"export_canonical": "python3 -c pass"}
+    }))
+    reg = _registry(Producer(program_id="p", repo="o/p", role="x", local_path=str(base)))
+    results = fetch_all(reg, tmp_path / "ws", run_export=True)
+    assert results[0]["exported"] is True
+
+
 def test_fetch_all_skips_clone_for_local_path(tmp_path):
     local = tmp_path / "checkout"
     local.mkdir()

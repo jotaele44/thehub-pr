@@ -39,18 +39,19 @@ def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dic
             id_field = STREAM_ID_FIELD.get(stream)
             bucket = streams.setdefault(stream, {})
             n = 0
-            for raw in fpath.read_text().splitlines():
-                raw = raw.strip()
-                if not raw:
-                    continue
-                row = json.loads(raw)
-                key = row.get(id_field) if id_field else f"{producer}:{stream}:{n}"
-                existing = bucket.get(key)
-                provenance = (existing or {}).get("_producers", []) if existing else []
-                row = dict(row)
-                row["_producers"] = sorted(set(provenance) | {producer})
-                bucket[key] = row
-                n += 1
+            with fpath.open() as fh:
+                for raw in fh:
+                    raw = raw.strip()
+                    if not raw:
+                        continue
+                    row = json.loads(raw)
+                    key = row.get(id_field) if id_field else f"{producer}:{stream}:{n}"
+                    existing = bucket.get(key)
+                    provenance = (existing or {}).get("_producers", []) if existing else []
+                    row = dict(row)
+                    row["_producers"] = sorted(set(provenance) | {producer})
+                    bucket[key] = row
+                    n += 1
             per_stream_counts[stream] = n
         summary["producers"][producer] = per_stream_counts
 

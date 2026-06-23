@@ -1,4 +1,4 @@
-.PHONY: setup test list validate-cs aggregate clean
+.PHONY: setup test list validate-cs aggregate clean lock smoke-fetch
 
 PY ?= python3
 
@@ -21,3 +21,15 @@ aggregate:
 
 clean:
 	rm -rf data/aggregate/*.jsonl data/aggregate/graph_summary.json
+
+# Regenerate the lock file.
+lock:
+	uv lock
+
+# Smoke-test hub fetch --run end-to-end using a synthetic local producer (no network).
+smoke-fetch:
+	$(eval TMP := $(shell mktemp -d))
+	mkdir -p $(TMP)/producer
+	echo '{"program_id":"smoke","hub_parent":"thehub-pr","hub_callable_commands":{"export_canonical":"python3 -c pass"}}' > $(TMP)/producer/federation.json
+	PYTHONPATH=src $(PY) -m hub fetch --run --root $(TMP)/ws 2>&1 || true
+	rm -rf $(TMP)

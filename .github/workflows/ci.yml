@@ -25,3 +25,11 @@ jobs:
         run: python -m hub list --registry registry/producers.yaml
       - name: Tests
         run: pytest -q
+
+  lock:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Lock file is up to date
+        run: uv lock --check
