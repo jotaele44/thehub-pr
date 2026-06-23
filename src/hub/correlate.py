@@ -192,8 +192,10 @@ def correlate_spatial(entities: Sequence[Dict[str, Any]],
     those edges, so wraparound adjacency would be unused complexity. Revisit if
     a producer ever emits points near the antimeridian or a pole.
     """
-    pts = [(ent, _point(ent)) for ent in entities]
-    pts = [(ent, pt) for ent, pt in pts if pt is not None]
+    _raw = [(ent, _point(ent)) for ent in entities]
+    pts: List[Tuple[Dict[str, Any], Tuple[float, float]]] = [
+        (ent, pt) for ent, pt in _raw if pt is not None
+    ]
 
     # Degrees-per-km vary with latitude: one degree of latitude is ~110.574 km
     # everywhere, but one degree of longitude shrinks to ~111.320*cos(lat) km.

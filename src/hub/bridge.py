@@ -13,7 +13,6 @@ from __future__ import annotations
 import hashlib
 import json
 from pathlib import Path
-from typing import List, Optional
 
 from ._schemas import STREAM_SCHEMA
 
@@ -66,7 +65,7 @@ def write_manifest(
 
     # Deterministic package id from sorted (filename, sha256) + mode.
     digest = hashlib.sha256(
-        ("|".join(f"{f['filename']}:{f['sha256']}" for f in sorted(files, key=lambda x: x["filename"])) + f"|{mode}").encode()
+        ("|".join(f"{f['filename']}:{f['sha256']}" for f in sorted(files, key=lambda x: str(x["filename"]))) + f"|{mode}").encode()
     ).hexdigest()[:32]
 
     manifest = {

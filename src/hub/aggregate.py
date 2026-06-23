@@ -39,8 +39,8 @@ def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dic
             id_field = STREAM_ID_FIELD.get(stream)
             bucket = streams.setdefault(stream, {})
             n = 0
-            with fpath.open() as fh:
-                for raw in fh:
+            with fpath.open() as _fh:
+                for raw in _fh:
                     raw = raw.strip()
                     if not raw:
                         continue

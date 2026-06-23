@@ -7,7 +7,7 @@ workspace checkout.
 from __future__ import annotations
 
 import json
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -160,8 +160,8 @@ def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str,
         )
 
     by_blocker: Dict[str, int] = {}
-    for producer in producers:
-        by_blocker[producer.blocker_class] = by_blocker.get(producer.blocker_class, 0) + 1
+    for pr in producers:
+        by_blocker[pr.blocker_class] = by_blocker.get(pr.blocker_class, 0) + 1
 
     return {
         "hub": registry.hub,
