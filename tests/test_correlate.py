@@ -5,7 +5,6 @@ import json
 import re
 
 import jsonschema
-import pytest
 
 from hub._schemas import load_schema
 from hub.aggregate import aggregate

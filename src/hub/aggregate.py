@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, Mapping
+from typing import Any, Dict, Mapping
 
 from ._schemas import STREAM_ID_FIELD
 from .bridge import write_manifest
@@ -20,7 +20,7 @@ def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dic
     out.mkdir(parents=True, exist_ok=True)
 
     streams: Dict[str, Dict[str, dict]] = {}
-    summary = {"producers": {}, "streams": {}, "errors": {}}
+    summary: Dict[str, Any] = {"producers": {}, "streams": {}, "errors": {}}
 
     for producer, pkg in packages.items():
         pkg = Path(pkg)
@@ -39,8 +39,8 @@ def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dic
             id_field = STREAM_ID_FIELD.get(stream)
             bucket = streams.setdefault(stream, {})
             n = 0
-            with fpath.open() as fh:
-                for raw in fh:
+            with fpath.open() as _fh:
+                for raw in _fh:
                     raw = raw.strip()
                     if not raw:
                         continue

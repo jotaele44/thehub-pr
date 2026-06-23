@@ -4,7 +4,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 
 from hub.federation_status import _blocker_class, validate_federation
 from hub.registry import Producer, Registry
