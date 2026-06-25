@@ -39,6 +39,13 @@ _SHELL_METACHAR = frozenset(";|&`$><\\\n\r")
 # Shell interpreters that accept -c <string> for arbitrary code execution.
 _SHELL_EVAL_INTERPRETERS = frozenset({"bash", "sh"})
 
+# Python interpreters that can run inline code (-c/-e), an arbitrary module
+# (-m, e.g. `python -m pip install ...` / `python -m timeit -s ...`), or a
+# program read from stdin (-) — all of which sidestep "run a script file".
+_PY_INTERPRETERS = frozenset({"python", "python3"})
+_PY_CODE_EXEC_LONG = ("--command", "--eval")
+_PY_CODE_EXEC_SHORT = frozenset("cem")
+
 # A runner takes a command (token list) and an optional cwd, and runs it.
 Runner = Callable[[Sequence[str], Optional[str]], Any]
 
@@ -65,22 +72,53 @@ def clone_or_pull(
     return "cloned"
 
 
+def _py_executes_code(args: List[str]) -> bool:
+    """True if a python interpreter's leading options run code instead of a file.
+
+    Only the option tokens *before* the script/module argument matter: once a
+    non-option token is reached it is the script path and the rest are its argv,
+    so a script's own flag (e.g. ``export.py -c config.yaml``) is not mistaken
+    for ``python -c``. Catches bare ``-`` (stdin), ``--command``/``--eval``, and
+    ``-c``/``-e``/``-m`` including attached (``-mpip``) and combined (``-Ic``)
+    short-option clusters.
+    """
+    for arg in args:
+        if not arg.startswith("-"):
+            return False  # the script path; remaining tokens are its arguments
+        if arg == "-":
+            return True  # read program from stdin
+        if arg.startswith(_PY_CODE_EXEC_LONG):
+            return True
+        if arg[1:2] != "-":  # a short-option cluster, not a long option
+            for ch in arg[1:]:
+                if ch in _PY_CODE_EXEC_SHORT:
+                    return True
+                if not ch.isalpha():  # reached an attached value (e.g. -W0) — stop
+                    break
+    return False
+
+
 def _validate_command(cmd: str) -> Optional[List[str]]:
     """Split and allowlist-check a producer command string.
 
-    Returns the token list when the command is safe, None otherwise.
-    Safety requires: no shell metacharacters, and the first token's basename
-    must be in _ALLOWED_EXECUTABLES.
+    Returns the token list when the command is safe, None otherwise. Safety
+    requires: no shell metacharacters; the first token is a bare allowlisted
+    executable name (no path separator — so ``/tmp/python`` cannot smuggle a
+    different binary past a basename check); shells are not invoked with ``-c``;
+    and python interpreters run a script file rather than inline code (``-c``/
+    ``-e``), an arbitrary module (``-m``), or a program from stdin (``-``).
     """
     if any(c in _SHELL_METACHAR for c in cmd):
         return None
     tokens = shlex.split(cmd)
     if not tokens:
         return None
-    executable = Path(tokens[0]).name
-    if executable not in _ALLOWED_EXECUTABLES:
+    executable = tokens[0]
+    if "/" in executable or executable not in _ALLOWED_EXECUTABLES:
         return None
     if executable in _SHELL_EVAL_INTERPRETERS and "-c" in tokens[1:]:
+        return None
+    if executable in _PY_INTERPRETERS and _py_executes_code(tokens[1:]):
         return None
     return tokens
 
