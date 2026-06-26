@@ -12,28 +12,28 @@
 | Repo | 1·Role | 2·Conf | 3·Tests | 4·CI | 5·Quality | 6·Sec | 7·Deps | 8·Docs | 9·Debt | 10·Perf | 11·Branches | 12·Data | **Overall** |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | **thehub-pr** | 🟢 | 🟢 | 🟢 | 🟡 | 🟡 | 🟡 | 🟡 | 🟢 | 🟡 | 🟡 | 🟡 | 🟢 | **🟡** |
-| **Contract-Sweeper** | 🟢 | 🟡 | 🟢 | 🟡 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟡 | 🟢 | 🟢 | **🟡** |
+| **moneysweep-pr** | 🟢 | 🟡 | 🟢 | 🟡 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟡 | 🟢 | 🟢 | **🟡** |
 | **spiderweb-pr** | 🟡 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟡 | 🟡 | 🟡 | 🟡 | 🟡 | 🟢 | **🟡** |
 | **aguayluz-pr** | 🟢 | 🟡 | 🟡 | 🟢 | 🟢 | 🟡 | 🔴 | 🟡 | 🟡 | 🟢 | 🟡 | 🟡 | **🟡** |
-| **PRUFON** | 🟢 | 🟢 | 🟡 | 🟡 | 🟡 | 🟢 | 🟡 | 🟡 | 🔴 | 🟢 | 🟡 | 🔴 | **🟡** |
+| **OVNIS** | 🟢 | 🟢 | 🟡 | 🟡 | 🟡 | 🟢 | 🟡 | 🟡 | 🔴 | 🟢 | 🟡 | 🔴 | **🟡** |
 | **skywatcher-pr** | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟢 | 🟡 | 🟢 | 🟡 | 🟢 | **🟢** |
 | **PRIIS** | 🟡 | 🟡 | 🟡 | 🟢 | 🟡 | 🟢 | 🟢 | 🟡 | 🟡 | 🟡 | 🟢 | 🔴 | **🟡** |
 
-**skywatcher-pr** is the cleanest node. **PRUFON** and **PRIIS** carry the most data-state debt (placeholder ledger and no real Hub aggregate consumed, respectively).
+**skywatcher-pr** is the cleanest node. **OVNIS** and **PRIIS** carry the most data-state debt (placeholder ledger and no real Hub aggregate consumed, respectively).
 
 ---
 
 ## Top Cross-Repo Themes
 
-1. **No lint/type-check gate in 4 of 7 repos.** thehub-pr, PRUFON, skywatcher-pr, and PRIIS have zero ruff/mypy/flake8 in CI. Contract-Sweeper (gating ruff + mypy) and aguayluz-pr (gating ruff UP) are the best-practice reference implementations.
+1. **No lint/type-check gate in 4 of 7 repos.** thehub-pr, OVNIS, skywatcher-pr, and PRIIS have zero ruff/mypy/flake8 in CI. moneysweep-pr (gating ruff + mypy) and aguayluz-pr (gating ruff UP) are the best-practice reference implementations.
 
 2. **FR24 migration resolved across Spiderweb and Skywatcher.** Spiderweb has merged the FR24 removal/slimdown path; Skywatcher PR #6 merged the FR24 ingest/OCR/RLSM pipeline into `main`, with post-merge local validation at `328 passed, 12 skipped`. Remaining FR24 blocker is operational data capture, not code placement.
 
-3. **Synthetic/placeholder data in 3 producer nodes.** PRUFON holds only a placeholder row; skywatcher has synthetic observations only; PRIIS has never ingested a real Hub aggregate. All three correctly declare `ready_for_hub_live_execution=false` (PRUFON, skywatcher) or carry no readiness gate (PRIIS, which is a consumer). The production data gap is externally blocked, not an engineering gap.
+3. **Synthetic/placeholder data in 3 producer nodes.** OVNIS holds only a placeholder row; skywatcher has synthetic observations only; PRIIS has never ingested a real Hub aggregate. All three correctly declare `ready_for_hub_live_execution=false` (OVNIS, skywatcher) or carry no readiness gate (PRIIS, which is a consumer). The production data gap is externally blocked, not an engineering gap.
 
 4. **Z2 entity location shipped but not consumed.** `federation_entity.schema.json` now carries optional `location{lat,lon,municipality?}`. Hub aggregate stores it. PRIIS's `_entity_name()` extracts only `.name` — the geometry field that Hub's schema explicitly designates for PRIIS use sits dormant. Field-name mismatch compounds this: entity uses `lat`/`lon`, PRIIS's existing location reader keys on `latitude`/`longitude`.
 
-5. **README drift in 4 repos.** spiderweb-pr README has 0 federation mentions and presents the repo as an FR24 tool. aguayluz-pr README does not document the AEE/LUMA pipeline. PRUFON README is a single heading. PRIIS README does not state its consumer-vs-producer boundary.
+5. **README drift in 4 repos.** spiderweb-pr README has 0 federation mentions and presents the repo as an FR24 tool. aguayluz-pr README does not document the AEE/LUMA pipeline. OVNIS README is a single heading. PRIIS README does not state its consumer-vs-producer boundary.
 
 ---
 
@@ -77,11 +77,11 @@
 
 ---
 
-### 2. Contract-Sweeper
+### 2. moneysweep-pr
 **Role:** `moneysweep-pr` — public-money / federal-funding intelligence producer.  
 **Audit ref:** `origin/main` (HEAD `e92449e` PR #228)
 
-**Summary.** Contract-Sweeper is the most engineered node in the federation: 531 Python modules, 156 test files, 594 passing tests, 14 workflows — of which lint (ruff E/F/W/I), mypy (`files=["contract_sweeper"]`), repro, promotion-guard, production-status-gate, and lockfile-drift are all gating. The canonical_v1 bridge is correct and verifiable (`manifest.json`: sources 4,480 = 4,248 federal publications + 232 canonical evidence; `edges_federated_pct: 100.0`; `not_yet_federated: 0`). Security posture is best-in-class: gating `scan_for_secrets.py` covering all 5 API key patterns, `install_api_keys_from_zip.py` writing `.env` at mode 0600, and secret-gated `workflow_dispatch`-only fetchers. The headline weakness is a **three-way source-count drift**: `federation.json` and `federation_source_status_reconciliation.json` both claim 84 sources while `materialization_readiness.json` (which they cite as the source of truth) says 85 — violating the repo's own declared `blocking_condition`. Two `workflow_dispatch`-only workflows post a cosmetic red ✗ on every push. The bridge re-stamps `generated_at` on every run, and this non-determinism is untested.
+**Summary.** moneysweep-pr is the most engineered node in the federation: 531 Python modules, 156 test files, 594 passing tests, 14 workflows — of which lint (ruff E/F/W/I), mypy (`files=["moneysweep"]`), repro, promotion-guard, production-status-gate, and lockfile-drift are all gating. The canonical_v1 bridge is correct and verifiable (`manifest.json`: sources 4,480 = 4,248 federal publications + 232 canonical evidence; `edges_federated_pct: 100.0`; `not_yet_federated: 0`). Security posture is best-in-class: gating `scan_for_secrets.py` covering all 5 API key patterns, `install_api_keys_from_zip.py` writing `.env` at mode 0600, and secret-gated `workflow_dispatch`-only fetchers. The headline weakness is a **three-way source-count drift**: `federation.json` and `federation_source_status_reconciliation.json` both claim 84 sources while `materialization_readiness.json` (which they cite as the source of truth) says 85 — violating the repo's own declared `blocking_condition`. Two `workflow_dispatch`-only workflows post a cosmetic red ✗ on every push. The bridge re-stamps `generated_at` on every run, and this non-determinism is untested.
 
 | # | Dimension | Status | Key finding (evidence) |
 |---|-----------|:------:|------------------------|
@@ -102,12 +102,12 @@
 **Strengths.** Federation bridge verifiably correct — every manifest headline matches committed `manifest.json`. Security best-in-class for the federation. CI rigor genuinely tightened (lint + mypy + lockfile gating). Exceptional cleanliness for ~1,150 files: 2 TODO/FIXME tree-wide, zero stale human branches.
 
 **Backlog:**
-- `[P1] Contract-Sweeper — reconcile 84↔85 source-count drift — S — federation.json vs materialization_readiness.json`
-- `[P1] Contract-Sweeper — suppress workflow_dispatch workflows from push checks — S — runs 27174361540/27174361791`
-- `[P1] Contract-Sweeper — test + gate bridge output determinism (write_streams idempotency) — M — bridge_canonical_v1_federation.py:131`
-- `[P1] Contract-Sweeper — add tests for security-sensitive adapter modules — M — issue #215 (priority:high)`
-- `[P2] Contract-Sweeper — install from requirements.lock in CI for reproducibility — S — requirements.txt (unpinned) vs requirements.lock (pinned)`
-- `[P2] Contract-Sweeper — promote pip-audit to gating — S — pip-audit.yml (continue-on-error)`
+- `[P1] moneysweep-pr — reconcile 84↔85 source-count drift — S — federation.json vs materialization_readiness.json`
+- `[P1] moneysweep-pr — suppress workflow_dispatch workflows from push checks — S — runs 27174361540/27174361791`
+- `[P1] moneysweep-pr — test + gate bridge output determinism (write_streams idempotency) — M — bridge_canonical_v1_federation.py:131`
+- `[P1] moneysweep-pr — add tests for security-sensitive adapter modules — M — issue #215 (priority:high)`
+- `[P2] moneysweep-pr — install from requirements.lock in CI for reproducibility — S — requirements.txt (unpinned) vs requirements.lock (pinned)`
+- `[P2] moneysweep-pr — promote pip-audit to gating — S — pip-audit.yml (continue-on-error)`
 
 ---
 
@@ -183,37 +183,37 @@
 
 ---
 
-### 5. PRUFON
+### 5. OVNIS
 **Role:** `anomaly_intelligence_node` — UAP/anomaly case producer.  
-**Audit ref:** `origin/main`. Local checkout is on WIP branch `prufon-100-development-logic`.
+**Audit ref:** `origin/main`. Local checkout is on WIP branch `ovnis-100-development-logic`.
 
-**Summary.** PRUFON has sound infrastructure — federation manifest, CI pipeline, export adapter, validation scripts, and a 30-test suite — all functionally verified: 30/30 tests pass, the validator exits clean on placeholder ledgers, the export adapter correctly blocks synthetic rows in production mode, and `ready_for_hub_live_execution=false` is honest. The primary debt is that the repo holds only placeholder data on origin/main: all three ledger files hold a single placeholder row. A 91-row gap-sweep CSV from a release exists only on a local-only unpushed branch (`prufon-100-development-logic`) and has never been loaded into the JSONL pipeline the validator and exporter actually read. `dedupe_candidates.py` and `score_candidates.py` (207 lines total, including weighted scoring formula at `score_candidates.py:39`) have zero unit tests. The README is one line.
+**Summary.** OVNIS has sound infrastructure — federation manifest, CI pipeline, export adapter, validation scripts, and a 30-test suite — all functionally verified: 30/30 tests pass, the validator exits clean on placeholder ledgers, the export adapter correctly blocks synthetic rows in production mode, and `ready_for_hub_live_execution=false` is honest. The primary debt is that the repo holds only placeholder data on origin/main: all three ledger files hold a single placeholder row. A 91-row gap-sweep CSV from a release exists only on a local-only unpushed branch (`ovnis-100-development-logic`) and has never been loaded into the JSONL pipeline the validator and exporter actually read. `dedupe_candidates.py` and `score_candidates.py` (207 lines total, including weighted scoring formula at `score_candidates.py:39`) have zero unit tests. The README is one line.
 
 | # | Dimension | Status | Key finding (evidence) |
 |---|-----------|:------:|------------------------|
-| 1 | Role & mission | 🟢 | `federation.json:8` `anomaly_intelligence_node`; `docs/CASE_PROMOTION_STANDARD.md` + `docs/PRUFON_GITHUB_CONTROL_PLANE.md` complete operating doctrine |
+| 1 | Role & mission | 🟢 | `federation.json:8` `anomaly_intelligence_node`; `docs/CASE_PROMOTION_STANDARD.md` + `docs/OVNIS_GITHUB_CONTROL_PLANE.md` complete operating doctrine |
 | 2 | Federation conformance | 🟢 | `federation.json` valid; `ready_for_hub_live_execution=false` with honest `blocking_conditions`; `--mode production` exits 1 "FAIL — 4 synthetic rows" (verified live); `--mode test` → valid manifest |
 | 3 | Tests | 🟡 | 30/30 pass (0.73s). Test coverage: `federation_export` + `validate_case_ledgers` only. **`dedupe_candidates.py` and `score_candidates.py` have zero tests** |
 | 4 | CI health | 🟡 | 6 CI steps, all correct. **Single python-version: "3.12"** — no matrix despite all scripts using `from __future__ import annotations` for 3.9 compatibility. `pip install pytest jsonschema` unpinned |
 | 5 | Code quality | 🟡 | `py_compile` clean on all 5 scripts. `from __future__ import annotations` correct. **No lint tool or lint CI step** |
 | 6 | Security | 🟢 | Grep for dangerous built-ins across scripts → none found. Stdlib-only (json, csv, difflib, hashlib, pathlib, argparse) |
 | 7 | Dependencies | 🟡 | No `pyproject.toml`, no `requirements.txt`. CI installs `pytest jsonschema` inline and unpinned. Reproducibility risk |
-| 8 | Docs | 🟡 | `README.md`: single line `# PRUFON`. `docs/CASE_PROMOTION_STANDARD.md` + `docs/PRUFON_GITHUB_CONTROL_PLANE.md` thorough and accurate — not surfaced from repo root |
-| 9 | Tech debt | 🔴 | **91-row gap-sweep CSV on unpushed local branch `prufon-100-development-logic`** — never loaded into JSONL pipeline; `git show prufon-100-development-logic:data/master/master_cases.jsonl` → fatal (path not in branch). Discovered cases exist only as out-of-band CSV |
+| 8 | Docs | 🟡 | `README.md`: single line `# OVNIS`. `docs/CASE_PROMOTION_STANDARD.md` + `docs/OVNIS_GITHUB_CONTROL_PLANE.md` thorough and accurate — not surfaced from repo root |
+| 9 | Tech debt | 🔴 | **91-row gap-sweep CSV on unpushed local branch `ovnis-100-development-logic`** — never loaded into JSONL pipeline; `git show ovnis-100-development-logic:data/master/master_cases.jsonl` → fatal (path not in branch). Discovered cases exist only as out-of-band CSV |
 | 10 | Performance | 🟢 | Stdlib-only. SequenceMatcher dedup (O(N²)) appropriate at 1-row scale. No bottlenecks |
-| 11 | Branch hygiene | 🟡 | Remote `origin/main` is clean. **Local clone**: `main [behind 3]`; `feat/prufon-pytest-suite [ahead 1, behind 1]` diverged; `prufon-100-development-logic` 3 commits ahead of origin/main and **never pushed** |
+| 11 | Branch hygiene | 🟡 | Remote `origin/main` is clean. **Local clone**: `main [behind 3]`; `feat/ovnis-pytest-suite [ahead 1, behind 1]` diverged; `ovnis-100-development-logic` 3 commits ahead of origin/main and **never pushed** |
 | 12 | Data state | 🔴 | `data/master/master_cases.jsonl`: 1 placeholder row (PRUFON-0000, T4). `data/candidates/candidate_cases.jsonl`: 1 placeholder. `data/reference/source_registry.csv`: 1 placeholder. **Gap-sweep 91-row CSV exists only on an unpushed local branch** |
 | 13 | Gap | 🟡 | No P0; P1: load gap-sweep into pipeline, test dedupe/score, write README; P2: pin deps, expand CI matrix |
 
 **Strengths.** Honest placeholder discipline — `federation.json` and ledger files make no false production claims; production-reject gate is hard and verified. 30/30 tests pass covering all critical paths. Deterministic IDs via sha256. Stdlib-only scripts with graceful jsonschema degradation (`validate_case_ledgers.py:121-127`).
 
 **Backlog:**
-- `[P1] PRUFON — push prufon-100-development-logic branch and load gap-sweep candidates into data/candidates JSONL — L — prufon-100-development-logic (local-only, 3 commits, 91-row CSV); git show → fatal`
-- `[P1] PRUFON — add unit tests for dedupe_candidates.py and score_candidates.py — M — neither appears in any test file; score_candidates.py:39 scoring weights untested`
-- `[P1] PRUFON — write README.md content (usage, CI badge, quick-start) — S — README.md = "# PRUFON" only`
-- `[P2] PRUFON — pin pytest and jsonschema (requirements.txt or pyproject.toml) — S — ci.yml step 4: pip install pytest jsonschema (no pins)`
-- `[P2] PRUFON — expand CI python-version matrix to include 3.9 (compat declared via __future__ but never verified) — S — ci.yml python-version: "3.12" only`
-- `[P2] PRUFON — add CI validation of export output against hub-side federation schemas — S — ci.yml export smoke only checks manifest.json exists + production mode exits 1`
+- `[P1] OVNIS — push ovnis-100-development-logic branch and load gap-sweep candidates into data/candidates JSONL — L — ovnis-100-development-logic (local-only, 3 commits, 91-row CSV); git show → fatal`
+- `[P1] OVNIS — add unit tests for dedupe_candidates.py and score_candidates.py — M — neither appears in any test file; score_candidates.py:39 scoring weights untested`
+- `[P1] OVNIS — write README.md content (usage, CI badge, quick-start) — S — README.md = "# OVNIS" only`
+- `[P2] OVNIS — pin pytest and jsonschema (requirements.txt or pyproject.toml) — S — ci.yml step 4: pip install pytest jsonschema (no pins)`
+- `[P2] OVNIS — expand CI python-version matrix to include 3.9 (compat declared via __future__ but never verified) — S — ci.yml python-version: "3.12" only`
+- `[P2] OVNIS — add CI validation of export output against hub-side federation schemas — S — ci.yml export smoke only checks manifest.json exists + production mode exits 1`
 
 ---
 
@@ -304,10 +304,10 @@
 | Add ruff + mypy lint gate to CI | thehub-pr | Configure ruff in `pyproject.toml`; add lint step to `ci.yml:1-26` | S |
 | Define canonical schema + STREAM_ID_FIELD for `observations` stream | thehub-pr | Add entry to `_schemas.py:STREAM_SCHEMA` and `STREAM_ID_FIELD`; cross-producer dedup currently silent/undefined | M |
 | Replace aggregate full-RAM load with chunked JSONL reader | thehub-pr | Stream rows per producer instead of `fpath.read_text().splitlines()` + in-memory dict (`aggregate.py:22,42`) | M |
-| Reconcile 84↔85 source-count drift | Contract-Sweeper | Re-run reconciler; add CI assertion `federation.json source_truth.total_sources == materialization_readiness.json total_sources` | S |
-| Stop `workflow_dispatch` workflows from posting red-X on every push | Contract-Sweeper | Add no-op push guard; runs 27174361540/27174361791 | S |
-| Test + gate bridge output determinism | Contract-Sweeper | Add `write_streams` twice → byte-identical test (exclude `generated_at`); bring canonical_v1 export under repro-style assert-no-diff (`bridge_canonical_v1_federation.py:131`) | M |
-| Add tests for security-sensitive adapter modules | Contract-Sweeper | Cover `contract_sweeper/query/adapters/` (issue #215, priority:high) | M |
+| Reconcile 84↔85 source-count drift | moneysweep-pr | Re-run reconciler; add CI assertion `federation.json source_truth.total_sources == materialization_readiness.json total_sources` | S |
+| Stop `workflow_dispatch` workflows from posting red-X on every push | moneysweep-pr | Add no-op push guard; runs 27174361540/27174361791 | S |
+| Test + gate bridge output determinism | moneysweep-pr | Add `write_streams` twice → byte-identical test (exclude `generated_at`); bring canonical_v1 export under repro-style assert-no-diff (`bridge_canonical_v1_federation.py:131`) | M |
+| Add tests for security-sensitive adapter modules | moneysweep-pr | Cover `moneysweep/query/adapters/` (issue #215, priority:high) | M |
 | Resolve numpy pin conflict | spiderweb-pr | Reconcile `pyproject.toml numpy>=2.4,<2.5` vs `requirements.txt numpy>=1.26` | S |
 | Document federation role in README | spiderweb-pr | Add producer+consumer+query-hub description; 0 federation mentions in current `README.md:1-3` | S |
 | FR24→skywatcher migration closure | spiderweb-pr | Done: Spiderweb no longer owns the FR24 ingest/OCR/RLSM subsystem; remaining Spiderweb work is query-hub/readiness debt. | Done |
@@ -320,9 +320,9 @@
 | Wire entity location{lat,lon} into PRIIS scoring | PRIIS | `hub_aggregate.py:32-34` extracts only `.name`; entity Z2 geometry sits dormant; sub-field mismatch: entity uses `lat`/`lon`, PRIIS keys `latitude`/`longitude` | M |
 | Expand PRIIS geocoder coverage 20→78 municipalities | PRIIS | `constants.py` hardcodes 20 centroids; 58/78 municipalities fall through to keyword match; depresses `geocode_confidence_0_1` scoring weight | M |
 | Add CLI-level test for `consume-hub` | PRIIS | Only Python API tested; main integration boundary has no subprocess-level coverage | S |
-| Push `prufon-100-development-logic` + load gap-sweep into JSONL pipeline | PRUFON | 91-row gap-sweep CSV exists only on local-only unpushed branch; never loaded into `data/master/master_cases.jsonl` | L |
-| Add unit tests for `dedupe_candidates.py` + `score_candidates.py` | PRUFON | 207 lines (including scoring formula at `score_candidates.py:39`) with zero test coverage | M |
-| Write PRUFON `README.md` | PRUFON | Current content: `# PRUFON` (1 line) | S |
+| Push `ovnis-100-development-logic` + load gap-sweep into JSONL pipeline | OVNIS | 91-row gap-sweep CSV exists only on local-only unpushed branch; never loaded into `data/master/master_cases.jsonl` | L |
+| Add unit tests for `dedupe_candidates.py` + `score_candidates.py` | OVNIS | 207 lines (including scoring formula at `score_candidates.py:39`) with zero test coverage | M |
+| Write OVNIS `README.md` | OVNIS | Current content: `# OVNIS` (1 line) | S |
 
 ---
 
@@ -334,8 +334,8 @@
 | Add direct tests for `cli.py` | thehub-pr | Main public entry point has no test coverage (`cli.py:62-137`) | S |
 | Exercise `hub fetch --run` end-to-end | thehub-pr | CI smoke or Makefile target with synthetic federation.json export (`FEDERATION_STATUS.md:70-73`) | M |
 | Merge or delete 2 open hub branches | thehub-pr | `feat/g1-hub-discovery` + `gpt/implement-intsys-pr-base44-build` (2026-06-07, unmerged) | S |
-| Install from `requirements.lock` in CI | Contract-Sweeper | Use pinned lock in CI install for reproducibility | S |
-| Promote `pip-audit` to gating | Contract-Sweeper | Flip `continue-on-error` after first clean run | S |
+| Install from `requirements.lock` in CI | moneysweep-pr | Use pinned lock in CI install for reproducibility | S |
+| Promote `pip-audit` to gating | moneysweep-pr | Flip `continue-on-error` after first clean run | S |
 | Prune local branch cruft + broken refs in spiderweb | spiderweb-pr | Workstation hygiene only; not a federation-blocking FR24 migration item after Spiderweb/Skywatcher closure. | S |
 | Add spatial index to O(n²) query-hub correlators | spiderweb-pr | `hub/query.py:71-91,103-122` nested pairwise loops | M |
 | Implement 4 RAG retrieval stubs | spiderweb-pr | `server/rag/retrieval.py:17,23,29,35` (4 stubs) | M |
@@ -351,9 +351,9 @@
 | Replace hardcoded `DEFAULT_SRC`/`DEFAULT_GEODATA` paths | PRIIS | `ingest_satellite_mosaics.py:24`, `ingest_spiderweb_layers.py:22` hardcode `/Users/jotaele/Documents/Data/...` | S |
 | Commit minimal real Hub aggregate fixture | PRIIS | No `from_hub.json` or real JSONL in repo history; CI demo uses synthetic only | S |
 | Document consumer boundary in PRIIS README | PRIIS | README does not name PRIIS as consumer-not-producer or document `consume-hub` as federation entry point | S |
-| Pin pytest + jsonschema in PRUFON | PRUFON | `ci.yml` installs unpinned; breaking release would silently fail validation | S |
-| Expand PRUFON CI to 3.9 matrix | PRUFON | `from __future__ import annotations` used for 3.9 compat but only 3.12 tested | S |
-| Add CI export validation against hub-side federation schemas | PRUFON | CI smoke checks only manifest.json exists; emitted rows never validated against canonical stream schemas | S |
+| Pin pytest + jsonschema in OVNIS | OVNIS | `ci.yml` installs unpinned; breaking release would silently fail validation | S |
+| Expand OVNIS CI to 3.9 matrix | OVNIS | `from __future__ import annotations` used for 3.9 compat but only 3.12 tested | S |
+| Add CI export validation against hub-side federation schemas | OVNIS | CI smoke checks only manifest.json exists; emitted rows never validated against canonical stream schemas | S |
 
 ---
 
@@ -364,12 +364,12 @@ These remain blocked on operator actions outside the codebase. Engineering is co
 | Gap | Blocked on | Repo |
 |-----|-----------|------|
 | Real FlightRadar24 observation capture | Manual FR24 screenshot capture or ADS-B feed agreement | skywatcher-pr |
-| PRUFON real case corpus | Case discovery + promotion workflow | PRUFON |
-| FEC/SAM/HigherGov/LDA/OpenCorporates API keys | Operator key provisioning (issue #87) | Contract-Sweeper |
+| OVNIS real case corpus | Case discovery + promotion workflow | OVNIS |
+| FEC/SAM/HigherGov/LDA/OpenCorporates API keys | Operator key provisioning (issue #87) | moneysweep-pr |
 | Real spiderweb envelope rows | Production spatial data collection | spiderweb-pr |
 | PRIIS ECW mosaic driver | Proprietary GDAL ECW driver install | PRIIS |
 | aguayluz per-asset live outage feed | MiLUMA ToS agreement or PR Energy Bureau data sharing | aguayluz-pr |
-| `FEDERATION_DELIVERY_TOKEN` PAT | Repo-scoped PAT with write-to-spiderweb-pr scope | Contract-Sweeper |
+| `FEDERATION_DELIVERY_TOKEN` PAT | Repo-scoped PAT with write-to-spiderweb-pr scope | moneysweep-pr |
 | Repo deletions (Aerospace-Intelligence-Tool + Puerto-Rico-Airspace-Intelligence-Tool) | `gh auth refresh -s delete_repo` + jorgegonzalez44 account action | — |
 
 ---

@@ -10,12 +10,12 @@ def _registry(*producers):
 
 def test_discover_auto_wraps_raw_streams(tmp_path, package_factory):
     """A producer dir with raw canonical streams (no manifest) is auto-wrapped."""
-    streams = tmp_path / "Contract-Sweeper" / "data" / "exports" / "canonical_v1_federation"
+    streams = tmp_path / "moneysweep-pr" / "data" / "exports" / "canonical_v1_federation"
     package_factory(streams)
     (streams / "manifest.json").unlink()  # leave only the raw streams
 
     reg = _registry(Producer(
-        program_id="moneysweep-pr", repo="jotaele44/Contract-Sweeper", role="x",
+        program_id="moneysweep-pr", repo="jotaele44/moneysweep-pr", role="x",
         export_path="data/exports/canonical_v1_federation",
     ))
     found = discover_packages(reg, tmp_path)
@@ -44,7 +44,7 @@ def test_discover_honors_local_path(tmp_path, package_factory):
     custom = tmp_path / "anywhere" / "pkgdir"
     package_factory(custom / "exports" / "federation")
     reg = _registry(Producer(
-        program_id="prufon-pr", repo="jotaele44/PRUFON", role="x",
+        program_id="ovnis-pr", repo="jotaele44/ovnis-pr", role="x",
         local_path=str(custom),
     ))
-    assert "prufon-pr" in discover_packages(reg, tmp_path)
+    assert "ovnis-pr" in discover_packages(reg, tmp_path)

@@ -1,12 +1,12 @@
 {
   "schema_version": "repo_federation_manifest_v1",
   "program_id": "moneysweep-pr",
-  "repository_full_name": "jotaele44/Contract-Sweeper",
+  "repository_full_name": "jotaele44/moneysweep-pr",
   "repository_legacy_name": "Contract-Sweeper",
   "federation_role": "public_money_intelligence_node",
   "hub_parent": "thehub-pr",
   "jurisdiction": "Puerto Rico",
-  "active_vector": "CONTRACT_SWEEPER_FEDERATION_READINESS_AUDIT",
+  "active_vector": "MONEYSWEEP_FEDERATION_READINESS_AUDIT",
   "production_status": "NON_PRODUCTION_DIAGNOSTIC",
   "pause_lock_required": true,
   "source_truth": {

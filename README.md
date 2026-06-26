@@ -10,8 +10,8 @@ The Hub does not own domain data collection. It discovers producer repositories,
             │ aggregate → correlate → publish federation graph                   │
             └───────────────▲───────────────▲───────────────▲───────────────▲────┘
                             │               │               │               │
-              moneysweep-pr │   spiderweb-pr│    aguayluz-pr│    prufon-pr  │  skywatcher-pr
-            (Contract-Sweeper) (spatial/ops)  (water/grid)   (case corpus)    (airspace)
+              moneysweep-pr │   spiderweb-pr│    aguayluz-pr│    ovnis-pr  │  skywatcher-pr
+            (moneysweep-pr) (spatial/ops)  (water/grid)   (case corpus)    (airspace)
                    PRODUCERS emit federation.json + canonical export packages
 ```
 
@@ -21,10 +21,10 @@ A separate analytical consumer may read Hub aggregate outputs to rank leads. It 
 
 | Federation id | Repository | Domain | Hub stance |
 |---|---|---|---|
-| `moneysweep-pr` | [`Contract-Sweeper`](https://github.com/jotaele44/Contract-Sweeper) | Public money, procurement, grants, recovery, influence, fiscal-control records | Producer; not production-certified master dataset until gates pass |
+| `moneysweep-pr` | [`moneysweep-pr`](https://github.com/jotaele44/moneysweep-pr) | Public money, procurement, grants, recovery, influence, fiscal-control records | Producer; not production-certified master dataset until gates pass |
 | `spiderweb-pr` | [`spiderweb-pr`](https://github.com/jotaele44/spiderweb-pr) | Spatial / operational evidence and GIS bridge exports | Producer; no longer active FR24 owner |
 | `aguayluz-pr` | [`aguayluz-pr`](https://github.com/jotaele44/aguayluz-pr) | Water, wastewater, power, outage, and recovery-project monitoring | Real-data partial producer |
-| `prufon-pr` | [`PRUFON`](https://github.com/jotaele44/PRUFON) | Puerto Rico historical case corpus | Case-corpus producer |
+| `ovnis-pr` | [`OVNIS`](https://github.com/jotaele44/ovnis-pr) | Puerto Rico historical case corpus | Case-corpus producer |
 | `skywatcher-pr` | [`skywatcher-pr`](https://github.com/jotaele44/skywatcher-pr) | Airspace / aircraft intelligence and FR24 ingestion | Airspace producer; live execution blocked until non-synthetic observation export exists |
 
 ## The producer contract
@@ -53,7 +53,7 @@ make setup                                   # pip install -e ".[dev]"
 hub list                                     # show registered producers
 hub validate-federation --root ..            # roll up all producer manifests/packages
 hub validate-federation --root .. --json     # machine-readable readiness report
-hub validate-manifest ../Contract-Sweeper/federation.json
+hub validate-manifest ../moneysweep-pr/federation.json
 hub validate-package <export-dir>            # validate producer export package
 hub fetch --run --root ws                    # clone/refresh producers and run exports when allowed
 hub aggregate --root .. --out data/aggregate # merge discoverable packages

@@ -14,17 +14,17 @@ from GitHub, so aggregation no longer assumes local checkouts.
 | Node (program_id) | Role | Discovery | Live exec | Canonical `location` | Notes |
 |---|---|:--:|:--:|:--:|---|
 | `thehub-pr` | Hub (registry+validator+aggregator) | — | — | — | not a producer |
-| `moneysweep-pr` (Contract-Sweeper) | public-money | ✅ | ⛔ | n/a (no point coords) | needs API keys + Tranche-B materialization |
+| `moneysweep-pr` (moneysweep-pr) | public-money | ✅ | ⛔ | n/a (no point coords) | needs API keys + Tranche-B materialization |
 | `spiderweb-pr` | spatial/operational producer | ✅ | ⛔ | ✅ records project geometry | FR24 ownership moved to `skywatcher-pr`; needs non-synthetic spatial/operational envelope rows for production promotion |
 | `aguayluz-pr` | water/grid | ✅ | ✅ | ✅ 273/273 assets | power + PREPS + water/wastewater live; outage granularity remains caveated |
-| `prufon-pr` (PRUFON) | historical case corpus | ✅ | ⛔ | n/a | placeholder ledger — needs real cases |
+| `ovnis-pr` (OVNIS) | historical case corpus | ✅ | ⛔ | n/a | placeholder ledger — needs real cases |
 | `skywatcher-pr` | airspace | ✅ | ⛔ | ✅ observations | synthetic package only — needs real FR24 capture/export |
 
 ## What is closed
 
 **Parts 1–3** built every producer + the Hub, closed the producer↔Hub↔consumer
 communication paths, and wired real data where available (aguayluz power+PREPS,
-Contract-Sweeper federal publications, skywatcher airport reference, and retained
+moneysweep-pr federal publications, skywatcher airport reference, and retained
 spatial layers).
 
 **Part 4 — Full Gap Closure:**
@@ -58,8 +58,8 @@ Each item below is **code-ready** unless noted; the missing item is named.
 | Gap | Node | Unblock requirement |
 |---|---|---|
 | Live observations | skywatcher | Real FlightRadar24 capture → FR24/ILAP intake; the adapter + ILAP bridge then run in production mode. |
-| Real cases | PRUFON | Real UAP/anomalous-event case records → `data/master/master_cases.jsonl` replacing the placeholder row. |
-| Live exec | Contract-Sweeper | Tranche-B manual source exports + PR-gov scraper queue + runtime API keys (`FEC_API_KEY`, `SAM_API_KEY`, `HIGHERGOV_API_KEY`, `LDA_API_KEY`, `OPENCORPORATES_API_TOKEN`) supplied locally. |
+| Real cases | OVNIS | Real UAP/anomalous-event case records → `data/master/master_cases.jsonl` replacing the placeholder row. |
+| Live exec | moneysweep-pr | Tranche-B manual source exports + PR-gov scraper queue + runtime API keys (`FEC_API_KEY`, `SAM_API_KEY`, `HIGHERGOV_API_KEY`, `LDA_API_KEY`, `OPENCORPORATES_API_TOKEN`) supplied locally. |
 | Production export | spiderweb | Real, non-synthetic spatial/operational evidence-envelope rows from the retained producer pipeline; FR24-specific live observations belong to `skywatcher-pr`. |
 | Per-asset outage attribution | aguayluz | A finer outage feed; PREPS is island-wide aggregate and third-party outage snapshots remain review-grade until promoted. |
 | ECW photomosaic extents | PRIIS | A GDAL ECW driver/plugin or external ECW→GeoTIFF conversion before remaining mosaics can be ingested. |
@@ -68,11 +68,11 @@ Each item below is **code-ready** unless noted; the missing item is named.
 
 ## Remaining code-closable
 
-- **Cross-repo intake-lane delivery.** Contract-Sweeper has the router + raw-intake
+- **Cross-repo intake-lane delivery.** moneysweep-pr has the router + raw-intake
   subsystem; the missing piece is delivery into Spiderweb's normalized intake lane
   and PR automation.
 - **Federal publications → canonical_v1.** Fold `data/sources/federal_publications.jsonl`
-  into Contract-Sweeper's canonical_v1 evidence layer when a downstream consumer
+  into moneysweep-pr's canonical_v1 evidence layer when a downstream consumer
   needs the expanded source count.
 - **Skywatcher engine port.** Optional terrain / mission / satellite components are
   not the live-execution blocker; real FR24 input is.

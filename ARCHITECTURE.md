@@ -5,7 +5,7 @@
 | Role | Repos | Responsibility |
 |------|-------|----------------|
 | **Hub** | `thehub-pr` (this repo) | Owns canonical schemas; discovers producers; validates + aggregates their exports; correlates entities across producers into derived relationship edges. |
-| **Producer** | `Contract-Sweeper` (moneysweep-pr), `spiderweb-pr`, `aguayluz-pr`, `PRUFON` (prufon-pr), `skywatcher-pr` | Domain node. Emits `federation.json` + an export package of JSONL streams. |
+| **Producer** | `moneysweep-pr` (moneysweep-pr), `spiderweb-pr`, `aguayluz-pr`, `OVNIS` (ovnis-pr), `skywatcher-pr` | Domain node. Emits `federation.json` + an export package of JSONL streams. |
 | **Consumer** | `Puerto-Rico-Integrated-Intelligence-System` (PRIIS) | Downstream analytics. Reads Hub aggregate outputs to rank leads. **Not** the hub. |
 
 The federation is **artifact-based**, not a live network service: producers publish export

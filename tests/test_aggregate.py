@@ -33,7 +33,7 @@ def test_strict_mode_skips_invalid_package(package_factory, tmp_path):
     bad.mkdir()
     (bad / "manifest.json").write_text("{ not json")
     out = tmp_path / "agg"
-    summary = aggregate({"moneysweep-pr": pkg, "prufon-pr": bad}, out, strict=True)
-    assert summary["errors"]["prufon-pr"]
-    assert "prufon-pr" not in summary["producers"]
+    summary = aggregate({"moneysweep-pr": pkg, "ovnis-pr": bad}, out, strict=True)
+    assert summary["errors"]["ovnis-pr"]
+    assert "ovnis-pr" not in summary["producers"]
     assert summary["streams"]["sources"] == 1

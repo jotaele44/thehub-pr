@@ -1,7 +1,7 @@
 """Adapt a producer's raw JSONL stream directory into a Hub-conformant export
 package by generating a ``federation_export_manifest.json``.
 
-Some producers (e.g. Contract-Sweeper's canonical_v1 bridge) emit the canonical
+Some producers (e.g. moneysweep-pr's canonical_v1 bridge) emit the canonical
 ``sources/entities/relationships.jsonl`` streams but with a producer-specific
 manifest. This adapter wraps such a directory into the Hub's package contract
 (deterministic ``package_id``, per-file ``sha256`` + ``record_count``,
