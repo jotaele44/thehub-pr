@@ -95,7 +95,7 @@ _DISPLAY_NAMES = {
     "moneysweep-pr": "MoneySweep PR",
     "spiderweb-pr": "Spiderweb PR",
     "aguayluz-pr": "AguaYLuz PR",
-    "prufon-pr": "PRUFON PR",
+    "ovnis-pr": "OVNIS PR",
     "skywatcher-pr": "Skywatcher PR",
 }
 

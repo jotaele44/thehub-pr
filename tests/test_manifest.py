@@ -3,16 +3,16 @@ import json
 from hub.manifest import load_and_validate_manifest, validate_repo_manifest
 
 
-def test_real_contract_sweeper_manifest_conforms(fixtures_dir):
-    """The actual federation.json that landed on Contract-Sweeper main (PR #199)
+def test_real_moneysweep_manifest_conforms(fixtures_dir):
+    """The actual federation.json that landed on moneysweep-pr main (PR #199)
     must validate against the Hub's repo_federation_manifest_v1 schema."""
-    data, errors = load_and_validate_manifest(fixtures_dir / "contract_sweeper_federation.json")
+    data, errors = load_and_validate_manifest(fixtures_dir / "moneysweep_federation.json")
     assert errors == [], errors
     assert data["hub_parent"] == "thehub-pr"
 
 
 def _base(fixtures_dir):
-    return json.loads((fixtures_dir / "contract_sweeper_federation.json").read_text())
+    return json.loads((fixtures_dir / "moneysweep_federation.json").read_text())
 
 
 def test_wrong_hub_parent_is_rejected(fixtures_dir):

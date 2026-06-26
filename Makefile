@@ -11,9 +11,9 @@ test:
 list:
 	$(PY) -m hub list --registry registry/producers.yaml
 
-# Validate the Contract-Sweeper federation.json from a sibling checkout.
+# Validate the moneysweep-pr federation.json from a sibling checkout.
 validate-cs:
-	$(PY) -m hub validate-manifest ../Contract-Sweeper/federation.json
+	$(PY) -m hub validate-manifest ../moneysweep-pr/federation.json
 
 # Aggregate any producer export packages found under the parent workspace.
 aggregate:

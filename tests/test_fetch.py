@@ -19,12 +19,12 @@ class FakeRunner:
 
 def test_clone_or_pull_clones_when_absent(tmp_path):
     runner = FakeRunner()
-    dest = tmp_path / "Contract-Sweeper"
-    action = clone_or_pull("jotaele44/Contract-Sweeper", dest, runner=runner)
+    dest = tmp_path / "moneysweep-pr"
+    action = clone_or_pull("jotaele44/moneysweep-pr", dest, runner=runner)
     assert action == "cloned"
     cmd, _ = runner.calls[0]
     assert cmd[:2] == ["git", "clone"]
-    assert "https://github.com/jotaele44/Contract-Sweeper.git" in cmd
+    assert "https://github.com/jotaele44/moneysweep-pr.git" in cmd
     assert str(dest) in cmd
 
 
