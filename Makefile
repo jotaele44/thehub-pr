@@ -30,6 +30,7 @@ lock:
 smoke-fetch:
 	$(eval TMP := $(shell mktemp -d))
 	mkdir -p $(TMP)/producer
-	echo '{"program_id":"smoke","hub_parent":"thehub-pr","hub_callable_commands":{"export_canonical":"python3 -c pass"}}' > $(TMP)/producer/federation.json
+	: > $(TMP)/producer/export.py
+	echo '{"program_id":"smoke","hub_parent":"thehub-pr","hub_callable_commands":{"export_canonical":"python3 export.py"}}' > $(TMP)/producer/federation.json
 	PYTHONPATH=src $(PY) -m hub fetch --run --root $(TMP)/ws 2>&1 || true
 	rm -rf $(TMP)

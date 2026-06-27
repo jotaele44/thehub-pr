@@ -100,11 +100,59 @@ def test_validate_command_rejects_unsafe(bad_cmd):
     ("pytest tests/", "pytest"),
     ("bash scripts/build.sh", "bash"),
     ("make export", "make"),
+    # A script's own -c flag (after the script path) is the script's argv, not
+    # python's -c, so it must still be allowed.
+    ("python3 scripts/export.py -c config.yaml", "python3"),
+    # Benign interpreter options before the script (e.g. -O) are fine.
+    ("python3 -O scripts/export.py", "python3"),
+    # Value-consuming options whose value precedes a real script path — the value
+    # (`ignore` / `dev`) must not be mistaken for code execution.
+    ("python3 -W ignore scripts/export.py", "python3"),
+    ("python3 -X dev scripts/export.py", "python3"),
+    ("python3 --check-hash-based-pycs=always scripts/export.py", "python3"),
+    ("python3 -Wc scripts/export.py", "python3"),  # -W consumes "c", not python -c
 ])
 def test_validate_command_allows_safe(safe_cmd, expected_first):
     tokens = _validate_command(safe_cmd)
     assert tokens is not None
     assert tokens[0] == expected_first
+
+
+@pytest.mark.parametrize("bad_cmd", [
+    # Inline code through an allowed python interpreter (bash -c was already
+    # blocked; python -c was not). Shell metachars are avoided so these reach
+    # the interpreter-specific checks.
+    "python -c pass",
+    "python3 -c import_os",
+    "python -e pass",
+    "python --command pass",
+    "python3 --eval=pass",
+    # Attached / combined short-option forms.
+    "python -cpass",
+    "python -Ic pass",
+    "python -Icpass",
+    # Module execution: pip / timeit / any module is arbitrary code or package
+    # installation.
+    "python -m pip",
+    "python3 -m timeit",
+    "python -mpip",
+    "python -Im pip",
+    # Program read from stdin.
+    "python3 -",
+    # Value-consuming options (-W arg / -X opt / --check-hash-based-pycs arg) must
+    # not let a later -c/-m slip past by being mistaken for the script path.
+    "python3 -W ignore -c pass",
+    "python3 -X dev -m pip",
+    "python3 -W ignore -X dev -mpip",
+    "python3 -OW ignore -c pass",
+    "python3 --check-hash-based-pycs always -m pip",
+    # Path-qualified interpreter: basename is "python" but a $PATH/absolute path
+    # would run a different binary than the allowlist intends.
+    "/tmp/python evil.py",
+    "./python evil.py",
+])
+def test_validate_command_rejects_code_execution(bad_cmd):
+    assert _validate_command(bad_cmd) is None
 
 
 def test_export_command_rejects_shell_injection(tmp_path):
@@ -122,11 +170,15 @@ def test_export_command_rejects_disallowed_executable(tmp_path):
 
 
 def test_fetch_run_real_subprocess(tmp_path):
-    """End-to-end: allowlist + real subprocess.run without network or mocks."""
+    """End-to-end: allowlist + real subprocess.run without network or mocks.
+
+    Uses a real in-tree no-op script (inline `python3 -c pass` is now rejected).
+    """
     base = tmp_path / "producer"
     base.mkdir()
+    (base / "export.py").write_text("")  # in-tree no-op export script
     (base / "federation.json").write_text(json.dumps({
-        "hub_callable_commands": {"export_canonical": "python3 -c pass"}
+        "hub_callable_commands": {"export_canonical": "python3 export.py"}
     }))
     reg = _registry(Producer(program_id="p", repo="o/p", role="x", local_path=str(base)))
     results = fetch_all(reg, tmp_path / "ws", run_export=True)
