@@ -27,6 +27,47 @@ def test_aggregate_dedups_shared_ids_across_producers(package_factory, tmp_path)
     assert all(set(e["_producers"]) == {"moneysweep-pr", "spiderweb-pr"} for e in ent)
 
 
+def _alert_package(directory, producer):
+    import hashlib
+
+    directory.mkdir(parents=True, exist_ok=True)
+    _TS = "2026-01-01T00:00:00Z"
+    row = {
+        "alert_id": "alrt_0123456789abcdef0123456789abcdef",
+        "source_id": "src_0123456789abcdef0123456789abcdef",
+        "module": "HYDRO_OPS", "alert_type": "maintenance", "severity": 2,
+        "status": "draft", "observed_at": _TS, "confidence": 0.6,
+        "lineage": {"producer_script": "x", "producer_phase": "T", "source_inputs": []},
+        "synthetic": False, "created_at": _TS, "extracted_at": _TS,
+    }
+    jsonl = directory / "alerts.jsonl"
+    jsonl.write_text(json.dumps(row, sort_keys=True) + "\n")
+    manifest = {
+        "package_id": "pkg_0123456789abcdef0123456789abcdef",
+        "producer": producer, "export_contract_version": "1.0.0", "mode": "test",
+        "created_at": _TS, "extracted_at": _TS,
+        "federation": {"producer_repo": producer, "hub_parent": "thehub-pr"},
+        "files": [{
+            "filename": "alerts.jsonl", "stream": "alerts", "record_count": 1,
+            "sha256": hashlib.sha256(jsonl.read_bytes()).hexdigest(),
+            "schema_id": "federation_alert.schema.json",
+        }],
+    }
+    (directory / "manifest.json").write_text(json.dumps(manifest))
+    return directory
+
+
+def test_aggregate_alerts_stream(tmp_path):
+    pkg = _alert_package(tmp_path / "ayl", producer="aguayluz-pr")
+    out = tmp_path / "agg"
+    summary = aggregate({"aguayluz-pr": pkg}, out)
+    assert summary["errors"]["aguayluz-pr"] == []
+    assert summary["streams"]["alerts"] == 1
+    rows = (out / "alerts.jsonl").read_text().splitlines()
+    assert len(rows) == 1
+    assert json.loads(rows[0])["_producers"] == ["aguayluz-pr"]
+
+
 def test_strict_mode_skips_invalid_package(package_factory, tmp_path):
     pkg = package_factory(tmp_path / "good", producer="moneysweep-pr")
     bad = tmp_path / "bad"

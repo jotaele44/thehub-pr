@@ -51,6 +51,14 @@ spatial layers).
 - Schema-gate drift is being closed so producer identity, sample package manifests,
   and validators use the active federation ids.
 
+**Part 6 — operational `alerts` stream:**
+- New canonical `alerts` stream (`federation_alert.schema.json`, id `alrt_…`) wired
+  into `STREAM_SCHEMA`/`STREAM_ID_FIELD`, the export-manifest enum, and the bridge.
+- `aguayluz-pr` emits it from its operational alert system (10 sector modules;
+  hydro/power/weather/contamination/dam-safety active). The Hub validates,
+  aggregates, and — via `hub correlate` — links an alert's anchor entity to
+  co-located cross-producer entities (`alert_affects_entity`, match_basis `location`).
+
 ## Blocked gaps — fully specified, waiting on a named external input
 
 Each item below is **code-ready** unless noted; the missing item is named.

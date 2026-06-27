@@ -42,6 +42,7 @@ exports/…/manifest.json + *.jsonl ─(fetch)──▶ hub.validate.validate_pa
 | `funding_awards` | `awd_[a-f0-9]{32}` | `federation_funding_award.schema.json` | optional |
 | `transactions` | `txn_[a-f0-9]{32}` | `federation_transaction.schema.json` | optional |
 | `observations` | producer-defined | producer-specific (e.g. airspace) | optional |
+| `alerts` | `alrt_[a-f0-9]{32}` | `federation_alert.schema.json` | optional |
 
 Ids are **deterministic functions of row content**, so the same fact emitted by two producers
 collapses to one aggregated row whose `_producers` list records every contributor.
