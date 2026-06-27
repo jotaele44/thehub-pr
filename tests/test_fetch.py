@@ -105,6 +105,12 @@ def test_validate_command_rejects_unsafe(bad_cmd):
     ("python3 scripts/export.py -c config.yaml", "python3"),
     # Benign interpreter options before the script (e.g. -O) are fine.
     ("python3 -O scripts/export.py", "python3"),
+    # Value-consuming options whose value precedes a real script path — the value
+    # (`ignore` / `dev`) must not be mistaken for code execution.
+    ("python3 -W ignore scripts/export.py", "python3"),
+    ("python3 -X dev scripts/export.py", "python3"),
+    ("python3 --check-hash-based-pycs=always scripts/export.py", "python3"),
+    ("python3 -Wc scripts/export.py", "python3"),  # -W consumes "c", not python -c
 ])
 def test_validate_command_allows_safe(safe_cmd, expected_first):
     tokens = _validate_command(safe_cmd)
@@ -133,6 +139,13 @@ def test_validate_command_allows_safe(safe_cmd, expected_first):
     "python -Im pip",
     # Program read from stdin.
     "python3 -",
+    # Value-consuming options (-W arg / -X opt / --check-hash-based-pycs arg) must
+    # not let a later -c/-m slip past by being mistaken for the script path.
+    "python3 -W ignore -c pass",
+    "python3 -X dev -m pip",
+    "python3 -W ignore -X dev -mpip",
+    "python3 -OW ignore -c pass",
+    "python3 --check-hash-based-pycs always -m pip",
     # Path-qualified interpreter: basename is "python" but a $PATH/absolute path
     # would run a different binary than the allowlist intends.
     "/tmp/python evil.py",
