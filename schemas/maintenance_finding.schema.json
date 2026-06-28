@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "maintenance_finding.schema.json",
+  "title": "Maintenance Finding",
+  "description": "A single deterministic maintenance/audit finding emitted by a producer's maintenance scaffold. Detect broadly; correct narrowly; quarantine interpretive issues.",
+  "type": "object",
+  "required": [
+    "finding_id",
+    "repo",
+    "category",
+    "severity",
+    "action",
+    "confidence"
+  ],
+  "properties": {
+    "finding_id": {
+      "type": "string",
+      "description": "Stable unique finding identifier (deterministic per repo+category+target).",
+      "minLength": 1
+    },
+    "repo": {
+      "type": "string",
+      "description": "Producer program_id / repo name."
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "manifest",
+        "schema",
+        "export_integrity",
+        "source_staleness",
+        "lineage",
+        "duplicate",
+        "contradiction",
+        "synthetic_leakage",
+        "artifact_hygiene",
+        "test_gap",
+        "dependency_drift",
+        "promotion_gate"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["info", "warning", "error", "critical"]
+    },
+    "action": {
+      "type": "string",
+      "enum": ["none", "auto_corrected", "quarantined", "blocked"]
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "message": {
+      "type": "string",
+      "description": "Human-readable summary of the finding."
+    },
+    "path": {
+      "type": "string",
+      "description": "Repo-relative path the finding concerns, when applicable."
+    },
+    "detail": {
+      "type": "object",
+      "description": "Optional structured context (counts, offending ids, etc.).",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
