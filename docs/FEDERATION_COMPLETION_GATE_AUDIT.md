@@ -26,6 +26,32 @@ Findings are tagged by evidence tier:
 
 ---
 
+## How the Hub computes "live ready"
+
+The Hub does not take readiness on faith. `src/hub/federation_status.py` assigns
+each producer a `blocker_class`, returning `ready` **only** when all of:
+
+1. `checkout_present` — producer workspace is checked out;
+2. `manifest_present` — `federation.json` exists;
+3. `manifest_valid` — passes `load_and_validate_manifest`;
+4. `package_present` — a canonical export package exists at `export_path`
+   (defaults to `exports/federation/`);
+5. `package_valid` — `src/hub/validate.py::validate_package` returns no errors
+   (manifest matches `federation_export_manifest.schema.json`, every file's
+   `sha256` matches, **every JSONL row validates against its stream schema**,
+   declared `record_count`s match);
+6. `live_execution_ready` — the producer's own
+   `federation_readiness_gate.ready_for_hub_live_execution == true`;
+7. the registry `status:` is not one of `blocked` / `diagnostic` / `synthetic_only`.
+
+The package at step 4 does **not** have to be committed by the producer: the Hub
+**materializes it itself** via `hub fetch --run` (`src/hub/fetch.py::fetch_all`),
+which clones each producer and runs its `hub_callable_commands.export_canonical`
+through an allowlisted subprocess. So readiness is checked end-to-end with
+`hub fetch --root ws --run` → `hub validate-federation --root ws --json`.
+
+---
+
 ## 1. Scope & coverage
 
 All six installed Federation repos were in scope.
@@ -52,7 +78,7 @@ plus `schemas/`, `src/`, `server/`, `docs/`, and `tests/`.
 | 5/5 producer manifests present (`federation.json`) | PASS | [VERIFIED] for MoneySweep & OVNIS; [CONNECTOR] for the rest |
 | Hub producer registry present | PASS | [VERIFIED] `registry/producers.yaml` |
 | Hub maintenance/schema rollup present | PASS | [VERIFIED] `schemas/` + `docs/` present; [CONNECTOR] for rollup logic |
-| All readiness flags aligned (Hub ↔ producers) | FAIL | [VERIFIED] OVNIS contradiction (§4.2) |
+| All readiness flags aligned (Hub ↔ producers) | FAIL | [VERIFIED] OVNIS registry note vs. data (§4.2) |
 | Source-of-truth counts aligned | FAIL → being fixed | [VERIFIED] MoneySweep drift (§4.1), resolved on `claude/federation-code-setup-audit-ffkp45` |
 | Open PR queue clean | FAIL | [CONNECTOR] open/draft PRs across repos |
 | All active CI green | PARTIAL | [CONNECTOR] MoneySweep PR #332 lint/pre-commit failing |
@@ -68,7 +94,7 @@ plus `schemas/`, `src/`, `server/`, `docs/`, and `tests/`.
 | TheHub | partial | n/a (hub) | n/a | [VERIFIED] registry + scaffolding present; [CONNECTOR] draft PRs (#22 alerts, #23 INTSYS P0) open |
 | MoneySweep | partial | present | `false` | [VERIFIED] source-count drift (now reconciled on this branch); [CONNECTOR] Tranche-B manual ingest + runtime keys block live exec |
 | Spiderweb | partial | present | `false` | [CONNECTOR] discovery-ready; production export needs non-synthetic rows + Hub validation |
-| OVNIS / PRUFON | near-complete | present | producer `true` / Hub `discovery` | [VERIFIED] manifest↔registry contradiction (§4.2) |
+| OVNIS / PRUFON | near-complete | present | producer `true`; data supports it | [VERIFIED] 470 real cases, 0 synthetic; Hub registry note is stale; real gap is `export_canonical` still `--mode test` on main (§4.2) |
 | AguaYLuz | near-complete | present | `true` (caveated) | [CONNECTOR] live-ready; outage granularity snapshot-grade; alert-stream split across paired PRs |
 | Skywatcher | partial | present | `false` | [CONNECTOR] discovery-ready; live blocked on real FR24 capture + runtime proof |
 
@@ -90,7 +116,10 @@ so the stale values were self-violating.
 entry recording the 136→141 change. No readiness flag changed
 (`ready_for_hub_live_execution` remains `false`).
 
-### 4.2 OVNIS ↔ Hub readiness contradiction — [VERIFIED] (open decision)
+### 4.2 OVNIS readiness: data is real; the Hub registry note is stale — [VERIFIED]
+
+The original "OVNIS↔Hub contradiction" was investigated in depth. The producer
+manifest and the registry disagree:
 
 - `ovnis-pr/federation.json`: `production_status: PRODUCTION`,
   `ready_for_hub_live_execution: true`, `blocking_conditions: []`.
@@ -98,11 +127,33 @@ entry recording the 136→141 change. No readiness flag changed
   comment *"live exec blocked: needs real case records in
   data/master/master_cases.jsonl (placeholder row only)"*.
 
-The registry header states each producer's own flag is authoritative, yet the Hub's
-status line contradicts it. **This is an open decision** — whether OVNIS is truly
-live-ready (then the Hub status is stale) or still scaffold-only (then the producer
-manifest overstates readiness). It is **not** resolved by this branch; a human
-authority call is required before editing either side.
+**Evidence resolves it in the producer's favor — the registry note is wrong:**
+
+- **[VERIFIED]** `data/master/master_cases.jsonl` holds **470 master records with
+  zero `source_family == "placeholder"` (synthetic) rows** — real agency sourcing
+  (U.S. Navy ×37, USAF, FAA, NASA, AARO, PR Police/FURA), evidence tiers T1–T4.
+  The "placeholder row only" claim is stale.
+- **[VERIFIED]** The registry comment also has **no effect in code**:
+  `_blocker_class` only special-cases `status ∈ {blocked, diagnostic,
+  synthetic_only}`, and OVNIS's value is `ready_for_discovery`. The comment is
+  misleading documentation, not an enforced gate.
+- **[VERIFIED]** `scripts/federation_export.py --mode production` fails if any row
+  is synthetic; with 0 placeholder rows it would pass.
+
+**The real remaining gap (code-only):** on `main`, OVNIS's
+`hub_callable_commands.export_canonical` is still
+`python3 scripts/federation_export.py --mode test`. When the Hub runs
+`hub fetch --run`, it would therefore materialize a **test-mode** package that
+bypasses the synthetic-row guard — so OVNIS would not legitimately clear the live
+gate. **OVNIS PR #12** flips this single line to `--mode production` (verified in
+its diff), which is exactly the fix — but #12 is `draft` and `mergeable_state:
+dirty` (merge conflicts) and otherwise only touches dashboard shaping.
+
+**Conclusion:** not a flag flip in either direction. To make OVNIS genuinely
+live-ready and remove the contradiction: (a) land the `export_canonical` →
+`--mode production` change (OVNIS PR #12, after resolving conflicts), and
+(b) correct/refresh the stale Hub registry note. Then confirm with
+`hub fetch --run` + `hub validate-federation` reporting `blocker_class: ready`.
 
 ### 4.3 AguaYLuz alert-stream split — [CONNECTOR]
 
@@ -126,7 +177,7 @@ Ordered, with risk class and whether each is code-only or live-data/operational.
 | # | Action | Repo(s) | Class | Risk |
 |---|---|---|---|---|
 | 1 | Reconcile MoneySweep source counts (136→141, 90→95) | moneysweep-pr | code-only | low — **done on this branch** |
-| 2 | Resolve OVNIS live-readiness contradiction (one side becomes authoritative) | ovnis-pr + thehub-pr | code-only + decision | medium — needs human call |
+| 2 | Land OVNIS `export_canonical` → `--mode production` (PR #12, resolve conflicts) and refresh the stale Hub registry note for `ovnis-pr` | ovnis-pr + thehub-pr | code-only | medium — data already supports live; verify via `hub validate-federation` |
 | 3 | Fix MoneySweep PR #332 lint / pre-commit failure | moneysweep-pr | code-only | low |
 | 4 | Resolve TheHub #22 + AguaYLuz #14 as a paired alert-stream migration | thehub-pr + aguayluz-pr | code-only | medium — schema coupling |
 | 5 | Review/merge TheHub #23 (INTSYS P0 frontend) if required for setup-complete | thehub-pr | code-only | medium |
@@ -146,6 +197,8 @@ final completion certificate:
 python -m pytest -q
 ruff check .
 python scripts/run_maintenance.py --repo <repo> --mode audit --fail-on-blocker
+hub fetch --root ws --run          # materialize producer packages
+hub validate-federation --root ws --json   # blocker_class per producer
 hub validate-package <producer-export>
 hub aggregate
 ```
@@ -159,7 +212,7 @@ validated against the maintenance report schema (requires `repo`,
 ## 7. Conclusion
 
 Code setup is **not finished** at the federation level. One P0 (MoneySweep
-source-count drift) is resolved on this branch; the OVNIS↔Hub contradiction, the
-open PR queue, the MoneySweep #332 CI failure, and the live-execution gates remain.
-Do not declare completion until connector state, manifest truth, PR state, and local
-gate execution all align.
+source-count drift) is resolved on this branch; the OVNIS export-mode gap + stale
+registry note, the open PR queue, the MoneySweep #332 CI failure, and the remaining
+producers' live-execution gates remain. Do not declare completion until connector
+state, manifest truth, PR state, and local gate execution all align.
