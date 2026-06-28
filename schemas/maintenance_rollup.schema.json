@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "maintenance_rollup.schema.json",
+  "title": "Maintenance Rollup",
+  "description": "Federation-level aggregation of producer maintenance reports plus the computed promotion gate. Produced by the Hub.",
+  "type": "object",
+  "required": [
+    "producer_count",
+    "reports_missing",
+    "repo_status",
+    "promotion_blocked"
+  ],
+  "properties": {
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "maintenance_version": {
+      "type": "string"
+    },
+    "producer_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Expected producer count (from the registry)."
+    },
+    "reports_missing": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Count of producers with no readable maintenance report."
+    },
+    "reports_invalid": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Count of producers whose report failed schema validation."
+    },
+    "findings_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "critical_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "promotion_blocked": {
+      "type": "boolean"
+    },
+    "blockers": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Human-readable reasons the federation gate blocks."
+    },
+    "repo_status": {
+      "type": "object",
+      "description": "Per-repo rollup status keyed by program_id.",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["report_present", "report_valid"],
+        "properties": {
+          "report_present": {"type": "boolean"},
+          "report_valid": {"type": "boolean"},
+          "findings_count": {"type": "integer", "minimum": 0},
+          "critical_count": {"type": "integer", "minimum": 0},
+          "promotion_blocked": {"type": "boolean"},
+          "errors": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

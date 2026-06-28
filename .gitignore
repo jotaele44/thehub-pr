@@ -225,6 +225,9 @@ __marimo__/
 data/aggregate/*.jsonl
 data/aggregate/graph_summary.json
 
+# generated federation maintenance rollup (audit artifact, not committed)
+reports/federation_maintenance/
+
 # server entity database (runtime-generated)
 data/hub.db
 

@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "maintenance_report.schema.json",
+  "title": "Maintenance Report",
+  "description": "The latest maintenance/audit report a producer emits to reports/maintenance/latest.json. The Hub loads one per producer and rolls them up.",
+  "type": "object",
+  "required": [
+    "repo",
+    "maintenance_version",
+    "findings_count",
+    "critical_count",
+    "promotion_blocked"
+  ],
+  "properties": {
+    "repo": {
+      "type": "string",
+      "description": "Producer program_id / repo name."
+    },
+    "maintenance_version": {
+      "type": "string",
+      "description": "Maintenance scaffold version that produced this report."
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["audit", "safe-correct", "gate"],
+      "description": "Run mode. Audit-only by default; safe-correct only when explicitly enabled."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this report was generated (RFC3339)."
+    },
+    "findings_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "critical_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "promotion_blocked": {
+      "type": "boolean",
+      "description": "True if this producer's own gate blocks promotion."
+    },
+    "findings": {
+      "type": "array",
+      "items": {"$ref": "maintenance_finding.schema.json"}
+    }
+  },
+  "additionalProperties": false
+}

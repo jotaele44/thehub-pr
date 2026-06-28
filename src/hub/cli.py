@@ -7,11 +7,13 @@
     hub fetch [--root ws] [--run]    clone/refresh producers (optionally export)
     hub aggregate [--root .]         discover + aggregate producer packages
     hub correlate [--in d --out d]   derive cross-producer correlation relationships
+    hub maintenance [--root ..]      roll up producer maintenance reports + gate
 """
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from typing import List, Optional
 
@@ -21,6 +23,7 @@ from .correlate import correlate
 from .federation_status import validate_federation
 from .fetch import fetch_all
 from .graph_report import graph_report
+from .maintenance import build_rollup
 from .manifest import load_and_validate_manifest
 from .registry import load_registry
 from .validate import validate_package
@@ -76,6 +79,13 @@ def _build_parser() -> argparse.ArgumentParser:
     gr = sub.add_parser("graph-report", help="quality report for an aggregate directory")
     gr.add_argument("--in", dest="in_dir", default="data/aggregate", help="aggregate dir to read")
     gr.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+
+    mt = sub.add_parser("maintenance", help="roll up producer maintenance reports and compute the promotion gate")
+    mt.add_argument("--registry", default=DEFAULT_REGISTRY)
+    mt.add_argument("--root", default="..", help="workspace root containing producer checkouts")
+    mt.add_argument("--write-report", action="store_true", help="write the rollup to reports/federation_maintenance/latest.json")
+    mt.add_argument("--fail-on-blocker", action="store_true", help="exit 1 if the promotion gate blocks")
+    mt.add_argument("--json", action="store_true", help="emit machine-readable JSON")
 
     return p
 
@@ -211,6 +221,42 @@ def main(argv: Optional[List[str]] = None) -> int:
                 print("  match basis:")
                 for b, count in basis.items():
                     print(f"    {b}: {count}")
+        return 0
+
+    if args.cmd == "maintenance":
+        reg = load_registry(args.registry)
+        rollup = build_rollup(reg, args.root)
+        if args.write_report:
+            out_path = os.path.join("reports", "federation_maintenance", "latest.json")
+            os.makedirs(os.path.dirname(out_path), exist_ok=True)
+            with open(out_path, "w") as fh:
+                json.dump(rollup, fh, indent=2, sort_keys=True)
+            print(f"wrote rollup -> {out_path}")
+        if args.json:
+            print(json.dumps(rollup, indent=2, sort_keys=True))
+        else:
+            present = rollup["producer_count"] - rollup["reports_missing"]
+            print(
+                f"# {reg.hub} maintenance rollup — "
+                f"{present}/{rollup['producer_count']} reports present, "
+                f"{rollup['critical_count']} critical finding(s)"
+            )
+            for repo, st in sorted(rollup["repo_status"].items()):
+                flag = "present" if st["report_present"] else "MISSING"
+                valid = "valid" if st["report_valid"] else "invalid"
+                print(
+                    f"{repo:16} {flag:8} {valid:8} "
+                    f"findings={st['findings_count']:<3} critical={st['critical_count']:<3} "
+                    f"blocked={'yes' if st['promotion_blocked'] else 'no'}"
+                )
+            if rollup["promotion_blocked"]:
+                print("PROMOTION BLOCKED:")
+                for b in rollup["blockers"]:
+                    print("  -", b)
+            else:
+                print("promotion gate: OK")
+        if args.fail_on_blocker and rollup["promotion_blocked"]:
+            return 1
         return 0
 
     return 2
