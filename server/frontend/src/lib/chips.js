@@ -1,0 +1,19 @@
+const BASE = 'inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium';
+export const GENERIC_STATUS = { New: 'bg-sky-500/15 text-sky-300 border-sky-500/30', Reviewing: 'bg-blue-500/15 text-blue-300 border-blue-500/30', Active: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30', Archived: 'bg-slate-500/15 text-slate-300 border-slate-500/30', Blocked: 'bg-red-500/15 text-red-300 border-red-500/30', Passed: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30', InProgress: 'bg-blue-500/15 text-blue-300 border-blue-500/30' };
+export const REVIEW_STATUS = { Proposed: GENERIC_STATUS.New, Reviewing: GENERIC_STATUS.Reviewing, Accepted: GENERIC_STATUS.Active, Rejected: 'bg-red-500/15 text-red-300 border-red-500/30', FalsePositive: 'bg-slate-500/15 text-slate-300 border-slate-500/30' };
+export const CONFIDENCE = { Low: 'bg-yellow-500/15 text-yellow-300 border-yellow-500/30', Medium: 'bg-blue-500/15 text-blue-300 border-blue-500/30', High: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30' };
+export const SEVERITY = { Low: CONFIDENCE.Low, Medium: CONFIDENCE.Medium, High: 'bg-orange-500/15 text-orange-300 border-orange-500/30', Critical: 'bg-red-500/15 text-red-300 border-red-500/30' };
+export const SENSITIVITY = { Public: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30', Internal: 'bg-blue-500/15 text-blue-300 border-blue-500/30', Restricted: 'bg-red-500/15 text-red-300 border-red-500/30' };
+export const TIER = { T1: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30', T2: 'bg-blue-500/15 text-blue-300 border-blue-500/30', T3: 'bg-amber-500/15 text-amber-300 border-amber-500/30', T4: 'bg-slate-500/15 text-slate-300 border-slate-500/30' };
+export const VERIFICATION = { Verified: GENERIC_STATUS.Active, Unverified: GENERIC_STATUS.New, NeedsReview: 'bg-amber-500/15 text-amber-300 border-amber-500/30', Rejected: 'bg-red-500/15 text-red-300 border-red-500/30' };
+export const CASE_STATUS = { Open: GENERIC_STATUS.Active, Review: GENERIC_STATUS.Reviewing, Closed: GENERIC_STATUS.Archived, Archived: GENERIC_STATUS.Archived };
+export const PROGRAM_STATUS = { Active: GENERIC_STATUS.Active, Paused: GENERIC_STATUS.Archived, Blocked: GENERIC_STATUS.Blocked };
+export const GITHUB_STATUS = { Connected: GENERIC_STATUS.Active, Blocked: GENERIC_STATUS.Blocked, Unknown: GENERIC_STATUS.Archived };
+export const BASE44_STATUS = GITHUB_STATUS;
+export const GATE_STATUS = { Passed: GENERIC_STATUS.Passed, Blocked: GENERIC_STATUS.Blocked, InProgress: GENERIC_STATUS.InProgress, Failed: GENERIC_STATUS.Blocked, Pending: GENERIC_STATUS.New };
+export const INTEGRATION_STATUS = { Connected: GENERIC_STATUS.Active, Ready: GENERIC_STATUS.Passed, Blocked: GENERIC_STATUS.Blocked, Error: GENERIC_STATUS.Blocked, Unknown: GENERIC_STATUS.Archived };
+export const DICTIONARY_STATUS = { Draft: GENERIC_STATUS.New, Reviewing: GENERIC_STATUS.Reviewing, Stable: GENERIC_STATUS.Active, Deprecated: GENERIC_STATUS.Archived };
+export const TASK_LIFECYCLE = { Backlog: GENERIC_STATUS.New, Ready: GENERIC_STATUS.Passed, InProgress: GENERIC_STATUS.InProgress, Blocked: GENERIC_STATUS.Blocked, Review: GENERIC_STATUS.Reviewing, Done: GENERIC_STATUS.Active, Deferred: GENERIC_STATUS.Archived };
+export const PRIORITY = { Low: CONFIDENCE.Low, Medium: CONFIDENCE.Medium, High: SEVERITY.High, Critical: SEVERITY.Critical };
+export const GAP_CHIP = { 'Program Gap': SEVERITY.High, 'Missing Due Date': CONFIDENCE.Low, 'Unlinked': GENERIC_STATUS.Archived };
+export function chipClass(map, value) { return `${BASE} ${map?.[value] || GENERIC_STATUS.Archived}`; }
