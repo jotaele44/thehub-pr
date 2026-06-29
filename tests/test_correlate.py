@@ -18,6 +18,7 @@ from hub.correlate import (
     _point,
     _to_relationship,
     correlate,
+    correlate_alerts,
     correlate_by_external_id,
     correlate_entities,
     correlate_spatial,
@@ -55,7 +56,60 @@ def _write_jsonl(path, rows):
     path.write_text("".join(json.dumps(r, sort_keys=True) + "\n" for r in rows))
 
 
+def _alert(alert_id, entity_id, municipality, *, producers=None, confidence=0.6):
+    al = {
+        "alert_id": alert_id, "source_id": SRC, "module": "HYDRO_OPS",
+        "alert_type": "maintenance", "severity": 2, "status": "draft",
+        "observed_at": _TS, "confidence": confidence, "lineage": _LINEAGE,
+        "synthetic": False, "created_at": _TS, "extracted_at": _TS,
+    }
+    if entity_id:
+        al["entity_id"] = entity_id
+    if municipality:
+        al["location"] = {"lat": 18.34, "lon": -66.01, "municipality": municipality}
+    if producers is not None:
+        al["_producers"] = producers
+    return al
+
+
 # ── per-strategy units ───────────────────────────────────────────────────────
+
+def test_alert_correlation_links_anchor_to_colocated_cross_producer_entity():
+    al = _alert("alrt_" + "a" * 32, ENT_A, "San Juan", producers=["aguayluz-pr"])
+    ent = _entity(ENT_B, "PRASA INTAKE", lat=18.43, lon=-66.0, producers=["spiderweb-pr"])
+    ent["location"]["municipality"] = "San Juan"
+    links = correlate_alerts([al], [ent])
+    assert len(links) == 1
+    assert links[0]["relationship_type"] == "alert_affects_entity"
+    assert links[0]["match_basis"] == "location"
+    # directed: anchor entity -> co-located entity
+    assert links[0]["source_entity_id"] == ENT_A
+    assert links[0]["target_entity_id"] == ENT_B
+
+
+def test_alert_correlation_skips_same_producer_and_unanchored():
+    # same producer -> not a cross-producer pair
+    al_same = _alert("alrt_" + "a" * 32, ENT_A, "San Juan", producers=["spiderweb-pr"])
+    ent = _entity(ENT_B, "PRASA INTAKE", producers=["spiderweb-pr"])
+    ent["location"] = {"lat": 18.43, "lon": -66.0, "municipality": "San Juan"}
+    assert correlate_alerts([al_same], [ent]) == []
+    # no anchor entity_id -> nothing to link
+    al_unanchored = _alert("alrt_" + "b" * 32, None, "San Juan", producers=["aguayluz-pr"])
+    assert correlate_alerts([al_unanchored], [ent]) == []
+
+
+def test_alert_correlation_flows_through_derive_relationships():
+    al = _alert("alrt_" + "a" * 32, ENT_A, "San Juan", producers=["aguayluz-pr"])
+    ent_anchor = _entity(ENT_A, "REPRESA CARRAIZO", producers=["aguayluz-pr"])
+    ent_other = _entity(ENT_B, "PRASA INTAKE", producers=["spiderweb-pr"])
+    ent_other["location"] = {"lat": 18.43, "lon": -66.0, "municipality": "San Juan"}
+    rels = derive_relationships([ent_anchor, ent_other], alerts=[al])
+    alert_rels = [r for r in rels if r["relationship_type"] == "alert_affects_entity"]
+    assert len(alert_rels) == 1
+    jsonschema.Draft7Validator(load_schema("federation_relationship.schema.json")).validate(
+        alert_rels[0]
+    )
+
 
 def test_entity_name_correlation_cross_producer():
     a = _entity(ENT_A, "ACME RECOVERY LLC", producers=["spiderweb-pr"])

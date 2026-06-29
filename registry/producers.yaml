@@ -26,6 +26,8 @@ producers:
     role: water_grid_monitoring_node
     federation_manifest: federation.json
     status: ready_for_live             # real power/PREPS/water data wired; ready_for_hub_live_execution=true; outage granularity caveated (snapshot-grade until MiLUMA data-sharing resolved)
+    # Also emits the canonical `alerts` stream (operational alert system; federation_alert.schema.json),
+    # validated + aggregated by the Hub and correlated to entities by municipality/location.
 
   - program_id: ovnis-pr
     repo: jotaele44/ovnis-pr

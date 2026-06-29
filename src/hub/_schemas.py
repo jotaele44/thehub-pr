@@ -29,6 +29,7 @@ STREAM_SCHEMA: Dict[str, str] = {
     "funding_awards": "federation_funding_award.schema.json",
     "transactions": "federation_transaction.schema.json",
     "observations": "federation_observation.schema.json",
+    "alerts": "federation_alert.schema.json",
 }
 
 # stream name -> the field that holds the row's deterministic id (for dedup)
@@ -39,6 +40,7 @@ STREAM_ID_FIELD: Dict[str, str] = {
     "funding_awards": "award_id",
     "transactions": "transaction_id",
     "observations": "observation_id",
+    "alerts": "alert_id",
 }
 
 
