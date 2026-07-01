@@ -1,0 +1,26 @@
+{
+  "producer": "skywatcher-pr",
+  "consumer": "thehub-pr",
+  "export_contract": "sensor_fusion_analytics_v1",
+  "generated_at": "2026-07-01T21:00:00+00:00",
+  "live_tracking": false,
+  "operational_cueing": false,
+  "operator_action": "review_context_only",
+  "anomaly_count": 2,
+  "dashboard": "sensor_fusion_context",
+  "metrics": {
+    "air_event_count": 10,
+    "context_record_count": 8,
+    "overlap_count": 3,
+    "baseline_count": 5
+  },
+  "review_bands": {
+    "high_review": 1,
+    "moderate_review": 1
+  },
+  "guardrails": {
+    "context_only": true,
+    "public_live_tracking": false,
+    "operational_cueing": false
+  }
+}
