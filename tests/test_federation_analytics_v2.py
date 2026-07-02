@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from hub.federation_analytics_v2 import (
@@ -6,11 +7,25 @@ from hub.federation_analytics_v2 import (
     calibrate_anomaly_thresholds,
     correlate_cross_repo_anomalies,
 )
-from scripts.build_federation_analytics_v2 import read_json_records, read_jsonl
 
 
 RECORDS = Path(__file__).parent / "fixtures" / "federation_analytics_v2_records.jsonl"
 ANOMALIES = Path(__file__).parent / "fixtures" / "federation_analytics_v2_anomalies.json"
+
+
+def read_jsonl(path: Path) -> list[dict[str, object]]:
+    records: list[dict[str, object]] = []
+    with path.open(encoding="utf-8") as handle:
+        for line in handle:
+            text = line.strip()
+            if text:
+                records.append(json.loads(text))
+    return records
+
+
+def read_json_records(path: Path) -> list[dict[str, object]]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return [item for item in payload.get("anomalies", []) if isinstance(item, dict)]
 
 
 def test_build_seasonality_models_groups_by_corridor_domain_and_time_bucket():
