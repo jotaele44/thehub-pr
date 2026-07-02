@@ -36,7 +36,7 @@ _FIXED_TS = "1970-01-01T00:00:00Z"
 _LINEAGE = {
     "producer_script": "src/hub/correlate.py",
     "producer_phase": "HUB_CORRELATE",
-    "source_inputs": ["entities.jsonl", "funding_awards.jsonl", "transactions.jsonl"],
+    "source_inputs": ["entities.jsonl", "funding_awards.jsonl", "transactions.jsonl", "alerts.jsonl"],
     "extraction_method": "deterministic",
 }
 
@@ -84,6 +84,16 @@ def _point(row: Dict[str, Any]) -> Optional[Tuple[float, float]]:
     if isinstance(loc, dict):
         return _coerce_latlon(loc.get("lat", loc.get("latitude")),
                               loc.get("lon", loc.get("longitude")))
+    return None
+
+
+def _municipality(row: Dict[str, Any]) -> Optional[str]:
+    """Normalized (upper, trimmed) municipality from a row's ``location``."""
+    loc = row.get("location")
+    if isinstance(loc, dict):
+        muni = loc.get("municipality")
+        if isinstance(muni, str) and muni.strip():
+            return muni.strip().upper()
     return None
 
 
@@ -299,6 +309,40 @@ def correlate_temporal(awards: Sequence[Dict[str, Any]],
     return [link for _, link in tagged]
 
 
+def correlate_alerts(alerts: Sequence[Dict[str, Any]],
+                     entities: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Link an alert's anchor entity to co-located cross-producer entities.
+
+    An alert (e.g. from aguayluz-pr) that carries an ``entity_id`` anchor and a
+    ``location.municipality`` is linked to every entity another producer reports
+    in the same municipality, emitting a directed ``alert_affects_entity`` edge.
+    This surfaces, in the federation graph, which cross-domain entities sit in
+    the footprint of an active infrastructure alert. Alerts without an anchor
+    entity or municipality contribute nothing (honest: an unmatched draft alert
+    has no canonical entity to anchor)."""
+    by_muni: Dict[str, List[Dict[str, Any]]] = {}
+    for ent in entities:
+        muni = _municipality(ent)
+        if muni:
+            by_muni.setdefault(muni, []).append(ent)
+
+    links: List[Dict[str, Any]] = []
+    for al in alerts:
+        anchor = al.get("entity_id")
+        muni = _municipality(al)
+        if not isinstance(anchor, str) or not muni:
+            continue
+        for ent in by_muni.get(muni, []):
+            if ent["entity_id"] == anchor or not _disjoint(al, ent):
+                continue
+            conf = _score(al)
+            conf = round(conf, 3) if conf is not None else 0.5
+            links.append(_link(anchor, ent["entity_id"], "alert_affects_entity",
+                               "location", conf,
+                               f"Alert in {muni} co-located with cross-producer entity."))
+    return links
+
+
 # --------------------------------------------------------------------------
 # Relationship emission
 # --------------------------------------------------------------------------
@@ -322,9 +366,18 @@ def correlator_source() -> Dict[str, Any]:
     }
 
 
+#: Correlator relationship types that are directional (source -> target order is
+#: meaningful and must be preserved). All other correlator edges are symmetric,
+#: so their endpoints are sorted to canonicalize the id and dedupe (a,b)/(b,a).
+_DIRECTED_TYPES = frozenset({"alert_affects_entity"})
+
+
 def _to_relationship(link: Dict[str, Any]) -> Dict[str, Any]:
-    src, tgt = sorted((link["source_entity_id"], link["target_entity_id"]))
     rtype = link["relationship_type"]
+    if rtype in _DIRECTED_TYPES:
+        src, tgt = link["source_entity_id"], link["target_entity_id"]
+    else:
+        src, tgt = sorted((link["source_entity_id"], link["target_entity_id"]))
     rid = "rel_" + hashlib.sha256(f"{src}|{tgt}|{rtype}".encode()).hexdigest()[:32]
     sid = correlator_source_id()
     return {
@@ -345,13 +398,18 @@ def _to_relationship(link: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _dedupe_links(links: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Collapse duplicate edges (same unordered pair + relationship_type), keeping
-    the highest-confidence one. Name- and external-id matches both produce
-    ``entity_correlation`` and intentionally collapse to one edge."""
+    """Collapse duplicate edges (same pair + relationship_type), keeping the
+    highest-confidence one. Symmetric types (name/external-id/spatial/temporal)
+    key on an *unordered* pair so (a,b) and (b,a) collapse to one edge. Directional
+    types (``alert_affects_entity``) key on the *ordered* pair so a genuine reverse
+    edge (b->a) is preserved alongside a->b."""
     best: Dict[Any, Dict[str, Any]] = {}
     for link in links:
-        key = (frozenset((link["source_entity_id"], link["target_entity_id"])),
-               link["relationship_type"])
+        src, tgt = link["source_entity_id"], link["target_entity_id"]
+        if link["relationship_type"] in _DIRECTED_TYPES:
+            key: Any = (src, tgt, link["relationship_type"])
+        else:
+            key = (frozenset((src, tgt)), link["relationship_type"])
         if key not in best or link["confidence"] > best[key]["confidence"]:
             best[key] = link
     return list(best.values())
@@ -376,14 +434,16 @@ def _read_stream(in_dir: Path, stream: str) -> List[Dict[str, Any]]:
 def derive_relationships(entities: Sequence[Dict[str, Any]],
                          awards: Sequence[Dict[str, Any]] = (),
                          transactions: Sequence[Dict[str, Any]] = (),
+                         alerts: Sequence[Dict[str, Any]] = (),
                          *, window_days: int = 7,
                          threshold_km: float = 1.0) -> List[Dict[str, Any]]:
-    """Run all 4 strategies, dedupe, and emit sorted canonical relationship rows."""
+    """Run all 5 strategies, dedupe, and emit sorted canonical relationship rows."""
     links = (
         correlate_entities(entities)
         + correlate_by_external_id(entities)
         + correlate_spatial(entities, threshold_km=threshold_km)
         + correlate_temporal(awards, transactions, window_days=window_days)
+        + correlate_alerts(alerts, entities)
     )
     relationships = [_to_relationship(link) for link in _dedupe_links(links)]
     relationships.sort(key=lambda r: (r["relationship_type"],
@@ -400,9 +460,10 @@ def correlate(in_dir, out_dir, *, window_days: int = 7,
     entities = _read_stream(in_dir, "entities")
     awards = _read_stream(in_dir, "funding_awards")
     transactions = _read_stream(in_dir, "transactions")
+    alerts = _read_stream(in_dir, "alerts")
 
     relationships = derive_relationships(
-        entities, awards, transactions,
+        entities, awards, transactions, alerts,
         window_days=window_days, threshold_km=threshold_km,
     )
 

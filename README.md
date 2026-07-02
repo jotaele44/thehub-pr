@@ -42,6 +42,7 @@ relationships.jsonl
 funding_awards.jsonl
 transactions.jsonl
 observations.jsonl
+alerts.jsonl
 ```
 
 Every row should carry deterministic ids, lineage, confidence, synthetic/test flags where applicable, and ISO timestamps. The package manifest records each file's SHA-256 and record count.
