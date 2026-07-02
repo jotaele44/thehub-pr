@@ -33,7 +33,7 @@ producers:
     repo: jotaele44/ovnis-pr
     role: anomaly_intelligence_node
     federation_manifest: federation.json
-    status: ready_for_discovery        # 470 real master cases on main (0 synthetic); ready_for_hub_live_execution=true. Live exec pending only export_canonical --mode production (still --mode test on main; OVNIS PR #12 fixes this). Verify via `hub fetch --run` + `hub validate-federation`, then promote to ready_for_live
+    status: ready_for_live             # 470 real master cases on main (0 synthetic); ready_for_hub_live_execution=true; production_status=PRODUCTION. export_canonical is --mode production on main; verified locally via federation_export.py --mode production (manifest.json emitted, synthetic rows rejected)
 
   - program_id: skywatcher-pr
     repo: jotaele44/skywatcher-pr

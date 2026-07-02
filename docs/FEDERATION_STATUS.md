@@ -1,7 +1,7 @@
 # PRII Federation — Gap-Closure Status
 
 _Authoritative status of the Puerto Rico Integrated Intelligence (PRII) federation._
-_Last updated: 2026-06-12 (Docs link + schema gate sweep)._ 
+_Last updated: 2026-07-02 (OVNIS production reconciliation + status-consistency gate)._ 
 
 The federation is **artifact-based**: producers emit a discovery manifest
 (`federation.json`) plus a canonical export package (`sources/entities/
@@ -17,7 +17,7 @@ from GitHub, so aggregation no longer assumes local checkouts.
 | `moneysweep-pr` (moneysweep-pr) | public-money | ✅ | ⛔ | n/a (no point coords) | needs API keys + Tranche-B materialization |
 | `spiderweb-pr` | spatial/operational producer | ✅ | ⛔ | ✅ records project geometry | FR24 ownership moved to `skywatcher-pr`; needs non-synthetic spatial/operational envelope rows for production promotion |
 | `aguayluz-pr` | water/grid | ✅ | ✅ | ✅ 273/273 assets | power + PREPS + water/wastewater live; outage granularity remains caveated |
-| `ovnis-pr` (OVNIS) | historical case corpus | ✅ | ⛔ | n/a | placeholder ledger — needs real cases |
+| `ovnis-pr` (OVNIS) | historical case corpus | ✅ | ✅ | n/a | 470 real master cases (0 synthetic); production canonical export live |
 | `skywatcher-pr` | airspace | ✅ | ⛔ | ✅ observations | synthetic package only — needs real FR24 capture/export |
 
 ## What is closed
@@ -66,7 +66,6 @@ Each item below is **code-ready** unless noted; the missing item is named.
 | Gap | Node | Unblock requirement |
 |---|---|---|
 | Live observations | skywatcher | Real FlightRadar24 capture → FR24/ILAP intake; the adapter + ILAP bridge then run in production mode. |
-| Real cases | OVNIS | Real UAP/anomalous-event case records → `data/master/master_cases.jsonl` replacing the placeholder row. |
 | Live exec | moneysweep-pr | Tranche-B manual source exports + PR-gov scraper queue + runtime API keys (`FEC_API_KEY`, `SAM_API_KEY`, `HIGHERGOV_API_KEY`, `LDA_API_KEY`, `OPENCORPORATES_API_TOKEN`) supplied locally. |
 | Production export | spiderweb | Real, non-synthetic spatial/operational evidence-envelope rows from the retained producer pipeline; FR24-specific live observations belong to `skywatcher-pr`. |
 | Per-asset outage attribution | aguayluz | A finer outage feed; PREPS is island-wide aggregate and third-party outage snapshots remain review-grade until promoted. |
