@@ -1,0 +1,22 @@
+{
+  "anomalies": [
+    {
+      "producer": "skywatcher-pr",
+      "corridor_id": "sj_corridor",
+      "observed_at": "2026-01-05T12:00:00+00:00",
+      "anomaly_score": 0.8
+    },
+    {
+      "producer": "aguayluz-pr",
+      "corridor_id": "sj_corridor",
+      "observed_at": "2026-01-05T12:30:00+00:00",
+      "anomaly_score": 0.7
+    },
+    {
+      "producer": "moneysweep-pr",
+      "corridor_id": "ponce_corridor",
+      "observed_at": "2026-02-02T18:00:00+00:00",
+      "anomaly_score": 0.6
+    }
+  ]
+}

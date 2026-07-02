@@ -1,0 +1,4 @@
+{"producer":"skywatcher-pr","corridor_id":"sj_corridor","domain":"air","observed_at":"2026-01-05T12:00:00+00:00","event_count":4,"confidence":0.8}
+{"producer":"skywatcher-pr","corridor_id":"sj_corridor","domain":"air","observed_at":"2026-01-12T12:30:00+00:00","event_count":6,"confidence":0.7}
+{"producer":"aguayluz-pr","corridor_id":"sj_corridor","domain":"utility","observed_at":"2026-01-05T12:20:00+00:00","event_count":2,"confidence":0.9}
+{"producer":"centinelas-pr","corridor_id":"ponce_corridor","domain":"infrastructure","observed_at":"2026-02-02T18:00:00+00:00","event_count":1,"confidence":0.6}
