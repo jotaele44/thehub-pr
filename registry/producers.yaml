@@ -40,3 +40,9 @@ producers:
     role: airspace_intelligence_node
     federation_manifest: federation.json
     status: ready_for_discovery        # FR24 ingest/OCR/RLSM pipeline on main; live exec blocked: needs real FlightRadar24 capture to flip ready_for_hub_live_execution
+
+  - program_id: centinelas-pr
+    repo: jotaele44/centinelas-pr
+    role: pre_officialization_signal_producer
+    federation_manifest: federation.json
+    status: ready_for_discovery        # root federation.json + canonical export adapter on main; live exec blocked: needs real (non-synthetic) signal intake to flip ready_for_hub_live_execution

@@ -10,8 +10,8 @@ The Hub does not own domain data collection. It discovers producer repositories,
             │ aggregate → correlate → publish federation graph                   │
             └───────────────▲───────────────▲───────────────▲───────────────▲────┘
                             │               │               │               │
-              moneysweep-pr │   spiderweb-pr│    aguayluz-pr│    ovnis-pr  │  skywatcher-pr
-            (moneysweep-pr) (spatial/ops)  (water/grid)   (case corpus)    (airspace)
+   moneysweep-pr │ spiderweb-pr │ aguayluz-pr │ ovnis-pr │ skywatcher-pr │ centinelas-pr
+   (public money)  (spatial/ops)  (water/grid) (case corpus) (airspace)   (pre-signal)
                    PRODUCERS emit federation.json + canonical export packages
 ```
 
@@ -26,6 +26,7 @@ A separate analytical consumer may read Hub aggregate outputs to rank leads. It 
 | `aguayluz-pr` | [`aguayluz-pr`](https://github.com/jotaele44/aguayluz-pr) | Water, wastewater, power, outage, and recovery-project monitoring | Real-data partial producer |
 | `ovnis-pr` | [`OVNIS`](https://github.com/jotaele44/ovnis-pr) | Puerto Rico historical case corpus | Case-corpus producer |
 | `skywatcher-pr` | [`skywatcher-pr`](https://github.com/jotaele44/skywatcher-pr) | Airspace / aircraft intelligence and FR24 ingestion | Airspace producer; live execution blocked until non-synthetic observation export exists |
+| `centinelas-pr` | [`centinelas-pr`](https://github.com/jotaele44/centinelas-pr) | Pre-officialization public-interest signal monitoring (upstream of moneysweep-pr) | Pre-signal producer; live execution blocked until real (non-synthetic) signal intake exists |
 
 ## The producer contract
 

@@ -19,6 +19,7 @@ from GitHub, so aggregation no longer assumes local checkouts.
 | `aguayluz-pr` | water/grid | ✅ | ✅ | ✅ 273/273 assets | power + PREPS + water/wastewater live; outage granularity remains caveated |
 | `ovnis-pr` (OVNIS) | historical case corpus | ✅ | ✅ | n/a | 470 real master cases (0 synthetic); production canonical export live |
 | `skywatcher-pr` | airspace | ✅ | ⛔ | ✅ observations | synthetic package only — needs real FR24 capture/export |
+| `centinelas-pr` | pre-officialization signal monitor | ✅ | ⛔ | n/a | federation.json + canonical export adapter live; synthetic seed only — needs real signal intake for production promotion |
 
 ## What is closed
 
