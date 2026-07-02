@@ -27,18 +27,24 @@ def summarize_population(records: Iterable[Mapping[str, Any]]) -> dict[str, Any]
     }
 
 
+def _label_value(label: Mapping[str, Any]) -> bool:
+    if "is_relevant" in label:
+        return bool(label.get("is_relevant"))
+    return bool(label.get("is_true_positive"))
+
+
 def review_threshold_performance(
     scored_events: Iterable[Mapping[str, Any]],
     labels: Iterable[Mapping[str, Any]],
 ) -> dict[str, Any]:
-    """Compare scored events against analyst labels.
+    """Compare scored events against analyst relevance labels.
 
-    Labels use `event_id` and `is_true_positive`. Scored events use `event_id`
-    and `anomaly_score`. This function is intentionally aggregate: it tunes
-    review thresholds, not operational outcomes.
+    Labels use `event_id` and preferably `is_relevant`. Scored events use
+    `event_id` and `anomaly_score`. This function tunes review thresholds, not
+    operational outcomes.
     """
 
-    label_index = {str(item.get("event_id")): bool(item.get("is_true_positive")) for item in labels}
+    label_index = {str(item.get("event_id")): _label_value(item) for item in labels}
     events = [item for item in scored_events if str(item.get("event_id")) in label_index]
     if not events:
         return {
