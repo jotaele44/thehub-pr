@@ -1,0 +1,5 @@
+{"event_id":"e1","corridor_id":"sj_corridor","anomaly_score":0.82}
+{"event_id":"e2","corridor_id":"sj_corridor","anomaly_score":0.65}
+{"event_id":"e3","corridor_id":"sj_corridor","anomaly_score":0.45}
+{"event_id":"e4","corridor_id":"ponce_corridor","anomaly_score":0.72}
+{"event_id":"e5","corridor_id":"ponce_corridor","anomaly_score":0.35}
