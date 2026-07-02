@@ -111,6 +111,22 @@ def test_alert_correlation_flows_through_derive_relationships():
     )
 
 
+def test_alert_correlation_preserves_both_directed_edges():
+    # Two cross-producer alerts in the same municipality, each anchored on the
+    # other's entity, emit A->B and B->A. Both directional edges must survive
+    # dedupe (an unordered key would drop one).
+    al_a = _alert("alrt_" + "a" * 32, ENT_A, "San Juan", producers=["aguayluz-pr"])
+    al_b = _alert("alrt_" + "b" * 32, ENT_B, "San Juan", producers=["spiderweb-pr"])
+    ent_a = _entity(ENT_A, "CARRAIZO", producers=["aguayluz-pr"])
+    ent_a["location"] = {"lat": 18.34, "lon": -66.01, "municipality": "San Juan"}
+    ent_b = _entity(ENT_B, "PRASA INTAKE", producers=["spiderweb-pr"])
+    ent_b["location"] = {"lat": 18.35, "lon": -66.02, "municipality": "San Juan"}
+    rels = derive_relationships([ent_a, ent_b], alerts=[al_a, al_b])
+    directed = {(r["source_entity_id"], r["target_entity_id"])
+                for r in rels if r["relationship_type"] == "alert_affects_entity"}
+    assert directed == {(ENT_A, ENT_B), (ENT_B, ENT_A)}
+
+
 def test_entity_name_correlation_cross_producer():
     a = _entity(ENT_A, "ACME RECOVERY LLC", producers=["spiderweb-pr"])
     b = _entity(ENT_B, "ACME RECOVERY LLC", producers=["moneysweep-pr"])

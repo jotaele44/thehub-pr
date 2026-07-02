@@ -398,13 +398,18 @@ def _to_relationship(link: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _dedupe_links(links: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Collapse duplicate edges (same unordered pair + relationship_type), keeping
-    the highest-confidence one. Name- and external-id matches both produce
-    ``entity_correlation`` and intentionally collapse to one edge."""
+    """Collapse duplicate edges (same pair + relationship_type), keeping the
+    highest-confidence one. Symmetric types (name/external-id/spatial/temporal)
+    key on an *unordered* pair so (a,b) and (b,a) collapse to one edge. Directional
+    types (``alert_affects_entity``) key on the *ordered* pair so a genuine reverse
+    edge (b->a) is preserved alongside a->b."""
     best: Dict[Any, Dict[str, Any]] = {}
     for link in links:
-        key = (frozenset((link["source_entity_id"], link["target_entity_id"])),
-               link["relationship_type"])
+        src, tgt = link["source_entity_id"], link["target_entity_id"]
+        if link["relationship_type"] in _DIRECTED_TYPES:
+            key: Any = (src, tgt, link["relationship_type"])
+        else:
+            key = (frozenset((src, tgt)), link["relationship_type"])
         if key not in best or link["confidence"] > best[key]["confidence"]:
             best[key] = link
     return list(best.values())
