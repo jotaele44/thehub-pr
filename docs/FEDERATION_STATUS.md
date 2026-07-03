@@ -1,7 +1,7 @@
 # PRII Federation — Gap-Closure Status
 
 _Authoritative status of the Puerto Rico Integrated Intelligence (PRII) federation._
-_Last updated: 2026-07-02 (OVNIS production reconciliation + status-consistency gate)._ 
+_Last updated: 2026-07-03 (runtime materialization sweep; all seven federation PRs merged)._ 
 
 The federation is **artifact-based**: producers emit a discovery manifest
 (`federation.json`) plus a canonical export package (`sources/entities/
@@ -14,8 +14,8 @@ from GitHub, so aggregation no longer assumes local checkouts.
 | Node (program_id) | Role | Discovery | Live exec | Canonical `location` | Notes |
 |---|---|:--:|:--:|:--:|---|
 | `thehub-pr` | Hub (registry+validator+aggregator) | — | — | — | not a producer |
-| `moneysweep-pr` (moneysweep-pr) | public-money | ✅ | ⛔ | n/a (no point coords) | needs API keys + Tranche-B materialization |
-| `spiderweb-pr` | spatial/operational producer | ✅ | ⛔ | ✅ records project geometry | FR24 ownership moved to `skywatcher-pr`; needs non-synthetic spatial/operational envelope rows for production promotion |
+| `moneysweep-pr` (moneysweep-pr) | public-money | ✅ | ⛔ | n/a (no point coords) | 8/14 required sources live-materialized (FEC in flight); blocked on Tranche-B manual exports + cor3 portal |
+| `spiderweb-pr` | spatial/operational producer | ✅ | ⛔ | ✅ records project geometry | first REAL production package built + hub-validated (package_valid=true); live flip held for operator review |
 | `aguayluz-pr` | water/grid | ✅ | ✅ | ✅ 273/273 assets | power + PREPS + water/wastewater live; outage granularity remains caveated |
 | `ovnis-pr` (OVNIS) | historical case corpus | ✅ | ✅ | n/a | 470 real master cases (0 synthetic); production canonical export live |
 | `skywatcher-pr` | airspace | ✅ | ⛔ | ✅ observations | synthetic package only — needs real FR24 capture/export |
@@ -66,9 +66,9 @@ Each item below is **code-ready** unless noted; the missing item is named.
 
 | Gap | Node | Unblock requirement |
 |---|---|---|
-| Live observations | skywatcher | Real FlightRadar24 capture → FR24/ILAP intake; the adapter + ILAP bridge then run in production mode. |
-| Live exec | moneysweep-pr | Tranche-B manual source exports + PR-gov scraper queue + runtime API keys (`FEC_API_KEY`, `SAM_API_KEY`, `HIGHERGOV_API_KEY`, `LDA_API_KEY`, `OPENCORPORATES_API_TOKEN`) supplied locally. |
-| Production export | spiderweb | Real, non-synthetic spatial/operational evidence-envelope rows from the retained producer pipeline; FR24-specific live observations belong to `skywatcher-pr`. |
+| Live observations | skywatcher | Real FlightRadar24 capture only — the DB→producer-package builder now automates the rest (see skywatcher docs/FR24_PRODUCTION_PROMOTION_RUNBOOK.md). |
+| Live exec | moneysweep-pr | Tranche-B manual source exports (hud_drgr, prasa, oficina_contralor, pr_cabilderos) + cor3 portal export (JS-rendered; manual CSV fallback) + `PROPUBLICA_API_KEY`. Runtime keys (FEC/SAM/HigherGov/LDA/Data.gov-family via `X_API_KEY`) are now supplied and 8/14 required sources are live-materialized. |
+| Production export | spiderweb | Operator review of the first real production package (1 site observation + 9 airport reference locations), then flip ready_for_hub_live_execution + registry together. |
 | Per-asset outage attribution | aguayluz | A finer outage feed; PREPS is island-wide aggregate and third-party outage snapshots remain review-grade until promoted. |
 | ECW photomosaic extents | PRIIS | A GDAL ECW driver/plugin or external ECW→GeoTIFF conversion before remaining mosaics can be ingested. |
 | Repo deletion | `jotaele44/Aerospace-Intelligence-Tool` | `gh auth refresh -s delete_repo` then `gh repo delete … --yes`. Content preserved in `skywatcher-pr` archive/provenance notes. |
