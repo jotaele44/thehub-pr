@@ -13,13 +13,13 @@ producers:
     role: public_money_intelligence_node
     federation_manifest: federation.json
     export_path: data/exports/canonical_v1_federation   # canonical_v1 bridge streams (auto-wrapped by the Hub)
-    status: ready_for_discovery        # canonical_v1 bridge live on main; live exec blocked: API keys (FEC/SAM/HigherGov/LDA/OpenCorporates) + Tranche-B manual exports not yet supplied (moneysweep-pr issue #87)
+    status: ready_for_discovery        # 9/14 required sources live-materialized (runtime keys supplied); live exec blocked: Tranche-B manual exports + cor3 portal export (JS-gated) + PROPUBLICA_API_KEY
 
   - program_id: spiderweb-pr
     repo: jotaele44/spiderweb-pr
     role: spatial_operational_producer
     federation_manifest: federation.json
-    status: ready_for_discovery        # canonical export adapter live on main; live exec blocked: needs non-synthetic spatial/operational evidence-envelope rows for production promotion
+    status: ready_for_live             # first real production package (1 site observation + 9 airport reference locations) hub-validated; ready_for_hub_live_execution=true (operator-approved 2026-07-03); corpus grows with the revived intake lane
 
   - program_id: aguayluz-pr
     repo: jotaele44/aguayluz-pr
@@ -45,4 +45,4 @@ producers:
     repo: jotaele44/centinelas-pr
     role: pre_officialization_signal_producer
     federation_manifest: federation.json
-    status: ready_for_discovery        # root federation.json + canonical export adapter on main; live exec blocked: needs real (non-synthetic) signal intake to flip ready_for_hub_live_execution
+    status: ready_for_live             # live RSS intake bridged: 274 real signals in data/signals/live_signals.jsonl; production export hub-validated; ready_for_hub_live_execution=true (operator-approved 2026-07-03)
