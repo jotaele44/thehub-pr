@@ -31,16 +31,16 @@ export function useVerificationGate() {
   async function verify(item, note) {
     let reviewer = null;
     try { reviewer = (await federation.auth.me())?.email || null; } catch { reviewer = null; }
-    await update(item.id, {
+    await update({ id: item.id, data: {
       sync_status: "Verified",
       verified_by: reviewer,
       verified_at: new Date().toISOString(),
       verification_note: note || item.verification_note || "",
-    });
+    }});
   }
 
   async function reject(item) {
-    await update(item.id, { sync_status: "NeedsReview" });
+    await update({ id: item.id, data: { sync_status: "NeedsReview" } });
   }
 
   return { pending, verified, counts, isLoading, saving, verify, reject };
