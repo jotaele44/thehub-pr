@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "federation.blockers.v1",
+  "title": "Federation Blockers",
+  "type": "object",
+  "required": ["schema_version", "repo", "generated_at", "blockers"],
+  "properties": {
+    "schema_version": {"const": "federation.blockers.v1"},
+    "repo": {"type": "string"},
+    "generated_at": {"type": "string"},
+    "blockers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "status", "scope", "title", "impact", "resolution"],
+        "properties": {
+          "id": {"type": "string"},
+          "severity": {"enum": ["critical", "high", "medium", "low"]},
+          "status": {"enum": ["open", "resolved", "accepted_risk"]},
+          "scope": {"type": "string"},
+          "title": {"type": "string"},
+          "impact": {"type": "string"},
+          "resolution": {"type": "string"},
+          "evidence_refs": {"type": "array"}
+        }
+      }
+    }
+  }
+}
