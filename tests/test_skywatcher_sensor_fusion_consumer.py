@@ -57,6 +57,18 @@ def test_invalid_payload_is_rejected():
     assert any("False was expected" in error for error in result.errors)
 
 
+def test_non_numeric_anomaly_count_does_not_crash():
+    payload = load_json(FIXTURE)
+    for bad in ["n/a", None, True]:
+        payload["anomaly_count"] = bad
+        result = consume_sensor_fusion_export(payload)
+        assert result.valid is False
+        assert result.anomaly_count == 0
+        assert result.errors
+        surface = build_dashboard_surface(payload)
+        assert surface["valid"] is False
+
+
 def test_write_dashboard_surface_roundtrip(tmp_path):
     out = tmp_path / "dashboard" / "surface.json"
     surface = write_dashboard_surface(FIXTURE, out)

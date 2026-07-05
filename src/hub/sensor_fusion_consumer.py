@@ -48,11 +48,19 @@ def validate_sensor_fusion_export(payload: Mapping[str, Any], schema_path: Path 
 def consume_sensor_fusion_export(payload: Mapping[str, Any]) -> SensorFusionConsumerResult:
     errors = validate_sensor_fusion_export(payload)
     guardrails = dict(payload.get("guardrails", {})) if isinstance(payload.get("guardrails", {}), Mapping) else {}
+    # The schema already enforces an integer; never cast the raw value, so a
+    # malformed export still yields a valid=False result instead of a crash.
+    raw_anomaly_count = payload.get("anomaly_count", 0)
+    anomaly_count = (
+        raw_anomaly_count
+        if isinstance(raw_anomaly_count, int) and not isinstance(raw_anomaly_count, bool)
+        else 0
+    )
     return SensorFusionConsumerResult(
         valid=not errors,
         producer=str(payload.get("producer", "")),
         export_contract=str(payload.get("export_contract", "")),
-        anomaly_count=int(payload.get("anomaly_count", 0)),
+        anomaly_count=anomaly_count,
         dashboard=str(payload.get("dashboard", "sensor_fusion_context")),
         guardrails=guardrails,
         errors=errors,
