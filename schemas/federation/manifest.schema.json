@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "federation.offline_package.v1",
+  "title": "Federation Offline Package Manifest",
+  "type": "object",
+  "required": ["schema_version", "repo", "node_type", "generated_at", "offline_ready", "localhost_required", "summary", "files", "gates"],
+  "properties": {
+    "schema_version": {"const": "federation.offline_package.v1"},
+    "repo": {"type": "string"},
+    "node_type": {"enum": ["hub", "producer"]},
+    "package_id": {"type": "string"},
+    "generated_at": {"type": "string"},
+    "commit_sha": {"type": "string"},
+    "branch": {"type": "string"},
+    "data_mode": {"type": "string"},
+    "production_status": {"type": "string"},
+    "offline_ready": {"const": true},
+    "localhost_required": {"const": false},
+    "summary": {"type": "object"},
+    "files": {"type": "array"},
+    "gates": {"type": "object"}
+  }
+}
