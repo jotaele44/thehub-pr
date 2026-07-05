@@ -3,25 +3,27 @@
   "$id": "federation.blockers.v1",
   "title": "Federation Blockers",
   "type": "object",
+  "additionalProperties": false,
   "required": ["schema_version", "repo", "generated_at", "blockers"],
   "properties": {
     "schema_version": {"const": "federation.blockers.v1"},
-    "repo": {"type": "string"},
-    "generated_at": {"type": "string"},
+    "repo": {"enum": ["thehub-pr", "skywatcher-pr", "moneysweep-pr", "aguayluz-pr", "centinelas-pr", "ovnis-pr", "spiderweb-pr"]},
+    "generated_at": {"type": "string", "minLength": 1},
     "blockers": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "severity", "status", "scope", "title", "impact", "resolution"],
+        "additionalProperties": false,
+        "required": ["id", "severity", "status", "scope", "title", "impact", "resolution", "evidence_refs"],
         "properties": {
-          "id": {"type": "string"},
+          "id": {"type": "string", "minLength": 1},
           "severity": {"enum": ["critical", "high", "medium", "low"]},
           "status": {"enum": ["open", "resolved", "accepted_risk"]},
-          "scope": {"type": "string"},
-          "title": {"type": "string"},
-          "impact": {"type": "string"},
-          "resolution": {"type": "string"},
-          "evidence_refs": {"type": "array"}
+          "scope": {"enum": ["schema", "data", "test", "export", "dashboard", "hub_ingest", "security", "documentation", "source_registry", "evidence", "runtime", "unknown"]},
+          "title": {"type": "string", "minLength": 1},
+          "impact": {"type": "string", "minLength": 1},
+          "resolution": {"type": "string", "minLength": 1},
+          "evidence_refs": {"type": "array", "items": {"type": "string"}}
         }
       }
     }
