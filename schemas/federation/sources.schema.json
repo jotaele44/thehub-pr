@@ -19,11 +19,11 @@
           "source_id": {"type": "string", "minLength": 1},
           "name": {"type": "string", "minLength": 1},
           "category": {"type": "string", "minLength": 1},
-          "access_method": {"enum": ["manual", "rss", "api", "upload", "derived", "unknown"]},
+          "access_method": {"enum": ["manual", "rss", "api", "scrape", "upload", "derived", "unknown"]},
           "scope": {"enum": ["puerto_rico", "caribbean", "us_federal", "global", "mixed", "unknown"]},
           "authority_level": {"enum": ["official", "institutional", "media", "community", "derived", "unknown"]},
           "cadence": {"enum": ["daily", "weekly", "monthly", "event_driven", "unknown"]},
-          "status": {"enum": ["active", "candidate", "deprecated", "unavailable"]},
+          "status": {"enum": ["active", "candidate", "deprecated", "blocked", "unavailable"]},
           "notes": {"type": "string"}
         }
       }
