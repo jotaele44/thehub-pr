@@ -142,8 +142,10 @@ The decision is a document, but its central claim is testable end to end once
 Phase 1 is built:
 
 1. Run the data plane: `make setup && hub fetch --root ws && hub aggregate --root
-   .. --out data/aggregate && hub correlate --in data/aggregate`, and confirm
-   `data/aggregate/*.jsonl` and `correlations.jsonl` are produced.
+   ws --out data/aggregate && hub correlate --in data/aggregate`, and confirm
+   `data/aggregate/*.jsonl` and `correlations.jsonl` are produced. (`aggregate`
+   must read the same `--root` that `fetch` populated — the CLI's own fetch
+   summary prints the matching `hub aggregate --root <root>` to run next.)
 2. After Phase 1, start `uvicorn server.backend.main:app` and the frontend with
    `VITE_OFFLINE` off, and confirm the per-producer pages and the
    Crossover/Anomaly views render the live aggregate rather than `snapshot.json` —
