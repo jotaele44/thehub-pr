@@ -93,9 +93,10 @@ def _observation(observation_id, entity_id, municipality, *, producers=None, con
 
 def test_observation_correlation_links_anchor_to_colocated_cross_producer_entity():
     obs = _observation("obs_" + "a" * 32, ENT_A, "San Juan", producers=["skywatcher-pr"])
+    anchor = _entity(ENT_A, "AIRCRAFT N123", producers=["skywatcher-pr"])
     ent = _entity(ENT_B, "PRASA INTAKE", producers=["aguayluz-pr"])
     ent["location"] = {"lat": 18.43, "lon": -66.0, "municipality": "San Juan"}
-    links = correlate_observations([obs], [ent])
+    links = correlate_observations([obs], [anchor, ent])
     assert len(links) == 1
     assert links[0]["relationship_type"] == "observation_at_entity"
     assert links[0]["match_basis"] == "location"
@@ -105,17 +106,28 @@ def test_observation_correlation_links_anchor_to_colocated_cross_producer_entity
 
 
 def test_observation_correlation_skips_same_producer_and_unanchored():
-    # same producer -> not a cross-producer pair
-    obs_same = _observation("obs_" + "a" * 32, ENT_A, "San Juan", producers=["aguayluz-pr"])
+    anchor = _entity(ENT_A, "PRASA PUMP", producers=["aguayluz-pr"])
     ent = _entity(ENT_B, "PRASA INTAKE", producers=["aguayluz-pr"])
     ent["location"] = {"lat": 18.43, "lon": -66.0, "municipality": "San Juan"}
-    assert correlate_observations([obs_same], [ent]) == []
+    # same producer -> not a cross-producer pair
+    obs_same = _observation("obs_" + "a" * 32, ENT_A, "San Juan", producers=["aguayluz-pr"])
+    assert correlate_observations([obs_same], [anchor, ent]) == []
     # no anchor entity_id -> nothing to link
     obs_unanchored = _observation("obs_" + "b" * 32, None, "San Juan", producers=["skywatcher-pr"])
-    assert correlate_observations([obs_unanchored], [ent]) == []
+    assert correlate_observations([obs_unanchored], [anchor, ent]) == []
     # no municipality -> nothing to link
     obs_no_muni = _observation("obs_" + "c" * 32, ENT_A, None, producers=["skywatcher-pr"])
-    assert correlate_observations([obs_no_muni], [ent]) == []
+    assert correlate_observations([obs_no_muni], [anchor, ent]) == []
+
+
+def test_observation_correlation_skips_anchor_absent_from_entity_set():
+    # An observations-only producer ships no entities.jsonl, so its anchor id is
+    # absent from the aggregate -> no dangling edge is emitted.
+    obs = _observation("obs_" + "a" * 32, ENT_A, "San Juan", producers=["skywatcher-pr"])
+    ent = _entity(ENT_B, "PRASA INTAKE", producers=["aguayluz-pr"])
+    ent["location"] = {"lat": 18.43, "lon": -66.0, "municipality": "San Juan"}
+    # ENT_A (the anchor) is NOT in the entity set
+    assert correlate_observations([obs], [ent]) == []
 
 
 def test_observation_correlation_flows_through_derive_relationships():

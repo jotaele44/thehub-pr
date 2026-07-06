@@ -355,9 +355,17 @@ def correlate_observations(observations: Sequence[Dict[str, Any]],
     cross-domain entities sit in the footprint of a recorded observation (an
     aircraft transit, structure sighting, sensor reading). Observations without an
     anchor entity or municipality contribute nothing — an unanchored observation
-    has no canonical entity to hang an edge on (mirrors ``correlate_alerts``)."""
+    has no canonical entity to hang an edge on (mirrors ``correlate_alerts``).
+
+    The anchor must also resolve to an entity present in the aggregate: an
+    observations-only export ships no ``entities.jsonl``, so an anchor id that is
+    absent from the entity set would otherwise emit an edge from a node that does
+    not exist. Such observations are skipped to keep the graph free of dangling
+    edges."""
     by_muni: Dict[str, List[Dict[str, Any]]] = {}
+    entity_ids = set()
     for ent in entities:
+        entity_ids.add(ent["entity_id"])
         muni = _municipality(ent)
         if muni:
             by_muni.setdefault(muni, []).append(ent)
@@ -366,7 +374,7 @@ def correlate_observations(observations: Sequence[Dict[str, Any]],
     for obs in observations:
         anchor = obs.get("entity_id")
         muni = _municipality(obs)
-        if not isinstance(anchor, str) or not muni:
+        if not isinstance(anchor, str) or not muni or anchor not in entity_ids:
             continue
         for ent in by_muni.get(muni, []):
             if ent["entity_id"] == anchor or not _disjoint(obs, ent):

@@ -54,18 +54,27 @@ def _corridor(row: Dict[str, Any]) -> str:
     return "unassigned"
 
 
-def _producer(row: Dict[str, Any]) -> str:
+def _producers(row: Dict[str, Any]) -> List[str]:
+    """Every producer that contributed the row (aggregate stamps ``_producers``).
+
+    One record is emitted per producer so a row corroborated by two producers in
+    the same corridor/time window yields a cross-repo correlation instead of
+    collapsing to a single repo. ``correlate_cross_repo_anomalies`` needs >= 2
+    distinct producers in a bucket to emit an edge, so preserving the full set is
+    what makes multi-producer corroboration visible. Seasonality groups by
+    corridor/domain/time (not producer), so the per-producer fan-out does not
+    distort it."""
     producers = row.get("_producers")
     if isinstance(producers, list) and producers:
-        return str(sorted(producers)[0])
-    return "unknown"
+        return sorted(str(p) for p in producers)
+    return ["unknown"]
 
 
 def aggregate_to_analytics_records(aggregate_dir: str | Path) -> List[Dict[str, Any]]:
     """Build Federation Analytics v2 input records from a Hub aggregate directory.
 
-    Deterministic: streams are read in a fixed order and rows are emitted in file
-    order, so the same aggregate yields byte-identical records."""
+    Deterministic: streams are read in a fixed order, rows in file order, and
+    producers sorted, so the same aggregate yields byte-identical records."""
     agg = Path(aggregate_dir)
     records: List[Dict[str, Any]] = []
     for stream, domain in _EVENT_STREAMS.items():
@@ -74,12 +83,15 @@ def aggregate_to_analytics_records(aggregate_dir: str | Path) -> List[Dict[str, 
             if not observed_at:
                 continue
             conf = row.get("confidence")
-            records.append({
-                "observed_at": observed_at,
-                "corridor_id": _corridor(row),
-                "domain": domain,
-                "event_count": 1,
-                "producer": _producer(row),
-                "anomaly_score": float(conf) if isinstance(conf, (int, float)) else 0.5,
-            })
+            score = float(conf) if isinstance(conf, (int, float)) else 0.5
+            corridor = _corridor(row)
+            for producer in _producers(row):
+                records.append({
+                    "observed_at": observed_at,
+                    "corridor_id": corridor,
+                    "domain": domain,
+                    "event_count": 1,
+                    "producer": producer,
+                    "anomaly_score": score,
+                })
     return records

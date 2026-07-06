@@ -89,6 +89,19 @@ def test_records_feed_analytics_payload(tmp_path):
     assert payload["cross_repo_correlation_count"] >= 1
 
 
+def test_shared_row_fans_out_one_record_per_producer(tmp_path):
+    # A single aggregated observation corroborated by two producers must yield one
+    # record per producer, so the cross-repo correlator sees both repos.
+    shared = _observation("obs_" + "a" * 32, "San Juan",
+                          producers=["skywatcher-pr", "spiderweb-pr"])
+    _write_jsonl(tmp_path / "observations.jsonl", [shared])
+    records = aggregate_to_analytics_records(tmp_path)
+    assert len(records) == 2
+    assert sorted(r["producer"] for r in records) == ["skywatcher-pr", "spiderweb-pr"]
+    payload = build_federation_analytics_v2_payload(records, records)
+    assert payload["cross_repo_correlation_count"] >= 1
+
+
 def test_adapter_is_deterministic(tmp_path):
     _write_jsonl(tmp_path / "observations.jsonl", [
         _observation("obs_" + "a" * 32, "San Juan", producers=["skywatcher-pr"]),
