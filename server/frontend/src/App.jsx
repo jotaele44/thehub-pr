@@ -28,6 +28,7 @@ import FederationCrossoverWorkspace from '@/pages/FederationCrossoverWorkspace';
 import AnomalyOverlap from '@/pages/AnomalyOverlap';
 import ControlLedgers from '@/pages/ControlLedgers';
 import Hub from '@/pages/Hub';
+import RecentActivity from '@/pages/RecentActivity';
 import ResearchAssistant from '@/pages/ResearchAssistant';
 import Dictionary from '@/pages/Dictionary';
 
@@ -58,7 +59,8 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        <Route path="/" element={<Hub />} />
+        <Route path="/" element={<RecentActivity />} />
+        <Route path="/activity" element={<RecentActivity />} />
         <Route path="/programs" element={<Programs />} />
         <Route path="/cases" element={<Cases />} />
         <Route path="/sources" element={<Sources />} />

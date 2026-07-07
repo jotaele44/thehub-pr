@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { MODULES, domainAccent } from "@/lib/federation";
 import {
-  Hexagon, Network, Radar, Droplets, Banknote, Plane,
+  Hexagon, Network, Radar, Droplets, Banknote, Plane, Activity,
 } from "lucide-react";
 
 const MODULE_ICONS = {
@@ -14,8 +14,10 @@ const MODULE_ICONS = {
   "Skywatcher-PR": Plane,
 };
 
+// Recent Activity = the landing page: recent risk activity grouped per program.
+const ACTIVITY = { name: "Recent Activity", path: "/", domain: "ControlPlane", icon: Activity };
 // Hub = 6th module: parent control plane + all federation & crossover surfaces.
-const HUB = { name: "Hub", path: "/", domain: "ControlPlane", icon: Hexagon };
+const HUB = { name: "Hub", path: "/hub", domain: "ControlPlane", icon: Hexagon };
 
 function NavItem({ item, active, accentDot }) {
   const Icon = item.icon;
@@ -56,8 +58,12 @@ export default function Sidebar() {
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/60">Modules</div>
         <NavItem
+          item={{ label: ACTIVITY.name, path: ACTIVITY.path, icon: ACTIVITY.icon }}
+          active={pathname === "/" || pathname.startsWith("/activity")}
+        />
+        <NavItem
           item={{ label: HUB.name, path: HUB.path, icon: HUB.icon }}
-          active={pathname === "/" || pathname.startsWith("/hub")}
+          active={pathname.startsWith("/hub")}
           accentDot={domainAccent(HUB.domain).dot}
         />
         {MODULES.map((m) => {

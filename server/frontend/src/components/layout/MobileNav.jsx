@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MODULES, domainAccent } from "@/lib/federation";
 
-const HUB = { name: "Hub", path: "/", domain: "ControlPlane" };
+const ACTIVITY = { name: "Recent Activity", path: "/", domain: "ControlPlane" };
+const HUB = { name: "Hub", path: "/hub", domain: "ControlPlane" };
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -26,8 +27,13 @@ export default function MobileNav() {
         <SheetContent side="left" className="w-72 bg-sidebar border-sidebar-border p-0">
           <nav className="px-3 py-5 space-y-1 overflow-y-auto h-full">
             <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/60">Modules</div>
+            <Link to={ACTIVITY.path} onClick={() => setOpen(false)}
+              className={cn("flex items-center gap-2 px-3 py-2 rounded-lg text-sm", (pathname === "/" || pathname.startsWith("/activity")) ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "text-sidebar-foreground")}>
+              <Activity className="h-4 w-4" />
+              {ACTIVITY.name}
+            </Link>
             <Link to={HUB.path} onClick={() => setOpen(false)}
-              className={cn("flex items-center gap-2 px-3 py-2 rounded-lg text-sm", (pathname === "/" || pathname.startsWith("/hub")) ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "text-sidebar-foreground")}>
+              className={cn("flex items-center gap-2 px-3 py-2 rounded-lg text-sm", pathname.startsWith("/hub") ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "text-sidebar-foreground")}>
               <span className={cn("h-2 w-2 rounded-full", domainAccent(HUB.domain).dot)} />
               {HUB.name}
             </Link>
