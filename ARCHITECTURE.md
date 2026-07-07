@@ -64,3 +64,11 @@ collapses to one aggregated row whose `_producers` list records every contributo
 already-published exports. `ready_for_hub_live_execution` (running the producer's
 `hub_callable_commands` against live sources) is a stricter gate, typically blocked until manual
 sources are materialized and runtime keys are supplied.
+
+## Decision records
+
+Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
+
+- [ADR 0001 — Federated engines, one hub app](docs/adr/0001-federated-engines-single-hub.md):
+  keep the six producers independent as engines and consolidate the final product into the
+  single `thehub-pr` app, rather than merging the repositories into a monorepo.
