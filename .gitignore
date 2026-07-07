@@ -236,3 +236,8 @@ server/frontend/node_modules/
 server/frontend/export-standalone/
 server/frontend/.env.local
 server/frontend/dist/
+
+# The Python `lib/` rule above (build artifacts) unintentionally matches the
+# frontend's client-logic layer. That is source, not a build dir — keep it.
+!server/frontend/src/lib/
+!server/frontend/src/lib/**

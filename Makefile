@@ -1,4 +1,4 @@
-.PHONY: setup test list validate-cs aggregate clean lock smoke-fetch
+.PHONY: setup test list validate-cs aggregate ingest clean lock smoke-fetch
 
 PY ?= python3
 
@@ -18,6 +18,10 @@ validate-cs:
 # Aggregate any producer export packages found under the parent workspace.
 aggregate:
 	$(PY) -m hub aggregate --root .. --out data/aggregate
+
+# Load the aggregate into the server entity store the frontend reads.
+ingest:
+	$(PY) -m hub ingest --in data/aggregate --db data/hub.db
 
 clean:
 	rm -rf data/aggregate/*.jsonl data/aggregate/graph_summary.json

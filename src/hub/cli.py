@@ -7,6 +7,7 @@
     hub fetch [--root ws] [--run]    clone/refresh producers (optionally export)
     hub aggregate [--root .]         discover + aggregate producer packages
     hub correlate [--in d --out d]   derive cross-producer correlation relationships
+    hub ingest [--in d --db f]       load an aggregate into the server entity store
     hub analytics-v2 [--in d]        build Federation Analytics v2 from an aggregate
     hub consume-sensor-fusion <p>    validate skywatcher sensor-fusion export -> dashboard
     hub maintenance [--root ..]      roll up producer maintenance reports + gate
@@ -27,6 +28,7 @@ from .federation_analytics_v2 import build_federation_analytics_v2_payload
 from .federation_status import validate_federation
 from .fetch import fetch_all
 from .graph_report import graph_report
+from .ingest import ingest_aggregate
 from .maintenance import build_rollup
 from .manifest import load_and_validate_manifest
 from .registry import load_registry
@@ -80,6 +82,10 @@ def _build_parser() -> argparse.ArgumentParser:
     cp.add_argument("--out", default="data/aggregate", help="dir to write correlations.jsonl")
     cp.add_argument("--window-days", type=int, default=7, help="temporal-proximity window")
     cp.add_argument("--threshold-km", type=float, default=1.0, help="spatial-proximity threshold")
+
+    ig = sub.add_parser("ingest", help="load an aggregate into the server entity store (data/hub.db)")
+    ig.add_argument("--in", dest="in_dir", default="data/aggregate", help="aggregate dir to read")
+    ig.add_argument("--db", default="data/hub.db", help="SQLite entity store the server reads")
 
     gr = sub.add_parser("graph-report", help="quality report for an aggregate directory")
     gr.add_argument("--in", dest="in_dir", default="data/aggregate", help="aggregate dir to read")
@@ -203,6 +209,18 @@ def main(argv: Optional[List[str]] = None) -> int:
         )
         print(f"wrote {summary['correlations']} correlation(s) -> {args.out}/correlations.jsonl")
         print(json.dumps(summary["by_type"], indent=2, sort_keys=True))
+        return 0
+
+    if args.cmd == "ingest":
+        summary = ingest_aggregate(args.in_dir, args.db)
+        if not summary["total"]:
+            print(f"no aggregate streams found under {args.in_dir!r} — nothing to ingest")
+            return 1
+        print(f"ingested {summary['total']} row(s) from {args.in_dir!r} -> {summary['db']}")
+        print(json.dumps(summary["collections"], indent=2, sort_keys=True))
+        if summary["skipped"]:
+            print("rows skipped (missing canonical id):",
+                  json.dumps(summary["skipped"], sort_keys=True))
         return 0
 
     if args.cmd == "wrap-bridge":
