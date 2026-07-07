@@ -1,7 +1,7 @@
 // Configuration for the Federation Crossover Workspace: module vocabulary,
 // pair enumeration, and chip color maps.
 
-// Modules that can appear on either side of a crossover (Hub + 5 producers).
+// Modules that can appear on either side of a crossover (Hub + 6 producers).
 export const CROSSOVER_MODULES = [
   "Hub",
   "Spiderweb-PR",
@@ -9,6 +9,7 @@ export const CROSSOVER_MODULES = [
   "AguaYLuz-PR",
   "MoneySweep-PR",
   "Skywatcher-PR",
+  "Centinelas-PR",
 ];
 
 export const MODULE_SHORT = {
@@ -18,6 +19,7 @@ export const MODULE_SHORT = {
   "AguaYLuz-PR": "Agua",
   "MoneySweep-PR": "Money",
   "Skywatcher-PR": "Sky",
+  "Centinelas-PR": "Cent",
 };
 
 // Order-insensitive key for a module pair.
@@ -61,6 +63,7 @@ export const MODULE_CHIP = {
   "AguaYLuz-PR": TEAL,
   "MoneySweep-PR": GREEN,
   "Skywatcher-PR": BLUE,
+  "Centinelas-PR": ORANGE,
 };
 
 export const CROSSOVER_STATUS_CHIP = {

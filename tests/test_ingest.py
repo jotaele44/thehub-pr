@@ -125,6 +125,53 @@ def test_ingest_skips_rows_missing_canonical_id(tmp_path):
     assert set(_rows(db, "Entities")) == {good_id}
 
 
+def test_ingest_projects_crossover_links(tmp_path):
+    """correlations.jsonl -> the workspace's explicit CrossoverLinks collection.
+
+    Covers the reshape (module/type/band mapping) and the curation: entity-name
+    links are always kept; spatial links collapse to the nearest cross-producer
+    match per minority-producer entity.
+    """
+    agg = tmp_path / "agg"
+    agg.mkdir()
+    ents = [
+        {"entity_id": "ent_agua1", "name": "Ceiba WTP", "_producers": ["aguayluz-pr"]},
+        {"entity_id": "ent_ovni1", "name": "Ceiba sighting", "_producers": ["ovnis-pr"]},
+        {"entity_id": "ent_ovni2", "name": "Ceiba sighting B", "_producers": ["ovnis-pr"]},
+    ]
+    (agg / "entities.jsonl").write_text("\n".join(json.dumps(e) for e in ents) + "\n")
+    corrs = [
+        # two spatial links to the SAME minority (ovnis) entity -> keep higher confidence
+        {"relationship_id": "rel_s1", "source_entity_id": "ent_agua1", "target_entity_id": "ent_ovni1",
+         "relationship_type": "spatial_proximity", "match_basis": "location", "confidence": 0.9,
+         "explanation": "within 0.1 km"},
+        {"relationship_id": "rel_s2", "source_entity_id": "ent_agua1", "target_entity_id": "ent_ovni1",
+         "relationship_type": "spatial_proximity", "match_basis": "location", "confidence": 0.5,
+         "explanation": "within 0.5 km"},
+        # entity-name correlation -> always kept
+        {"relationship_id": "rel_e1", "source_entity_id": "ent_agua1", "target_entity_id": "ent_ovni2",
+         "relationship_type": "entity_correlation", "match_basis": "normalized_name", "confidence": 0.5,
+         "explanation": "shared name"},
+    ]
+    (agg / "correlations.jsonl").write_text("\n".join(json.dumps(c) for c in corrs) + "\n")
+
+    db = tmp_path / "hub.db"
+    summary = ingest_aggregate(agg, db)
+
+    xlinks = _rows(db, "CrossoverLinks")
+    assert summary["collections"]["CrossoverLinks"] == 2
+    assert set(xlinks) == {"rel_s1", "rel_e1"}  # rel_s2 collapsed into rel_s1 (same ovnis entity)
+
+    s1 = xlinks["rel_s1"]
+    assert s1["source_module"] == "AguaYLuz-PR"      # from _producers -> CROSSOVER_MODULES string
+    assert s1["target_module"] == "Ovnis-PR"
+    assert s1["correlation_type"] == "Geography"     # spatial_proximity -> Geography
+    assert s1["confidence_score"] == 90 and s1["confidence_band"] == "High"
+    assert s1["status"] == "Candidate"
+    assert s1["source_label"] == "Ceiba WTP"         # entity name resolved
+    assert xlinks["rel_e1"]["correlation_type"] == "Entity"  # entity_correlation -> Entity
+
+
 def test_ingest_empty_dir_returns_zero(tmp_path):
     agg = tmp_path / "empty"
     agg.mkdir()

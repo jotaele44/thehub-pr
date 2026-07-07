@@ -33,7 +33,7 @@ import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 from ._schemas import STREAM_ID_FIELD
 
@@ -67,6 +67,100 @@ _ID_FIELD: Dict[str, str] = {**STREAM_ID_FIELD, "correlations": "relationship_id
 # graph_summary.json lands as a single row in this collection (Dashboard counts).
 _SUMMARY_COLLECTION = "FederationSummary"
 _SUMMARY_ID = "graph_summary"
+
+# ── Phase 2: frontend-facing CrossoverLinks projection ────────────────────────
+# The Crossover Workspace (server/frontend/src/lib/crossover.js) is explicit-only:
+# it renders the "CrossoverLinks" collection. Phase 1 above loads the canonical
+# `correlations` stream verbatim into "Correlations"; this projects those rows
+# into the workspace's display shape and curates the volume so the frontend's
+# bounded page (useEntityData caps at _CROSSOVER_CAP) shows the strongest links.
+_CROSSOVER_COLLECTION = "CrossoverLinks"
+_CROSSOVER_CAP = 500
+
+# producer program_id -> crossover-config.js CROSSOVER_MODULES string.
+_PRODUCER_MODULE: Dict[str, str] = {
+    "aguayluz-pr": "AguaYLuz-PR", "ovnis-pr": "Ovnis-PR", "moneysweep-pr": "MoneySweep-PR",
+    "spiderweb-pr": "Spiderweb-PR", "skywatcher-pr": "Skywatcher-PR", "centinelas-pr": "Centinelas-PR",
+}
+# correlate relationship_type -> crossover-config.js correlation_type.
+_CROSSOVER_TYPE: Dict[str, str] = {
+    "spatial_proximity": "Geography", "spatial_correlation": "Geography",
+    "temporal_proximity": "Temporal", "temporal_correlation": "Temporal",
+    "entity_correlation": "Entity",
+}
+# aguayluz is the dense side we collapse AGAINST; spatial links dedupe to the
+# nearest cross-producer match per one of these (minority) entities, otherwise
+# municipality-centroid geocoding explodes them (one case ~ thousands of assets).
+_MINORITY_PRODUCERS = {"ovnis-pr", "spiderweb-pr", "skywatcher-pr", "centinelas-pr", "moneysweep-pr"}
+
+
+def _first_producer(entity: Dict[str, Any]) -> str:
+    ps = entity.get("_producers") or []
+    return str(ps[0]) if ps else ""
+
+
+def _crossover_band(score: float) -> str:
+    return "High" if score >= 70 else "Medium" if score >= 40 else "Low"
+
+
+def project_crossover_links(aggregate_dir: str | Path) -> List[Tuple[str, Dict[str, Any]]]:
+    """Reshape ``correlations.jsonl`` into the explicit CrossoverLinks the workspace reads.
+
+    Curation: keep every entity-name correlation; collapse spatial/temporal links
+    to the single nearest cross-producer match per minority-producer entity; cap
+    the total to ``_CROSSOVER_CAP`` by descending confidence. Returns
+    ``(crossover_id, payload)`` pairs; empty if there is no correlations stream.
+    """
+    agg = Path(aggregate_dir)
+    corr_path = agg / "correlations.jsonl"
+    if not corr_path.exists():
+        return []
+    ent_path = agg / "entities.jsonl"
+    ents = {e["entity_id"]: e for e in _read_jsonl(ent_path)} if ent_path.exists() else {}
+
+    name_links: List[Dict[str, Any]] = []
+    spatial_best: Dict[str, Dict[str, Any]] = {}
+    for r in _read_jsonl(corr_path):
+        if r.get("relationship_type") == "entity_correlation":
+            name_links.append(r)
+            continue
+        a, b = r.get("source_entity_id"), r.get("target_entity_id")
+        key = a if _first_producer(ents.get(a, {})) in _MINORITY_PRODUCERS else b
+        conf = r.get("confidence") or 0
+        if key is not None and (key not in spatial_best or conf > (spatial_best[key].get("confidence") or 0)):
+            spatial_best[key] = r
+
+    curated = name_links + list(spatial_best.values())
+    curated.sort(key=lambda r: r.get("confidence") or 0, reverse=True)
+
+    out: List[Tuple[str, Dict[str, Any]]] = []
+    for r in curated[:_CROSSOVER_CAP]:
+        a = ents.get(r.get("source_entity_id"), {})
+        b = ents.get(r.get("target_entity_id"), {})
+        score = round((r.get("confidence") or 0) * 100)
+        sm = _PRODUCER_MODULE.get(_first_producer(a), "Hub")
+        tm = _PRODUCER_MODULE.get(_first_producer(b), "Hub")
+        cid = r.get("relationship_id") or f"xover_{r.get('source_entity_id')}_{r.get('target_entity_id')}"
+        basis = r.get("match_basis")
+        out.append((cid, {
+            "crossover_id": cid,
+            "source_module": sm, "target_module": tm,
+            "source_record_id": r.get("source_entity_id"),
+            "target_record_id": r.get("target_entity_id"),
+            "source_label": a.get("name") or r.get("source_entity_id"),
+            "target_label": b.get("name") or r.get("target_entity_id"),
+            "related_modules": sorted({sm, tm}),
+            "correlation_type": _CROSSOVER_TYPE.get(r.get("relationship_type") or "", "Other"),
+            "status": "Candidate",
+            "confidence_score": score,
+            "confidence_band": _crossover_band(score),
+            "rationale": r.get("explanation", ""),
+            "matching_criteria": [basis] if basis else [],
+            "source_ids": [],
+            "evidence_tier": None,
+            "created_from": "hub correlate",
+        }))
+    return out
 
 
 def _now() -> str:
@@ -150,6 +244,13 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
             payload = json.loads(summary_path.read_text(encoding="utf-8"))
             _upsert(conn, _SUMMARY_COLLECTION, _SUMMARY_ID, payload, ts)
             collections[_SUMMARY_COLLECTION] = 1
+
+        # Phase 2: project correlations into the workspace's explicit CrossoverLinks.
+        xlinks = project_crossover_links(agg)
+        for cid, payload in xlinks:
+            _upsert(conn, _CROSSOVER_COLLECTION, cid, payload, ts)
+        if xlinks:
+            collections[_CROSSOVER_COLLECTION] = len(xlinks)
 
         conn.commit()
     finally:
