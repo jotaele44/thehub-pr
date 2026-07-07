@@ -1,44 +1,25 @@
-// Leadership case-brief PDF template library.
-// Each template controls layout density, accent color, and which sections are
-// rendered. Neutral analytical language is preserved across all styles.
+// Output styles for the case-brief PDF generator.
 
 export const BRIEF_TEMPLATES = {
+  standard: {
+    id: "standard",
+    label: "Standard Brief",
+    description: "Full case brief: summary, metadata, linked sources with evidence tiers, and anomaly flags.",
+    sections: ["summary", "metadata", "sources", "anomalies"],
+  },
   executive: {
     id: "executive",
     label: "Executive Summary",
-    description: "One-page leadership snapshot: header, confidence, validation bar, summary.",
-    accent: [37, 99, 235], // blue-600
-    headerTitle: "INTSYS-PR Federation — Executive Case Brief",
-    titleSize: 18,
-    sections: { confidence: true, validation: true, summary: true, anomalies: false },
-    summaryMaxLines: 8,
+    description: "One-page leadership view: public summary and key metadata only.",
+    sections: ["summary", "metadata"],
   },
-  detailed: {
-    id: "detailed",
-    label: "Detailed Analytical",
-    description: "Full brief with validation stages, evidence tiers, and related anomaly flags.",
-    accent: [124, 58, 237], // violet-600
-    headerTitle: "INTSYS-PR Federation — Detailed Case Brief",
-    titleSize: 16,
-    sections: { confidence: true, validation: true, summary: true, anomalies: true },
-    summaryMaxLines: 999,
-  },
-  minimal: {
-    id: "minimal",
-    label: "Minimal / Print",
-    description: "Compact monochrome layout: title, status line, and summary only.",
-    accent: [71, 85, 105], // slate-600
-    headerTitle: "INTSYS-PR — Case Brief",
-    titleSize: 15,
-    sections: { confidence: true, validation: false, summary: true, anomalies: false },
-    summaryMaxLines: 999,
+  evidence: {
+    id: "evidence",
+    label: "Evidence Annex",
+    description: "Source-focused annex: every linked source with tier, reliability, and verification status.",
+    sections: ["metadata", "sources"],
   },
 };
 
 export const BRIEF_TEMPLATE_LIST = Object.values(BRIEF_TEMPLATES);
-
-export const DEFAULT_TEMPLATE_ID = "detailed";
-
-export function getBriefTemplate(id) {
-  return BRIEF_TEMPLATES[id] || BRIEF_TEMPLATES[DEFAULT_TEMPLATE_ID];
-}
+export const DEFAULT_TEMPLATE_ID = "standard";

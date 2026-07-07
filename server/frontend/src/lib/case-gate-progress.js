@@ -1,45 +1,51 @@
-// Pure logic: derive a case's movement through validation stages from its
-// own status and the evidence tiers / verification of its linked sources.
-// No conclusions are hard-coded — stages reflect review progression only.
+// Case validation-stage progress derived from a case row + the UnifiedSources
+// ledger. Consumed by CaseGateTracker; returns
+// { stageIndex, percent, label, bestTier, verifiedCount, sourceCount, blocked }.
 
-// Ordered validation stages a case moves through.
 export const CASE_STAGES = [
-  { key: "Intake", label: "Intake" },
-  { key: "SourcesLinked", label: "Sources Linked" },
-  { key: "EvidenceTiered", label: "Evidence Tiered" },
-  { key: "Verified", label: "Verified" },
-  { key: "Resolved", label: "Resolved" },
+  { key: "new", label: "New" },
+  { key: "sourced", label: "Sourced" },
+  { key: "reviewing", label: "Reviewing" },
+  { key: "verified", label: "Verified" },
+  { key: "corroborated", label: "Corroborated" },
 ];
 
-const TIER_RANK = { T4: 1, T3: 2, T2: 3, T1: 4 };
+const unwrap = (row) => (row && row.data ? { ...row.data, id: row.id ?? row.data.id } : row);
 
-// Returns { stageIndex, percent, label, bestTier, verifiedCount, sourceCount, blocked }
-export function getCaseGateProgress(caseRow, allSources) {
-  const sources = (allSources || []).filter((s) => s.linked_case_id === caseRow.case_id);
-  const sourceCount = sources.length;
+const TIER_RANK = { T1: 1, T2: 2, T3: 3, T4: 4 };
 
-  const verifiedCount = sources.filter((s) => s.verification_status === "Verified").length;
-  const tiers = sources.map((s) => s.evidence_tier).filter(Boolean);
-  const bestTier = tiers.sort((a, b) => (TIER_RANK[b] || 0) - (TIER_RANK[a] || 0))[0] || null;
+const sourcesForCase = (caseRow, sources = []) => {
+  const ids = new Set(
+    [caseRow?.case_id, caseRow?.case_code, caseRow?.id].filter(Boolean).map(String)
+  );
+  return sources.map(unwrap).filter((s) => {
+    const ref = s?.case_id || s?.linked_case_id || s?.related_case_id;
+    return ref && ids.has(String(ref));
+  });
+};
 
-  // A case is blocked/contradicted — surfaced, never advanced.
-  const blocked = caseRow.status === "Contradicted";
+export function getCaseGateProgress(caseRow, sources = []) {
+  const linked = sourcesForCase(caseRow, sources);
+  const sourceCount = linked.length;
+  const verifiedCount = linked.filter((s) => s.verification_status === "Verified").length;
 
-  let stageIndex = 0; // Intake
-  if (sourceCount > 0) stageIndex = 1; // SourcesLinked
-  if (bestTier && (TIER_RANK[bestTier] || 0) >= 3) stageIndex = 2; // EvidenceTiered (T2+)
-  if (verifiedCount > 0) stageIndex = 3; // Verified
-  if (caseRow.status === "Corroborated" || caseRow.status === "Archived") stageIndex = 4; // Resolved
+  let bestTier = null;
+  for (const s of linked) {
+    const t = s.evidence_tier;
+    if (t && TIER_RANK[t] && (!bestTier || TIER_RANK[t] < TIER_RANK[bestTier])) bestTier = t;
+  }
 
-  const percent = Math.round((stageIndex / (CASE_STAGES.length - 1)) * 100);
+  const status = caseRow?.status || "New";
+  const blocked = status === "Contradicted";
 
-  return {
-    stageIndex,
-    percent,
-    label: CASE_STAGES[stageIndex].label,
-    bestTier,
-    verifiedCount,
-    sourceCount,
-    blocked,
-  };
+  let stageIndex = 0;
+  if (status === "Corroborated" || status === "Archived") stageIndex = 4;
+  else if (verifiedCount > 0) stageIndex = 3;
+  else if (status === "Reviewing") stageIndex = 2;
+  else if (sourceCount > 0) stageIndex = 1;
+
+  const percent = blocked ? 0 : Math.round((stageIndex / (CASE_STAGES.length - 1)) * 100);
+  const label = CASE_STAGES[stageIndex].label;
+
+  return { stageIndex, percent, label, bestTier, verifiedCount, sourceCount, blocked };
 }

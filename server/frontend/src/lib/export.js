@@ -1,67 +1,77 @@
-import { HUB_REPO } from "@/lib/federation";
+// Provenance-preserving client-side export helpers (CSV + GeoJSON).
 
-// Generic, provenance-preserving export utilities for federation ledgers.
-// All exports inject source_repo = thehub-pr and keep IDs, module, evidence tier,
-// confidence, and review status when those fields exist on the record.
+const unwrap = (row) => (row && row.data ? { ...row.data, id: row.id ?? row.data.id } : row);
 
-const esc = (v) => {
-  if (v === null || v === undefined) return "";
-  const s = Array.isArray(v) ? v.join("; ") : String(v);
-  return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+const csvEscape = (value) => {
+  if (value === undefined || value === null) return "";
+  let s = value;
+  if (typeof s === "object") s = JSON.stringify(s);
+  s = String(s);
+  if (/[",\n\r]/.test(s)) s = `"${s.replace(/"/g, '""')}"`;
+  return s;
 };
 
-function download(content, fileName, mime) {
-  const blob = new Blob([content], { type: mime });
+export function toCsv(rows, columns) {
+  const records = rows.map(unwrap);
+  const cols = columns && columns.length
+    ? columns
+    : Array.from(records.reduce((set, r) => {
+        Object.keys(r || {}).forEach((k) => set.add(k));
+        return set;
+      }, new Set()));
+  const header = cols.map(csvEscape).join(",");
+  const lines = records.map((r) => cols.map((c) => csvEscape(r?.[c])).join(","));
+  return [header, ...lines].join("\n");
+}
+
+export function downloadFile(content, fileName, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = fileName;
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
 
-const stamp = () => new Date().toISOString().slice(0, 10);
+const num = (v) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : null;
+};
 
-// Build a flat row from an entity record (data lives at top level after .list()).
-const flatten = (rec) => ({ ...(rec.data || rec), id: rec.id || rec.data?.id });
+const hasGeo = (r) => num(r?.latitude) !== null && num(r?.longitude) !== null;
 
-// CSV export. `columns` is an ordered array of field keys. source_repo is always appended.
-export function exportLedgerCsv(records, { columns, fileNameBase, module }) {
-  const cols = columns.includes("source_repo") ? columns : [...columns, "source_repo"];
-  const rows = records.map(flatten);
-  const header = cols.join(",");
-  const body = rows
-    .map((r) => cols.map((c) => esc(c === "source_repo" ? (r.source_repo || HUB_REPO) : r[c])).join(","))
-    .join("\n");
-  const fileName = `${fileNameBase}-${stamp()}.csv`;
-  download(`${header}\n${body}`, fileName, "text/csv;charset=utf-8;");
-  return { fileName, count: rows.length, module };
+// Count of records that carry a mappable latitude/longitude pair.
+export function geoCount(records = []) {
+  return records.map(unwrap).filter(hasGeo).length;
 }
 
-// GeoJSON export for geospatial ledgers. Only records with numeric lat/long are emitted.
-// All non-geometry fields are preserved as feature properties (provenance-safe).
-export function exportLedgerGeoJson(records, { fileNameBase, module }) {
-  const rows = records.map(flatten);
-  const features = rows
-    .filter((r) => typeof r.latitude === "number" && typeof r.longitude === "number")
-    .map((r) => {
-      const { latitude, longitude, ...props } = r;
+// Export a ledger to CSV; returns { fileName, count } for the audit trail.
+export function exportLedgerCsv(records = [], { columns, fileNameBase = "ledger" } = {}) {
+  const rows = records.map(unwrap);
+  const fileName = `${fileNameBase}-${new Date().toISOString().slice(0, 10)}.csv`;
+  downloadFile(toCsv(rows, columns), fileName, "text/csv;charset=utf-8");
+  return { fileName, count: rows.length };
+}
+
+// Export mappable rows of a ledger as a GeoJSON FeatureCollection;
+// returns { fileName, count } for the audit trail.
+export function exportLedgerGeoJson(records = [], { fileNameBase = "ledger", module } = {}) {
+  const rows = records.map(unwrap).filter(hasGeo);
+  const collection = {
+    type: "FeatureCollection",
+    features: rows.map((r) => {
+      const { latitude, longitude, ...properties } = r;
       return {
         type: "Feature",
-        geometry: { type: "Point", coordinates: [longitude, latitude] },
-        properties: { ...props, source_repo: props.source_repo || HUB_REPO },
+        geometry: { type: "Point", coordinates: [num(longitude), num(latitude)] },
+        properties: { ...properties, module: module || properties.module },
       };
-    });
-  const fc = {
-    type: "FeatureCollection",
-    metadata: { module, source_repo: HUB_REPO, exported_at: new Date().toISOString(), feature_count: features.length },
-    features,
+    }),
   };
-  const fileName = `${fileNameBase}-${stamp()}.geojson`;
-  download(JSON.stringify(fc, null, 2), fileName, "application/geo+json;charset=utf-8;");
-  return { fileName, count: features.length, module };
+  const fileName = `${fileNameBase}-${new Date().toISOString().slice(0, 10)}.geojson`;
+  downloadFile(JSON.stringify(collection, null, 2), fileName, "application/geo+json");
+  return { fileName, count: rows.length };
 }
-
-// Count records that carry usable geometry.
-export const geoCount = (records) =>
-  records.map(flatten).filter((r) => typeof r.latitude === "number" && typeof r.longitude === "number").length;

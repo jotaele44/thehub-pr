@@ -45,7 +45,7 @@ const getAppParams = () => {
     }),
     token: getParamValue('access_token', { removeFromUrl: true }),
     fromUrl: getParamValue('from_url', { defaultValue: window.location.href }),
-    mode: import.meta.env.VITE_FEDERATION_MODE || 'diagnostic',
+    mode: import.meta.env.VITE_FEDERATION_MODE || 'control-plane',
     requireAuth: import.meta.env.VITE_FEDERATION_REQUIRE_AUTH === 'true',
   };
 };

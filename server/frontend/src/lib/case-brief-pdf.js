@@ -1,155 +1,123 @@
 import { jsPDF } from "jspdf";
-import { getCaseGateProgress, CASE_STAGES } from "@/lib/case-gate-progress";
-import { getBriefTemplate, DEFAULT_TEMPLATE_ID } from "@/lib/case-brief-templates";
+import { BRIEF_TEMPLATES, DEFAULT_TEMPLATE_ID } from "@/lib/case-brief-templates";
 
-// Leadership brief for a single case, rendered from a chosen template style.
-// Pulls: case summary, validation progress, current confidence, and (for
-// detailed templates) recent related AnomalyFlags.
-// Neutral analytical language only — anomalies presented as review items.
+const unwrap = (row) => (row && row.data ? { ...row.data, id: row.id ?? row.data.id } : row);
 
-// Recent anomalies related to a case via its linked sources' source_id.
-function relatedAnomalies(caseRow, allSources, allAnomalies) {
-  const sourceIds = (allSources || [])
-    .filter((s) => s.linked_case_id === caseRow.case_id)
-    .map((s) => s.source_id);
-  if (!sourceIds.length) return [];
-  return (allAnomalies || [])
-    .filter((a) => sourceIds.includes(a.source_id))
-    .slice(0, 8);
-}
+const matchesCase = (record, caseRow) => {
+  const ids = new Set([caseRow?.case_id, caseRow?.case_code, caseRow?.id].filter(Boolean).map(String));
+  const ref = record?.case_id || record?.linked_case_id || record?.related_case_id;
+  return ref && ids.has(String(ref));
+};
 
-export function generateCaseBriefPdf(caseRow, sources, anomalies, templateId = DEFAULT_TEMPLATE_ID) {
-  const tpl = getBriefTemplate(templateId);
-  const progress = getCaseGateProgress(caseRow, sources);
-  const doc = new jsPDF();
-  const M = 18;
-  const barW = 210 - M * 2;
-  const [aR, aG, aB] = tpl.accent;
-  let y = 20;
+// Generate and download a case-brief PDF for the given template id.
+export function generateCaseBriefPdf(caseRow, sources = [], anomalies = [], templateId = DEFAULT_TEMPLATE_ID) {
+  const template = BRIEF_TEMPLATES[templateId] || BRIEF_TEMPLATES[DEFAULT_TEMPLATE_ID];
+  const c = unwrap(caseRow) || {};
+  const linkedSources = sources.map(unwrap).filter((s) => matchesCase(s, c));
+  const linkedAnomalies = anomalies.map(unwrap).filter((a) => matchesCase(a, c));
+
+  const doc = new jsPDF({ unit: "pt", format: "letter" });
+  const margin = 48;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const maxWidth = pageWidth - margin * 2;
+  let y = margin;
+
+  const ensureRoom = (needed = 16) => {
+    if (y + needed > pageHeight - margin) {
+      doc.addPage();
+      y = margin;
+    }
+  };
+
+  const writeLines = (text, size = 10, style = "normal", gap = 4) => {
+    doc.setFont("helvetica", style);
+    doc.setFontSize(size);
+    const lines = doc.splitTextToSize(String(text ?? "—"), maxWidth);
+    for (const line of lines) {
+      ensureRoom(size + gap);
+      doc.text(line, margin, y);
+      y += size + gap;
+    }
+  };
+
+  const heading = (text) => {
+    y += 8;
+    writeLines(text, 12, "bold", 6);
+  };
 
   // Header
-  doc.setFontSize(9);
-  doc.setTextColor(aR, aG, aB);
-  doc.text(tpl.headerTitle, M, y);
-  doc.setTextColor(120);
-  doc.text(new Date().toLocaleString(), 210 - M, y, { align: "right" });
-  y += 8;
-  doc.setDrawColor(aR, aG, aB);
-  doc.line(M, y, 210 - M, y);
-  y += 10;
+  writeLines(`Case Brief — ${c.case_code || c.case_id || "Untitled Case"}`, 16, "bold", 8);
+  writeLines(`${template.label} · Generated ${new Date().toLocaleString()} · Source repo: thehub-pr`, 8, "normal", 10);
+  writeLines(c.title || "", 12, "bold", 8);
 
-  // Title block
-  doc.setFontSize(tpl.titleSize);
-  doc.setTextColor(20);
-  doc.text(caseRow.title || "Untitled Case", M, y);
-  y += 7;
-  doc.setFontSize(10);
-  doc.setTextColor(110);
-  doc.text(
-    `${caseRow.case_code || caseRow.case_id || "—"}  ·  ${caseRow.case_type || "—"}  ·  ${caseRow.municipality || "—"}`,
-    M, y
-  );
-  y += 6;
-  doc.text(`Status: ${caseRow.status || "—"}    Sensitivity: ${caseRow.sensitivity || "—"}`, M, y);
-  y += 12;
-
-  // Confidence
-  if (tpl.sections.confidence) {
-    doc.setFontSize(11);
-    doc.setTextColor(20);
-    doc.text("Current Confidence", M, y);
-    doc.setTextColor(110);
-    doc.text(`${caseRow.confidence || "Low"}`, M + 60, y);
-    y += 10;
+  if (template.sections.includes("summary")) {
+    heading("Public Summary");
+    writeLines(c.summary_public || c.summary || "No public summary recorded.");
   }
 
-  // Validation progress label + bar + stage markers
-  if (tpl.sections.validation) {
-    doc.setFontSize(11);
-    doc.setTextColor(20);
-    doc.text("Validation Progress", M, y);
-    doc.setTextColor(110);
-    doc.text(`${progress.blocked ? "Contradicted — review" : progress.label} (${progress.percent}%)`, M + 60, y);
-    y += 5;
-
-    const fill = progress.blocked ? 100 : progress.percent;
-    doc.setFillColor(230);
-    doc.roundedRect(M, y, barW, 4, 2, 2, "F");
-    if (progress.blocked) doc.setFillColor(245, 158, 11);
-    else if (progress.percent >= 100) doc.setFillColor(16, 185, 129);
-    else doc.setFillColor(aR, aG, aB);
-    doc.roundedRect(M, y, (barW * fill) / 100, 4, 2, 2, "F");
-    y += 9;
-
-    doc.setFontSize(8);
-    const stageW = barW / CASE_STAGES.length;
-    CASE_STAGES.forEach((s, i) => {
-      doc.setTextColor(i <= progress.stageIndex ? 60 : 170);
-      doc.text(s.label, M + stageW * i + stageW / 2, y, { align: "center" });
-    });
-    y += 6;
-    doc.setFontSize(9);
-    doc.setTextColor(110);
-    doc.text(`Evidence: best tier ${progress.bestTier || "—"} · ${progress.verifiedCount}/${progress.sourceCount} sources verified`, M, y);
-    y += 12;
+  if (template.sections.includes("metadata")) {
+    heading("Case Metadata");
+    const rows = [
+      ["Case ID", c.case_id],
+      ["Case Code", c.case_code],
+      ["Program", c.program_id],
+      ["Type", c.case_type],
+      ["Status", c.status],
+      ["Event Date", c.event_date],
+      ["Date Precision", c.date_precision],
+      ["Municipality", c.municipality],
+      ["Region", c.region],
+      ["Coordinates", (c.latitude || c.longitude) ? `${c.latitude ?? "—"}, ${c.longitude ?? "—"}` : null],
+      ["Confidence", c.confidence],
+      ["Sensitivity", c.sensitivity],
+    ];
+    for (const [label, value] of rows) {
+      if (value === undefined || value === null || value === "") continue;
+      writeLines(`${label}: ${value}`, 10, "normal", 4);
+    }
   }
 
-  // Public summary
-  if (tpl.sections.summary) {
-    doc.setFontSize(11);
-    doc.setTextColor(20);
-    doc.text("Summary", M, y);
-    y += 6;
-    doc.setFontSize(10);
-    doc.setTextColor(80);
-    const summary = caseRow.summary_public || "No public summary recorded.";
-    doc.splitTextToSize(summary, barW).slice(0, tpl.summaryMaxLines).forEach((line) => {
-      if (y > 270) { doc.addPage(); y = 20; }
-      doc.text(line, M, y);
-      y += 5;
-    });
-    y += 8;
-  }
-
-  // Recent related anomaly flags
-  if (tpl.sections.anomalies) {
-    const anoms = relatedAnomalies(caseRow, sources, anomalies);
-    doc.setFontSize(11);
-    doc.setTextColor(20);
-    if (y > 250) { doc.addPage(); y = 20; }
-    doc.text("Recent Related Anomaly Flags (review items)", M, y);
-    y += 6;
-    doc.setFontSize(9);
-    if (!anoms.length) {
-      doc.setTextColor(120);
-      doc.text("No related anomaly flags linked through this case's sources.", M, y);
-      y += 5;
+  if (template.sections.includes("sources")) {
+    heading(`Linked Sources (${linkedSources.length})`);
+    if (!linkedSources.length) {
+      writeLines("No sources linked to this case.");
     } else {
-      anoms.forEach((a) => {
-        if (y > 268) { doc.addPage(); y = 20; }
-        doc.setTextColor(40);
-        doc.text(`• ${a.flag_type} — Severity ${a.severity} · Confidence ${a.confidence} · ${a.review_status}`, M, y);
-        y += 5;
-        if (a.rationale) {
-          doc.setTextColor(110);
-          doc.splitTextToSize(a.rationale, barW - 6).slice(0, 2).forEach((line) => {
-            if (y > 272) { doc.addPage(); y = 20; }
-            doc.text(line, M + 4, y);
-            y += 4.5;
-          });
-        }
-        y += 2;
+      linkedSources.forEach((s, i) => {
+        writeLines(`${i + 1}. ${s.title || s.source_id || "Untitled source"}`, 10, "bold", 4);
+        const meta = [
+          s.evidence_tier && `Tier ${s.evidence_tier}`,
+          s.reliability && `Reliability: ${s.reliability}`,
+          s.verification_status && `Verification: ${s.verification_status}`,
+          s.sensitivity && `Sensitivity: ${s.sensitivity}`,
+        ].filter(Boolean).join(" · ");
+        if (meta) writeLines(meta, 9, "normal", 4);
+        if (s.url) writeLines(s.url, 8, "italic", 6);
       });
     }
   }
 
-  // Footer caveat
-  doc.setFontSize(8);
-  doc.setTextColor(150);
-  doc.text(
-    "Analytical brief. Items represent leads/observations under review, not conclusions. Source lineage preserved in INTSYS-PR.",
-    M, 285
-  );
+  if (template.sections.includes("anomalies")) {
+    heading(`Anomaly Flags (${linkedAnomalies.length})`);
+    if (!linkedAnomalies.length) {
+      writeLines("No anomaly flags linked to this case.");
+    } else {
+      linkedAnomalies.forEach((a, i) => {
+        writeLines(`${i + 1}. ${a.summary || a.anomaly_id || "Anomaly"}`, 10, "bold", 4);
+        const meta = [
+          a.severity && `Severity: ${a.severity}`,
+          a.confidence && `Confidence: ${a.confidence}`,
+          a.review_status && `Review: ${a.review_status}`,
+        ].filter(Boolean).join(" · ");
+        if (meta) writeLines(meta, 9, "normal", 6);
+      });
+    }
+  }
 
-  doc.save(`case-brief-${tpl.id}-${caseRow.case_code || caseRow.case_id || "record"}.pdf`);
+  y += 12;
+  writeLines("Provenance preserved · IDs, evidence tiers, and review status retained. Correlation ≠ causation.", 8, "italic", 4);
+
+  const fileName = `case-brief-${(c.case_code || c.case_id || "case").toString().toLowerCase().replace(/[^a-z0-9-]+/g, "-")}-${template.id}.pdf`;
+  doc.save(fileName);
+  return { fileName };
 }

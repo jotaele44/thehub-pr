@@ -241,3 +241,12 @@ server/frontend/dist/
 # frontend's client-logic layer. That is source, not a build dir — keep it.
 !server/frontend/src/lib/
 !server/frontend/src/lib/**
+
+# Desktop wrapper (see desktop/README.md)
+.venv/
+server/frontend/node_modules/
+server/frontend/export-standalone/
+desktop/.setup-complete
+!desktop/pyinstaller.spec
+dist-desktop/
+build/

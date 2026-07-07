@@ -1,60 +1,72 @@
-// Cross-module anomaly overlap comparison.
-// "Anomalies" here are anomaly-flagged UnifiedCases (high-confidence / under-review
-// records) which carry the geography (municipality + region) needed to compare
-// modules side-by-side. Each case_type maps to a federation module.
+// Side-by-side geographic overlap of cases from two federation modules.
+// Cases map to modules through their case_type; overlaps are grouped by shared
+// municipality first, then by shared region for cases without municipality.
 
-import { MODULES } from "@/lib/federation";
+export const MODULE_OPTIONS = [
+  "Spiderweb-PR",
+  "Ovnis-PR",
+  "AguaYLuz-PR",
+  "MoneySweep-PR",
+  "Skywatcher-PR",
+  "Hub",
+];
 
-// case_type -> module name. Multiple case types can route to the same module.
-export const CASE_TYPE_MODULE = {
-  UAP: "Ovnis-PR",
-  Infrastructure: "AguaYLuz-PR",
-  Contract: "MoneySweep-PR",
-  Airspace: "Skywatcher-PR",
-  Network: "Spiderweb-PR",
-  Control: "Spiderweb-PR",
-  Other: "Spiderweb-PR",
+const MODULE_CASE_TYPE = {
+  "Spiderweb-PR": "Network",
+  "Ovnis-PR": "UAP",
+  "AguaYLuz-PR": "Infrastructure",
+  "MoneySweep-PR": "Contract",
+  "Skywatcher-PR": "Airspace",
+  Hub: "Control",
 };
 
-export const moduleForCase = (c) => CASE_TYPE_MODULE[c?.case_type] || "Spiderweb-PR";
+const unwrap = (row) => (row && row.data ? { ...row.data, id: row.id ?? row.data.id } : row);
 
-export const MODULE_OPTIONS = MODULES.map((m) => m.name);
+const casesForModule = (cases, module) => {
+  const type = MODULE_CASE_TYPE[module];
+  return cases.filter((c) => c.case_type === type || c.module === module);
+};
 
-const norm = (v) => (v || "").trim().toLowerCase();
-
-// Cases that read as "anomalies" worth comparing: anything not already Archived.
-// We surface review-relevant records (New / Reviewing / Corroborated / Contradicted).
-export const isAnomalyCase = (c) => c?.status && c.status !== "Archived";
-
-export function casesForModule(cases, moduleName) {
-  return cases.filter((c) => isAnomalyCase(c) && moduleForCase(c) === moduleName);
-}
-
-// Build overlap groups: a municipality OR region shared by at least one case
-// from module A and one from module B.
-export function buildOverlaps(cases, moduleA, moduleB) {
+// Returns [{ kind: "Municipality"|"Region", label, a: [...cases], b: [...cases] }].
+export function buildOverlaps(cases = [], moduleA, moduleB) {
   if (!moduleA || !moduleB || moduleA === moduleB) return [];
-  const a = casesForModule(cases, moduleA);
-  const b = casesForModule(cases, moduleB);
+  const rows = cases.map(unwrap).filter(Boolean);
+  const aCases = casesForModule(rows, moduleA);
+  const bCases = casesForModule(rows, moduleB);
+  if (!aCases.length || !bCases.length) return [];
 
-  const groups = new Map(); // key -> { kind, label, a: [], b: [] }
+  const groups = [];
 
-  const addToGroup = (kind, rawLabel, side, item) => {
-    if (!rawLabel) return;
-    const key = `${kind}:${norm(rawLabel)}`;
-    if (!groups.has(key)) groups.set(key, { kind, label: rawLabel, a: [], b: [] });
-    groups.get(key)[side].push(item);
+  const groupBy = (kind, field) => {
+    const index = new Map();
+    const add = (side, c) => {
+      const raw = c[field];
+      if (!raw) return;
+      const label = String(raw).trim();
+      if (!label) return;
+      if (!index.has(label)) index.set(label, { kind, label, a: [], b: [] });
+      index.get(label)[side].push(c);
+    };
+    aCases.forEach((c) => add("a", c));
+    bCases.forEach((c) => add("b", c));
+    for (const group of index.values()) {
+      if (group.a.length && group.b.length) groups.push(group);
+    }
   };
 
-  a.forEach((c) => { addToGroup("Municipality", c.municipality, "a", c); addToGroup("Region", c.region, "a", c); });
-  b.forEach((c) => { addToGroup("Municipality", c.municipality, "b", c); addToGroup("Region", c.region, "b", c); });
+  groupBy("Municipality", "municipality");
+  groupBy("Region", "region");
 
-  // Keep only true overlaps (both sides present).
-  return Array.from(groups.values())
-    .filter((g) => g.a.length > 0 && g.b.length > 0)
-    // Municipality overlaps are more specific — show them first, then by total count.
-    .sort((x, y) => {
-      if (x.kind !== y.kind) return x.kind === "Municipality" ? -1 : 1;
-      return (y.a.length + y.b.length) - (x.a.length + x.b.length);
-    });
+  // A region group is redundant if every case in it already overlaps by municipality.
+  const seen = new Set();
+  const deduped = groups.filter((g) => {
+    if (g.kind !== "Region") {
+      g.a.concat(g.b).forEach((c) => seen.add(c.id));
+      return true;
+    }
+    const fresh = g.a.some((c) => !seen.has(c.id)) || g.b.some((c) => !seen.has(c.id));
+    return fresh;
+  });
+
+  return deduped.sort((x, y) => (y.a.length + y.b.length) - (x.a.length + x.b.length));
 }

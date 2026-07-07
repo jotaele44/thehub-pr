@@ -1,81 +1,180 @@
-// Centralized status chip color maps. Neutral analytical language only.
+// Shared status-chip color maps for the Federation control plane.
+// Each map keys a controlled vocabulary value to tailwind classes
+// (background / text / border). Rendered via <StatusChip map={...} value={...} />,
+// which resolves classes through chipClass(map, value).
 
-const C = {
-  gray: "bg-slate-500/15 text-slate-300 border-slate-500/30",
-  blue: "bg-blue-500/15 text-blue-300 border-blue-500/30",
-  green: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  yellow: "bg-yellow-500/15 text-yellow-300 border-yellow-500/30",
-  amber: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  red: "bg-red-500/15 text-red-300 border-red-500/30",
-  violet: "bg-violet-500/15 text-violet-300 border-violet-500/30",
-  teal: "bg-teal-500/15 text-teal-300 border-teal-500/30",
+const NEUTRAL = "bg-secondary text-muted-foreground border-border";
+
+// Resolve the chip classes for a value; falls back to a neutral chip so
+// unknown / legacy values still render instead of breaking the UI.
+export function chipClass(map, value) {
+  if (!map || value === undefined || value === null) return NEUTRAL;
+  return map[value] || map[String(value)] || NEUTRAL;
+}
+
+// --- Shared tone shortcuts -------------------------------------------------
+const BLUE = "bg-sky-500/15 text-sky-300 border-sky-500/30";
+const GREEN = "bg-emerald-500/15 text-emerald-300 border-emerald-500/30";
+const AMBER = "bg-amber-500/15 text-amber-300 border-amber-500/30";
+const RED = "bg-red-500/15 text-red-300 border-red-500/30";
+const VIOLET = "bg-violet-500/15 text-violet-300 border-violet-500/30";
+const SLATE = "bg-slate-500/15 text-slate-300 border-slate-500/30";
+const TEAL = "bg-teal-500/15 text-teal-300 border-teal-500/30";
+const YELLOW = "bg-yellow-500/15 text-yellow-300 border-yellow-500/30";
+const ORANGE = "bg-orange-500/15 text-orange-300 border-orange-500/30";
+
+// --- Cases -----------------------------------------------------------------
+export const CASE_STATUS = {
+  New: BLUE,
+  Reviewing: AMBER,
+  Corroborated: GREEN,
+  Contradicted: RED,
+  Archived: SLATE,
 };
 
-export const CONFIDENCE = { Low: C.yellow, Medium: C.blue, High: C.green };
+// --- Evidence / confidence -------------------------------------------------
+export const CONFIDENCE = {
+  Low: SLATE,
+  Medium: AMBER,
+  High: GREEN,
+  Unknown: NEUTRAL,
+};
 
-export const SENSITIVITY = { Public: C.gray, Internal: C.amber, Restricted: C.red };
+export const SENSITIVITY = {
+  Public: SLATE,
+  Internal: AMBER,
+  Restricted: RED,
+};
+
+export const TIER = {
+  T1: GREEN,
+  T2: TEAL,
+  T3: AMBER,
+  T4: SLATE,
+};
+
+export const SEVERITY = {
+  Low: SLATE,
+  Medium: YELLOW,
+  High: ORANGE,
+  Critical: RED,
+};
+
+export const PRIORITY = {
+  Low: SLATE,
+  Medium: BLUE,
+  High: ORANGE,
+  Critical: RED,
+};
+
+// --- Review / verification -------------------------------------------------
+export const REVIEW_STATUS = {
+  Proposed: BLUE,
+  New: BLUE,
+  Reviewing: AMBER,
+  PendingReview: AMBER,
+  Accepted: GREEN,
+  Correlated: GREEN,
+  Verified: GREEN,
+  Disputed: ORANGE,
+  Inconclusive: YELLOW,
+  Rejected: RED,
+  RuledOut: RED,
+  Archived: SLATE,
+  Low: SLATE,
+  Medium: AMBER,
+  High: GREEN,
+  Unknown: NEUTRAL,
+};
 
 export const VERIFICATION = {
-  Unreviewed: C.gray, Verified: C.green, Disputed: C.amber, Rejected: C.red,
+  Unreviewed: SLATE,
+  Verified: GREEN,
+  Disputed: AMBER,
+  Rejected: RED,
 };
 
-export const GATE_STATUS = {
-  NotStarted: C.gray, InProgress: C.blue, Passed: C.green, Failed: C.red, Blocked: C.red,
+// --- Generic / module ledgers ----------------------------------------------
+export const GENERIC_STATUS = {
+  New: BLUE,
+  Draft: SLATE,
+  Proposed: BLUE,
+  Reviewing: AMBER,
+  Active: GREEN,
+  Correlated: GREEN,
+  Accepted: GREEN,
+  Verified: GREEN,
+  Resolved: GREEN,
+  Monitored: TEAL,
+  Public: SLATE,
+  Internal: AMBER,
+  Restricted: RED,
+  RuledOut: RED,
+  Rejected: RED,
+  Inactive: SLATE,
+  Archived: SLATE,
 };
 
-export const CASE_STATUS = {
-  New: C.gray, Reviewing: C.blue, Corroborated: C.green, Contradicted: C.amber, Archived: C.gray,
+export const DICTIONARY_STATUS = {
+  Proposed: BLUE,
+  Approved: GREEN,
+  Deprecated: SLATE,
 };
 
-export const TASK_STATUS = {
-  Queued: C.gray, InProgress: C.blue, Blocked: C.red, Complete: C.green, Deferred: C.gray,
-};
-
-// Canonical lifecycle status chip map (task control plane).
-export const TASK_LIFECYCLE = {
-  Backlog: C.gray, Ready: C.teal, InProgress: C.blue, Blocked: C.red,
-  Review: C.violet, Done: C.green, Deferred: C.gray,
-};
-
-export const PRIORITY = { Low: C.gray, Medium: C.blue, High: C.amber, Critical: C.red };
-
-// Gap warning chips — neutral amber/yellow tone.
-export const GAP_CHIP = {
-  "Program Gap": C.amber, "Linkage Gap": C.yellow, "Due Date Gap": C.yellow,
-  "Assignee Gap": C.yellow, "Sensitivity Gap": C.amber,
-};
-
-export const PROGRAM_STATUS = { Planned: C.gray, Active: C.green, Paused: C.amber, Archived: C.gray };
-
-export const GITHUB_STATUS = {
-  NotConnected: C.gray, Blocked: C.red, Ready: C.green, Connected: C.blue,
+// --- Governance / control plane ---------------------------------------------
+export const PROGRAM_STATUS = {
+  Planned: SLATE,
+  Active: GREEN,
+  Paused: AMBER,
+  Archived: SLATE,
 };
 
 export const FEDERATION_STATUS = {
-  Draft: C.gray, Reviewing: C.blue, Stable: C.green, NeedsRevision: C.amber,
+  Draft: SLATE,
+  Reviewing: AMBER,
+  Stable: GREEN,
+  NeedsRevision: ORANGE,
+  Deprecated: SLATE,
+};
+
+export const GITHUB_STATUS = {
+  NotConnected: SLATE,
+  Blocked: RED,
+  Ready: BLUE,
+  Connected: GREEN,
 };
 
 export const INTEGRATION_STATUS = {
-  NotConnected: C.gray, Blocked: C.red, Ready: C.green, Connected: C.blue, Error: C.red,
+  NotConnected: SLATE,
+  Blocked: RED,
+  Ready: BLUE,
+  Connected: GREEN,
+  Error: RED,
 };
 
-export const SEVERITY = { Low: C.gray, Medium: C.blue, High: C.amber, Critical: C.red };
-
-export const TIER = { T1: C.green, T2: C.teal, T3: C.blue, T4: C.gray };
-
-export const REVIEW_STATUS = {
-  Proposed: C.gray, Reviewing: C.blue, Accepted: C.green, Disputed: C.amber,
-  Rejected: C.red, FalsePositive: C.violet, Inconclusive: C.amber,
-  Unreviewed: C.gray, Reviewed: C.green, NeedsFollowup: C.amber,
+export const GATE_STATUS = {
+  NotStarted: SLATE,
+  InProgress: BLUE,
+  Passed: GREEN,
+  Failed: RED,
+  Blocked: AMBER,
 };
 
-export const DICTIONARY_STATUS = { Proposed: C.gray, Approved: C.green, Deprecated: C.amber };
-
-export const GENERIC_STATUS = {
-  New: C.gray, Reviewing: C.blue, Mitigated: C.green, Archived: C.gray,
-  Correlated: C.green, RuledOut: C.amber, Flagged: C.amber, Cleared: C.green,
-  Active: C.green, Inactive: C.gray, Unknown: C.gray, UnderReview: C.blue,
-  Sanitized: C.green, Excluded: C.gray,
+// --- Task control plane ------------------------------------------------------
+export const TASK_LIFECYCLE = {
+  Backlog: SLATE,
+  Ready: BLUE,
+  InProgress: VIOLET,
+  Review: AMBER,
+  Blocked: RED,
+  Done: GREEN,
+  Deferred: NEUTRAL,
 };
 
-export const chipClass = (map, value) => map[value] || C.gray;
+export const GAP_CHIP = {
+  "Program Gap": RED,
+  "Linkage Gap": AMBER,
+  "Due Date Gap": YELLOW,
+  "Assignee Gap": ORANGE,
+  "Sensitivity Gap": VIOLET,
+};

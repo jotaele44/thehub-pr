@@ -1,232 +1,23 @@
-// Federation task control plane utilities.
-// Canonical program identity, normalization, urgency, linkage, and gap logic.
-// Uses FederationTasks + Programs only. No new entities.
+// Normalization + derivation helpers for the Federation task control plane.
+// Canonical vocabularies mirror the FederationTasks ledger.
 
-// ── Canonical program identity ──────────────────────────────────────────────
-export const CONTROL_PROGRAM_ID = "prog-control";
-export const UNASSIGNED_KEY = "__unassigned__";
-export const UNASSIGNED_LABEL = "Unassigned / Needs Program Mapping";
+export const UNASSIGNED_KEY = "unassigned";
 
-// Fixed canonical order (program_id -> canonical label)
+// Canonical program grouping order for the control plane. Real programs use
+// prog-* keys (matched against FederationTasks.program_id); the trailing
+// bucket collects tasks with a missing or unmappable program.
 export const TASK_PROGRAM_ORDER = [
-  { key: "prog-control", label: "INTSYS-PR", domain: "ControlPlane" },
+  { key: "prog-hub", label: "Hub / Control Plane", domain: "ControlPlane" },
   { key: "prog-spiderweb", label: "Spiderweb-PR", domain: "NetworkGraph" },
   { key: "prog-ovnis", label: "Ovnis-PR", domain: "UAP" },
   { key: "prog-aguayluz", label: "AguaYLuz-PR", domain: "Infrastructure" },
   { key: "prog-moneysweep", label: "MoneySweep-PR", domain: "Contracts" },
   { key: "prog-skywatcher", label: "Skywatcher-PR", domain: "Airspace" },
-  { key: UNASSIGNED_KEY, label: UNASSIGNED_LABEL, domain: "ControlPlane" },
+  { key: UNASSIGNED_KEY, label: "Unassigned / Needs Mapping", domain: null },
 ];
 
-const CANONICAL_LABELS = new Set(TASK_PROGRAM_ORDER.map((p) => p.label));
-
-// Resolve a task to its canonical { key, label, domain } using the Programs ledger.
-// programIndex: Map(program_id -> program record).
-export function resolveTaskProgram(task, programIndex) {
-  const pid = task?.program_id;
-  if (pid && programIndex.has(pid)) {
-    const prog = programIndex.get(pid);
-    const canonical = TASK_PROGRAM_ORDER.find((p) => p.key === pid);
-    // Only render canonical labels; fall back to ledger name if canonical, else Unassigned.
-    if (canonical) return { key: canonical.key, label: canonical.label, domain: canonical.domain };
-    if (prog?.name && CANONICAL_LABELS.has(prog.name)) {
-      const match = TASK_PROGRAM_ORDER.find((p) => p.label === prog.name);
-      return { key: match.key, label: match.label, domain: match.domain };
-    }
-  }
-  return { key: UNASSIGNED_KEY, label: UNASSIGNED_LABEL, domain: "ControlPlane" };
-}
-
-// ── Lifecycle status ────────────────────────────────────────────────────────
-export const TASK_STATUS_ORDER = ["Backlog", "Ready", "InProgress", "Blocked", "Review", "Done", "Deferred"];
-
-const STATUS_ALIASES = {
-  backlog: "Backlog",
-  queued: "Backlog",
-  ready: "Ready",
-  todo: "Ready",
-  inprogress: "InProgress",
-  in_progress: "InProgress",
-  "in progress": "InProgress",
-  active: "InProgress",
-  blocked: "Blocked",
-  review: "Review",
-  reviewing: "Review",
-  done: "Done",
-  complete: "Done",
-  completed: "Done",
-  closed: "Done",
-  deferred: "Deferred",
-};
-
-export function normalizeTaskStatus(value) {
-  if (!value) return "Backlog";
-  const k = String(value).trim().toLowerCase().replace(/\s+/g, " ");
-  return STATUS_ALIASES[k] || STATUS_ALIASES[k.replace(/ /g, "_")] || "Backlog";
-}
-
-// ── Priority ────────────────────────────────────────────────────────────────
+export const TASK_STATUS_ORDER = ["Backlog", "Ready", "InProgress", "Review", "Blocked", "Done", "Deferred"];
 export const TASK_PRIORITY_ORDER = ["Critical", "High", "Medium", "Low"];
-
-const PRIORITY_ALIASES = {
-  critical: "Critical", crit: "Critical",
-  high: "High",
-  medium: "Medium", med: "Medium", normal: "Medium",
-  low: "Low",
-};
-
-export function normalizeTaskPriority(value) {
-  if (!value) return "Medium";
-  const k = String(value).trim().toLowerCase();
-  return PRIORITY_ALIASES[k] || "Medium";
-}
-
-const PRIORITY_RANK = { Critical: 0, High: 1, Medium: 2, Low: 3 };
-
-// ── Sensitivity ─────────────────────────────────────────────────────────────
-const SENSITIVITY_ALIASES = {
-  public: "Public",
-  internal: "Internal",
-  restricted: "Restricted",
-};
-
-export function normalizeTaskSensitivity(value) {
-  if (!value) return null;
-  const k = String(value).trim().toLowerCase();
-  return SENSITIVITY_ALIASES[k] || null;
-}
-
-// ── Date helpers ────────────────────────────────────────────────────────────
-function parseDue(due) {
-  if (!due) return null;
-  const d = new Date(due);
-  return isNaN(d.getTime()) ? null : d;
-}
-
-function startOfDay(d) {
-  const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x;
-}
-
-const OPEN_STATUSES = new Set(["Backlog", "Ready", "InProgress", "Blocked", "Review"]);
-
-export function isTaskOpen(status) {
-  return OPEN_STATUSES.has(normalizeTaskStatus(status));
-}
-
-export function isTaskOverdue(task) {
-  if (normalizeTaskStatus(task.status) === "Done") return false;
-  const d = parseDue(task.due_date);
-  if (!d) return false;
-  return startOfDay(d) < startOfDay(new Date());
-}
-
-export function isTaskDueToday(task) {
-  const d = parseDue(task.due_date);
-  if (!d) return false;
-  return startOfDay(d).getTime() === startOfDay(new Date()).getTime();
-}
-
-export function isTaskDueThisWeek(task) {
-  const d = parseDue(task.due_date);
-  if (!d) return false;
-  const today = startOfDay(new Date());
-  const end = new Date(today);
-  end.setDate(end.getDate() + 7);
-  const due = startOfDay(d);
-  return due >= today && due <= end;
-}
-
-// High priority due within next 48 hours and not done — deadline warning.
-export function isDeadlineWarning(task) {
-  const pr = normalizeTaskPriority(task.priority);
-  if (pr !== "Critical" && pr !== "High") return false;
-  if (normalizeTaskStatus(task.status) === "Done") return false;
-  const d = parseDue(task.due_date);
-  if (!d) return false;
-  const now = new Date();
-  const limit = new Date(now.getTime() + 48 * 60 * 60 * 1000);
-  // Include overdue high-priority within the warning band too.
-  return d <= limit;
-}
-
-// ── Lifecycle transitions (UI-level) ─────────────────────────────────────────
-const TRANSITIONS = {
-  Backlog: ["Ready", "Deferred"],
-  Ready: ["InProgress", "Blocked"],
-  InProgress: ["Review", "Blocked", "Deferred"],
-  Blocked: ["Ready", "Deferred"],
-  Review: ["Done", "InProgress"],
-  Done: ["InProgress"], // Reopen, admin-gated
-  Deferred: ["Ready"], // admin/analyst-gated
-};
-
-// role: "admin" | "analyst" | "reviewer" | "user"
-export function getTaskLifecycleOptions(status, role = "user") {
-  const s = normalizeTaskStatus(status);
-  let opts = TRANSITIONS[s] || [];
-  if (s === "Done" && role !== "admin") opts = [];
-  if (s === "Deferred" && !(role === "admin" || role === "analyst")) opts = [];
-  return opts;
-}
-
-// ── Linkage badges ──────────────────────────────────────────────────────────
-// Ordered: first matching field wins for the primary badge; all matches returned too.
-const LINKAGE_FIELDS = [
-  { field: "linked_case_id", label: "Case-linked" },
-  { field: "linked_source_id", label: "Source-linked" },
-  { field: "linked_gate_id", label: "Gate-linked" },
-  { field: "linked_vector", label: "Vector-linked" },
-  { field: "linked_export_id", label: "Export-linked" },
-  { field: "linked_foia_id", label: "FOIA-linked" },
-  { field: "linked_integration_id", label: "Integration-linked" },
-  { field: "linked_contract_id", label: "Contract-linked" },
-  { field: "linked_vendor_id", label: "Vendor-linked" },
-  { field: "linked_anomaly_id", label: "AnomalyFlag-linked" },
-  { field: "linked_asset_id", label: "Infrastructure-linked" },
-  { field: "linked_risk_id", label: "ContinuityRisk-linked" },
-  { field: "linked_airspace_event_id", label: "AirspaceEvent-linked" },
-  { field: "linked_correlation_id", label: "CorrelationReview-linked" },
-  { field: "linked_node_id", label: "GraphNode-linked" },
-  { field: "linked_edge_id", label: "GraphEdge-linked" },
-  { field: "linked_pattern_id", label: "PatternObservation-linked" },
-  { field: "linked_witness_id", label: "WitnessReport-linked" },
-];
-
-function hasValue(v) {
-  return v !== undefined && v !== null && String(v).trim() !== "";
-}
-
-// Primary linkage badge for compact display.
-export function getTaskLinkageBadge(task) {
-  for (const l of LINKAGE_FIELDS) {
-    if (hasValue(task[l.field])) return l.label;
-  }
-  if (hasValue(task.program_id)) return "Program Task";
-  return "Unlinked";
-}
-
-// All linkage references present (for table / detail).
-export function getTaskLinkages(task) {
-  const out = LINKAGE_FIELDS.filter((l) => hasValue(task[l.field])).map((l) => ({ label: l.label, value: task[l.field] }));
-  return out;
-}
-
-// ── Gap detection ───────────────────────────────────────────────────────────
-export function getTaskGapBadges(task, programIndex) {
-  const gaps = [];
-  const pid = task.program_id;
-  if (!pid || !programIndex.has(pid)) gaps.push("Program Gap");
-  const hasLink = LINKAGE_FIELDS.some((l) => hasValue(task[l.field]));
-  if (!hasLink) gaps.push("Linkage Gap");
-  if (!hasValue(task.due_date)) gaps.push("Due Date Gap");
-  if (!hasValue(task.assigned_to)) gaps.push("Assignee Gap");
-  if (!hasValue(task.sensitivity)) gaps.push("Sensitivity Gap");
-  return gaps;
-}
-
-// ── Urgency buckets ─────────────────────────────────────────────────────────
 export const TASK_URGENCY_ORDER = [
   "Overdue",
   "Blocked",
@@ -237,45 +28,211 @@ export const TASK_URGENCY_ORDER = [
   "No Due Date",
 ];
 
-// Returns the single primary urgency bucket for a task.
-export function getTaskUrgencyBucket(task, programIndex) {
-  const status = normalizeTaskStatus(task.status);
-  if (status === "Done" || status === "Deferred") return null;
-  if (isTaskOverdue(task)) return "Overdue";
-  if (status === "Blocked") return "Blocked";
-  if (isTaskDueToday(task)) return "Due Today";
-  if (isTaskDueThisWeek(task)) return "Due This Week";
-  const pr = normalizeTaskPriority(task.priority);
-  if (pr === "Critical" || pr === "High") return "High Priority";
-  if (!task.program_id || !programIndex.has(task.program_id)) return "Unassigned / Needs Mapping";
-  if (!task.due_date) return "No Due Date";
-  return "No Due Date";
+const OPEN_EXCLUDED = new Set(["Done", "Deferred"]);
+const PRIORITY_RANK = { Critical: 0, High: 1, Medium: 2, Low: 3 };
+
+const STATUS_ALIASES = {
+  backlog: "Backlog",
+  todo: "Backlog",
+  planned: "Backlog",
+  new: "Backlog",
+  open: "Backlog",
+  ready: "Ready",
+  inprogress: "InProgress",
+  "in progress": "InProgress",
+  in_progress: "InProgress",
+  active: "InProgress",
+  doing: "InProgress",
+  review: "Review",
+  inreview: "Review",
+  "in review": "Review",
+  needsreview: "Review",
+  blocked: "Blocked",
+  onhold: "Blocked",
+  done: "Done",
+  complete: "Done",
+  completed: "Done",
+  closed: "Done",
+  deferred: "Deferred",
+  paused: "Deferred",
+  cancelled: "Deferred",
+  canceled: "Deferred",
+};
+
+export function normalizeTaskStatus(status) {
+  if (!status) return "Backlog";
+  if (TASK_STATUS_ORDER.includes(status)) return status;
+  return STATUS_ALIASES[String(status).trim().toLowerCase()] || "Backlog";
 }
 
-// ── Sorting ─────────────────────────────────────────────────────────────────
-export function sortTasksByUrgency(tasks) {
-  const copy = [...tasks];
-  copy.sort((a, b) => {
+export function normalizeTaskPriority(priority) {
+  if (!priority) return "Medium";
+  const p = String(priority).trim().toLowerCase();
+  if (p === "critical" || p === "urgent" || p === "p0") return "Critical";
+  if (p === "high" || p === "p1") return "High";
+  if (p === "low" || p === "p3") return "Low";
+  return "Medium";
+}
+
+export function normalizeTaskSensitivity(sensitivity) {
+  if (!sensitivity) return null;
+  const s = String(sensitivity).trim().toLowerCase();
+  if (s === "public") return "Public";
+  if (s === "restricted" || s === "confidential") return "Restricted";
+  if (s === "internal") return "Internal";
+  return "Internal";
+}
+
+const PROGRAM_BY_KEY = new Map(TASK_PROGRAM_ORDER.map((p) => [p.key, p]));
+const UNASSIGNED = PROGRAM_BY_KEY.get(UNASSIGNED_KEY);
+
+// Resolve a task's program group. Direct prog-* keys win; otherwise fall back
+// to the Programs ledger (programIndex: Map<program_id, program row>) and try
+// to map onto a canonical group by name/domain.
+export function resolveTaskProgram(task, programIndex) {
+  const pid = task?.program_id;
+  if (pid && PROGRAM_BY_KEY.has(pid)) return PROGRAM_BY_KEY.get(pid);
+  if (pid && programIndex && typeof programIndex.get === "function" && programIndex.has(pid)) {
+    const row = programIndex.get(pid);
+    const match = TASK_PROGRAM_ORDER.find(
+      (p) => p.key !== UNASSIGNED_KEY && (p.label === row.name || (row.domain && p.domain === row.domain))
+    );
+    if (match) return match;
+    return { key: pid, label: row.name || pid, domain: row.domain || null };
+  }
+  return UNASSIGNED;
+}
+
+export function isTaskOpen(status) {
+  return !OPEN_EXCLUDED.has(normalizeTaskStatus(status));
+}
+
+const startOfDay = (d) => {
+  const c = new Date(d);
+  c.setHours(0, 0, 0, 0);
+  return c;
+};
+
+export function isTaskOverdue(task) {
+  if (!task?.due_date || !isTaskOpen(task.status)) return false;
+  const due = new Date(task.due_date);
+  if (Number.isNaN(due.getTime())) return false;
+  return startOfDay(due) < startOfDay(new Date());
+}
+
+export function isTaskDueToday(task) {
+  if (!task?.due_date || !isTaskOpen(task.status)) return false;
+  const due = new Date(task.due_date);
+  if (Number.isNaN(due.getTime())) return false;
+  return startOfDay(due).getTime() === startOfDay(new Date()).getTime();
+}
+
+export function isTaskDueThisWeek(task) {
+  if (!task?.due_date || !isTaskOpen(task.status)) return false;
+  const due = startOfDay(new Date(task.due_date));
+  if (Number.isNaN(due.getTime())) return false;
+  const today = startOfDay(new Date());
+  const weekOut = new Date(today);
+  weekOut.setDate(weekOut.getDate() + 7);
+  return due >= today && due <= weekOut;
+}
+
+// High/critical priority task overdue or due within 48h → deadline warning.
+export function isDeadlineWarning(task) {
+  const priority = normalizeTaskPriority(task?.priority);
+  if (priority !== "Critical" && priority !== "High") return false;
+  if (!isTaskOpen(task?.status)) return false;
+  if (isTaskOverdue(task)) return true;
+  if (!task?.due_date) return false;
+  const due = new Date(task.due_date);
+  if (Number.isNaN(due.getTime())) return false;
+  return due.getTime() - Date.now() <= 48 * 60 * 60 * 1000;
+}
+
+// Linked-record fields → human badge label. First populated linkage wins.
+const LINKAGE_FIELDS = [
+  ["linked_case_id", "Case"],
+  ["linked_source_id", "Source"],
+  ["linked_gate_id", "Gate"],
+  ["linked_export_id", "Export"],
+  ["linked_foia_id", "FOIA"],
+  ["linked_integration_id", "Integration"],
+  ["linked_contract_id", "Contract"],
+  ["linked_vendor_id", "Vendor"],
+  ["linked_anomaly_id", "Anomaly"],
+  ["linked_asset_id", "Asset"],
+  ["linked_risk_id", "Risk"],
+  ["linked_airspace_event_id", "Airspace Event"],
+  ["linked_correlation_id", "Correlation"],
+  ["linked_node_id", "Graph Node"],
+  ["linked_edge_id", "Graph Edge"],
+  ["linked_pattern_id", "Pattern"],
+  ["linked_witness_id", "Witness"],
+  ["linked_vector", "Vector"],
+];
+
+export function getTaskLinkageBadge(task) {
+  for (const [field, label] of LINKAGE_FIELDS) {
+    if (task?.[field]) return label;
+  }
+  return "Unlinked";
+}
+
+// Control-plane hygiene gaps for a task (subset of the canonical GAP labels).
+export function getTaskGapBadges(task, programIndex) {
+  const gaps = [];
+  const program = resolveTaskProgram(task, programIndex);
+  if (program.key === UNASSIGNED_KEY) gaps.push("Program Gap");
+  if (getTaskLinkageBadge(task) === "Unlinked") gaps.push("Linkage Gap");
+  if (!task?.due_date && isTaskOpen(task?.status)) gaps.push("Due Date Gap");
+  if (!task?.assigned_to && isTaskOpen(task?.status)) gaps.push("Assignee Gap");
+  if (!task?.sensitivity) gaps.push("Sensitivity Gap");
+  return gaps;
+}
+
+// Single urgency bucket per task (first match wins); closed tasks are excluded.
+export function getTaskUrgencyBucket(task, programIndex) {
+  if (!isTaskOpen(task?.status)) return null;
+  if (isTaskOverdue(task)) return "Overdue";
+  if (normalizeTaskStatus(task?.status) === "Blocked") return "Blocked";
+  if (isTaskDueToday(task)) return "Due Today";
+  if (isTaskDueThisWeek(task)) return "Due This Week";
+  const priority = normalizeTaskPriority(task?.priority);
+  if (priority === "Critical" || priority === "High") return "High Priority";
+  if (resolveTaskProgram(task, programIndex).key === UNASSIGNED_KEY) return "Unassigned / Needs Mapping";
+  if (!task?.due_date) return "No Due Date";
+  return null;
+}
+
+// Overdue first, then nearest due date, then priority rank.
+export function sortTasksByUrgency(tasks = []) {
+  return [...tasks].sort((a, b) => {
     const ao = isTaskOverdue(a) ? 0 : 1;
     const bo = isTaskOverdue(b) ? 0 : 1;
     if (ao !== bo) return ao - bo;
-    const ad = parseDue(a.due_date);
-    const bd = parseDue(b.due_date);
-    if (ad && bd && ad.getTime() !== bd.getTime()) return ad - bd;
-    if (ad && !bd) return -1;
-    if (!ad && bd) return 1;
-    return PRIORITY_RANK[normalizeTaskPriority(a.priority)] - PRIORITY_RANK[normalizeTaskPriority(b.priority)];
+    const ad = a.due_date ? new Date(a.due_date).getTime() : Infinity;
+    const bd = b.due_date ? new Date(b.due_date).getTime() : Infinity;
+    if (ad !== bd) return ad - bd;
+    const ap = PRIORITY_RANK[normalizeTaskPriority(a.priority)] ?? 9;
+    const bp = PRIORITY_RANK[normalizeTaskPriority(b.priority)] ?? 9;
+    return ap - bp;
   });
-  return copy;
 }
 
-export function sortTasksByProgramOrder(tasks, programIndex) {
-  const idx = Object.fromEntries(TASK_PROGRAM_ORDER.map((p, i) => [p.key, i]));
-  const copy = [...tasks];
-  copy.sort((a, b) => {
-    const ak = resolveTaskProgram(a, programIndex).key;
-    const bk = resolveTaskProgram(b, programIndex).key;
-    return (idx[ak] ?? 99) - (idx[bk] ?? 99);
-  });
-  return copy;
+// Allowed lifecycle transitions from a given (normalized) status.
+// Admins may move tasks anywhere; regular users follow the forward flow.
+const TRANSITIONS = {
+  Backlog: ["Ready", "InProgress", "Deferred"],
+  Ready: ["InProgress", "Backlog", "Deferred"],
+  InProgress: ["Review", "Blocked", "Done"],
+  Review: ["Done", "InProgress", "Blocked"],
+  Blocked: ["Ready", "InProgress", "Deferred"],
+  Done: ["InProgress"],
+  Deferred: ["Backlog", "Ready"],
+};
+
+export function getTaskLifecycleOptions(status, role = "user") {
+  const current = normalizeTaskStatus(status);
+  if (role === "admin") return TASK_STATUS_ORDER.filter((s) => s !== current);
+  return TRANSITIONS[current] || [];
 }
