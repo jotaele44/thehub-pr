@@ -12,7 +12,7 @@ export async function promoteFeedItem(item) {
     const created = await federation.entities.Contracts.create({
       contract_id: contractId,
       title: item.title || item.summary || "Promoted feed award",
-      agency: item.agency || item.awarding_agency || null,
+      agency: item.agency || item.agency_name || item.awarding_agency || null,
       vendor_name: item.vendor_name || null,
       amount: item.amount ?? null,
       award_date: item.award_date || item.published_at || null,
