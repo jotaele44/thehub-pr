@@ -1,14 +1,16 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useEntityData } from "@/hooks/useEntityData";
 import PageHeader from "@/components/shared/PageHeader";
 import StatCard from "@/components/shared/StatCard";
 import StatusChip from "@/components/shared/StatusChip";
 import IdCode from "@/components/shared/IdCode";
 import EmptyState from "@/components/shared/EmptyState";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SEVERITY, REVIEW_STATUS, GENERIC_STATUS } from "@/lib/chips";
-import { domainAccent } from "@/lib/federation";
+import { domainAccent, MODULES } from "@/lib/federation";
 import { cn } from "@/lib/utils";
-import { Activity, ShieldAlert, Droplets, Banknote, ScrollText, AlertTriangle } from "lucide-react";
+import { Activity, ShieldAlert, Droplets, Banknote, ScrollText, AlertTriangle, ArrowRight } from "lucide-react";
 
 // Recent Activity — the app's landing page. Surfaces recent risk activity across the
 // federation, grouped by the program (module) each signal belongs to. Merges the three
@@ -19,18 +21,58 @@ import { Activity, ShieldAlert, Droplets, Banknote, ScrollText, AlertTriangle } 
 
 const POLL_MS = 30000;
 const MAX_PER_GROUP = 8;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+const SEVERITIES = ["Critical", "High", "Medium", "Low"];
+// Time windows for the feed. value = max age in ms (null = no bound).
+const WINDOWS = [
+  { value: "all", label: "All time", ms: null },
+  { value: "7d", label: "Last 7 days", ms: 7 * DAY_MS },
+  { value: "30d", label: "Last 30 days", ms: 30 * DAY_MS },
+];
 
 // Per-kind rendering config + the program a signal defaults to when it carries no explicit
 // program_id / module. The default label doubles as the matcher key against Programs rows.
+// "Closedness" mirrors the conventions already used elsewhere so the Open KPI stays consistent:
+// ContinuityRisk/AnomalyFlag carry closed-lists (from RiskHeatmap.jsx); GovernanceAlert instead
+// defines its OPEN states (from GovernanceAlertsPanel.jsx) and treats everything else as closed.
 const KINDS = {
   ContinuityRisk: { label: "Continuity Risk", icon: Droplets, statusMap: GENERIC_STATUS, defaultProgram: "AguaYLuz-PR", closed: ["Mitigated", "Archived"] },
   AnomalyFlag: { label: "Anomaly Flag", icon: Banknote, statusMap: REVIEW_STATUS, defaultProgram: "MoneySweep-PR", closed: ["Rejected", "FalsePositive"] },
-  GovernanceAlert: { label: "Governance Alert", icon: ScrollText, statusMap: REVIEW_STATUS, defaultProgram: "Federation / Control", closed: ["Resolved", "Dismissed", "FalsePositive"] },
+  GovernanceAlert: { label: "Governance Alert", icon: ScrollText, statusMap: REVIEW_STATUS, defaultProgram: "Federation / Control", open: ["Open", "Acknowledged"] },
 };
+
+// A signal is closed when its kind lists the status as closed, or (for kinds that instead
+// declare their open states) when the status is not among them.
+function isClosed(cfg, status) {
+  if (cfg.open) return !cfg.open.includes(status);
+  return cfg.closed.includes(status);
+}
 
 const norm = (s) => String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const toTime = (v) => { const t = v ? new Date(v).getTime() : NaN; return Number.isNaN(t) ? 0 : t; };
 const fmt = (v) => { const t = toTime(v); return t ? new Date(t).toLocaleString() : "—"; };
+
+// Relative "updated Xs ago" for the freshness badge.
+function ago(ts) {
+  if (!ts) return "never";
+  const s = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  return `${Math.floor(m / 60)}h ago`;
+}
+
+// Resolve a group (its program name / domain) to a producer module route, if one exists,
+// so the section can link to that module's page. Fuzzy-match on name then domain.
+function modulePathFor(group) {
+  const nName = norm(group.name);
+  const byName = nName
+    ? MODULES.find((m) => { const nm = norm(m.name); return nm && (nm.includes(nName) || nName.includes(nm)); })
+    : null;
+  const mod = byName || (group.domain ? MODULES.find((m) => norm(m.domain) === norm(group.domain)) : null);
+  return mod ? mod.path : null;
+}
 
 // Normalize one raw entity row into the shared activity shape.
 function normalize(kind, raw) {
@@ -61,7 +103,7 @@ function normalize(kind, raw) {
     timestamp,
     ts: toTime(timestamp),
     programKey,
-    closed: cfg.closed.includes(status),
+    closed: isClosed(cfg, status),
   };
 }
 
@@ -88,19 +130,27 @@ function RiskActivityRow({ item }) {
 }
 
 export default function RecentActivity() {
-  const { rows: risks, isLoading: lr } = useEntityData("ContinuityRisks", "-updated_date", { refetchInterval: POLL_MS });
-  const { rows: anomalies, isLoading: la } = useEntityData("AnomalyFlags", "-updated_date", { refetchInterval: POLL_MS });
-  const { rows: alerts, isLoading: lg } = useEntityData("GovernanceAlerts", "-updated_date", { refetchInterval: POLL_MS });
+  const { rows: risks, isLoading: lr, dataUpdatedAt: ur } = useEntityData("ContinuityRisks", "-updated_date", { refetchInterval: POLL_MS });
+  const { rows: anomalies, isLoading: la, dataUpdatedAt: ua } = useEntityData("AnomalyFlags", "-updated_date", { refetchInterval: POLL_MS });
+  const { rows: alerts, isLoading: lg, dataUpdatedAt: ug } = useEntityData("GovernanceAlerts", "-updated_date", { refetchInterval: POLL_MS });
   const { rows: programs } = useEntityData("Programs");
 
+  const [severity, setSeverity] = useState("all");
+  const [timeWindow, setTimeWindow] = useState("all");
+
   const loading = lr || la || lg;
+  const updatedAt = Math.max(ur || 0, ua || 0, ug || 0);
 
   const groups = useMemo(() => {
+    const windowMs = WINDOWS.find((w) => w.value === timeWindow)?.ms ?? null;
+    const cutoff = windowMs ? Date.now() - windowMs : null;
+
     const items = [
       ...risks.map((r) => normalize("ContinuityRisk", r)),
       ...anomalies.map((a) => normalize("AnomalyFlag", a)),
       ...alerts.map((g) => normalize("GovernanceAlert", g)),
-    ];
+    ].filter((it) => (severity === "all" || it.severity === severity)
+                  && (cutoff === null || it.ts >= cutoff));
 
     // Resolve a program key to a Programs row (by id / name / repo, fuzzy) for a nice header.
     const matchProgram = (key) => {
@@ -134,7 +184,7 @@ export default function RecentActivity() {
     });
     list.sort((x, y) => y.newest - x.newest);
     return list;
-  }, [risks, anomalies, alerts, programs]);
+  }, [risks, anomalies, alerts, programs, severity, timeWindow]);
 
   const totals = useMemo(() => {
     const all = groups.flatMap((g) => g.items);
@@ -149,28 +199,63 @@ export default function RecentActivity() {
         icon={Activity}
         title="Recent Activity"
         description="Latest risk activity across the federation, grouped by program. Continuity risks, anomaly flags, and governance alerts — newest first. Leads for review, not conclusions."
+        actions={
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className={cn("h-2 w-2 rounded-full", loading ? "bg-amber-400 animate-pulse" : "bg-emerald-400")} />
+            <span>updated {ago(updatedAt)}</span>
+            <span className="hidden sm:inline">· auto every {Math.round(POLL_MS / 1000)}s</span>
+          </div>
+        }
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <StatCard label="Risk Signals" value={totals.total} icon={Activity} />
         <StatCard label="Open" value={totals.open} icon={ShieldAlert} />
         <StatCard label="Critical / High" value={totals.critHigh} icon={AlertTriangle} accent="text-red-300" alert={totals.critHigh > 0} />
       </div>
 
+      <div className="flex flex-wrap items-center gap-3 mb-8">
+        <Select value={severity} onValueChange={setSeverity}>
+          <SelectTrigger className="w-40 h-9"><SelectValue placeholder="Severity" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All severities</SelectItem>
+            {SEVERITIES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={timeWindow} onValueChange={setTimeWindow}>
+          <SelectTrigger className="w-40 h-9"><SelectValue placeholder="Window" /></SelectTrigger>
+          <SelectContent>
+            {WINDOWS.map((w) => <SelectItem key={w.value} value={w.value}>{w.label}</SelectItem>)}
+          </SelectContent>
+        </Select>
+      </div>
+
       {loading && !groups.length ? (
         <p className="text-xs text-muted-foreground">Aggregating risk activity…</p>
       ) : !groups.length ? (
-        <EmptyState icon={Activity} title="No risk activity" description="No continuity risks, anomaly flags, or governance alerts have been recorded yet." />
+        (risks.length || anomalies.length || alerts.length) ? (
+          <EmptyState icon={Activity} title="No matching activity" description="No risk activity matches the current severity / time-window filters." />
+        ) : (
+          <EmptyState icon={Activity} title="No risk activity" description="No continuity risks, anomaly flags, or governance alerts have been recorded yet." />
+        )
       ) : (
         <div className="space-y-6">
           {groups.map((g) => {
             const accent = g.domain ? domainAccent(g.domain) : null;
             const shown = g.items.slice(0, MAX_PER_GROUP);
+            const modulePath = modulePathFor(g);
             return (
               <div key={g.id} className="rounded-xl border border-border bg-card p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <span className={cn("h-2.5 w-2.5 rounded-full shrink-0", accent ? accent.dot : "bg-muted-foreground/50")} />
-                  <h3 className="text-sm font-semibold">{g.name}</h3>
+                  {modulePath ? (
+                    <Link to={modulePath} className="group inline-flex items-center gap-1.5">
+                      <h3 className="text-sm font-semibold group-hover:underline">{g.name}</h3>
+                      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </Link>
+                  ) : (
+                    <h3 className="text-sm font-semibold">{g.name}</h3>
+                  )}
                   {g.domain && <span className="text-xs text-muted-foreground">· {g.domain}</span>}
                   <span className="ml-auto inline-flex items-center gap-2">
                     {g.open > 0 && (

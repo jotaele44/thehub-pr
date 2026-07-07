@@ -268,8 +268,12 @@ async def filter_entities(entity_name: str, request: Request):
     limit: int = body.get("limit", 500)
 
     c = _conn()
+    # Order by write time before the (oversized) prefetch cap so the Python-side filter
+    # scans the most-recently-touched rows — otherwise, past the cap, genuinely-new matches
+    # can be missed. Same fix as list_entities.
     rows = c.execute(
-        "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? LIMIT ?",
+        "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
+        "ORDER BY updated_at DESC LIMIT ?",
         (entity_name, max(limit * 10, 5000)),
     ).fetchall()
     c.close()
