@@ -14,8 +14,8 @@ import { Activity, ShieldAlert, Droplets, Banknote, ScrollText, AlertTriangle } 
 // federation, grouped by the program (module) each signal belongs to. Merges the three
 // risk-bearing entities into one normalized, newest-first stream:
 //   ContinuityRisks (AguaYLuz) · AnomalyFlags (MoneySweep) · GovernanceAlerts (audit).
-// The backend stamps created_date/updated_date on every write but ignores the sort param,
-// so ordering happens client-side here. Light polling keeps the feed live like useLiveFeed.
+// The backend returns the most-recently-written page (ordered by updated_at) per entity;
+// we still sort client-side to interleave the three streams. Light polling keeps it live.
 
 const POLL_MS = 30000;
 const MAX_PER_GROUP = 8;
