@@ -23,6 +23,7 @@ _CANDIDATES = [
     ("relationships.jsonl", "relationships"),
     ("funding_awards.jsonl", "funding_awards"),
     ("transactions.jsonl", "transactions"),
+    ("observations.jsonl", "observations"),
     ("alerts.jsonl", "alerts"),
 ]
 

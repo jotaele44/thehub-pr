@@ -65,8 +65,10 @@ def validate_package(pkg_dir) -> List[str]:
         schema_name = STREAM_SCHEMA.get(stream)
         count = 0
         if schema_name is None:
-            # Stream with no Hub-canonical schema (e.g. producer-specific
-            # 'observations'): count rows, skip per-row schema validation.
+            # Stream with no Hub-canonical schema: count rows, skip per-row schema
+            # validation. (All 7 canonical streams — including 'observations' —
+            # now have a schema in STREAM_SCHEMA; this branch only fires for a
+            # future/unknown producer-specific stream.)
             for _lineno, _raw in _iter_rows(fpath):
                 count += 1
         else:

@@ -27,7 +27,8 @@ exports/…/manifest.json + *.jsonl ─(fetch)──▶ hub.validate.validate_pa
                             data/aggregate/graph_summary.json
                                        │
                                   hub.correlate.correlate
-                                       │  link cross-producer entities (name / external-id / location / funding-date)
+                                       │  link cross-producer entities (name / external-id / location /
+                                       │  funding-date / alert / observation footprint)
                                        ▼
                             data/aggregate/correlations.jsonl  (derived federation_relationship rows)
 ```

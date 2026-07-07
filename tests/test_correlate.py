@@ -21,6 +21,7 @@ from hub.correlate import (
     correlate_alerts,
     correlate_by_external_id,
     correlate_entities,
+    correlate_observations,
     correlate_spatial,
     correlate_temporal,
     correlator_source,
@@ -72,7 +73,88 @@ def _alert(alert_id, entity_id, municipality, *, producers=None, confidence=0.6)
     return al
 
 
+def _observation(observation_id, entity_id, municipality, *, producers=None, confidence=0.8):
+    obs = {
+        "observation_id": observation_id, "source_id": SRC,
+        "observation_type": "aircraft_transit", "observed_at": _TS,
+        "confidence": confidence, "lineage": _LINEAGE,
+        "synthetic": True, "created_at": _TS, "extracted_at": _TS,
+    }
+    if entity_id:
+        obs["entity_id"] = entity_id
+    if municipality:
+        obs["location"] = {"lat": 18.34, "lon": -66.01, "municipality": municipality}
+    if producers is not None:
+        obs["_producers"] = producers
+    return obs
+
+
 # ── per-strategy units ───────────────────────────────────────────────────────
+
+def test_observation_correlation_links_anchor_to_colocated_cross_producer_entity():
+    obs = _observation("obs_" + "a" * 32, ENT_A, "San Juan", producers=["skywatcher-pr"])
+    anchor = _entity(ENT_A, "AIRCRAFT N123", producers=["skywatcher-pr"])
+    ent = _entity(ENT_B, "PRASA INTAKE", producers=["aguayluz-pr"])
+    ent["location"] = {"lat": 18.43, "lon": -66.0, "municipality": "San Juan"}
+    links = correlate_observations([obs], [anchor, ent])
+    assert len(links) == 1
+    assert links[0]["relationship_type"] == "observation_at_entity"
+    assert links[0]["match_basis"] == "location"
+    # directed: anchor entity -> co-located entity
+    assert links[0]["source_entity_id"] == ENT_A
+    assert links[0]["target_entity_id"] == ENT_B
+
+
+def test_observation_correlation_skips_same_producer_and_unanchored():
+    anchor = _entity(ENT_A, "PRASA PUMP", producers=["aguayluz-pr"])
+    ent = _entity(ENT_B, "PRASA INTAKE", producers=["aguayluz-pr"])
+    ent["location"] = {"lat": 18.43, "lon": -66.0, "municipality": "San Juan"}
+    # same producer -> not a cross-producer pair
+    obs_same = _observation("obs_" + "a" * 32, ENT_A, "San Juan", producers=["aguayluz-pr"])
+    assert correlate_observations([obs_same], [anchor, ent]) == []
+    # no anchor entity_id -> nothing to link
+    obs_unanchored = _observation("obs_" + "b" * 32, None, "San Juan", producers=["skywatcher-pr"])
+    assert correlate_observations([obs_unanchored], [anchor, ent]) == []
+    # no municipality -> nothing to link
+    obs_no_muni = _observation("obs_" + "c" * 32, ENT_A, None, producers=["skywatcher-pr"])
+    assert correlate_observations([obs_no_muni], [anchor, ent]) == []
+
+
+def test_observation_correlation_skips_anchor_absent_from_entity_set():
+    # An observations-only producer ships no entities.jsonl, so its anchor id is
+    # absent from the aggregate -> no dangling edge is emitted.
+    obs = _observation("obs_" + "a" * 32, ENT_A, "San Juan", producers=["skywatcher-pr"])
+    ent = _entity(ENT_B, "PRASA INTAKE", producers=["aguayluz-pr"])
+    ent["location"] = {"lat": 18.43, "lon": -66.0, "municipality": "San Juan"}
+    # ENT_A (the anchor) is NOT in the entity set
+    assert correlate_observations([obs], [ent]) == []
+
+
+def test_observation_correlation_flows_through_derive_relationships():
+    obs = _observation("obs_" + "a" * 32, ENT_A, "San Juan", producers=["skywatcher-pr"])
+    ent_anchor = _entity(ENT_A, "AIRCRAFT N123", producers=["skywatcher-pr"])
+    ent_other = _entity(ENT_B, "PRASA INTAKE", producers=["aguayluz-pr"])
+    ent_other["location"] = {"lat": 18.43, "lon": -66.0, "municipality": "San Juan"}
+    rels = derive_relationships([ent_anchor, ent_other], observations=[obs])
+    obs_rels = [r for r in rels if r["relationship_type"] == "observation_at_entity"]
+    assert len(obs_rels) == 1
+    jsonschema.Draft7Validator(load_schema("federation_relationship.schema.json")).validate(
+        obs_rels[0]
+    )
+
+
+def test_observation_correlation_flows_through_correlate_io(tmp_path):
+    agg = tmp_path / "agg"
+    agg.mkdir()
+    ent_anchor = _entity(ENT_A, "AIRCRAFT N123", producers=["skywatcher-pr"])
+    ent_other = _entity(ENT_B, "PRASA INTAKE", producers=["aguayluz-pr"])
+    ent_other["location"] = {"lat": 18.43, "lon": -66.0, "municipality": "San Juan"}
+    obs = _observation("obs_" + "a" * 32, ENT_A, "San Juan", producers=["skywatcher-pr"])
+    _write_jsonl(agg / "entities.jsonl", [ent_anchor, ent_other])
+    _write_jsonl(agg / "observations.jsonl", [obs])
+    summary = correlate(agg, agg)
+    assert summary["by_type"].get("observation_at_entity") == 1
+
 
 def test_alert_correlation_links_anchor_to_colocated_cross_producer_entity():
     al = _alert("alrt_" + "a" * 32, ENT_A, "San Juan", producers=["aguayluz-pr"])

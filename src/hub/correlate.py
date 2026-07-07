@@ -36,7 +36,8 @@ _FIXED_TS = "1970-01-01T00:00:00Z"
 _LINEAGE = {
     "producer_script": "src/hub/correlate.py",
     "producer_phase": "HUB_CORRELATE",
-    "source_inputs": ["entities.jsonl", "funding_awards.jsonl", "transactions.jsonl", "alerts.jsonl"],
+    "source_inputs": ["entities.jsonl", "funding_awards.jsonl", "transactions.jsonl",
+                      "alerts.jsonl", "observations.jsonl"],
     "extraction_method": "deterministic",
 }
 
@@ -343,6 +344,49 @@ def correlate_alerts(alerts: Sequence[Dict[str, Any]],
     return links
 
 
+def correlate_observations(observations: Sequence[Dict[str, Any]],
+                          entities: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Link an observation's anchor entity to co-located cross-producer entities.
+
+    A canonical observation (e.g. from skywatcher-pr / spiderweb-pr) that carries
+    an ``entity_id`` anchor and a ``location.municipality`` is linked to every
+    entity another producer reports in the same municipality, emitting a directed
+    ``observation_at_entity`` edge. This surfaces, in the federation graph, which
+    cross-domain entities sit in the footprint of a recorded observation (an
+    aircraft transit, structure sighting, sensor reading). Observations without an
+    anchor entity or municipality contribute nothing — an unanchored observation
+    has no canonical entity to hang an edge on (mirrors ``correlate_alerts``).
+
+    The anchor must also resolve to an entity present in the aggregate: an
+    observations-only export ships no ``entities.jsonl``, so an anchor id that is
+    absent from the entity set would otherwise emit an edge from a node that does
+    not exist. Such observations are skipped to keep the graph free of dangling
+    edges."""
+    by_muni: Dict[str, List[Dict[str, Any]]] = {}
+    entity_ids = set()
+    for ent in entities:
+        entity_ids.add(ent["entity_id"])
+        muni = _municipality(ent)
+        if muni:
+            by_muni.setdefault(muni, []).append(ent)
+
+    links: List[Dict[str, Any]] = []
+    for obs in observations:
+        anchor = obs.get("entity_id")
+        muni = _municipality(obs)
+        if not isinstance(anchor, str) or not muni or anchor not in entity_ids:
+            continue
+        for ent in by_muni.get(muni, []):
+            if ent["entity_id"] == anchor or not _disjoint(obs, ent):
+                continue
+            conf = _score(obs)
+            conf = round(conf, 3) if conf is not None else 0.5
+            links.append(_link(anchor, ent["entity_id"], "observation_at_entity",
+                               "location", conf,
+                               f"Observation in {muni} co-located with cross-producer entity."))
+    return links
+
+
 # --------------------------------------------------------------------------
 # Relationship emission
 # --------------------------------------------------------------------------
@@ -369,7 +413,7 @@ def correlator_source() -> Dict[str, Any]:
 #: Correlator relationship types that are directional (source -> target order is
 #: meaningful and must be preserved). All other correlator edges are symmetric,
 #: so their endpoints are sorted to canonicalize the id and dedupe (a,b)/(b,a).
-_DIRECTED_TYPES = frozenset({"alert_affects_entity"})
+_DIRECTED_TYPES = frozenset({"alert_affects_entity", "observation_at_entity"})
 
 
 def _to_relationship(link: Dict[str, Any]) -> Dict[str, Any]:
@@ -435,15 +479,17 @@ def derive_relationships(entities: Sequence[Dict[str, Any]],
                          awards: Sequence[Dict[str, Any]] = (),
                          transactions: Sequence[Dict[str, Any]] = (),
                          alerts: Sequence[Dict[str, Any]] = (),
+                         observations: Sequence[Dict[str, Any]] = (),
                          *, window_days: int = 7,
                          threshold_km: float = 1.0) -> List[Dict[str, Any]]:
-    """Run all 5 strategies, dedupe, and emit sorted canonical relationship rows."""
+    """Run all 6 strategies, dedupe, and emit sorted canonical relationship rows."""
     links = (
         correlate_entities(entities)
         + correlate_by_external_id(entities)
         + correlate_spatial(entities, threshold_km=threshold_km)
         + correlate_temporal(awards, transactions, window_days=window_days)
         + correlate_alerts(alerts, entities)
+        + correlate_observations(observations, entities)
     )
     relationships = [_to_relationship(link) for link in _dedupe_links(links)]
     relationships.sort(key=lambda r: (r["relationship_type"],
@@ -461,9 +507,10 @@ def correlate(in_dir, out_dir, *, window_days: int = 7,
     awards = _read_stream(in_dir, "funding_awards")
     transactions = _read_stream(in_dir, "transactions")
     alerts = _read_stream(in_dir, "alerts")
+    observations = _read_stream(in_dir, "observations")
 
     relationships = derive_relationships(
-        entities, awards, transactions, alerts,
+        entities, awards, transactions, alerts, observations,
         window_days=window_days, threshold_km=threshold_km,
     )
 

@@ -7,6 +7,8 @@
     hub fetch [--root ws] [--run]    clone/refresh producers (optionally export)
     hub aggregate [--root .]         discover + aggregate producer packages
     hub correlate [--in d --out d]   derive cross-producer correlation relationships
+    hub analytics-v2 [--in d]        build Federation Analytics v2 from an aggregate
+    hub consume-sensor-fusion <p>    validate skywatcher sensor-fusion export -> dashboard
     hub maintenance [--root ..]      roll up producer maintenance reports + gate
 """
 from __future__ import annotations
@@ -17,15 +19,18 @@ import os
 import sys
 from typing import List, Optional
 
-from .aggregate import aggregate, discover_packages
+from .aggregate import aggregate, discover_packages, discovery_status, dry_run_warnings
+from .analytics_adapter import aggregate_to_analytics_records
 from .bridge import write_manifest
 from .correlate import correlate
+from .federation_analytics_v2 import build_federation_analytics_v2_payload
 from .federation_status import validate_federation
 from .fetch import fetch_all
 from .graph_report import graph_report
 from .maintenance import build_rollup
 from .manifest import load_and_validate_manifest
 from .registry import load_registry
+from .sensor_fusion_consumer import write_dashboard_surface
 from .validate import validate_package
 
 DEFAULT_REGISTRY = "registry/producers.yaml"
@@ -79,6 +84,26 @@ def _build_parser() -> argparse.ArgumentParser:
     gr = sub.add_parser("graph-report", help="quality report for an aggregate directory")
     gr.add_argument("--in", dest="in_dir", default="data/aggregate", help="aggregate dir to read")
     gr.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+
+    av = sub.add_parser(
+        "analytics-v2",
+        help="build Federation Analytics v2 from a Hub aggregate (seasonality/thresholds/cross-repo)",
+    )
+    av.add_argument("--in", dest="in_dir", default="data/aggregate",
+                    help="aggregate dir to read (observations/alerts.jsonl)")
+    av.add_argument("--out", default="data/aggregate/federation_analytics_v2.json",
+                    help="path to write the analytics payload")
+
+    sf = sub.add_parser(
+        "consume-sensor-fusion",
+        help="validate a skywatcher-pr sensor-fusion export and write its dashboard surface",
+    )
+    sf.add_argument("path", help="path to the skywatcher sensor-fusion analytics JSON export")
+    sf.add_argument(
+        "--out",
+        default="data/dashboard/skywatcher_sensor_fusion.json",
+        help="dashboard surface output path",
+    )
 
     mt = sub.add_parser("maintenance", help="roll up producer maintenance reports and compute the promotion gate")
     mt.add_argument("--registry", default=DEFAULT_REGISTRY)
@@ -156,6 +181,8 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.cmd == "aggregate":
         reg = load_registry(args.registry)
+        for w in dry_run_warnings(discovery_status(reg, args.root)):
+            print(f"WARNING: {w}")
         packages = discover_packages(reg, args.root)
         if not packages:
             print(f"no producer export packages found under {args.root!r}")
@@ -204,6 +231,8 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(f"  entities:         {report['entity_count']}")
             print(f"  relationships:    {report['relationship_count']}")
             print(f"  correlations:     {report['correlation_count']}")
+            print(f"  observations:     {report['observation_count']} "
+                  f"({report['anchored_observations']} anchored)")
             print(f"  orphan entities:  {report['orphan_entities']}")
             print(f"  low-conf edges:   {report['low_confidence_edges']}")
             dupes = report["duplicate_external_ids"]
@@ -221,6 +250,37 @@ def main(argv: Optional[List[str]] = None) -> int:
                 print("  match basis:")
                 for b, count in basis.items():
                     print(f"    {b}: {count}")
+        return 0
+
+    if args.cmd == "analytics-v2":
+        records = aggregate_to_analytics_records(args.in_dir)
+        # Records double as the cross-repo anomaly-event stream (they carry
+        # producer + anomaly_score + observed_at + corridor_id).
+        payload = build_federation_analytics_v2_payload(records, records)
+        out_path = args.out
+        os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
+        with open(out_path, "w") as fh:
+            json.dump(payload, fh, indent=2, sort_keys=True)
+        print(
+            f"wrote {out_path} — {payload['seasonality_model_count']} seasonality model(s), "
+            f"{payload['threshold_count']} threshold(s), "
+            f"{payload['cross_repo_correlation_count']} cross-repo correlation(s) "
+            f"from {len(records)} event record(s)"
+        )
+        return 0
+
+    if args.cmd == "consume-sensor-fusion":
+        surface = write_dashboard_surface(args.path, args.out)
+        print(
+            f"wrote {args.out} — surface={surface['surface_id']} "
+            f"producer={surface['producer']} valid={'yes' if surface['valid'] else 'no'} "
+            f"anomalies={surface['anomaly_count']}"
+        )
+        if not surface["valid"]:
+            print(f"INVALID export — {len(surface['errors'])} error(s):")
+            for e in surface["errors"][:20]:
+                print("  -", e)
+            return 1
         return 0
 
     if args.cmd == "maintenance":
