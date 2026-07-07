@@ -76,7 +76,9 @@ aggregate → correlate → ingest pipeline.
 - **Producer:** `moneysweep-pr/scripts/build_contract_finance_bundle.py`
   (hub command `build_contract_finance_bundle`). Reuses
   `scripts/run_contract_finance_geo_reasoning.py` for row-level geo reasoning.
-- **Bundle (the handoff):** `outputs/contract_finance/`
+- **Bundle (the handoff):** `outputs/contract_finance_bundle/` (kept separate
+  from the geo-reasoner's `outputs/contract_finance/` artifacts so refreshes
+  never clobber them)
   - `contract_awards.geojson`, `financial_flows.geojson`
     (`properties`: `record_id`, `entity_id`, `amount`, `date`,
     `municipality_code`, `municipality_name`, `feature_type`, `source_layer`,
@@ -98,12 +100,21 @@ aggregate → correlate → ingest pipeline.
 ### 5. → Hub (aggregate → correlate → ingest)
 
 - MoneySweep's `funding_awards`/`transactions` (including Centinelas-derived
-  pre-official candidates, each carrying a `location` block) and SpiderWeb's
-  observations/overlay reach the Hub through their canonical federation packages.
-- `src/hub/correlate.py` links cross-producer entities by
-  `location.municipality` (`_municipality`) and by lat/lon proximity
-  (`correlate_spatial`), so the located pre-official finance correlates with
-  officialized money and spatial records **without any Hub code change**.
+  pre-official candidates) and their recipient/funding-agency **entities** (which
+  carry the `location` block), plus SpiderWeb's observations/overlay, reach the
+  Hub through their canonical federation packages.
+- `src/hub/correlate.py` `derive_relationships` correlates:
+  - **entities** by normalized name, external id, and lat/lon proximity
+    (`correlate_spatial`, on entity `location`), and
+  - **funding awards / transactions** by date + shared primary entity
+    (`correlate_temporal`).
+
+  So the located pre-official finance correlates with officialized money and
+  spatial records **through its anchoring entity's location** (spatial) and by
+  temporal proximity — not by a direct `funding_award.location` join. This needs
+  **no Hub code change**: MoneySweep already emits the recipient/agency as an
+  entity carrying the `location` block. (`correlate.py`'s `_municipality` helper is
+  used for alert/observation footprint links, not the finance path.)
 
 ## Provenance & guardrails
 
@@ -111,4 +122,10 @@ aggregate → correlate → ingest pipeline.
   `signal_stage="pre_official"`, `synthetic=false`, `source_id="centinelas-pr"`,
   full lineage. Downstream consumers can filter or weight them accordingly.
 - Location attribution is enrichment, never a filter: unresolved rows are kept
-  with an empty `municipality_code` and `attribution_confidence="unknown"`.
+  with an empty `municipality_code`. Within the MoneySweep intermediate/bundle
+  the geo-attribution vocabulary is used (`exact_fips`/`exact_name`/`unknown`),
+  but the canonical Hub `location.attribution_confidence` is a **number in
+  `[0, 1]`** (`schemas/federation_funding_award.schema.json` /
+  `federation_transaction.schema.json`). The canonical export maps the vocabulary
+  to a numeric confidence (or omits the field) so `hub validate-package` accepts
+  the pre-official rows — never emit the string `"unknown"` on a canonical row.
