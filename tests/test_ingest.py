@@ -1,8 +1,4 @@
-"""Tests for the aggregate -> entity-store ingest bridge (hub.ingest).
-
-The bridge maps canonical aggregate streams onto the UI's per-domain collection
-names and field shapes (UnifiedSources, GraphNodes, GraphEdges, ...).
-"""
+"""Tests for the aggregate -> entity-store ingest bridge (hub.ingest)."""
 import json
 import sqlite3
 
@@ -38,7 +34,42 @@ def _count(db):
         conn.close()
 
 
-def test_ingest_maps_streams_onto_ui_collections(valid_package, tmp_path):
+def test_ingest_loads_streams_into_collections(valid_package, tmp_path):
+    agg = tmp_path / "agg"
+    aggregate({"moneysweep-pr": valid_package}, agg)
+    expected_entities = _ids(agg / "entities.jsonl")
+    expected_sources = _ids(agg / "sources.jsonl")
+    expected_rels = _ids(agg / "relationships.jsonl")
+
+    db = tmp_path / "hub.db"
+    summary = ingest_aggregate(agg, db)
+
+    # Canonical collections + the per-domain UI projections alongside them.
+    assert summary["collections"] == {
+        "Sources": 1, "Entities": 2, "Relationships": 1, "FederationSummary": 1,
+        "UnifiedSources": 1, "GraphNodes": 2, "GraphEdges": 1,
+    }
+    assert summary["skipped"] == {}
+
+    # Entities keyed by canonical entity_id, full payload + provenance preserved.
+    entities = _rows(db, "Entities")
+    assert set(entities) == expected_entities
+    row = next(iter(entities.values()))
+    assert row["id"] in expected_entities        # id injected for the server read path
+    assert "name" in row                         # canonical payload intact
+    assert row["_producers"] == ["moneysweep-pr"]
+
+    assert set(_rows(db, "Sources")) == expected_sources
+    assert set(_rows(db, "Relationships")) == expected_rels
+    # graph_summary folded into a single FederationSummary row.
+    summary_rows = _rows(db, "FederationSummary")
+    assert set(summary_rows) == {"graph_summary"}
+    assert "streams" in summary_rows["graph_summary"]
+
+
+def test_ingest_projects_ui_collections(valid_package, tmp_path):
+    """Streams also project into the UI's per-domain collections with alias fields,
+    keeping the canonical payload + provenance."""
     agg = tmp_path / "agg"
     aggregate({"moneysweep-pr": valid_package}, agg)
     expected_nodes = _ids(agg / "entities.jsonl")
@@ -46,33 +77,25 @@ def test_ingest_maps_streams_onto_ui_collections(valid_package, tmp_path):
     expected_edges = _ids(agg / "relationships.jsonl")
 
     db = tmp_path / "hub.db"
-    summary = ingest_aggregate(agg, db)
+    ingest_aggregate(agg, db)
 
-    assert summary["collections"] == {
-        "UnifiedSources": 1, "GraphNodes": 2, "GraphEdges": 1, "FederationSummary": 1,
-    }
-    assert summary["total"] == 5
-    assert summary["skipped"] == {}
-
-    # entities -> GraphNodes, keyed by canonical entity_id, with UI field names added
-    # and the canonical payload + provenance preserved.
+    # entities -> GraphNodes
     nodes = _rows(db, "GraphNodes")
     assert set(nodes) == expected_nodes
     node = nodes[next(iter(expected_nodes))]
-    assert node["node_id"] == node["id"]         # id injected + node_id alias
-    assert node["label"] == node["name"]         # UI alias of canonical name
+    assert node["node_id"] == node["id"]
+    assert node["label"] == node["name"]                 # UI alias of canonical name
     assert node["node_type"] == node["entity_type"]
-    assert node["confidence"] in {"Low", "Medium", "High"}  # banded from numeric
-    assert node["_producers"] == ["moneysweep-pr"]          # canonical provenance kept
+    assert node["confidence"] in {"Low", "Medium", "High"}   # banded from 0..1
+    assert node["_producers"] == ["moneysweep-pr"]           # provenance preserved
 
-    # sources -> UnifiedSources with title alias.
-    sources = _rows(db, "UnifiedSources")
-    assert set(sources) == expected_sources
-    src = next(iter(sources.values()))
+    # sources -> UnifiedSources
+    src = next(iter(_rows(db, "UnifiedSources").values()))
+    assert set(_rows(db, "UnifiedSources")) == expected_sources
     assert src["title"] == src["source_name"]
     assert src["program_id"] == "moneysweep-pr"
 
-    # relationships -> GraphEdges with node aliases.
+    # relationships -> GraphEdges
     edges = _rows(db, "GraphEdges")
     assert set(edges) == expected_edges
     edge = next(iter(edges.values()))
@@ -80,47 +103,10 @@ def test_ingest_maps_streams_onto_ui_collections(valid_package, tmp_path):
     assert edge["source_node_id"] == edge["source_entity_id"]
     assert edge["target_node_id"] == edge["target_entity_id"]
 
-    # graph_summary -> single FederationSummary row.
-    summary_rows = _rows(db, "FederationSummary")
-    assert set(summary_rows) == {"graph_summary"}
-    assert "streams" in summary_rows["graph_summary"]
 
-
-def test_ingest_maps_correlations_to_crossover_links(valid_package, tmp_path):
-    agg = tmp_path / "agg"
-    aggregate({"moneysweep-pr": valid_package}, agg)
-    rel_id = "rel_ffffffffffffffffffffffffffffffff"
-    corr = {
-        "relationship_id": rel_id,
-        "source_id": "src_0123456789abcdef0123456789abcdef",
-        "source_entity_id": "ent_0123456789abcdef0123456789abce01",
-        "target_entity_id": "ent_0123456789abcdef0123456789abce02",
-        "relationship_type": "entity_correlation",
-        "evidence_source_id": "src_0123456789abcdef0123456789abcdef",
-        "confidence": 0.8, "explanation": "shared normalized name",
-        "lineage": {"producer_script": "src/hub/correlate.py",
-                    "producer_phase": "HUB_CORRELATE", "source_inputs": []},
-        "synthetic": True, "created_at": "1970-01-01T00:00:00Z",
-        "extracted_at": "1970-01-01T00:00:00Z",
-    }
-    (agg / "correlations.jsonl").write_text(json.dumps(corr) + "\n")
-
-    db = tmp_path / "hub.db"
-    summary = ingest_aggregate(agg, db)
-
-    assert summary["collections"]["CrossoverLinks"] == 1
-    link = _rows(db, "CrossoverLinks")[rel_id]
-    assert link["crossover_id"] == rel_id
-    assert link["source_record_id"] == "ent_0123456789abcdef0123456789abce01"
-    assert link["correlation_type"] == "entity_correlation"
-    assert link["confidence_band"] == "High"
-    assert link["status"] == "PendingReview"
-    # modules derived from the endpoint entities' producers (join on _producers)
-    assert link["source_module"] == "MoneySweep-PR"
-    assert link["target_module"] == "MoneySweep-PR"
-
-
-def test_ingest_maps_alerts_to_governance(tmp_path):
+def test_ingest_projects_governance_alerts(tmp_path):
+    """alerts -> GovernanceAlerts with canonical status normalized to the UI's
+    open/closed review vocabulary."""
     agg = tmp_path / "agg"
     agg.mkdir()
     alert = {
@@ -132,11 +118,11 @@ def test_ingest_maps_alerts_to_governance(tmp_path):
     (agg / "alerts.jsonl").write_text(json.dumps(alert) + "\n")
 
     db = tmp_path / "hub.db"
-    ingest_aggregate(agg, db)
+    summary = ingest_aggregate(agg, db)
 
+    assert summary["collections"]["GovernanceAlerts"] == 1
     ga = _rows(db, "GovernanceAlerts")["alrt_0123456789abcdef0123456789abcdef"]
-    # canonical "active" -> UI open state so the GovernanceAlerts panel surfaces it
-    assert ga["review_status"] == "Open"
+    assert ga["review_status"] == "Open"          # canonical "active" -> UI open state
     assert ga["occurred_at"] == "2026-01-01T00:00:00Z"
     assert ga["record_id"] == "ent_0123456789abcdef0123456789abce01"
     assert ga["severity"] == 3
@@ -151,8 +137,36 @@ def test_ingest_is_idempotent(valid_package, tmp_path):
     total_after_first = _count(db)
     second = ingest_aggregate(agg, db)
 
+    # INSERT OR REPLACE on (entity_type, entity_id) -> no duplicate rows.
     assert first["collections"] == second["collections"]
     assert _count(db) == total_after_first
+
+
+def test_ingest_maps_correlations_by_relationship_id(valid_package, tmp_path):
+    agg = tmp_path / "agg"
+    aggregate({"moneysweep-pr": valid_package}, agg)
+    # Hand-write a correlation row (federation_relationship shape) as correlate would.
+    rel_id = "rel_ffffffffffffffffffffffffffffffff"
+    corr = {
+        "relationship_id": rel_id,
+        "source_id": "src_0123456789abcdef0123456789abcdef",
+        "source_entity_id": "ent_0123456789abcdef0123456789abce01",
+        "target_entity_id": "ent_0123456789abcdef0123456789abce02",
+        "relationship_type": "entity_correlation",
+        "evidence_source_id": "src_0123456789abcdef0123456789abcdef",
+        "confidence": 0.8,
+        "lineage": {"producer_script": "src/hub/correlate.py",
+                    "producer_phase": "HUB_CORRELATE", "source_inputs": []},
+        "synthetic": True, "created_at": "1970-01-01T00:00:00Z",
+        "extracted_at": "1970-01-01T00:00:00Z",
+    }
+    (agg / "correlations.jsonl").write_text(json.dumps(corr) + "\n")
+
+    db = tmp_path / "hub.db"
+    summary = ingest_aggregate(agg, db)
+
+    assert summary["collections"]["Correlations"] == 1
+    assert set(_rows(db, "Correlations")) == {rel_id}
 
 
 def test_ingest_skips_rows_missing_canonical_id(tmp_path):
@@ -168,9 +182,56 @@ def test_ingest_skips_rows_missing_canonical_id(tmp_path):
     db = tmp_path / "hub.db"
     summary = ingest_aggregate(agg, db)
 
-    assert summary["collections"]["GraphNodes"] == 1
-    assert summary["skipped"] == {"GraphNodes": 1}
-    assert set(_rows(db, "GraphNodes")) == {good_id}
+    assert summary["collections"]["Entities"] == 1
+    assert summary["skipped"] == {"Entities": 1}
+    assert set(_rows(db, "Entities")) == {good_id}
+
+
+def test_ingest_projects_crossover_links(tmp_path):
+    """correlations.jsonl -> the workspace's explicit CrossoverLinks collection.
+
+    Covers the reshape (module/type/band mapping) and the curation: entity-name
+    links are always kept; spatial links collapse to the nearest cross-producer
+    match per minority-producer entity.
+    """
+    agg = tmp_path / "agg"
+    agg.mkdir()
+    ents = [
+        {"entity_id": "ent_agua1", "name": "Ceiba WTP", "_producers": ["aguayluz-pr"]},
+        {"entity_id": "ent_ovni1", "name": "Ceiba sighting", "_producers": ["ovnis-pr"]},
+        {"entity_id": "ent_ovni2", "name": "Ceiba sighting B", "_producers": ["ovnis-pr"]},
+    ]
+    (agg / "entities.jsonl").write_text("\n".join(json.dumps(e) for e in ents) + "\n")
+    corrs = [
+        # two spatial links to the SAME minority (ovnis) entity -> keep higher confidence
+        {"relationship_id": "rel_s1", "source_entity_id": "ent_agua1", "target_entity_id": "ent_ovni1",
+         "relationship_type": "spatial_proximity", "match_basis": "location", "confidence": 0.9,
+         "explanation": "within 0.1 km"},
+        {"relationship_id": "rel_s2", "source_entity_id": "ent_agua1", "target_entity_id": "ent_ovni1",
+         "relationship_type": "spatial_proximity", "match_basis": "location", "confidence": 0.5,
+         "explanation": "within 0.5 km"},
+        # entity-name correlation -> always kept
+        {"relationship_id": "rel_e1", "source_entity_id": "ent_agua1", "target_entity_id": "ent_ovni2",
+         "relationship_type": "entity_correlation", "match_basis": "normalized_name", "confidence": 0.5,
+         "explanation": "shared name"},
+    ]
+    (agg / "correlations.jsonl").write_text("\n".join(json.dumps(c) for c in corrs) + "\n")
+
+    db = tmp_path / "hub.db"
+    summary = ingest_aggregate(agg, db)
+
+    xlinks = _rows(db, "CrossoverLinks")
+    assert summary["collections"]["CrossoverLinks"] == 2
+    assert set(xlinks) == {"rel_s1", "rel_e1"}  # rel_s2 collapsed into rel_s1 (same ovnis entity)
+
+    s1 = xlinks["rel_s1"]
+    assert s1["source_module"] == "AguaYLuz-PR"      # from _producers -> CROSSOVER_MODULES string
+    assert s1["target_module"] == "Ovnis-PR"
+    assert s1["correlation_type"] == "Geography"     # spatial_proximity -> Geography
+    assert s1["confidence_score"] == 90 and s1["confidence_band"] == "High"
+    assert s1["status"] == "Candidate"
+    assert s1["source_label"] == "Ceiba WTP"         # entity name resolved
+    assert xlinks["rel_e1"]["correlation_type"] == "Entity"  # entity_correlation -> Entity
 
 
 def test_ingest_empty_dir_returns_zero(tmp_path):
@@ -190,6 +251,7 @@ def test_ingest_cli_reports_and_errors(valid_package, tmp_path):
     db = tmp_path / "hub.db"
 
     assert main(["ingest", "--in", str(agg), "--db", str(db)]) == 0
+    # Empty aggregate dir -> non-zero exit.
     empty = tmp_path / "empty"
     empty.mkdir()
     assert main(["ingest", "--in", str(empty), "--db", str(db)]) == 1

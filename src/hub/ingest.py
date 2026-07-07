@@ -3,25 +3,29 @@
 The aggregation pipeline (``hub aggregate`` / ``hub correlate``) writes canonical
 JSONL streams to ``data/aggregate/``. The FastAPI server
 (``server/backend/main.py``) reads a generic SQLite document store at
-``data/hub.db`` and serves it at ``/api/entities/<Collection>``; the React UI
-reads those collections. This module is the bridge between the two.
+``data/hub.db`` and, until now, only ever saw the ``Programs`` rows it seeds from
+the registry. Nothing connected the two halves.
 
-The UI was built against per-domain collection names (``UnifiedSources``,
-``GraphNodes``/``GraphEdges``, ``GovernanceAlerts``, ``CrossoverLinks``) whose
-field names differ from the domain-agnostic canonical streams. So each stream is
-run through a small **adapter**: it keeps the full canonical payload (including
-the aggregate's ``_producers`` provenance) and *adds* the UI's field names on
-top, storing the result under the UI collection name. Streams the UI has no
-distinct page for yet are stored under their canonical name unchanged.
+This module is that bridge. It loads each aggregate stream into a store
+collection keyed by the row's canonical id, so a running server serves the live
+federation graph at ``/api/entities/<Collection>`` instead of a static snapshot.
 
 Design notes:
 
-* **Idempotent.** Rows upsert by ``(entity_type, entity_id)`` (``INSERT OR
-  REPLACE``) — re-ingesting the same aggregate is a no-op on counts.
-* **No server process required.** Writes ``data/hub.db`` with the same DDL as
-  ``server/backend/main.py::_init_db``; the server picks rows up on its next read.
-* **Single source of mapping truth.** ``COLLECTION_ADAPTERS`` is the one place the
-  stream -> collection + field projection is defined.
+* **Idempotent.** Re-ingesting the same aggregate replaces rows in place
+  (``INSERT OR REPLACE`` on the ``(entity_type, entity_id)`` primary key) — no
+  duplicates, stable counts.
+* **No server process required.** The bridge writes ``data/hub.db`` directly with
+  the *same* DDL as ``server/backend/main.py::_init_db``, so the store and this
+  bridge can never diverge; the server picks the rows up on its next read.
+* **Canonical, lossless.** The full canonical row (including the aggregate's
+  ``_producers`` provenance array) is stored verbatim in the JSON ``data`` column;
+  only an ``id`` key is injected so the server's read path (which backfills
+  ``id`` / ``created_date`` / ``updated_date``) and mutations key off it.
+
+Stream -> collection naming is a single module constant (``STREAM_TO_COLLECTION``)
+so the frontend-facing retarget (Phase 2: map onto the UI's per-domain collection
+names/fields) is a one-spot edit.
 """
 from __future__ import annotations
 
@@ -29,7 +33,7 @@ import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, List, NamedTuple, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from ._schemas import STREAM_ID_FIELD
 
@@ -44,184 +48,128 @@ _SCHEMA = """
     )
 """
 
-# graph_summary.json lands as a single row in this collection.
+# Aggregate stream (file stem) -> store collection name (entity_type).
+STREAM_TO_COLLECTION: Dict[str, str] = {
+    "sources": "Sources",
+    "entities": "Entities",
+    "relationships": "Relationships",
+    "funding_awards": "FundingAwards",
+    "transactions": "Transactions",
+    "observations": "Observations",
+    "alerts": "Alerts",
+    "correlations": "Correlations",
+}
+
+# The field holding each stream's deterministic id. correlations.jsonl rows are
+# canonical federation_relationship rows, so they key off relationship_id.
+_ID_FIELD: Dict[str, str] = {**STREAM_ID_FIELD, "correlations": "relationship_id"}
+
+# graph_summary.json lands as a single row in this collection (Dashboard counts).
 _SUMMARY_COLLECTION = "FederationSummary"
 _SUMMARY_ID = "graph_summary"
 
+# ── Phase 2: frontend-facing CrossoverLinks projection ────────────────────────
+# The Crossover Workspace (server/frontend/src/lib/crossover.js) is explicit-only:
+# it renders the "CrossoverLinks" collection. Phase 1 above loads the canonical
+# `correlations` stream verbatim into "Correlations"; this projects those rows
+# into the workspace's display shape and curates the volume so the frontend's
+# bounded page (useEntityData caps at _CROSSOVER_CAP) shows the strongest links.
+_CROSSOVER_COLLECTION = "CrossoverLinks"
+_CROSSOVER_CAP = 500
 
-# ── projection helpers ──────────────────────────────────────────────────────────
-
-def _band(value: Any) -> Optional[str]:
-    """Bucket a 0..1 confidence into the UI's Low/Medium/High select values."""
-    try:
-        v = float(value)
-    except (TypeError, ValueError):
-        return None
-    if v < 0.5:
-        return "Low"
-    if v < 0.8:
-        return "Medium"
-    return "High"
-
-
-def _first_producer(row: Dict[str, Any]) -> Optional[str]:
-    producers = row.get("_producers")
-    if isinstance(producers, list) and producers:
-        return str(producers[0])
-    return None
-
-
-def _loc(row: Dict[str, Any], key: str) -> Any:
-    loc = row.get("location")
-    return loc.get(key) if isinstance(loc, dict) else None
-
-
-def _clean(fields: Dict[str, Any]) -> Dict[str, Any]:
-    """Drop keys whose value is None so we never overwrite with nulls."""
-    return {k: v for k, v in fields.items() if v is not None}
-
-
-# program_id -> UI module display name (matches server/frontend/src/lib/federation.js).
-_MODULE_NAMES = {
-    "spiderweb-pr": "Spiderweb-PR",
-    "ovnis-pr": "Ovnis-PR",
-    "aguayluz-pr": "AguaYLuz-PR",
-    "moneysweep-pr": "MoneySweep-PR",
-    "skywatcher-pr": "Skywatcher-PR",
-    "centinelas-pr": "Centinelas-PR",
+# producer program_id -> crossover-config.js CROSSOVER_MODULES string.
+_PRODUCER_MODULE: Dict[str, str] = {
+    "aguayluz-pr": "AguaYLuz-PR", "ovnis-pr": "Ovnis-PR", "moneysweep-pr": "MoneySweep-PR",
+    "spiderweb-pr": "Spiderweb-PR", "skywatcher-pr": "Skywatcher-PR", "centinelas-pr": "Centinelas-PR",
 }
-
-# Canonical federation_alert.status -> the UI's GovernanceAlerts review_status.
-# The panel treats only {"Open","Acknowledged"} as open, so live producer alerts
-# must be translated or they render as closed/hidden. Unknown -> "Open" (surface it).
-_ALERT_STATUS = {
-    "draft": "Open",
-    "active": "Open",
-    "validated": "Acknowledged",
-    "closed": "Closed",
-    "rejected": "Rejected",
+# correlate relationship_type -> crossover-config.js correlation_type.
+_CROSSOVER_TYPE: Dict[str, str] = {
+    "spatial_proximity": "Geography", "spatial_correlation": "Geography",
+    "temporal_proximity": "Temporal", "temporal_correlation": "Temporal",
+    "entity_correlation": "Entity",
 }
+# aguayluz is the dense side we collapse AGAINST; spatial links dedupe to the
+# nearest cross-producer match per one of these (minority) entities, otherwise
+# municipality-centroid geocoding explodes them (one case ~ thousands of assets).
+_MINORITY_PRODUCERS = {"ovnis-pr", "spiderweb-pr", "skywatcher-pr", "centinelas-pr", "moneysweep-pr"}
 
 
-def _module_for(program_id: Optional[str]) -> Optional[str]:
-    if not program_id:
-        return None
-    return _MODULE_NAMES.get(program_id, program_id)
+def _first_producer(entity: Dict[str, Any]) -> str:
+    ps = entity.get("_producers") or []
+    return str(ps[0]) if ps else ""
 
 
-def _entity_module_map(agg: Path) -> Dict[str, str]:
-    """entity_id -> UI module display name, from each entity's first producer.
-
-    correlations.jsonl rows carry only entity ids; the crossover UI needs the
-    source/target *modules* to build matrix pairs and chips. Entities do carry
-    ``_producers``, so we join on them here."""
-    path = agg / "entities.jsonl"
-    if not path.exists():
-        return {}
-    mapping: Dict[str, str] = {}
-    for row in _read_jsonl(path):
-        eid = row.get("entity_id")
-        module = _module_for(_first_producer(row))
-        if eid and module:
-            mapping[eid] = module
-    return mapping
+def _crossover_band(score: float) -> str:
+    return "High" if score >= 70 else "Medium" if score >= 40 else "Low"
 
 
-# ── stream -> UI collection field projections ───────────────────────────────────
+def project_crossover_links(aggregate_dir: str | Path) -> List[Tuple[str, Dict[str, Any]]]:
+    """Reshape ``correlations.jsonl`` into the explicit CrossoverLinks the workspace reads.
 
-def _sources_to_unified(row: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
-    return _clean({
-        "source_id": row.get("source_id"),
-        "title": row.get("source_name"),
-        "source_type": row.get("source_type"),
-        "url": row.get("source_url") or row.get("source_ref"),
-        "program_id": _first_producer(row),
-    })
+    Curation: keep every entity-name correlation; collapse spatial/temporal links
+    to the single nearest cross-producer match per minority-producer entity; cap
+    the total to ``_CROSSOVER_CAP`` by descending confidence. Returns
+    ``(crossover_id, payload)`` pairs; empty if there is no correlations stream.
+    """
+    agg = Path(aggregate_dir)
+    corr_path = agg / "correlations.jsonl"
+    if not corr_path.exists():
+        return []
+    ent_path = agg / "entities.jsonl"
+    ents = {e["entity_id"]: e for e in _read_jsonl(ent_path)} if ent_path.exists() else {}
 
+    name_links: List[Dict[str, Any]] = []
+    spatial_best: Dict[str, Dict[str, Any]] = {}
+    for r in _read_jsonl(corr_path):
+        if r.get("relationship_type") == "entity_correlation":
+            name_links.append(r)
+            continue
+        a, b = r.get("source_entity_id"), r.get("target_entity_id")
+        key = a if _first_producer(ents.get(a, {})) in _MINORITY_PRODUCERS else b
+        conf = r.get("confidence") or 0
+        if key is not None and (key not in spatial_best or conf > (spatial_best[key].get("confidence") or 0)):
+            spatial_best[key] = r
 
-def _entities_to_nodes(row: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
-    return _clean({
-        "node_id": row.get("entity_id"),
-        "label": row.get("name"),
-        "node_type": row.get("entity_type"),
-        "municipality": _loc(row, "municipality"),
-        "latitude": _loc(row, "lat"),
-        "longitude": _loc(row, "lon"),
-        "confidence": _band(row.get("confidence")),
-        "program_id": _first_producer(row),
-    })
+    curated = name_links + list(spatial_best.values())
+    curated.sort(key=lambda r: r.get("confidence") or 0, reverse=True)
 
+    out: List[Tuple[str, Dict[str, Any]]] = []
+    for r in curated[:_CROSSOVER_CAP]:
+        a = ents.get(r.get("source_entity_id"), {})
+        b = ents.get(r.get("target_entity_id"), {})
+        score = round((r.get("confidence") or 0) * 100)
+        sm = _PRODUCER_MODULE.get(_first_producer(a), "Hub")
+        tm = _PRODUCER_MODULE.get(_first_producer(b), "Hub")
+        cid = r.get("relationship_id") or f"xover_{r.get('source_entity_id')}_{r.get('target_entity_id')}"
+        basis = r.get("match_basis")
+        out.append((cid, {
+            "crossover_id": cid,
+            "source_module": sm, "target_module": tm,
+            "source_record_id": r.get("source_entity_id"),
+            "target_record_id": r.get("target_entity_id"),
+            "source_label": a.get("name") or r.get("source_entity_id"),
+            "target_label": b.get("name") or r.get("target_entity_id"),
+            "related_modules": sorted({sm, tm}),
+            "correlation_type": _CROSSOVER_TYPE.get(r.get("relationship_type") or "", "Other"),
+            "status": "Candidate",
+            "confidence_score": score,
+            "confidence_band": _crossover_band(score),
+            "rationale": r.get("explanation", ""),
+            "matching_criteria": [basis] if basis else [],
+            "source_ids": [],
+            "evidence_tier": None,
+            "created_from": "hub correlate",
+        }))
+    return out
 
-def _relationships_to_edges(row: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
-    return _clean({
-        "edge_id": row.get("relationship_id"),
-        "source_node_id": row.get("source_entity_id"),
-        "target_node_id": row.get("target_entity_id"),
-        "relationship_type": row.get("relationship_type"),
-        "confidence": _band(row.get("confidence")),
-    })
-
-
-def _alerts_to_governance(row: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
-    attrs = row.get("attributes")
-    attributes = attrs if isinstance(attrs, dict) else {}
-    status = row.get("status")
-    review_status = _ALERT_STATUS.get(status, "Open") if isinstance(status, str) else "Open"
-    return _clean({
-        "module": row.get("module"),
-        "entity_name": row.get("module"),
-        "severity": row.get("severity"),
-        "review_status": review_status,
-        "occurred_at": row.get("observed_at"),
-        "record_id": row.get("entity_id"),
-        "summary": attributes.get("summary") or row.get("alert_type"),
-    })
-
-
-def _correlations_to_crossover(row: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
-    entity_module = ctx.get("entity_module", {})
-    return _clean({
-        "crossover_id": row.get("relationship_id"),
-        "source_record_id": row.get("source_entity_id"),
-        "target_record_id": row.get("target_entity_id"),
-        "source_module": entity_module.get(row.get("source_entity_id")),
-        "target_module": entity_module.get(row.get("target_entity_id")),
-        "correlation_type": row.get("relationship_type"),
-        "confidence_score": row.get("confidence"),
-        "confidence_band": _band(row.get("confidence")),
-        "rationale": row.get("explanation"),
-        "status": "PendingReview",
-        "source_ids": [row["source_id"]] if row.get("source_id") else [],
-        "created_from": "hub_correlate",
-    })
-
-
-class Adapter(NamedTuple):
-    stream: str
-    collection: str
-    id_field: str
-    project: Optional[Callable[[Dict[str, Any], Dict[str, Any]], Dict[str, Any]]]
-
-
-# The one place the stream -> collection + field mapping lives.
-# correlations.jsonl rows are canonical federation_relationship rows -> relationship_id.
-COLLECTION_ADAPTERS: List[Adapter] = [
-    Adapter("sources", "UnifiedSources", STREAM_ID_FIELD["sources"], _sources_to_unified),
-    Adapter("entities", "GraphNodes", STREAM_ID_FIELD["entities"], _entities_to_nodes),
-    Adapter("relationships", "GraphEdges", STREAM_ID_FIELD["relationships"], _relationships_to_edges),
-    Adapter("alerts", "GovernanceAlerts", STREAM_ID_FIELD["alerts"], _alerts_to_governance),
-    Adapter("correlations", "CrossoverLinks", "relationship_id", _correlations_to_crossover),
-    # No distinct UI page by name yet -> keep canonical name, canonical payload.
-    Adapter("funding_awards", "FundingAwards", STREAM_ID_FIELD["funding_awards"], None),
-    Adapter("transactions", "Transactions", STREAM_ID_FIELD["transactions"], None),
-    Adapter("observations", "Observations", STREAM_ID_FIELD["observations"], None),
-]
-
-
-# ── store helpers ───────────────────────────────────────────────────────────────
 
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def _ensure_schema(conn: sqlite3.Connection) -> None:
+    conn.execute(_SCHEMA)
+    conn.commit()
 
 
 def _read_jsonl(path: Path) -> List[Dict[str, Any]]:
@@ -247,20 +195,128 @@ def _upsert(conn: sqlite3.Connection, collection: str, entity_id: str,
     )
 
 
+# ── Phase 2: frontend-facing per-domain projections ──────────────────────────
+# Alongside the canonical collections above, several UI pages read per-domain
+# collections whose field names differ from the canonical streams (Sources.jsx ->
+# UnifiedSources, Spiderweb.jsx -> GraphNodes/GraphEdges, GovernanceAlertsPanel ->
+# GovernanceAlerts). We project each stream into its UI collection, keeping the
+# full canonical payload (incl. _producers) and *adding* the UI field aliases, so
+# those pages render live aggregate data without losing provenance. Streams keep
+# their canonical collection too (the aggregate graph stays intact for consumers).
+
+# Canonical alert status -> the UI's GovernanceAlerts review_status. The panel
+# treats only {"Open","Acknowledged"} as open, so live alerts must be translated
+# or they render as closed/hidden. Unknown -> "Open" (surface it for review).
+_ALERT_REVIEW_STATUS = {
+    "draft": "Open", "active": "Open", "validated": "Acknowledged",
+    "closed": "Closed", "rejected": "Rejected",
+}
+
+
+def _conf01_band(value: Any) -> Optional[str]:
+    """Bucket a 0..1 confidence into the UI's Low/Medium/High select values."""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return None
+    return "Low" if v < 0.5 else "Medium" if v < 0.8 else "High"
+
+
+def _loc(row: Dict[str, Any], key: str) -> Any:
+    loc = row.get("location")
+    return loc.get(key) if isinstance(loc, dict) else None
+
+
+def _nonnull(fields: Dict[str, Any]) -> Dict[str, Any]:
+    return {k: v for k, v in fields.items() if v is not None}
+
+
+def _alias_source(row: Dict[str, Any]) -> Dict[str, Any]:
+    return _nonnull({
+        "source_id": row.get("source_id"),
+        "title": row.get("source_name"),
+        "source_type": row.get("source_type"),
+        "url": row.get("source_url") or row.get("source_ref"),
+        "program_id": _first_producer(row) or None,
+    })
+
+
+def _alias_node(row: Dict[str, Any]) -> Dict[str, Any]:
+    return _nonnull({
+        "node_id": row.get("entity_id"),
+        "label": row.get("name"),
+        "node_type": row.get("entity_type"),
+        "municipality": _loc(row, "municipality"),
+        "latitude": _loc(row, "lat"),
+        "longitude": _loc(row, "lon"),
+        "confidence": _conf01_band(row.get("confidence")),
+        "program_id": _first_producer(row) or None,
+    })
+
+
+def _alias_edge(row: Dict[str, Any]) -> Dict[str, Any]:
+    return _nonnull({
+        "edge_id": row.get("relationship_id"),
+        "source_node_id": row.get("source_entity_id"),
+        "target_node_id": row.get("target_entity_id"),
+        "relationship_type": row.get("relationship_type"),
+        "confidence": _conf01_band(row.get("confidence")),
+    })
+
+
+def _alias_alert(row: Dict[str, Any]) -> Dict[str, Any]:
+    status = row.get("status")
+    review = _ALERT_REVIEW_STATUS.get(status, "Open") if isinstance(status, str) else "Open"
+    attrs = row.get("attributes")
+    attrs = attrs if isinstance(attrs, dict) else {}
+    return _nonnull({
+        "module": row.get("module"),
+        "entity_name": row.get("module"),
+        "severity": row.get("severity"),
+        "review_status": review,
+        "occurred_at": row.get("observed_at"),
+        "record_id": row.get("entity_id"),
+        "summary": attrs.get("summary") or row.get("alert_type"),
+    })
+
+
+# (stream, id field, UI collection, alias projector) — canonical row + UI aliases.
+_UI_PROJECTIONS: List[Tuple[str, str, str, Callable[[Dict[str, Any]], Dict[str, Any]]]] = [
+    ("sources", "source_id", "UnifiedSources", _alias_source),
+    ("entities", "entity_id", "GraphNodes", _alias_node),
+    ("relationships", "relationship_id", "GraphEdges", _alias_edge),
+    ("alerts", "alert_id", "GovernanceAlerts", _alias_alert),
+]
+
+
+def _project_ui(agg: Path, stream: str, id_field: str,
+                alias: Callable[[Dict[str, Any]], Dict[str, Any]]) -> List[Tuple[str, Dict[str, Any]]]:
+    path = agg / f"{stream}.jsonl"
+    if not path.exists():
+        return []
+    out: List[Tuple[str, Dict[str, Any]]] = []
+    for row in _read_jsonl(path):
+        eid = row.get(id_field)
+        if not eid:
+            continue
+        out.append((str(eid), {**row, **alias(row)}))
+    return out
+
+
 def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
     """Load a Hub aggregate directory into the SQLite entity store.
 
-    Returns::
+    Returns a summary::
 
         {
           "db": "<db_path>",
-          "collections": {"UnifiedSources": 4, "GraphNodes": 12, ...},
-          "skipped": {"GraphNodes": 0, ...},   # rows missing their canonical id
+          "collections": {"Entities": 12, "Sources": 4, ...},
+          "skipped": {"Entities": 0, ...},   # rows missing their canonical id
           "total": 16,
         }
 
-    Missing streams (and graph_summary.json) are silently skipped; ``total == 0``
-    signals "nothing to ingest" to the caller.
+    Streams (and graph_summary.json) that are absent are silently skipped;
+    ``total == 0`` signals "nothing to ingest" for the caller.
     """
     agg = Path(aggregate_dir)
     db = Path(db_path)
@@ -270,36 +326,47 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
     collections: Dict[str, int] = {}
     skipped: Dict[str, int] = {}
 
-    ctx = {"entity_module": _entity_module_map(agg)}
-
     conn = sqlite3.connect(db)
     try:
-        conn.execute(_SCHEMA)
-        for adapter in COLLECTION_ADAPTERS:
-            fpath = agg / f"{adapter.stream}.jsonl"
+        _ensure_schema(conn)
+        for stream, collection in STREAM_TO_COLLECTION.items():
+            fpath = agg / f"{stream}.jsonl"
             if not fpath.exists():
                 continue
+            id_field = _ID_FIELD[stream]
             upserted = 0
             missing = 0
             for row in _read_jsonl(fpath):
-                entity_id = row.get(adapter.id_field)
+                entity_id = row.get(id_field)
                 if not entity_id:
                     missing += 1
                     continue
-                payload = dict(row)
-                if adapter.project is not None:
-                    payload.update(adapter.project(row, ctx))
-                _upsert(conn, adapter.collection, str(entity_id), payload, ts)
+                _upsert(conn, collection, str(entity_id), row, ts)
                 upserted += 1
-            collections[adapter.collection] = upserted
+            collections[collection] = upserted
             if missing:
-                skipped[adapter.collection] = missing
+                skipped[collection] = missing
 
         summary_path = agg / "graph_summary.json"
         if summary_path.exists():
             payload = json.loads(summary_path.read_text(encoding="utf-8"))
             _upsert(conn, _SUMMARY_COLLECTION, _SUMMARY_ID, payload, ts)
             collections[_SUMMARY_COLLECTION] = 1
+
+        # Phase 2: project correlations into the workspace's explicit CrossoverLinks.
+        xlinks = project_crossover_links(agg)
+        for cid, payload in xlinks:
+            _upsert(conn, _CROSSOVER_COLLECTION, cid, payload, ts)
+        if xlinks:
+            collections[_CROSSOVER_COLLECTION] = len(xlinks)
+
+        # Phase 2: project each stream into its per-domain UI collection.
+        for stream, id_field, collection, alias in _UI_PROJECTIONS:
+            projected = _project_ui(agg, stream, id_field, alias)
+            for eid, payload in projected:
+                _upsert(conn, collection, eid, payload, ts)
+            if projected:
+                collections[collection] = len(projected)
 
         conn.commit()
     finally:

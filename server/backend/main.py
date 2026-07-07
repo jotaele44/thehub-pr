@@ -87,9 +87,11 @@ def _row(row: sqlite3.Row) -> dict[str, Any]:
 _DOMAIN_MAP = {
     "public_money_intelligence_node": "Contracts",
     "spatial_operational_query_hub": "NetworkGraph",
+    "spatial_operational_producer": "NetworkGraph",
     "water_grid_monitoring_node": "Infrastructure",
     "anomaly_intelligence_node": "UAP",
     "airspace_intelligence_node": "Airspace",
+    "pre_officialization_signal_producer": "Signals",
 }
 
 _DISPLAY_NAMES = {
@@ -98,6 +100,7 @@ _DISPLAY_NAMES = {
     "aguayluz-pr": "AguaYLuz PR",
     "ovnis-pr": "OVNIS PR",
     "skywatcher-pr": "Skywatcher PR",
+    "centinelas-pr": "Centinelas PR",
 }
 
 
