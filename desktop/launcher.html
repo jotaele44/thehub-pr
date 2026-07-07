@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PRII Federation Launcher</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #0b1020; color: #e2e8f0; min-height: 100vh; padding: 40px 16px;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    h1 { font-size: 22px; letter-spacing: .02em; }
+    p.sub { color: #94a3b8; margin: 6px 0 24px; font-size: 14px; }
+    .card {
+      display: flex; align-items: center; gap: 14px;
+      background: #111a30; border: 1px solid #1e2a4a; border-radius: 12px;
+      padding: 14px 16px; margin-bottom: 10px;
+    }
+    .card .info { flex: 1; min-width: 0; }
+    .card .name { font-weight: 700; }
+    .card .domain { color: #94a3b8; font-size: 13px; }
+    .chip {
+      font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px;
+      white-space: nowrap;
+    }
+    .chip.ok { background: #052e1f; color: #34d399; border: 1px solid #14532d; }
+    .chip.warn { background: #3a2b05; color: #fbbf24; border: 1px solid #713f12; }
+    .chip.off { background: #1f2937; color: #9ca3af; border: 1px solid #374151; }
+    button {
+      font: inherit; font-weight: 700; font-size: 13px; cursor: pointer;
+      background: #1d4ed8; color: white; border: 0; border-radius: 8px;
+      padding: 8px 16px;
+    }
+    button:disabled { background: #1f2937; color: #6b7280; cursor: default; }
+    a { color: #60a5fa; font-size: 13px; }
+    .note { color: #64748b; font-size: 12px; margin-top: 18px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>PRII Federation Launcher</h1>
+    <p class="sub">Launch any federation app cloned next to this hub. First launch of an app runs its one-time setup (can take a few minutes).</p>
+    <div id="list">Loading…</div>
+    <p class="note">
+      An app opens in its own window on its own local port. "Not cloned" repos need
+      <code>git clone</code> next to the hub directory first. The hub dashboard itself is
+      <a href="/">here</a>.
+    </p>
+  </div>
+  <script>
+    const list = document.getElementById("list");
+    const launching = new Set();
+
+    function chip(repo) {
+      if (repo.is_hub) return '<span class="chip ok">THIS WINDOW</span>';
+      if (!repo.present) return '<span class="chip off">NOT CLONED</span>';
+      if (!repo.has_desktop) return '<span class="chip warn">NO WRAPPER</span>';
+      if (repo.running) return '<span class="chip ok">RUNNING</span>';
+      if (!repo.setup_complete) return '<span class="chip warn">FIRST-RUN SETUP</span>';
+      return '<span class="chip ok">READY</span>';
+    }
+
+    function render(repos) {
+      list.innerHTML = repos.map(function (r) {
+        const canLaunch = !r.is_hub && r.present && r.has_desktop && !r.running;
+        const busy = launching.has(r.repo);
+        const action = r.is_hub
+          ? ""
+          : r.present && r.has_desktop
+            ? '<button data-repo="' + r.repo + '"' + (canLaunch && !busy ? "" : " disabled") + ">" + (busy ? "Launching…" : r.running ? "Running" : "Launch") + "</button>"
+            : '<a href="' + r.github_url + '" target="_blank">GitHub ↗</a>';
+        return '<div class="card"><div class="info"><div class="name">' + r.name +
+          ' <span style="color:#475569;font-weight:400">· ' + r.repo + '</span></div>' +
+          '<div class="domain">' + r.domain + '</div></div>' + chip(r) + action + '</div>';
+      }).join("");
+      list.querySelectorAll("button[data-repo]").forEach(function (btn) {
+        btn.addEventListener("click", function () { launch(btn.dataset.repo); });
+      });
+    }
+
+    async function refresh() {
+      try {
+        const res = await fetch("/api/local/federation");
+        render(await res.json());
+      } catch (err) {
+        list.textContent = "Failed to load federation status: " + err;
+      }
+    }
+
+    async function launch(repo) {
+      launching.add(repo);
+      refresh();
+      try {
+        const res = await fetch("/api/local/launch/" + repo, { method: "POST" });
+        if (!res.ok) {
+          const body = await res.json().catch(function () { return {}; });
+          alert(body.detail || "Launch failed");
+        }
+      } finally {
+        // Give slow first-run setups time before clearing the spinner state.
+        setTimeout(function () { launching.delete(repo); refresh(); }, 4000);
+      }
+    }
+
+    refresh();
+    setInterval(refresh, 5000);
+  </script>
+</body>
+</html>
