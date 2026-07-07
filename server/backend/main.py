@@ -326,11 +326,27 @@ async def agents_stub(path: str, request: Request):
         return []
     return {"id": str(uuid.uuid4()), "message": "Agents not implemented in diagnostic mode"}
 
+
+@app.api_route("/api/integrations/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
+async def integrations_stub(path: str, request: Request):
+    return {"message": f"Integration {path!r} not configured"}
+
+
+@app.post("/api/files/upload")
+async def files_upload():
+    return {"file_id": str(uuid.uuid4()), "message": "File storage not implemented"}
+
+
+@app.get("/api/connectors/{name}/connection")
+def connectors_stub(name: str):
+    return {"status": "not_connected", "name": name}
+
 # ── Static frontend (one served product) ───────────────────────────────────────
 # When the frontend is built (`npm --prefix server/frontend run build`), serve it
 # from the same origin as /api so the hub is a single deployable product. If dist/
 # is absent (API-only dev, with Vite on :5173), these routes simply don't mount.
-# Declared last so every /api and /health route above takes precedence.
+# Registered LAST, after every /api and /health route, so the catch-all never
+# shadows an API route.
 
 DIST = REPO_ROOT / "server" / "frontend" / "dist"
 
@@ -348,18 +364,3 @@ if DIST.is_dir():
         if full_path and candidate.is_file() and DIST.resolve() in candidate.parents:
             return FileResponse(candidate)
         return FileResponse(DIST / "index.html")
-
-
-@app.api_route("/api/integrations/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
-async def integrations_stub(path: str, request: Request):
-    return {"message": f"Integration {path!r} not configured"}
-
-
-@app.post("/api/files/upload")
-async def files_upload():
-    return {"file_id": str(uuid.uuid4()), "message": "File storage not implemented"}
-
-
-@app.get("/api/connectors/{name}/connection")
-def connectors_stub(name: str):
-    return {"status": "not_connected", "name": name}

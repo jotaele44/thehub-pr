@@ -115,6 +115,9 @@ def test_ingest_maps_correlations_to_crossover_links(valid_package, tmp_path):
     assert link["correlation_type"] == "entity_correlation"
     assert link["confidence_band"] == "High"
     assert link["status"] == "PendingReview"
+    # modules derived from the endpoint entities' producers (join on _producers)
+    assert link["source_module"] == "MoneySweep-PR"
+    assert link["target_module"] == "MoneySweep-PR"
 
 
 def test_ingest_maps_alerts_to_governance(tmp_path):
@@ -132,7 +135,8 @@ def test_ingest_maps_alerts_to_governance(tmp_path):
     ingest_aggregate(agg, db)
 
     ga = _rows(db, "GovernanceAlerts")["alrt_0123456789abcdef0123456789abcdef"]
-    assert ga["review_status"] == "active"
+    # canonical "active" -> UI open state so the GovernanceAlerts panel surfaces it
+    assert ga["review_status"] == "Open"
     assert ga["occurred_at"] == "2026-01-01T00:00:00Z"
     assert ga["record_id"] == "ent_0123456789abcdef0123456789abce01"
     assert ga["severity"] == 3

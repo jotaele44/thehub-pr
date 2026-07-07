@@ -81,9 +81,55 @@ def _clean(fields: Dict[str, Any]) -> Dict[str, Any]:
     return {k: v for k, v in fields.items() if v is not None}
 
 
+# program_id -> UI module display name (matches server/frontend/src/lib/federation.js).
+_MODULE_NAMES = {
+    "spiderweb-pr": "Spiderweb-PR",
+    "ovnis-pr": "Ovnis-PR",
+    "aguayluz-pr": "AguaYLuz-PR",
+    "moneysweep-pr": "MoneySweep-PR",
+    "skywatcher-pr": "Skywatcher-PR",
+    "centinelas-pr": "Centinelas-PR",
+}
+
+# Canonical federation_alert.status -> the UI's GovernanceAlerts review_status.
+# The panel treats only {"Open","Acknowledged"} as open, so live producer alerts
+# must be translated or they render as closed/hidden. Unknown -> "Open" (surface it).
+_ALERT_STATUS = {
+    "draft": "Open",
+    "active": "Open",
+    "validated": "Acknowledged",
+    "closed": "Closed",
+    "rejected": "Rejected",
+}
+
+
+def _module_for(program_id: Optional[str]) -> Optional[str]:
+    if not program_id:
+        return None
+    return _MODULE_NAMES.get(program_id, program_id)
+
+
+def _entity_module_map(agg: Path) -> Dict[str, str]:
+    """entity_id -> UI module display name, from each entity's first producer.
+
+    correlations.jsonl rows carry only entity ids; the crossover UI needs the
+    source/target *modules* to build matrix pairs and chips. Entities do carry
+    ``_producers``, so we join on them here."""
+    path = agg / "entities.jsonl"
+    if not path.exists():
+        return {}
+    mapping: Dict[str, str] = {}
+    for row in _read_jsonl(path):
+        eid = row.get("entity_id")
+        module = _module_for(_first_producer(row))
+        if eid and module:
+            mapping[eid] = module
+    return mapping
+
+
 # ── stream -> UI collection field projections ───────────────────────────────────
 
-def _sources_to_unified(row: Dict[str, Any]) -> Dict[str, Any]:
+def _sources_to_unified(row: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
     return _clean({
         "source_id": row.get("source_id"),
         "title": row.get("source_name"),
@@ -93,7 +139,7 @@ def _sources_to_unified(row: Dict[str, Any]) -> Dict[str, Any]:
     })
 
 
-def _entities_to_nodes(row: Dict[str, Any]) -> Dict[str, Any]:
+def _entities_to_nodes(row: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
     return _clean({
         "node_id": row.get("entity_id"),
         "label": row.get("name"),
@@ -106,7 +152,7 @@ def _entities_to_nodes(row: Dict[str, Any]) -> Dict[str, Any]:
     })
 
 
-def _relationships_to_edges(row: Dict[str, Any]) -> Dict[str, Any]:
+def _relationships_to_edges(row: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
     return _clean({
         "edge_id": row.get("relationship_id"),
         "source_node_id": row.get("source_entity_id"),
@@ -116,25 +162,30 @@ def _relationships_to_edges(row: Dict[str, Any]) -> Dict[str, Any]:
     })
 
 
-def _alerts_to_governance(row: Dict[str, Any]) -> Dict[str, Any]:
+def _alerts_to_governance(row: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
     attrs = row.get("attributes")
     attributes = attrs if isinstance(attrs, dict) else {}
+    status = row.get("status")
+    review_status = _ALERT_STATUS.get(status, "Open") if isinstance(status, str) else "Open"
     return _clean({
         "module": row.get("module"),
         "entity_name": row.get("module"),
         "severity": row.get("severity"),
-        "review_status": row.get("status"),
+        "review_status": review_status,
         "occurred_at": row.get("observed_at"),
         "record_id": row.get("entity_id"),
         "summary": attributes.get("summary") or row.get("alert_type"),
     })
 
 
-def _correlations_to_crossover(row: Dict[str, Any]) -> Dict[str, Any]:
+def _correlations_to_crossover(row: Dict[str, Any], ctx: Dict[str, Any]) -> Dict[str, Any]:
+    entity_module = ctx.get("entity_module", {})
     return _clean({
         "crossover_id": row.get("relationship_id"),
         "source_record_id": row.get("source_entity_id"),
         "target_record_id": row.get("target_entity_id"),
+        "source_module": entity_module.get(row.get("source_entity_id")),
+        "target_module": entity_module.get(row.get("target_entity_id")),
         "correlation_type": row.get("relationship_type"),
         "confidence_score": row.get("confidence"),
         "confidence_band": _band(row.get("confidence")),
@@ -149,7 +200,7 @@ class Adapter(NamedTuple):
     stream: str
     collection: str
     id_field: str
-    project: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]]
+    project: Optional[Callable[[Dict[str, Any], Dict[str, Any]], Dict[str, Any]]]
 
 
 # The one place the stream -> collection + field mapping lives.
@@ -219,6 +270,8 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
     collections: Dict[str, int] = {}
     skipped: Dict[str, int] = {}
 
+    ctx = {"entity_module": _entity_module_map(agg)}
+
     conn = sqlite3.connect(db)
     try:
         conn.execute(_SCHEMA)
@@ -235,7 +288,7 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
                     continue
                 payload = dict(row)
                 if adapter.project is not None:
-                    payload.update(adapter.project(row))
+                    payload.update(adapter.project(row, ctx))
                 _upsert(conn, adapter.collection, str(entity_id), payload, ts)
                 upserted += 1
             collections[adapter.collection] = upserted
