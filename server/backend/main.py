@@ -21,7 +21,8 @@ from typing import Any
 import yaml
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import Response
+from fastapi.responses import FileResponse, Response
+from fastapi.staticfiles import StaticFiles
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 DB_PATH = REPO_ROOT / "data" / "hub.db"
@@ -342,3 +343,27 @@ async def files_upload():
 @app.get("/api/connectors/{name}/connection")
 def connectors_stub(name: str):
     return {"status": "not_connected", "name": name}
+
+# ── Static frontend (one served product) ───────────────────────────────────────
+# When the frontend is built (`npm --prefix server/frontend run build`), serve it
+# from the same origin as /api so the hub is a single deployable product. If dist/
+# is absent (API-only dev, with Vite on :5173), these routes simply don't mount.
+# Registered LAST, after every /api and /health route, so the catch-all never
+# shadows an API route.
+
+DIST = REPO_ROOT / "server" / "frontend" / "dist"
+
+if DIST.is_dir():
+    if (DIST / "assets").is_dir():
+        app.mount("/assets", StaticFiles(directory=DIST / "assets"), name="assets")
+
+    @app.get("/{full_path:path}")
+    def spa(full_path: str):
+        # Serve a real built file when it exists (favicon, etc.); otherwise the SPA
+        # shell. /api/* is handled above; block it here so unknown API paths 404.
+        if full_path.startswith("api/"):
+            raise HTTPException(status_code=404, detail="Not found")
+        candidate = (DIST / full_path).resolve()
+        if full_path and candidate.is_file() and DIST.resolve() in candidate.parents:
+            return FileResponse(candidate)
+        return FileResponse(DIST / "index.html")

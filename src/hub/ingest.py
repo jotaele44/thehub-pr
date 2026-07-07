@@ -33,7 +33,7 @@ import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from ._schemas import STREAM_ID_FIELD
 
@@ -195,6 +195,114 @@ def _upsert(conn: sqlite3.Connection, collection: str, entity_id: str,
     )
 
 
+# ── Phase 2: frontend-facing per-domain projections ──────────────────────────
+# Alongside the canonical collections above, several UI pages read per-domain
+# collections whose field names differ from the canonical streams (Sources.jsx ->
+# UnifiedSources, Spiderweb.jsx -> GraphNodes/GraphEdges, GovernanceAlertsPanel ->
+# GovernanceAlerts). We project each stream into its UI collection, keeping the
+# full canonical payload (incl. _producers) and *adding* the UI field aliases, so
+# those pages render live aggregate data without losing provenance. Streams keep
+# their canonical collection too (the aggregate graph stays intact for consumers).
+
+# Canonical alert status -> the UI's GovernanceAlerts review_status. The panel
+# treats only {"Open","Acknowledged"} as open, so live alerts must be translated
+# or they render as closed/hidden. Unknown -> "Open" (surface it for review).
+_ALERT_REVIEW_STATUS = {
+    "draft": "Open", "active": "Open", "validated": "Acknowledged",
+    "closed": "Closed", "rejected": "Rejected",
+}
+
+
+def _conf01_band(value: Any) -> Optional[str]:
+    """Bucket a 0..1 confidence into the UI's Low/Medium/High select values."""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return None
+    return "Low" if v < 0.5 else "Medium" if v < 0.8 else "High"
+
+
+def _loc(row: Dict[str, Any], key: str) -> Any:
+    loc = row.get("location")
+    return loc.get(key) if isinstance(loc, dict) else None
+
+
+def _nonnull(fields: Dict[str, Any]) -> Dict[str, Any]:
+    return {k: v for k, v in fields.items() if v is not None}
+
+
+def _alias_source(row: Dict[str, Any]) -> Dict[str, Any]:
+    return _nonnull({
+        "source_id": row.get("source_id"),
+        "title": row.get("source_name"),
+        "source_type": row.get("source_type"),
+        "url": row.get("source_url") or row.get("source_ref"),
+        "program_id": _first_producer(row) or None,
+    })
+
+
+def _alias_node(row: Dict[str, Any]) -> Dict[str, Any]:
+    return _nonnull({
+        "node_id": row.get("entity_id"),
+        "label": row.get("name"),
+        "node_type": row.get("entity_type"),
+        "municipality": _loc(row, "municipality"),
+        "latitude": _loc(row, "lat"),
+        "longitude": _loc(row, "lon"),
+        "confidence": _conf01_band(row.get("confidence")),
+        "program_id": _first_producer(row) or None,
+    })
+
+
+def _alias_edge(row: Dict[str, Any]) -> Dict[str, Any]:
+    return _nonnull({
+        "edge_id": row.get("relationship_id"),
+        "source_node_id": row.get("source_entity_id"),
+        "target_node_id": row.get("target_entity_id"),
+        "relationship_type": row.get("relationship_type"),
+        "confidence": _conf01_band(row.get("confidence")),
+    })
+
+
+def _alias_alert(row: Dict[str, Any]) -> Dict[str, Any]:
+    status = row.get("status")
+    review = _ALERT_REVIEW_STATUS.get(status, "Open") if isinstance(status, str) else "Open"
+    attrs = row.get("attributes")
+    attrs = attrs if isinstance(attrs, dict) else {}
+    return _nonnull({
+        "module": row.get("module"),
+        "entity_name": row.get("module"),
+        "severity": row.get("severity"),
+        "review_status": review,
+        "occurred_at": row.get("observed_at"),
+        "record_id": row.get("entity_id"),
+        "summary": attrs.get("summary") or row.get("alert_type"),
+    })
+
+
+# (stream, id field, UI collection, alias projector) — canonical row + UI aliases.
+_UI_PROJECTIONS: List[Tuple[str, str, str, Callable[[Dict[str, Any]], Dict[str, Any]]]] = [
+    ("sources", "source_id", "UnifiedSources", _alias_source),
+    ("entities", "entity_id", "GraphNodes", _alias_node),
+    ("relationships", "relationship_id", "GraphEdges", _alias_edge),
+    ("alerts", "alert_id", "GovernanceAlerts", _alias_alert),
+]
+
+
+def _project_ui(agg: Path, stream: str, id_field: str,
+                alias: Callable[[Dict[str, Any]], Dict[str, Any]]) -> List[Tuple[str, Dict[str, Any]]]:
+    path = agg / f"{stream}.jsonl"
+    if not path.exists():
+        return []
+    out: List[Tuple[str, Dict[str, Any]]] = []
+    for row in _read_jsonl(path):
+        eid = row.get(id_field)
+        if not eid:
+            continue
+        out.append((str(eid), {**row, **alias(row)}))
+    return out
+
+
 def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
     """Load a Hub aggregate directory into the SQLite entity store.
 
@@ -251,6 +359,14 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
             _upsert(conn, _CROSSOVER_COLLECTION, cid, payload, ts)
         if xlinks:
             collections[_CROSSOVER_COLLECTION] = len(xlinks)
+
+        # Phase 2: project each stream into its per-domain UI collection.
+        for stream, id_field, collection, alias in _UI_PROJECTIONS:
+            projected = _project_ui(agg, stream, id_field, alias)
+            for eid, payload in projected:
+                _upsert(conn, collection, eid, payload, ts)
+            if projected:
+                collections[collection] = len(projected)
 
         conn.commit()
     finally:

@@ -60,8 +60,38 @@ hub validate-package <export-dir>            # validate producer export package
 hub fetch --run --root ws                    # clone/refresh producers and run exports when allowed
 hub aggregate --root .. --out data/aggregate # merge discoverable packages
 hub correlate --in data/aggregate            # derive cross-producer relationship edges
+hub ingest --in data/aggregate --db data/hub.db  # load the aggregate into the app store
 make test
 ```
+
+## The hub app (single product)
+
+The hub ships as one product — a FastAPI backend that serves both the JSON API and the
+React UI, so operators use a single app instead of switching between per-producer dashboards.
+
+```bash
+# 1. Load real federation data into the app store (data/hub.db)
+hub aggregate --root .. --out data/aggregate && hub correlate --in data/aggregate
+hub ingest --in data/aggregate --db data/hub.db
+
+# 2. Build the UI once (outputs server/frontend/dist/, git-ignored)
+npm --prefix server/frontend ci
+npm --prefix server/frontend run build
+
+# 3. Serve UI + API on one origin
+python -m uvicorn server.backend.main:app --port 8000   # open http://localhost:8000/
+```
+
+`hub ingest` maps the canonical aggregate streams onto the collections the UI reads
+(`sources → UnifiedSources`, `entities → GraphNodes`, `relationships → GraphEdges`,
+`alerts → GovernanceAlerts`, `correlations → CrossoverLinks`); the mapping lives in one place,
+`COLLECTION_ADAPTERS` in [`src/hub/ingest.py`](src/hub/ingest.py). Pages backed by these
+collections (Sources, the Spiderweb graph, cross-producer links) render live aggregate data;
+domain-heavy pages that need per-domain fields the aggregate does not yet carry (contracts,
+feeds, cases) stay empty until producers emit that data. If `dist/` is not built, the backend
+runs API-only and the UI can be served separately with `npm --prefix server/frontend run dev`
+(Vite on :5173). The per-producer `dashboard/`/`frontend/` apps are diagnostic-only; the hub
+app is the product.
 
 ## Boundary rules
 

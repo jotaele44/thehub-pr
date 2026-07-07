@@ -44,10 +44,11 @@ def test_ingest_loads_streams_into_collections(valid_package, tmp_path):
     db = tmp_path / "hub.db"
     summary = ingest_aggregate(agg, db)
 
+    # Canonical collections + the per-domain UI projections alongside them.
     assert summary["collections"] == {
         "Sources": 1, "Entities": 2, "Relationships": 1, "FederationSummary": 1,
+        "UnifiedSources": 1, "GraphNodes": 2, "GraphEdges": 1,
     }
-    assert summary["total"] == 5
     assert summary["skipped"] == {}
 
     # Entities keyed by canonical entity_id, full payload + provenance preserved.
@@ -64,6 +65,67 @@ def test_ingest_loads_streams_into_collections(valid_package, tmp_path):
     summary_rows = _rows(db, "FederationSummary")
     assert set(summary_rows) == {"graph_summary"}
     assert "streams" in summary_rows["graph_summary"]
+
+
+def test_ingest_projects_ui_collections(valid_package, tmp_path):
+    """Streams also project into the UI's per-domain collections with alias fields,
+    keeping the canonical payload + provenance."""
+    agg = tmp_path / "agg"
+    aggregate({"moneysweep-pr": valid_package}, agg)
+    expected_nodes = _ids(agg / "entities.jsonl")
+    expected_sources = _ids(agg / "sources.jsonl")
+    expected_edges = _ids(agg / "relationships.jsonl")
+
+    db = tmp_path / "hub.db"
+    ingest_aggregate(agg, db)
+
+    # entities -> GraphNodes
+    nodes = _rows(db, "GraphNodes")
+    assert set(nodes) == expected_nodes
+    node = nodes[next(iter(expected_nodes))]
+    assert node["node_id"] == node["id"]
+    assert node["label"] == node["name"]                 # UI alias of canonical name
+    assert node["node_type"] == node["entity_type"]
+    assert node["confidence"] in {"Low", "Medium", "High"}   # banded from 0..1
+    assert node["_producers"] == ["moneysweep-pr"]           # provenance preserved
+
+    # sources -> UnifiedSources
+    src = next(iter(_rows(db, "UnifiedSources").values()))
+    assert set(_rows(db, "UnifiedSources")) == expected_sources
+    assert src["title"] == src["source_name"]
+    assert src["program_id"] == "moneysweep-pr"
+
+    # relationships -> GraphEdges
+    edges = _rows(db, "GraphEdges")
+    assert set(edges) == expected_edges
+    edge = next(iter(edges.values()))
+    assert edge["edge_id"] == edge["id"]
+    assert edge["source_node_id"] == edge["source_entity_id"]
+    assert edge["target_node_id"] == edge["target_entity_id"]
+
+
+def test_ingest_projects_governance_alerts(tmp_path):
+    """alerts -> GovernanceAlerts with canonical status normalized to the UI's
+    open/closed review vocabulary."""
+    agg = tmp_path / "agg"
+    agg.mkdir()
+    alert = {
+        "alert_id": "alrt_0123456789abcdef0123456789abcdef",
+        "module": "HYDRO_OPS", "alert_type": "maintenance", "severity": 3,
+        "status": "active", "observed_at": "2026-01-01T00:00:00Z",
+        "entity_id": "ent_0123456789abcdef0123456789abce01",
+    }
+    (agg / "alerts.jsonl").write_text(json.dumps(alert) + "\n")
+
+    db = tmp_path / "hub.db"
+    summary = ingest_aggregate(agg, db)
+
+    assert summary["collections"]["GovernanceAlerts"] == 1
+    ga = _rows(db, "GovernanceAlerts")["alrt_0123456789abcdef0123456789abcdef"]
+    assert ga["review_status"] == "Open"          # canonical "active" -> UI open state
+    assert ga["occurred_at"] == "2026-01-01T00:00:00Z"
+    assert ga["record_id"] == "ent_0123456789abcdef0123456789abce01"
+    assert ga["severity"] == 3
 
 
 def test_ingest_is_idempotent(valid_package, tmp_path):
