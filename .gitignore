@@ -236,3 +236,14 @@ server/frontend/node_modules/
 server/frontend/export-standalone/
 server/frontend/.env.local
 server/frontend/dist/
+
+# Desktop wrapper (see desktop/README.md)
+.venv/
+server/frontend/node_modules/
+server/frontend/dist/
+server/frontend/export-standalone/
+desktop/.setup-complete
+!desktop/pyinstaller.spec
+!server/frontend/src/lib/
+dist-desktop/
+build/
