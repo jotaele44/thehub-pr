@@ -3,29 +3,25 @@
 The aggregation pipeline (``hub aggregate`` / ``hub correlate``) writes canonical
 JSONL streams to ``data/aggregate/``. The FastAPI server
 (``server/backend/main.py``) reads a generic SQLite document store at
-``data/hub.db`` and, until now, only ever saw the ``Programs`` rows it seeds from
-the registry. Nothing connected the two halves.
+``data/hub.db`` and serves it at ``/api/entities/<Collection>``; the React UI
+reads those collections. This module is the bridge between the two.
 
-This module is that bridge. It loads each aggregate stream into a store
-collection keyed by the row's canonical id, so a running server serves the live
-federation graph at ``/api/entities/<Collection>`` instead of a static snapshot.
+The UI was built against per-domain collection names (``UnifiedSources``,
+``GraphNodes``/``GraphEdges``, ``GovernanceAlerts``, ``CrossoverLinks``) whose
+field names differ from the domain-agnostic canonical streams. So each stream is
+run through a small **adapter**: it keeps the full canonical payload (including
+the aggregate's ``_producers`` provenance) and *adds* the UI's field names on
+top, storing the result under the UI collection name. Streams the UI has no
+distinct page for yet are stored under their canonical name unchanged.
 
 Design notes:
 
-* **Idempotent.** Re-ingesting the same aggregate replaces rows in place
-  (``INSERT OR REPLACE`` on the ``(entity_type, entity_id)`` primary key) — no
-  duplicates, stable counts.
-* **No server process required.** The bridge writes ``data/hub.db`` directly with
-  the *same* DDL as ``server/backend/main.py::_init_db``, so the store and this
-  bridge can never diverge; the server picks the rows up on its next read.
-* **Canonical, lossless.** The full canonical row (including the aggregate's
-  ``_producers`` provenance array) is stored verbatim in the JSON ``data`` column;
-  only an ``id`` key is injected so the server's read path (which backfills
-  ``id`` / ``created_date`` / ``updated_date``) and mutations key off it.
-
-Stream -> collection naming is a single module constant (``STREAM_TO_COLLECTION``)
-so the frontend-facing retarget (Phase 2: map onto the UI's per-domain collection
-names/fields) is a one-spot edit.
+* **Idempotent.** Rows upsert by ``(entity_type, entity_id)`` (``INSERT OR
+  REPLACE``) — re-ingesting the same aggregate is a no-op on counts.
+* **No server process required.** Writes ``data/hub.db`` with the same DDL as
+  ``server/backend/main.py::_init_db``; the server picks rows up on its next read.
+* **Single source of mapping truth.** ``COLLECTION_ADAPTERS`` is the one place the
+  stream -> collection + field projection is defined.
 """
 from __future__ import annotations
 
@@ -33,7 +29,7 @@ import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List, NamedTuple, Optional
 
 from ._schemas import STREAM_ID_FIELD
 
@@ -48,34 +44,133 @@ _SCHEMA = """
     )
 """
 
-# Aggregate stream (file stem) -> store collection name (entity_type).
-STREAM_TO_COLLECTION: Dict[str, str] = {
-    "sources": "Sources",
-    "entities": "Entities",
-    "relationships": "Relationships",
-    "funding_awards": "FundingAwards",
-    "transactions": "Transactions",
-    "observations": "Observations",
-    "alerts": "Alerts",
-    "correlations": "Correlations",
-}
-
-# The field holding each stream's deterministic id. correlations.jsonl rows are
-# canonical federation_relationship rows, so they key off relationship_id.
-_ID_FIELD: Dict[str, str] = {**STREAM_ID_FIELD, "correlations": "relationship_id"}
-
-# graph_summary.json lands as a single row in this collection (Dashboard counts).
+# graph_summary.json lands as a single row in this collection.
 _SUMMARY_COLLECTION = "FederationSummary"
 _SUMMARY_ID = "graph_summary"
 
 
+# ── projection helpers ──────────────────────────────────────────────────────────
+
+def _band(value: Any) -> Optional[str]:
+    """Bucket a 0..1 confidence into the UI's Low/Medium/High select values."""
+    try:
+        v = float(value)
+    except (TypeError, ValueError):
+        return None
+    if v < 0.5:
+        return "Low"
+    if v < 0.8:
+        return "Medium"
+    return "High"
+
+
+def _first_producer(row: Dict[str, Any]) -> Optional[str]:
+    producers = row.get("_producers")
+    if isinstance(producers, list) and producers:
+        return str(producers[0])
+    return None
+
+
+def _loc(row: Dict[str, Any], key: str) -> Any:
+    loc = row.get("location")
+    return loc.get(key) if isinstance(loc, dict) else None
+
+
+def _clean(fields: Dict[str, Any]) -> Dict[str, Any]:
+    """Drop keys whose value is None so we never overwrite with nulls."""
+    return {k: v for k, v in fields.items() if v is not None}
+
+
+# ── stream -> UI collection field projections ───────────────────────────────────
+
+def _sources_to_unified(row: Dict[str, Any]) -> Dict[str, Any]:
+    return _clean({
+        "source_id": row.get("source_id"),
+        "title": row.get("source_name"),
+        "source_type": row.get("source_type"),
+        "url": row.get("source_url") or row.get("source_ref"),
+        "program_id": _first_producer(row),
+    })
+
+
+def _entities_to_nodes(row: Dict[str, Any]) -> Dict[str, Any]:
+    return _clean({
+        "node_id": row.get("entity_id"),
+        "label": row.get("name"),
+        "node_type": row.get("entity_type"),
+        "municipality": _loc(row, "municipality"),
+        "latitude": _loc(row, "lat"),
+        "longitude": _loc(row, "lon"),
+        "confidence": _band(row.get("confidence")),
+        "program_id": _first_producer(row),
+    })
+
+
+def _relationships_to_edges(row: Dict[str, Any]) -> Dict[str, Any]:
+    return _clean({
+        "edge_id": row.get("relationship_id"),
+        "source_node_id": row.get("source_entity_id"),
+        "target_node_id": row.get("target_entity_id"),
+        "relationship_type": row.get("relationship_type"),
+        "confidence": _band(row.get("confidence")),
+    })
+
+
+def _alerts_to_governance(row: Dict[str, Any]) -> Dict[str, Any]:
+    attrs = row.get("attributes")
+    attributes = attrs if isinstance(attrs, dict) else {}
+    return _clean({
+        "module": row.get("module"),
+        "entity_name": row.get("module"),
+        "severity": row.get("severity"),
+        "review_status": row.get("status"),
+        "occurred_at": row.get("observed_at"),
+        "record_id": row.get("entity_id"),
+        "summary": attributes.get("summary") or row.get("alert_type"),
+    })
+
+
+def _correlations_to_crossover(row: Dict[str, Any]) -> Dict[str, Any]:
+    return _clean({
+        "crossover_id": row.get("relationship_id"),
+        "source_record_id": row.get("source_entity_id"),
+        "target_record_id": row.get("target_entity_id"),
+        "correlation_type": row.get("relationship_type"),
+        "confidence_score": row.get("confidence"),
+        "confidence_band": _band(row.get("confidence")),
+        "rationale": row.get("explanation"),
+        "status": "PendingReview",
+        "source_ids": [row["source_id"]] if row.get("source_id") else [],
+        "created_from": "hub_correlate",
+    })
+
+
+class Adapter(NamedTuple):
+    stream: str
+    collection: str
+    id_field: str
+    project: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]]
+
+
+# The one place the stream -> collection + field mapping lives.
+# correlations.jsonl rows are canonical federation_relationship rows -> relationship_id.
+COLLECTION_ADAPTERS: List[Adapter] = [
+    Adapter("sources", "UnifiedSources", STREAM_ID_FIELD["sources"], _sources_to_unified),
+    Adapter("entities", "GraphNodes", STREAM_ID_FIELD["entities"], _entities_to_nodes),
+    Adapter("relationships", "GraphEdges", STREAM_ID_FIELD["relationships"], _relationships_to_edges),
+    Adapter("alerts", "GovernanceAlerts", STREAM_ID_FIELD["alerts"], _alerts_to_governance),
+    Adapter("correlations", "CrossoverLinks", "relationship_id", _correlations_to_crossover),
+    # No distinct UI page by name yet -> keep canonical name, canonical payload.
+    Adapter("funding_awards", "FundingAwards", STREAM_ID_FIELD["funding_awards"], None),
+    Adapter("transactions", "Transactions", STREAM_ID_FIELD["transactions"], None),
+    Adapter("observations", "Observations", STREAM_ID_FIELD["observations"], None),
+]
+
+
+# ── store helpers ───────────────────────────────────────────────────────────────
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
-
-
-def _ensure_schema(conn: sqlite3.Connection) -> None:
-    conn.execute(_SCHEMA)
-    conn.commit()
 
 
 def _read_jsonl(path: Path) -> List[Dict[str, Any]]:
@@ -104,17 +199,17 @@ def _upsert(conn: sqlite3.Connection, collection: str, entity_id: str,
 def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
     """Load a Hub aggregate directory into the SQLite entity store.
 
-    Returns a summary::
+    Returns::
 
         {
           "db": "<db_path>",
-          "collections": {"Entities": 12, "Sources": 4, ...},
-          "skipped": {"Entities": 0, ...},   # rows missing their canonical id
+          "collections": {"UnifiedSources": 4, "GraphNodes": 12, ...},
+          "skipped": {"GraphNodes": 0, ...},   # rows missing their canonical id
           "total": 16,
         }
 
-    Streams (and graph_summary.json) that are absent are silently skipped;
-    ``total == 0`` signals "nothing to ingest" for the caller.
+    Missing streams (and graph_summary.json) are silently skipped; ``total == 0``
+    signals "nothing to ingest" to the caller.
     """
     agg = Path(aggregate_dir)
     db = Path(db_path)
@@ -126,24 +221,26 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
 
     conn = sqlite3.connect(db)
     try:
-        _ensure_schema(conn)
-        for stream, collection in STREAM_TO_COLLECTION.items():
-            fpath = agg / f"{stream}.jsonl"
+        conn.execute(_SCHEMA)
+        for adapter in COLLECTION_ADAPTERS:
+            fpath = agg / f"{adapter.stream}.jsonl"
             if not fpath.exists():
                 continue
-            id_field = _ID_FIELD[stream]
             upserted = 0
             missing = 0
             for row in _read_jsonl(fpath):
-                entity_id = row.get(id_field)
+                entity_id = row.get(adapter.id_field)
                 if not entity_id:
                     missing += 1
                     continue
-                _upsert(conn, collection, str(entity_id), row, ts)
+                payload = dict(row)
+                if adapter.project is not None:
+                    payload.update(adapter.project(row))
+                _upsert(conn, adapter.collection, str(entity_id), payload, ts)
                 upserted += 1
-            collections[collection] = upserted
+            collections[adapter.collection] = upserted
             if missing:
-                skipped[collection] = missing
+                skipped[adapter.collection] = missing
 
         summary_path = agg / "graph_summary.json"
         if summary_path.exists():
