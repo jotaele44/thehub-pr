@@ -170,9 +170,17 @@ def auth_me():
 
 @app.get("/api/entities/{entity_name}")
 def list_entities(entity_name: str, sort: str = Query("-created_date"), limit: int = Query(500)):
+    # Order by the write timestamp before applying LIMIT so a bounded page returns
+    # the most-recently-touched rows rather than an arbitrary slice — otherwise, past
+    # `limit` rows, genuinely-new items can be dropped before the client re-sorts.
+    # `sort` is a "-field"/"field" recency hint; only its leading sign is honored here
+    # (all fields collapse to updated_at, the indexed write time). `direction` is a
+    # validated literal, so interpolating it into the query is injection-safe.
+    direction = "ASC" if sort and not sort.startswith("-") else "DESC"
     c = _conn()
     rows = c.execute(
-        "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? LIMIT ?",
+        f"SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
+        f"ORDER BY updated_at {direction} LIMIT ?",
         (entity_name, limit),
     ).fetchall()
     c.close()
@@ -258,10 +266,17 @@ async def filter_entities(entity_name: str, request: Request):
     body = await request.json()
     filters: dict = body.get("filters", {})
     limit: int = body.get("limit", 500)
+    sort: str = body.get("sort") or "-created_date"
 
     c = _conn()
+    # Order by write time before the (oversized) prefetch cap so the Python-side filter
+    # scans the right end of the range — otherwise, past the cap, matching rows can be
+    # missed. Honor the caller's requested direction (as list_entities does) so ascending
+    # requests (e.g. chronological chat transcripts) aren't silently reversed.
+    direction = "ASC" if not sort.startswith("-") else "DESC"
     rows = c.execute(
-        "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? LIMIT ?",
+        f"SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
+        f"ORDER BY updated_at {direction} LIMIT ?",
         (entity_name, max(limit * 10, 5000)),
     ).fetchall()
     c.close()
