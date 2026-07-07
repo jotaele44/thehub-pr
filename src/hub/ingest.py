@@ -26,6 +26,11 @@ Design notes:
 Stream -> collection naming is a single module constant (``STREAM_TO_COLLECTION``)
 so the frontend-facing retarget (Phase 2: map onto the UI's per-domain collection
 names/fields) is a one-spot edit.
+
+Every stage (canonical streams, the CrossoverLinks projection, the per-domain UI
+aliases) reduces to the same shape: a collection name plus ``(id, payload)``
+pairs to upsert. Phase 3 pulls that shape out into one shared skeleton
+(``_ingest_pairs``) so each stage is just a producer of pairs feeding it.
 """
 from __future__ import annotations
 
@@ -303,6 +308,54 @@ def _project_ui(agg: Path, stream: str, id_field: str,
     return out
 
 
+# ── Phase 3: shared producer skeleton ─────────────────────────────────────────
+# Every stage above (canonical streams, CrossoverLinks, per-domain UI aliases)
+# ultimately produces the same shape: a collection name plus a list of
+# (id, payload) pairs to upsert. _ingest_pairs is the one place that shape gets
+# written to the store and tallied, so each stage is just a producer of pairs.
+
+
+def _canonical_pairs(agg: Path, stream: str, id_field: str,
+                      ) -> Optional[Tuple[List[Tuple[str, Dict[str, Any]]], int]]:
+    """(id, row) pairs for a canonical stream, plus its count of id-less rows.
+
+    Returns ``None`` if the stream file is absent (caller skips it entirely,
+    as opposed to a present-but-empty file — see ``_ingest_pairs(..., always=True)``).
+    """
+    path = agg / f"{stream}.jsonl"
+    if not path.exists():
+        return None
+    pairs: List[Tuple[str, Dict[str, Any]]] = []
+    missing = 0
+    for row in _read_jsonl(path):
+        eid = row.get(id_field)
+        if not eid:
+            missing += 1
+            continue
+        pairs.append((str(eid), row))
+    return pairs, missing
+
+
+def _ingest_pairs(conn: sqlite3.Connection, collection: str,
+                   pairs: List[Tuple[str, Dict[str, Any]]], ts: str,
+                   collections: Dict[str, int], missing: int = 0,
+                   skipped: Optional[Dict[str, int]] = None, always: bool = False) -> None:
+    """Upsert ``(id, payload)`` pairs into ``collection`` and tally the counts.
+
+    ``always`` records the collection's count even when ``pairs`` is empty
+    (used for canonical streams, where a present-but-empty file is still
+    reported); projections instead only tally when they produced rows.
+    """
+    n = 0
+    for eid, payload in pairs:
+        _upsert(conn, collection, eid, payload, ts)
+        n += 1
+    if n or always:
+        collections[collection] = n
+    if missing and skipped is not None:
+        skipped[collection] = missing
+
+
 def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
     """Load a Hub aggregate directory into the SQLite entity store.
 
@@ -330,43 +383,23 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
     try:
         _ensure_schema(conn)
         for stream, collection in STREAM_TO_COLLECTION.items():
-            fpath = agg / f"{stream}.jsonl"
-            if not fpath.exists():
+            result = _canonical_pairs(agg, stream, _ID_FIELD[stream])
+            if result is None:
                 continue
-            id_field = _ID_FIELD[stream]
-            upserted = 0
-            missing = 0
-            for row in _read_jsonl(fpath):
-                entity_id = row.get(id_field)
-                if not entity_id:
-                    missing += 1
-                    continue
-                _upsert(conn, collection, str(entity_id), row, ts)
-                upserted += 1
-            collections[collection] = upserted
-            if missing:
-                skipped[collection] = missing
+            pairs, missing = result
+            _ingest_pairs(conn, collection, pairs, ts, collections, missing, skipped, always=True)
 
         summary_path = agg / "graph_summary.json"
         if summary_path.exists():
             payload = json.loads(summary_path.read_text(encoding="utf-8"))
-            _upsert(conn, _SUMMARY_COLLECTION, _SUMMARY_ID, payload, ts)
-            collections[_SUMMARY_COLLECTION] = 1
+            _ingest_pairs(conn, _SUMMARY_COLLECTION, [(_SUMMARY_ID, payload)], ts, collections, always=True)
 
-        # Phase 2: project correlations into the workspace's explicit CrossoverLinks.
-        xlinks = project_crossover_links(agg)
-        for cid, payload in xlinks:
-            _upsert(conn, _CROSSOVER_COLLECTION, cid, payload, ts)
-        if xlinks:
-            collections[_CROSSOVER_COLLECTION] = len(xlinks)
+        # Phase 3: project correlations into the workspace's explicit CrossoverLinks.
+        _ingest_pairs(conn, _CROSSOVER_COLLECTION, project_crossover_links(agg), ts, collections)
 
-        # Phase 2: project each stream into its per-domain UI collection.
+        # Phase 3: project each stream into its per-domain UI collection.
         for stream, id_field, collection, alias in _UI_PROJECTIONS:
-            projected = _project_ui(agg, stream, id_field, alias)
-            for eid, payload in projected:
-                _upsert(conn, collection, eid, payload, ts)
-            if projected:
-                collections[collection] = len(projected)
+            _ingest_pairs(conn, collection, _project_ui(agg, stream, id_field, alias), ts, collections)
 
         conn.commit()
     finally:
