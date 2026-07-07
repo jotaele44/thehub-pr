@@ -14,12 +14,24 @@ producers:
     federation_manifest: federation.json
     export_path: data/exports/canonical_v1_federation   # canonical_v1 bridge streams (auto-wrapped by the Hub)
     status: ready_for_discovery        # 9/14 required sources live-materialized (runtime keys supplied); live exec blocked: Tranche-B manual exports + cor3 portal export (JS-gated) + PROPUBLICA_API_KEY
+    # Finance/location fusion pair (see docs/FEDERATION_TOPOLOGY.md): MoneySweep is
+    # the money ANCHOR. It also consumes centinelas-pr FINANCIAL/POLITICAL intake
+    # drops (scripts/ingest_centinelas_signals.py) as pre-official located-finance
+    # candidates (signal_stage=pre_official) and emits the contract-finance bundle
+    # (scripts/build_contract_finance_bundle.py) that spiderweb-pr scores. The
+    # resulting funding_awards carry a location block; the Hub correlates them by
+    # municipality/proximity via src/hub/correlate.py.
 
   - program_id: spiderweb-pr
     repo: jotaele44/spiderweb-pr
     role: spatial_operational_producer
     federation_manifest: federation.json
     status: ready_for_live             # first real production package (1 site observation + 9 airport reference locations) hub-validated; ready_for_hub_live_execution=true (operator-approved 2026-07-03); corpus grows with the revived intake lane
+    # Finance/location fusion pair (see docs/FEDERATION_TOPOLOGY.md): SpiderWeb owns
+    # the "assign finances to a location" join — readiness/contract_finance_layer.py
+    # scores MoneySweep's contract-finance bundle (incl. centinelas-pr pre-official
+    # rows) into contract_finance_scored_overlay.geojson, surfacing Centinelas
+    # provenance in the layer report.
 
   - program_id: aguayluz-pr
     repo: jotaele44/aguayluz-pr
