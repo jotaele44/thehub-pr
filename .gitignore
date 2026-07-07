@@ -250,3 +250,5 @@ desktop/.setup-complete
 !desktop/pyinstaller.spec
 dist-desktop/
 build/
+desktop/.running
+dist-smoke/
