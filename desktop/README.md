@@ -37,3 +37,18 @@ python desktop/setup.py          # one-time setup
 .venv/bin/python desktop/launch.py --browser  # browser tab instead
 .venv/bin/python desktop/launch.py --no-window  # server only
 ```
+
+## macOS app icon
+
+`PRII-THEHUB.app` is a double-click macOS app (Apple-silicon and Intel). Double-click
+it in Finder and the dashboard opens in its own window — no Terminal. The first
+launch runs the one-time setup (needs internet once, plus Node.js for the
+dashboard build); after that it starts straight away and works offline.
+
+This repo also ships **`PRII Federation.app`** — the unified launcher. Double-click it to open a window listing all seven federation apps, each with a Launch button (it drives the sibling repos, so keep them cloned next to `thehub-pr`).
+
+Because the app is a small self-locating wrapper around `desktop/launch.py`, it
+must stay at the repo root (it finds the repo from its own location). If macOS
+blocks the first open with an "unidentified developer" notice, right-click the
+app → **Open** once to allow it. No-Python-required standalone builds are still
+produced separately by the `desktop-build` workflow.
