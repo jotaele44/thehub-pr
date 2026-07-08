@@ -238,10 +238,11 @@ def test_ingest_projects_producer_collections(tmp_path, monkeypatch):
     """canonical entities -> best-effort per-domain page collections.
 
     Covers the per-producer split, the (producer, entity_type) -> collection
-    mapping, lat/lon flatten, synthetic skip, the PatternObservations alias, and
-    the per-collection cap. GraphNodes/GraphEdges/UnifiedSources are the generic
-    _UI_PROJECTIONS pass's job (test_ingest_projects_ui_collections) — out of
-    scope here.
+    mapping (incl. multi-producer rows where the mapped producer isn't first in
+    the sorted ``_producers`` set), lat/lon flatten, synthetic + id-less skip,
+    the PatternObservations alias, and the per-collection cap.
+    GraphNodes/GraphEdges/UnifiedSources are the generic _UI_PROJECTIONS pass's
+    job (test_ingest_projects_ui_collections) — out of scope here.
     """
     import hub.ingest as ingest_mod
     monkeypatch.setattr(ingest_mod, "_LEDGER_CAP", 2)
@@ -268,6 +269,12 @@ def test_ingest_projects_producer_collections(tmp_path, monkeypatch):
         {"entity_id": "ent_syn", "entity_type": "utility_asset", "synthetic": True,
          "_producers": ["aguayluz-pr"]},
         {"entity_id": "ent_x", "entity_type": "municipality", "_producers": ["aguayluz-pr"]},
+        # multi-producer row: _producers is a sorted set, so "centinelas-pr" sorts before
+        # "moneysweep-pr" even though only moneysweep-pr maps "recipient" -> Vendors.
+        {"entity_id": "ent_mv2", "name": "Multi Corp", "entity_type": "recipient",
+         "_producers": ["centinelas-pr", "moneysweep-pr"]},
+        # id-less row that WOULD map (moneysweep-pr/recipient) -> must be skipped, not crash.
+        {"entity_type": "recipient", "_producers": ["moneysweep-pr"]},
     ]
     (agg / "entities.jsonl").write_text("\n".join(json.dumps(e) for e in ents) + "\n")
 
@@ -278,7 +285,7 @@ def test_ingest_projects_producer_collections(tmp_path, monkeypatch):
     assert summary["collections"]["InfrastructureAssets"] == 2  # capped from 3
     assert summary["collections"]["UnifiedCases"] == 1
     assert summary["collections"]["PatternObservations"] == 1   # alias mirrors UnifiedCases
-    assert summary["collections"]["Vendors"] == 1
+    assert summary["collections"]["Vendors"] == 2  # ent_mv1 + ent_mv2 (multi-producer match)
     assert summary["collections"]["Contracts"] == 1
 
     # synthetic never projected; cap drops the ungeocoded low-confidence asset.
@@ -297,6 +304,13 @@ def test_ingest_projects_producer_collections(tmp_path, monkeypatch):
     assert asset["confidence"] == "High" and asset["confidence_score"] == 0.9
     # a row with no canonical confidence bands to None (blank chip, not a misleading value).
     assert _rows(db, "Vendors")["ent_mv1"]["confidence"] is None
+
+    # multi-producer row projects under the mapped producer even though it isn't
+    # first in the sorted _producers set.
+    assert set(_rows(db, "Vendors")) == {"ent_mv1", "ent_mv2"}
+
+    # id-less-but-mappable row is skipped, not a crash (ingest_aggregate returned at all).
+    assert summary["total"] > 0
 
     # Contracts row carries the contract_id alias.
     assert _rows(db, "Contracts")["ent_mc1"]["contract_id"] == "ent_mc1"

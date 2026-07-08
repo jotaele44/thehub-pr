@@ -223,12 +223,28 @@ def _ledger_row(e: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
     return eid, payload
 
 
+def _ledger_collection(e: Dict[str, Any]) -> Optional[str]:
+    """The ledger collection for an entity, checking every contributing producer.
+
+    ``_producers`` is a sorted set (aggregate.py), not an owner-ordered list, so a
+    multi-producer row (e.g. a recipient both centinelas-pr and moneysweep-pr
+    contributed) can't just check index 0 — that misses the mapping if the
+    alphabetically-first producer isn't the one ``_PRODUCER_LEDGER`` maps.
+    """
+    etype = str(e.get("entity_type") or "")
+    for p in e.get("_producers") or []:
+        collection = _PRODUCER_LEDGER.get((str(p), etype))
+        if collection:
+            return collection
+    return None
+
+
 def project_producer_collections(aggregate_dir: str | Path) -> Dict[str, List[Tuple[str, Dict[str, Any]]]]:
     """Best-effort projection of canonical entities into the per-producer page collections.
 
-    Splits entities by ``_producers[0]``, maps ``(producer, entity_type) -> collection``,
-    keeps real (non-synthetic) rows, prefers geocoded + high-confidence, caps
-    ``_LEDGER_CAP`` per collection. Returns ``{collection: [(entity_id, payload), ...]}``.
+    Maps ``(producer, entity_type) -> collection`` for any producer on the row, keeps
+    real (non-synthetic) rows with a canonical id, prefers geocoded + high-confidence,
+    caps ``_LEDGER_CAP`` per collection. Returns ``{collection: [(entity_id, payload), ...]}``.
     """
     agg = Path(aggregate_dir)
     ent_path = agg / "entities.jsonl"
@@ -237,10 +253,9 @@ def project_producer_collections(aggregate_dir: str | Path) -> Dict[str, List[Tu
 
     buckets: Dict[str, List[Dict[str, Any]]] = {}
     for e in _read_jsonl(ent_path):
-        if e.get("synthetic"):
+        if e.get("synthetic") or not e.get("entity_id"):
             continue
-        producer = _first_producer(e)
-        collection = _PRODUCER_LEDGER.get((producer, str(e.get("entity_type") or "")))
+        collection = _ledger_collection(e)
         if not collection:
             continue
         buckets.setdefault(collection, []).append(e)
