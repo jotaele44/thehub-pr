@@ -11,6 +11,12 @@
 The federation is **artifact-based**, not a live network service: producers publish export
 packages in their own repos; the Hub fetches and merges them. There is no shared database or RPC.
 
+**One deliberate, scoped exception (ADR 0001, Phase 3):** `packages/prii_maintenance/` is a
+dependency-free stdlib package hosted in this repo and consumed by producers as a pinned
+git-URL pip dependency — the first time a producer takes a *build-time* dependency on
+`thehub-pr`. This does not reverse the artifact-only design: it is one shared library with
+no runtime coupling, versioned by tag, bumped one producer at a time.
+
 ## Data flow
 
 ```
