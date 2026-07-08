@@ -47,3 +47,22 @@ jobs:
         run: ruff check src/hub tests
       - name: Mypy
         run: mypy src/hub
+
+  # Self-contained sub-project (packages/prii_maintenance) — its own CI, isolated
+  # from the root test matrix since its consumers (spiderweb-pr >=3.11,
+  # skywatcher-pr 3.10+) don't need the root matrix's Python 3.9 floor.
+  maintenance-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -e ".[dev]" -e packages/prii_maintenance
+      - name: Ruff
+        run: ruff check packages/prii_maintenance
+      - name: Mypy
+        run: mypy packages/prii_maintenance/src
+      - name: Tests
+        run: pytest packages/prii_maintenance/tests -q
