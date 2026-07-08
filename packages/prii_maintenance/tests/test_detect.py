@@ -16,6 +16,16 @@ def test_missing_federation_json_is_critical(tmp_path):
     assert any(f.category == "manifest" and f.severity == "critical" for f in findings)
 
 
+def test_malformed_federation_json_is_critical_with_its_own_message(tmp_path):
+    (tmp_path / "federation.json").write_text("{not json", encoding="utf-8")
+    state = state_mod.collect_repo_state(tmp_path)
+    findings = detect.detect_missing_required_files("acme-pr", tmp_path, state)
+    assert len(findings) == 1
+    assert findings[0].category == "manifest"
+    assert findings[0].severity == "critical"
+    assert "not valid JSON" in findings[0].message
+
+
 def test_missing_declared_output_is_info_not_error(tmp_path):
     state = _federation(tmp_path, some_output="does/not/exist.json")
     findings = detect.detect_missing_required_files("acme-pr", tmp_path, state)
@@ -60,3 +70,19 @@ def test_no_duplicates_no_finding(tmp_path):
     (d / "events.jsonl").write_text('{"a":1}\n{"a":2}\n', encoding="utf-8")
     state = _federation(tmp_path, canonical_export_dir="exports/federation")
     assert detect.detect_exact_duplicate_jsonl("acme-pr", tmp_path, state) == []
+
+
+def test_duplicate_jsonl_not_double_counted_when_also_inside_export_dir(tmp_path):
+    # A producer can declare an explicit .jsonl canonical output that also
+    # lives inside canonical_export_dir; the file must be scanned only once.
+    d = tmp_path / "exports" / "federation"
+    d.mkdir(parents=True)
+    (d / "events.jsonl").write_text('{"a":1}\n{"a":1}\n{"a":2}\n', encoding="utf-8")
+    state = _federation(
+        tmp_path,
+        canonical_export_dir="exports/federation",
+        events="exports/federation/events.jsonl",
+    )
+    findings = detect.detect_exact_duplicate_jsonl("acme-pr", tmp_path, state)
+    assert len(findings) == 1
+    assert findings[0].detail == {"duplicate_rows": 1}

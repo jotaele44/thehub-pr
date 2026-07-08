@@ -20,6 +20,19 @@ def detect_missing_required_files(
     repo: str, root: Path, state: dict
 ) -> list[MaintenanceFinding]:
     findings: list[MaintenanceFinding] = []
+    if state.get("federation_json_malformed"):
+        findings.append(
+            MaintenanceFinding(
+                finding_id=_fid(repo, "manifest", "federation_json_malformed"),
+                repo=repo,
+                category="manifest",
+                severity="critical",
+                action="blocked",
+                message="federation.json exists but is not valid JSON",
+                path="federation.json",
+            )
+        )
+        return findings
     if not state["federation_json_present"]:
         findings.append(
             MaintenanceFinding(
@@ -86,7 +99,22 @@ def _candidate_jsonl(root: Path, state: dict) -> list[Path]:
     export_dir = outputs.get("canonical_export_dir")
     if isinstance(export_dir, str) and (root / export_dir).is_dir():
         paths.extend(sorted((root / export_dir).glob("*.jsonl")))
-    return [p for p in paths if p.exists()]
+
+    # An explicit canonical_outputs entry can point at a file that also lives
+    # inside canonical_export_dir, so the same path can appear from both loops
+    # above. Dedupe by resolved path or a duplicate-row finding gets emitted
+    # twice for one file; safe-correct then fixes it on the first pass and
+    # finds nothing left to remove on the second, leaving a stale unresolved
+    # finding in the report for an already-clean file.
+    seen: set[Path] = set()
+    deduped: list[Path] = []
+    for p in paths:
+        resolved = p.resolve()
+        if resolved in seen:
+            continue
+        seen.add(resolved)
+        deduped.append(p)
+    return [p for p in deduped if p.exists()]
 
 
 def detect_exact_duplicate_jsonl(
