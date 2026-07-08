@@ -168,7 +168,7 @@ def project_crossover_links(aggregate_dir: str | Path) -> List[Tuple[str, Dict[s
     return out
 
 
-# ── Phase 2b: best-effort per-domain page collections ─────────────────────────
+# ── Phase 3: best-effort per-domain page collections ──────────────────────────
 # The per-producer PAGES read rich per-domain collections. The canonical aggregate
 # only carries id / name / entity_type / confidence / location / _producers, so this
 # is a BEST-EFFORT projection: real entity lists + coordinates, with the rich fields
@@ -493,13 +493,10 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
         for stream, id_field, collection, alias in _UI_PROJECTIONS:
             _ingest_pairs(conn, collection, _project_ui(agg, stream, id_field, alias), ts, collections)
 
-        # Phase 2b: best-effort per-domain page collections (Vendors/InfrastructureAssets/…)
+        # Phase 3: best-effort per-domain page collections (Vendors/InfrastructureAssets/…)
         # not covered by the generic UI projections above.
         for collection, rows in project_producer_collections(agg).items():
-            for eid, payload in rows:
-                _upsert(conn, collection, eid, payload, ts)
-            if rows:
-                collections[collection] = len(rows)
+            _ingest_pairs(conn, collection, rows, ts, collections)
 
         conn.commit()
     finally:

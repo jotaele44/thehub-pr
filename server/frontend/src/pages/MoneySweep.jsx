@@ -106,7 +106,9 @@ export default function MoneySweep() {
           <EntityLedger entityName="AnomalyFlags" fields={flagFields} columns={flagColumns}
             searchKeys={["flag_id", "contract_id", "rationale"]}
             filterDefs={[{ key: "flag_type", label: "Type", options: FLAG_TYPES }, { key: "severity", label: "Severity", options: ["Low", "Medium", "High", "Critical"] }]}
-            addLabel="New Flag" emptyTitle="No anomaly flags" searchPlaceholder="Search flags…" />
+            addLabel="New Flag" emptyTitle="No anomaly flags"
+            emptyDescription="Anomaly detection requires contract/vendor-level enrichment not yet in the canonical federation export — data pending richer MoneySweep-PR intake."
+            searchPlaceholder="Search flags…" />
         </TabsContent>
       </Tabs>
     </div>

@@ -82,7 +82,9 @@ export default function AguaYLuz() {
           <EntityLedger entityName="ContinuityRisks" fields={riskFields} columns={riskColumns}
             searchKeys={["risk_id", "asset_id", "summary"]}
             filterDefs={[{ key: "risk_type", label: "Type", options: RISK_TYPES }, { key: "severity", label: "Severity", options: ["Low", "Medium", "High", "Critical"] }]}
-            addLabel="New Risk" emptyTitle="No risks" searchPlaceholder="Search risks…" />
+            addLabel="New Risk" emptyTitle="No risks"
+            emptyDescription="Continuity risk assessments require asset-level enrichment not yet in the canonical federation export — data pending richer AguaYLuz-PR intake."
+            searchPlaceholder="Search risks…" />
         </TabsContent>
       </Tabs>
     </div>

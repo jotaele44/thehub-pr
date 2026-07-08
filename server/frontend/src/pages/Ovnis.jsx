@@ -66,7 +66,9 @@ export default function Ovnis() {
           <EntityLedger entityName="WitnessReports" fields={witnessFields} columns={witnessColumns}
             searchKeys={["witness_report_id", "linked_case_id"]}
             filterDefs={[{ key: "privacy_status", label: "Privacy", options: ["Sanitized", "Restricted", "Excluded"] }, { key: "verification_status", label: "Verification", options: ["Unreviewed", "Verified", "Disputed", "Rejected"] }]}
-            addLabel="New Report" emptyTitle="No witness reports" searchPlaceholder="Search reports…" />
+            addLabel="New Report" emptyTitle="No witness reports"
+            emptyDescription="Witness records are sanitized out of the canonical federation export — data pending richer Ovnis-PR intake."
+            searchPlaceholder="Search reports…" />
         </TabsContent>
       </Tabs>
     </div>
