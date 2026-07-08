@@ -234,6 +234,88 @@ def test_ingest_projects_crossover_links(tmp_path):
     assert xlinks["rel_e1"]["correlation_type"] == "Entity"  # entity_correlation -> Entity
 
 
+def test_ingest_projects_producer_collections(tmp_path, monkeypatch):
+    """canonical entities -> best-effort per-domain page collections.
+
+    Covers the per-producer split, the (producer, entity_type) -> collection
+    mapping (incl. multi-producer rows where the mapped producer isn't first in
+    the sorted ``_producers`` set), lat/lon flatten, synthetic + id-less skip,
+    the PatternObservations alias, and the per-collection cap.
+    GraphNodes/GraphEdges/UnifiedSources are the generic _UI_PROJECTIONS pass's
+    job (test_ingest_projects_ui_collections) — out of scope here.
+    """
+    import hub.ingest as ingest_mod
+    monkeypatch.setattr(ingest_mod, "_LEDGER_CAP", 2)
+
+    agg = tmp_path / "agg"
+    agg.mkdir()
+    ents = [
+        # aguayluz -> InfrastructureAssets: 3 rows to exercise cap=2 (ungeocoded/low-conf drops)
+        {"entity_id": "ent_ag1", "name": "Ceiba WTP", "entity_type": "utility_asset", "confidence": 0.9,
+         "location": {"lat": 18.0, "lon": -66.0}, "_producers": ["aguayluz-pr"]},
+        {"entity_id": "ent_ag2", "entity_type": "utility_asset", "confidence": 0.8,
+         "location": {"lat": 18.1, "lon": -66.1}, "_producers": ["aguayluz-pr"]},
+        {"entity_id": "ent_ag3", "entity_type": "utility_asset", "confidence": 0.1,
+         "_producers": ["aguayluz-pr"]},
+        # ovnis -> UnifiedCases (+ PatternObservations alias)
+        {"entity_id": "ent_ov1", "name": "Lajas 1977", "entity_type": "uap_case",
+         "confidence": 0.7, "_producers": ["ovnis-pr"]},
+        # moneysweep -> Vendors + Contracts
+        {"entity_id": "ent_mv1", "name": "ACME Corp", "entity_type": "recipient",
+         "_producers": ["moneysweep-pr"]},
+        {"entity_id": "ent_mc1", "name": "Contract 9", "entity_type": "contract",
+         "_producers": ["moneysweep-pr"]},
+        # synthetic -> skipped; unmapped entity_type -> not projected
+        {"entity_id": "ent_syn", "entity_type": "utility_asset", "synthetic": True,
+         "_producers": ["aguayluz-pr"]},
+        {"entity_id": "ent_x", "entity_type": "municipality", "_producers": ["aguayluz-pr"]},
+        # multi-producer row: _producers is a sorted set, so "centinelas-pr" sorts before
+        # "moneysweep-pr" even though only moneysweep-pr maps "recipient" -> Vendors.
+        {"entity_id": "ent_mv2", "name": "Multi Corp", "entity_type": "recipient",
+         "_producers": ["centinelas-pr", "moneysweep-pr"]},
+        # id-less row that WOULD map (moneysweep-pr/recipient) -> must be skipped, not crash.
+        {"entity_type": "recipient", "_producers": ["moneysweep-pr"]},
+    ]
+    (agg / "entities.jsonl").write_text("\n".join(json.dumps(e) for e in ents) + "\n")
+
+    db = tmp_path / "hub.db"
+    summary = ingest_aggregate(agg, db)
+
+    # mapping + curation counts
+    assert summary["collections"]["InfrastructureAssets"] == 2  # capped from 3
+    assert summary["collections"]["UnifiedCases"] == 1
+    assert summary["collections"]["PatternObservations"] == 1   # alias mirrors UnifiedCases
+    assert summary["collections"]["Vendors"] == 2  # ent_mv1 + ent_mv2 (multi-producer match)
+    assert summary["collections"]["Contracts"] == 1
+
+    # synthetic never projected; cap drops the ungeocoded low-confidence asset.
+    ia = _rows(db, "InfrastructureAssets")
+    assert set(ia) == {"ent_ag1", "ent_ag2"}
+
+    # field projection: lat/lon flattened from location, id/type aliases, rich fields null.
+    asset = ia["ent_ag1"]
+    assert asset["latitude"] == 18.0 and asset["longitude"] == -66.0
+    assert asset["id"] == "ent_ag1" and asset["asset_id"] == "ent_ag1"
+    assert asset["asset_type"] == "utility_asset"
+    assert asset["label"] == "Ceiba WTP"
+    assert asset["municipality"] is None and asset["award_amount"] is None
+    # confidence is banded with the same _conf01_band the generic UI projections use
+    # (0.9 -> High); raw score kept alongside.
+    assert asset["confidence"] == "High" and asset["confidence_score"] == 0.9
+    # a row with no canonical confidence bands to None (blank chip, not a misleading value).
+    assert _rows(db, "Vendors")["ent_mv1"]["confidence"] is None
+
+    # multi-producer row projects under the mapped producer even though it isn't
+    # first in the sorted _producers set.
+    assert set(_rows(db, "Vendors")) == {"ent_mv1", "ent_mv2"}
+
+    # id-less-but-mappable row is skipped, not a crash (ingest_aggregate returned at all).
+    assert summary["total"] > 0
+
+    # Contracts row carries the contract_id alias.
+    assert _rows(db, "Contracts")["ent_mc1"]["contract_id"] == "ent_mc1"
+
+
 def test_ingest_empty_dir_returns_zero(tmp_path):
     agg = tmp_path / "empty"
     agg.mkdir()

@@ -168,6 +168,113 @@ def project_crossover_links(aggregate_dir: str | Path) -> List[Tuple[str, Dict[s
     return out
 
 
+# ── Phase 3: best-effort per-domain page collections ──────────────────────────
+# The per-producer PAGES read rich per-domain collections. The canonical aggregate
+# only carries id / name / entity_type / confidence / location / _producers, so this
+# is a BEST-EFFORT projection: real entity lists + coordinates, with the rich fields
+# the canonical lacks (municipality name, amounts, dates, operator, …) left null.
+# GraphNodes/GraphEdges/UnifiedSources are NOT this function's job — the generic
+# _UI_PROJECTIONS pass below already covers every producer's entities/relationships.
+# Collections with no canonical source (witness/risk/anomaly records and the
+# governance ledgers) are intentionally NOT populated here. AirspaceEvents maps
+# skywatcher, but that producer currently exports a synthetic-only package, so the
+# collection stays empty until skywatcher ships a real FR24 capture.
+_LEDGER_CAP = 500
+
+# (producer program_id, canonical entity_type) -> per-domain collection.
+_PRODUCER_LEDGER: Dict[Tuple[str, str], str] = {
+    ("aguayluz-pr", "utility_asset"): "InfrastructureAssets",
+    ("ovnis-pr", "uap_case"): "UnifiedCases",
+    ("moneysweep-pr", "recipient"): "Vendors",
+    ("moneysweep-pr", "contract"): "Contracts",  # sparse (a few canonical contract entities); rich contract fields pending
+    ("skywatcher-pr", "airspace_observation"): "AirspaceEvents",
+}
+# UnifiedCases also back the Ovnis page's PatternObservations view.
+_LEDGER_ALIAS: Dict[str, str] = {"UnifiedCases": "PatternObservations"}
+
+
+def _ledger_row(e: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
+    """One canonical entity -> a per-domain page row (best-effort, generous aliases)."""
+    eid = str(e["entity_id"])
+    loc = e.get("location") or {}
+    name = e.get("name")
+    etype = e.get("entity_type")
+    payload: Dict[str, Any] = {
+        "id": eid, "entity_id": eid,
+        # id aliases the various page components key on:
+        "asset_id": eid, "vendor_id": eid, "event_id": eid,
+        "case_id": eid, "pattern_id": eid, "contract_id": eid,
+        "name": name, "title": name, "label": name or eid,
+        "normalized_name": e.get("normalized_name"), "summary": e.get("normalized_name"),
+        # type aliases (source-of-truth is entity_type):
+        "entity_type": etype, "asset_type": etype, "event_type": etype,
+        # band the raw 0–1 confidence into the same Low/Medium/High vocabulary the
+        # generic UI projections use (_conf01_band), so a row reads consistently
+        # across collections; keep the raw score too.
+        "confidence": _conf01_band(e.get("confidence")),
+        "confidence_score": e.get("confidence"),
+        "latitude": loc.get("lat"), "longitude": loc.get("lon"),
+        "source_id": e.get("source_id"), "_producers": e.get("_producers"),
+        # rich fields absent from the canonical aggregate (pending richer producer exports):
+        "municipality": None, "region": None, "status": None, "sensitivity": None,
+        "award_amount": None, "award_date": None, "event_date": None,
+        "operator": None, "owner_agency": None,
+    }
+    return eid, payload
+
+
+def _ledger_collection(e: Dict[str, Any]) -> Optional[str]:
+    """The ledger collection for an entity, checking every contributing producer.
+
+    ``_producers`` is a sorted set (aggregate.py), not an owner-ordered list, so a
+    multi-producer row (e.g. a recipient both centinelas-pr and moneysweep-pr
+    contributed) can't just check index 0 — that misses the mapping if the
+    alphabetically-first producer isn't the one ``_PRODUCER_LEDGER`` maps.
+    """
+    etype = str(e.get("entity_type") or "")
+    for p in e.get("_producers") or []:
+        collection = _PRODUCER_LEDGER.get((str(p), etype))
+        if collection:
+            return collection
+    return None
+
+
+def project_producer_collections(aggregate_dir: str | Path) -> Dict[str, List[Tuple[str, Dict[str, Any]]]]:
+    """Best-effort projection of canonical entities into the per-producer page collections.
+
+    Maps ``(producer, entity_type) -> collection`` for any producer on the row, keeps
+    real (non-synthetic) rows with a canonical id, prefers geocoded + high-confidence,
+    caps ``_LEDGER_CAP`` per collection. Returns ``{collection: [(entity_id, payload), ...]}``.
+    """
+    agg = Path(aggregate_dir)
+    ent_path = agg / "entities.jsonl"
+    if not ent_path.exists():
+        return {}
+
+    buckets: Dict[str, List[Dict[str, Any]]] = {}
+    for e in _read_jsonl(ent_path):
+        if e.get("synthetic") or not e.get("entity_id"):
+            continue
+        collection = _ledger_collection(e)
+        if not collection:
+            continue
+        buckets.setdefault(collection, []).append(e)
+
+    out: Dict[str, List[Tuple[str, Dict[str, Any]]]] = {}
+    for collection, rows in buckets.items():
+        rows.sort(
+            key=lambda e: (((e.get("location") or {}).get("lat") is not None), e.get("confidence") or 0),
+            reverse=True,
+        )
+        projected = [_ledger_row(e) for e in rows[:_LEDGER_CAP]]
+        out[collection] = projected
+        alias = _LEDGER_ALIAS.get(collection)
+        if alias:
+            out[alias] = projected
+
+    return out
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -400,6 +507,11 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
         # Phase 3: project each stream into its per-domain UI collection.
         for stream, id_field, collection, alias in _UI_PROJECTIONS:
             _ingest_pairs(conn, collection, _project_ui(agg, stream, id_field, alias), ts, collections)
+
+        # Phase 3: best-effort per-domain page collections (Vendors/InfrastructureAssets/…)
+        # not covered by the generic UI projections above.
+        for collection, rows in project_producer_collections(agg).items():
+            _ingest_pairs(conn, collection, rows, ts, collections)
 
         conn.commit()
     finally:

@@ -57,4 +57,4 @@ producers:
     repo: jotaele44/centinelas-pr
     role: pre_officialization_signal_producer
     federation_manifest: federation.json
-    status: ready_for_live             # live RSS intake bridged: 274 real signals in data/signals/live_signals.jsonl; production export hub-validated; ready_for_hub_live_execution=true (operator-approved 2026-07-03)
+    status: ready_for_discovery        # discovery-ready only — manifest federation_readiness_gate.ready_for_hub_live_execution=false (production_status=NON_PRODUCTION_DIAGNOSTIC). 274 real RSS signals staged in data/signals/live_signals.jsonl, but production export is still refused as synthetic until real intake is wired (mid-integration). Reconciled 2026-07-07 to match the producer manifest.
