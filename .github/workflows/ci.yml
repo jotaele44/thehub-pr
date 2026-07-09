@@ -66,3 +66,21 @@ jobs:
         run: mypy packages/prii_maintenance/src
       - name: Tests
         run: pytest packages/prii_maintenance/tests -q
+
+  # Self-contained sub-project (packages/prii_export_utils) — its own CI, same
+  # isolation rationale as maintenance-package above.
+  export-utils-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: pip install -e ".[dev]" -e packages/prii_export_utils
+      - name: Ruff
+        run: ruff check packages/prii_export_utils
+      - name: Mypy
+        run: mypy packages/prii_export_utils/src
+      - name: Tests
+        run: pytest packages/prii_export_utils/tests -q
