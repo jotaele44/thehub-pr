@@ -36,9 +36,20 @@ pip install "prii-maintenance @ git+https://github.com/jotaele44/thehub-pr.git@p
 
 ## Pinning policy
 
-Producers pin to a tag (`prii-maintenance-vN`), never to `@main`. **Never
-force-move an existing tag** — cut `vN+1` on a new commit and let each
-producer bump deliberately: edit one dependency line, open one PR, re-run
-that producer's test suite. A tag is not a stronger guarantee than a
-convention; if stronger immutability is ever needed, pin the exact commit SHA
-in the same `@<ref>` slot instead of the tag name.
+Producers pin to a released tag (`prii-maintenance-vN`, e.g.
+`prii-maintenance-v1` = the extraction commit `3c9e51e`) or to the exact
+commit SHA in the same `@<ref>` slot — never to `@main`. **Never force-move
+an existing tag** — cut `vN+1` on a new commit and let each producer bump
+deliberately: edit one dependency line, open one PR, re-run that producer's
+test suite.
+
+## Where the pin lives (federation convention)
+
+Each producer declares the pin in exactly one place — its **primary install
+manifest**: `[project.dependencies]` in `pyproject.toml` where the repo has
+one, else the runtime `requirements.txt`. The repo's `federation.json`
+`hub_callable_commands.setup` and its CI workflows install **from that
+manifest** (`pip install -e .[dev]` / `pip install -r requirements.txt`)
+rather than repeating the git+https string, so the pinned SHA cannot drift
+between files. `setup` must install everything the repo's other hub-callable
+commands import.

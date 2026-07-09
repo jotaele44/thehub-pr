@@ -1,6 +1,4 @@
 import { appParams } from '@/lib/app-params';
-import snapshot from '@/lib/snapshot.json';
-const OFFLINE = import.meta.env.VITE_OFFLINE === '1';
 
 const TOKEN_STORAGE_KEY = 'federation_access_token';
 
@@ -54,11 +52,6 @@ async function request(path, options = {}) {
   }
   if (token && !headers.has('Authorization')) {
     headers.set('Authorization', `Bearer ${token}`);
-  }
-
-  if (OFFLINE) {
-    const key = path.split('?')[0];
-    return key in snapshot ? snapshot[key] : null;
   }
 
   const response = await fetch(`${baseUrl}${path}`, {

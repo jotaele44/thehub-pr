@@ -40,5 +40,16 @@ pip install "prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@
 
 ## Pinning policy
 
-Pin to a commit SHA, never to `@main`. Bump = one line, one PR, per producer,
-on their own schedule — same convention as `prii_maintenance`.
+Pin to a released tag (`prii-export-utils-vN`, e.g. `prii-export-utils-v1` =
+the extraction commit `c007a72`) or to an exact commit SHA, never to `@main`.
+Bump = one line, one PR, per producer, on their own schedule — same
+convention as `prii_maintenance`.
+
+## Where the pin lives (federation convention)
+
+Same rule as `prii_maintenance`: the pin lives in the producer's primary
+install manifest (`pyproject.toml` `[project.dependencies]` if the repo has
+one, else the runtime `requirements.txt`), and `federation.json`'s `setup`
+command plus CI install from that manifest instead of repeating the git+https
+string. `setup` must install everything the repo's other hub-callable
+commands import.

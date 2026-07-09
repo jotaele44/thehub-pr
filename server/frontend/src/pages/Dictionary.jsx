@@ -12,7 +12,7 @@ import { BookA, Plus, ArrowRight } from "lucide-react";
 import { DICTIONARY_STATUS } from "@/lib/chips";
 
 const CATEGORIES = ["Agency", "Vendor", "Person", "Location", "Asset", "Program", "Acronym", "Alias", "Other"];
-const MODULES = ["Hub", "Spiderweb-PR", "Ovnis-PR", "AguaYLuz-PR", "MoneySweep-PR", "Skywatcher-PR"];
+const MODULES = ["Hub", "Spiderweb-PR", "Ovnis-PR", "AguaYLuz-PR", "MoneySweep-PR", "Skywatcher-PR", "Centinelas-PR"];
 const STATUSES = ["Proposed", "Approved", "Deprecated"];
 
 export default function Dictionary() {

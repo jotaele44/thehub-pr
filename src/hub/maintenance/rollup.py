@@ -15,13 +15,12 @@ from typing import Any, Dict, List
 
 import jsonschema
 
+from prii_maintenance import MAINTENANCE_VERSION, REPORT_RELPATH
+
 from .._schemas import load_schema
 from ..federation_status import _producer_base
 from ..registry import Registry
 from .gate import compute_gate
-
-MAINTENANCE_VERSION = "0.1.0"
-REPORT_RELPATH = "reports/maintenance/latest.json"
 
 
 def _report_validator() -> "jsonschema.Draft7Validator":

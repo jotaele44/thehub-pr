@@ -28,7 +28,7 @@
     "source_truth": {"type": "object"},
     "hub_callable_commands": {
       "type": "object",
-      "description": "Shell commands the Hub may invoke. setup and test_suite MUST be offline-safe (no network).",
+      "description": "Shell commands the Hub may invoke. setup MUST install everything the other declared commands import, and may use the network only to install SHA-pinned dependencies (e.g. the shared prii-* packages via git+https). Every command other than setup MUST be offline-safe (no network).",
       "minProperties": 1,
       "required": ["setup", "test_suite"],
       "additionalProperties": {"type": "string"}
@@ -42,11 +42,13 @@
     "manual_ingestion_tranche_b": {"type": "object"},
     "federation_readiness_gate": {
       "type": "object",
+      "description": "Gate semantics: a non-empty blocking_conditions list means ready_for_hub_live_execution MUST be false. Conditions that have been resolved belong in resolved_conditions; advisory or domain-specific notes belong outside this gate object.",
       "required": ["ready_for_hub_discovery", "ready_for_hub_live_execution", "blocking_conditions"],
       "properties": {
         "ready_for_hub_discovery": {"type": "boolean"},
         "ready_for_hub_live_execution": {"type": "boolean"},
-        "blocking_conditions": {"type": "array", "items": {"type": "string"}}
+        "blocking_conditions": {"type": "array", "items": {"type": "string"}},
+        "resolved_conditions": {"type": "array", "items": {"type": "string"}}
       }
     }
   }

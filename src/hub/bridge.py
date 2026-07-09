@@ -14,6 +14,8 @@ import hashlib
 import json
 from pathlib import Path
 
+from prii_export_utils import sha256 as _sha256
+
 from ._schemas import STREAM_SCHEMA
 
 # Canonical filename -> stream name (only files that exist are included).
@@ -26,10 +28,6 @@ _CANDIDATES = [
     ("observations.jsonl", "observations"),
     ("alerts.jsonl", "alerts"),
 ]
-
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _record_count(path: Path) -> int:
