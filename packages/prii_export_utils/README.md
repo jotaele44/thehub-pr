@@ -40,10 +40,10 @@ pip install "prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@
 
 ## Pinning policy
 
-Pin to a released tag (`prii-export-utils-vN`, e.g. `prii-export-utils-v1` =
-the extraction commit `c007a72`) or to an exact commit SHA, never to `@main`.
-Bump = one line, one PR, per producer, on their own schedule — same
-convention as `prii_maintenance`.
+Pin to the exact commit SHA (`c007a72…` is the v1 extraction commit, the
+current release), or to a release tag (`prii-export-utils-vN`) once a
+maintainer cuts one at that SHA — never to `@main`. Bump = one line, one PR,
+per producer, on their own schedule — same convention as `prii_maintenance`.
 
 ## Where the pin lives (federation convention)
 
