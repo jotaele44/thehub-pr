@@ -1,0 +1,188 @@
+# TheHub MCP Federation — capability registry
+# TheHub is the control plane: this file is the single authoritative source
+# of truth for which MCP capabilities exist, their lifecycle status, and
+# their pinned version. Project manifests (mcp/manifests/*.mcp.yaml) may
+# only reference capabilities declared here, or their own project-local
+# capabilities.
+version: 2
+
+registry_rules:
+  - "TheHub is the federation control plane; project repos declare capabilities only."
+  - "write_policy.default must be read_only for every project manifest."
+  - "No manifest or registry entry may commit secrets (api_key/token/password/secret)."
+  - "No raw sensitive data may be stored in registry or manifest files."
+  - "Anomaly-classification assertion language is never used in this registry."
+  - "External MCPs are adapters, not authorities; TheHub correlation logic remains authoritative."
+  - "Every active capability must carry a concrete version_pin; pending-evaluation is reserved for pilot/conditional adapters."
+
+adapter_status_values:
+  - planned
+  - pilot
+  - active
+  - deprecated
+
+capability_classes:
+  - core
+  - geospatial
+  - domain
+  - government
+
+capabilities:
+  federation-core:
+    class: core
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Baseline federation identity, manifest inheritance, and control-plane
+      handshake capability inherited by every project manifest.
+    required_by:
+      - skywatcher
+      - ovnis
+      - spiderweb
+      - centinelas
+      - moneysweep
+      - aguayluz
+
+  github-bridge:
+    class: core
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Read-only GitHub repository access used for source-controlled
+      artifact exchange between project repos and TheHub.
+    required_by:
+      - skywatcher
+      - ovnis
+      - spiderweb
+      - centinelas
+      - moneysweep
+      - aguayluz
+
+  provenance:
+    class: core
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Source lineage and confidence tracking attached to every adapter
+      output, required for correlation in the Hub's aggregate/correlate
+      pipeline.
+    required_by:
+      - skywatcher
+      - ovnis
+      - spiderweb
+      - centinelas
+      - moneysweep
+      - aguayluz
+
+  geospatial:
+    class: geospatial
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      General-purpose geocoding/reverse-geocoding and spatial-feature
+      lookup capability.
+    required_by:
+      - skywatcher
+      - spiderweb
+
+  terrain:
+    class: geospatial
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Elevation and terrain-model lookup capability (e.g. DEM/USGS-derived
+      data).
+    required_by:
+      - skywatcher
+      - aguayluz
+
+  flight:
+    class: domain
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Flight-track and ADS-B position capability for air-domain
+      observation.
+    required_by:
+      - skywatcher
+
+  weather:
+    class: domain
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Current-conditions and forecast weather capability.
+    required_by:
+      - skywatcher
+      - centinelas
+      - aguayluz
+
+  documents:
+    class: domain
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Document ingestion/search capability (OCR, archive text search)
+      used by the case-archive producer.
+    required_by:
+      - ovnis
+
+  contracts:
+    class: government
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Federal contract/spending data capability (e.g. SAM.gov,
+      USAspending-class sources).
+    required_by:
+      - moneysweep
+
+  regulations:
+    class: government
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Federal Register and Regulations.gov-class regulatory data
+      capability.
+    required_by:
+      - spiderweb
+
+  utilities:
+    class: domain
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Utility/hydrology data capability (water, power, and related
+      infrastructure feeds).
+    required_by:
+      - aguayluz
+
+  field-ops:
+    class: domain
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      Field-operations support capability (GPS/maps/observation intake for
+      field personnel).
+    required_by:
+      - centinelas
+
+# Capabilities that are specific to a single project and are not part of
+# the shared global registry above. Manifests may declare these only for
+# their own project.
+project_local_capabilities:
+  skywatcher:
+    - satellite
+  ovnis:
+    - source-registry
+    - citations
+    - archive-search
+    - deduplication
+  spiderweb:
+    - parcels
+    - routing
+  centinelas:
+    - offline-cache
+  moneysweep:
+    - entity-resolution
+  aguayluz: []
