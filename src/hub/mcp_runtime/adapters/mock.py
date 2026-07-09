@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from hub.mcp_runtime.sdk import MCPAdapter, MCPRequest
 
@@ -15,10 +15,14 @@ class MockAdapter(MCPAdapter):
         served_capabilities: List[str],
         adapter_name: str = "mock",
         healthy: bool = True,
+        write_actions: Optional[List[str]] = None,
+        authenticated: bool = True,
     ) -> None:
         self._capabilities = list(served_capabilities)
         self._name = adapter_name
         self._healthy = healthy
+        self._write_actions = list(write_actions or [])
+        self._authenticated = authenticated
         self.calls: List[MCPRequest] = []
 
     def name(self) -> str:
@@ -32,6 +36,12 @@ class MockAdapter(MCPAdapter):
 
     def health_check(self) -> bool:
         return self._healthy
+
+    def authenticate(self) -> bool:
+        return self._authenticated
+
+    def write_actions(self) -> List[str]:
+        return list(self._write_actions)
 
     def execute(self, request: MCPRequest) -> Dict[str, Any]:
         self.calls.append(request)

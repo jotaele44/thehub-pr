@@ -51,6 +51,16 @@ class MCPAdapter(abc.ABC):
     def capabilities(self) -> List[str]:
         """Registry capability names this adapter serves."""
 
+    def write_actions(self) -> List[str]:
+        """Action names that mutate state. Trusted source of the write
+        classification — the router consults this, not the caller's flag,
+        so a request cannot smuggle a write past the read-only policy by
+        omitting is_write."""
+        return []
+
+    def is_write_action(self, action: str) -> bool:
+        return action in self.write_actions()
+
     def health_check(self) -> bool:
         """Cheap liveness probe; override for adapters with real backends."""
         return True
@@ -87,7 +97,11 @@ class MCPAdapter(abc.ABC):
         }
 
     def run(self, request: MCPRequest) -> AdapterResult:
-        """Validate, execute, and wrap with provenance."""
+        """Authenticate, validate, execute, and wrap with provenance."""
+        if not self.authenticate():
+            raise PermissionError(
+                f"adapter {self.name()!r} failed to authenticate"
+            )
         error = self.validate(request)
         if error:
             raise ValueError(error)

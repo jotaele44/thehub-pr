@@ -42,8 +42,12 @@ class Router:
         return adapters[0]
 
     def route(self, request: MCPRequest) -> AdapterResult:
-        self.policy.check(request)
+        self.policy.check_access(request)
         adapter = self.resolve(request.capability)
+        # Trusted write classification: the adapter's own declaration OR the
+        # caller's flag — callers can escalate but never conceal a write.
+        is_write = request.is_write or adapter.is_write_action(request.action)
+        self.policy.check_write(request, is_write)
         result = adapter.run(request)
         capability = self.registry.capabilities.get(request.capability)
         if capability is not None:

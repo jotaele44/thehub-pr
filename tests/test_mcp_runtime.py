@@ -115,6 +115,41 @@ def test_provenance_sink_receives_audit_records(registry):
     assert audit[0]["capability"] == "weather"
 
 
+def test_omitted_write_flag_cannot_bypass_allowlist(router):
+    # The adapter declares update_station as a write; a caller omitting
+    # is_write must still hit the read-only allowlist gate.
+    router.register_adapter(
+        MockAdapter(["weather"], write_actions=["update_station"])
+    )
+    request = MCPRequest(
+        project="centinelas", capability="weather", action="update_station"
+    )
+    assert request.is_write is False
+    with pytest.raises(PolicyViolation, match="allowed_writes"):
+        router.route(request)
+
+
+def test_read_action_on_write_capable_adapter_still_routes(router):
+    router.register_adapter(
+        MockAdapter(["weather"], write_actions=["update_station"])
+    )
+    result = router.route(
+        MCPRequest(project="centinelas", capability="weather", action="forecast")
+    )
+    assert result.status == "ok"
+
+
+def test_failed_authentication_blocks_execution(router):
+    adapter = MockAdapter(["weather"], authenticated=False)
+    router.register_adapter(adapter)
+    request = MCPRequest(
+        project="centinelas", capability="weather", action="forecast"
+    )
+    with pytest.raises(PermissionError, match="failed to authenticate"):
+        router.route(request)
+    assert adapter.calls == []
+
+
 def test_unknown_project_raises(registry):
     policy = PolicyEngine(registry)
     request = MCPRequest(project="nonexistent", capability="weather", action="x")

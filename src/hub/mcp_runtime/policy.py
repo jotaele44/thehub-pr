@@ -22,7 +22,8 @@ class PolicyEngine:
     def __init__(self, registry: RuntimeRegistry) -> None:
         self.registry = registry
 
-    def check(self, request: MCPRequest) -> None:
+    def check_access(self, request: MCPRequest) -> None:
+        """Declaration and lifecycle checks (independent of write status)."""
         manifest = self.registry.manifest_for(request.project)
 
         if request.capability not in manifest.declared:
@@ -38,15 +39,31 @@ class PolicyEngine:
                 f"routable"
             )
 
-        if request.is_write:
-            if manifest.write_default == "write_disabled":
-                raise PolicyViolation(
-                    f"project {request.project!r} has writes disabled"
-                )
-            write_key = f"{request.capability}:{request.action}"
-            if write_key not in manifest.allowed_writes:
-                raise PolicyViolation(
-                    f"write action {write_key!r} is not in "
-                    f"{request.project!r}'s allowed_writes (default is "
-                    f"{manifest.write_default!r})"
-                )
+    def check_write(self, request: MCPRequest, is_write: bool) -> None:
+        """Write-allowlist check.
+
+        is_write is supplied by the router from the resolved adapter's own
+        write_actions() declaration (OR-ed with the caller's flag), never
+        from the request alone — a caller can escalate a request to write
+        scrutiny but can never downgrade a declared write to a read.
+        """
+        if not is_write:
+            return
+        manifest = self.registry.manifest_for(request.project)
+        if manifest.write_default == "write_disabled":
+            raise PolicyViolation(
+                f"project {request.project!r} has writes disabled"
+            )
+        write_key = f"{request.capability}:{request.action}"
+        if write_key not in manifest.allowed_writes:
+            raise PolicyViolation(
+                f"write action {write_key!r} is not in "
+                f"{request.project!r}'s allowed_writes (default is "
+                f"{manifest.write_default!r})"
+            )
+
+    def check(self, request: MCPRequest) -> None:
+        """Full check using only request-carried write intent. Prefer the
+        router path, which derives write status from adapter metadata."""
+        self.check_access(request)
+        self.check_write(request, request.is_write)
