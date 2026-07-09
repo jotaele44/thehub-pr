@@ -1,0 +1,39 @@
+name: MCP Registry Validation
+
+on:
+  pull_request:
+    paths:
+      - "mcp/**"
+      - "schemas/federation/**"
+      - "tools/validate_mcp_*.py"
+      - "tests/test_mcp_*.py"
+      - ".github/workflows/mcp-registry-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "mcp/**"
+      - "schemas/federation/**"
+      - "tools/validate_mcp_*.py"
+      - "tests/test_mcp_*.py"
+      - ".github/workflows/mcp-registry-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install jsonschema pyyaml pytest
+      - name: Validate MCP manifests
+        run: python tools/validate_mcp_manifests.py
+      - name: Validate MCP candidates
+        run: python tools/validate_mcp_candidates.py
+      - name: Run MCP registry tests
+        run: pytest tests/test_mcp_manifest_schema.py tests/test_mcp_candidates.py
