@@ -15,6 +15,15 @@ SCHEMA_PATH = REPO_ROOT / "schemas" / "federation" / "project_mcp_manifest.schem
 REGISTRY_PATH = REPO_ROOT / "mcp" / "registry" / "capability_registry.yaml"
 MANIFESTS_DIR = REPO_ROOT / "mcp" / "manifests"
 
+EXPECTED_PROJECTS = {
+    "skywatcher",
+    "ovnis",
+    "spiderweb",
+    "centinelas",
+    "moneysweep",
+    "aguayluz",
+}
+
 FORBIDDEN_TERMS = [
     "api_key:",
     "token:",
@@ -68,13 +77,29 @@ def validate() -> list[str]:
             errors.append(
                 f"registry capability {name!r} has invalid status {status!r}"
             )
+        # pending-evaluation is reserved for pilot/conditional adapters; an
+        # active capability must carry a concrete pin.
+        if version_pin == "pending-evaluation" and status == "active":
+            errors.append(
+                f"registry capability {name!r} is active but version_pin is "
+                f"pending-evaluation"
+            )
 
     schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
     validator = Draft7Validator(schema)
 
     manifest_paths = sorted(MANIFESTS_DIR.glob("*.mcp.yaml"))
-    if not manifest_paths:
-        errors.append(f"no manifest files found in {MANIFESTS_DIR}")
+    found_projects = {p.name.removesuffix(".mcp.yaml") for p in manifest_paths}
+    missing_projects = EXPECTED_PROJECTS - found_projects
+    if missing_projects:
+        errors.append(
+            f"missing manifest(s) for project(s): {sorted(missing_projects)}"
+        )
+    unexpected_projects = found_projects - EXPECTED_PROJECTS
+    if unexpected_projects:
+        errors.append(
+            f"unexpected manifest file(s) for: {sorted(unexpected_projects)}"
+        )
 
     validated_count = 0
     for manifest_path in manifest_paths:
@@ -95,6 +120,13 @@ def validate() -> list[str]:
             )
 
         project = manifest["project"]
+        expected_name = f"{project}.mcp.yaml"
+        if manifest_path.name != expected_name:
+            errors.append(
+                f"{manifest_path}: declares project {project!r} but filename "
+                f"is not {expected_name!r}"
+            )
+
         allowed_local = set(project_local_capabilities.get(project, []))
         declared = list(manifest.get("inherits", [])) + list(
             manifest.get("capabilities", [])

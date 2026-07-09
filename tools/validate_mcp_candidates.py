@@ -92,6 +92,16 @@ def validate() -> list[str]:
         for row_num, row in enumerate(reader, start=2):
             row_count += 1
 
+            # csv.DictReader parks surplus cells under the None key and fills
+            # short rows with None values — both mean a malformed row.
+            if None in row and row[None]:
+                errors.append(
+                    f"row {row_num}: too many cells (unquoted comma in a "
+                    f"field?)"
+                )
+            if any(v is None for k, v in row.items() if k is not None):
+                errors.append(f"row {row_num}: too few cells")
+
             for column in REQUIRED_COLUMNS:
                 value = (row.get(column) or "").strip()
                 if not value:
