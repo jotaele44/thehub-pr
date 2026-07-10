@@ -170,6 +170,28 @@ def test_documents_get_rejects_traversal(router, tmp_path):
         )
 
 
+def test_documents_search_skips_symlink_escape(router, tmp_path):
+    root = tmp_path / "archive"
+    root.mkdir()
+    (root / "inside.md").write_text("findme inside\n")
+    outside = tmp_path / "outside.md"
+    outside.write_text("findme secret outside\n")
+    link = root / "link.md"
+    try:
+        link.symlink_to(outside)
+    except (OSError, NotImplementedError):
+        pytest.skip("symlinks not supported on this platform")
+    router.register_adapter(DocumentsAdapter())
+    result = router.route(
+        MCPRequest(
+            project="ovnis", capability="documents", action="search",
+            params={"root": str(root), "query": "findme"},
+        )
+    )
+    paths = {hit["path"] for hit in result.data["hits"]}
+    assert paths == {"inside.md"}  # link.md -> outside is not surfaced
+
+
 def test_documents_search_respects_max_hits(router, tmp_path):
     (tmp_path / "many.md").write_text("match\n" * 10)
     router.register_adapter(DocumentsAdapter())
@@ -209,6 +231,27 @@ def test_github_bridge_resolve_repo(router):
     assert result.data["repo"] == "jotaele44/spiderweb-pr"
     assert result.data["repo_name"] == "spiderweb-pr"
     assert result.data["clone_url"] == "https://github.com/jotaele44/spiderweb-pr.git"
+
+
+def test_github_bridge_provenance_honors_registry_override(router, tmp_path):
+    alt = tmp_path / "alt_producers.yaml"
+    alt.write_text(
+        "schema_version: hub_registry_v1\n"
+        "hub: thehub-pr\n"
+        "producers:\n"
+        "  - program_id: solo-pr\n"
+        "    repo: acme/solo-pr\n"
+        "    role: test_node\n"
+    )
+    router.register_adapter(GithubBridgeAdapter())
+    result = router.route(
+        MCPRequest(
+            project="skywatcher", capability="github-bridge",
+            action="list_producers", params={"registry": str(alt)},
+        )
+    )
+    assert result.data["count"] == 1
+    assert result.provenance["registry"] == str(alt)
 
 
 def test_github_bridge_unknown_program_id(router):

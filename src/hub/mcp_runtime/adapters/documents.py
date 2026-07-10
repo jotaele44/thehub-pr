@@ -43,10 +43,15 @@ class DocumentsAdapter(MCPAdapter):
         return Path(raw).resolve()
 
     @staticmethod
-    def _within(root: Path, target: Path) -> Path:
+    def _is_within(root: Path, resolved: Path) -> bool:
+        # Path.is_relative_to lands in 3.9; this covers both explicit
+        # traversal (../) and symlinks whose resolved target leaves the root.
+        return resolved == root or root in resolved.parents
+
+    @classmethod
+    def _within(cls, root: Path, target: Path) -> Path:
         resolved = target.resolve()
-        # Path.is_relative_to lands in 3.9; guard against traversal escapes.
-        if root not in resolved.parents and resolved != root:
+        if not cls._is_within(root, resolved):
             raise ValueError(f"path {target} escapes document root {root}")
         return resolved
 
@@ -65,6 +70,10 @@ class DocumentsAdapter(MCPAdapter):
             for glob in _GLOBS:
                 for path in sorted(root.glob(glob)):
                     if not path.is_file():
+                        continue
+                    # Skip symlinks whose target resolves outside the root, so
+                    # search never surfaces content get() would reject.
+                    if not self._is_within(root, path.resolve()):
                         continue
                     text = path.read_text(encoding="utf-8", errors="replace")
                     for line_no, line in enumerate(text.splitlines(), start=1):

@@ -49,10 +49,12 @@ class GithubBridgeAdapter(MCPAdapter):
     def _clone_url(repo: str) -> str:
         return f"https://github.com/{repo}.git"
 
-    def _load(self, request: MCPRequest) -> Registry:
+    def _effective_registry(self, request: MCPRequest) -> Path:
         raw = request.params.get("registry")
-        path = Path(raw) if raw else self._registry_path
-        return load_registry(path)
+        return Path(raw) if raw else self._registry_path
+
+    def _load(self, request: MCPRequest) -> Registry:
+        return load_registry(self._effective_registry(request))
 
     def execute(self, request: MCPRequest) -> Any:
         registry = self._load(request)
@@ -90,5 +92,6 @@ class GithubBridgeAdapter(MCPAdapter):
 
     def provenance(self, request: MCPRequest) -> Dict[str, Any]:
         block = super().provenance(request)
-        block["registry"] = str(self._registry_path)
+        # Record the registry actually loaded, honoring a params override.
+        block["registry"] = str(self._effective_registry(request))
         return block
