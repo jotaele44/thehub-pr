@@ -188,6 +188,7 @@ _PRODUCER_LEDGER: Dict[Tuple[str, str], str] = {
     ("moneysweep-pr", "recipient"): "Vendors",
     ("moneysweep-pr", "contract"): "Contracts",  # sparse (a few canonical contract entities); rich contract fields pending
     ("skywatcher-pr", "airspace_observation"): "AirspaceEvents",
+    ("centinelas-pr", "public_matter"): "PublicMatters",
 }
 # UnifiedCases also back the Ovnis page's PatternObservations view.
 _LEDGER_ALIAS: Dict[str, str] = {"UnifiedCases": "PatternObservations"}
@@ -203,7 +204,7 @@ def _ledger_row(e: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
         "id": eid, "entity_id": eid,
         # id aliases the various page components key on:
         "asset_id": eid, "vendor_id": eid, "event_id": eid,
-        "case_id": eid, "pattern_id": eid, "contract_id": eid,
+        "case_id": eid, "pattern_id": eid, "contract_id": eid, "matter_id": eid,
         "name": name, "title": name, "label": name or eid,
         "normalized_name": e.get("normalized_name"), "summary": e.get("normalized_name"),
         # type aliases (source-of-truth is entity_type):

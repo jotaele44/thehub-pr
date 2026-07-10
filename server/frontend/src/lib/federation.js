@@ -47,6 +47,14 @@ export const MODULES = [
     oldName: "skywatcher-pr",
     blurb: "Airspace / aircraft intelligence & FR24 ingestion",
   },
+  {
+    name: "Centinelas-PR",
+    path: "/centinelas",
+    domain: "Signals",
+    repo_name: "centinelas-pr",
+    oldName: "centinelas-pr",
+    blurb: "Pre-officialization signal intake, classification & routing",
+  },
 ];
 
 // Controlled region vocabulary for case / event records (Puerto Rico).
@@ -113,6 +121,12 @@ const ACCENTS = {
     bg: "bg-sky-500/10",
     text: "text-sky-300",
     border: "border-sky-500/30",
+  },
+  Signals: {
+    dot: "bg-orange-400",
+    bg: "bg-orange-500/10",
+    text: "text-orange-300",
+    border: "border-orange-500/30",
   },
 };
 

@@ -1,8 +1,7 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter, HashRouter, Route, Routes } from 'react-router-dom';
-const Router = import.meta.env.VITE_OFFLINE === '1' ? HashRouter : BrowserRouter;
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
@@ -22,6 +21,7 @@ import Ovnis from '@/pages/Ovnis';
 import AguaYLuz from '@/pages/AguaYLuz';
 import MoneySweep from '@/pages/MoneySweep';
 import Skywatcher from '@/pages/Skywatcher';
+import Centinelas from '@/pages/Centinelas';
 import ModuleReadiness from '@/pages/ModuleReadiness';
 import TransitionAudit from '@/pages/TransitionAudit';
 import FederationCrossoverWorkspace from '@/pages/FederationCrossoverWorkspace';
@@ -82,6 +82,7 @@ const AuthenticatedApp = () => {
         <Route path="/aguayluz" element={<AguaYLuz />} />
         <Route path="/moneysweep" element={<MoneySweep />} />
         <Route path="/skywatcher" element={<Skywatcher />} />
+        <Route path="/centinelas" element={<Centinelas />} />
       </Route>
       <Route path="*" element={<PageNotFound />} />
     </Routes>
