@@ -35,8 +35,13 @@ is the *located finance* sub-flow declared in `docs/FEDERATION_TOPOLOGY.md`.
 
 ## Stage 1 — Centinelas: find and classify the story
 
-Repo: `centinelas-pr` (production gate: `PRODUCTION`,
-`ready_for_hub_live_execution: true`).
+Repo: `centinelas-pr`. Its producer manifest declares `PRODUCTION` /
+`ready_for_hub_live_execution: true` (flipped 2026-07-04, operator-approved),
+but the Hub's own records disagree: `registry/producers.yaml` and
+`docs/FEDERATION_STATUS.md` (last reconciled 2026-07-07) still list Centinelas
+as **discovery-only** with live execution blocked. Until that divergence is
+re-reconciled, treat the Hub-side registry as authoritative for what the Hub
+will execute.
 
 1. **Ingest.** `src/centinelas/ingest/rss.py` (`poll_all`) polls the RSS/Atom
    feeds in `src/centinelas/ingest/sources.yaml`, deduplicates by
@@ -147,7 +152,10 @@ validated against the schemas in `schemas/`. The Hub pipeline (`src/hub/`,
 CLI `hub …`) then runs:
 
 1. **fetch** (`fetch.py`) — clones each producer from `registry/producers.yaml`
-   and runs its `export_canonical` command behind an allowlist security gate.
+   and, **only when invoked as `hub fetch --run`**, also runs each producer's
+   `export_canonical` command behind an allowlist security gate. Plain
+   `hub fetch` is clone-only, so a following `hub aggregate` sees whatever
+   packages are already committed or previously materialized.
 2. **aggregate** (`aggregate.py`) — validates packages, unions rows, dedups by
    deterministic id, and stamps every row with `_producers` provenance.
 3. **correlate** (`correlate.py` `derive_relationships`) — six strategies, each
@@ -193,7 +201,7 @@ move through the flow as:
 | Signal-to-award matching ("who got the contract") | **not implemented** | — | aspirational (schema-level intent only: `matched_to_moneysweep`, `handoff_status`) |
 | MoneySweep → SpiderWeb bundle | implemented | yes | manual transport; automated delivery removed 2026-06 |
 | SpiderWeb contract-finance scoring | implemented | yes | runs on delivered bundles |
-| Producers → Hub canonical packages | implemented | yes | centinelas + spiderweb gates `true`; moneysweep consumed from committed artifacts (`ready_for_hub_live_execution: false`) |
+| Producers → Hub canonical packages | implemented | yes | spiderweb live; moneysweep consumed from committed artifacts (`ready_for_hub_live_execution: false`); centinelas manifest says live but the Hub registry still gates it to discovery-only (divergence noted in Stage 1) |
 | Hub aggregate → correlate → ingest | implemented | extensive | yes — production-grade |
 
 ## Gaps
