@@ -78,7 +78,11 @@ hub ingest --in data/aggregate --db data/hub.db
 npm --prefix server/frontend ci
 npm --prefix server/frontend run build
 
-# 3. Serve UI + API on one origin
+# 3. Install the backend serving deps (FastAPI/uvicorn live in the `server` extra,
+#    which `make setup`'s `.[dev]` install does not include)
+pip install -e ".[server]"        # or: pip install -r server/backend/requirements.txt
+
+# 4. Serve UI + API on one origin
 python -m uvicorn server.backend.main:app --port 8000   # open http://localhost:8000/
 ```
 
