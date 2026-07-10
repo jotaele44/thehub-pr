@@ -3,7 +3,7 @@
 PY ?= python3
 
 setup:
-	$(PY) -m pip install -e ".[dev]" -e packages/prii_maintenance -e packages/prii_export_utils
+	$(PY) -m pip install -e ".[dev]"
 
 test:
 	$(PY) -m pytest -q
