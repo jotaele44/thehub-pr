@@ -78,14 +78,28 @@ TheHub's aggregation and correlation logic (`src/hub/correlate.py` and
 friends) remains the authority on cross-producer relationships; adapters
 only supply raw inputs, always carrying provenance back to their source.
 
+## Implemented so far
+
+- **Governance & static validation** — this document, the capability
+  registry, project manifests, JSON schema, validators, tests, and CI.
+- **Runtime core** — `src/hub/mcp_runtime/`: the `MCPAdapter` SDK contract,
+  the registry loader, the request-time policy engine (declaration checks,
+  read-only-default write gating, deprecation blocking), and the router
+  (capability→adapter resolution with provenance stamping).
+- **Core adapters** — `src/hub/mcp_runtime/adapters/`: read-only, hermetic
+  (local-data-backed) adapters for `provenance`, `geospatial`, `documents`,
+  and `github-bridge`. See `MCP_ADAPTERS.md`.
+
 ## Future work (not implemented)
 
-A federation **runtime** (a server that loads manifests/registry, resolves
-adapters, enforces policy at request time, and routes calls) plus a full
-adapter ecosystem, authentication/secrets layer, synchronization
-automation, telemetry, caching, and deployment tooling is a natural next
-phase of this program. None of that runtime exists yet — this document and
-its companion registry/schema/validator files establish governance and
-static validation only. Building the runtime is out of scope for this
-change and is tracked as future work, not claimed as complete anywhere in
-this repository.
+The runtime is a **library** today — there is no long-running server, and
+the following remain unbuilt and are not claimed as complete anywhere in
+this repository:
+
+- an API/server front-end that hosts the router as a service;
+- **domain adapters** (`flight`, `weather`, `contracts`, `regulations`,
+  `terrain`, `utilities`, `field-ops`) and networked variants of the core
+  adapters (e.g. live git operations behind `github-bridge`);
+- an authentication/secrets layer (adapters that need credentials source
+  them from the environment at runtime — never the repo);
+- synchronization automation, telemetry, caching, and deployment tooling.
