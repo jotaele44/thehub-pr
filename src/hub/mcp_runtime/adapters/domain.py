@@ -57,11 +57,16 @@ class WeatherAdapter(BaseHttpAdapter):
             lat, lon = request.params.get("lat"), request.params.get("lon")
             if lat is None or lon is None:
                 raise ValueError("forecast requires 'lat' and 'lon' params")
-            payload = self._get("/forecast", {"lat": lat, "lon": lon})
-            return {
-                "location": {"lat": lat, "lon": lon},
-                "periods": payload.get("periods") or [],
-            }
+            # NWS flow: /points/{lat},{lon} yields a gridpoint forecast URL,
+            # whose periods live under properties.periods.
+            points = self._get(f"/points/{lat},{lon}")
+            forecast_url = (points.get("properties") or {}).get("forecast")
+            location = {"lat": lat, "lon": lon}
+            if not forecast_url:
+                return {"location": location, "periods": []}
+            grid = self._request(forecast_url)
+            periods = (grid.get("properties") or {}).get("periods") or []
+            return {"location": location, "periods": periods}
         raise ValueError(f"unknown action {request.action!r}")
 
 
@@ -95,7 +100,22 @@ class ContractsAdapter(BaseHttpAdapter):
             keyword = request.params.get("keyword")
             if not keyword:
                 raise ValueError("search requires a 'keyword' param")
-            payload = self._get("/opportunities/v2/search", {"q": keyword})
+            # SAM.gov Get Opportunities requires a posted-date window
+            # (MM/dd/yyyy) and searches titles via `title` (no `q`).
+            posted_from = request.params.get("posted_from")
+            posted_to = request.params.get("posted_to")
+            if not posted_from or not posted_to:
+                raise ValueError(
+                    "search requires 'posted_from' and 'posted_to' "
+                    "(MM/dd/yyyy) date params"
+                )
+            query = {
+                "title": keyword,
+                "postedFrom": posted_from,
+                "postedTo": posted_to,
+                "limit": request.params.get("limit", 10),
+            }
+            payload = self._get("/opportunities/v2/search", query)
             records = payload.get("opportunitiesData") or []
             return {"keyword": keyword, "opportunities": records,
                     "count": len(records)}

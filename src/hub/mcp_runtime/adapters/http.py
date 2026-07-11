@@ -88,13 +88,20 @@ class BaseHttpAdapter(MCPAdapter):
             return True
         return bool(os.environ.get(self.env_key))
 
-    def _get(self, path: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def _request(
+        self, url: str, params: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """GET an absolute URL, injecting the credential when configured."""
         merged: Dict[str, Any] = dict(params or {})
         if self.env_key and self.auth_param_name:
             secret = os.environ.get(self.env_key)
             if secret:
                 merged[self.auth_param_name] = secret
-        return self._client.get(self.base_url + path, merged)
+        return self._client.get(url, merged)
+
+    def _get(self, path: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """GET a path under this adapter's `base_url`."""
+        return self._request(self.base_url + path, params)
 
     def provenance(self, request: MCPRequest) -> Dict[str, Any]:
         block = super().provenance(request)

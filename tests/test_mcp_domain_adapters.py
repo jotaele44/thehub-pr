@@ -25,6 +25,21 @@ class FakeClient:
         return self.payload
 
 
+class RoutingFakeClient:
+    """Returns a payload chosen by the first matching URL substring."""
+
+    def __init__(self, routes):
+        self.routes = routes  # list of (substring, payload)
+        self.calls = []
+
+    def get(self, url, params=None):
+        self.calls.append((url, dict(params or {})))
+        for needle, payload in self.routes:
+            if needle in url:
+                return payload
+        raise AssertionError(f"no fake route for {url}")
+
+
 @pytest.fixture()
 def registry():
     return RuntimeRegistry()
@@ -49,8 +64,12 @@ def test_flight_states(router):
     assert client.calls[0][0] == "https://opensky-network.org/api/states/all"
 
 
-def test_weather_forecast_sends_coords(router):
-    client = FakeClient({"periods": [{"name": "Today"}]})
+def test_weather_forecast_follows_nws_two_step(router):
+    forecast_url = "https://api.weather.gov/gridpoints/SJU/40,50/forecast"
+    client = RoutingFakeClient([
+        ("/points/", {"properties": {"forecast": forecast_url}}),
+        ("/gridpoints/", {"properties": {"periods": [{"name": "Today"}]}}),
+    ])
     router.register_adapter(WeatherAdapter(client=client))
     result = router.route(
         MCPRequest(
@@ -59,9 +78,21 @@ def test_weather_forecast_sends_coords(router):
         )
     )
     assert result.data["periods"] == [{"name": "Today"}]
-    url, params = client.calls[0]
-    assert url.endswith("/forecast")
-    assert params == {"lat": 18.2, "lon": -66.5}
+    # first call resolves the point, second fetches the gridpoint forecast
+    assert client.calls[0][0] == "https://api.weather.gov/points/18.2,-66.5"
+    assert client.calls[1][0] == forecast_url
+
+
+def test_weather_forecast_empty_when_point_unresolved(router):
+    client = RoutingFakeClient([("/points/", {"properties": {}})])
+    router.register_adapter(WeatherAdapter(client=client))
+    result = router.route(
+        MCPRequest(
+            project="aguayluz", capability="weather", action="forecast",
+            params={"lat": 18.2, "lon": -66.5},
+        )
+    )
+    assert result.data["periods"] == []
 
 
 def test_terrain_elevation(router):
@@ -91,10 +122,25 @@ def test_field_ops_observations(router):
 
 # --- keyed adapters (fail-closed + secret handling) -----------------------
 
+CONTRACTS_WINDOW = {"posted_from": "01/01/2026", "posted_to": "03/01/2026"}
+
+
 def test_contracts_requires_api_key(router, monkeypatch):
     monkeypatch.delenv("MCP_CONTRACTS_API_KEY", raising=False)
     router.register_adapter(ContractsAdapter(client=FakeClient({})))
     with pytest.raises(PermissionError, match="authenticate"):
+        router.route(
+            MCPRequest(
+                project="moneysweep", capability="contracts", action="search",
+                params={"keyword": "recovery", **CONTRACTS_WINDOW},
+            )
+        )
+
+
+def test_contracts_requires_date_window(router, monkeypatch):
+    monkeypatch.setenv("MCP_CONTRACTS_API_KEY", "SECRET123")
+    router.register_adapter(ContractsAdapter(client=FakeClient({})))
+    with pytest.raises(ValueError, match="posted_from"):
         router.route(
             MCPRequest(
                 project="moneysweep", capability="contracts", action="search",
@@ -110,13 +156,17 @@ def test_contracts_injects_key_but_keeps_it_out_of_provenance(router, monkeypatc
     result = router.route(
         MCPRequest(
             project="moneysweep", capability="contracts", action="search",
-            params={"keyword": "recovery"},
+            params={"keyword": "recovery", **CONTRACTS_WINDOW},
         )
     )
     assert result.data["count"] == 1
-    # secret is sent to the upstream...
-    assert client.calls[0][1]["api_key"] == "SECRET123"
-    # ...but never leaks into the audit/provenance block.
+    _, params = client.calls[0]
+    # SAM.gov contract: title search + mandatory posted-date window + key.
+    assert params["title"] == "recovery"
+    assert params["postedFrom"] == "01/01/2026"
+    assert params["postedTo"] == "03/01/2026"
+    assert params["api_key"] == "SECRET123"
+    # secret never leaks into the audit/provenance block.
     assert "SECRET123" not in str(result.provenance)
 
 
