@@ -12,6 +12,7 @@ Time comes from an injected clock (default `time.monotonic`), mirroring
 
 from __future__ import annotations
 
+import copy
 import json
 import time
 from typing import Any, Callable, Dict, Optional, Tuple
@@ -55,13 +56,17 @@ class ResponseCache:
         if self._clock() - stored_at >= self._ttl:
             self._store.pop(key, None)
             return None
-        return result
+        # Hand back an isolated copy so a caller mutating result.data /
+        # result.provenance cannot corrupt the cached payload for later reads.
+        return copy.deepcopy(result)
 
     def put(self, request: MCPRequest, result: AdapterResult) -> None:
         key = self._key(request)
         # Refresh position on overwrite so recency reflects last write.
         self._store.pop(key, None)
-        self._store[key] = (self._clock(), result)
+        # Store an isolated copy so the instance returned to the first caller
+        # (which they may later mutate) is not the one we serve to others.
+        self._store[key] = (self._clock(), copy.deepcopy(result))
         while len(self._store) > self._max:
             oldest = next(iter(self._store))
             self._store.pop(oldest, None)

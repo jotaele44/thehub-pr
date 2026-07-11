@@ -89,6 +89,37 @@ def test_denied_request_never_cached(registry):
                                 action="search")) is None
 
 
+def test_cache_hit_emits_provenance(registry):
+    clock = FakeClock()
+    cache = ResponseCache(ttl_seconds=10, clock=clock)
+    prov = []
+    router = Router(registry, cache=cache, provenance_sink=prov.append, clock=clock)
+    router.register_adapter(MockAdapter(["weather"]))
+    router.route(_weather_req())  # miss
+    router.route(_weather_req())  # hit
+    # Both the live success and the cache hit emit provenance.
+    assert len(prov) == 2
+    assert all(p["capability"] == "weather" for p in prov)
+
+
+def test_cache_isolates_from_caller_mutation(registry):
+    clock = FakeClock()
+    cache = ResponseCache(ttl_seconds=10, clock=clock)
+    router = Router(registry, cache=cache, clock=clock)
+    router.register_adapter(MockAdapter(["weather"]))
+
+    first = router.route(_weather_req())
+    first.data["injected"] = "tampered"  # caller mutates after route returns
+    first.provenance["injected"] = "tampered"
+    second = router.route(_weather_req())  # served from cache
+    assert "injected" not in second.data
+    assert "injected" not in second.provenance
+    # mutating the served copy must not corrupt a later read either
+    second.data["injected2"] = "x"
+    third = router.route(_weather_req())
+    assert "injected2" not in third.data
+
+
 def test_cache_keys_by_project(registry):
     clock = FakeClock()
     cache = ResponseCache(ttl_seconds=10, clock=clock)

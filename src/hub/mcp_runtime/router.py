@@ -189,6 +189,10 @@ class Router:
         if self.cache is not None and not is_write:
             cached = self.cache.get(request)
             if cached is not None:
+                # A cache hit is a successful result: honor the provenance_sink
+                # contract just as the live-adapter path does.
+                if self.provenance_sink is not None:
+                    self.provenance_sink(dict(cached.provenance))
                 self._emit_audit(
                     request, "allowed", cached.adapter,
                     [{"adapter": "cache", "outcome": "hit"}], "cache_hit",
