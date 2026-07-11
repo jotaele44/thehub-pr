@@ -27,6 +27,7 @@ Search for:
 - `.env`
 - private key material
 No live credentials may be committed.
+`config/.env.example` must stay names-only (empty values).
 ## Provenance Review
 - [ ] Source lineage is required for all adapter outputs.
 - [ ] Candidate matrix identifies authority level.

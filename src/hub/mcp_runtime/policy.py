@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import Optional, Set
+
 from hub.mcp_runtime.registry import RuntimeRegistry
 from hub.mcp_runtime.sdk import MCPRequest
 
@@ -17,13 +19,39 @@ class PolicyEngine:
     - Write actions are denied unless explicitly allowlisted in the
       project's write_policy.allowed_writes (read_only default).
     - Deprecated capabilities are never routable.
+    - Optional deployment-level allowlists further restrict which projects
+      and capabilities are routable at all (None = allow all, the default).
     """
 
-    def __init__(self, registry: RuntimeRegistry) -> None:
+    def __init__(
+        self,
+        registry: RuntimeRegistry,
+        capability_allowlist: Optional[Set[str]] = None,
+        project_allowlist: Optional[Set[str]] = None,
+    ) -> None:
         self.registry = registry
+        self.capability_allowlist = capability_allowlist
+        self.project_allowlist = project_allowlist
 
     def check_access(self, request: MCPRequest) -> None:
         """Declaration and lifecycle checks (independent of write status)."""
+        if (
+            self.project_allowlist is not None
+            and request.project not in self.project_allowlist
+        ):
+            raise PolicyViolation(
+                f"project {request.project!r} is not in the deployment "
+                f"project allowlist"
+            )
+        if (
+            self.capability_allowlist is not None
+            and request.capability not in self.capability_allowlist
+        ):
+            raise PolicyViolation(
+                f"capability {request.capability!r} is not in the deployment "
+                f"capability allowlist"
+            )
+
         manifest = self.registry.manifest_for(request.project)
 
         if request.capability not in manifest.declared:

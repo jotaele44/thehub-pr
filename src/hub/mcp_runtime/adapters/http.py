@@ -11,11 +11,11 @@ repo, and never appear in a result's provenance block.
 from __future__ import annotations
 
 import json
-import os
 import urllib.parse
 import urllib.request
 from typing import Any, Dict, List, Optional, Protocol
 
+from hub.mcp_runtime.auth import CredentialProvider, EnvCredentialProvider
 from hub.mcp_runtime.sdk import MCPAdapter, MCPRequest
 
 
@@ -67,8 +67,12 @@ class BaseHttpAdapter(MCPAdapter):
         self,
         client: Optional[HttpClient] = None,
         base_url: Optional[str] = None,
+        credentials: Optional[CredentialProvider] = None,
     ) -> None:
         self._client: HttpClient = client if client is not None else EnvHttpClient()
+        self._credentials: CredentialProvider = (
+            credentials if credentials is not None else EnvCredentialProvider()
+        )
         if base_url is not None:
             self.base_url = base_url
 
@@ -82,11 +86,12 @@ class BaseHttpAdapter(MCPAdapter):
         return [self.capability_name]
 
     def authenticate(self) -> bool:
-        # Credentials come from the environment, never the repo. A declared
-        # env_key that is unset makes the adapter fail closed (run() raises).
+        # Credentials resolve through the provider (env by default), never
+        # the repo. A declared env_key the provider cannot resolve makes the
+        # adapter fail closed (run() raises before execute()).
         if self.env_key is None:
             return True
-        return bool(os.environ.get(self.env_key))
+        return bool(self._credentials.get(self.env_key))
 
     def _request(
         self, url: str, params: Optional[Dict[str, Any]] = None
@@ -94,7 +99,7 @@ class BaseHttpAdapter(MCPAdapter):
         """GET an absolute URL, injecting the credential when configured."""
         merged: Dict[str, Any] = dict(params or {})
         if self.env_key and self.auth_param_name:
-            secret = os.environ.get(self.env_key)
+            secret = self._credentials.get(self.env_key)
             if secret:
                 merged[self.auth_param_name] = secret
         return self._client.get(url, merged)

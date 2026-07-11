@@ -351,6 +351,19 @@ def connectors_stub(name: str):
 # Registered LAST, after every /api and /health route, so the catch-all never
 # shadows an API route.
 
+# ── MCP federation API ─────────────────────────────────────────────────────────
+# Mount the runtime Router as HTTP routes. Guarded so a failure in the MCP layer
+# can never take down the entity API. Registered before the SPA catch-all below
+# so its GET routes (/healthz, /readyz, /mcp/capabilities) are not shadowed.
+try:
+    from server.backend.mcp_api import build_mcp_api, create_default_hub_router
+
+    app.include_router(build_mcp_api(create_default_hub_router()))
+except Exception as _mcp_exc:  # pragma: no cover - defensive mount guard
+    import logging as _logging
+
+    _logging.getLogger("hub.mcp").warning("MCP API not mounted: %s", _mcp_exc)
+
 DIST = REPO_ROOT / "server" / "frontend" / "dist"
 
 if DIST.is_dir():
