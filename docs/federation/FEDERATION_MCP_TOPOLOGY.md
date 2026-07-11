@@ -107,9 +107,15 @@ only supply raw inputs, always carrying provenance back to their source.
   capability/project allowlists in the policy engine. Governance is never
   bypassed: policy denials raise up front and never fall back.
 - **Hosted MCP API** — `server/backend/mcp_api.py` mounts the router into the
-  existing FastAPI app: `POST /mcp/route`, `GET /mcp/capabilities`, and
-  `GET /healthz` / `/readyz`. Runs in-process (`python -m uvicorn
-  server.backend.main:app`); provenance is logged as structured JSON lines.
+  existing FastAPI app: `POST /mcp/route`, `GET /mcp/capabilities`,
+  `GET /mcp/metrics`, and `GET /healthz` / `/readyz`. Runs in-process
+  (`python -m uvicorn server.backend.main:app`); provenance is logged as
+  structured JSON lines.
+- **Telemetry & caching** — `hub.mcp_runtime.telemetry` (a `Metric` per
+  routing decision + `InMemoryMetrics` aggregates) and
+  `hub.mcp_runtime.cache` (a TTL `ResponseCache`, injected clock). The router
+  emits a metric on every path and caches reads only, after policy passes.
+  See `MCP_ADAPTERS.md`.
 
 ## Future work (not implemented)
 
@@ -120,6 +126,6 @@ this repository:
   refresh hook is the seam they implement);
 - networked variants of the core adapters (e.g. live git operations behind
   `github-bridge`);
-- deployment packaging (Docker/compose/systemd), distributed tracing and
-  metrics/telemetry dashboards, response caching, and cross-repo
-  synchronization automation.
+- deployment packaging (Docker/compose/systemd), an external metrics/tracing
+  backend behind the `MetricsSink` seam, and cross-repo synchronization
+  automation.

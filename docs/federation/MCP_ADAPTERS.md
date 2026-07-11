@@ -100,8 +100,27 @@ python -m uvicorn server.backend.main:app --port 8000
   capability/adapter → 404, bad action/params → 400.
 - `GET /mcp/capabilities` — the registry (capability → class/status/
   version_pin/required_by) plus project manifests, for operator introspection.
+- `GET /mcp/metrics` — telemetry aggregates (count, error rate, cache-hit
+  rate, per-capability/adapter/decision tallies). Names and counts only —
+  never params or credentials.
 - `GET /healthz` (liveness) and `GET /readyz` (registry loaded + at least one
   adapter registered).
+
+## Telemetry & caching
+
+The router accepts an optional `metrics_sink` and `cache`
+(`hub.mcp_runtime.telemetry` / `hub.mcp_runtime.cache`), both off by default:
+
+- **Telemetry** — one `Metric` per `route()` call (capability, action,
+  adapter, decision, `duration_s`, `cache_hit`, status). `InMemoryMetrics`
+  collects them and computes aggregates; a `MetricsSink` can forward to an
+  external backend later.
+- **Response caching** — `ResponseCache` is a TTL memory cache (injected
+  clock, size cap) keyed by `(project, capability, action, params)`. The
+  router only consults it for **reads and only after policy passes**, so a
+  denied request is never served from or written to the cache, and writes are
+  never cached. The hosted router wires both (30s cache TTL); metrics surface
+  at `/mcp/metrics`.
 
 FastAPI is the optional `[server]` extra; the API mount is guarded so a
 failure there never takes down the entity API, and the server tests skip when

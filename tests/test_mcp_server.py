@@ -81,3 +81,27 @@ def test_capabilities_lists_registry(client):
     assert len(body["capabilities"]) == 12
     assert body["capabilities"]["federation-core"]["version_pin"] == "1.0.0"
     assert "moneysweep" in body["projects"]
+
+
+def test_metrics_endpoint_reports_after_routes():
+    from hub.mcp_runtime import InMemoryMetrics, ResponseCache, Router, RuntimeRegistry
+    from hub.mcp_runtime.adapters import GeospatialAdapter
+
+    router = Router(
+        RuntimeRegistry(), metrics_sink=InMemoryMetrics(),
+        cache=ResponseCache(ttl_seconds=30),
+    )
+    router.register_adapter(GeospatialAdapter())
+    app = FastAPI()
+    app.include_router(build_mcp_api(router))
+    c = TestClient(app)
+
+    payload = {
+        "project": "spiderweb", "capability": "geospatial", "action": "distance",
+        "params": {"a": [18.46, -66.10], "b": [18.01, -66.61]},
+    }
+    c.post("/mcp/route", json=payload)
+    c.post("/mcp/route", json=payload)  # cache hit
+    agg = c.get("/mcp/metrics").json()
+    assert agg["count"] == 2
+    assert agg["cache_hit_rate"] == 0.5
