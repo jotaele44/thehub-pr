@@ -1,0 +1,64 @@
+name: Federation ingest
+
+# Event-driven federation hop 2 (receiver): fires when a producer (moneysweep-pr)
+# emits a `moneysweep-export` repository_dispatch after processing new upstream data.
+# Runs the existing Hub CLI pipeline — fetch (clone producers) -> aggregate the
+# committed canonical packages -> correlate -> ingest into data/hub.db — and uploads
+# the aggregate + hub.db as artifacts. No Hub code change: producers are read from
+# registry/producers.yaml exactly as the operator-run pipeline does.
+#
+# Note: aggregation reads each producer's *committed* canonical export package
+# (federation is artifact-based). Fetch clones producers over HTTPS; a
+# FEDERATION_DISPATCH_TOKEN with read access is used when producers are private.
+
+on:
+  repository_dispatch:
+    types: [moneysweep-export]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Configure git auth for producer clones
+        env:
+          FEDERATION_DISPATCH_TOKEN: ${{ secrets.FEDERATION_DISPATCH_TOKEN }}
+        run: |
+          if [ -n "$FEDERATION_DISPATCH_TOKEN" ]; then
+            git config --global \
+              url."https://x-access-token:${FEDERATION_DISPATCH_TOKEN}@github.com/".insteadOf \
+              "https://github.com/"
+            echo "Configured token auth for producer clones."
+          else
+            echo "No FEDERATION_DISPATCH_TOKEN — assuming public producer repos."
+          fi
+
+      - name: Fetch producers (clone/refresh)
+        run: hub fetch --root ws
+
+      - name: Aggregate -> correlate -> ingest
+        run: |
+          hub aggregate --root ws --out data/aggregate
+          hub correlate --in data/aggregate
+          hub ingest --in data/aggregate --db data/hub.db
+
+      - name: Upload aggregate + hub.db
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: hub-aggregate
+          path: |
+            data/aggregate
+            data/hub.db
+          if-no-files-found: ignore
