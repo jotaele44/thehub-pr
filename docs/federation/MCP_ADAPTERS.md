@@ -85,6 +85,28 @@ from hub.mcp_runtime.adapters import WeatherAdapter
 router.register_adapter(WeatherAdapter())  # EnvHttpClient by default
 ```
 
-Remaining future work (auth/secrets layer, router/policy hardening, a hosted
-server, telemetry, caching, sync, deployment) is tracked in
+## Hosted API
+
+`server/backend/mcp_api.py` mounts the router into the existing FastAPI app
+(`server/backend/main.py`), so the runtime is reachable over HTTP in-process:
+
+```
+python -m uvicorn server.backend.main:app --port 8000
+```
+
+- `POST /mcp/route` — body `{project, capability, action, params?, is_write?}`
+  → `{status, data, provenance}`. Runtime exceptions map to status codes:
+  policy denial → 403, missing/expired credential → 401, unknown
+  capability/adapter → 404, bad action/params → 400.
+- `GET /mcp/capabilities` — the registry (capability → class/status/
+  version_pin/required_by) plus project manifests, for operator introspection.
+- `GET /healthz` (liveness) and `GET /readyz` (registry loaded + at least one
+  adapter registered).
+
+FastAPI is the optional `[server]` extra; the API mount is guarded so a
+failure there never takes down the entity API, and the server tests skip when
+the extra is absent.
+
+Remaining future work (live OAuth/secret-manager integrations, telemetry,
+caching, sync automation, deployment packaging) is tracked in
 `FEDERATION_MCP_TOPOLOGY.md`.

@@ -101,18 +101,25 @@ only supply raw inputs, always carrying provenance back to their source.
   in provenance, logs, or reprs. Key names are documented in
   `config/.env.example` (names only). Live OAuth flows and secret-manager
   integrations plug into the refresh seam and remain future work.
+- **Router hardening** — priority-ordered fallback across multiple adapters
+  for a capability, a per-adapter circuit breaker (injected clock), an audit
+  sink recording every routing decision, and optional deployment-level
+  capability/project allowlists in the policy engine. Governance is never
+  bypassed: policy denials raise up front and never fall back.
+- **Hosted MCP API** — `server/backend/mcp_api.py` mounts the router into the
+  existing FastAPI app: `POST /mcp/route`, `GET /mcp/capabilities`, and
+  `GET /healthz` / `/readyz`. Runs in-process (`python -m uvicorn
+  server.backend.main:app`); provenance is logged as structured JSON lines.
 
 ## Future work (not implemented)
 
-The runtime is a **library** today — there is no long-running server, and
-the following remain unbuilt and are not claimed as complete anywhere in
+The following remain unbuilt and are not claimed as complete anywhere in
 this repository:
 
-- an API/server front-end that hosts the router as a service;
 - live OAuth flows and secret-manager integrations (the `TokenCache`
   refresh hook is the seam they implement);
 - networked variants of the core adapters (e.g. live git operations behind
   `github-bridge`);
-- router/policy hardening (multi-adapter fallback, circuit breaking,
-  allowlists), synchronization automation, telemetry, caching, and
-  deployment tooling.
+- deployment packaging (Docker/compose/systemd), distributed tracing and
+  metrics/telemetry dashboards, response caching, and cross-repo
+  synchronization automation.

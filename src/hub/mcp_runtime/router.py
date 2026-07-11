@@ -97,6 +97,10 @@ class Router:
     def _candidates(self, capability: str) -> List[MCPAdapter]:
         return [adapter for _, _, adapter in self._adapters.get(capability, [])]
 
+    def registered_capabilities(self) -> List[str]:
+        """Capabilities that currently have at least one registered adapter."""
+        return list(self._adapters)
+
     def resolve(self, capability: str) -> MCPAdapter:
         candidates = self._candidates(capability)
         if not candidates:
