@@ -116,6 +116,12 @@ only supply raw inputs, always carrying provenance back to their source.
   `hub.mcp_runtime.cache` (a TTL `ResponseCache`, injected clock). The router
   emits a metric on every path and caches reads only, after policy passes.
   See `MCP_ADAPTERS.md`.
+- **Registry drift detection** — `tools/check_registry_drift.py` fails CI
+  when a capability's `required_by` and the manifests that declare it
+  disagree (in either direction), keeping the registry and project manifests
+  in sync. This is the testable core of the sync story; the automation that
+  *opens PRs* across sibling repos on drift needs cross-repo tokens and
+  remains future work.
 
 ## Future work (not implemented)
 
@@ -127,5 +133,5 @@ this repository:
 - networked variants of the core adapters (e.g. live git operations behind
   `github-bridge`);
 - deployment packaging (Docker/compose/systemd), an external metrics/tracing
-  backend behind the `MetricsSink` seam, and cross-repo synchronization
-  automation.
+  backend behind the `MetricsSink` seam, and the cross-repo automation that
+  *opens PRs* on registry drift (the drift *check* already ships).

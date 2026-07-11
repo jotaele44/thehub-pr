@@ -6,7 +6,9 @@ on:
       - "mcp/**"
       - "schemas/federation/**"
       - "tools/validate_mcp_*.py"
+      - "tools/check_registry_drift.py"
       - "tests/test_mcp_*.py"
+      - "tests/test_registry_drift.py"
       - ".github/workflows/mcp-registry-validation.yml"
   push:
     branches:
@@ -15,7 +17,9 @@ on:
       - "mcp/**"
       - "schemas/federation/**"
       - "tools/validate_mcp_*.py"
+      - "tools/check_registry_drift.py"
       - "tests/test_mcp_*.py"
+      - "tests/test_registry_drift.py"
       - ".github/workflows/mcp-registry-validation.yml"
 
 permissions:
@@ -35,5 +39,9 @@ jobs:
         run: python tools/validate_mcp_manifests.py
       - name: Validate MCP candidates
         run: python tools/validate_mcp_candidates.py
+      - name: Check registry drift
+        run: python tools/check_registry_drift.py
       - name: Run MCP registry tests
-        run: pytest tests/test_mcp_manifest_schema.py tests/test_mcp_candidates.py
+        run: >-
+          pytest tests/test_mcp_manifest_schema.py tests/test_mcp_candidates.py
+          tests/test_registry_drift.py
