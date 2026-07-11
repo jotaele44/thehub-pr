@@ -17,8 +17,10 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from hub.mcp_runtime import (
+    InMemoryMetrics,
     MCPRequest,
     PolicyViolation,
+    ResponseCache,
     Router,
     RuntimeRegistry,
 )
@@ -53,7 +55,12 @@ def create_default_hub_router() -> Router:
     always safe even when no keys are configured.
     """
     registry = RuntimeRegistry()
-    router = Router(registry, provenance_sink=_log_provenance)
+    router = Router(
+        registry,
+        provenance_sink=_log_provenance,
+        metrics_sink=InMemoryMetrics(),
+        cache=ResponseCache(ttl_seconds=30.0),
+    )
     for adapter in (
         ProvenanceAdapter(),
         GeospatialAdapter(),
@@ -82,6 +89,13 @@ def build_mcp_api(router: Router) -> APIRouter:
         if not ready:
             raise HTTPException(status_code=503, detail="not ready")
         return {"status": "ready"}
+
+    @api.get("/mcp/metrics")
+    def metrics() -> Dict[str, Any]:
+        sink = router.metrics_sink
+        if isinstance(sink, InMemoryMetrics):
+            return sink.aggregates()
+        return {"count": 0, "detail": "no in-memory metrics collector"}
 
     @api.get("/mcp/capabilities")
     def capabilities() -> Dict[str, Any]:

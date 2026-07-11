@@ -11,9 +11,11 @@ from __future__ import annotations
 import time
 from typing import Callable, Dict, List, Optional, Tuple
 
+from hub.mcp_runtime.cache import ResponseCache
 from hub.mcp_runtime.policy import PolicyEngine, PolicyViolation
 from hub.mcp_runtime.registry import RuntimeRegistry
 from hub.mcp_runtime.sdk import AdapterResult, MCPAdapter, MCPRequest
+from hub.mcp_runtime.telemetry import Metric, MetricsSink
 
 
 class _CircuitBreaker:
@@ -65,6 +67,8 @@ class Router:
         policy: Optional[PolicyEngine] = None,
         provenance_sink: Optional[Callable[[Dict], None]] = None,
         audit_sink: Optional[Callable[[Dict], None]] = None,
+        metrics_sink: Optional[MetricsSink] = None,
+        cache: Optional[ResponseCache] = None,
         failure_threshold: int = 5,
         cooldown_seconds: float = 30.0,
         clock: Callable[[], float] = time.monotonic,
@@ -73,6 +77,8 @@ class Router:
         self.policy = policy or PolicyEngine(registry)
         self.provenance_sink = provenance_sink
         self.audit_sink = audit_sink
+        self.metrics_sink = metrics_sink
+        self.cache = cache
         self._failure_threshold = failure_threshold
         self._cooldown_seconds = cooldown_seconds
         self._clock = clock
@@ -127,18 +133,43 @@ class Router:
             "reason": reason,
         })
 
+    def _emit_metric(
+        self,
+        request: MCPRequest,
+        decision: str,
+        started: float,
+        adapter: Optional[str] = None,
+        cache_hit: bool = False,
+        status: Optional[str] = None,
+    ) -> None:
+        if self.metrics_sink is None:
+            return
+        self.metrics_sink.record(Metric(
+            capability=request.capability,
+            action=request.action,
+            decision=decision,
+            duration_s=self._clock() - started,
+            cache_hit=cache_hit,
+            adapter=adapter,
+            status=status,
+        ))
+
     def route(self, request: MCPRequest) -> AdapterResult:
+        started = self._clock()
+
         # 1. Access policy — a denial never falls back.
         try:
             self.policy.check_access(request)
         except PolicyViolation as exc:
             self._emit_audit(request, "denied", None, [], str(exc))
+            self._emit_metric(request, "denied", started)
             raise
 
         candidates = self._candidates(request.capability)
         if not candidates:
             reason = f"no adapter registered for capability {request.capability!r}"
             self._emit_audit(request, "error", None, [], reason)
+            self._emit_metric(request, "error", started)
             raise LookupError(reason)
 
         # 2. Write classification is the strictest across candidates, so a
@@ -150,9 +181,29 @@ class Router:
             self.policy.check_write(request, is_write)
         except PolicyViolation as exc:
             self._emit_audit(request, "denied", None, [], str(exc))
+            self._emit_metric(request, "denied", started)
             raise
 
-        # 3. Priority-ordered attempts, skipping open breakers.
+        # 3. Cache — reads only, and only after policy has passed, so a denied
+        #    request is never served from (or written to) the cache.
+        if self.cache is not None and not is_write:
+            cached = self.cache.get(request)
+            if cached is not None:
+                # A cache hit is a successful result: honor the provenance_sink
+                # contract just as the live-adapter path does.
+                if self.provenance_sink is not None:
+                    self.provenance_sink(dict(cached.provenance))
+                self._emit_audit(
+                    request, "allowed", cached.adapter,
+                    [{"adapter": "cache", "outcome": "hit"}], "cache_hit",
+                )
+                self._emit_metric(
+                    request, "allowed", started, adapter=cached.adapter,
+                    cache_hit=True, status=cached.status,
+                )
+                return cached
+
+        # 4. Priority-ordered attempts, skipping open breakers.
         attempts: List[Dict] = []
         last_exc: Optional[Exception] = None
         for adapter in candidates:
@@ -177,16 +228,24 @@ class Router:
                 result.provenance["version_pin"] = capability.version_pin
             if self.provenance_sink is not None:
                 self.provenance_sink(dict(result.provenance))
+            if self.cache is not None and not is_write:
+                self.cache.put(request, result)
             self._emit_audit(request, "allowed", adapter.name(), attempts, "ok")
+            self._emit_metric(
+                request, "allowed", started, adapter=adapter.name(),
+                cache_hit=False, status=result.status,
+            )
             return result
 
-        # 4. Everything failed or was skipped.
+        # 5. Everything failed or was skipped.
         if last_exc is not None:
             self._emit_audit(request, "error", None, attempts, str(last_exc))
+            self._emit_metric(request, "error", started)
             raise last_exc
         reason = (
             f"no available adapter for capability {request.capability!r} "
             f"(circuit breakers open)"
         )
         self._emit_audit(request, "error", None, attempts, reason)
+        self._emit_metric(request, "error", started)
         raise LookupError(reason)
