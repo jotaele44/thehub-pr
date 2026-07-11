@@ -48,27 +48,42 @@ def find_drift(registry_path: Path, manifests_dir: Path) -> List[str]:
     }
 
     drift: List[str] = []
+
+    # Build project -> set(global capabilities it declares) from the manifests.
+    declared: Dict[str, set] = {}
     for manifest_path in sorted(manifests_dir.glob("*.mcp.yaml")):
         manifest = _load(manifest_path)
         project = manifest.get("project")
         if not project:
             drift.append(f"{manifest_path.name}: missing 'project'")
             continue
-        declared = set(manifest.get("inherits", []) or []) | set(
+        all_declared = set(manifest.get("inherits", []) or []) | set(
             manifest.get("capabilities", []) or []
         )
-        global_declared = declared & global_names
-        expected = {cap for cap, projects in required_by.items() if project in projects}
+        declared[project] = all_declared & global_names
 
-        for cap in sorted(expected - global_declared):
-            drift.append(
-                f"{project}: required_by {cap!r} but the manifest does not "
-                f"declare it"
-            )
-        for cap in sorted(global_declared - expected):
+    # extra — a manifest declares a global capability it isn't required_by.
+    for project in sorted(declared):
+        expected = {c for c, projects in required_by.items() if project in projects}
+        for cap in sorted(declared[project] - expected):
             drift.append(
                 f"{project}: declares {cap!r} but is not in its required_by"
             )
+
+    # missing — a capability's required_by names a project that doesn't
+    # declare it, including a project with no manifest at all (so a typo or a
+    # not-yet-onboarded project in required_by is caught, not silently passed).
+    for cap in sorted(required_by):
+        for project in sorted(required_by[cap]):
+            if project not in declared:
+                drift.append(
+                    f"{cap}: required_by {project!r} but no manifest declares it"
+                )
+            elif cap not in declared[project]:
+                drift.append(
+                    f"{project}: required_by {cap!r} but the manifest does not "
+                    f"declare it"
+                )
     return drift
 
 

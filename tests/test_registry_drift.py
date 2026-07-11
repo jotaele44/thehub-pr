@@ -63,6 +63,19 @@ def test_extra_declaration_is_drift(tmp_path):
     assert "spiderweb" in result.stdout and "contracts" in result.stdout
 
 
+def test_required_by_project_without_manifest_is_drift(tmp_path):
+    reg, mani = _fixture(tmp_path)
+    # Add a project to weather.required_by that has no manifest at all.
+    data = yaml.safe_load(reg.read_text())
+    data["capabilities"]["weather"]["required_by"].append("ghost-project")
+    reg.write_text(yaml.safe_dump(data))
+
+    result = _run("--registry", str(reg), "--manifests", str(mani))
+    assert result.returncode == 1
+    assert "ghost-project" in result.stdout
+    assert "no manifest" in result.stdout
+
+
 def test_project_local_capabilities_are_not_drift(tmp_path):
     # The committed manifests declare project-local caps (satellite, parcels,
     # etc.) that are absent from the registry; these must NOT be flagged.
