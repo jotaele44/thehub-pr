@@ -31,6 +31,32 @@ and then stamps the registry `version_pin` onto the result's provenance.
   deliberately out of scope here and tracked as future work, preserving the
   read-only-default posture.
 
+## Domain adapters
+
+The seven domain/government capabilities are HTTP-backed adapters
+(`src/hub/mcp_runtime/adapters/domain.py`) built on a shared, **injectable**
+`HttpClient` (`http.py`). `EnvHttpClient` is the only place network access
+lives; tests inject a fake client, so CI runs fully offline. Adapters are
+read-only. Where an upstream needs a credential, the adapter reads the named
+environment variable at runtime (never the repo), appends it to the outgoing
+request, and keeps it out of the provenance block; a declared-but-unset key
+makes the adapter fail closed (`run()` raises before `execute()`).
+
+| Adapter | Capability | Upstream | Env key | Actions |
+|---|---|---|---|---|
+| `FlightAdapter` | `flight` | OpenSky | — | `states`, `track` |
+| `WeatherAdapter` | `weather` | NWS | — | `forecast` |
+| `TerrainAdapter` | `terrain` | USGS EPQS | — | `elevation` |
+| `ContractsAdapter` | `contracts` | SAM.gov | `MCP_CONTRACTS_API_KEY` | `search` |
+| `RegulationsAdapter` | `regulations` | Regulations.gov | `MCP_REGULATIONS_API_KEY` | `search` |
+| `UtilitiesAdapter` | `utilities` | PRASA/PREPA/LUMA (deploy-configured) | `MCP_UTILITIES_API_KEY` | `status` |
+| `FieldOpsAdapter` | `field-ops` | Centinelas field intake (deploy-configured) | — | `observations` |
+
+Each adapter owns its request/return contract and extracts upstream fields
+defensively (`.get`), so a schema drift degrades to empty fields rather than a
+crash. Live endpoints must be verified outside CI. `DOMAIN_ADAPTERS` is a tuple
+of all seven classes for bulk registration.
+
 ## Usage
 
 ```python
@@ -46,5 +72,14 @@ result = router.route(MCPRequest(
 # result.data["distance_km"], result.provenance["version_pin"] == "1.0.0"
 ```
 
-Domain adapters (`flight`, `weather`, `contracts`, …) remain future work; see
+A domain adapter takes an injectable client (a fake in tests, `EnvHttpClient`
+in production):
+
+```python
+from hub.mcp_runtime.adapters import WeatherAdapter
+router.register_adapter(WeatherAdapter())  # EnvHttpClient by default
+```
+
+Remaining future work (auth/secrets layer, router/policy hardening, a hosted
+server, telemetry, caching, sync, deployment) is tracked in
 `FEDERATION_MCP_TOPOLOGY.md`.

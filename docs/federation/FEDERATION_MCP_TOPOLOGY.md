@@ -89,6 +89,11 @@ only supply raw inputs, always carrying provenance back to their source.
 - **Core adapters** — `src/hub/mcp_runtime/adapters/`: read-only, hermetic
   (local-data-backed) adapters for `provenance`, `geospatial`, `documents`,
   and `github-bridge`. See `MCP_ADAPTERS.md`.
+- **Domain adapters** — the seven domain/government capabilities (`flight`,
+  `weather`, `terrain`, `contracts`, `regulations`, `utilities`,
+  `field-ops`) as read-only, HTTP-backed adapters over an injectable client
+  (hermetic in tests; live endpoints wired at deploy, credentials from the
+  environment). See `MCP_ADAPTERS.md`.
 
 ## Future work (not implemented)
 
@@ -97,9 +102,11 @@ the following remain unbuilt and are not claimed as complete anywhere in
 this repository:
 
 - an API/server front-end that hosts the router as a service;
-- **domain adapters** (`flight`, `weather`, `contracts`, `regulations`,
-  `terrain`, `utilities`, `field-ops`) and networked variants of the core
-  adapters (e.g. live git operations behind `github-bridge`);
-- an authentication/secrets layer (adapters that need credentials source
-  them from the environment at runtime — never the repo);
-- synchronization automation, telemetry, caching, and deployment tooling.
+- a dedicated authentication/secrets layer (credential providers, token
+  refresh/rotation) beyond the per-adapter environment-sourced keys already
+  in place;
+- networked variants of the core adapters (e.g. live git operations behind
+  `github-bridge`);
+- router/policy hardening (multi-adapter fallback, circuit breaking,
+  allowlists), synchronization automation, telemetry, caching, and
+  deployment tooling.
