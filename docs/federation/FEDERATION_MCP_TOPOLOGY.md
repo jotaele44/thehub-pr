@@ -94,6 +94,13 @@ only supply raw inputs, always carrying provenance back to their source.
   `field-ops`) as read-only, HTTP-backed adapters over an injectable client
   (hermetic in tests; live endpoints wired at deploy, credentials from the
   environment). See `MCP_ADAPTERS.md`.
+- **Auth/secrets layer** — `hub.mcp_runtime.auth`: pluggable credential
+  providers (env, static, chain) and a TTL `TokenCache` with an injected
+  refresh hook and clock. Adapters resolve credentials through this layer
+  and fail closed when a key cannot be resolved; secret values never appear
+  in provenance, logs, or reprs. Key names are documented in
+  `config/.env.example` (names only). Live OAuth flows and secret-manager
+  integrations plug into the refresh seam and remain future work.
 
 ## Future work (not implemented)
 
@@ -102,9 +109,8 @@ the following remain unbuilt and are not claimed as complete anywhere in
 this repository:
 
 - an API/server front-end that hosts the router as a service;
-- a dedicated authentication/secrets layer (credential providers, token
-  refresh/rotation) beyond the per-adapter environment-sourced keys already
-  in place;
+- live OAuth flows and secret-manager integrations (the `TokenCache`
+  refresh hook is the seam they implement);
 - networked variants of the core adapters (e.g. live git operations behind
   `github-bridge`);
 - router/policy hardening (multi-adapter fallback, circuit breaking,

@@ -37,10 +37,15 @@ The seven domain/government capabilities are HTTP-backed adapters
 (`src/hub/mcp_runtime/adapters/domain.py`) built on a shared, **injectable**
 `HttpClient` (`http.py`). `EnvHttpClient` is the only place network access
 lives; tests inject a fake client, so CI runs fully offline. Adapters are
-read-only. Where an upstream needs a credential, the adapter reads the named
-environment variable at runtime (never the repo), appends it to the outgoing
-request, and keeps it out of the provenance block; a declared-but-unset key
-makes the adapter fail closed (`run()` raises before `execute()`).
+read-only. Where an upstream needs a credential, the adapter resolves the
+named key at runtime through the **credential provider layer**
+(`hub.mcp_runtime.auth`) — `EnvCredentialProvider` by default, with
+`StaticCredentialProvider`, `ChainCredentialProvider`, and a TTL `TokenCache`
+(injected refresh hook and clock) available for other wirings. The value is
+appended to the outgoing request and kept out of the provenance block; a
+declared key the provider cannot resolve makes the adapter fail closed
+(`run()` raises before `execute()`). Key names (never values) are listed in
+`config/.env.example`.
 
 | Adapter | Capability | Upstream | Env key | Actions |
 |---|---|---|---|---|

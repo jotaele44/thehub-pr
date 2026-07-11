@@ -12,6 +12,14 @@ synchronization, and deployment tooling are future work (see
 docs/federation/FEDERATION_MCP_TOPOLOGY.md).
 """
 
+from hub.mcp_runtime.auth import (
+    ChainCredentialProvider,
+    CredentialProvider,
+    EnvCredentialProvider,
+    StaticCredentialProvider,
+    TokenCache,
+    redact,
+)
 from hub.mcp_runtime.policy import PolicyEngine, PolicyViolation
 from hub.mcp_runtime.registry import RuntimeRegistry
 from hub.mcp_runtime.router import Router
@@ -19,10 +27,16 @@ from hub.mcp_runtime.sdk import AdapterResult, MCPAdapter, MCPRequest
 
 __all__ = [
     "AdapterResult",
+    "ChainCredentialProvider",
+    "CredentialProvider",
+    "EnvCredentialProvider",
     "MCPAdapter",
     "MCPRequest",
     "PolicyEngine",
     "PolicyViolation",
     "Router",
     "RuntimeRegistry",
+    "StaticCredentialProvider",
+    "TokenCache",
+    "redact",
 ]
