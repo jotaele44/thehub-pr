@@ -316,18 +316,66 @@ async def bulk_create(entity_name: str, request: Request):
     c.close()
     return created
 
-# ── Stub endpoints for optional features ──────────────────────────────────────
+# ── Diagnostic-mode stub endpoints ─────────────────────────────────────────────
+# These three subsystems (function execution, conversational agents, binary file
+# storage) are intentionally NOT implemented in this hub build. They are bound to
+# live producer feeds / external backends that are out of local scope, so the hub
+# ships them as *diagnostic-mode stubs* rather than fabricating real behaviour.
+#
+# Each returns an explicit, self-documenting payload carrying a stable, machine-
+# readable contract: `status="not_implemented"`, `mode="diagnostic"`,
+# `implemented=False`, a `feature` name, and a documented `reason`. The HTTP status
+# is deliberately kept at 200 (not 501): the single-product frontend treats any
+# non-2xx response as a hard error, and these stubs must let the diagnostic UI stay
+# functional (degrading gracefully) instead of throwing. Compatibility keys the
+# frontend reads (e.g. `id` for a created agent conversation) are preserved.
+
+DIAGNOSTIC_STUB_REASONS: dict[str, str] = {
+    "functions": (
+        "Federation function execution is bound to live producer feeds and is "
+        "disabled in the diagnostic-mode hub build."
+    ),
+    "agents": (
+        "The conversational agents subsystem is not provisioned in diagnostic "
+        "mode; it activates only with a configured agent backend."
+    ),
+    "files": (
+        "Binary file storage is not provisioned in diagnostic mode; this hub "
+        "build retains no upload backend."
+    ),
+}
+
+
+def _diagnostic_stub(feature: str, **extra: Any) -> dict[str, Any]:
+    """Build the stable diagnostic-mode contract for an unimplemented subsystem.
+
+    The returned mapping always carries ``status``, ``mode``, ``implemented``,
+    ``feature`` and ``reason`` keys; ``extra`` supplies endpoint-specific
+    compatibility keys (e.g. ``id`` / ``result`` / ``file_id``) the frontend reads.
+    """
+    reason = DIAGNOSTIC_STUB_REASONS[feature]
+    payload: dict[str, Any] = {
+        "status": "not_implemented",
+        "mode": "diagnostic",
+        "implemented": False,
+        "feature": feature,
+        "reason": reason,
+        "message": f"{feature} not implemented in diagnostic mode",
+    }
+    payload.update(extra)
+    return payload
+
 
 @app.api_route("/api/functions/{function_name}/invoke", methods=["POST"])
-async def invoke_function(function_name: str, request: Request):
-    return {"result": None, "message": f"Function {function_name!r} not implemented"}
+async def invoke_function(function_name: str, request: Request) -> dict[str, Any]:
+    return _diagnostic_stub("functions", function=function_name, result=None)
 
 
 @app.api_route("/api/agents/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
 async def agents_stub(path: str, request: Request):
     if request.method == "GET":
         return []
-    return {"id": str(uuid.uuid4()), "message": "Agents not implemented in diagnostic mode"}
+    return _diagnostic_stub("agents", id=str(uuid.uuid4()))
 
 
 @app.api_route("/api/integrations/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
@@ -336,8 +384,8 @@ async def integrations_stub(path: str, request: Request):
 
 
 @app.post("/api/files/upload")
-async def files_upload():
-    return {"file_id": str(uuid.uuid4()), "message": "File storage not implemented"}
+async def files_upload() -> dict[str, Any]:
+    return _diagnostic_stub("files", file_id=str(uuid.uuid4()))
 
 
 @app.get("/api/connectors/{name}/connection")
