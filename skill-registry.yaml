@@ -1,0 +1,85 @@
+# PRII Skill Registry — thehub-pr (the federation Hub)
+#
+# Machine-readable skill-to-command map. Each entry conforms to
+# prii_skill_contract_v1 (schemas/skills/prii_skill_contract.schema.json) and is
+# validated by scripts/validate_skills.py (the shared, Hub-owned validator —
+# byte-identical across every federation repo).
+#
+# This is the shared-infrastructure seed: it ships the federation contract, the
+# validator, and one Hub-appropriate skill (prii-validate-producer-manifest).
+# The Hub owns no producer federation.json, so commands resolve against the hub
+# CLI entrypoints (command_source: cli_entrypoints) rather than a manifest. The
+# Hub's fuller skill set (discover / aggregate / correlate / ingest) is added
+# later from its own blueprint; each new skill is one more entry here.
+#
+# Invariants the registry enforces:
+#   - command_ids resolve ONLY through the declared hub CLI entrypoints.
+#   - Skills default to read_only / offline; live_network and promotion modes
+#     require explicit user authorization.
+#   - No skill mutates or promotes a producer's manifest or export from the Hub;
+#     the Hub discovers, validates, and aggregates — producers own their data.
+
+schema_version: prii_skill_registry_v1
+owner_repo: jotaele44/thehub-pr
+federation_role: federation_hub
+
+# Per-repo configuration for the shared validator. command_source is
+# cli_entrypoints because the Hub has no producer federation.json to resolve
+# commands against — it IS the command surface. export_contract and
+# coverage_report are omitted: the Hub aggregates, it does not emit a producer
+# export or a producer readiness report.
+packet_config:
+  owner_repo: jotaele44/thehub-pr
+  boundary_owner: thehub-pr
+  command_source: cli_entrypoints
+  available_commands:
+    - list
+    - validate-manifest
+    - validate-package
+    - validate-federation
+    - fetch
+    - aggregate
+    - wrap-bridge
+    - correlate
+    - ingest
+    - graph-report
+    - analytics-v2
+    - consume-sensor-fusion
+    - maintenance
+  activation_routes:
+    - route_to_moneysweep
+    - route_to_centinelas
+    - route_to_aguayluz
+    - route_to_spiderweb
+    - route_to_ovnis
+    - route_to_skywatcher
+    - clarify
+  contract_schema: schemas/skills/prii_skill_contract.schema.json
+
+skills:
+  - schema_version: prii_skill_contract_v1
+    skill_id: prii-validate-producer-manifest
+    owner_repo: jotaele44/thehub-pr
+    federation_role: federation_hub
+    trigger_intents:
+      - "validate a producer federation.json against the Hub-owned manifest schema"
+    allowed_modes: [read_only]
+    default_mode: read_only
+    command_ids: [validate-manifest]
+    local_scripts: []
+    reads:
+      - schemas/repo_federation_manifest.schema.json
+      - registry/producers.yaml
+    outputs:
+      - "manifest validity, schema version, missing/invalid keys, readiness gate"
+    stop_conditions:
+      - "producer manifest violates the Hub-owned schema"
+    evidence_requirements:
+      - "cite the schema key/rule that failed and the producer manifest path"
+    boundary_owner: thehub-pr
+    forbidden_operations:
+      - "mutating or promoting a producer's manifest or export from the Hub"
+    synthetic_data_policy: reject_in_production
+    provenance_policy: required
+    confidence_policy: required_when_inferred
+    review_queue_policy: required_for_ambiguity

@@ -1,0 +1,43 @@
+name: Skills Validation
+
+on:
+  pull_request:
+    paths:
+      - "skill-registry.yaml"
+      - "activation-matrix.yaml"
+      - "dependency-graph.yaml"
+      - "skills/**"
+      - "scripts/validate_skills.py"
+      - "schemas/skills/**"
+      - "tests/skill_contract/**"
+      - ".github/workflows/skills-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "skill-registry.yaml"
+      - "activation-matrix.yaml"
+      - "dependency-graph.yaml"
+      - "skills/**"
+      - "scripts/validate_skills.py"
+      - "schemas/skills/**"
+      - "tests/skill_contract/**"
+      - ".github/workflows/skills-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install jsonschema pyyaml pytest
+      - name: Validate skill packet
+        run: python scripts/validate_skills.py
+      - name: Run skill contract tests
+        run: pytest tests/skill_contract -q
