@@ -1,0 +1,22 @@
+# TheHub MCP API — local/single-host deployment.
+#   docker compose up --build
+# Adapter credentials (see config/.env.example) are provided at runtime; copy
+# config/.env.example to config/.env and uncomment the env_file line below, or
+# export the vars in your shell / secret manager. Never commit real values.
+services:
+  thehub:
+    build: .
+    image: thehub-mcp
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist the SQLite store / aggregate outputs across restarts.
+      - ./data:/app/data
+    # env_file:
+    #   - config/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
