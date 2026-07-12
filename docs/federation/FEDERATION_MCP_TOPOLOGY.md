@@ -103,6 +103,14 @@ only supply raw inputs, always carrying provenance back to their source.
   and fail closed when a key cannot be resolved; secret values never appear
   in provenance, logs, or reprs. Key names are documented in
   `config/.env.example` (names only).
+- **Secret-manager providers** — `hub.mcp_runtime.secrets.SecretManagerProvider`
+  implements the `CredentialProvider` protocol over an injectable `fetcher`
+  (the boundary to AWS Secrets Manager / Vault / GCP — the operator supplies
+  the SDK call), with optional TTL caching and fail-closed on error;
+  `HttpSecretManager` is a generic REST fetcher. Compose with
+  `ChainCredentialProvider([SecretManagerProvider(...),
+  EnvCredentialProvider()])`. Injection-tested; a live backend is operator
+  config, not exercised in CI.
 - **OAuth2 refresh** — `hub.mcp_runtime.oauth.OAuth2ClientCredentials` is a
   client-credentials refresh callable for `TokenCache`: it exchanges an
   env-sourced client id/secret for a bearer token on TTL expiry and fails

@@ -26,6 +26,7 @@ from hub.mcp_runtime.policy import PolicyEngine, PolicyViolation
 from hub.mcp_runtime.registry import RuntimeRegistry
 from hub.mcp_runtime.router import Router
 from hub.mcp_runtime.sdk import AdapterResult, MCPAdapter, MCPRequest
+from hub.mcp_runtime.secrets import HttpSecretManager, SecretManagerProvider
 from hub.mcp_runtime.telemetry import InMemoryMetrics, Metric, MetricsSink
 
 __all__ = [
@@ -41,9 +42,11 @@ __all__ = [
     "OAuth2ClientCredentials",
     "PolicyEngine",
     "PolicyViolation",
+    "HttpSecretManager",
     "ResponseCache",
     "Router",
     "RuntimeRegistry",
+    "SecretManagerProvider",
     "StaticCredentialProvider",
     "TokenCache",
     "redact",
