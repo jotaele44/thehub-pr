@@ -1,0 +1,27 @@
+# Activation matrix — which skill (or route) a prompt should select.
+#
+# Consumed by scripts/validate_skills.py (activation check) and
+# tests/skill_contract/. Each case names the expected route:
+#   - a skill_id in the registry, OR
+#   - "route_to_<producer>" (work that a producer owns, not the Hub), OR
+#   - "clarify" (ambiguous; operator must ask before routing).
+# Every expected skill must exist in skill-registry.yaml (validator-enforced).
+
+schema_version: prii_activation_matrix_v1
+
+positive:
+  - prompt: "validate this producer's federation.json against the Hub manifest schema"
+    expect: prii-validate-producer-manifest
+
+negative:
+  - prompt: "collect new signals from the source feeds"
+    expect: route_to_centinelas
+    reason: "signal collection is producer-owned (centinelas-pr), not a Hub job"
+  - prompt: "materialize a missing financial contract source"
+    expect: route_to_moneysweep
+    reason: "source materialization is producer-owned (moneysweep-pr)"
+
+ambiguous:
+  - prompt: "check the manifest"
+    expect: clarify
+    reason: "which producer, and against which schema version"
