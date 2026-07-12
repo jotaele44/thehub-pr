@@ -41,6 +41,7 @@ Verify manifests exist for:
 - [ ] Centinelas
 - [ ] MoneySweep
 - [ ] AguaYLuz
+- [ ] Registry drift check passes (`tools/check_registry_drift.py`).
 ## Policy Gate Review
 Confirm:
 - [ ] TheHub remains the control plane.
