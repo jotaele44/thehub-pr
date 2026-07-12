@@ -1,0 +1,41 @@
+name: MCP Cross-Repo Sync (dry-run)
+
+# Generates the per-producer capability contract (from the registry) and
+# uploads it as an artifact. Propagating it to the sibling producer repos
+# (opening a PR / repository_dispatch) requires an operator-provided PAT with
+# cross-repo scope AND each producer's config layout — that step is gated on
+# the SYNC_PAT secret and is intentionally left as a documented, operator-
+# activated hop. Without the secret this workflow is a dry run (artifacts
+# only, no sibling-repo writes). The cross-repo write is not verified in CI.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pyyaml
+      - name: Generate producer capability contracts
+        run: python tools/generate_sync_artifacts.py --out-dir sync-artifacts
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mcp-sync-artifacts
+          path: sync-artifacts/
+      - name: Propagate to producer repos (operator-gated; not run without PAT)
+        if: ${{ secrets.SYNC_PAT != '' }}
+        env:
+          SYNC_PAT: ${{ secrets.SYNC_PAT }}
+        run: |
+          echo "SYNC_PAT present — cross-repo propagation would run here."
+          echo "Deliberately a no-op placeholder: opening PRs on sibling"
+          echo "producer repos depends on each repo's layout and is the"
+          echo "operator's step. This hop is not exercised in CI."

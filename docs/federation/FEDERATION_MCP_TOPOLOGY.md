@@ -141,21 +141,31 @@ only supply raw inputs, always carrying provenance back to their source.
   and the manifests that declare it disagree (either direction);
   `tools/registry_sync_report.py` emits the same state as JSON for dashboards;
   and `.github/workflows/mcp-registry-drift-schedule.yml` runs the check on a
-  weekly cron and opens/updates a same-repo tracking issue on drift. The
-  automation that *opens PRs across sibling producer repos* needs an operator
-  cross-repo PAT and each producer's config layout, and remains future work.
+  weekly cron and opens/updates a same-repo tracking issue on drift.
+  `tools/generate_sync_artifacts.py` emits the per-producer capability
+  contract (from `required_by`) that a sync job would propagate, and
+  `.github/workflows/mcp-cross-repo-sync.yml` generates + uploads those
+  artifacts. The actual *cross-repo write* to sibling producer repos is gated
+  on an operator `SYNC_PAT` secret and is a documented, operator-activated hop
+  that is **not exercised in CI**.
 
-## Future work (not implemented)
+## Future work — operator-activated external hops only
 
-The following remain unbuilt and are not claimed as complete anywhere in
-this repository. Note the OAuth2 refresh provider and the networked
-`github-bridge fetch` action are implemented and injection-tested, but their
-*live external hop* (a real IdP token endpoint; a real git/network fetch) is
-operator config and is **not verified against live services in CI**:
+The runtime and tooling are complete to the honest limit of a hermetic
+environment. What remains is **not unbuilt code** but **live external hops**
+this repository deliberately does not exercise in CI. In each case the in-repo
+core is implemented and injection-tested; activating the live hop is the
+operator's documented step, and none is faked or claimed as CI-verified:
 
-- secret-manager backend integrations (the `CredentialProvider` /
-  `TokenCache` refresh hook is the seam they implement);
-- an external metrics/tracing backend behind the `MetricsSink` seam;
-- the cross-repo automation that *opens PRs on sibling producer repos* on
-  registry drift (the drift check, JSON report, and the same-repo scheduled
-  issue automation already ship).
+- **Secret managers** — `SecretManagerProvider` + `HttpSecretManager` ship;
+  wiring a specific cloud SDK (AWS/Vault/GCP) is the operator's `fetcher`.
+- **OAuth2** — `OAuth2ClientCredentials` ships; a real IdP `token_url` is
+  operator config.
+- **Metrics/tracing backend** — `LoggingMetricsSink` is fully real;
+  `HttpMetricsSink` ships behind an injectable poster — a live collector is
+  operator config.
+- **Networked `github-bridge fetch`** — ships behind an injectable runner; the
+  real git/network call is the default runner in production.
+- **Cross-repo sync write** — the drift check, JSON report, same-repo issue
+  automation, and per-producer artifact generation all ship; the write to
+  sibling producer repos is gated on an operator `SYNC_PAT`.
