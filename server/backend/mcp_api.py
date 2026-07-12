@@ -18,7 +18,9 @@ from pydantic import BaseModel
 
 from hub.mcp_runtime import (
     InMemoryMetrics,
+    LoggingMetricsSink,
     MCPRequest,
+    MultiMetricsSink,
     PolicyViolation,
     ResponseCache,
     Router,
@@ -55,10 +57,13 @@ def create_default_hub_router() -> Router:
     always safe even when no keys are configured.
     """
     registry = RuntimeRegistry()
+    # In-memory aggregates power /mcp/metrics; the logging sink gives a durable
+    # structured-JSON metric stream. Add an HttpMetricsSink here to push to an
+    # external collector.
     router = Router(
         registry,
         provenance_sink=_log_provenance,
-        metrics_sink=InMemoryMetrics(),
+        metrics_sink=MultiMetricsSink([InMemoryMetrics(), LoggingMetricsSink()]),
         cache=ResponseCache(ttl_seconds=30.0),
     )
     for adapter in (
@@ -93,8 +98,10 @@ def build_mcp_api(router: Router) -> APIRouter:
     @api.get("/mcp/metrics")
     def metrics() -> Dict[str, Any]:
         sink = router.metrics_sink
-        if isinstance(sink, InMemoryMetrics):
-            return sink.aggregates()
+        candidates = sink.sinks if isinstance(sink, MultiMetricsSink) else [sink]
+        for candidate in candidates:
+            if isinstance(candidate, InMemoryMetrics):
+                return candidate.aggregates()
         return {"count": 0, "detail": "no in-memory metrics collector"}
 
     @api.get("/mcp/capabilities")

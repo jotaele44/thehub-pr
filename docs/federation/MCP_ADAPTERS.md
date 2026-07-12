@@ -135,8 +135,13 @@ The router accepts an optional `metrics_sink` and `cache`
 
 - **Telemetry** — one `Metric` per `route()` call (capability, action,
   adapter, decision, `duration_s`, `cache_hit`, status). `InMemoryMetrics`
-  collects them and computes aggregates; a `MetricsSink` can forward to an
-  external backend later.
+  collects them and computes aggregates. Backends:
+  `LoggingMetricsSink` (structured JSON per metric — fully real, no external
+  dependency), `HttpMetricsSink` (push to a collector via an injectable
+  poster; live collector = operator config), and `MultiMetricsSink` to fan
+  out. The hosted router uses `MultiMetricsSink([InMemoryMetrics(),
+  LoggingMetricsSink()])` so `/mcp/metrics` keeps working while metrics are
+  also logged.
 - **Response caching** — `ResponseCache` is a TTL memory cache (injected
   clock, size cap) keyed by `(project, capability, action, params)`. The
   router only consults it for **reads and only after policy passes**, so a

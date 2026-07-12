@@ -21,6 +21,11 @@ from hub.mcp_runtime.auth import (
     redact,
 )
 from hub.mcp_runtime.cache import ResponseCache
+from hub.mcp_runtime.metrics_backends import (
+    HttpMetricsSink,
+    LoggingMetricsSink,
+    MultiMetricsSink,
+)
 from hub.mcp_runtime.oauth import OAuth2ClientCredentials
 from hub.mcp_runtime.policy import PolicyEngine, PolicyViolation
 from hub.mcp_runtime.registry import RuntimeRegistry
@@ -42,7 +47,10 @@ __all__ = [
     "OAuth2ClientCredentials",
     "PolicyEngine",
     "PolicyViolation",
+    "HttpMetricsSink",
     "HttpSecretManager",
+    "LoggingMetricsSink",
+    "MultiMetricsSink",
     "ResponseCache",
     "Router",
     "RuntimeRegistry",
