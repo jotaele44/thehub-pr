@@ -88,7 +88,10 @@ only supply raw inputs, always carrying provenance back to their source.
   (capability→adapter resolution with provenance stamping).
 - **Core adapters** — `src/hub/mcp_runtime/adapters/`: read-only, hermetic
   (local-data-backed) adapters for `provenance`, `geospatial`, `documents`,
-  and `github-bridge`. See `MCP_ADAPTERS.md`.
+  and `github-bridge`. The `github-bridge` adapter also has a networked
+  `fetch` action (live shallow clone / fast-forward pull via
+  `hub.fetch.clone_or_pull` through its injectable runner — real git in
+  production, a fake runner in tests). See `MCP_ADAPTERS.md`.
 - **Domain adapters** — the seven domain/government capabilities (`flight`,
   `weather`, `terrain`, `contracts`, `regulations`, `utilities`,
   `field-ops`) as read-only, HTTP-backed adapters over an injectable client
@@ -99,8 +102,17 @@ only supply raw inputs, always carrying provenance back to their source.
   refresh hook and clock. Adapters resolve credentials through this layer
   and fail closed when a key cannot be resolved; secret values never appear
   in provenance, logs, or reprs. Key names are documented in
-  `config/.env.example` (names only). Live OAuth flows and secret-manager
-  integrations plug into the refresh seam and remain future work.
+  `config/.env.example` (names only).
+- **OAuth2 refresh** — `hub.mcp_runtime.oauth.OAuth2ClientCredentials` is a
+  client-credentials refresh callable for `TokenCache`: it exchanges an
+  env-sourced client id/secret for a bearer token on TTL expiry and fails
+  closed on any error. The token exchange is behind an injectable `poster`
+  (real IdP call in production, a fake in tests) — the code is
+  injection-tested, but a live IdP `token_url` is operator config and is not
+  exercised in CI. Secret-manager backends remain future work.
+- **Deployment packaging** — `Dockerfile`, `docker-compose.yml`,
+  `deploy/thehub-mcp.service`, and `MCP_DEPLOYMENT.md` run the hosted API via
+  uvicorn (non-root, `/healthz` healthcheck). See `MCP_DEPLOYMENT.md`.
 - **Router hardening** — priority-ordered fallback across multiple adapters
   for a capability, a per-adapter circuit breaker (injected clock), an audit
   sink recording every routing decision, and optional deployment-level
@@ -128,12 +140,14 @@ only supply raw inputs, always carrying provenance back to their source.
 ## Future work (not implemented)
 
 The following remain unbuilt and are not claimed as complete anywhere in
-this repository:
+this repository. Note the OAuth2 refresh provider and the networked
+`github-bridge fetch` action are implemented and injection-tested, but their
+*live external hop* (a real IdP token endpoint; a real git/network fetch) is
+operator config and is **not verified against live services in CI**:
 
-- live OAuth flows and secret-manager integrations (the `TokenCache`
-  refresh hook is the seam they implement);
-- networked variants of the core adapters (e.g. live git operations behind
-  `github-bridge`);
-- deployment packaging (Docker/compose/systemd), an external metrics/tracing
-  backend behind the `MetricsSink` seam, and the cross-repo automation that
-  *opens PRs* on registry drift (the drift *check* already ships).
+- secret-manager backend integrations (the `CredentialProvider` /
+  `TokenCache` refresh hook is the seam they implement);
+- an external metrics/tracing backend behind the `MetricsSink` seam;
+- the cross-repo automation that *opens PRs on sibling producer repos* on
+  registry drift (the drift check, JSON report, and the same-repo scheduled
+  issue automation already ship).

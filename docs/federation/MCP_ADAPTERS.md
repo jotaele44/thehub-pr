@@ -16,7 +16,7 @@ and then stamps the registry `version_pin` onto the result's provenance.
 | `ProvenanceAdapter` | `provenance` | an export package's `sources.jsonl` (via `params["package"]`) | `list_sources`, `get_source`, `stamp` |
 | `GeospatialAdapter` | `geospatial` | none — pure computation (reuses `hub.correlate` geodesy) | `distance`, `nearest`, `normalize_municipality` |
 | `DocumentsAdapter` | `documents` | a document root of `*.md`/`*.txt` (via `params["root"]`) | `search`, `get` |
-| `GithubBridgeAdapter` | `github-bridge` | `registry/producers.yaml` | `list_producers`, `resolve_repo` |
+| `GithubBridgeAdapter` | `github-bridge` | `registry/producers.yaml` (+ live git for `fetch`) | `list_producers`, `resolve_repo`, `fetch` |
 
 ## Notes
 
@@ -27,9 +27,31 @@ and then stamps the registry `version_pin` onto the result's provenance.
 - **DocumentsAdapter** `get` rejects any path that resolves outside its root
   (path-traversal guard); `search` is case-insensitive and result-capped.
 - **GithubBridgeAdapter** is a read-only view of the producer registry.
-  Live git operations (clone/pull via `hub.fetch.clone_or_pull`) are
-  deliberately out of scope here and tracked as future work, preserving the
-  read-only-default posture.
+  The `fetch` action performs a live shallow clone / fast-forward pull
+  (params `program_id`, `dest`) via `hub.fetch.clone_or_pull` through the
+  adapter's injectable `runner` — real git in production, a fake runner in
+  tests. It reads remote state (still read-only for the federation); the
+  network hop is not exercised in CI.
+
+## Credentials & OAuth
+
+Adapters resolve API keys through the credential provider layer
+(`hub.mcp_runtime.auth`). For upstreams that use OAuth2 client-credentials,
+`hub.mcp_runtime.oauth.OAuth2ClientCredentials` is a refresh callable for
+`TokenCache`:
+
+```python
+from hub.mcp_runtime import OAuth2ClientCredentials, TokenCache, EnvCredentialProvider
+refresh = OAuth2ClientCredentials(
+    token_url="https://idp.example/oauth/token",
+    client_id_key="MCP_FOO_CLIENT_ID", client_secret_key="MCP_FOO_CLIENT_SECRET",
+)
+creds = TokenCache(EnvCredentialProvider(), ttl_seconds=3000, refresh=refresh)
+```
+
+The token exchange is behind an injectable `poster` (real IdP call in
+production, a fake in tests); client id/secret come from the environment,
+never the repo, and it fails closed on any error.
 
 ## Domain adapters
 

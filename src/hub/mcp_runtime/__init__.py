@@ -21,6 +21,7 @@ from hub.mcp_runtime.auth import (
     redact,
 )
 from hub.mcp_runtime.cache import ResponseCache
+from hub.mcp_runtime.oauth import OAuth2ClientCredentials
 from hub.mcp_runtime.policy import PolicyEngine, PolicyViolation
 from hub.mcp_runtime.registry import RuntimeRegistry
 from hub.mcp_runtime.router import Router
@@ -37,6 +38,7 @@ __all__ = [
     "MCPRequest",
     "Metric",
     "MetricsSink",
+    "OAuth2ClientCredentials",
     "PolicyEngine",
     "PolicyViolation",
     "ResponseCache",
