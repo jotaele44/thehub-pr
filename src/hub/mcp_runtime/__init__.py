@@ -21,10 +21,17 @@ from hub.mcp_runtime.auth import (
     redact,
 )
 from hub.mcp_runtime.cache import ResponseCache
+from hub.mcp_runtime.metrics_backends import (
+    HttpMetricsSink,
+    LoggingMetricsSink,
+    MultiMetricsSink,
+)
+from hub.mcp_runtime.oauth import OAuth2ClientCredentials
 from hub.mcp_runtime.policy import PolicyEngine, PolicyViolation
 from hub.mcp_runtime.registry import RuntimeRegistry
 from hub.mcp_runtime.router import Router
 from hub.mcp_runtime.sdk import AdapterResult, MCPAdapter, MCPRequest
+from hub.mcp_runtime.secrets import HttpSecretManager, SecretManagerProvider
 from hub.mcp_runtime.telemetry import InMemoryMetrics, Metric, MetricsSink
 
 __all__ = [
@@ -37,11 +44,17 @@ __all__ = [
     "MCPRequest",
     "Metric",
     "MetricsSink",
+    "OAuth2ClientCredentials",
     "PolicyEngine",
     "PolicyViolation",
+    "HttpMetricsSink",
+    "HttpSecretManager",
+    "LoggingMetricsSink",
+    "MultiMetricsSink",
     "ResponseCache",
     "Router",
     "RuntimeRegistry",
+    "SecretManagerProvider",
     "StaticCredentialProvider",
     "TokenCache",
     "redact",

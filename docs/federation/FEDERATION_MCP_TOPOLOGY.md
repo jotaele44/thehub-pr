@@ -88,7 +88,10 @@ only supply raw inputs, always carrying provenance back to their source.
   (capability→adapter resolution with provenance stamping).
 - **Core adapters** — `src/hub/mcp_runtime/adapters/`: read-only, hermetic
   (local-data-backed) adapters for `provenance`, `geospatial`, `documents`,
-  and `github-bridge`. See `MCP_ADAPTERS.md`.
+  and `github-bridge`. The `github-bridge` adapter also has a networked
+  `fetch` action (live shallow clone / fast-forward pull via
+  `hub.fetch.clone_or_pull` through its injectable runner — real git in
+  production, a fake runner in tests). See `MCP_ADAPTERS.md`.
 - **Domain adapters** — the seven domain/government capabilities (`flight`,
   `weather`, `terrain`, `contracts`, `regulations`, `utilities`,
   `field-ops`) as read-only, HTTP-backed adapters over an injectable client
@@ -99,8 +102,25 @@ only supply raw inputs, always carrying provenance back to their source.
   refresh hook and clock. Adapters resolve credentials through this layer
   and fail closed when a key cannot be resolved; secret values never appear
   in provenance, logs, or reprs. Key names are documented in
-  `config/.env.example` (names only). Live OAuth flows and secret-manager
-  integrations plug into the refresh seam and remain future work.
+  `config/.env.example` (names only).
+- **Secret-manager providers** — `hub.mcp_runtime.secrets.SecretManagerProvider`
+  implements the `CredentialProvider` protocol over an injectable `fetcher`
+  (the boundary to AWS Secrets Manager / Vault / GCP — the operator supplies
+  the SDK call), with optional TTL caching and fail-closed on error;
+  `HttpSecretManager` is a generic REST fetcher. Compose with
+  `ChainCredentialProvider([SecretManagerProvider(...),
+  EnvCredentialProvider()])`. Injection-tested; a live backend is operator
+  config, not exercised in CI.
+- **OAuth2 refresh** — `hub.mcp_runtime.oauth.OAuth2ClientCredentials` is a
+  client-credentials refresh callable for `TokenCache`: it exchanges an
+  env-sourced client id/secret for a bearer token on TTL expiry and fails
+  closed on any error. The token exchange is behind an injectable `poster`
+  (real IdP call in production, a fake in tests) — the code is
+  injection-tested, but a live IdP `token_url` is operator config and is not
+  exercised in CI. Secret-manager backends remain future work.
+- **Deployment packaging** — `Dockerfile`, `docker-compose.yml`,
+  `deploy/thehub-mcp.service`, and `MCP_DEPLOYMENT.md` run the hosted API via
+  uvicorn (non-root, `/healthz` healthcheck). See `MCP_DEPLOYMENT.md`.
 - **Router hardening** — priority-ordered fallback across multiple adapters
   for a capability, a per-adapter circuit breaker (injected clock), an audit
   sink recording every routing decision, and optional deployment-level
@@ -116,22 +136,36 @@ only supply raw inputs, always carrying provenance back to their source.
   `hub.mcp_runtime.cache` (a TTL `ResponseCache`, injected clock). The router
   emits a metric on every path and caches reads only, after policy passes.
   See `MCP_ADAPTERS.md`.
-- **Registry drift detection** — `tools/check_registry_drift.py` fails CI
-  when a capability's `required_by` and the manifests that declare it
-  disagree (in either direction), keeping the registry and project manifests
-  in sync. This is the testable core of the sync story; the automation that
-  *opens PRs* across sibling repos on drift needs cross-repo tokens and
-  remains future work.
+- **Registry drift detection & sync automation** —
+  `tools/check_registry_drift.py` fails CI when a capability's `required_by`
+  and the manifests that declare it disagree (either direction);
+  `tools/registry_sync_report.py` emits the same state as JSON for dashboards;
+  and `.github/workflows/mcp-registry-drift-schedule.yml` runs the check on a
+  weekly cron and opens/updates a same-repo tracking issue on drift.
+  `tools/generate_sync_artifacts.py` emits the per-producer capability
+  contract (from `required_by`) that a sync job would propagate, and
+  `.github/workflows/mcp-cross-repo-sync.yml` generates + uploads those
+  artifacts. The actual *cross-repo write* to sibling producer repos is gated
+  on an operator `SYNC_PAT` secret and is a documented, operator-activated hop
+  that is **not exercised in CI**.
 
-## Future work (not implemented)
+## Future work — operator-activated external hops only
 
-The following remain unbuilt and are not claimed as complete anywhere in
-this repository:
+The runtime and tooling are complete to the honest limit of a hermetic
+environment. What remains is **not unbuilt code** but **live external hops**
+this repository deliberately does not exercise in CI. In each case the in-repo
+core is implemented and injection-tested; activating the live hop is the
+operator's documented step, and none is faked or claimed as CI-verified:
 
-- live OAuth flows and secret-manager integrations (the `TokenCache`
-  refresh hook is the seam they implement);
-- networked variants of the core adapters (e.g. live git operations behind
-  `github-bridge`);
-- deployment packaging (Docker/compose/systemd), an external metrics/tracing
-  backend behind the `MetricsSink` seam, and the cross-repo automation that
-  *opens PRs* on registry drift (the drift *check* already ships).
+- **Secret managers** — `SecretManagerProvider` + `HttpSecretManager` ship;
+  wiring a specific cloud SDK (AWS/Vault/GCP) is the operator's `fetcher`.
+- **OAuth2** — `OAuth2ClientCredentials` ships; a real IdP `token_url` is
+  operator config.
+- **Metrics/tracing backend** — `LoggingMetricsSink` is fully real;
+  `HttpMetricsSink` ships behind an injectable poster — a live collector is
+  operator config.
+- **Networked `github-bridge fetch`** — ships behind an injectable runner; the
+  real git/network call is the default runner in production.
+- **Cross-repo sync write** — the drift check, JSON report, same-repo issue
+  automation, and per-producer artifact generation all ship; the write to
+  sibling producer repos is gated on an operator `SYNC_PAT`.
