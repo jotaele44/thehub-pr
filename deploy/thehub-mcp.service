@@ -1,0 +1,23 @@
+# systemd unit for the TheHub MCP API (non-container host deployment).
+# Install:
+#   sudo cp deploy/thehub-mcp.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now thehub-mcp
+# Adjust WorkingDirectory / User / EnvironmentFile to your host.
+[Unit]
+Description=TheHub PRII Federation MCP API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=thehub
+WorkingDirectory=/opt/thehub-pr
+# Credentials are read from the environment, never the repo (see
+# config/.env.example). Point this at an operator-managed file with 0600 perms.
+EnvironmentFile=-/etc/thehub-pr/thehub.env
+ExecStart=/opt/thehub-pr/.venv/bin/uvicorn server.backend.main:app --host 0.0.0.0 --port 8000
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

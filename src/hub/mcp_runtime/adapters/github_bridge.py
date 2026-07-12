@@ -1,11 +1,13 @@
-"""GitHub bridge adapter — read-only view over the producer registry.
+"""GitHub bridge adapter — producer-registry view + optional live git fetch.
 
-Backed by ``registry/producers.yaml`` (already in the repo); no network, no
-secrets. Serves the ``github-bridge`` capability every project inherits.
+The ``list_producers`` / ``resolve_repo`` actions are backed by
+``registry/producers.yaml`` (already in the repo); no network, no secrets.
 
-Live git operations (clone/pull) go through hub.fetch.clone_or_pull and are
-deliberately out of scope for this hermetic adapter — they remain future
-work so the read-only default is preserved.
+The optional ``fetch`` action performs a live shallow clone / fast-forward
+pull of a producer repo via ``hub.fetch.clone_or_pull``. It reads remote
+state (still read-only for the federation) and goes through the same
+injectable ``runner`` the Hub uses elsewhere, so tests exercise it offline;
+the real git/network call is the default runner in production.
 """
 
 from __future__ import annotations
@@ -13,6 +15,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from hub.fetch import Runner, _subprocess_runner, clone_or_pull
 from hub.mcp_runtime.sdk import MCPAdapter, MCPRequest
 from hub.registry import Registry, load_registry
 
@@ -33,8 +36,13 @@ class GithubBridgeAdapter(MCPAdapter):
     overridden with params ``registry`` (used by tests).
     """
 
-    def __init__(self, registry_path: Optional[Path] = None) -> None:
+    def __init__(
+        self,
+        registry_path: Optional[Path] = None,
+        runner: Runner = _subprocess_runner,
+    ) -> None:
         self._registry_path = Path(registry_path) if registry_path else _DEFAULT_REGISTRY
+        self._runner = runner
 
     def name(self) -> str:
         return "github-bridge"
@@ -87,6 +95,17 @@ class GithubBridgeAdapter(MCPAdapter):
                 "repo_name": producer.repo_name,
                 "clone_url": self._clone_url(producer.repo),
             }
+
+        if request.action == "fetch":
+            program_id = request.params.get("program_id")
+            dest = request.params.get("dest")
+            if not program_id or not dest:
+                raise ValueError("fetch requires 'program_id' and 'dest' params")
+            producer = registry.by_id(program_id)
+            if producer is None:
+                raise LookupError(f"no producer with program_id {program_id!r}")
+            result = clone_or_pull(producer.repo, dest, self._runner)
+            return {"repo": producer.repo, "dest": str(dest), "result": result}
 
         raise ValueError(f"unknown action {request.action!r}")
 
