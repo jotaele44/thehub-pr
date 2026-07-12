@@ -79,6 +79,57 @@ def test_activation_check_requires_a_matrix(tmp_path):
     assert data["ok"] is False and data["errors"]["activation"]
 
 
+def test_path_resolution_rejects_out_of_repo_paths(tmp_path):
+    # reads/local_scripts are repo-relative by contract; absolute or ../ paths
+    # must be rejected so a packet cannot authorize resources outside the repo.
+    reg = {
+        "schema_version": "prii_skill_registry_v1",
+        "skills": [{"skill_id": "x", "reads": ["/etc/hostname", "../outside.txt"]}],
+    }
+    (tmp_path / "skill-registry.yaml").write_text(yaml.safe_dump(reg), encoding="utf-8")
+    result = subprocess.run(
+        [
+            sys.executable,
+            "scripts/validate_skills.py",
+            "--root",
+            str(tmp_path),
+            "--check",
+            "path-resolution",
+            "--json",
+        ],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 1, result.stdout + result.stderr
+    errors = json.loads(result.stdout)["errors"]["path-resolution"]
+    assert any("not repo-relative" in e for e in errors), errors
+    assert any("escapes the repo root" in e for e in errors), errors
+
+
+def test_available_commands_match_hub_cli():
+    # command_source is cli_entrypoints, so available_commands is a hand-kept
+    # copy of the hub CLI subcommands. Bind it to the real parser here (where the
+    # parser lives) so a typo or a removed command fails CI — the shared,
+    # stdlib-only validator stays portable and cannot import the hub package.
+    pytest.importorskip("hub")
+    import argparse
+
+    from hub.cli import _build_parser
+
+    parser = _build_parser()
+    cli_commands = set()
+    for action in parser._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            cli_commands |= set(action.choices)
+    registry = yaml.safe_load((REPO_ROOT / "skill-registry.yaml").read_text())
+    declared = set(registry["packet_config"]["available_commands"])
+    assert declared == cli_commands, (
+        f"available_commands drift: only-in-registry={sorted(declared - cli_commands)}, "
+        f"only-in-cli={sorted(cli_commands - declared)}"
+    )
+
+
 def test_registry_validates_against_declared_schema():
     # The registry declares a schema; it must actually conform to it, including
     # the top-level packet_config block (the pure-Python validator does not
