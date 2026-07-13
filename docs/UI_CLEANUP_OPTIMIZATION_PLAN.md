@@ -59,7 +59,7 @@ Evidence gathered from the working tree. File references are clickable.
 
 | # | Finding | Evidence |
 |---|---|---|
-| E1 | **No route-level code splitting.** Every page is statically imported in `App.jsx`, so heavy libs (`leaflet` ×3, `recharts` ×3, `jspdf`) all land in the initial bundle even for users who only view Recent Activity. | [`App.jsx`](../server/frontend/src/App.jsx). |
+| E1 | **No route-level code splitting.** Every page is statically imported in `App.jsx`, so heavy libs (`leaflet` ×3, `recharts` ×3, `jspdf`) all land in the initial bundle even for users who only view Recent Activity. **Addressed:** page routes are now `React.lazy` + `Suspense` (shared `RouteFallback`); the build emits ~75 chunks and Leaflet/Recharts/jsPDF load only on the pages that use them. | [`App.jsx`](../server/frontend/src/App.jsx). |
 | E2 | Recent Activity polls three entities every 30s and merges client-side; correct but a candidate for one server-side activity endpoint later. | [`RecentActivity.jsx`](../server/frontend/src/pages/RecentActivity.jsx). |
 
 ### F. Testing / verification
