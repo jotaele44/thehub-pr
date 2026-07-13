@@ -31,7 +31,7 @@ Evidence gathered from the working tree. File references are clickable.
 
 | # | Finding | Evidence |
 |---|---|---|
-| B1 | **~35 of ~48 shadcn UI primitives have zero imports** outside `components/ui/` itself. | e.g. `accordion`, `alert*`, `avatar`, `badge`, `breadcrumb`, `calendar`, `carousel`, `chart`, `checkbox`, `collapsible`, `command`, `context-menu`, `drawer`, `dropdown-menu`, `form`, `hover-card`, `menubar`, `navigation-menu`, `pagination`, `popover`, `progress`, `radio-group`, `resizable`, `scroll-area`, `slider`, `toggle*`. |
+| B1 | **~34 of ~48 shadcn UI primitives have zero imports** outside `components/ui/` itself. | e.g. `alert*`, `avatar`, `badge`, `breadcrumb`, `calendar`, `carousel`, `chart`, `checkbox`, `collapsible`, `command`, `context-menu`, `drawer`, `dropdown-menu`, `form`, `hover-card`, `menubar`, `navigation-menu`, `pagination`, `popover`, `progress`, `radio-group`, `resizable`, `scroll-area`, `slider`, `toggle*`. (Do **not** assume by name — `accordion` looks unused at a glance but is imported by `PairPanel.jsx` and `GroupedView.jsx`; drive removals by an actual import gate, not this list.) |
 | B2 | **A second, unused 626-line sidebar system** ships in the bundle. The app uses the custom `layout/Sidebar.jsx`; the shadcn `ui/sidebar.jsx` (626 lines) is never imported. | [`ui/sidebar.jsx`](../server/frontend/src/components/ui/sidebar.jsx). |
 | B3 | **7 npm dependencies with zero source imports:** `moment`, `@stripe/react-stripe-js`, `@stripe/stripe-js`, `canvas-confetti`, `react-quill`, `lodash`, `framer-motion`, `html2canvas`. (Stripe/confetti are template leftovers unrelated to an intelligence control plane.) | `grep` across `src`. |
 | B4 | **Three overlapping toast systems** coexist: `sonner` (5 files), `react-hot-toast` (1 file), and the Radix `toast`/`use-toast`/`toaster` stack. Only one should remain. | `grep` across `src`. |
@@ -111,7 +111,7 @@ Evidence gathered from the working tree. File references are clickable.
 
 ### P1 — Dead code & dependency removal
 
-5. **Prune unused shadcn primitives (B1/B2).** Remove `ui/*.jsx` files with zero imports, including the 626-line `ui/sidebar.jsx`. Keep the ~13 in use (`button`, `tabs`, `select`, `input`, `label`, `table`, `card`, `textarea`, `dialog`, `sheet`, `separator`, `skeleton`, `tooltip`, plus toast — see #7). Verify with a codemod/grep gate so nothing transitively required is dropped.
+5. **Prune unused shadcn primitives (B1/B2).** Remove `ui/*.jsx` files with zero imports, including the 626-line `ui/sidebar.jsx`. Keep the ~14 in use (`button`, `tabs`, `select`, `input`, `label`, `table`, `card`, `textarea`, `dialog`, `sheet`, `separator`, `skeleton`, `tooltip`, `accordion`, plus toast — see #7). Verify with a codemod/grep gate (an actual import scan, not a by-name guess) so nothing transitively required is dropped.
 
 6. **Remove zero-import dependencies (B3)** from `package.json`: `moment`, `@stripe/*`, `canvas-confetti`, `react-quill`, `lodash`, `framer-motion`, `html2canvas`; plus `embla-carousel-react`, `react-day-picker`, and `next-themes` once their sole consumers (`carousel`, `calendar`, `sonner`) are removed (B5/B6). Re-run `npm ci && build` to confirm.
 
