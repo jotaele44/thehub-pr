@@ -43,6 +43,28 @@
     --sidebar-accent-foreground: 210 20% 92%;
     --sidebar-border: 223 14% 15%;
     --sidebar-ring: 217 60% 60%;
+
+    /* Semantic status tokens — the shared status vocabulary (chips, alerts).
+       `-fg` is the lighter text tone; the base is used for tinted bg/border.
+       Values mirror the Tailwind palette the chips previously hard-coded. */
+    --status-danger: 0 84.2% 60.2%;
+    --status-danger-fg: 0 93.5% 81.8%;
+    --status-success: 160.1 84.1% 39.4%;
+    --status-success-fg: 156.2 71.6% 66.9%;
+    --status-warning: 37.7 92.1% 50.2%;
+    --status-warning-fg: 45.9 96.7% 64.5%;
+    --status-info: 198.6 88.7% 48.4%;
+    --status-info-fg: 199.4 95.5% 73.9%;
+    --status-neutral: 215.4 16.3% 46.9%;
+    --status-neutral-fg: 212.7 26.8% 83.9%;
+    --status-process: 258.3 89.5% 66.3%;
+    --status-process-fg: 252.5 94.7% 85.1%;
+    --status-tier: 173.4 80.4% 40%;
+    --status-tier-fg: 170.6 76.9% 64.3%;
+    --status-caution: 45.4 93.4% 47.5%;
+    --status-caution-fg: 50.4 97.8% 63.5%;
+    --status-elevated: 24.6 95% 53.1%;
+    --status-elevated-fg: 30.7 97.2% 72.4%;
   }
 
   .dark {
