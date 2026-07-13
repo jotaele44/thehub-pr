@@ -7,7 +7,6 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import AppLayout from '@/components/layout/AppLayout';
-import Dashboard from '@/pages/Dashboard';
 import Programs from '@/pages/Programs';
 import Cases from '@/pages/Cases';
 import Sources from '@/pages/Sources';

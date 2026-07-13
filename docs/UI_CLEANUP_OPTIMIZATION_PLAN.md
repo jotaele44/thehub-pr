@@ -59,7 +59,7 @@ Evidence gathered from the working tree. File references are clickable.
 
 | # | Finding | Evidence |
 |---|---|---|
-| E1 | **No route-level code splitting.** Every page is statically imported in `App.jsx`, so heavy libs (`leaflet` ×3, `recharts` ×3, `three`, `jspdf`) all land in the initial bundle even for users who only view Recent Activity. | [`App.jsx`](../server/frontend/src/App.jsx). |
+| E1 | **No route-level code splitting.** Every page is statically imported in `App.jsx`, so heavy libs (`leaflet` ×3, `recharts` ×3, `jspdf`) all land in the initial bundle even for users who only view Recent Activity. | [`App.jsx`](../server/frontend/src/App.jsx). |
 | E2 | Recent Activity polls three entities every 30s and merges client-side; correct but a candidate for one server-side activity endpoint later. | [`RecentActivity.jsx`](../server/frontend/src/pages/RecentActivity.jsx). |
 
 ### F. Testing / verification
@@ -111,7 +111,7 @@ Evidence gathered from the working tree. File references are clickable.
 
 ### P1 — Dead code & dependency removal
 
-5. **Prune unused shadcn primitives (B1/B2).** Remove `ui/*.jsx` files with zero imports, including the 626-line `ui/sidebar.jsx`. Keep the ~14 in use (`button`, `tabs`, `select`, `input`, `label`, `table`, `card`, `textarea`, `dialog`, `sheet`, `separator`, `skeleton`, `tooltip`, `accordion`, plus toast — see #7). Verify with a codemod/grep gate (an actual import scan, not a by-name guess) so nothing transitively required is dropped.
+5. **Prune unused shadcn primitives (B1/B2).** Remove `ui/*.jsx` files with zero imports, including the 626-line `ui/sidebar.jsx`. Keep the 16 in use (`button`, `tabs`, `select`, `input`, `input-otp`, `label`, `table`, `card`, `textarea`, `dialog`, `sheet`, `switch`, `accordion`, `toast`, `toaster`, `use-toast`). A transitive import scan confirms `separator`/`skeleton`/`tooltip` have **zero** importers, so they are deleted too. Verify with a codemod/grep gate (an actual import scan, not a by-name guess) so nothing transitively required is dropped.
 
 6. **Remove zero-import dependencies (B3)** from `package.json`: `moment`, `@stripe/*`, `canvas-confetti`, `react-quill`, `lodash`, `framer-motion`, `html2canvas`; plus `embla-carousel-react`, `react-day-picker`, and `next-themes` once their sole consumers (`carousel`, `calendar`, `sonner`) are removed (B5/B6). Re-run `npm ci && build` to confirm.
 
