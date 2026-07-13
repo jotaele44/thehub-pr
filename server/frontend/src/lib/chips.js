@@ -5,6 +5,10 @@
 
 const NEUTRAL = "bg-secondary text-muted-foreground border-border";
 
+// Build a chip class triple from a semantic status token. `role` is a token
+// family declared in index.css / tailwind.config (status.<role> + its `-fg`).
+const tone = (role) => `bg-status-${role}/15 text-status-${role}-fg border-status-${role}/30`;
+
 // Resolve the chip classes for a value; falls back to a neutral chip so
 // unknown / legacy values still render instead of breaking the UI.
 export function chipClass(map, value) {
@@ -13,15 +17,17 @@ export function chipClass(map, value) {
 }
 
 // --- Shared tone shortcuts -------------------------------------------------
-const BLUE = "bg-sky-500/15 text-sky-300 border-sky-500/30";
-const GREEN = "bg-emerald-500/15 text-emerald-300 border-emerald-500/30";
-const AMBER = "bg-amber-500/15 text-amber-300 border-amber-500/30";
-const RED = "bg-red-500/15 text-red-300 border-red-500/30";
-const VIOLET = "bg-violet-500/15 text-violet-300 border-violet-500/30";
-const SLATE = "bg-slate-500/15 text-slate-300 border-slate-500/30";
-const TEAL = "bg-teal-500/15 text-teal-300 border-teal-500/30";
-const YELLOW = "bg-yellow-500/15 text-yellow-300 border-yellow-500/30";
-const ORANGE = "bg-orange-500/15 text-orange-300 border-orange-500/30";
+// Each tone resolves to a semantic status token (see index.css). Views never
+// reference raw palette colors — they go through these maps and StatusChip.
+const BLUE = tone("info");
+const GREEN = tone("success");
+const AMBER = tone("warning");
+const RED = tone("danger");
+const VIOLET = tone("process");
+const SLATE = tone("neutral");
+const TEAL = tone("tier");
+const YELLOW = tone("caution");
+const ORANGE = tone("elevated");
 
 // --- Cases -----------------------------------------------------------------
 export const CASE_STATUS = {

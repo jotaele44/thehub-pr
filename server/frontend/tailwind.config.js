@@ -59,6 +59,17 @@ module.exports = {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			status: {
+  				danger: { DEFAULT: 'hsl(var(--status-danger))', fg: 'hsl(var(--status-danger-fg))' },
+  				success: { DEFAULT: 'hsl(var(--status-success))', fg: 'hsl(var(--status-success-fg))' },
+  				warning: { DEFAULT: 'hsl(var(--status-warning))', fg: 'hsl(var(--status-warning-fg))' },
+  				info: { DEFAULT: 'hsl(var(--status-info))', fg: 'hsl(var(--status-info-fg))' },
+  				neutral: { DEFAULT: 'hsl(var(--status-neutral))', fg: 'hsl(var(--status-neutral-fg))' },
+  				process: { DEFAULT: 'hsl(var(--status-process))', fg: 'hsl(var(--status-process-fg))' },
+  				tier: { DEFAULT: 'hsl(var(--status-tier))', fg: 'hsl(var(--status-tier-fg))' },
+  				caution: { DEFAULT: 'hsl(var(--status-caution))', fg: 'hsl(var(--status-caution-fg))' },
+  				elevated: { DEFAULT: 'hsl(var(--status-elevated))', fg: 'hsl(var(--status-elevated-fg))' }
   			}
   		},
   		fontFamily: {

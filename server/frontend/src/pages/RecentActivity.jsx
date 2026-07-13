@@ -201,7 +201,7 @@ export default function RecentActivity() {
         description="Latest risk activity across the federation, grouped by program. Continuity risks, anomaly flags, and governance alerts — newest first. Leads for review, not conclusions."
         actions={
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <span className={cn("h-2 w-2 rounded-full", loading ? "bg-amber-400 animate-pulse" : "bg-emerald-400")} />
+            <span className={cn("h-2 w-2 rounded-full", loading ? "bg-status-warning animate-pulse" : "bg-status-success")} />
             <span>updated {ago(updatedAt)}</span>
             <span className="hidden sm:inline">· auto every {Math.round(POLL_MS / 1000)}s</span>
           </div>
@@ -211,7 +211,7 @@ export default function RecentActivity() {
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         <StatCard label="Risk Signals" value={totals.total} icon={Activity} />
         <StatCard label="Open" value={totals.open} icon={ShieldAlert} />
-        <StatCard label="Critical / High" value={totals.critHigh} icon={AlertTriangle} accent="text-red-300" alert={totals.critHigh > 0} />
+        <StatCard label="Critical / High" value={totals.critHigh} icon={AlertTriangle} accent="text-status-danger-fg" alert={totals.critHigh > 0} />
       </div>
 
       <div className="flex flex-wrap items-center gap-3 mb-8">
@@ -259,7 +259,7 @@ export default function RecentActivity() {
                   {g.domain && <span className="text-xs text-muted-foreground">· {g.domain}</span>}
                   <span className="ml-auto inline-flex items-center gap-2">
                     {g.open > 0 && (
-                      <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-red-500/20 text-red-300 text-xs font-mono-id" title={`${g.open} open`}>
+                      <span className="inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-status-danger/20 text-status-danger-fg text-xs font-mono-id" title={`${g.open} open`}>
                         {g.open}
                       </span>
                     )}

@@ -1,91 +1,109 @@
+import { lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
-import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import { appParams } from '@/lib/app-params';
+import ProtectedRoute from '@/components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 import AppLayout from '@/components/layout/AppLayout';
-import Dashboard from '@/pages/Dashboard';
-import Programs from '@/pages/Programs';
-import Cases from '@/pages/Cases';
-import Sources from '@/pages/Sources';
-import Tasks from '@/pages/Tasks';
-import Gates from '@/pages/Gates';
-import Integrations from '@/pages/Integrations';
-import ExportsPage from '@/pages/Exports';
-import Manifest from '@/pages/Manifest';
-import Spiderweb from '@/pages/Spiderweb';
-import Ovnis from '@/pages/Ovnis';
-import AguaYLuz from '@/pages/AguaYLuz';
-import MoneySweep from '@/pages/MoneySweep';
-import Skywatcher from '@/pages/Skywatcher';
-import Centinelas from '@/pages/Centinelas';
-import ModuleReadiness from '@/pages/ModuleReadiness';
-import TransitionAudit from '@/pages/TransitionAudit';
-import FederationCrossoverWorkspace from '@/pages/FederationCrossoverWorkspace';
-import AnomalyOverlap from '@/pages/AnomalyOverlap';
-import ControlLedgers from '@/pages/ControlLedgers';
-import Hub from '@/pages/Hub';
-import RecentActivity from '@/pages/RecentActivity';
-import ResearchAssistant from '@/pages/ResearchAssistant';
-import Dictionary from '@/pages/Dictionary';
+import RouteFallback from '@/components/shared/RouteFallback';
 
-const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+// Routes are code-split so heavy per-page deps (Leaflet, Recharts, jsPDF) load
+// only when their page is visited, not in the initial bundle. The app shell
+// (layout, nav, auth guard) stays eager.
+const Login = lazy(() => import('@/pages/Login'));
+const Register = lazy(() => import('@/pages/Register'));
+const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
+const Programs = lazy(() => import('@/pages/Programs'));
+const Cases = lazy(() => import('@/pages/Cases'));
+const Sources = lazy(() => import('@/pages/Sources'));
+const Tasks = lazy(() => import('@/pages/Tasks'));
+const Gates = lazy(() => import('@/pages/Gates'));
+const Integrations = lazy(() => import('@/pages/Integrations'));
+const ExportsPage = lazy(() => import('@/pages/Exports'));
+const Manifest = lazy(() => import('@/pages/Manifest'));
+const Spiderweb = lazy(() => import('@/pages/Spiderweb'));
+const Ovnis = lazy(() => import('@/pages/Ovnis'));
+const AguaYLuz = lazy(() => import('@/pages/AguaYLuz'));
+const MoneySweep = lazy(() => import('@/pages/MoneySweep'));
+const Skywatcher = lazy(() => import('@/pages/Skywatcher'));
+const Centinelas = lazy(() => import('@/pages/Centinelas'));
+const ModuleReadiness = lazy(() => import('@/pages/ModuleReadiness'));
+const TransitionAudit = lazy(() => import('@/pages/TransitionAudit'));
+const FederationCrossoverWorkspace = lazy(() => import('@/pages/FederationCrossoverWorkspace'));
+const AnomalyOverlap = lazy(() => import('@/pages/AnomalyOverlap'));
+const ControlLedgers = lazy(() => import('@/pages/ControlLedgers'));
+const Hub = lazy(() => import('@/pages/Hub'));
+const RecentActivity = lazy(() => import('@/pages/RecentActivity'));
+const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
+const Dictionary = lazy(() => import('@/pages/Dictionary'));
 
-  // Show loading spinner while checking app public settings or auth
-  if (isLoadingPublicSettings || isLoadingAuth) {
-    return (
-      <div className="fixed inset-0 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
-      </div>
-    );
+const AppRoutes = () => {
+  const { isLoadingPublicSettings, appPublicSettings } = useAuth();
+
+  // Wait for public settings before routing — we need to know whether auth is
+  // required before deciding whether to guard the app routes or render anonymously.
+  if (isLoadingPublicSettings) {
+    return <RouteFallback />;
   }
 
-  // Handle authentication errors
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      // Redirect to login automatically
-      navigateToLogin();
-      return null;
-    }
-  }
+  const authRequired = Boolean(
+    appPublicSettings?.public_settings?.requires_auth || appParams.requireAuth
+  );
 
-  // Render the main app
+  // When auth is required, wrap the app shell in ProtectedRoute (redirects
+  // unauthenticated users to /login). In public/diagnostic mode the layout route
+  // is a pass-through so the app renders anonymously.
+  const guard = authRequired
+    ? <ProtectedRoute fallback={<RouteFallback />} unauthenticatedElement={<Navigate to="/login" replace />} />
+    : <Outlet />;
+
   return (
-    <Routes>
-      <Route element={<AppLayout />}>
-        <Route path="/" element={<RecentActivity />} />
-        <Route path="/activity" element={<RecentActivity />} />
-        <Route path="/programs" element={<Programs />} />
-        <Route path="/cases" element={<Cases />} />
-        <Route path="/sources" element={<Sources />} />
-        <Route path="/tasks" element={<Tasks />} />
-        <Route path="/gates" element={<Gates />} />
-        <Route path="/integrations" element={<Integrations />} />
-        <Route path="/exports" element={<ExportsPage />} />
-        <Route path="/readiness" element={<ModuleReadiness />} />
-        <Route path="/transition" element={<TransitionAudit />} />
-        <Route path="/crossover" element={<FederationCrossoverWorkspace />} />
-        <Route path="/anomaly-overlap" element={<AnomalyOverlap />} />
-        <Route path="/control" element={<ControlLedgers />} />
-        <Route path="/hub" element={<Hub />} />
-        <Route path="/research" element={<ResearchAssistant />} />
-        <Route path="/dictionary" element={<Dictionary />} />
-        <Route path="/manifest" element={<Manifest />} />
-        <Route path="/spiderweb" element={<Spiderweb />} />
-        <Route path="/ovnis" element={<Ovnis />} />
-        <Route path="/aguayluz" element={<AguaYLuz />} />
-        <Route path="/moneysweep" element={<MoneySweep />} />
-        <Route path="/skywatcher" element={<Skywatcher />} />
-        <Route path="/centinelas" element={<Centinelas />} />
-      </Route>
-      <Route path="*" element={<PageNotFound />} />
-    </Routes>
+    <Suspense fallback={<RouteFallback />}>
+      <Routes>
+        {/* Public auth routes — rendered without the app shell. */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Protected application. */}
+        <Route element={guard}>
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<RecentActivity />} />
+            <Route path="/activity" element={<RecentActivity />} />
+            <Route path="/programs" element={<Programs />} />
+            <Route path="/cases" element={<Cases />} />
+            <Route path="/sources" element={<Sources />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/gates" element={<Gates />} />
+            <Route path="/integrations" element={<Integrations />} />
+            <Route path="/exports" element={<ExportsPage />} />
+            <Route path="/readiness" element={<ModuleReadiness />} />
+            <Route path="/transition" element={<TransitionAudit />} />
+            <Route path="/crossover" element={<FederationCrossoverWorkspace />} />
+            <Route path="/anomaly-overlap" element={<AnomalyOverlap />} />
+            <Route path="/control" element={<ControlLedgers />} />
+            <Route path="/hub" element={<Hub />} />
+            <Route path="/research" element={<ResearchAssistant />} />
+            <Route path="/dictionary" element={<Dictionary />} />
+            <Route path="/manifest" element={<Manifest />} />
+            <Route path="/spiderweb" element={<Spiderweb />} />
+            <Route path="/ovnis" element={<Ovnis />} />
+            <Route path="/aguayluz" element={<AguaYLuz />} />
+            <Route path="/moneysweep" element={<MoneySweep />} />
+            <Route path="/skywatcher" element={<Skywatcher />} />
+            <Route path="/centinelas" element={<Centinelas />} />
+          </Route>
+        </Route>
+
+        <Route path="*" element={<PageNotFound />} />
+      </Routes>
+    </Suspense>
   );
 };
 
@@ -97,7 +115,7 @@ function App() {
       <QueryClientProvider client={queryClientInstance}>
         <Router>
           <ScrollToTop />
-          <AuthenticatedApp />
+          <AppRoutes />
         </Router>
         <Toaster />
       </QueryClientProvider>

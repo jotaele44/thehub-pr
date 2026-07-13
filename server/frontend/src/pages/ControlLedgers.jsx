@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import PageHeader from "@/components/shared/PageHeader";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,31 +27,22 @@ const TABS = [
   { value: "manifest", label: "Manifest", Component: Manifest },
 ];
 
-export default function ControlLedgers({ embedded = false }) {
+export default function ControlLedgers() {
   const navigate = useNavigate();
   const { search } = useLocation();
   const tabParam = new URLSearchParams(search).get("tab");
-  const initial = TABS.some((t) => t.value === tabParam) ? tabParam : "programs";
-  // When embedded inside the Hub shell, keep tab state internal so sub-tab
-  // navigation never escapes to /control. Standalone keeps URL-synced tabs.
-  const [embeddedTab, setEmbeddedTab] = useState(initial);
-  const active = embedded ? embeddedTab : initial;
+  const active = TABS.some((t) => t.value === tabParam) ? tabParam : "programs";
   const Active = TABS.find((t) => t.value === active).Component;
 
-  const onTabChange = (v) => {
-    if (embedded) setEmbeddedTab(v);
-    else navigate(`/control?tab=${v}`);
-  };
+  const onTabChange = (v) => navigate(`/control?tab=${v}`);
 
   return (
     <div>
-      {!embedded && (
-        <PageHeader
-          icon={Boxes}
-          title="Control Ledgers"
-          description="Parent control-plane ledgers and federation governance surfaces."
-        />
-      )}
+      <PageHeader
+        icon={Boxes}
+        title="Control Ledgers"
+        description="Parent control-plane ledgers and federation governance surfaces."
+      />
       <Tabs value={active} onValueChange={onTabChange} className="mb-6">
         <TabsList className="flex-wrap h-auto justify-start">
           {TABS.map((t) => (
