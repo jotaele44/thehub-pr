@@ -8,7 +8,7 @@ import LedgerExportRow from "@/components/exports/LedgerExportRow";
 import ExportHistory from "@/components/exports/ExportHistory";
 import { EXPORT_LEDGERS } from "@/lib/export-config";
 import { HUB_REPO } from "@/lib/federation";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 const highestSensitivity = (records) => {
   const rank = { Public: 0, Internal: 1, Restricted: 2 };
@@ -71,7 +71,7 @@ export default function ExportsPage() {
       source_repo: HUB_REPO,
     });
     qc.invalidateQueries({ queryKey: ["Exports"] });
-    toast.success(`${ledger.label} exported (${count} records)`);
+    toast({ title: `${ledger.label} exported (${count} records)` });
   };
 
   const realExports = exports.map((e) => e.data || e).filter((e) => !e.test_record);

@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Github, RefreshCw, Plus, Loader2, AlertCircle } from "lucide-react";
 import { MODULES, HUB_REPO } from "@/lib/federation";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 const REPOS = [
   { name: "INTSYS-PR", repo: HUB_REPO },
@@ -31,7 +31,7 @@ export default function ModuleReadiness() {
   const call = (payload) => federation.functions.invoke("githubModuleReadiness", payload);
 
   const load = async () => {
-    if (!owner.trim()) { toast.error("Enter the GitHub owner/org first"); return; }
+    if (!owner.trim()) { toast({ title: "Enter the GitHub owner/org first", variant: "destructive" }); return; }
     setLoading(true); setError(null);
     try {
       const res = await call({ action: "list", owner: owner.trim(), repo });
@@ -47,11 +47,11 @@ export default function ModuleReadiness() {
     setSaving(true);
     try {
       await call({ action: "createIssue", owner: owner.trim(), repo, title, body });
-      toast.success("Issue created");
+      toast({ title: "Issue created" });
       setDialogOpen(false);
       await load();
     } catch (e) {
-      toast.error(e?.response?.data?.error || e.message);
+      toast({ title: e?.response?.data?.error || e.message, variant: "destructive" });
     }
     setSaving(false);
   };
@@ -62,7 +62,7 @@ export default function ModuleReadiness() {
       await call({ action: item.state === "open" ? "closeIssue" : "reopenIssue", owner: owner.trim(), repo, issue_number: item.number });
       await load();
     } catch (e) {
-      toast.error(e?.response?.data?.error || e.message);
+      toast({ title: e?.response?.data?.error || e.message, variant: "destructive" });
     }
     setBusyNum(null);
   };

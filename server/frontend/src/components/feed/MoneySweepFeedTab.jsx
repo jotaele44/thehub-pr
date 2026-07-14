@@ -13,7 +13,7 @@ import IdCode from "@/components/shared/IdCode";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RefreshCw, FileStack, DollarSign, UserPlus, AlertTriangle, ExternalLink } from "lucide-react";
 import { promoteFeedItem } from "@/lib/promote-feed";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 const fmtMoney = (n) => (n || n === 0) ? `$${Number(n).toLocaleString()}` : "—";
 const SYNC = {
@@ -39,13 +39,13 @@ export default function MoneySweepFeedTab() {
     try {
       const res = await federation.functions.invoke("refetchUSASpending", { source_id: "usaspending-pr", limit: 25 });
       const d = res.data || {};
-      if (d.error) toast.error(`Refetch failed: ${d.error}`);
-      else toast.success(`Fetched ${d.items_fetched} · ${d.items_new} new`);
+      if (d.error) toast({ title: `Refetch failed: ${d.error}`, variant: "destructive" });
+      else toast({ title: `Fetched ${d.items_fetched} · ${d.items_new} new` });
       qc.invalidateQueries({ queryKey: ["entity", "LiveFeedItems"] });
       qc.invalidateQueries({ queryKey: ["entity", "LiveFeedSources"] });
       qc.invalidateQueries({ queryKey: ["entity", "LiveFeedRuns"] });
     } catch (e) {
-      toast.error(`Refetch error: ${e.message}`);
+      toast({ title: `Refetch error: ${e.message}`, variant: "destructive" });
     }
     setRefetching(false);
   };
@@ -55,19 +55,19 @@ export default function MoneySweepFeedTab() {
       if (sync_status === "Promoted") {
         const recordId = await promoteFeedItem(item);
         await updateItem({ id: item.id, data: { sync_status, promoted_record_id: recordId } });
-        toast.success(`Promoted to Contract ${recordId}`);
+        toast({ title: `Promoted to Contract ${recordId}` });
         qc.invalidateQueries({ queryKey: ["entity", "Contracts"] });
         qc.invalidateQueries({ queryKey: ["entity", "Vendors"] });
       } else if (sync_status === "Verified") {
         let reviewer = null;
         try { reviewer = (await federation.auth.me())?.email || null; } catch { reviewer = null; }
         await updateItem({ id: item.id, data: { sync_status, verified_by: reviewer, verified_at: new Date().toISOString() } });
-        toast.success("Verified — ready to promote");
+        toast({ title: "Verified — ready to promote" });
       } else {
         await updateItem({ id: item.id, data: { sync_status } });
       }
     } catch (e) {
-      toast.error(`Promotion failed: ${e.message}`);
+      toast({ title: `Promotion failed: ${e.message}`, variant: "destructive" });
     }
   };
 
