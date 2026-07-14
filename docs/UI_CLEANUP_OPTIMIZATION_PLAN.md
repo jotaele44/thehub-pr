@@ -34,7 +34,7 @@ Evidence gathered from the working tree. File references are clickable.
 | B1 | **~34 of ~48 shadcn UI primitives have zero imports** outside `components/ui/` itself. | e.g. `alert*`, `avatar`, `badge`, `breadcrumb`, `calendar`, `carousel`, `chart`, `checkbox`, `collapsible`, `command`, `context-menu`, `drawer`, `dropdown-menu`, `form`, `hover-card`, `menubar`, `navigation-menu`, `pagination`, `popover`, `progress`, `radio-group`, `resizable`, `scroll-area`, `slider`, `toggle*`. (Do **not** assume by name — `accordion` looks unused at a glance but is imported by `PairPanel.jsx` and `GroupedView.jsx`; drive removals by an actual import gate, not this list.) |
 | B2 | **A second, unused 626-line sidebar system** ships in the bundle. The app uses the custom `layout/Sidebar.jsx`; the shadcn `ui/sidebar.jsx` (626 lines) is never imported. | [`ui/sidebar.jsx`](../server/frontend/src/components/ui/sidebar.jsx). |
 | B3 | **7 npm dependencies with zero source imports:** `moment`, `@stripe/react-stripe-js`, `@stripe/stripe-js`, `canvas-confetti`, `react-quill`, `lodash`, `framer-motion`, `html2canvas`. (Stripe/confetti are template leftovers unrelated to an intelligence control plane.) | `grep` across `src`. |
-| B4 | **Three overlapping toast systems** coexist: `sonner` (5 files), `react-hot-toast` (1 file), and the Radix `toast`/`use-toast`/`toaster` stack. Only one should remain. | `grep` across `src`. |
+| B4 | **Three overlapping toast systems** coexist: `sonner` (5 files), `react-hot-toast` (1 file), and the Radix `toast`/`use-toast`/`toaster` stack. Only one should remain. **Addressed:** consolidated onto the Radix `toast`; the 4 `sonner` call-sites migrated and `sonner` removed (`react-hot-toast` was already dropped). | `grep` across `src`. |
 | B5 | **Single-consumer feature libs** pulled in for one dead UI primitive each: `embla-carousel-react` (only `carousel.jsx`), `react-day-picker` (only `calendar.jsx`), `input-otp` (1 real use). | `grep` across `src`. |
 | B6 | **`next-themes` is loaded only to power `ui/sonner.jsx`**, itself unused, in an app with a single hard-coded dark theme. | [`ui/sonner.jsx:2`](../server/frontend/src/components/ui/sonner.jsx). |
 
@@ -42,18 +42,18 @@ Evidence gathered from the working tree. File references are clickable.
 
 | # | Finding | Evidence |
 |---|---|---|
-| C1 | **Hard-coded semantic status colors** (`text-red-300`, `bg-emerald-400`, `bg-red-500/20`, …) are used directly in views, which `FEDERATION_DESIGN_SYSTEM_V1.md` explicitly prohibits ("semantic tokens only"). **Partially addressed:** a semantic status-token layer (`--status-*` in `index.css` + `status.*` in `tailwind.config.js`) now backs the shared status vocabulary — all `StatusChip`s via `chips.js`, plus `StatCard` and `RecentActivity`. Remaining per-component inline accents (crossover tiles, task-warning reds, research-chat affordances) are a tracked follow-up; some mix status with identity/link colors and need per-line judgment. Domain-identity accents in `federation.js` are intentionally left as identity hues. | [`RecentActivity.jsx`](../server/frontend/src/pages/RecentActivity.jsx), accent palette in [`federation.js`](../server/frontend/src/lib/federation.js), status maps in [`chips.js`](../server/frontend/src/lib/chips.js). |
-| C2 | **Two near-identical page headers** (`PageHeader`, `ModulePageHeader`) with divergent markup. | [`shared/PageHeader.jsx`](../server/frontend/src/components/shared/PageHeader.jsx), [`shared/ModulePageHeader.jsx`](../server/frontend/src/components/shared/ModulePageHeader.jsx). |
-| C3 | **Render-blocking Google Fonts `@import`** in CSS contradicts the repo's offline-safe / sanitized posture and adds a third-party request to first paint. | [`index.css:1`](../server/frontend/src/index.css). |
-| C4 | **Duplicated `:root` and `.dark` token blocks** are byte-identical; the theme plumbing implies a toggle that does not exist. | [`index.css`](../server/frontend/src/index.css). |
+| C1 | **Hard-coded semantic status colors** (`text-red-300`, `bg-emerald-400`, `bg-red-500/20`, …) are used directly in views, which `FEDERATION_DESIGN_SYSTEM_V1.md` explicitly prohibits ("semantic tokens only"). **Addressed:** a semantic status-token layer (`--status-*` in `index.css` + `status.*` in `tailwind.config.js`) backs the shared status vocabulary (all `StatusChip`s via `chips.js`), and the inline status/severity literals across the task, crossover, cases, research, audit, feed, dashboard, and gate/sources surfaces were swept onto tokens. Intentional exceptions remain (documented): GitHub open/merged state colors, node-type identity hues (IlapPanel), markdown-link/memory blues, selection-state accent, source-repo emphasis, the light-mode error screen, and the toast primitive's destructive variant. Domain-identity accents in `federation.js` are left as identity hues. | [`RecentActivity.jsx`](../server/frontend/src/pages/RecentActivity.jsx), accent palette in [`federation.js`](../server/frontend/src/lib/federation.js), status maps in [`chips.js`](../server/frontend/src/lib/chips.js). |
+| C2 | **Two near-identical page headers** (`PageHeader`, `ModulePageHeader`) with divergent markup. **Addressed:** `PageHeader` gained optional `accent`/`badge` props and `ModulePageHeader` is now a thin preset over it. | [`shared/PageHeader.jsx`](../server/frontend/src/components/shared/PageHeader.jsx), [`shared/ModulePageHeader.jsx`](../server/frontend/src/components/shared/ModulePageHeader.jsx). |
+| C3 | **Render-blocking Google Fonts `@import`** in CSS contradicts the repo's offline-safe / sanitized posture and adds a third-party request to first paint. **Addressed:** fonts self-hosted via `@fontsource` (imported in `main.jsx`); no third-party font request. | [`index.css:1`](../server/frontend/src/index.css). |
+| C4 | **Duplicated `:root` and `.dark` token blocks** are byte-identical; the theme plumbing implies a toggle that does not exist. **Addressed:** removed the dead `.dark` block (app is dark-only, sets `data-theme`, never a `.dark` class). | [`index.css`](../server/frontend/src/index.css). |
 
-### D. Accessibility (design-system AA gates, currently unmet)
+### D. Accessibility (design-system AA gates)
 
 | # | Finding | Evidence |
 |---|---|---|
-| D1 | Icon-only / dot-only controls lack accessible names (mobile menu button, accent-dot nav items). | [`MobileNav.jsx`](../server/frontend/src/components/layout/MobileNav.jsx), [`Sidebar.jsx`](../server/frontend/src/components/layout/Sidebar.jsx). |
-| D2 | Loading spinner has no `role="status"` / `aria-live`; multiple `animate-spin` / `animate-pulse` with no `prefers-reduced-motion` fallback. | [`App.jsx`](../server/frontend/src/App.jsx), [`RecentActivity.jsx`](../server/frontend/src/pages/RecentActivity.jsx). |
-| D3 | No semantic landmarks beyond a single `<main>`; nav is not wrapped/labeled consistently. | layout components. |
+| D1 | Icon-only / dot-only controls lack accessible names (mobile menu button, accent-dot nav items). **Addressed:** mobile menu button labeled; decorative accent dots marked `aria-hidden`. | [`MobileNav.jsx`](../server/frontend/src/components/layout/MobileNav.jsx), [`Sidebar.jsx`](../server/frontend/src/components/layout/Sidebar.jsx). |
+| D2 | Loading spinner has no `role="status"` / `aria-live`; multiple `animate-spin` / `animate-pulse` with no `prefers-reduced-motion` fallback. **Addressed:** shared `RouteFallback` spinner carries `role="status"`; a global `prefers-reduced-motion` rule neutralizes animation/transition app-wide. | [`App.jsx`](../server/frontend/src/App.jsx), [`RecentActivity.jsx`](../server/frontend/src/pages/RecentActivity.jsx). |
+| D3 | No semantic landmarks beyond a single `<main>`; nav is not wrapped/labeled consistently. **Addressed:** primary `<nav>` landmarks in `Sidebar`/`MobileNav` now carry `aria-label`. | layout components. |
 
 ### E. Performance
 
@@ -66,7 +66,7 @@ Evidence gathered from the working tree. File references are clickable.
 
 | # | Finding | Evidence |
 |---|---|---|
-| F1 | **Zero frontend tests.** The design-system verification matrix requires unit/integration, axe, keyboard smoke, and visual-regression baselines; none exist. | no `*.test.*` under `server/frontend/src`. |
+| F1 | **Zero frontend tests.** The design-system verification matrix requires unit/integration, axe, keyboard smoke, and visual-regression baselines; none exist. **Addressed (floor):** Vitest + React Testing Library + `vitest-axe` smoke suite (chips/nav invariants, StatusChip, header parity, axe on shared primitives) with a new `frontend` CI job (`npm ci → lint → test → build`). Visual-regression baselines remain future work. | no `*.test.*` under `server/frontend/src`. |
 
 ---
 
