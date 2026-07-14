@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Fonts are self-hosted via @fontsource (imported in main.jsx) — no third-party
+   font request, keeping first paint and offline builds clean. */
 
 @tailwind base;
 @tailwind components;
@@ -31,9 +32,9 @@
     --chart-4: 270 60% 65%;
     --chart-5: 200 80% 60%;
     --radius: 0.5rem;
-    --font-heading: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
     --sidebar-background: 224 20% 9%;
     --sidebar-foreground: 215 16% 65%;
@@ -65,36 +66,6 @@
     --status-caution-fg: 50.4 97.8% 63.5%;
     --status-elevated: 24.6 95% 53.1%;
     --status-elevated-fg: 30.7 97.2% 72.4%;
-  }
-
-  .dark {
-    --background: 222 18% 7%;
-    --foreground: 210 20% 92%;
-    --card: 223 17% 11%;
-    --card-foreground: 210 20% 92%;
-    --popover: 223 17% 11%;
-    --popover-foreground: 210 20% 92%;
-    --primary: 210 20% 92%;
-    --primary-foreground: 222 18% 7%;
-    --secondary: 223 15% 16%;
-    --secondary-foreground: 210 20% 92%;
-    --muted: 223 15% 16%;
-    --muted-foreground: 215 14% 55%;
-    --accent: 223 15% 18%;
-    --accent-foreground: 210 20% 92%;
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 223 14% 18%;
-    --input: 223 14% 18%;
-    --ring: 217 60% 60%;
-    --sidebar-background: 224 20% 9%;
-    --sidebar-foreground: 215 16% 65%;
-    --sidebar-primary: 217 70% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 223 15% 15%;
-    --sidebar-accent-foreground: 210 20% 92%;
-    --sidebar-border: 223 14% 15%;
-    --sidebar-ring: 217 60% 60%;
   }
 }
 
