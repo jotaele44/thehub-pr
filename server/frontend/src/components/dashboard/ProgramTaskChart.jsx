@@ -40,7 +40,7 @@ export default function ProgramTaskChart() {
   return (
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-center gap-2 mb-1">
-        <BarChart3 className="h-4 w-4 text-sky-300" />
+        <BarChart3 className="h-4 w-4 text-status-info-fg" />
         <h3 className="text-sm font-semibold">Task Completion by Module</h3>
       </div>
       <p className="text-xs text-muted-foreground mb-4">

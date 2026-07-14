@@ -31,7 +31,7 @@ function ToolCall({ toolCall }) {
       >
         <Wrench className="h-3 w-3 text-muted-foreground" />
         <span className="text-foreground/90">{name}</span>
-        <Icon className={cn("h-3 w-3", running && "animate-spin text-blue-300", failed ? "text-red-300" : !running && "text-emerald-300")} />
+        <Icon className={cn("h-3 w-3", running && "animate-spin text-status-info-fg", failed ? "text-status-danger-fg" : !running && "text-status-success-fg")} />
         {(toolCall?.arguments_string || results) && !running && (
           <ChevronRight className={cn("h-3 w-3 text-muted-foreground transition-transform", open && "rotate-90")} />
         )}

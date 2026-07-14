@@ -27,8 +27,8 @@ export default function UrgencyView({ urgency, role, onEdit, onStatusChange }) {
         return (
           <div key={bucket.label}>
             <div className="flex items-center gap-2 mb-2">
-              <Icon className={alert ? "h-4 w-4 text-red-300" : "h-4 w-4 text-muted-foreground"} />
-              <h3 className={alert ? "text-sm font-semibold text-red-300" : "text-sm font-semibold text-foreground"}>{bucket.label}</h3>
+              <Icon className={alert ? "h-4 w-4 text-status-danger-fg" : "h-4 w-4 text-muted-foreground"} />
+              <h3 className={alert ? "text-sm font-semibold text-status-danger-fg" : "text-sm font-semibold text-foreground"}>{bucket.label}</h3>
               <span className="text-xs text-muted-foreground font-mono-id">{bucket.tasks.length}</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">

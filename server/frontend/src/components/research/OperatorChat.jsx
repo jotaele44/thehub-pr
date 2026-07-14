@@ -84,7 +84,7 @@ export default function OperatorChat() {
     <Card className="flex flex-col h-[60vh]">
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-border">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <ShieldCheck className="h-3.5 w-3.5 text-emerald-300" />
+          <ShieldCheck className="h-3.5 w-3.5 text-status-success-fg" />
           <span>Research Operator · governed actions, file & Drive reads</span>
         </div>
         <Button variant="ghost" size="sm" onClick={startNew} className="h-7 text-xs text-muted-foreground">

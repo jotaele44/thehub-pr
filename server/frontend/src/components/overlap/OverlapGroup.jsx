@@ -7,7 +7,7 @@ export default function OverlapGroup({ group, moduleA, moduleB }) {
   return (
     <div className="rounded-lg border border-border bg-secondary/40 overflow-hidden">
       <div className="flex items-center gap-2 px-4 py-2.5 border-b border-border bg-card/40">
-        <Icon className="h-4 w-4 text-amber-300" />
+        <Icon className="h-4 w-4 text-status-warning-fg" />
         <span className="text-sm font-medium text-foreground">{group.label}</span>
         <span className="text-xs text-muted-foreground">{group.kind} overlap</span>
         <span className="ml-auto text-xs text-muted-foreground">

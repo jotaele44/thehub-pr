@@ -17,10 +17,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 const STATUS = {
-  New: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  Verified: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  Promoted: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  NeedsReview: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  New: "bg-status-info/15 text-status-info-fg border-status-info/30",
+  Verified: "bg-status-success/15 text-status-success-fg border-status-success/30",
+  Promoted: "bg-status-success/15 text-status-success-fg border-status-success/30",
+  NeedsReview: "bg-status-warning/15 text-status-warning-fg border-status-warning/30",
   Deferred: "bg-muted text-muted-foreground border-border",
 };
 const DOMAINS = ["Water", "Power", "Wastewater", "Hydrology"];
@@ -91,8 +91,8 @@ export default function AguaYLuzFeedTab() {
       </div>
 
       <FeedKpiCards cards={[
-        { label: "Power Events", value: powerActive, icon: Zap, accent: "text-amber-300" },
-        { label: "Water Events", value: waterActive, icon: Droplet, accent: "text-sky-300" },
+        { label: "Power Events", value: powerActive, icon: Zap, accent: "text-status-warning-fg" },
+        { label: "Water Events", value: waterActive, icon: Droplet, accent: "text-status-info-fg" },
         { label: "Municipalities", value: munis, icon: MapPin },
         { label: "Needs Review", value: needsReview, icon: AlertTriangle, alert: needsReview > 0 },
       ]} />

@@ -10,11 +10,11 @@ import { format } from "date-fns";
 
 export default function FlatTableView({ tasks, onEdit }) {
   const columns = [
-    { key: "title", label: "Task", render: (r) => <span className={cn("font-medium", r._warning && "text-red-300")}>{r.title}</span> },
+    { key: "title", label: "Task", render: (r) => <span className={cn("font-medium", r._warning && "text-status-danger-fg")}>{r.title}</span> },
     { key: "_programLabel", label: "Program", render: (r) => <span className="text-muted-foreground text-xs">{r._programLabel}</span> },
     { key: "_status", label: "Status", render: (r) => <StatusChip map={TASK_LIFECYCLE} value={r._status} /> },
     { key: "_priority", label: "Priority", render: (r) => <StatusChip map={PRIORITY} value={r._priority} /> },
-    { key: "due_date", label: "Due", render: (r) => r.due_date ? <span className={cn(r._overdue && "text-red-300")}>{format(new Date(r.due_date), "MMM d, yyyy")}</span> : <span className="text-muted-foreground">—</span> },
+    { key: "due_date", label: "Due", render: (r) => r.due_date ? <span className={cn(r._overdue && "text-status-danger-fg")}>{format(new Date(r.due_date), "MMM d, yyyy")}</span> : <span className="text-muted-foreground">—</span> },
     { key: "assigned_to", label: "Assignee" },
     { key: "_sensitivity", label: "Sensitivity", render: (r) => r._sensitivity ? <StatusChip map={SENSITIVITY} value={r._sensitivity} /> : <span className="text-muted-foreground">—</span> },
     { key: "_linkage", label: "Linkage", render: (r) => <LinkageBadge label={r._linkage} /> },

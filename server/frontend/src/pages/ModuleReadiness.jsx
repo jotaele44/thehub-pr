@@ -94,7 +94,7 @@ export default function ModuleReadiness() {
       </div>
 
       {error && (
-        <div className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300 flex items-center gap-2 mb-5">
+        <div className="rounded-lg border border-status-danger/30 bg-status-danger/10 px-4 py-3 text-sm text-status-danger-fg flex items-center gap-2 mb-5">
           <AlertCircle className="h-4 w-4 shrink-0" /> {error}
         </div>
       )}

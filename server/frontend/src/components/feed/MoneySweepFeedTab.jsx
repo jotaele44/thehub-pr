@@ -17,10 +17,10 @@ import { toast } from "sonner";
 
 const fmtMoney = (n) => (n || n === 0) ? `$${Number(n).toLocaleString()}` : "—";
 const SYNC = {
-  New: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  Verified: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  Promoted: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  NeedsReview: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  New: "bg-status-info/15 text-status-info-fg border-status-info/30",
+  Verified: "bg-status-success/15 text-status-success-fg border-status-success/30",
+  Promoted: "bg-status-success/15 text-status-success-fg border-status-success/30",
+  NeedsReview: "bg-status-warning/15 text-status-warning-fg border-status-warning/30",
   Deferred: "bg-muted text-muted-foreground border-border",
 };
 
@@ -87,7 +87,7 @@ export default function MoneySweepFeedTab() {
 
       <FeedKpiCards cards={[
         { label: "New Awards", value: newCount, icon: FileStack },
-        { label: "Total Value", value: fmtMoney(totalValue), icon: DollarSign, accent: "text-emerald-300" },
+        { label: "Total Value", value: fmtMoney(totalValue), icon: DollarSign, accent: "text-status-success-fg" },
         { label: "Vendors", value: vendors, icon: UserPlus },
         { label: "Needs Review", value: needsReview, icon: AlertTriangle, alert: needsReview > 0 },
       ]} />
@@ -126,7 +126,7 @@ export default function MoneySweepFeedTab() {
                     <TableCell><StatusChip map={SYNC} value={i.sync_status} /></TableCell>
                     <TableCell>
                       {i.source_url
-                        ? <a href={i.source_url} target="_blank" rel="noreferrer" className="text-sky-300 flex items-center gap-1"><IdCode>{i.award_id}</IdCode><ExternalLink className="h-3 w-3" /></a>
+                        ? <a href={i.source_url} target="_blank" rel="noreferrer" className="text-status-info-fg flex items-center gap-1"><IdCode>{i.award_id}</IdCode><ExternalLink className="h-3 w-3" /></a>
                         : <IdCode>{i.award_id}</IdCode>}
                     </TableCell>
                   </TableRow>

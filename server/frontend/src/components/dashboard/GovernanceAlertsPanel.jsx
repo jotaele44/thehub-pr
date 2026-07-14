@@ -20,10 +20,10 @@ export default function GovernanceAlertsPanel() {
   return (
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-center gap-2 mb-1">
-        <ShieldAlert className="h-4 w-4 text-red-300" />
+        <ShieldAlert className="h-4 w-4 text-status-danger-fg" />
         <h3 className="text-sm font-semibold">Governance Alerts — Ungated High-Severity Changes</h3>
         {open.length > 0 && (
-          <span className="ml-auto inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-red-500/20 text-red-300 text-xs font-mono-id">
+          <span className="ml-auto inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full bg-status-danger/20 text-status-danger-fg text-xs font-mono-id">
             {open.length}
           </span>
         )}
@@ -35,7 +35,7 @@ export default function GovernanceAlertsPanel() {
       {isLoading ? (
         <p className="text-xs text-muted-foreground">Loading alerts…</p>
       ) : !open.length ? (
-        <div className="flex items-center gap-2 text-xs text-emerald-300">
+        <div className="flex items-center gap-2 text-xs text-status-success-fg">
           <CheckCircle2 className="h-4 w-4" /> No open governance alerts — high-severity changes are gate-aligned.
         </div>
       ) : (

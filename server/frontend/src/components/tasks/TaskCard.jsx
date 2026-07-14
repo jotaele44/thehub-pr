@@ -19,12 +19,12 @@ export default function TaskCard({ task, role = "admin", onEdit, onStatusChange 
       className={cn(
         "rounded-lg border bg-card p-3 transition-colors cursor-pointer hover:bg-secondary/40",
         warning
-          ? "border-red-500/50 ring-1 ring-red-500/30 bg-red-500/[0.04]"
+          ? "border-status-danger/50 ring-1 ring-status-danger/30 bg-status-danger/[0.04]"
           : "border-border"
       )}
     >
       {warning && (
-        <div className="flex items-center gap-1.5 mb-2 text-[11px] font-medium text-red-300">
+        <div className="flex items-center gap-1.5 mb-2 text-[11px] font-medium text-status-danger-fg">
           <AlarmClock className="h-3.5 w-3.5" />
           {task._overdue ? "Overdue · high priority" : "Due within 48h · high priority"}
         </div>
@@ -43,7 +43,7 @@ export default function TaskCard({ task, role = "admin", onEdit, onStatusChange 
       </div>
 
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
-        <span className={cn("inline-flex items-center gap-1", task._overdue && "text-red-300")}>
+        <span className={cn("inline-flex items-center gap-1", task._overdue && "text-status-danger-fg")}>
           <CalendarClock className="h-3 w-3" />
           {task.due_date ? format(new Date(task.due_date), "MMM d, yyyy") : "No due date"}
         </span>

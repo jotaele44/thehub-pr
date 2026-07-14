@@ -48,7 +48,7 @@ export default function Gates() {
   const columns = [
     { key: "gate_name", label: "Gate", render: (r) => <span className="font-medium">{r.gate_name}</span> },
     { key: "program_id", label: "Program", render: (r) => <span className="text-muted-foreground font-mono-id text-xs">{r.program_id}</span> },
-    { key: "blocking", label: "Blocking", render: (r) => r.blocking ? <span className="inline-flex items-center gap-1 text-xs text-amber-300"><Lock className="h-3 w-3" />Yes</span> : <span className="text-xs text-muted-foreground">No</span> },
+    { key: "blocking", label: "Blocking", render: (r) => r.blocking ? <span className="inline-flex items-center gap-1 text-xs text-status-warning-fg"><Lock className="h-3 w-3" />Yes</span> : <span className="text-xs text-muted-foreground">No</span> },
     { key: "status", label: "Status", render: (r) => <StatusChip map={GATE_STATUS} value={r.status} /> },
     { key: "reviewed_at", label: "Reviewed" },
   ];
@@ -62,7 +62,7 @@ export default function Gates() {
         actions={<Button onClick={openNew}><Plus className="h-4 w-4 mr-2" />New Gate</Button>}
       />
       {blockingOpen > 0 && (
-        <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200 flex items-center gap-2">
+        <div className="mb-4 rounded-lg border border-status-warning/30 bg-status-warning/10 px-4 py-3 text-sm text-status-warning-fg flex items-center gap-2">
           <Lock className="h-4 w-4" />
           {blockingOpen} blocking gate{blockingOpen > 1 ? "s" : ""} not yet passed — repository sync remains blocked.
         </div>

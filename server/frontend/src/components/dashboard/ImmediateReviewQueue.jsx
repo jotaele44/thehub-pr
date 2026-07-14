@@ -26,11 +26,11 @@ export default function ImmediateReviewQueue() {
   );
 
   return (
-    <div className="rounded-xl border border-red-500/30 bg-card p-5">
+    <div className="rounded-xl border border-status-danger/30 bg-card p-5">
       <div className="flex items-center gap-2 mb-1">
-        <AlertOctagon className="h-4 w-4 text-red-300" />
+        <AlertOctagon className="h-4 w-4 text-status-danger-fg" />
         <h3 className="text-sm font-semibold">Needs Immediate Review</h3>
-        <span className="ml-auto text-sm font-semibold font-mono-id text-red-300">{queue.length}</span>
+        <span className="ml-auto text-sm font-semibold font-mono-id text-status-danger-fg">{queue.length}</span>
       </div>
       <p className="text-xs text-muted-foreground mb-4">
         Auto-flagged anomalies with high/critical severity but low confidence — a risk/evidence mismatch requiring source-backed review before any conclusion.

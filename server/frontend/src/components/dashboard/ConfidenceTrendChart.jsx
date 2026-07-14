@@ -48,7 +48,7 @@ export default function ConfidenceTrendChart() {
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-start justify-between gap-3 mb-1">
         <div className="flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-sky-300" />
+          <TrendingUp className="h-4 w-4 text-status-info-fg" />
           <h3 className="text-sm font-semibold">Correlation Confidence Trend</h3>
         </div>
         <span className="text-[11px] text-muted-foreground">Last {DAYS} days · cumulative</span>
