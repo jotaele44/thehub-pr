@@ -88,3 +88,16 @@
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: hsl(223 14% 20%); border-radius: 6px; }
 ::-webkit-scrollbar-thumb:hover { background: hsl(223 14% 26%); }
+
+/* Respect the user's reduced-motion preference: neutralize spinners, pulses,
+   and transitions app-wide (WCAG 2.2 — no continuous/large motion). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -14,7 +14,7 @@ function NavItem({ item, active }) {
       )}
     >
       {item.accentDot ? (
-        <span className={cn("h-2 w-2 rounded-full shrink-0", item.accentDot)} />
+        <span aria-hidden="true" className={cn("h-2 w-2 rounded-full shrink-0", item.accentDot)} />
       ) : Icon ? (
         <Icon className="h-4 w-4 shrink-0" />
       ) : (
@@ -40,7 +40,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
+      <nav aria-label="Primary" className="flex-1 overflow-y-auto px-3 py-4 space-y-4">
         {NAV_GROUPS.map((group) => (
           <div key={group.label} className="space-y-1">
             <div className="px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/60">{group.label}</div>
