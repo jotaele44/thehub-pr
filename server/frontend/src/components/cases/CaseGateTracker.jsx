@@ -10,10 +10,10 @@ export default function CaseGateTracker({ progress, compact = false }) {
   const { stageIndex, percent, label, bestTier, verifiedCount, sourceCount, blocked } = progress;
 
   const barColor = blocked
-    ? "bg-amber-400"
+    ? "bg-status-warning"
     : percent >= 100
-    ? "bg-emerald-400"
-    : "bg-blue-400";
+    ? "bg-status-success"
+    : "bg-status-info";
 
   return (
     <div className={compact ? "min-w-[180px]" : "space-y-2"}>
@@ -27,7 +27,7 @@ export default function CaseGateTracker({ progress, compact = false }) {
 
       {/* Label row */}
       <div className="flex items-center gap-2 mt-1 text-xs">
-        <span className={cn("font-medium", blocked ? "text-amber-300" : "text-foreground/90")}>
+        <span className={cn("font-medium", blocked ? "text-status-warning-fg" : "text-foreground/90")}>
           {blocked ? "Contradicted — review" : label}
         </span>
         <span className="text-muted-foreground font-mono-id">{percent}%</span>
@@ -45,7 +45,7 @@ export default function CaseGateTracker({ progress, compact = false }) {
               <div
                 className={cn(
                   "h-1.5 w-1.5 rounded-full mx-auto mb-1",
-                  i <= stageIndex ? (blocked ? "bg-amber-400" : "bg-blue-400") : "bg-secondary"
+                  i <= stageIndex ? (blocked ? "bg-status-warning" : "bg-status-info") : "bg-secondary"
                 )}
               />
               <span

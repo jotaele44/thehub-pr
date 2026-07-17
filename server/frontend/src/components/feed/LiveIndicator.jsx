@@ -33,8 +33,8 @@ export default function LiveIndicator({ dataUpdatedAt, isFetching, isError, inte
   const stale = !!dataUpdatedAt && Date.now() - dataUpdatedAt > staleAfterMs;
   const degraded = isError || stale;
 
-  const dot = degraded ? "bg-amber-400" : "bg-emerald-400";
-  const text = degraded ? "text-amber-300" : "text-emerald-300";
+  const dot = degraded ? "bg-status-warning" : "bg-status-success";
+  const text = degraded ? "text-status-warning-fg" : "text-status-success-fg";
   const label = isError ? "Degraded" : stale ? "Stale" : "Live";
 
   return (
@@ -50,7 +50,7 @@ export default function LiveIndicator({ dataUpdatedAt, isFetching, isError, inte
       </span>
       <span>updated {ago(dataUpdatedAt)}</span>
       {intervalMs && !degraded && <span className="hidden sm:inline">· auto every {Math.round(intervalMs / 1000)}s</span>}
-      {isError && <span className="hidden sm:inline text-amber-400/80">· fetch error, retrying</span>}
+      {isError && <span className="hidden sm:inline text-status-warning-fg/80">· fetch error, retrying</span>}
       <Button size="sm" variant="ghost" className="h-7 px-2" onClick={refreshNow}>
         <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
       </Button>

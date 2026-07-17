@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { ShieldCheck, Check, AlertCircle, ExternalLink, Inbox } from "lucide-react";
 
 const SYNC = {
-  New: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  Updated: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  NeedsReview: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  New: "bg-status-info/15 text-status-info-fg border-status-info/30",
+  Updated: "bg-status-info/15 text-status-info-fg border-status-info/30",
+  NeedsReview: "bg-status-warning/15 text-status-warning-fg border-status-warning/30",
 };
 
 const MODULE = {
-  "MoneySweep-PR": "bg-violet-500/15 text-violet-300 border-violet-500/30",
+  "MoneySweep-PR": "bg-status-process/15 text-status-process-fg border-status-process/30",
   "AguaYLuz-PR": "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
 };
 
@@ -31,7 +31,7 @@ export default function VerificationGatePanel() {
   return (
     <div className="rounded-xl border border-border bg-card p-5 mb-8">
       <div className="flex items-center gap-2 mb-1">
-        <ShieldCheck className="h-4 w-4 text-emerald-300" />
+        <ShieldCheck className="h-4 w-4 text-status-success-fg" />
         <h3 className="text-sm font-semibold">Verification Gate</h3>
         <span className="ml-auto text-xs text-muted-foreground">
           {counts.moneysweep} MoneySweep · {counts.aguayluz} AguaYLuz pending · {counts.verifiedReady} verified
@@ -71,7 +71,7 @@ export default function VerificationGatePanel() {
                     <AlertCircle className="h-3.5 w-3.5 mr-1" /> Flag
                   </Button>
                   {it.source_url && (
-                    <a href={it.source_url} target="_blank" rel="noreferrer" className="text-xs text-sky-300 flex items-center gap-1 px-2">
+                    <a href={it.source_url} target="_blank" rel="noreferrer" className="text-xs text-status-info-fg flex items-center gap-1 px-2">
                       <ExternalLink className="h-3 w-3" /> Source
                     </a>
                   )}

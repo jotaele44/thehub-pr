@@ -33,13 +33,13 @@ export default function CrossoverMatrix({ matrix, onSelectPair }) {
                 {MODULE_SHORT[m.a]} ↔ {MODULE_SHORT[m.b]}
               </TableCell>
               <TableCell className="text-right font-mono-id">{m.count}</TableCell>
-              <TableCell className="text-right font-mono-id text-emerald-300">{m.verified}</TableCell>
-              <TableCell className="text-right font-mono-id text-blue-300">{m.pending}</TableCell>
-              <TableCell className="text-right font-mono-id text-amber-300">{m.contradicted}</TableCell>
+              <TableCell className="text-right font-mono-id text-status-success-fg">{m.verified}</TableCell>
+              <TableCell className="text-right font-mono-id text-status-info-fg">{m.pending}</TableCell>
+              <TableCell className="text-right font-mono-id text-status-warning-fg">{m.contradicted}</TableCell>
               <TableCell className="text-right font-mono-id">{m.topScore || "—"}</TableCell>
               <TableCell>{m.dominantTier !== "—" ? <StatusChip map={TIER} value={m.dominantTier} /> : "—"}</TableCell>
               <TableCell>{m.commonType !== "—" ? <StatusChip map={TYPE_CHIP} value={m.commonType} /> : "—"}</TableCell>
-              <TableCell className="text-right font-mono-id text-yellow-300">{m.gaps || "—"}</TableCell>
+              <TableCell className="text-right font-mono-id text-status-caution-fg">{m.gaps || "—"}</TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -2,7 +2,12 @@
 import { useState, useEffect } from "react";
 
 const TOAST_LIMIT = 20;
-const TOAST_REMOVE_DELAY = 1000000;
+// How long a toast stays visible before it auto-dismisses. The local Toast
+// primitives are plain elements (not Radix), so there is no built-in duration
+// timer — we schedule the dismiss ourselves in toast().
+const TOAST_DURATION = 5000;
+// Delay between a toast being dismissed (open:false) and pruned from the array.
+const TOAST_REMOVE_DELAY = 1000;
 
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
@@ -133,6 +138,9 @@ function toast({ ...props }) {
       },
     },
   });
+
+  // The local Toast stack has no Radix duration timer, so auto-dismiss here.
+  setTimeout(dismiss, TOAST_DURATION);
 
   return {
     id,

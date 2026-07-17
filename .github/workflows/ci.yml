@@ -34,6 +34,26 @@ jobs:
       - name: Lock file is up to date
         run: uv lock --check
 
+  # Hub app frontend (server/frontend): lint, unit/axe tests, production build.
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install
+        run: npm ci --no-audit --no-fund
+      - name: Lint
+        run: npm run lint
+      - name: Tests
+        run: npm run test
+      - name: Build
+        run: npm run build
+
   lint:
     runs-on: ubuntu-latest
     steps:

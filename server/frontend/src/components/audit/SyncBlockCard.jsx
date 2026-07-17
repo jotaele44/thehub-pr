@@ -5,9 +5,9 @@ import { INTEGRATION_STATUS } from "@/lib/chips";
 
 export default function SyncBlockCard({ github }) {
   return (
-    <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-5">
+    <div className="rounded-xl border border-status-danger/30 bg-status-danger/5 p-5">
       <div className="flex items-center justify-between mb-3">
-        <span className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-red-300">
+        <span className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest text-status-danger-fg">
           <Lock className="h-3.5 w-3.5" /> GitHub Sync Readiness
         </span>
         <StatusChip map={INTEGRATION_STATUS} value={github?.status || "Blocked"} />

@@ -14,13 +14,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Plus, Zap, Droplet, MapPin, AlertTriangle } from "lucide-react";
 import { promoteFeedItem } from "@/lib/promote-feed";
 import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/use-toast";
 
 const STATUS = {
-  New: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  Verified: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  Promoted: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  NeedsReview: "bg-amber-500/15 text-amber-300 border-amber-500/30",
+  New: "bg-status-info/15 text-status-info-fg border-status-info/30",
+  Verified: "bg-status-success/15 text-status-success-fg border-status-success/30",
+  Promoted: "bg-status-success/15 text-status-success-fg border-status-success/30",
+  NeedsReview: "bg-status-warning/15 text-status-warning-fg border-status-warning/30",
   Deferred: "bg-muted text-muted-foreground border-border",
 };
 const DOMAINS = ["Water", "Power", "Wastewater", "Hydrology"];
@@ -59,18 +59,18 @@ export default function AguaYLuzFeedTab() {
       if (sync_status === "Promoted") {
         const recordId = await promoteFeedItem(item);
         await updateItem({ id: item.id, data: { sync_status, promoted_record_id: recordId } });
-        toast.success(`Promoted to Asset ${recordId}`);
+        toast({ title: `Promoted to Asset ${recordId}` });
         qc.invalidateQueries({ queryKey: ["entity", "InfrastructureAssets"] });
       } else if (sync_status === "Verified") {
         let reviewer = null;
         try { reviewer = (await federation.auth.me())?.email || null; } catch { reviewer = null; }
         await updateItem({ id: item.id, data: { sync_status, verified_by: reviewer, verified_at: new Date().toISOString() } });
-        toast.success("Verified — ready to promote");
+        toast({ title: "Verified — ready to promote" });
       } else {
         await updateItem({ id: item.id, data: { sync_status } });
       }
     } catch (e) {
-      toast.error(`Promotion failed: ${e.message}`);
+      toast({ title: `Promotion failed: ${e.message}`, variant: "destructive" });
     }
   };
   const handleSave = async (data) => {
@@ -91,8 +91,8 @@ export default function AguaYLuzFeedTab() {
       </div>
 
       <FeedKpiCards cards={[
-        { label: "Power Events", value: powerActive, icon: Zap, accent: "text-amber-300" },
-        { label: "Water Events", value: waterActive, icon: Droplet, accent: "text-sky-300" },
+        { label: "Power Events", value: powerActive, icon: Zap, accent: "text-status-warning-fg" },
+        { label: "Water Events", value: waterActive, icon: Droplet, accent: "text-status-info-fg" },
         { label: "Municipalities", value: munis, icon: MapPin },
         { label: "Needs Review", value: needsReview, icon: AlertTriangle, alert: needsReview > 0 },
       ]} />

@@ -8,7 +8,7 @@ export default function EvidenceStandardsCard({ standards }) {
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-center justify-between mb-3">
         <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Evidence Standards</span>
-        <StatusChip map={{ Populated: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30", Empty: "bg-red-500/15 text-red-300 border-red-500/30" }} value={sorted.length === 4 ? "Populated" : (sorted.length === 0 ? "Empty" : "Partial")} />
+        <StatusChip map={{ Populated: "bg-status-success/15 text-status-success-fg border-status-success/30", Empty: "bg-status-danger/15 text-status-danger-fg border-status-danger/30" }} value={sorted.length === 4 ? "Populated" : (sorted.length === 0 ? "Empty" : "Partial")} />
       </div>
       <div className="space-y-2">
         {sorted.map((s) => (

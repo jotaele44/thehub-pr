@@ -58,7 +58,7 @@ export default function Sources() {
     { key: "evidence_tier", label: "Tier", render: (r) => <StatusChip map={TIER} value={r.evidence_tier} /> },
     { key: "reliability", label: "Reliability", render: (r) => <StatusChip map={REVIEW_STATUS} value={r.reliability} /> },
     { key: "verification_status", label: "Verification", render: (r) => <StatusChip map={VERIFICATION} value={r.verification_status} /> },
-    { key: "url", label: "Link", sortable: false, render: (r) => r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-sky-300 inline-flex"><ExternalLink className="h-4 w-4" /></a> : <span className="text-muted-foreground">—</span> },
+    { key: "url", label: "Link", sortable: false, render: (r) => r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-status-info-fg inline-flex"><ExternalLink className="h-4 w-4" /></a> : <span className="text-muted-foreground">—</span> },
   ];
 
   return (

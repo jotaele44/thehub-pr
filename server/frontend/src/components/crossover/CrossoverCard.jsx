@@ -39,10 +39,10 @@ export default function CrossoverCard({ c }) {
         {c.evidence_tier && <StatusChip map={TIER} value={c.evidence_tier} />}
         <span className="text-xs font-mono-id text-muted-foreground">score {c.confidence_score}</span>
         {verified
-          ? <span className="inline-flex items-center gap-1 text-xs text-emerald-300"><CheckCircle2 className="h-3 w-3" /> review-verified linkage</span>
-          : <span className="text-xs text-yellow-300/80">candidate · not verified</span>}
+          ? <span className="inline-flex items-center gap-1 text-xs text-status-success-fg"><CheckCircle2 className="h-3 w-3" /> review-verified linkage</span>
+          : <span className="text-xs text-status-caution-fg/80">candidate · not verified</span>}
         {c.related_modules?.length >= 3 && (
-          <span className="text-xs text-violet-300">+{c.related_modules.length} modules</span>
+          <span className="text-xs text-status-process-fg">+{c.related_modules.length} modules</span>
         )}
       </div>
 
@@ -71,7 +71,7 @@ export default function CrossoverCard({ c }) {
               s.title ? (
                 s.url ? (
                   <a key={s.id} href={s.url} target="_blank" rel="noreferrer" title={s.title}
-                    className="inline-flex items-center gap-1 rounded-md border border-blue-500/30 bg-blue-500/10 px-1.5 py-0.5 text-blue-300 max-w-[14rem]">
+                    className="inline-flex items-center gap-1 rounded-md border border-status-info/30 bg-status-info/10 px-1.5 py-0.5 text-status-info-fg max-w-[14rem]">
                     <span className="truncate">{s.title}</span>{s.tier && <span className="font-mono-id">{s.tier}</span>}<ExternalLink className="h-3 w-3 shrink-0" />
                   </a>
                 ) : (
@@ -81,17 +81,17 @@ export default function CrossoverCard({ c }) {
                   </span>
                 )
               ) : (
-                <span key={s.id} className="inline-flex items-center gap-1 text-yellow-300/80" title="Referenced source_id not found in UnifiedSources">
+                <span key={s.id} className="inline-flex items-center gap-1 text-status-caution-fg/80" title="Referenced source_id not found in UnifiedSources">
                   <FileWarning className="h-3 w-3" /><IdCode>{s.id}</IdCode> unresolved
                 </span>
               )
             ))
-          : <span className="inline-flex items-center gap-1 text-yellow-300/80"><FileWarning className="h-3 w-3" /> no source reference</span>}
+          : <span className="inline-flex items-center gap-1 text-status-caution-fg/80"><FileWarning className="h-3 w-3" /> no source reference</span>}
       </div>
 
       {/* Contradiction / caveat — preserved, never deleted */}
       {(contradicted || c.contradiction_notes) && (
-        <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2 text-xs text-amber-200">
+        <div className="flex items-start gap-2 rounded-lg border border-status-warning/30 bg-status-warning/10 p-2 text-xs text-status-warning-fg">
           <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" />
           <span>{c.contradiction_notes || "Marked contradicted/rejected during review. Caveat preserved."}</span>
         </div>

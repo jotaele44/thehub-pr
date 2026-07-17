@@ -45,13 +45,13 @@ export default function Dashboard() {
         <StatCard label="Unified Cases" value={cases.length} icon={FileStack} />
         <StatCard label="Sources" value={sources.length} icon={BookOpen} />
         <StatCard label="Open Tasks" value={openTasks} icon={ListChecks} />
-        <StatCard label="Gates Passed" value={`${passedGates}/${gates.length || 0}`} icon={ShieldCheck} accent="text-emerald-300" />
+        <StatCard label="Gates Passed" value={`${passedGates}/${gates.length || 0}`} icon={ShieldCheck} accent="text-status-success-fg" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
         <div className="lg:col-span-2 rounded-xl border border-border bg-card p-5">
           <div className="flex items-center gap-2 mb-1">
-            <Lock className="h-4 w-4 text-amber-300" />
+            <Lock className="h-4 w-4 text-status-warning-fg" />
             <h3 className="text-sm font-semibold">GitHub-Readiness</h3>
           </div>
           <p className="text-xs text-muted-foreground mb-4">Repository sync stays blocked until all blocking validation gates pass for a program.</p>
@@ -64,7 +64,7 @@ export default function Dashboard() {
               <div className="text-2xl font-semibold font-mono-id text-foreground">{syncReady}</div>
               <div className="text-xs text-muted-foreground">Programs sync-ready</div>
             </div>
-            <Link to="/gates" className="ml-auto text-xs text-sky-300 hover:underline flex items-center gap-1">
+            <Link to="/gates" className="ml-auto text-xs text-status-info-fg hover:underline flex items-center gap-1">
               <GitBranch className="h-3.5 w-3.5" /> Review gates
             </Link>
           </div>
