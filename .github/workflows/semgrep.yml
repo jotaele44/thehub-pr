@@ -1,0 +1,49 @@
+name: Federation Semgrep
+
+on:
+  workflow_call:
+    secrets:
+      SEMGREP_APP_TOKEN:
+        required: false
+  pull_request:
+    branches: ["main"]
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: semgrep-${{ github.repository }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  semgrep:
+    name: semgrep/baseline
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep:1.164.0
+    env:
+      SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Run Semgrep AppSec baseline
+        if: env.SEMGREP_APP_TOKEN != ''
+        continue-on-error: true
+        run: semgrep ci
+
+      - name: Run Semgrep CE baseline
+        if: env.SEMGREP_APP_TOKEN == ''
+        continue-on-error: true
+        run: >-
+          semgrep scan
+          --config p/python
+          --config p/security-audit
+          --config p/secrets
+          --metrics=off
+          .
