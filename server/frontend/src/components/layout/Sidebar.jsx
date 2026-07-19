@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NAV_GROUPS, isNavActive } from "@/lib/nav";
+import ThemeToggle from "@/components/shared/ThemeToggle";
 
 function NavItem({ item, active }) {
   const Icon = item.icon;
@@ -51,8 +52,11 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <div className="px-5 py-3 border-t border-sidebar-border text-[10px] text-sidebar-foreground/50">
-        Sanitized metadata only · Gated sync
+      <div className="px-5 py-3 border-t border-sidebar-border flex items-center justify-between gap-2">
+        <span className="text-[10px] text-sidebar-foreground/50">
+          Sanitized metadata only · Gated sync
+        </span>
+        <ThemeToggle />
       </div>
     </aside>
   );

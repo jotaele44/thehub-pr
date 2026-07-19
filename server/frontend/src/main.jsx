@@ -7,8 +7,9 @@ import App from '@/App.jsx'
 import '@/index.css'
 import '@/styles/federation.css'
 
+// Repo accent for the shared federation.css; theme (light/dark) is owned by the
+// ThemeProvider in App.jsx, which sets `.dark` + data-theme from stored/OS preference.
 document.documentElement.dataset.repo = 'thehub-pr'
-document.documentElement.dataset.theme = 'dark'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <App />
