@@ -117,6 +117,38 @@ def test_livefeed_items_from_water_alerts(tmp_path):
     feed = _rows(db, "LiveFeedItems")
     item = feed["alrt_c1"]
     assert item["module"] == "AguaYLuz-PR"
-    assert item["utility_domain"] == "Water Quality"
+    # must be one of the feed's recognized DOMAINS so the Water Events KPI counts it
+    assert item["utility_domain"] == "Water"
     assert item["municipality"] == "Utuado"
     assert item["sync_status"] == "NeedsReview"  # from review_status
+
+
+def test_closed_alerts_excluded_from_continuity_risks(tmp_path):
+    agg = _build_aggregate(tmp_path)
+    alerts = [json.loads(line) for line in (agg / "alerts.jsonl").read_text().splitlines()]
+    alerts.append({
+        "alert_id": "alrt_closed", "module": "HYDRO_OPS", "alert_type": "hazard",
+        "severity": 3, "status": "closed", "confidence": 0.6, "synthetic": False,
+        "entity_id": "ent_water1", "observed_at": "2026-07-03T00:00:00Z",
+        "_producers": ["aguayluz-pr"],
+    })
+    _write(agg, "alerts.jsonl", alerts)
+    db = tmp_path / "hub.db"
+    ingest_aggregate(agg, db)
+    # a closed alert must not surface as a current continuity risk
+    assert "risk_alert_alrt_closed" not in _rows(db, "ContinuityRisks")
+
+
+def test_foreign_producer_alert_not_in_aguayluz_feed(tmp_path):
+    agg = _build_aggregate(tmp_path)
+    alerts = [json.loads(line) for line in (agg / "alerts.jsonl").read_text().splitlines()]
+    # another producer emits a like-named module — must NOT leak into the AguaYLuz feed
+    alerts.append({
+        "alert_id": "alrt_foreign", "module": "POWER_OPS", "alert_type": "outage",
+        "severity": 2, "status": "active", "confidence": 0.6, "synthetic": False,
+        "observed_at": "2026-07-04T00:00:00Z", "_producers": ["spiderweb-pr"],
+    })
+    _write(agg, "alerts.jsonl", alerts)
+    db = tmp_path / "hub.db"
+    ingest_aggregate(agg, db)
+    assert "alrt_foreign" not in _rows(db, "LiveFeedItems")

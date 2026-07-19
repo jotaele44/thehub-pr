@@ -289,8 +289,17 @@ def project_producer_collections(aggregate_dir: str | Path) -> Dict[str, List[Tu
 
 # Alert modules that put a specific water asset's service continuity at risk.
 _CONTINUITY_ALERT_MODULES = {"CONTAMINATION", "HYDRO_OPS", "DAM_SAFETY", "POWER_OPS"}
+# Only alerts in a live lifecycle state imply a *current* risk; closed/rejected/draft
+# alerts must not surface as active continuity risks.
+_ACTIVE_ALERT_STATUS = {"active", "validated"}
 # Canonical 0-5 alert severity -> the UI's Low/Medium/High/Critical vocabulary.
 _SEVERITY_BAND = {0: "Low", 1: "Low", 2: "Medium", 3: "High", 4: "Critical", 5: "Critical"}
+
+
+def _is_aguayluz(row: Dict[str, Any]) -> bool:
+    """True if aguayluz-pr contributed this row. ``module`` is a producer-defined
+    string, so scope water projections by provenance, not module name alone."""
+    return "aguayluz-pr" in (row.get("_producers") or [])
 
 
 def project_continuity_risks(aggregate_dir: str | Path) -> List[Tuple[str, Dict[str, Any]]]:
@@ -352,6 +361,10 @@ def project_continuity_risks(aggregate_dir: str | Path) -> List[Tuple[str, Dict[
             asset_id = a.get("entity_id")
             if module not in _CONTINUITY_ALERT_MODULES or not asset_id or asset_id not in ents:
                 continue
+            if not _is_aguayluz(a):
+                continue  # another producer's like-named module is not a water risk
+            if a.get("status") not in _ACTIVE_ALERT_STATUS:
+                continue  # closed/rejected/draft alerts are not current risks
             loc = (ents[asset_id].get("location") or {}) or (a.get("location") or {})
             risk_id = f"risk_alert_{a.get('alert_id')}"
             sev = a.get("severity")
@@ -370,10 +383,13 @@ def project_continuity_risks(aggregate_dir: str | Path) -> List[Tuple[str, Dict[
     return out[:_LEDGER_CAP]
 
 
-# Alert module -> the AguaYLuz feed's utility-domain label.
+# Alert module -> the AguaYLuz feed's utility-domain label. Must be one of the
+# feed's recognized DOMAINS (Water/Power/Wastewater/Hydrology) — the Water Events
+# KPI counts utility_domain == "Water", so contamination maps to Water (not a new
+# label the KPI and manual-entry select would miss).
 _MODULE_DOMAIN = {
-    "CONTAMINATION": "Water Quality", "HYDRO_OPS": "Hydrology",
-    "DAM_SAFETY": "Hydrology", "POWER_OPS": "Power", "WEATHER_HAZARD": "Weather",
+    "CONTAMINATION": "Water", "HYDRO_OPS": "Hydrology",
+    "DAM_SAFETY": "Hydrology", "POWER_OPS": "Power",
 }
 
 
@@ -391,9 +407,11 @@ def project_livefeed(aggregate_dir: str | Path) -> List[Tuple[str, Dict[str, Any
         return []
     out: List[Tuple[str, Dict[str, Any]]] = []
     for a in _read_jsonl(alert_path):
-        # Only aguayluz-authored water alerts carry these modules; skip others.
+        # Scope to aguayluz-authored water alerts: `module` is a producer-defined
+        # string, so another producer's like-named POWER_OPS/HYDRO_OPS must not
+        # leak into the AguaYLuz feed. Require both provenance and a water module.
         module = a.get("module")
-        if module not in _MODULE_DOMAIN:
+        if module not in _MODULE_DOMAIN or not _is_aguayluz(a):
             continue
         attrs = a.get("attributes")
         attrs = attrs if isinstance(attrs, dict) else {}
