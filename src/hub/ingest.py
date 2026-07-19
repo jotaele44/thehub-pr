@@ -198,7 +198,8 @@ def _ledger_row(e: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
     """One canonical entity -> a per-domain page row (best-effort, generous aliases)."""
     eid = str(e["entity_id"])
     loc = e.get("location") or {}
-    attrs = e.get("attributes") if isinstance(e.get("attributes"), dict) else {}
+    attrs = e.get("attributes")
+    attrs = attrs if isinstance(attrs, dict) else {}
     name = e.get("name")
     etype = e.get("entity_type")
     payload: Dict[str, Any] = {
@@ -394,7 +395,8 @@ def project_livefeed(aggregate_dir: str | Path) -> List[Tuple[str, Dict[str, Any
         module = a.get("module")
         if module not in _MODULE_DOMAIN:
             continue
-        attrs = a.get("attributes") if isinstance(a.get("attributes"), dict) else {}
+        attrs = a.get("attributes")
+        attrs = attrs if isinstance(attrs, dict) else {}
         loc = a.get("location") or {}
         munis = attrs.get("municipalities") or []
         aid = str(a.get("alert_id"))
