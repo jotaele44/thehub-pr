@@ -198,6 +198,7 @@ def _ledger_row(e: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
     """One canonical entity -> a per-domain page row (best-effort, generous aliases)."""
     eid = str(e["entity_id"])
     loc = e.get("location") or {}
+    attrs = e.get("attributes") if isinstance(e.get("attributes"), dict) else {}
     name = e.get("name")
     etype = e.get("entity_type")
     payload: Dict[str, Any] = {
@@ -216,10 +217,19 @@ def _ledger_row(e: Dict[str, Any]) -> Tuple[str, Dict[str, Any]]:
         "confidence_score": e.get("confidence"),
         "latitude": loc.get("lat"), "longitude": loc.get("lon"),
         "source_id": e.get("source_id"), "_producers": e.get("_producers"),
-        # rich fields absent from the canonical aggregate (pending richer producer exports):
-        "municipality": None, "region": None, "status": None, "sensitivity": None,
-        "award_amount": None, "award_date": None, "event_date": None,
-        "operator": None, "owner_agency": None,
+        # rich, operator-facing fields carried through the canonical export in the
+        # entity's `attributes` block (producers that emit them — e.g. aguayluz-pr —
+        # populate these columns; producers that don't leave them None).
+        "municipality": loc.get("municipality") or attrs.get("municipality"),
+        "region": attrs.get("region"),
+        "status": attrs.get("status"),
+        "sensitivity": attrs.get("sensitivity"),
+        "award_amount": attrs.get("award_amount"), "award_date": attrs.get("award_date"),
+        "event_date": attrs.get("event_date"),
+        "operator": attrs.get("operator"),
+        "owner_agency": attrs.get("owner_agency"),
+        "evidence_tier": attrs.get("evidence_tier"),
+        "review_status": attrs.get("review_status"),
     }
     return eid, payload
 
@@ -274,6 +284,135 @@ def project_producer_collections(aggregate_dir: str | Path) -> Dict[str, List[Tu
             out[alias] = projected
 
     return out
+
+
+# Alert modules that put a specific water asset's service continuity at risk.
+_CONTINUITY_ALERT_MODULES = {"CONTAMINATION", "HYDRO_OPS", "DAM_SAFETY", "POWER_OPS"}
+# Canonical 0-5 alert severity -> the UI's Low/Medium/High/Critical vocabulary.
+_SEVERITY_BAND = {0: "Low", 1: "Low", 2: "Medium", 3: "High", 4: "Critical", 5: "Critical"}
+
+
+def project_continuity_risks(aggregate_dir: str | Path) -> List[Tuple[str, Dict[str, Any]]]:
+    """Derive the AguaYLuz Continuity Risks collection from canonical streams.
+
+    A water asset's service continuity is at risk when either:
+
+    * it depends on the grid — the producer emits a water -[energized_by]-> power
+      relationship (from the water<->power crosswalk); or
+    * an asset-anchored alert (CONTAMINATION/HYDRO_OPS/DAM_SAFETY/POWER_OPS with an
+      ``entity_id``) is active against it.
+
+    This is computed Hub-side from the aggregate (relationships + alerts + entities);
+    no new producer stream is required. Returns ``(risk_id, payload)`` pairs shaped
+    for the Continuity Risks EntityLedger.
+    """
+    agg = Path(aggregate_dir)
+    ent_path = agg / "entities.jsonl"
+    if not ent_path.exists():
+        return []  # nothing to join against
+    ents = {e["entity_id"]: e for e in _read_jsonl(ent_path) if e.get("entity_id")}
+
+    out: List[Tuple[str, Dict[str, Any]]] = []
+
+    def _name(eid: Optional[str]) -> Optional[str]:
+        e = ents.get(str(eid)) if eid else None
+        return e.get("name") if e else None
+
+    # Power-dependency risks from `energized_by` relationships.
+    rel_path = agg / "relationships.jsonl"
+    if rel_path.exists():
+        for r in _read_jsonl(rel_path):
+            if r.get("relationship_type") != "energized_by":
+                continue
+            water_id, power_id = r.get("source_entity_id"), r.get("target_entity_id")
+            if not water_id or water_id not in ents:
+                continue
+            loc = ents[water_id].get("location") or {}
+            risk_id = f"risk_dep_{water_id}"
+            out.append((risk_id, _nonnull({
+                "id": risk_id, "risk_id": risk_id,
+                "asset_id": str(water_id), "related_asset_id": str(power_id) if power_id else None,
+                "name": _name(water_id), "title": _name(water_id),
+                "risk_type": "Dependency", "dependency_type": "WaterToPower",
+                "severity": "High",  # a grid outage takes the asset offline
+                "confidence": _conf01_band(r.get("confidence")),
+                "summary": f"Depends on grid feed from {_name(power_id) or power_id} "
+                           "(spatial proxy — confirm feeder).",
+                "latitude": loc.get("lat"), "longitude": loc.get("lon"),
+                "municipality": loc.get("municipality"),
+                "_producers": ents[water_id].get("_producers"),
+            })))
+
+    # Asset-anchored alert risks (only alerts that name a specific entity).
+    alert_path = agg / "alerts.jsonl"
+    if alert_path.exists():
+        for a in _read_jsonl(alert_path):
+            module = a.get("module")
+            asset_id = a.get("entity_id")
+            if module not in _CONTINUITY_ALERT_MODULES or not asset_id or asset_id not in ents:
+                continue
+            loc = (ents[asset_id].get("location") or {}) or (a.get("location") or {})
+            risk_id = f"risk_alert_{a.get('alert_id')}"
+            sev = a.get("severity")
+            out.append((risk_id, _nonnull({
+                "id": risk_id, "risk_id": risk_id, "asset_id": str(asset_id),
+                "name": _name(asset_id), "title": _name(asset_id),
+                "risk_type": "Outage" if module == "POWER_OPS" else "Capacity",
+                "severity": _SEVERITY_BAND.get(sev if isinstance(sev, int) else -1, "Medium"),
+                "confidence": _conf01_band(a.get("confidence")),
+                "summary": f"{module} alert active against this asset.",
+                "latitude": loc.get("lat"), "longitude": loc.get("lon"),
+                "municipality": loc.get("municipality"),
+                "_producers": ents[asset_id].get("_producers"),
+            })))
+
+    return out[:_LEDGER_CAP]
+
+
+# Alert module -> the AguaYLuz feed's utility-domain label.
+_MODULE_DOMAIN = {
+    "CONTAMINATION": "Water Quality", "HYDRO_OPS": "Hydrology",
+    "DAM_SAFETY": "Hydrology", "POWER_OPS": "Power", "WEATHER_HAZARD": "Weather",
+}
+
+
+def project_livefeed(aggregate_dir: str | Path) -> List[Tuple[str, Dict[str, Any]]]:
+    """Project aguayluz water alerts into the AguaYLuz feed's ``LiveFeedItems``.
+
+    The feed component reads ``LiveFeedItems`` scoped to ``module == "AguaYLuz-PR"``.
+    Historically only manual entries populated it; this surfaces the real,
+    federation-exported water alerts (SDWIS/reservoir/dam) in the same feed. Rows
+    are marked ``Verified`` (federation-sourced, not a manual promotion candidate).
+    """
+    agg = Path(aggregate_dir)
+    alert_path = agg / "alerts.jsonl"
+    if not alert_path.exists():
+        return []
+    out: List[Tuple[str, Dict[str, Any]]] = []
+    for a in _read_jsonl(alert_path):
+        # Only aguayluz-authored water alerts carry these modules; skip others.
+        module = a.get("module")
+        if module not in _MODULE_DOMAIN:
+            continue
+        attrs = a.get("attributes") if isinstance(a.get("attributes"), dict) else {}
+        loc = a.get("location") or {}
+        munis = attrs.get("municipalities") or []
+        aid = str(a.get("alert_id"))
+        out.append((aid, _nonnull({
+            "id": aid, "module": "AguaYLuz-PR",
+            "utility_domain": _MODULE_DOMAIN.get(module),
+            "title": attrs.get("asset_name") or a.get("alert_type") or module,
+            "event_type": a.get("alert_type"),
+            "facility_name": attrs.get("asset_name"),
+            "municipality": loc.get("municipality") or (munis[0] if munis else None),
+            "severity": a.get("severity"),
+            "source_id": a.get("source_id"),
+            "sync_status": "NeedsReview" if attrs.get("review_status") == "needs_review" else "Verified",
+            "occurred_at": a.get("observed_at"),
+            "last_refetched_at": a.get("observed_at"),
+            "_producers": a.get("_producers"),
+        })))
+    return out[:_LEDGER_CAP]
 
 
 def _now() -> str:
@@ -513,6 +652,12 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
         # not covered by the generic UI projections above.
         for collection, rows in project_producer_collections(agg).items():
             _ingest_pairs(conn, collection, rows, ts, collections)
+
+        # Water-monitoring surfaces derived Hub-side from canonical streams:
+        # Continuity Risks (energized_by relationships + asset-anchored alerts) and
+        # the AguaYLuz live feed (water alerts projected into LiveFeedItems).
+        _ingest_pairs(conn, "ContinuityRisks", project_continuity_risks(agg), ts, collections)
+        _ingest_pairs(conn, "LiveFeedItems", project_livefeed(agg), ts, collections)
 
         conn.commit()
     finally:

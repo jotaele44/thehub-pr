@@ -83,7 +83,7 @@ export default function AguaYLuz() {
             searchKeys={["risk_id", "asset_id", "summary"]}
             filterDefs={[{ key: "risk_type", label: "Type", options: RISK_TYPES }, { key: "severity", label: "Severity", options: ["Low", "Medium", "High", "Critical"] }]}
             addLabel="New Risk" emptyTitle="No risks"
-            emptyDescription="Continuity risk assessments require asset-level enrichment not yet in the canonical federation export — data pending richer AguaYLuz-PR intake."
+            emptyDescription="No continuity risks in the current aggregate. Risks are derived from AguaYLuz-PR water↔power dependencies and asset-anchored alerts; run the Hub aggregate/ingest to populate them."
             searchPlaceholder="Search risks…" />
         </TabsContent>
       </Tabs>
