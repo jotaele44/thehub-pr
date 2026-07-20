@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_GROUPS, isNavActive } from "@/lib/nav";
+import ThemeToggle from "@/components/shared/ThemeToggle";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -16,10 +17,12 @@ export default function MobileNav() {
         <div className="h-7 w-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-semibold text-xs">PR</div>
         <span className="text-sm font-semibold tracking-tight">INTSYS-PR</span>
       </div>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Open navigation menu"><Menu className="h-5 w-5" /></Button>
-        </SheetTrigger>
+      <div className="flex items-center gap-1">
+        <ThemeToggle />
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Open navigation menu"><Menu className="h-5 w-5" /></Button>
+          </SheetTrigger>
         <SheetContent side="left" className="w-72 bg-sidebar border-sidebar-border p-0">
           <nav aria-label="Primary" className="px-3 py-5 space-y-4 overflow-y-auto h-full">
             {NAV_GROUPS.map((group) => (
@@ -49,7 +52,8 @@ export default function MobileNav() {
             ))}
           </nav>
         </SheetContent>
-      </Sheet>
+        </Sheet>
+      </div>
     </div>
   );
 }
