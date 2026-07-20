@@ -545,6 +545,9 @@ def _alias_alert(row: Dict[str, Any]) -> Dict[str, Any]:
         "module": row.get("module"),
         "entity_name": row.get("module"),
         "severity": row.get("severity"),
+        # Producer-declared life-safety flag (severity>=4 and still actionable);
+        # drives the notification center's critical grouping and the push/SMS fan-out.
+        "is_critical": bool(row.get("is_critical")),
         "review_status": review,
         "occurred_at": row.get("observed_at"),
         "record_id": row.get("entity_id"),

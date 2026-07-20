@@ -13,7 +13,11 @@ name: Federation ingest
 
 on:
   repository_dispatch:
-    types: [moneysweep-export]
+    # Any producer that lands a fresh canonical export triggers a Hub re-aggregate,
+    # so hazard alerts (seismic, weather, contamination) reach users in minutes
+    # instead of waiting for the Hub's own schedule. Add new producers' export
+    # events here as they wire up their dispatch step.
+    types: [moneysweep-export, aguayluz-export, centinelas-export]
   workflow_dispatch: {}
 
 permissions:
@@ -52,6 +56,15 @@ jobs:
           hub aggregate --root ws --out data/aggregate
           hub correlate --in data/aggregate
           hub ingest --in data/aggregate --db data/hub.db
+
+      # Fan newly-ingested alerts out to subscribers (push/SMS). Offline-safe: no-ops
+      # cleanly when provider secrets are unset, still advancing the dispatch cursor.
+      - name: Dispatch notifications for new alerts
+        env:
+          HUB_VAPID_PRIVATE_KEY: ${{ secrets.HUB_VAPID_PRIVATE_KEY }}
+          HUB_SMS_API_KEY: ${{ secrets.HUB_SMS_API_KEY }}
+          HUB_SMTP_URL: ${{ secrets.HUB_SMTP_URL }}
+        run: python scripts/dispatch_notifications.py --db data/hub.db
 
       - name: Upload aggregate + hub.db
         if: ${{ always() }}

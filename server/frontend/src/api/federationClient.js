@@ -180,6 +180,17 @@ const system = {
   })),
 };
 
+// "What's new since you last looked" + per-subscriber push/SMS preferences.
+const notifications = {
+  list: (since) =>
+    request(`/notifications${since ? `?since=${encodeURIComponent(since)}` : ''}`),
+  ack: (lastSeen) =>
+    request('/notifications/ack', { method: 'POST', body: { last_seen: lastSeen } }),
+  getPreferences: () => request('/notifications/preferences'),
+  setPreferences: (prefs, targets) =>
+    request('/notifications/preferences', { method: 'PUT', body: { prefs, targets } }),
+};
+
 export const federation = {
   app: { id: appParams.appId, programId: appParams.programId },
   auth,
@@ -188,6 +199,7 @@ export const federation = {
   integrations,
   agents,
   connectors,
+  notifications,
   asServiceRole: { entities, connectors },
   system,
   request,

@@ -35,6 +35,7 @@
       "description": "Normalized operational event type (e.g. maintenance, outage, failure, quality, hazard, inspection)."
     },
     "severity": {"type": "integer", "minimum": 0, "maximum": 5},
+    "is_critical": {"type": "boolean", "description": "Life-safety flag (severity>=4 and still actionable); drives the Hub push/SMS fan-out."},
     "status": {"enum": ["draft", "validated", "active", "closed", "rejected"]},
     "gap_status": {"enum": ["none", "minor", "major", "blocking"]},
     "observed_at": {"type": "string", "format": "date-time"},

@@ -170,6 +170,77 @@ def public_settings():
 def auth_me():
     raise HTTPException(status_code=401, detail="No auth in diagnostic mode")
 
+# ── Notifications ───────────────────────────────────────────────────────────────
+# "What's new since you last looked" + per-subscriber push/SMS preferences. The
+# decision logic lives in server/backend/notifications.py (pure, unit-tested); these
+# routes are the thin HTTP surface. Single-operator by default (subscriber_id
+# "operator"), consistent with the diagnostic no-auth mode, but the store is keyed by
+# subscriber so it extends to real multi-user auth without a schema change.
+from server.backend import notifications as _notif  # noqa: E402
+
+_ALERT_COLLECTION = "GovernanceAlerts"
+
+
+def _load_alerts() -> list[dict[str, Any]]:
+    c = _conn()
+    rows = c.execute(
+        "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
+        "ORDER BY updated_at DESC LIMIT 2000",
+        (_ALERT_COLLECTION,),
+    ).fetchall()
+    c.close()
+    return [_row(r) for r in rows]
+
+
+@app.get("/api/notifications")
+def notifications(since: str | None = Query(None), subscriber: str = Query("operator")):
+    """New alerts since ``since`` (or the subscriber's stored cursor), ranked."""
+    c = _conn()
+    store = _notif.NotificationStore(c)
+    cursor = since if since is not None else store.get_cursor(subscriber)
+    c.close()
+    fresh = _notif.rank_new_alerts(_load_alerts(), cursor)
+    return {
+        "cursor": cursor,
+        "count": len(fresh),
+        "critical_count": sum(1 for a in fresh if a.get("is_critical")),
+        "items": fresh,
+    }
+
+
+@app.post("/api/notifications/ack")
+async def notifications_ack(request: Request):
+    """Advance the subscriber's last-seen cursor (marks the digest read)."""
+    body = await request.json()
+    subscriber = body.get("subscriber", "operator")
+    last_seen = body.get("last_seen") or _now()
+    c = _conn()
+    _notif.NotificationStore(c).set_cursor(last_seen, subscriber)
+    c.close()
+    return {"subscriber": subscriber, "last_seen": last_seen}
+
+
+@app.get("/api/notifications/preferences")
+def get_preferences(subscriber: str = Query("operator")):
+    c = _conn()
+    sub = _notif.NotificationStore(c).get_subscription(subscriber)
+    c.close()
+    return {"subscriber": subscriber, **sub, "domains": sorted(set(_notif.DOMAIN_FOR_MODULE.values())),
+            "channels": list(_notif.VALID_CHANNELS), "timing": list(_notif.VALID_TIMING)}
+
+
+@app.put("/api/notifications/preferences")
+async def set_preferences(request: Request):
+    """Set channel (push/sms/none) + timing (asap/brief) prefs, global or per-domain."""
+    body = await request.json()
+    subscriber = body.get("subscriber", "operator")
+    prefs = body.get("prefs", {})
+    targets = body.get("targets", {})
+    c = _conn()
+    _notif.NotificationStore(c).set_subscription(prefs, targets, subscriber, _now())
+    c.close()
+    return {"subscriber": subscriber, "prefs": prefs, "targets": targets}
+
 # ── Generic entity CRUD ────────────────────────────────────────────────────────
 
 @app.get("/api/entities/{entity_name}")
