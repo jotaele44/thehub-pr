@@ -124,7 +124,7 @@ class BaseHttpAdapter(MCPAdapter):
             if secret:
                 if self.auth_header_name:
                     headers[self.auth_header_name] = secret
-                else:
+                elif self.auth_param_name:
                     merged[self.auth_param_name] = secret
         return self._client.get(url, merged, headers or None)
 
