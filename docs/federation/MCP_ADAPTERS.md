@@ -76,13 +76,14 @@ declared key the provider cannot resolve makes the adapter fail closed
 | `TerrainAdapter` | `terrain` | USGS EPQS | — | `elevation` |
 | `ContractsAdapter` | `contracts` | SAM.gov | `MCP_CONTRACTS_API_KEY` | `search` |
 | `RegulationsAdapter` | `regulations` | Regulations.gov | `MCP_REGULATIONS_API_KEY` | `search` |
+| `OshaAdapter` | `osha` | DOL Open Data v4 (OSHA) | `MCP_OSHA_API_KEY` | `inspections`, `violations`, `accidents` |
 | `UtilitiesAdapter` | `utilities` | PRASA/PREPA/LUMA (deploy-configured) | `MCP_UTILITIES_API_KEY` | `status` |
 | `FieldOpsAdapter` | `field-ops` | Centinelas field intake (deploy-configured) | — | `observations` |
 
 Each adapter owns its request/return contract and extracts upstream fields
 defensively (`.get`), so a schema drift degrades to empty fields rather than a
 crash. Live endpoints must be verified outside CI. `DOMAIN_ADAPTERS` is a tuple
-of all seven classes for bulk registration.
+of all eight classes for bulk registration.
 
 ## Usage
 

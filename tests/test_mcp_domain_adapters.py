@@ -6,6 +6,7 @@ from hub.mcp_runtime.adapters import (
     ContractsAdapter,
     FieldOpsAdapter,
     FlightAdapter,
+    OshaAdapter,
     RegulationsAdapter,
     TerrainAdapter,
     UtilitiesAdapter,
@@ -170,6 +171,51 @@ def test_contracts_injects_key_but_keeps_it_out_of_provenance(router, monkeypatc
     assert "SECRET123" not in str(result.provenance)
 
 
+def test_osha_requires_api_key(router, monkeypatch):
+    monkeypatch.delenv("MCP_OSHA_API_KEY", raising=False)
+    router.register_adapter(OshaAdapter(client=FakeClient({})))
+    with pytest.raises(PermissionError, match="authenticate"):
+        router.route(
+            MCPRequest(
+                project="aguayluz", capability="osha", action="inspections",
+                params={"state": "PR"},
+            )
+        )
+
+
+def test_osha_defaults_to_pr_filter_and_injects_key(router, monkeypatch):
+    monkeypatch.setenv("MCP_OSHA_API_KEY", "OSHAKEY")
+    client = FakeClient({"data": [{"activity_nr": 1}, {"activity_nr": 2}]})
+    router.register_adapter(OshaAdapter(client=client))
+    result = router.route(
+        MCPRequest(
+            project="aguayluz", capability="osha", action="inspections",
+        )
+    )
+    assert result.data["count"] == 2
+    assert result.data["state"] == "PR"
+    url, params = client.calls[0]
+    # DOL v4 record endpoint for the OSHA inspection dataset.
+    assert url == "https://apiprod.dol.gov/v4/get/OSHA/inspection/json"
+    # PR jurisdiction filter defaulted on; free key injected as X-API-KEY.
+    assert '"value": "PR"' in params["filter_object"]
+    assert params["X-API-KEY"] == "OSHAKEY"
+    # secret never leaks into the audit/provenance block.
+    assert "OSHAKEY" not in str(result.provenance)
+    assert result.provenance["upstream"] == "dol_osha"
+
+
+def test_osha_unknown_action_raises(router, monkeypatch):
+    monkeypatch.setenv("MCP_OSHA_API_KEY", "OSHAKEY")
+    router.register_adapter(OshaAdapter(client=FakeClient({"data": []})))
+    with pytest.raises(ValueError, match="unknown action"):
+        router.route(
+            MCPRequest(
+                project="aguayluz", capability="osha", action="citations",
+            )
+        )
+
+
 def test_regulations_search(router, monkeypatch):
     monkeypatch.setenv("MCP_REGULATIONS_API_KEY", "RK")
     client = FakeClient({"data": [{"id": "d1"}, {"id": "d2"}]})
@@ -225,5 +271,5 @@ def test_domain_adapter_registry_is_complete():
     caps = {a.capability_name for a in DOMAIN_ADAPTERS}
     assert caps == {
         "flight", "weather", "terrain", "contracts",
-        "regulations", "utilities", "field-ops",
+        "regulations", "osha", "utilities", "field-ops",
     }
