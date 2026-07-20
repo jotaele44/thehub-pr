@@ -60,6 +60,17 @@ spatial layers).
   aggregates, and — via `hub correlate` — links an alert's anchor entity to
   co-located cross-producer entities (`alert_affects_entity`, match_basis `location`).
 
+**Part 7 — UI surface consolidation (ADR 0001, Phase 2):**
+- The single supported product surface is the Hub app
+  (`thehub-pr/server/frontend`): one page per producer plus the cross-domain
+  Crossover/Anomaly views only the Hub can host. The Hub UI consolidation —
+  grouped navigation, mounted auth routes, Hub-vs-route de-duplication, and
+  dead-code/dependency prune — landed here.
+- The six producer frontends are **demoted to diagnostic-only** (retained, not
+  deleted): each producer frontend carries a "Diagnostic-only surface (ADR 0001,
+  Phase 2)" note pointing operators to the Hub as the product surface. This does
+  not change any producer runtime, schema, or readiness gate.
+
 ## Blocked gaps — fully specified, waiting on a named external input
 
 Each item below is **code-ready** unless noted; the missing item is named.

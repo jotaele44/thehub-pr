@@ -17,8 +17,13 @@
   --fd-shadow-1: 0 1px 2px rgba(0,0,0,.18); --fd-shadow-2: 0 4px 12px rgba(0,0,0,.22);
   --fd-motion-fast: 120ms cubic-bezier(.2,.8,.2,1); --fd-motion-normal: 180ms cubic-bezier(.2,.8,.2,1);
 }
-[data-theme="dark"] { --fd-bg:#070b14; --fd-surface:#0f172a; --fd-surface-2:#172033; --fd-text:#f8fafc; --fd-text-muted:#94a3b8; --fd-border:#334155; }
+[data-theme="dark"] { color-scheme: dark; --fd-bg:#070b14; --fd-surface:#0f172a; --fd-surface-2:#172033; --fd-text:#f8fafc; --fd-text-muted:#94a3b8; --fd-border:#334155; }
 [data-repo="thehub-pr"]{--fd-accent:#2563eb}[data-repo="spiderweb-pr"]{--fd-accent:#0d9488}[data-repo="skywatcher-pr"]{--fd-accent:#0891b2}[data-repo="moneysweep-pr"]{--fd-accent:#16a34a}[data-repo="centinelas-pr"]{--fd-accent:#ea580c}[data-repo="aguayluz-pr"]{--fd-accent:#15803d}[data-repo="ovnis-pr"]{--fd-accent:#7c3aed}
+/* Federation base layer: consuming apps set data-theme + data-repo on the root.
+   body inherits the federation surface/typography; a global focus ring keeps
+   every interactive element keyboard-visible without per-component classes. */
+body{font-family:var(--fd-font-sans);background:var(--fd-bg);color:var(--fd-text)}
+:where(button,a,input,select,textarea,[tabindex]):focus-visible{outline:2px solid var(--fd-accent);outline-offset:2px}
 .fd-app{min-height:100%;background:var(--fd-bg);color:var(--fd-text);font-family:var(--fd-font-sans)}
 .fd-panel{background:var(--fd-surface);border:1px solid var(--fd-border);border-radius:var(--fd-radius-lg);box-shadow:var(--fd-shadow-1);padding:1rem}
 .fd-focus:focus-visible{outline:2px solid var(--fd-accent);outline-offset:2px}
