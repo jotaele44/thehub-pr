@@ -29,3 +29,8 @@ dist-ssr
 
 .env
 .vite
+
+# Playwright (keep committed baselines under tests/visual/__screenshots__)
+test-results/
+playwright-report/
+playwright/.cache/

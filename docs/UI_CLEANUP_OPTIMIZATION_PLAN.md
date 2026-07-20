@@ -66,7 +66,7 @@ Evidence gathered from the working tree. File references are clickable.
 
 | # | Finding | Evidence |
 |---|---|---|
-| F1 | **Zero frontend tests.** The design-system verification matrix requires unit/integration, axe, keyboard smoke, and visual-regression baselines; none exist. **Addressed (floor):** Vitest + React Testing Library + `vitest-axe` smoke suite (chips/nav invariants, StatusChip, header parity, axe on shared primitives) with a new `frontend` CI job (`npm ci → lint → test → build`). Visual-regression baselines remain future work. | no `*.test.*` under `server/frontend/src`. |
+| F1 | **Zero frontend tests.** The design-system verification matrix requires unit/integration, axe, keyboard smoke, and visual-regression baselines; none exist. **Addressed:** Vitest + React Testing Library + `vitest-axe` smoke suite (chips/nav invariants, StatusChip, header parity, axe on shared primitives) with a `frontend` CI job (`npm ci → lint → test → build`); **plus** Playwright visual-regression baselines (`tests/visual/`, desktop + tablet widths, deterministic mocked API) committed under `__screenshots__/` with a `frontend-visual` CI job. | no `*.test.*` under `server/frontend/src`. |
 
 ---
 
