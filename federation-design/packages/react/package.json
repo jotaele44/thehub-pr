@@ -1,10 +1,32 @@
 {
   "name": "@pr-federation/react",
   "version": "0.1.0",
-  "private": true,
+  "description": "Shared PRII federation design-system primitives (tokens, CSS layer, thin React wrappers). Consumed by the hub app and the six producer frontends.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jotaele44/thehub-pr.git",
+    "directory": "federation-design/packages/react"
+  },
   "type": "module",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "./src/index.jsx",
   "exports": {
-    ".": "./src/index.jsx"
+    ".": "./src/index.jsx",
+    "./styles.css": "./dist/federation.css",
+    "./tokens.json": "./dist/federation.tokens.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "prepack": "node scripts/prepack.mjs",
+    "pack:tarball": "npm pack"
   },
   "peerDependencies": {
     "react": ">=18 <20",
