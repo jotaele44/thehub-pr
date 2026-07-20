@@ -20,11 +20,9 @@ class FakeClient:
     def __init__(self, payload):
         self.payload = payload
         self.calls = []
-        self.headers = []
 
-    def get(self, url, params=None, headers=None):
+    def get(self, url, params=None):
         self.calls.append((url, dict(params or {})))
-        self.headers.append(dict(headers or {}))
         return self.payload
 
 
@@ -35,7 +33,7 @@ class RoutingFakeClient:
         self.routes = routes  # list of (substring, payload)
         self.calls = []
 
-    def get(self, url, params=None, headers=None):
+    def get(self, url, params=None):
         self.calls.append((url, dict(params or {})))
         for needle, payload in self.routes:
             if needle in url:
@@ -199,11 +197,10 @@ def test_osha_defaults_to_pr_filter_and_injects_key(router, monkeypatch):
     url, params = client.calls[0]
     # DOL v4 record endpoint for the OSHA inspection dataset.
     assert url == "https://apiprod.dol.gov/v4/get/OSHA/inspection/json"
-    # PR jurisdiction filter defaulted on (a JSON string, not a repr'd list).
-    assert '"value": "PR"' in params["filter_object"]
-    # Free key injected on the X-API-KEY *header*, not the query string.
-    assert client.headers[0]["X-API-KEY"] == "OSHAKEY"
-    assert "X-API-KEY" not in params
+    # PR jurisdiction filter defaulted on as a flat {field,operator,value} object.
+    assert params["filter_object"] == '{"field": "site_state", "operator": "eq", "value": "PR"}'
+    # DOL /v4/get authenticates on the X-API-KEY query param (the header is 401).
+    assert params["X-API-KEY"] == "OSHAKEY"
     # secret never leaks into the audit/provenance block.
     assert "OSHAKEY" not in str(result.provenance)
     assert result.provenance["upstream"] == "dol_osha"

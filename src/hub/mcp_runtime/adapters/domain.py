@@ -166,9 +166,9 @@ class OshaAdapter(BaseHttpAdapter):
     upstream = "dol_osha"
     base_url = "https://apiprod.dol.gov"
     env_key = "MCP_OSHA_API_KEY"
-    # The DOL v4 gateway authenticates on the X-API-KEY request header, not a
-    # query param.
-    auth_header_name = "X-API-KEY"
+    # The DOL v4 /v4/get record endpoint authenticates on the X-API-KEY *query
+    # param* — the header is rejected (401), verified against the live API.
+    auth_param_name = "X-API-KEY"
 
     _AGENCY = "OSHA"
     # action -> DOL v4 dataset endpoint slug (agency=OSHA)
@@ -198,8 +198,10 @@ class OshaAdapter(BaseHttpAdapter):
                 caller_filter if isinstance(caller_filter, str) else json.dumps(caller_filter)
             )
         elif state:
+            # DOL v4 filter_object is a flat {field, operator, value} object
+            # (a list form is rejected 500); verified against the live API.
             query["filter_object"] = json.dumps(
-                [{"field": "site_state", "operator": "eq", "value": state}]
+                {"field": "site_state", "operator": "eq", "value": state}
             )
         for optional in ("fields", "sort"):
             if params.get(optional):

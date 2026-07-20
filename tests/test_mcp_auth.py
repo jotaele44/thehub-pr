@@ -18,7 +18,7 @@ class FakeClient:
         self.payload = payload
         self.calls = []
 
-    def get(self, url, params=None, headers=None):
+    def get(self, url, params=None):
         self.calls.append((url, dict(params or {})))
         return self.payload
 
