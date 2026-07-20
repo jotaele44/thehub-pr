@@ -22,7 +22,12 @@ from hub.mcp_runtime.sdk import MCPAdapter, MCPRequest
 class HttpClient(Protocol):
     """Minimal read-only HTTP contract the domain adapters depend on."""
 
-    def get(self, url: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get(
+        self,
+        url: str,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         ...
 
 
@@ -36,11 +41,17 @@ class EnvHttpClient:
     def __init__(self, timeout: float = 10.0) -> None:
         self._timeout = timeout
 
-    def get(self, url: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def get(
+        self,
+        url: str,
+        params: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         query = "?" + urllib.parse.urlencode(params) if params else ""
-        request = urllib.request.Request(
-            url + query, headers={"Accept": "application/json"}
-        )
+        req_headers = {"Accept": "application/json"}
+        if headers:
+            req_headers.update(headers)
+        request = urllib.request.Request(url + query, headers=req_headers)
         with urllib.request.urlopen(request, timeout=self._timeout) as response:
             return json.loads(response.read().decode("utf-8"))
 
@@ -58,10 +69,14 @@ class BaseHttpAdapter(MCPAdapter):
     upstream: str = ""
     base_url: str = ""
     # Name of the env var holding a required credential, or None if the
-    # upstream is keyless. When set, the value is appended to outgoing query
-    # params under `auth_param_name` and the adapter fails closed if absent.
+    # upstream is keyless. When set, the value is injected into the outgoing
+    # request and the adapter fails closed if absent: as a query param under
+    # `auth_param_name`, or — when the upstream expects it in the header (e.g.
+    # the DOL gateway's `X-API-KEY`) — under `auth_header_name`. Set at most one
+    # of the two; the header takes precedence if both are set.
     env_key: Optional[str] = None
     auth_param_name: Optional[str] = None
+    auth_header_name: Optional[str] = None
 
     def __init__(
         self,
@@ -96,13 +111,22 @@ class BaseHttpAdapter(MCPAdapter):
     def _request(
         self, url: str, params: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """GET an absolute URL, injecting the credential when configured."""
+        """GET an absolute URL, injecting the credential when configured.
+
+        The credential goes into the request header (`auth_header_name`) or the
+        query params (`auth_param_name`); neither the header value nor the param
+        is ever surfaced in the provenance block.
+        """
         merged: Dict[str, Any] = dict(params or {})
-        if self.env_key and self.auth_param_name:
+        headers: Dict[str, Any] = {}
+        if self.env_key and (self.auth_header_name or self.auth_param_name):
             secret = self._credentials.get(self.env_key)
             if secret:
-                merged[self.auth_param_name] = secret
-        return self._client.get(url, merged)
+                if self.auth_header_name:
+                    headers[self.auth_header_name] = secret
+                else:
+                    merged[self.auth_param_name] = secret
+        return self._client.get(url, merged, headers or None)
 
     def _get(self, path: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """GET a path under this adapter's `base_url`."""

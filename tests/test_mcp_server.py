@@ -18,7 +18,7 @@ class FakeClient:
     def __init__(self, payload):
         self.payload = payload
 
-    def get(self, url, params=None):
+    def get(self, url, params=None, headers=None):
         return self.payload
 
 

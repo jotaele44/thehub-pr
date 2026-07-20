@@ -20,9 +20,11 @@ class FakeClient:
     def __init__(self, payload):
         self.payload = payload
         self.calls = []
+        self.headers = []
 
-    def get(self, url, params=None):
+    def get(self, url, params=None, headers=None):
         self.calls.append((url, dict(params or {})))
+        self.headers.append(dict(headers or {}))
         return self.payload
 
 
@@ -33,7 +35,7 @@ class RoutingFakeClient:
         self.routes = routes  # list of (substring, payload)
         self.calls = []
 
-    def get(self, url, params=None):
+    def get(self, url, params=None, headers=None):
         self.calls.append((url, dict(params or {})))
         for needle, payload in self.routes:
             if needle in url:
@@ -197,12 +199,29 @@ def test_osha_defaults_to_pr_filter_and_injects_key(router, monkeypatch):
     url, params = client.calls[0]
     # DOL v4 record endpoint for the OSHA inspection dataset.
     assert url == "https://apiprod.dol.gov/v4/get/OSHA/inspection/json"
-    # PR jurisdiction filter defaulted on; free key injected as X-API-KEY.
+    # PR jurisdiction filter defaulted on (a JSON string, not a repr'd list).
     assert '"value": "PR"' in params["filter_object"]
-    assert params["X-API-KEY"] == "OSHAKEY"
+    # Free key injected on the X-API-KEY *header*, not the query string.
+    assert client.headers[0]["X-API-KEY"] == "OSHAKEY"
+    assert "X-API-KEY" not in params
     # secret never leaks into the audit/provenance block.
     assert "OSHAKEY" not in str(result.provenance)
     assert result.provenance["upstream"] == "dol_osha"
+
+
+def test_osha_serializes_structured_filter_object(router, monkeypatch):
+    monkeypatch.setenv("MCP_OSHA_API_KEY", "OSHAKEY")
+    client = FakeClient({"data": []})
+    router.register_adapter(OshaAdapter(client=client))
+    router.route(
+        MCPRequest(
+            project="aguayluz", capability="osha", action="violations",
+            params={"filter_object": [{"field": "naics_code", "operator": "eq", "value": "331110"}]},
+        )
+    )
+    _, params = client.calls[0]
+    # A caller-supplied list is JSON-serialized (valid JSON, double quotes), not repr'd.
+    assert params["filter_object"] == '[{"field": "naics_code", "operator": "eq", "value": "331110"}]'
 
 
 def test_osha_unknown_action_raises(router, monkeypatch):

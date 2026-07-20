@@ -166,7 +166,9 @@ class OshaAdapter(BaseHttpAdapter):
     upstream = "dol_osha"
     base_url = "https://apiprod.dol.gov"
     env_key = "MCP_OSHA_API_KEY"
-    auth_param_name = "X-API-KEY"
+    # The DOL v4 gateway authenticates on the X-API-KEY request header, not a
+    # query param.
+    auth_header_name = "X-API-KEY"
 
     _AGENCY = "OSHA"
     # action -> DOL v4 dataset endpoint slug (agency=OSHA)
@@ -187,9 +189,14 @@ class OshaAdapter(BaseHttpAdapter):
         }
         # Server-side filter: caller-supplied filter_object wins; otherwise
         # default to the PR jurisdiction (empty string disables the filter).
+        # DOL expects a JSON string, so serialize a structured (list/dict) value
+        # rather than letting urlencode repr() it with single quotes.
         state = params.get("state", "PR")
         if params.get("filter_object") is not None:
-            query["filter_object"] = params["filter_object"]
+            caller_filter = params["filter_object"]
+            query["filter_object"] = (
+                caller_filter if isinstance(caller_filter, str) else json.dumps(caller_filter)
+            )
         elif state:
             query["filter_object"] = json.dumps(
                 [{"field": "site_state", "operator": "eq", "value": state}]
