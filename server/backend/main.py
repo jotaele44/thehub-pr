@@ -16,7 +16,7 @@ import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 import yaml
 from fastapi import FastAPI, HTTPException, Query, Request
@@ -193,7 +193,7 @@ def _load_alerts() -> list[dict[str, Any]]:
 
 
 @app.get("/api/notifications")
-def notifications(since: str | None = Query(None), subscriber: str = Query("operator")):
+def notifications(since: Optional[str] = Query(None), subscriber: str = Query("operator")):
     """New alerts since ``since`` (or the subscriber's stored cursor), ranked."""
     c = _conn()
     store = _notif.NotificationStore(c)
