@@ -169,6 +169,22 @@ def test_alert_correlation_links_anchor_to_colocated_cross_producer_entity():
     assert links[0]["target_entity_id"] == ENT_B
 
 
+def test_contamination_alert_correlates_to_colocated_entity():
+    # A data-driven aguayluz CONTAMINATION alert (SDWIS-derived) anchored to a
+    # water asset links to a co-located cross-producer entity by municipality.
+    al = _alert("alrt_" + "c" * 32, ENT_A, "Ponce", producers=["aguayluz-pr"])
+    al["module"] = "CONTAMINATION"
+    al["alert_type"] = "quality"
+    ent = _entity(ENT_B, "Recovery grant recipient", lat=18.01, lon=-66.61,
+                  producers=["moneysweep-pr"])
+    ent["location"]["municipality"] = "Ponce"
+    links = correlate_alerts([al], [ent])
+    assert len(links) == 1
+    assert links[0]["relationship_type"] == "alert_affects_entity"
+    assert links[0]["source_entity_id"] == ENT_A
+    assert links[0]["target_entity_id"] == ENT_B
+
+
 def test_alert_correlation_skips_same_producer_and_unanchored():
     # same producer -> not a cross-producer pair
     al_same = _alert("alrt_" + "a" * 32, ENT_A, "San Juan", producers=["spiderweb-pr"])
