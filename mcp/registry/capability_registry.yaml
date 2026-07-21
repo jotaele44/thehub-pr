@@ -160,11 +160,13 @@ capabilities:
 
   utilities:
     class: domain
-    status: active
+    status: pilot
     version_pin: "1.0.0"
     description: >
       Utility/hydrology data capability (water, power, and related
-      infrastructure feeds).
+      infrastructure feeds). Pilot: the adapter's endpoint is
+      deploy-supplied (empty base_url in the repo) — no live PRASA/PREPA/
+      LUMA upstream is wired yet.
     required_by:
       - aguayluz
 

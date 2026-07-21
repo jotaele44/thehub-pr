@@ -75,9 +75,9 @@ declared key the provider cannot resolve makes the adapter fail closed
 | `WeatherAdapter` | `weather` | NWS | — | `forecast` |
 | `TerrainAdapter` | `terrain` | USGS EPQS | — | `elevation` |
 | `ContractsAdapter` | `contracts` | SAM.gov | `MCP_CONTRACTS_API_KEY` | `search` |
-| `RegulationsAdapter` | `regulations` | Regulations.gov | `MCP_REGULATIONS_API_KEY` | `search` |
-| `OshaAdapter` | `osha` | DOL Open Data v4 (OSHA) | `MCP_OSHA_API_KEY` | `inspections`, `violations`, `accidents` |
-| `UtilitiesAdapter` | `utilities` | PRASA/PREPA/LUMA (deploy-configured) | `MCP_UTILITIES_API_KEY` | `status` |
+| `RegulationsAdapter` | `regulations` | Regulations.gov (live-verified) | `MCP_REGULATIONS_API_KEY` | `search` |
+| `OshaAdapter` | `osha` | DOL Open Data v4 (OSHA, live-verified) | `MCP_OSHA_API_KEY` | `inspections`, `violations`, `accidents` |
+| `UtilitiesAdapter` | `utilities` | PRASA/PREPA/LUMA (deploy-configured; **pilot** — no live upstream wired) | `MCP_UTILITIES_API_KEY` | `status` |
 | `FieldOpsAdapter` | `field-ops` | Centinelas field intake (deploy-configured) | — | `observations` |
 
 Each adapter owns its request/return contract and extracts upstream fields
