@@ -147,6 +147,17 @@ capabilities:
     required_by:
       - spiderweb
 
+  osha:
+    class: government
+    status: active
+    version_pin: "1.0.0"
+    description: >
+      OSHA/DOL workplace-safety enforcement capability (inspections,
+      violations, accidents) via the DOL Open Data Portal v4 API, filtered
+      to the PR jurisdiction.
+    required_by:
+      - aguayluz
+
   utilities:
     class: domain
     status: active

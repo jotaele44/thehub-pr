@@ -96,7 +96,11 @@ class BaseHttpAdapter(MCPAdapter):
     def _request(
         self, url: str, params: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
-        """GET an absolute URL, injecting the credential when configured."""
+        """GET an absolute URL, injecting the credential when configured.
+
+        The credential goes into the query params under `auth_param_name` and is
+        never surfaced in the provenance block.
+        """
         merged: Dict[str, Any] = dict(params or {})
         if self.env_key and self.auth_param_name:
             secret = self._credentials.get(self.env_key)

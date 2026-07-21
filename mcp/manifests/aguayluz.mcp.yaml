@@ -12,6 +12,7 @@ capabilities:
   - terrain
   - weather
   - utilities
+  - osha
 
 write_policy:
   default: read_only

@@ -14,12 +14,14 @@ Capability → declaring projects (see mcp/registry/capability_registry.yaml):
   terrain      → skywatcher, aguayluz
   contracts    → moneysweep
   regulations  → spiderweb
+  osha         → aguayluz
   utilities    → aguayluz
   field-ops    → centinelas
 """
 
 from __future__ import annotations
 
+import json
 from typing import Any, Dict
 
 from hub.mcp_runtime.adapters.http import BaseHttpAdapter
@@ -142,6 +144,74 @@ class RegulationsAdapter(BaseHttpAdapter):
         raise ValueError(f"unknown action {request.action!r}")
 
 
+class OshaAdapter(BaseHttpAdapter):
+    """Workplace-safety enforcement via the DOL Open Data Portal v4 API.
+
+    Backs the OSHA enforcement family (inspections, violations, accidents) that
+    the deprecated ``enforcedata.dol.gov`` catalog moved to ``data.dol.gov`` /
+    ``apiprod.dol.gov/v4``. The v4 record pattern is
+    ``/v4/get/{agency}/{endpoint}/{format}`` with a JSON ``filter_object`` for
+    server-side filtering; the free key (250 req/hr) is injected as the
+    ``X-API-KEY`` query param. Results default to the federation's Puerto Rico
+    jurisdiction (``state="PR"``) unless the caller overrides ``state`` or
+    passes an explicit ``filter_object``.
+
+    The DOL dataset slugs and filter field names below are the documented shape
+    but must be verified against a live key outside CI — the tests here drive a
+    fake client and never touch the network, matching the other keyed adapters.
+    """
+
+    capability_name = "osha"
+    adapter_name = "osha-enforcement"
+    upstream = "dol_osha"
+    base_url = "https://apiprod.dol.gov"
+    env_key = "MCP_OSHA_API_KEY"
+    # The DOL v4 /v4/get record endpoint authenticates on the X-API-KEY *query
+    # param* — the header is rejected (401), verified against the live API.
+    auth_param_name = "X-API-KEY"
+
+    _AGENCY = "OSHA"
+    # action -> DOL v4 dataset endpoint slug (agency=OSHA)
+    _ENDPOINTS = {
+        "inspections": "inspection",
+        "violations": "violation",
+        "accidents": "accident",
+    }
+
+    def execute(self, request: MCPRequest) -> Any:
+        endpoint = self._ENDPOINTS.get(request.action)
+        if endpoint is None:
+            raise ValueError(f"unknown action {request.action!r}")
+        params = request.params or {}
+        query: Dict[str, Any] = {
+            "limit": params.get("limit", 10),
+            "offset": params.get("offset", 0),
+        }
+        # Server-side filter: caller-supplied filter_object wins; otherwise
+        # default to the PR jurisdiction (empty string disables the filter).
+        # DOL expects a JSON string, so serialize a structured (list/dict) value
+        # rather than letting urlencode repr() it with single quotes.
+        state = params.get("state", "PR")
+        if params.get("filter_object") is not None:
+            caller_filter = params["filter_object"]
+            query["filter_object"] = (
+                caller_filter if isinstance(caller_filter, str) else json.dumps(caller_filter)
+            )
+        elif state:
+            # DOL v4 filter_object is a flat {field, operator, value} object
+            # (a list form is rejected 500); verified against the live API.
+            query["filter_object"] = json.dumps(
+                {"field": "site_state", "operator": "eq", "value": state}
+            )
+        for optional in ("fields", "sort"):
+            if params.get(optional):
+                query[optional] = params[optional]
+        payload = self._get(f"/v4/get/{self._AGENCY}/{endpoint}/json", query)
+        records = payload.get("data") or []
+        return {"action": request.action, "state": state or None,
+                "records": records, "count": len(records)}
+
+
 class UtilitiesAdapter(BaseHttpAdapter):
     capability_name = "utilities"
     adapter_name = "utilities-bridge"
@@ -185,6 +255,7 @@ DOMAIN_ADAPTERS = (
     TerrainAdapter,
     ContractsAdapter,
     RegulationsAdapter,
+    OshaAdapter,
     UtilitiesAdapter,
     FieldOpsAdapter,
 )
