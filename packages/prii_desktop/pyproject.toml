@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prii-desktop"
+version = "0.1.0"
+description = "Shared desktop-wrapper runtime for PRII producers (same-origin ASGI app + native-window launcher)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+# No hard runtime deps: the desktop .venv already provides fastapi + uvicorn
+# (server/backend/requirements.txt) and pywebview (requirements-desktop.txt).
+# Those are imported lazily inside functions so importing this package is cheap.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
