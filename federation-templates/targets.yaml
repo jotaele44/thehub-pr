@@ -1,0 +1,32 @@
+# Which canonical template renders to which path, in which repos.
+# {{APP_SLUG}} in an output path is substituted per-repo from producers.vars.yaml.
+# Verbatim templates carry no placeholder; slug-parameterized ones ({{APP_SLUG}})
+# substitute in content too. requirements-desktop.txt is desktop-producers-only
+# (spiderweb's desktop model differs; thehub keeps its own). The schema and
+# Fix-Gatekeeper are byte-identical across all 7.
+schema_version: prii_federation_template_targets_v1
+
+_all: &all
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
+_desktop: &desktop
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr]
+
+targets:
+  - template: Fix-Gatekeeper.command
+    output: Fix-Gatekeeper.command
+    repos: *all
+  - template: PRII-APP.command
+    output: PRII-{{APP_SLUG}}.command
+    repos: *all
+  - template: PRII-APP.bat
+    output: PRII-{{APP_SLUG}}.bat
+    repos: *all
+  - template: PRII-APP.sh
+    output: PRII-{{APP_SLUG}}.sh
+    repos: *all
+  - template: requirements-desktop.txt
+    output: requirements-desktop.txt
+    repos: *desktop
+  - template: schemas/federation_export_manifest.schema.json
+    output: schemas/federation_export_manifest.schema.json
+    repos: *all

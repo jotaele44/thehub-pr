@@ -1,0 +1,26 @@
+name: Federation template drift
+
+# thehub owns the canonical federation boilerplate templates
+# (federation-templates/). This asserts thehub's OWN launchers + shared schema
+# still match them. Producers enforce the same for their copies via their own
+# template-drift.yml, which renders from this repo. Edit a template once here and
+# re-render — never hand-edit a rendered file.
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install pyyaml
+      - name: Assert thehub's launchers/schema match the canonical templates
+        run: python tools/render_federation_templates.py --repo thehub-pr --check --repo-root .
