@@ -66,7 +66,18 @@ def render_repo(program_id: str, slug: str, repo_root: Path, targets: list[dict]
         dest = repo_root / rel
         if check:
             current = dest.read_bytes() if dest.exists() else None
-            if current != content:
+            drifted = current != content
+            # Launchers are part of a 0755 contract (the write path chmods them);
+            # a mode-only change that drops the executable bit breaks the
+            # double-click launchers on Linux/macOS while content still matches.
+            if (
+                not drifted
+                and rel.endswith((".sh", ".command"))
+                and dest.exists()
+                and not (dest.stat().st_mode & 0o111)
+            ):
+                drifted = True
+            if drifted:
                 drift.append(rel)
         else:
             dest.parent.mkdir(parents=True, exist_ok=True)

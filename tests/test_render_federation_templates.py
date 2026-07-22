@@ -53,6 +53,21 @@ def test_slug_substitution_renders_to_tmp(tmp_path):
     assert (tmp_path / "schemas" / "federation_export_manifest.schema.json").is_file()
 
 
+def test_check_detects_lost_executable_bit(tmp_path):
+    # Render ovnis, then drop the exec bit on a launcher — --check must flag drift.
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    launcher = tmp_path / "PRII-OVNIS.sh"
+    launcher.chmod(0o644)  # content unchanged, exec bit removed
+    r = subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--check", "--repo-root", str(tmp_path)],
+        capture_output=True, text=True,
+    )
+    assert r.returncode == 1 and "PRII-OVNIS.sh" in r.stdout, r.stdout + r.stderr
+
+
 def test_thehub_own_files_match_templates():
     # thehub is checked out here, so --repo-root . check its own launchers/schema.
     r = subprocess.run(
