@@ -21,10 +21,16 @@ to copy: the `Fix-Gatekeeper.command` and `PRII-<APP>.{command,bat,sh}` launcher
    committed copy diverges from the template — so hand-editing a rendered file is
    caught, and "edit the template once" is enforced.
 
-Cross-repo auto-propagation (opening the per-repo PRs automatically on a template
-change) is the operator-gated hop in `.github/workflows/mcp-cross-repo-sync.yml`
-(`SYNC_PAT`); until run, drift-check simply turns those repos red until they are
-re-rendered.
+### Auto-propagation (optional)
+
+`.github/workflows/federation-template-sync.yml` closes the write side: on a
+change to `federation-templates/` (or manual dispatch) it re-renders every
+producer and **opens a sync PR** on any that drifted. It's **dry-run by default**
+— without an operator-provided `SYNC_PAT` secret (contents + PR write on the
+producers) it only renders and prints the drift, opening nothing. Set `SYNC_PAT`
+to turn on the automatic per-producer PRs. Until then, edit a template → run
+`render_federation_templates.py --all` locally and commit per repo (each repo's
+`template-drift.yml` keeps them honest).
 
 ## Scope note
 

@@ -1,0 +1,85 @@
+name: Federation template sync (propagate)
+
+# Completes the "edit the template once" loop for the shared federation
+# boilerplate (federation-templates/): re-render each producer's launchers /
+# requirements-desktop.txt / shared schema and, when they drift from the
+# canonical templates, open a PR on that producer to update them.
+#
+# Cross-repo writes need an operator-provided SYNC_PAT secret (contents:write +
+# pull-requests:write on the producer repos). WITHOUT it this workflow is a
+# DRY RUN: it renders, prints the drift, and opens nothing — mirroring
+# mcp-cross-repo-sync.yml. Each producer's own template-drift.yml is the
+# read-only guard; this is the optional write-side automation.
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - "federation-templates/**"
+      - "tools/render_federation_templates.py"
+      - ".github/workflows/federation-template-sync.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  propagate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo: [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr]
+    steps:
+      - name: Checkout thehub-pr (canonical templates + renderer)
+        uses: actions/checkout@v4
+        with:
+          path: thehub-pr
+
+      - name: Checkout producer (${{ matrix.repo }})
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/${{ matrix.repo }}
+          path: ${{ matrix.repo }}
+          token: ${{ secrets.SYNC_PAT || github.token }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install pyyaml
+
+      - name: Re-render shared boilerplate into the producer
+        run: >
+          python thehub-pr/tools/render_federation_templates.py
+          --repo ${{ matrix.repo }} --repo-root ${{ matrix.repo }}
+
+      - name: Open a sync PR if the producer drifted
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_PAT }}
+        run: |
+          cd "${{ matrix.repo }}"
+          if git diff --quiet; then
+            echo "::notice::${{ matrix.repo }} already matches the canonical templates."
+            exit 0
+          fi
+          echo "Drift detected in ${{ matrix.repo }}:"
+          git --no-pager diff --stat
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::notice::SYNC_PAT absent — dry run; no PR opened. Set SYNC_PAT to enable propagation."
+            exit 0
+          fi
+          branch="federation-template-sync-${{ github.run_id }}"
+          git config user.name  "prii-federation-bot"
+          git config user.email "noreply@github.com"
+          git checkout -b "$branch"
+          git commit -am "chore: sync shared federation boilerplate from thehub-pr
+
+          Re-rendered launchers / requirements-desktop.txt / federation_export_manifest
+          schema from thehub-pr/federation-templates via render_federation_templates.py.
+          Automated by thehub-pr federation-template-sync."
+          git push -u origin "$branch"
+          gh pr create \
+            --repo "jotaele44/${{ matrix.repo }}" \
+            --base main --head "$branch" \
+            --title "Sync shared federation boilerplate from thehub-pr" \
+            --body "Automated re-render of the shared launcher/desktop/schema boilerplate from \`thehub-pr/federation-templates\`. The canonical template changed; this brings ${{ matrix.repo }}'s copies back in sync so its template-drift check passes."
