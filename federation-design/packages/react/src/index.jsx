@@ -58,11 +58,35 @@ export function FederationPanel({ as: Component = 'section', className, ...props
   return <Component className={cx('fd-panel', className)} {...props} />
 }
 
+// Canonical federation status vocabulary — the single shared set across the hub
+// and producers (see federation.css --fd-st-* + thehub-pr src/lib/chips.js).
+export const FEDERATION_STATUS_ROLES = [
+  'danger', 'success', 'warning', 'info', 'neutral', 'process', 'tier', 'caution', 'elevated',
+]
+
+// Coarse node-health aliases → canonical roles, so existing `.fd-status` values keep working.
+const STATUS_ALIASES = {
+  operational: 'success', degraded: 'warning', critical: 'danger',
+  offline: 'neutral', information: 'info', analysis: 'process',
+}
+
+// Resolve any status value (canonical role or alias) to a canonical role.
+export function federationStatusRole(status) {
+  const v = String(status || 'neutral').toLowerCase()
+  return STATUS_ALIASES[v] || v
+}
+
+// Style your own element as a status pill without importing the badge component:
+// <span {...federationTone('warning')}>…</span>
+export function federationTone(status) {
+  return { className: 'fd-status', 'data-status': federationStatusRole(status) }
+}
+
 export function FederationStatusBadge({ status, children, className, ...props }) {
-  const normalized = String(status || 'offline').toLowerCase()
+  const role = federationStatusRole(status)
   return (
-    <span className={cx('fd-status', `fd-status--${normalized}`, className)} data-status={normalized} {...props}>
-      {children ?? normalized}
+    <span className={cx('fd-status', `fd-status--${role}`, className)} data-status={role} {...props}>
+      {children ?? String(status ?? role)}
     </span>
   )
 }
