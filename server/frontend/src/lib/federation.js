@@ -85,48 +85,52 @@ export const GATE_NAMES = [
 ];
 
 // Accent palette per federation domain — consumers read .dot / .bg / .text / .border.
+// Colors are defined once in tailwind.config.js as semantic `fed-*` tokens (the exact
+// Tailwind palette shades these accents always used: 500 base, 400 dot, 300 fg), so
+// this map carries no raw palette classes — satisfying the design-system's
+// "semantic tokens only" rule (docs/FEDERATION_DESIGN_SYSTEM_V1.md).
 const ACCENTS = {
   ControlPlane: {
-    dot: "bg-slate-300",
-    bg: "bg-slate-500/10",
-    text: "text-slate-300",
-    border: "border-slate-500/30",
+    dot: "bg-fed-controlplane-dot",
+    bg: "bg-fed-controlplane/10",
+    text: "text-fed-controlplane-fg",
+    border: "border-fed-controlplane/30",
   },
   NetworkGraph: {
-    dot: "bg-violet-400",
-    bg: "bg-violet-500/10",
-    text: "text-violet-300",
-    border: "border-violet-500/30",
+    dot: "bg-fed-networkgraph-dot",
+    bg: "bg-fed-networkgraph/10",
+    text: "text-fed-networkgraph-fg",
+    border: "border-fed-networkgraph/30",
   },
   UAP: {
-    dot: "bg-lime-400",
-    bg: "bg-lime-500/10",
-    text: "text-lime-300",
-    border: "border-lime-500/30",
+    dot: "bg-fed-uap-dot",
+    bg: "bg-fed-uap/10",
+    text: "text-fed-uap-fg",
+    border: "border-fed-uap/30",
   },
   Infrastructure: {
-    dot: "bg-teal-400",
-    bg: "bg-teal-500/10",
-    text: "text-teal-300",
-    border: "border-teal-500/30",
+    dot: "bg-fed-infrastructure-dot",
+    bg: "bg-fed-infrastructure/10",
+    text: "text-fed-infrastructure-fg",
+    border: "border-fed-infrastructure/30",
   },
   Contracts: {
-    dot: "bg-emerald-400",
-    bg: "bg-emerald-500/10",
-    text: "text-emerald-300",
-    border: "border-emerald-500/30",
+    dot: "bg-fed-contracts-dot",
+    bg: "bg-fed-contracts/10",
+    text: "text-fed-contracts-fg",
+    border: "border-fed-contracts/30",
   },
   Airspace: {
-    dot: "bg-sky-400",
-    bg: "bg-sky-500/10",
-    text: "text-sky-300",
-    border: "border-sky-500/30",
+    dot: "bg-fed-airspace-dot",
+    bg: "bg-fed-airspace/10",
+    text: "text-fed-airspace-fg",
+    border: "border-fed-airspace/30",
   },
   Signals: {
-    dot: "bg-orange-400",
-    bg: "bg-orange-500/10",
-    text: "text-orange-300",
-    border: "border-orange-500/30",
+    dot: "bg-fed-signals-dot",
+    bg: "bg-fed-signals/10",
+    text: "text-fed-signals-fg",
+    border: "border-fed-signals/30",
   },
 };
 
