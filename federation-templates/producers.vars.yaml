@@ -1,0 +1,12 @@
+# Per-producer template variables for the federation boilerplate renderer.
+# The ONLY per-repo data needed to render the shared launcher/desktop/schema
+# boilerplate. See tools/render_federation_templates.py.
+schema_version: prii_federation_template_vars_v1
+producers:
+  aguayluz-pr:   { app_slug: AGUAYLUZ }
+  centinelas-pr: { app_slug: CENTINELAS }
+  moneysweep-pr: { app_slug: MONEYSWEEP }
+  ovnis-pr:      { app_slug: OVNIS }
+  skywatcher-pr: { app_slug: SKYWATCHER }
+  spiderweb-pr:  { app_slug: SPIDERWEB }
+  thehub-pr:     { app_slug: THEHUB }
