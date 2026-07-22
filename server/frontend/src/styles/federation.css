@@ -13,6 +13,18 @@
   --fd-offline-fg: #334155; --fd-offline-bg: #e2e8f0; --fd-offline-signal: #64748b;
   --fd-information-fg: #1e40af; --fd-information-bg: #dbeafe; --fd-information-signal: #3b82f6;
   --fd-analysis-fg: #6b21a8; --fd-analysis-bg: #f3e8ff; --fd-analysis-signal: #8b5cf6;
+  /* Canonical federation status vocabulary — the single shared set across the hub
+     and producers (mirrors thehub-pr src/lib/chips.js roles; base = Tailwind 500,
+     -fg = Tailwind 300). Rendered as a 15% tint pill via .fd-status[data-status]. */
+  --fd-st-danger:#ef4444; --fd-st-danger-fg:#fca5a5;
+  --fd-st-success:#10b981; --fd-st-success-fg:#6ee7b7;
+  --fd-st-warning:#f59e0b; --fd-st-warning-fg:#fcd34d;
+  --fd-st-info:#0ea5e9; --fd-st-info-fg:#7dd3fc;
+  --fd-st-neutral:#64748b; --fd-st-neutral-fg:#cbd5e1;
+  --fd-st-process:#8b5cf6; --fd-st-process-fg:#c4b5fd;
+  --fd-st-tier:#14b8a6; --fd-st-tier-fg:#5eead4;
+  --fd-st-caution:#eab308; --fd-st-caution-fg:#fde047;
+  --fd-st-elevated:#f97316; --fd-st-elevated-fg:#fdba74;
   --fd-radius-sm: .375rem; --fd-radius-md: .5rem; --fd-radius-lg: .75rem;
   --fd-shadow-1: 0 1px 2px rgba(0,0,0,.18); --fd-shadow-2: 0 4px 12px rgba(0,0,0,.22);
   --fd-motion-fast: 120ms cubic-bezier(.2,.8,.2,1); --fd-motion-normal: 180ms cubic-bezier(.2,.8,.2,1);
@@ -31,5 +43,16 @@ body{font-family:var(--fd-font-sans);background:var(--fd-bg);color:var(--fd-text
 .fd-button:disabled{cursor:not-allowed;opacity:.55}.fd-button--primary{background:var(--fd-accent);color:#fff}.fd-button--secondary{background:var(--fd-surface-2);border-color:var(--fd-border);color:var(--fd-text)}.fd-button--ghost{background:transparent;color:var(--fd-text)}
 .fd-status{display:inline-flex;align-items:center;border:1px solid currentColor;border-radius:9999px;padding:.2rem .55rem;font-size:.75rem;font-weight:600;line-height:1.25}
 .fd-status[data-status="operational"]{color:var(--fd-operational-fg);background:var(--fd-operational-bg)}.fd-status[data-status="degraded"]{color:var(--fd-degraded-fg);background:var(--fd-degraded-bg)}.fd-status[data-status="critical"]{color:var(--fd-critical-fg);background:var(--fd-critical-bg)}.fd-status[data-status="offline"]{color:var(--fd-offline-fg);background:var(--fd-offline-bg)}.fd-status[data-status="information"]{color:var(--fd-information-fg);background:var(--fd-information-bg)}.fd-status[data-status="analysis"]{color:var(--fd-analysis-fg);background:var(--fd-analysis-bg)}
+/* Canonical status roles — 15% tint pill (bg 15% / border 30% / -fg text), matching
+   the hub chip look. `data-status` also accepts the coarse aliases below. */
+.fd-status[data-status="danger"]{color:var(--fd-st-danger-fg);background:color-mix(in srgb,var(--fd-st-danger) 15%,transparent);border-color:color-mix(in srgb,var(--fd-st-danger) 30%,transparent)}
+.fd-status[data-status="success"]{color:var(--fd-st-success-fg);background:color-mix(in srgb,var(--fd-st-success) 15%,transparent);border-color:color-mix(in srgb,var(--fd-st-success) 30%,transparent)}
+.fd-status[data-status="warning"]{color:var(--fd-st-warning-fg);background:color-mix(in srgb,var(--fd-st-warning) 15%,transparent);border-color:color-mix(in srgb,var(--fd-st-warning) 30%,transparent)}
+.fd-status[data-status="info"]{color:var(--fd-st-info-fg);background:color-mix(in srgb,var(--fd-st-info) 15%,transparent);border-color:color-mix(in srgb,var(--fd-st-info) 30%,transparent)}
+.fd-status[data-status="neutral"]{color:var(--fd-st-neutral-fg);background:color-mix(in srgb,var(--fd-st-neutral) 15%,transparent);border-color:color-mix(in srgb,var(--fd-st-neutral) 30%,transparent)}
+.fd-status[data-status="process"]{color:var(--fd-st-process-fg);background:color-mix(in srgb,var(--fd-st-process) 15%,transparent);border-color:color-mix(in srgb,var(--fd-st-process) 30%,transparent)}
+.fd-status[data-status="tier"]{color:var(--fd-st-tier-fg);background:color-mix(in srgb,var(--fd-st-tier) 15%,transparent);border-color:color-mix(in srgb,var(--fd-st-tier) 30%,transparent)}
+.fd-status[data-status="caution"]{color:var(--fd-st-caution-fg);background:color-mix(in srgb,var(--fd-st-caution) 15%,transparent);border-color:color-mix(in srgb,var(--fd-st-caution) 30%,transparent)}
+.fd-status[data-status="elevated"]{color:var(--fd-st-elevated-fg);background:color-mix(in srgb,var(--fd-st-elevated) 15%,transparent);border-color:color-mix(in srgb,var(--fd-st-elevated) 30%,transparent)}
 .fd-empty-state{display:grid;justify-items:center;gap:.5rem;padding:2rem;text-align:center;color:var(--fd-text-muted)}.fd-empty-state__title{margin:0;color:var(--fd-text);font-size:1.125rem}.fd-empty-state__description{max-width:42rem;margin:0}.fd-empty-state__action{margin-top:.5rem}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
