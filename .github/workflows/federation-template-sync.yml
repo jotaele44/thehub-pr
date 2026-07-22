@@ -58,12 +58,14 @@ jobs:
           GH_TOKEN: ${{ secrets.SYNC_PAT }}
         run: |
           cd "${{ matrix.repo }}"
-          if git diff --quiet; then
+          # --porcelain also reports untracked files, so a newly added rendered
+          # target (which `git diff` would miss) still counts as drift.
+          if [ -z "$(git status --porcelain)" ]; then
             echo "::notice::${{ matrix.repo }} already matches the canonical templates."
             exit 0
           fi
           echo "Drift detected in ${{ matrix.repo }}:"
-          git --no-pager diff --stat
+          git status --short
           if [ -z "$GH_TOKEN" ]; then
             echo "::notice::SYNC_PAT absent — dry run; no PR opened. Set SYNC_PAT to enable propagation."
             exit 0
@@ -72,7 +74,8 @@ jobs:
           git config user.name  "prii-federation-bot"
           git config user.email "noreply@github.com"
           git checkout -b "$branch"
-          git commit -am "chore: sync shared federation boilerplate from thehub-pr
+          git add -A   # include newly-created rendered files, not just modified ones
+          git commit -m "chore: sync shared federation boilerplate from thehub-pr
 
           Re-rendered launchers / requirements-desktop.txt / federation_export_manifest
           schema from thehub-pr/federation-templates via render_federation_templates.py.
