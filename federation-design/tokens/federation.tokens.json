@@ -20,15 +20,15 @@
       "analysis":{"foreground":"#6b21a8","background":"#f3e8ff","signal":"#8b5cf6"}
     },
     "statusRoles": {
-      "danger":{"base":"#ef4444","foreground":"#fca5a5"},
-      "success":{"base":"#10b981","foreground":"#6ee7b7"},
-      "warning":{"base":"#f59e0b","foreground":"#fcd34d"},
-      "info":{"base":"#0ea5e9","foreground":"#7dd3fc"},
-      "neutral":{"base":"#64748b","foreground":"#cbd5e1"},
-      "process":{"base":"#8b5cf6","foreground":"#c4b5fd"},
-      "tier":{"base":"#14b8a6","foreground":"#5eead4"},
-      "caution":{"base":"#eab308","foreground":"#fde047"},
-      "elevated":{"base":"#f97316","foreground":"#fdba74"}
+      "danger":{"base":"#ef4444","foreground":"#b91c1c","foregroundDark":"#fca5a5"},
+      "success":{"base":"#10b981","foreground":"#047857","foregroundDark":"#6ee7b7"},
+      "warning":{"base":"#f59e0b","foreground":"#b45309","foregroundDark":"#fcd34d"},
+      "info":{"base":"#0ea5e9","foreground":"#0369a1","foregroundDark":"#7dd3fc"},
+      "neutral":{"base":"#64748b","foreground":"#334155","foregroundDark":"#cbd5e1"},
+      "process":{"base":"#8b5cf6","foreground":"#6d28d9","foregroundDark":"#c4b5fd"},
+      "tier":{"base":"#14b8a6","foreground":"#0f766e","foregroundDark":"#5eead4"},
+      "caution":{"base":"#eab308","foreground":"#a16207","foregroundDark":"#fde047"},
+      "elevated":{"base":"#f97316","foreground":"#c2410c","foregroundDark":"#fdba74"}
     },
     "light": {"background":"#f8fafc","surface":"#ffffff","surfaceSecondary":"#f1f5f9","textPrimary":"#0f172a","textSecondary":"#475569","border":"#cbd5e1"},
     "dark": {"background":"#070b14","surface":"#0f172a","surfaceSecondary":"#172033","textPrimary":"#f8fafc","textSecondary":"#94a3b8","border":"#334155"}

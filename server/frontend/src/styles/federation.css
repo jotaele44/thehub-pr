@@ -16,21 +16,24 @@
   /* Canonical federation status vocabulary — the single shared set across the hub
      and producers (mirrors thehub-pr src/lib/chips.js roles; base = Tailwind 500,
      -fg = Tailwind 300). Rendered as a 15% tint pill via .fd-status[data-status]. */
-  --fd-st-danger:#ef4444; --fd-st-danger-fg:#fca5a5;
-  --fd-st-success:#10b981; --fd-st-success-fg:#6ee7b7;
-  --fd-st-warning:#f59e0b; --fd-st-warning-fg:#fcd34d;
-  --fd-st-info:#0ea5e9; --fd-st-info-fg:#7dd3fc;
-  --fd-st-neutral:#64748b; --fd-st-neutral-fg:#cbd5e1;
-  --fd-st-process:#8b5cf6; --fd-st-process-fg:#c4b5fd;
-  --fd-st-tier:#14b8a6; --fd-st-tier-fg:#5eead4;
-  --fd-st-caution:#eab308; --fd-st-caution-fg:#fde047;
-  --fd-st-elevated:#f97316; --fd-st-elevated-fg:#fdba74;
+  --fd-st-danger:#ef4444; --fd-st-danger-fg:#b91c1c;
+  --fd-st-success:#10b981; --fd-st-success-fg:#047857;
+  --fd-st-warning:#f59e0b; --fd-st-warning-fg:#b45309;
+  --fd-st-info:#0ea5e9; --fd-st-info-fg:#0369a1;
+  --fd-st-neutral:#64748b; --fd-st-neutral-fg:#334155;
+  --fd-st-process:#8b5cf6; --fd-st-process-fg:#6d28d9;
+  --fd-st-tier:#14b8a6; --fd-st-tier-fg:#0f766e;
+  --fd-st-caution:#eab308; --fd-st-caution-fg:#a16207;
+  --fd-st-elevated:#f97316; --fd-st-elevated-fg:#c2410c;
   --fd-radius-sm: .375rem; --fd-radius-md: .5rem; --fd-radius-lg: .75rem;
   --fd-shadow-1: 0 1px 2px rgba(0,0,0,.18); --fd-shadow-2: 0 4px 12px rgba(0,0,0,.22);
   --fd-motion-fast: 120ms cubic-bezier(.2,.8,.2,1); --fd-motion-normal: 180ms cubic-bezier(.2,.8,.2,1);
 }
 [data-theme="dark"] { color-scheme: dark; --fd-bg:#070b14; --fd-surface:#0f172a; --fd-surface-2:#172033; --fd-text:#f8fafc; --fd-text-muted:#94a3b8; --fd-border:#334155; }
 [data-repo="thehub-pr"]{--fd-accent:#2563eb}[data-repo="spiderweb-pr"]{--fd-accent:#0d9488}[data-repo="skywatcher-pr"]{--fd-accent:#0891b2}[data-repo="moneysweep-pr"]{--fd-accent:#16a34a}[data-repo="centinelas-pr"]{--fd-accent:#ea580c}[data-repo="aguayluz-pr"]{--fd-accent:#15803d}[data-repo="ovnis-pr"]{--fd-accent:#7c3aed}
+/* Status pill text: :root defaults are dark (Tailwind 700) shades for WCAG-AA
+   contrast on the light 15% tint; dark theme swaps to light (300) shades. */
+[data-theme="dark"]{--fd-st-danger-fg:#fca5a5;--fd-st-success-fg:#6ee7b7;--fd-st-warning-fg:#fcd34d;--fd-st-info-fg:#7dd3fc;--fd-st-neutral-fg:#cbd5e1;--fd-st-process-fg:#c4b5fd;--fd-st-tier-fg:#5eead4;--fd-st-caution-fg:#fde047;--fd-st-elevated-fg:#fdba74}
 /* Federation base layer: consuming apps set data-theme + data-repo on the root.
    body inherits the federation surface/typography; a global focus ring keeps
    every interactive element keyboard-visible without per-component classes. */
