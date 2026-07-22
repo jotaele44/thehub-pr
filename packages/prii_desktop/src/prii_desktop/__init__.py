@@ -8,9 +8,9 @@ Public API:
 
 from __future__ import annotations
 
-from .appserver import make_desktop_app
+from .appserver import attach_spa, make_desktop_app
 from .config import DesktopConfig
 from .launcher import launch
 
-__all__ = ["DesktopConfig", "make_desktop_app", "launch"]
+__all__ = ["DesktopConfig", "make_desktop_app", "attach_spa", "launch"]
 __version__ = "0.1.0"

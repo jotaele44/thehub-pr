@@ -54,10 +54,19 @@ def _load_app(config: DesktopConfig):
 
 def make_desktop_app(config: DesktopConfig):
     """Return the producer's FastAPI app augmented with same-origin SPA serving."""
+    app = _load_app(config)
+    return attach_spa(app, config.dist_dir)
+
+
+def attach_spa(app, dist_dir):
+    """Augment a FastAPI ``app`` with same-origin static + SPA-fallback serving.
+
+    Split out from ``make_desktop_app`` so it can be unit-tested against a minimal
+    app without importing a producer backend.
+    """
     from fastapi.responses import FileResponse, HTMLResponse, RedirectResponse
 
-    app = _load_app(config)
-    dist_dir = Path(config.dist_dir)
+    dist_dir = Path(dist_dir)
 
     def _index_response():
         """The SPA entry point, or a friendly setup page when the build is missing."""
