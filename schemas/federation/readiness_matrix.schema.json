@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "federation.readiness_matrix.v1",
+  "title": "Federation Readiness Matrix",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "generated_at", "repos"],
+  "properties": {
+    "schema_version": {"const": "federation.readiness_matrix.v1"},
+    "generated_at": {"type": "string", "minLength": 1},
+    "repos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["repo", "status", "completion_pct", "localhost_required", "open_blockers", "validation_errors"],
+        "properties": {
+          "repo": {"enum": ["thehub-pr", "skywatcher-pr", "moneysweep-pr", "aguayluz-pr", "centinelas-pr", "ovnis-pr", "spiderweb-pr"]},
+          "status": {"enum": ["green", "yellow", "red", "critical", "unknown"]},
+          "completion_pct": {"type": "number", "minimum": 0, "maximum": 100},
+          "localhost_required": {"const": false},
+          "open_blockers": {"type": "number", "minimum": 0},
+          "validation_errors": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

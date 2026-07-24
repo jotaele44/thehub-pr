@@ -1,0 +1,24 @@
+FEDERATION_PY ?= python3
+
+.PHONY: federation-export federation-dashboard federation-package federation-validate federation-contract-validate federation-hub-validate offline
+
+federation-export:
+	$(FEDERATION_PY) scripts/offline_operator.py export
+
+federation-dashboard:
+	$(FEDERATION_PY) scripts/offline_operator.py dashboard
+
+federation-package: federation-export federation-dashboard
+	$(FEDERATION_PY) scripts/offline_operator.py package
+
+federation-validate:
+	$(FEDERATION_PY) scripts/offline_operator.py validate
+
+federation-contract-validate:
+	$(FEDERATION_PY) scripts/validate_offline_package_contract_max.py --root exports/federation
+
+federation-hub-validate:
+	$(FEDERATION_PY) scripts/offline_operator.py hub-validate
+	$(FEDERATION_PY) scripts/validate_offline_package_contract_max.py --root ..
+
+offline: federation-package federation-validate federation-contract-validate
