@@ -16,7 +16,7 @@ export default function AppLayout() {
           <Outlet />
         </main>
       </div>
-      <div className="fixed top-[calc(0.75rem+env(safe-area-inset-top))] right-24 z-50 lg:top-3 lg:right-3">
+      <div className="fixed top-[calc(0.75rem+env(safe-area-inset-top))] left-1/2 -translate-x-1/2 z-50 lg:top-3 lg:left-auto lg:right-3 lg:translate-x-0">
         <NotificationBell />
       </div>
       <MobileBottomNav />
