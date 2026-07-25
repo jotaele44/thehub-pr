@@ -1,0 +1,32 @@
+id,category,priority,title,file,line,hold_safe,effort,phase1_enabler,recommended_action
+BUG-1,correctness,P1,DB connection leak — no try/finally in FastAPI routes,server/backend/main.py,,CODE,S,no,Wrap route bodies in contextlib.closing(_conn()) or a yield/close FastAPI dependency
+BUG-2,correctness,P1,create_entity INSERT causes 500 on duplicate id,server/backend/main.py,280,CODE,S,no,Use INSERT OR REPLACE (upsert) or catch IntegrityError and return 409
+BUG-3,correctness,P1,Unvalidated request bodies return 500 not 400,server/backend/main.py,,CODE,M,no,Guard await request.json() and validate shape with Pydantic models; 400 on bad input
+BUG-4,correctness,P1,SQLite concurrency race on data/hub.db (no WAL/busy_timeout),server/backend/main.py,,CODE,M,yes,Enable PRAGMA journal_mode=WAL and busy_timeout on both connections; chunk ingest commits
+BUG-5,correctness,P1,DDL drift risk — duplicated inline schema unguarded,src/hub/ingest.py,46,CODE,M,yes,Single-source DDL module imported by both; add PRAGMA user_version; extend freeze test to DDL
+BUG-6,correctness,P2,Unbounded/negative limit,server/backend/main.py,247,CODE,S,no,Constrain limit with Query(500 ge=1 le=N) and validate body limit
+BUG-7,correctness,P2,manifest.py has no error handling,src/hub/manifest.py,26,CODE,S,no,Catch FileNotFoundError/JSONDecodeError and return friendly INVALID like validate.py
+BUG-8,correctness,P2,fetch_all no per-producer error isolation,src/hub/fetch.py,161,CODE,S,no,Wrap each producer iteration in try/except; record per-producer error; continue; guard cmd isinstance str
+BUG-9,correctness,P2,Startup/registry-shape crashes,server/backend/main.py,107,CODE,S,no,Validate registry shape (program_id present; producers is a list; hub/schema_version keys)
+BUG-10,correctness,P2,Non-atomic file writes cause reader races,src/hub/aggregate.py,58,CODE,S,no,Write temp file + os.replace(); tolerate a bad JSONL line
+BUG-11,correctness,P2,rstrip('s') plural gotcha,server/backend/main.py,271,CODE,S,no,Strip single trailing s (name[:-1] if endswith s) or explicit singular map
+SEC-1,security,P0,Unauth mutation API reachable via 0.0.0.0 Docker bind,docker-compose.yml,11,config+CODE,S/M,no,Bind compose to 127.0.0.1:8000; document no-auth-never-past-loopback invariant; gate mutations behind auth/read-only flag
+SEC-2,security,P1,No body-size limits / unbounded prefetch (DoS),server/backend/main.py,,config+CODE,S,no,Proxy/uvicorn body cap; clamp limit/max_hits; cap bulk_create item count
+SEC-3,security,P2,Error details reflect caller ids,server/backend/main.py,298,CODE,S,no,Generic 404 detail; keep specifics in server logs
+DEP-1,dependencies,P0,Spatial-RAG donor undeclared deps,scratchpad/spatial/spatial-rag/backend/requirements.txt,,config,S,no,Add pinned tenacity geoalchemy2 pgvector numpy; drop dead sse-starlette pin (donor only)
+DEP-2,dependencies,P1,mypy python_version 3.10 vs requires-python >=3.9,pyproject.toml,40,config,S,no,Set mypy python_version=3.9 or raise floor to 3.10
+DEP-3,dependencies,P1,Sub-package floor inconsistency (>=3.10 vs >=3.9),packages/prii_desktop/pyproject.toml,10,config,S,no,Unify to 3.10 or document the matrix explicitly
+DEP-4,ci,P1,No pip-audit/npm-audit/security scan/coverage/Dependabot,.github/workflows/ci.yml,,config,M,no,Add pip-audit + npm audit job; coverage gate; dependabot.yml
+DEP-5,ci,P1,Lint/type coverage narrow (src/hub+tests only),.github/workflows/ci.yml,93,config,M,no,Widen ruff/mypy to tools/ server/backend/ desktop/
+DEP-6,dependencies,P1,Mixed/duplicated pinning; server deps unpinned in image,server/backend/requirements.txt,,config,S/M,no,Pick one pinning strategy; de-duplicate vs server extra; consume lockfile in Dockerfile
+DEP-7,dependencies,P1,Deprecated starlette.testclient in 3 test files,tests/test_desktop_app_server.py,21,CODE,S,no,Standardize on fastapi.testclient
+DEP-8,tooling,P2,Ruff ruleset minimal,pyproject.toml,37,config,S/M,no,Add I and B rules; hold UP until Python floor is 3.10+
+DEP-9,tooling,P2,mypy leniency (global ignore_missing_imports),pyproject.toml,41,config,S,no,Scope ignores via per-module overrides; add types-jsonschema
+DEP-10,tooling,P2,Node engines not enforced in package.json,server/frontend/package.json,,config,S,no,Add engines node >=22
+DEP-11,dependencies,P2,Frontend major upgrades (React 18->19 etc),server/frontend/package.json,,CODE,L,no,Separate initiative; not part of HOLD-safe pass
+FEAT-1,feature,P1,SQLite migration+versioning; single-source DDL,src/hub/ingest.py,46,config+CODE,M,yes,See BUG-5; ADR is HOLD-safe now
+FEAT-2,feature,P1,Pin server deps / use lockfile in image,Dockerfile,26,config,S/M,no,Ship pinned server deps aligning with Phase-0 freeze artifacts
+FEAT-3,feature,P1,Structured logging + request-ID middleware + error tracking,server/backend/main.py,,CODE,M,no,ASGI middleware for X-Request-ID + JSON access log; env-gated error sink
+FEAT-4,feature,P2,CLI --version,src/hub/cli.py,,CODE,S,no,argparse action=version from package metadata
+FEAT-5,feature,P2,Extend schema-freeze to DDL/registry + hub doctor,tests/test_schema_freeze.py,24,config+CODE,S/M,yes,Freeze registry/DDL boundaries; optional hub doctor config-validation command
+FEAT-6,feature,P2,Ingest snapshot-metadata scaffold,src/hub/ingest.py,461,CODE,S/M,yes,Persist ingest-snapshot record (source dir counts timestamp producer SHAs)

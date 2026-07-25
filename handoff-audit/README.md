@@ -26,6 +26,16 @@ Produced under the user's explicit in-session authorization. **No code, no code 
 - `schemas/*.v1.schema.json` — 9 draft-2020-12 contract schemas (drafts; not installed/frozen)
 - `INTERFACES_DESIGN.md`, `SECURITY_CONTRACTS_DESIGN.md`, `TEST_PLAN_DESIGN.md`
 
+### `upgrade-audit/` — Recommendable features, bug fixes, dependency & CI upgrades
+Read-only audit findings. **RECOMMENDATIONS ONLY — nothing applied; HOLD retained.**
+- `UPGRADE_AUDIT.md` — prioritized (bugs/correctness · security · deps/tooling/CI · features), each
+  item with `file:line`, failure scenario, fix, HOLD-safe flag, effort, and Phase-1-enabler tag
+- `UPGRADE_FINDINGS.csv` — machine-readable index of every finding
+
+### `architecture/` — Architecture overview + diagrams
+- `ARCHITECTURE_OVERVIEW.md` — two GitHub-native Mermaid diagrams (three-layer/two-sided model with the
+  certified-snapshot boundary; Spatial-RAG donor → engine-split mapping) + prose tie-in to the baseline
+
 ## Verify
 
 ```bash
