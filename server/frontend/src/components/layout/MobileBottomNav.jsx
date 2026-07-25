@@ -16,7 +16,7 @@ const isActive = (pathname, path) => path === "/" ? pathname === "/" || pathname
 export default function MobileBottomNav() {
   const { pathname } = useLocation();
   return (
-    <nav aria-label="Mobile primary" className="mobile-bottom-nav lg:hidden fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
+    <nav aria-label="Mobile primary" className="mobile-bottom-nav md:hidden fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/85">
       <div className="grid grid-cols-5">
         {ITEMS.map(({ label, path, icon: Icon }) => {
           const active = isActive(pathname, path);
