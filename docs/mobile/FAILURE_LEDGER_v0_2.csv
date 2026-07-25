@@ -1,0 +1,9 @@
+gate,status,blocking_reason,next_action
+INSTALL_LOCKED_DEPENDENCIES,NOT_EXECUTED,Runtime could not clone repository because outbound DNS resolution failed,Run npm ci in connected CI or development runtime
+RUN_TESTS,NOT_EXECUTED,No local checkout or dependency installation available,Run npm test and backend test suite
+TYPECHECK,NOT_EXECUTED,No local checkout or dependency installation available,Run npm run typecheck
+LINT,NOT_EXECUTED,No local checkout or dependency installation available,Run npm run lint
+BUILD,NOT_EXECUTED,No local checkout or dependency installation available,Run npm run build
+EXISTING_VISUAL_TESTS,NOT_EXECUTED,Playwright could not be launched without checkout and installed browsers,Run npm run test:visual
+ROUTE_SCREENSHOTS,QUEUED,Mobile Playwright projects added but not executed,Populate ROUTE_SCREENSHOT_LEDGER after CI run
+GITHUB_CLI,UNAVAILABLE,gh command is not installed in runtime,Used GitHub connector for branch and file commits
