@@ -7,12 +7,12 @@ import NotificationBell from "@/components/notifications/NotificationBell";
 
 export default function AppLayout() {
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden flex bg-background">
       <a href="#main-content" className="skip-link">Skip to main content</a>
       <Sidebar />
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="flex-1 min-w-0 max-w-full overflow-x-hidden flex flex-col">
         <MobileNav />
-        <main id="main-content" tabIndex={-1} className="flex-1 px-4 sm:px-6 lg:px-8 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:pb-6 max-w-[1600px] w-full mx-auto">
+        <main id="main-content" tabIndex={-1} className="flex-1 min-w-0 max-w-full overflow-x-hidden px-4 sm:px-6 lg:px-8 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))] md:pb-6 max-w-[1600px] w-full mx-auto">
           <Outlet />
         </main>
       </div>
