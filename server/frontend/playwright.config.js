@@ -18,10 +18,27 @@ export default defineConfig({
     trace: 'off',
   },
   projects: [
-    { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
-    { name: 'mobile-390x844', use: { ...devices['Desktop Chrome'], viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } },
-    { name: 'mobile-430x932', use: { ...devices['Desktop Chrome'], viewport: { width: 430, height: 932 }, isMobile: true, hasTouch: true } },
-    { name: 'tablet-768x1024', use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 }, hasTouch: true } },
+    {
+      name: 'desktop',
+      testMatch: /pages\.spec\.js/,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } },
+    },
+    {
+      name: 'mobile-390x844',
+      testMatch: /mobile-shell\.spec\.js/,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
+    },
+    {
+      name: 'mobile-430x932',
+      testMatch: /mobile-shell\.spec\.js/,
+      use: { ...devices['Desktop Chrome'], viewport: { width: 430, height: 932 }, isMobile: true, hasTouch: true },
+    },
+    {
+      // Preserve the existing project name so committed tablet snapshots remain valid.
+      name: 'tablet',
+      testMatch: [/pages\.spec\.js/, /mobile-shell\.spec\.js/],
+      use: { ...devices['Desktop Chrome'], viewport: { width: 768, height: 1024 }, hasTouch: true },
+    },
   ],
   webServer: {
     command: 'npm run build && npm run preview -- --port 4173 --strictPort',
