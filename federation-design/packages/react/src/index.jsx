@@ -91,12 +91,30 @@ export function FederationStatusBadge({ status, children, className, ...props })
   )
 }
 
-export function FederationEmptyState({ title, description, action, className, ...props }) {
+// `icon` is an already-rendered node (e.g. a lucide element) — the package never
+// imports an icon library, keeping it dependency-free.
+export function FederationEmptyState({ icon, title, description, action, className, ...props }) {
   return (
     <div className={cx('fd-empty-state', className)} role="status" {...props}>
+      {icon ? <div className="fd-empty-state__icon" aria-hidden="true">{icon}</div> : null}
       <h2 className="fd-empty-state__title">{title}</h2>
       {description ? <p className="fd-empty-state__description">{description}</p> : null}
       {action ? <div className="fd-empty-state__action">{action}</div> : null}
+    </div>
+  )
+}
+
+// Metric tile. `value` is the headline figure; `icon` (optional) is a rendered
+// node; `sub` an optional caption; `alert` tints the icon with the danger token.
+export function FederationStatCard({ label, value, icon, sub, alert, className, ...props }) {
+  return (
+    <div className={cx('fd-stat-card', alert && 'fd-stat-card--alert', className)} {...props}>
+      <div className="fd-stat-card__head">
+        <span className="fd-stat-card__label">{label}</span>
+        {icon ? <span className="fd-stat-card__icon" aria-hidden="true">{icon}</span> : null}
+      </div>
+      <div className="fd-stat-card__value">{value}</div>
+      {sub ? <div className="fd-stat-card__sub">{sub}</div> : null}
     </div>
   )
 }
