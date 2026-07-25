@@ -60,6 +60,7 @@ hub validate-package <export-dir>            # validate producer export package
 hub fetch --run --root ws                    # clone/refresh producers and run exports when allowed
 hub aggregate --root .. --out data/aggregate # merge discoverable packages
 hub correlate --in data/aggregate            # derive cross-producer relationship edges
+hub project-signs --in data/aggregate --out reports/signs  # render per-project consolidation signs
 hub ingest --in data/aggregate --db data/hub.db  # load the aggregate into the app store
 make test
 ```
@@ -96,6 +97,13 @@ feeds, cases) stay empty until producers emit that data. If `dist/` is not built
 runs API-only and the UI can be served separately with `npm --prefix server/frontend run dev`
 (Vite on :5173). The per-producer `dashboard/`/`frontend/` apps are diagnostic-only; the hub
 app is the product.
+
+After consolidation, `hub project-signs` groups each project's funding awards (by recipient +
+location) into a public-works style **sign** — project title, location, each funding
+contribution with its agency, officials, and amount, and a consolidated total. It writes one
+self-contained HTML placard per project plus `index.json` to `reports/signs/`. Signs are a
+consolidation-summary artifact, not an official notice, and synthetic/test data renders a
+visible SYNTHETIC ribbon.
 
 ## Boundary rules
 
