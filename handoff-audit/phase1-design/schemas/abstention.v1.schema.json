@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/abstention/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "DESIGN_DRAFT — not installed, not frozen",
+  "title": "Abstention",
+  "description": "Eight abstention statuses, each with an explicit reason. On no evidence the system MUST NOT fabricate an answer (abstention.false_answer_on_no_evidence_max == 0).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "reason"],
+  "properties": {
+    "status": {"enum": ["ANSWERED", "PARTIALLY_ANSWERED", "INSUFFICIENT_EVIDENCE", "CONTRADICTED", "OUT_OF_SCOPE", "SNAPSHOT_INCOMPLETE", "RETRIEVAL_FAILURE", "GENERATION_FAILURE"]},
+    "reason": {"type": "string", "minLength": 1}
+  },
+  "allOf": [
+    {"if": {"properties": {"status": {"enum": ["INSUFFICIENT_EVIDENCE", "CONTRADICTED", "OUT_OF_SCOPE", "SNAPSHOT_INCOMPLETE", "RETRIEVAL_FAILURE", "GENERATION_FAILURE"]}}}, "then": {"description": "Non-answering statuses must not accompany fabricated claims; the claim ledger's claims array is expected to be empty or contradiction-only."}}
+  ]
+}
