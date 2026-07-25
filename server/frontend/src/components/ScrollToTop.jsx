@@ -13,20 +13,17 @@ export default function ScrollToTop() {
   useEffect(() => {
     if (navigationType === "POP") return;
 
-    if (hash) {
-      const id = getHashId(hash);
-      const timer = window.setTimeout(() => {
-        const target = document.getElementById(id);
+    const timer = window.setTimeout(() => {
+      if (hash) {
+        const target = document.getElementById(getHashId(hash));
         target?.scrollIntoView({ behavior: "smooth" });
         target?.focus?.({ preventScroll: true });
-      }, 50);
-      return () => window.clearTimeout(timer);
-    }
+      } else {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        document.getElementById("main-content")?.focus({ preventScroll: true });
+      }
+    }, 75);
 
-    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-    const timer = window.setTimeout(() => {
-      document.getElementById("main-content")?.focus({ preventScroll: true });
-    }, 0);
     return () => window.clearTimeout(timer);
   }, [pathname, hash, navigationType]);
 
