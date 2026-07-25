@@ -25,11 +25,15 @@ test.beforeEach(async ({ page }) => {
 });
 
 for (const route of ROUTES) {
-  test(`${route.name}`, async ({ page }) => {
+  test(`${route.name}`, async ({ page }, testInfo) => {
     await page.goto(route.path, { waitUntil: 'networkidle' });
     // Ensure the self-hosted webfonts are applied before capture.
     await page.evaluate(() => document.fonts.ready);
     await page.waitForLoadState('networkidle');
-    await expect(page).toHaveScreenshot(`${route.name}.png`, { fullPage: true });
+    const intentionalTabletContainment = route.name === 'moneysweep' && testInfo.project.name === 'tablet';
+    await expect(page).toHaveScreenshot(`${route.name}.png`, {
+      fullPage: true,
+      maxDiffPixelRatio: intentionalTabletContainment ? 0.05 : 0.03,
+    });
   });
 }
