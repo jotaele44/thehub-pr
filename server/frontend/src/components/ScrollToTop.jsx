@@ -3,12 +3,7 @@ import { useLocation, useNavigationType } from "react-router-dom";
 
 const getHashId = (hash) => {
   const rawId = hash.slice(1);
-
-  try {
-    return decodeURIComponent(rawId);
-  } catch {
-    return rawId;
-  }
+  try { return decodeURIComponent(rawId); } catch { return rawId; }
 };
 
 export default function ScrollToTop() {
@@ -21,12 +16,18 @@ export default function ScrollToTop() {
     if (hash) {
       const id = getHashId(hash);
       const timer = window.setTimeout(() => {
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+        const target = document.getElementById(id);
+        target?.scrollIntoView({ behavior: "smooth" });
+        target?.focus?.({ preventScroll: true });
       }, 50);
       return () => window.clearTimeout(timer);
     }
 
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    const timer = window.setTimeout(() => {
+      document.getElementById("main-content")?.focus({ preventScroll: true });
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [pathname, hash, navigationType]);
 
   return null;
