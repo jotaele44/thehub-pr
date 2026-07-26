@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import inspect
 from pathlib import Path
 
 import pytest
@@ -140,6 +141,11 @@ def test_non_loopback_requests_are_rejected():
     with pytest.raises(HTTPException, match="loopback only") as exc:
         _require_loopback(remote)
     assert exc.value.status_code == 403
+
+
+def test_fastapi_endpoint_annotations_are_python_39_compatible():
+    for endpoint in (federation_manager_api.list_apps, federation_manager_api.get_app):
+        assert " | " not in str(inspect.signature(endpoint))
 
 
 @pytest.fixture
