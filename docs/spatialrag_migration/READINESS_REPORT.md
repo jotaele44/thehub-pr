@@ -49,23 +49,16 @@ corpus or harness code is written — only its spec ([`EVALUATION_CORPUS_SPEC.md
 ADR 0003 is a design ratification, not a build authorization — a follow-on ADR/PR is required before
 Phase 2 runtime code lands.
 
-## Open questions requiring human sign-off before Phase 1
+## Human decisions approved for Phase 1
 
-1. **Datastore choice.** [`DATABASE_BOUNDARIES.md`](DATABASE_BOUNDARIES.md) recommends Postgres +
-   PostGIS + pgvector as a new, additional datastore (thehub-pr's existing SQLite `data/hub.db` has
-   no vector/spatial extension story and continues to serve the structured pipeline unchanged). The
-   recommendation is stated plainly, but adding a new stateful database service is a real operational
-   expansion for a repo whose `docker-compose.yml` runs one service today, and needs explicit
-   sign-off before provisioning begins.
-2. **`ARCHITECTURE.md` tension resolution.** ADR 0003 resolves this by precedent (the hub's own
-   product surface was already live per ADR 0001; the new engines extend that surface, not the
-   artifact-only producer boundary). The reasoning is sound, but this is the kind of precedent-setting
-   architectural interpretation that should get explicit reviewer sign-off rather than being treated
-   as automatically settled by this document.
-3. **Evidence/Intelligence Engine deployment shape.** Whether they run as subprocess workers or
-   in-process modules of `server/backend` is not decided in this Phase 0 pass —
-   [`TARGET_REPO_TREE.md`](TARGET_REPO_TREE.md) specs the module layout but not the process
-   topology; this affects the Phase 2 worker/service split noted there.
+1. **Datastore:** PostgreSQL + PostGIS + pgvector is approved as an additional datastore. SQLite
+   remains in place for the existing structured federation pipeline.
+2. **Architecture boundary:** `ARCHITECTURE.md` now explicitly preserves artifact-only producer
+   integration while distinguishing the Hub's live product boundary. Producer shared-database and
+   RPC coupling remain prohibited.
+3. **Deployment:** Control Plane and the read-only Intelligence API run in `server/backend`;
+   Evidence ingestion/OCR/embedding run as separate workers. PostgreSQL schemas and roles enforce
+   mutable-ingest, promotion-metadata, and read-only-active-snapshot separation.
 
 ## Requirement traceability
 
@@ -106,12 +99,12 @@ Every OUTPUT item from the mission (`ARCHITECTURE_DECISION_RECORD`, `COMPONENT_M
 |---|---|
 | All 13 companion docs + ADR 0003 exist and are internally consistent | Done — this pass |
 | Requirement traceability table above has no blank cells | Done |
-| Open questions (datastore choice, ARCHITECTURE.md tension, deployment shape) have explicit human sign-off | **Pending** — not resolved by this document alone |
+| Datastore, architecture boundary, deployment shape, and schema-role isolation have explicit human sign-off | **Done — adjudicated 2026-07-26** |
 | ADR 0003 reviewed and merged | **Pending** — awaiting reviewer approval on the PR carrying this deliverable |
 | No spatial-rag code, schema, or dependency file has been touched in thehub-pr | Confirmed — this Phase 0 pass is documentation-only |
 
-Phase 1 (new frozen schemas, `pyproject.toml` extras, benchmark corpus population) does not begin
-until the two **Pending** rows above are resolved.
+Phase 1 may begin after ADR 0003 is reviewed and merged. Phase 2 runtime implementation still
+requires its follow-on ADR/PR and parity gates.
 
 ## Readiness stages (restated from the mission, unchanged by this audit)
 
