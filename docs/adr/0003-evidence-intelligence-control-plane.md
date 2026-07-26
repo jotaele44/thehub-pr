@@ -109,13 +109,12 @@ capabilities *within* that already-live product surface — they extend the side
 that was never artifact-only, rather than violating the artifact-based principle that still governs
 producer relationships. Producer contract schemas remain frozen and untouched.
 
-This resolution is still flagged in
-[`READINESS_REPORT.md`](../spatialrag_migration/READINESS_REPORT.md) as requiring explicit human
-sign-off before Phase 1 begins, because it is a genuine, precedent-setting expansion of live surface
-area (a new stateful datastore, per
-[`DATABASE_BOUNDARIES.md`](../spatialrag_migration/DATABASE_BOUNDARIES.md)) — the architectural
-argument above says it's *consistent* with existing precedent, not that it's free of new operational
-risk.
+This resolution received explicit human sign-off on 2026-07-26, as recorded below and in
+[`READINESS_REPORT.md`](../spatialrag_migration/READINESS_REPORT.md). It remains a genuine,
+precedent-setting expansion of live surface area (including a new stateful datastore, per
+[`DATABASE_BOUNDARIES.md`](../spatialrag_migration/DATABASE_BOUNDARIES.md)), so the approval
+authorizes Phase 1 contract work without minimizing the operational risk or authorizing Phase 2
+runtime implementation.
 
 ## Human adjudication
 
