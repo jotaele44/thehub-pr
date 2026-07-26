@@ -14,10 +14,12 @@ import secrets
 import time
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Mapping
+from urllib.parse import urlsplit
 
-from jsonschema import Draft202012Validator
+from jsonschema import Draft202012Validator, FormatChecker
 
 APP_IDS = (
     "thehub",
@@ -38,6 +40,7 @@ APP_CATALOG: tuple[dict[str, Any], ...] = (
     {"appId": "spiderweb", "displayName": "Spiderweb", "profile": "one_click_basic", "iconId": "spiderweb"},
     {"appId": "moneysweep", "displayName": "MoneySweep", "profile": "multistage", "iconId": "moneysweep"},
 )
+APP_DISPLAY_NAMES = {app["appId"]: app["displayName"] for app in APP_CATALOG}
 
 READINESS_DIMENSIONS = ("install", "configuration", "data", "federation", "production")
 SECRET_KEY_PATTERN = ("secret", "token", "password", "api_key", "authorization", "credential")
@@ -49,6 +52,23 @@ FORBIDDEN_MANIFEST_FIELDS = (
     "executable",
     "hub_callable_commands",
 )
+RELEASE_FORMAT_CHECKER = FormatChecker()
+
+
+@RELEASE_FORMAT_CHECKER.checks("date-time", raises=ValueError)
+def _is_date_time(value: object) -> bool:
+    if not isinstance(value, str):
+        return True
+    parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    return parsed.tzinfo is not None
+
+
+@RELEASE_FORMAT_CHECKER.checks("uri")
+def _is_uri(value: object) -> bool:
+    if not isinstance(value, str):
+        return True
+    parsed = urlsplit(value)
+    return bool(parsed.scheme and parsed.netloc)
 
 
 class ManifestSecurityError(ValueError):
@@ -69,11 +89,22 @@ def _walk_keys(value: Any) -> list[str]:
 
 def validate_release_manifest(manifest: Mapping[str, Any], schema: Mapping[str, Any]) -> None:
     """Validate structure and reject every executable/arbitrary-command field."""
-    Draft202012Validator(schema).validate(manifest)
+    Draft202012Validator(schema, format_checker=RELEASE_FORMAT_CHECKER).validate(manifest)
     present = set(_walk_keys(manifest))
     forbidden = sorted(set(FORBIDDEN_MANIFEST_FIELDS) & present)
     if forbidden:
         raise ManifestSecurityError(f"executable manifest fields are forbidden: {forbidden}")
+    apps = manifest["apps"]
+    app_ids = [app["appId"] for app in apps]
+    if len(app_ids) != len(set(app_ids)) or set(app_ids) != set(APP_IDS):
+        raise ManifestSecurityError("release catalog must contain exactly one of each native app")
+    mismatched = [
+        app["appId"]
+        for app in apps
+        if app["displayName"] != APP_DISPLAY_NAMES[app["appId"]]
+    ]
+    if mismatched:
+        raise ManifestSecurityError(f"app identity/display-name mismatch: {mismatched}")
 
 
 @dataclass(frozen=True)
