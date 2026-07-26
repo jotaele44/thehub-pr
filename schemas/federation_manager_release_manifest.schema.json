@@ -14,7 +14,16 @@
       "type": "array",
       "minItems": 7,
       "maxItems": 7,
-      "items": {"$ref": "#/$defs/app"}
+      "items": {"$ref": "#/$defs/app"},
+      "allOf": [
+        {"contains": {"properties": {"appId": {"const": "thehub"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "ovnis"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "centinelas"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "skywatcher"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "aguayluz"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "spiderweb"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "moneysweep"}}}, "minContains": 1, "maxContains": 1}
+      ]
     },
     "signature": {
       "type": "object",
@@ -48,7 +57,16 @@
             "federationContract": {"type": "string"}
           }
         }
-      }
+      },
+      "allOf": [
+        {"if": {"properties": {"appId": {"const": "thehub"}}}, "then": {"properties": {"displayName": {"const": "TheHub"}}}},
+        {"if": {"properties": {"appId": {"const": "ovnis"}}}, "then": {"properties": {"displayName": {"const": "OVNIS"}}}},
+        {"if": {"properties": {"appId": {"const": "centinelas"}}}, "then": {"properties": {"displayName": {"const": "Centinelas"}}}},
+        {"if": {"properties": {"appId": {"const": "skywatcher"}}}, "then": {"properties": {"displayName": {"const": "Skywatcher"}}}},
+        {"if": {"properties": {"appId": {"const": "aguayluz"}}}, "then": {"properties": {"displayName": {"const": "AguaYLuz"}}}},
+        {"if": {"properties": {"appId": {"const": "spiderweb"}}}, "then": {"properties": {"displayName": {"const": "Spiderweb"}}}},
+        {"if": {"properties": {"appId": {"const": "moneysweep"}}}, "then": {"properties": {"displayName": {"const": "MoneySweep"}}}}
+      ]
     },
     "artifact": {
       "type": "object",
