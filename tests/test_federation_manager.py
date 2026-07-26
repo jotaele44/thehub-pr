@@ -6,6 +6,8 @@ from pathlib import Path
 import pytest
 from fastapi import HTTPException
 from jsonschema import ValidationError
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
 from starlette.requests import Request
 
 from server.backend.federation_manager import (
@@ -20,6 +22,7 @@ from server.backend.federation_manager import (
     validate_release_manifest,
 )
 from server.backend.federation_manager_api import _require_loopback
+from server.backend import federation_manager_api
 
 ROOT = Path(__file__).parents[1]
 SCHEMA = json.loads(
@@ -70,6 +73,37 @@ def test_release_schema_positive_and_tamper_negative():
         validate_release_manifest(tampered, SCHEMA)
 
 
+def test_release_schema_rejects_duplicate_apps():
+    manifest = valid_manifest()
+    manifest["apps"] = [manifest["apps"][0]] * 7
+    with pytest.raises(ValidationError):
+        validate_release_manifest(manifest, SCHEMA)
+
+
+def test_release_schema_rejects_identity_display_name_mismatch():
+    manifest = valid_manifest()
+    manifest["apps"][0]["displayName"] = "MoneySweep"
+    with pytest.raises(ValidationError):
+        validate_release_manifest(manifest, SCHEMA)
+
+
+@pytest.mark.parametrize(
+    ("path", "value"),
+    [
+        (("generatedAt",), "not-a-date"),
+        (("apps", 0, "artifacts", 0, "url"), "https://"),
+    ],
+)
+def test_release_schema_enforces_formats(path, value):
+    manifest = valid_manifest()
+    target = manifest
+    for key in path[:-1]:
+        target = target[key]
+    target[path[-1]] = value
+    with pytest.raises(ValidationError):
+        validate_release_manifest(manifest, SCHEMA)
+
+
 @pytest.mark.parametrize("field", ["command", "shell", "script", "executable", "hub_callable_commands"])
 def test_arbitrary_command_fields_are_rejected_at_any_depth(field):
     schema = json.loads(json.dumps(SCHEMA))
@@ -106,6 +140,62 @@ def test_non_loopback_requests_are_rejected():
     with pytest.raises(HTTPException, match="loopback only") as exc:
         _require_loopback(remote)
     assert exc.value.status_code == 403
+
+
+@pytest.fixture
+def manager_client(monkeypatch):
+    nonce = "n" * 32
+    manager = SessionManager(nonce, {"http://localhost:5173"}, ttl_seconds=5)
+    monkeypatch.setattr(federation_manager_api, "_bootstrap_nonce", nonce)
+    monkeypatch.setattr(federation_manager_api, "sessions", manager)
+    monkeypatch.setattr(federation_manager_api, "_require_loopback", lambda request: None)
+    app = FastAPI()
+    app.include_router(federation_manager_api.router)
+    return TestClient(app), manager, nonce
+
+
+def test_api_rejects_origin_and_missing_auth(manager_client):
+    client, _, nonce = manager_client
+    rejected = client.post(
+        "/api/federation-manager/session",
+        headers={"origin": "https://evil.invalid"},
+        json={"nonce": nonce, "origin": "https://evil.invalid"},
+    )
+    assert rejected.status_code == 403
+    missing = client.get(
+        "/api/federation-manager/apps",
+        headers={"origin": "http://localhost:5173"},
+    )
+    assert missing.status_code == 401
+
+
+def test_api_accepts_native_session_and_rejects_expired_token(manager_client):
+    client, manager, nonce = manager_client
+    session = client.post(
+        "/api/federation-manager/session",
+        headers={"origin": "http://localhost:5173"},
+        json={"nonce": nonce, "origin": "http://localhost:5173"},
+    )
+    assert session.status_code == 200
+    token = session.json()["token"]
+    inventory = client.get(
+        "/api/federation-manager/apps",
+        headers={
+            "origin": "http://localhost:5173",
+            "authorization": f"Bearer {token}",
+        },
+    )
+    assert inventory.status_code == 200
+    assert len(inventory.json()) == 7
+    expired_token, _ = manager.exchange(nonce, "http://localhost:5173", now=0)
+    expired = client.get(
+        "/api/federation-manager/apps",
+        headers={
+            "origin": "http://localhost:5173",
+            "authorization": f"Bearer {expired_token}",
+        },
+    )
+    assert expired.status_code == 401
 
 
 def test_secret_non_disclosure_and_interface_has_no_get():
