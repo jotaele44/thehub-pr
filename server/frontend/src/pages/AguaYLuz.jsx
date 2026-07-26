@@ -7,7 +7,7 @@ import StatusChip from "@/components/shared/StatusChip";
 import IdCode from "@/components/shared/IdCode";
 import { Droplets } from "lucide-react";
 import { MODULES, REGIONS } from "@/lib/federation";
-import { GENERIC_STATUS, SENSITIVITY, SEVERITY, CONFIDENCE } from "@/lib/chips";
+import { GENERIC_STATUS, SENSITIVITY, SEVERITY, CONFIDENCE, REVIEW_STATUS } from "@/lib/chips";
 
 const MODULE = MODULES.find((m) => m.name === "AguaYLuz-PR");
 const ASSET_TYPES = ["Reservoir", "Dam", "PumpStation", "WaterPlant", "PowerPlant", "Substation", "Transmission", "Distribution", "Canal", "Other"];
