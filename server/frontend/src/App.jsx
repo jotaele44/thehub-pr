@@ -42,6 +42,7 @@ const Hub = lazy(() => import('@/pages/Hub'));
 const RecentActivity = lazy(() => import('@/pages/RecentActivity'));
 const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
+const AppCenter = lazy(() => import('@/pages/AppCenter'));
 
 const AppRoutes = () => {
   const { isLoadingPublicSettings, appPublicSettings } = useAuth();
@@ -78,6 +79,7 @@ const AppRoutes = () => {
             <Route path="/" element={<RecentActivity />} />
             <Route path="/activity" element={<RecentActivity />} />
             <Route path="/programs" element={<Programs />} />
+            <Route path="/apps" element={<AppCenter />} />
             <Route path="/cases" element={<Cases />} />
             <Route path="/sources" element={<Sources />} />
             <Route path="/tasks" element={<Tasks />} />
