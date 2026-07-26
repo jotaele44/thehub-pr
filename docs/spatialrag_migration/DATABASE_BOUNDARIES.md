@@ -32,7 +32,7 @@ history table and no point-in-time query capability (confirmed directly — see
 The mutable/certified split specified here is new work for both halves of the merge, not a port of
 an existing thehub-pr pattern.
 
-## Open question: datastore choice (answered, not deferred)
+## Adopted datastore
 
 thehub-pr's only datastore today is a flat SQLite KV store (`data/hub.db`, table
 `entities(entity_type, entity_id, data, updated_at)`) with no vector or spatial extension story.
@@ -40,13 +40,20 @@ spatial-rag's stack is Postgres 15 + PostGIS 3.4 + pgvector. The Evidence Engine
 hybrid BM25/vector retrieval, PostGIS geometry queries with uncertainty, a queryable snapshot
 history — cannot be met by SQLite.
 
-**Recommendation: Postgres + PostGIS + pgvector is adopted as a new, additional datastore for the
+**Decision: PostgreSQL + PostGIS + pgvector is adopted as a new, additional datastore for the
 Evidence/Intelligence Engines.** thehub-pr's existing `data/hub.db` continues to serve the structured
 federation pipeline (`hub aggregate`/`correlate`/`ingest`) unchanged; nothing about this migration
-requires moving that pipeline off SQLite. This is stated plainly here rather than left open, but it
-is still listed as an item requiring explicit human sign-off in
-[`READINESS_REPORT.md`](READINESS_REPORT.md), because it is a genuinely new operational dependency
+requires moving that pipeline off SQLite. This human-signoff decision was recorded on 2026-07-26. It is a genuinely new operational dependency
 (a stateful database service) for a repo whose `docker-compose.yml` today runs one service.
+
+## Schema and role isolation
+
+- `evidence_worker`: write access to mutable ingest schemas; no authority to promote snapshots.
+- `control_plane`: read/write access to snapshot metadata and atomic promotion state; no general
+  evidence-content mutation authority.
+- `intelligence_reader`: read-only access to views or schemas exposing `ACTIVE` snapshots; no
+  mutable-ingest access and no promotion authority.
+- Operational credentials are distinct. Application code must not reuse an owner or migration role.
 
 ## Snapshot boundary mechanics (detail in SNAPSHOT_STATE_MACHINE.md)
 
