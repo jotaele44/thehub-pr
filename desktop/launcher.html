@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PRII Federation Launcher</title>
+  <title>TheHub</title>
   <style>
     :root { color-scheme: dark; }
     * { box-sizing: border-box; margin: 0; }
@@ -18,6 +18,15 @@
       display: flex; align-items: center; gap: 14px;
       background: #111a30; border: 1px solid #1e2a4a; border-radius: 12px;
       padding: 14px 16px; margin-bottom: 10px;
+    }
+    .app-icon {
+      width: 44px; height: 44px; flex: 0 0 44px;
+      display: grid; place-items: center;
+      border-radius: 11px;
+      background: linear-gradient(145deg, #273657, #141d34);
+      border: 1px solid #405174;
+      box-shadow: inset 0 1px 0 rgb(255 255 255 / .08), 0 6px 18px rgb(0 0 0 / .22);
+      color: #f8fafc; font-size: 13px; font-weight: 800; letter-spacing: .05em;
     }
     .card .info { flex: 1; min-width: 0; }
     .card .name { font-weight: 700; }
@@ -41,13 +50,12 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>PRII Federation Launcher</h1>
-    <p class="sub">Launch any federation app cloned next to this hub. First launch of an app runs its one-time setup (can take a few minutes).</p>
+    <h1>TheHub</h1>
+    <p class="sub">Launch any federation app cloned next to this hub. The first launch runs its one-time setup.</p>
     <div id="list">Loading…</div>
     <p class="note">
-      An app opens in its own window on its own local port. "Not cloned" repos need
-      <code>git clone</code> next to the hub directory first. The hub dashboard itself is
-      <a href="/">here</a>.
+      Each app opens in its own window on its own local port. Apps marked "Not cloned"
+      must be cloned next to TheHub first. The main dashboard is <a href="/">here</a>.
     </p>
   </div>
   <script>
@@ -71,9 +79,9 @@
           ? ""
           : r.present && r.has_desktop
             ? '<button data-repo="' + r.repo + '"' + (canLaunch && !busy ? "" : " disabled") + ">" + (busy ? "Launching…" : r.running ? "Running" : "Launch") + "</button>"
-            : '<a href="' + r.github_url + '" target="_blank">GitHub ↗</a>';
-        return '<div class="card"><div class="info"><div class="name">' + r.name +
-          ' <span style="color:#475569;font-weight:400">· ' + r.repo + '</span></div>' +
+            : '<a href="' + r.github_url + '" target="_blank" rel="noopener noreferrer">GitHub ↗</a>';
+        return '<div class="card"><div class="app-icon" aria-hidden="true">' + r.icon + '</div>' +
+          '<div class="info"><div class="name">' + r.name + '</div>' +
           '<div class="domain">' + r.domain + '</div></div>' + chip(r) + action + '</div>';
       }).join("");
       list.querySelectorAll("button[data-repo]").forEach(function (btn) {
@@ -100,7 +108,6 @@
           alert(body.detail || "Launch failed");
         }
       } finally {
-        // Give slow first-run setups time before clearing the spinner state.
         setTimeout(function () { launching.delete(repo); refresh(); }, 4000);
       }
     }
