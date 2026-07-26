@@ -7,6 +7,8 @@
 - Opaque short-lived sessions bound to browser origin
 - Native bootstrap nonce comparison using constant-time digest comparison
 - Declarative JSON Schema validation
+- Format-checked timestamps and artifact URIs
+- Exactly-one native app identity and ID/display-name pairing
 - Recursive rejection of executable manifest fields
 - Recursive technical-details redaction
 - Secret-provider interface without secret retrieval
