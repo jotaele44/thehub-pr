@@ -95,6 +95,14 @@ use the same flag: rendered when auth is required, redirected to `/` when it is 
 existing variable, no new state, no backend change — the shell can no longer contradict
 itself. Verified: `npm run lint` clean, `npm run build` clean, `npm run test` 16/16.
 
+The Playwright visual suite had a `login` baseline and initially failed on this change —
+correctly, since `/login` now redirects in diagnostic mode. `tests/visual/pages.spec.js` now
+reports `requires_auth: true` for that one test and `false` for the rest, so the auth layout
+stays under visual coverage and the suite exercises **both** sides of the gate. All 10
+snapshots pass against the **existing committed baselines** with no regeneration — which is
+the useful part: it proves the login page still renders pixel-identically when auth is
+required, so this change gates the route without altering the page.
+
 **2. Mutating API routes refuse unauthenticated non-loopback callers.**
 `server/backend/main.py` gains `require_write_access` on `POST`/`PATCH`/`DELETE`
 `/api/entities/*` and the notification write routes:
