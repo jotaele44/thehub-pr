@@ -89,11 +89,18 @@ Pillow, geopy, pytest, ...) splits into new extras — named, not yet added:
 `dev`/`server` stay as-is. This table is the Phase 1 starting point for editing `pyproject.toml` —
 not an instruction executed now.
 
-## Worker/service split implied (spec only — `docker-compose.yml`/`Dockerfile` not edited in this phase)
+## Adopted deployment shape (spec only — `docker-compose.yml`/`Dockerfile` not edited in this phase)
 
-Per the mission's dependency-and-deployment-target requirement, the eventual service split is:
-lightweight API, ingestion/OCR worker, embedding worker, intelligence service, frontend — as distinct
-`docker-compose.yml` services, mirroring spatial-rag's existing three-service split (`db`, `backend`,
-`frontend`) but decomposed further to isolate the heavy OCR/ML dependency footprint from the
-lightweight API surface. Full compose file design is a Phase 2 task once `evidence_engine`/
-`intelligence_engine` module boundaries are implemented, not specified module-by-module here.
+The Hub remains one product with a modular-monolith codebase, using a hybrid process topology:
+
+- `server/backend` hosts Control Plane routes and the read-only Intelligence query API.
+- Evidence ingestion/OCR and embedding execute in separate worker processes so long-running and
+  heavy-dependency jobs cannot block interactive requests.
+- Workers and backend use one PostgreSQL cluster with separate schemas and least-privilege roles as
+  defined in `DATABASE_BOUNDARIES.md`.
+- Intelligence is not a separately deployed network service in the initial shape. Its module and
+  contracts remain separable if later load evidence justifies independent scaling.
+- The frontend remains its existing service.
+
+This is the approved Phase 2 design target. Exact compose health checks, queues, concurrency, and
+resource limits remain Phase 2 implementation details.
