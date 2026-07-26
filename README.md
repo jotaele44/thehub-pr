@@ -88,8 +88,10 @@ python -m uvicorn server.backend.main:app --port 8000   # open http://localhost:
 
 `hub ingest` maps the canonical aggregate streams onto the collections the UI reads
 (`sources → UnifiedSources`, `entities → GraphNodes`, `relationships → GraphEdges`,
-`alerts → GovernanceAlerts`, `correlations → CrossoverLinks`); the mapping lives in one place,
-`COLLECTION_ADAPTERS` in [`src/hub/ingest.py`](src/hub/ingest.py). Pages backed by these
+`alerts → GovernanceAlerts`, `correlations → CrossoverLinks`); the mapping lives in
+[`src/hub/ingest.py`](src/hub/ingest.py), where `ingest_aggregate` drives the canonical
+streams through `_project_ui` and the `project_*` helpers (`project_producer_collections`,
+`project_crossover_links`, `project_continuity_risks`, `project_livefeed`). Pages backed by these
 collections (Sources, the Spiderweb graph, cross-producer links) render live aggregate data;
 domain-heavy pages that need per-domain fields the aggregate does not yet carry (contracts,
 feeds, cases) stay empty until producers emit that data. If `dist/` is not built, the backend

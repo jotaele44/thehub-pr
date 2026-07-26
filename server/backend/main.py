@@ -11,6 +11,9 @@ Start with:
 from __future__ import annotations
 
 import json
+import logging
+import os
+import secrets
 import sqlite3
 import uuid
 from contextlib import asynccontextmanager
@@ -19,7 +22,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import yaml
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -30,10 +33,59 @@ REGISTRY_PATH = REPO_ROOT / "registry" / "producers.yaml"
 
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
 
+log = logging.getLogger("hub.backend")
+
+# ── Write authorization ────────────────────────────────────────────────────────
+# Diagnostic mode ships without authentication: /api/auth/me always 401s and
+# public-settings reports requires_auth=false, so nothing else stands between a
+# caller and a route that writes to data/hub.db. That is fine for the documented
+# single-operator loopback workflow, and not fine once the app is reachable from
+# another host — and this repo ships a Dockerfile and docker-compose.yml, so
+# "it only listens on localhost" is not structurally guaranteed.
+#
+#   PRII_WRITE_TOKEN set    -> mutating routes require Authorization: Bearer <token>
+#   PRII_WRITE_TOKEN unset  -> mutating routes are served only to loopback clients
+#
+# Reads are unaffected in both cases.
+_WRITE_TOKEN = os.environ.get("PRII_WRITE_TOKEN", "")
+_LOOPBACK_HOSTS = frozenset({"127.0.0.1", "::1", "localhost"})
+
+
+def require_write_access(request: Request) -> None:
+    """Authorize a mutating request, by bearer token or by loopback origin."""
+    if _WRITE_TOKEN:
+        scheme, _, presented = request.headers.get("authorization", "").partition(" ")
+        if scheme.lower() != "bearer" or not secrets.compare_digest(
+            presented, _WRITE_TOKEN
+        ):
+            raise HTTPException(
+                status_code=401, detail="Missing or invalid write token"
+            )
+        return
+
+    client_host = request.client.host if request.client else ""
+    if client_host not in _LOOPBACK_HOSTS:
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                "Writes from non-loopback clients are refused while "
+                "PRII_WRITE_TOKEN is unset. Set it to enable remote writes."
+            ),
+        )
+
+
+_WRITE_GUARD = [Depends(require_write_access)]
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _init_db()
     _seed_programs()
+    if not _WRITE_TOKEN:
+        log.warning(
+            "PRII_WRITE_TOKEN is unset — mutating /api routes will be refused for "
+            "any client that is not on loopback."
+        )
     yield
 
 
@@ -208,7 +260,7 @@ def notifications(since: Optional[str] = Query(None), subscriber: str = Query("o
     }
 
 
-@app.post("/api/notifications/ack")
+@app.post("/api/notifications/ack", dependencies=_WRITE_GUARD)
 async def notifications_ack(request: Request):
     """Advance the subscriber's last-seen cursor (marks the digest read)."""
     body = await request.json()
@@ -229,7 +281,7 @@ def get_preferences(subscriber: str = Query("operator")):
             "channels": list(_notif.VALID_CHANNELS), "timing": list(_notif.VALID_TIMING)}
 
 
-@app.put("/api/notifications/preferences")
+@app.put("/api/notifications/preferences", dependencies=_WRITE_GUARD)
 async def set_preferences(request: Request):
     """Set channel (push/sms/none) + timing (asap/brief) prefs, global or per-domain."""
     body = await request.json()
@@ -262,7 +314,7 @@ def list_entities(entity_name: str, sort: str = Query("-created_date"), limit: i
     return [_row(r) for r in rows]
 
 
-@app.post("/api/entities/{entity_name}")
+@app.post("/api/entities/{entity_name}", dependencies=_WRITE_GUARD)
 async def create_entity(entity_name: str, request: Request):
     body = await request.json()
     ts = _now()
@@ -299,7 +351,7 @@ def get_entity(entity_name: str, entity_id: str):
     return _row(row)
 
 
-@app.patch("/api/entities/{entity_name}/{entity_id}")
+@app.patch("/api/entities/{entity_name}/{entity_id}", dependencies=_WRITE_GUARD)
 async def update_entity(entity_name: str, entity_id: str, request: Request):
     patch = await request.json()
     c = _conn()
@@ -324,7 +376,7 @@ async def update_entity(entity_name: str, entity_id: str, request: Request):
     return data
 
 
-@app.delete("/api/entities/{entity_name}/{entity_id}", status_code=204)
+@app.delete("/api/entities/{entity_name}/{entity_id}", status_code=204, dependencies=_WRITE_GUARD)
 def delete_entity(entity_name: str, entity_id: str):
     c = _conn()
     c.execute(
@@ -366,7 +418,7 @@ async def filter_entities(entity_name: str, request: Request):
     return results
 
 
-@app.post("/api/entities/{entity_name}/bulk")
+@app.post("/api/entities/{entity_name}/bulk", dependencies=_WRITE_GUARD)
 async def bulk_create(entity_name: str, request: Request):
     body = await request.json()
     items: list = body.get("items", [])
