@@ -1,6 +1,6 @@
 # ADR 0003 — Evidence Engine, Intelligence Engine, Control Plane
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-07-25
 - **Deciders:** PRII federation maintainers
 - **Scope:** `thehub-pr` design only — no code changes in this ADR's Phase 0
@@ -116,6 +116,23 @@ area (a new stateful datastore, per
 [`DATABASE_BOUNDARIES.md`](../spatialrag_migration/DATABASE_BOUNDARIES.md)) — the architectural
 argument above says it's *consistent* with existing precedent, not that it's free of new operational
 risk.
+
+## Human adjudication
+
+Approved on 2026-07-26 for Phase 1 planning:
+
+- Adopt PostgreSQL + PostGIS + pgvector as an additional datastore for the new engines; retain
+  SQLite for the existing structured federation pipeline.
+- Preserve the artifact-only, no-shared-database, no-RPC producer boundary and amend
+  `ARCHITECTURE.md` to distinguish it from the Hub's live product boundary.
+- Deploy Control Plane and Intelligence query routes in `server/backend`; run Evidence ingestion,
+  OCR, and embedding work in separate worker processes.
+- Enforce separate PostgreSQL schemas and least-privilege roles: Evidence workers may write mutable
+  ingest state; the Control Plane may manage snapshot metadata and atomic promotion; Intelligence is
+  read-only and may query only `ACTIVE` snapshots.
+
+This adjudication authorizes the Phase 1 contract work described below. It does not authorize a
+wholesale spatial-rag merge or Phase 2 runtime implementation.
 
 ## Rationale
 
