@@ -103,26 +103,44 @@ snapshots pass against the **existing committed baselines** with no regeneration
 the useful part: it proves the login page still renders pixel-identically when auth is
 required, so this change gates the route without altering the page.
 
-**2. Mutating API routes refuse unauthenticated non-loopback callers.**
+**2. Mutating API routes refuse unauthenticated callers from public addresses.**
 `server/backend/main.py` gains `require_write_access` on `POST`/`PATCH`/`DELETE`
 `/api/entities/*` and the notification write routes:
 
 - `PRII_WRITE_TOKEN` set → `Authorization: Bearer <token>` required (`secrets.compare_digest`)
-- `PRII_WRITE_TOKEN` unset → writes served to loopback only; a startup warning is logged
+- `PRII_WRITE_TOKEN` unset → writes served to local-network clients (loopback, RFC1918
+  private, link-local) and refused for public addresses; a startup warning is logged
 
-Reads are untouched, and the documented single-operator loopback workflow is unchanged.
-This matters because the repo ships a `Dockerfile` and `docker-compose.yml`, so
-"it only listens on localhost" was never structurally guaranteed. Verified by booting the
-server on `0.0.0.0` and probing from a non-loopback address:
+Reads are untouched in every case. This matters because the repo ships a `Dockerfile` and
+`docker-compose.yml`, so "it only listens on localhost" was never structurally guaranteed.
+
+The private-range allowance is deliberate. A first cut of this guard was loopback-only, and
+review correctly pointed out that it would 403 **every** write in the documented
+`docker compose up` deployment: opened from the host, uvicorn sees the Docker bridge address
+(typically `172.17.0.1`), not `127.0.0.1`. A guard that breaks the shipped deployment just
+gets reverted. Refusing public addresses still closes the case this is meant to close — an
+instance accidentally exposed to the internet — without breaking anything that works today.
+
+Verified by booting on `0.0.0.0` and probing from a non-loopback address, plus a unit check
+of the classifier:
 
 | Condition | Expected | Observed |
 |---|---|---|
 | no token, loopback write | 200 | **200** |
-| no token, remote write | 403 | **403** |
-| no token, remote **read** | 200 | **200** |
+| no token, private/bridge-address write | 200 | **200** |
+| no token, private-address **read** | 200 | **200** |
+| no token, public address (`8.8.8.8`, `1.1.1.1`, `93.184.216.34`, IPv6) | refused | **refused** |
 | token set, correct bearer | 200 | **200** |
 | token set, wrong bearer | 401 | **401** |
 | token set, no bearer | 401 | **401** |
+
+**Known limitation, deliberately not patched here.** When the token *is* set, the browser UI
+cannot supply it: `federationClient` sources only the federation access token, and
+`AuthContext` drops that when `/api/auth/me` 401s (which it always does in diagnostic mode).
+So token mode currently suits API/CLI callers, not the shipped UI. `aguayluz-pr` has the
+identical gap with its `API_SECRET_KEY`/`_require_key` pair — that repo shipped write auth
+first and its dashboard sends no `Authorization` header either. It wants one federation-wide
+answer, not three local patches; see the rollup's backlog.
 
 **3. README drift corrected.** `README.md:92` told readers the collection mapping lives in
 `COLLECTION_ADAPTERS` in `src/hub/ingest.py`. That symbol does not exist — `grep -rn

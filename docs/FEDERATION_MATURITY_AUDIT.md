@@ -26,17 +26,18 @@ Scored 0–4 per dimension. See each repo's own audit for the evidence behind ev
 
 | Repo | D1 Function | D2 Data | D3 UI | D4 Tests | D5 Hygiene | D6 Docs | Total |
 |---|---|---|---|---|---|---|---|
-| `aguayluz-pr` | 4 | 4 | 3 | 4 | 4 | 4 | **23** |
+| `aguayluz-pr` | 4 | 4 | 4 | 4 | 4 | 4 | **24** |
 | `thehub-pr` | 3 | 1 | 4 | 4 | 3 | 3 | **18** |
-| `moneysweep-pr` | 4 | 3 | 1 | 4 | 4 | 3 | **19** |
-| `spiderweb-pr` | 4 | 3 | 0 | 4 | 2 | 4 | **17** |
+| `moneysweep-pr` | 4 | 3 | 2 | 4 | 4 | 3 | **20** |
+| `spiderweb-pr` | 4 | 3 | 1 | 4 | 2 | 4 | **18** |
 | `skywatcher-pr` | 3 | 1 | 4 | 3 | 1 | 4 | **16** |
-| `centinelas-pr` | 3 | 2 | 3 | 3 | 3 | 4 | **18** |
+| `centinelas-pr` | 3 | 3 | 4 | 3 | 3 | 4 | **20** |
 | `ovnis-pr` | 3 | 4 | 2 | 2 | 1 | 3 | **15** |
 
 **`aguayluz-pr` is the reference node** — real data, a UI proportionate to its backend, the
-widest lint rule set in the federation, and honest caveats. When settling a "how should we do
-this?" argument, it is the one to copy.
+widest lint rule set in the federation, honest caveats, and the only producer that already
+ships optional write auth (`API_SECRET_KEY` via `_require_key`). When settling a "how should
+we do this?" argument, it is the one to copy.
 
 ---
 
@@ -75,14 +76,21 @@ Three repos also disagree on the config key for the same concept: `requires_auth
 
 Only `thehub-pr` and `skywatcher-pr` implement the generic `/api/entities/{name}` contract.
 Both accepted an unauthenticated `POST` and **persisted the row** — verified by follow-up
-`GET`. `thehub-pr` writes to `data/hub.db` on disk and ships a `Dockerfile` and
-`docker-compose.yml`, so the loopback assumption was never structurally enforced.
-`skywatcher-pr`'s writes are in-memory only. Both fixed.
+`GET`. `thehub-pr` writes to `data/hub.db` on disk; `skywatcher-pr`'s writes are in-memory
+only. Both now refuse unauthenticated writes from public addresses, and require a bearer
+token when `PRII_WRITE_TOKEN` is set.
 
 The other five backends implement domain REST APIs and returned 404 for `/api/entities/*`.
-Their own mutating routes were **not** write-probed — `aguayluz-pr` has 6
-(including `/admin/run-export`), `spiderweb-pr` 4, `centinelas-pr` 2. That is open follow-up
-work, flagged in those repos' backlogs.
+`aguayluz-pr` is ahead of the hub here: `_require_key` already gates all five of its mutating
+routes behind an optional `API_SECRET_KEY`. `spiderweb-pr` (4 mutating routes) and
+`centinelas-pr` (2) were not write-probed — open follow-up in those repos' backlogs.
+
+**The shared gap is the client, not the server.** Wherever write auth exists — the hub's
+new `PRII_WRITE_TOKEN`, skywatcher's, and aguayluz's older `API_SECRET_KEY` — no frontend
+sends the credential. `federationClient` carries only the federation access token, and
+`AuthContext` drops that when `/api/auth/me` 401s. So enabling write auth anywhere currently
+breaks that repo's own UI. This needs one federation-wide answer, not three local patches;
+it is item 4 in the backlog below.
 
 ### 3. The backends do not share an API contract
 
@@ -182,7 +190,8 @@ Ranked by value per unit of effort across the whole federation.
 | 1 | Add `pyproject.toml` + ruff + a CI lint step | `ovnis-pr` | S |
 | 2 | Add ruff + mypy to CI | `skywatcher-pr` | M |
 | 3 | Run `hub aggregate/correlate/ingest` in CI; ship a seeded DB | `thehub-pr` | M |
-| 4 | Decide the auth story: implement `/auth/*` or delete the pages | `centinelas-pr`, `skywatcher-pr`, `thehub-pr` | L / S |
+| 4 | One federation-wide answer for how a frontend supplies a write credential | all repos with write auth | M |
+| 4b | Decide the auth story: implement `/auth/*` or delete the pages | `centinelas-pr`, `skywatcher-pr`, `thehub-pr` | L / S |
 | 5 | Extend the lint allowlist beyond 13 files | `spiderweb-pr` | M |
 | 6 | Pick one frontend; retire the other two | `spiderweb-pr` | L |
 | 7 | Build out the dashboard | `moneysweep-pr` | L |
@@ -191,18 +200,66 @@ Ranked by value per unit of effort across the whole federation.
 | 10 | Add a frontend test runner (copy `thehub-pr`'s vitest setup) | 6 repos | M each |
 | 11 | Add ESLint config + `lint` script | `spiderweb-pr` | S |
 | 12 | Action the 60 module-consolidation candidates | `moneysweep-pr` | L |
-| 13 | Add empty-state / `ErrorBoundary` components | `centinelas-pr`, `ovnis-pr`, `spiderweb-pr` | S–M |
-| 14 | Review authorization on domain mutating routes | `aguayluz-pr`, `spiderweb-pr`, `centinelas-pr` | M |
+| 13 | Add a global `ErrorBoundary`; stop errors rendering as empty results | `centinelas-pr`, `ovnis-pr`, `spiderweb-pr` | S |
+| 14 | Review authorization on domain mutating routes | `spiderweb-pr`, `centinelas-pr` | M |
 | 15 | Run `npm run typecheck` in CI, or drop the script | `thehub-pr`, `skywatcher-pr` | M |
 | 16 | Migrate reusable `scripts/` logic into packages | `moneysweep-pr`, `spiderweb-pr`, `skywatcher-pr` | L each |
 | 17 | Reconcile `requires_auth` vs `auth_required` naming | 3 repos | S |
 | 18 | Reconcile declared `production_status` with observed maturity | `centinelas-pr`, `ovnis-pr` | S |
-| 19 | Populate empty `snapshot.json` files | `moneysweep-pr`, `aguayluz-pr` | S |
+| 19 | Populate the empty `snapshot.json` / chain a snapshot step into `build:export` | `aguayluz-pr` | S |
 | 20 | Split the single-page dashboards into routed pages | `ovnis-pr`, `moneysweep-pr` | M |
 
 **Highest value for least effort:** items 1, 8, 9, 11, 17 are all **S** and independently
 shippable. Items 3 and 4 are the ones that change what the federation *is* rather than how
 tidy it is.
+
+---
+
+## Corrections applied after review
+
+Automated review on the seven PRs caught real errors in the first draft. They are listed
+here rather than quietly edited, because an audit that hides its own corrections has no
+standing to grade anyone else's doc accuracy.
+
+**One methodology error, five repos affected.** The first draft counted UI states by
+grepping for *component names* (`EmptyState`, `emptyTitle`, `LoadingState`) rather than
+*semantic branches*. That systematically undercounted repos that handle states inline or
+through a differently-named shared component, and it understated four D3 scores:
+
+| Repo | What was actually there | D3 |
+|---|---|---|
+| `aguayluz-pr` | `components/common/PanelState.jsx` + branches in 7 views | 3 → **4** |
+| `centinelas-pr` | `components/ListState.jsx` — three-way loading/error/empty with `aria-live` and `role="alert"`, used by 8 files | 3 → **4** |
+| `moneysweep-pr` | `components/QueryBoundary.jsx` — shared loading/error-with-retry/empty across 4 tables | 1 → **2** |
+| `spiderweb-pr` | inline states in `FinancePane.tsx:53-54`, `LayerCatalogPane.tsx:35-36` | 0 → **1** |
+| `ovnis-pr` | inline "Queue empty" in `CandidateReview.jsx:46` | held at 2 — the real gap is that `getJSON` turns failures into `[]`, so errors are indistinguishable from empty |
+
+**Other corrections.**
+
+- **A regression this audit introduced.** The first cut of the write guard was loopback-only.
+  Under `docker compose up`, uvicorn sees the Docker bridge address, so it would have 403'd
+  every write in `thehub-pr`'s documented container deployment. Now allows loopback + private
+  + link-local, refusing public addresses. Caught in review, not by me.
+- `aguayluz-pr` **already had write auth** (`_require_key` / `API_SECRET_KEY` on all five
+  mutating routes). The draft said its routes were unguarded. It is ahead of the hub here,
+  and the finding became the client-credential gap instead.
+- `aguayluz-pr` has no `GET /assets/{id}` endpoint and no `/assets/:id` route — AssetDetail
+  is a panel over the `/assets` collection.
+- `centinelas-pr`'s data is **254 live records** (`is_synthetic: false`) against 6 synthetic
+  rows in a clearly-named example file. The draft's "2 of 3 files synthetic" reading, and the
+  "manifest overstates the node" conclusion that followed, were both wrong. D2 2 → 3.
+- `centinelas-pr`'s Handoff page is **backend-backed** (`createHandoff()` → `POST
+  /handoffs/{itemId}`), not localStorage-only.
+- `moneysweep-pr`'s baseline was measured on **Python 3.11.15** while CI pins **3.13** — now
+  labelled as such in both the audit and `STATUS.md`, rather than claimed as CI-equivalent.
+- `moneysweep-pr`'s `build:export` chains `npm run snapshot` first, so the committed `{}` is
+  intentional and offline exports do carry data. Backlog item removed.
+- `spiderweb-pr`'s `pipeline/`, `federation/` and `integration/` directories are **not**
+  ruff-clean — only the 13 allowlisted files are. The draft's advice to add those directories
+  wholesale would have broken the gate.
+- `ovnis-pr` has 7 application routes, not 11 (the draft counted FastAPI's auto-generated
+  docs routes), **5 of its 9 test modules import `scripts/` directly**, and it does have a
+  JS linter — the gap is Python-side plus a CI gate.
 
 ---
 
