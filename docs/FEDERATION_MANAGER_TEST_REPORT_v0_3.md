@@ -18,9 +18,9 @@ Executed on 2026-07-26:
 
 | Gate | Result |
 | --- | --- |
-| Federation Manager backend and schema-freeze tests | 19 passed |
+| Federation Manager backend and schema-freeze tests | 20 passed |
 | Focused App Center component and API-contract tests | 4 passed |
-| Complete Python suite | 405 passed, 1 skipped |
+| Complete Python suite | 406 passed, 1 skipped |
 | Ruff on foundation backend and tests | Passed |
 | Hub CI Ruff and mypy commands | Passed |
 | Complete frontend lint and test suite | 20 passed |
