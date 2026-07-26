@@ -75,6 +75,12 @@ export const PRIORITY = {
 
 // --- Review / verification -------------------------------------------------
 export const REVIEW_STATUS = {
+  // Open / Acknowledged / Closed come from the federation alert projection
+  // (src/hub/ingest.py `_ALERT_REVIEW_STATUS`); without them every ingested alert
+  // rendered on the neutral fallback chip.
+  Open: AMBER,
+  Acknowledged: BLUE,
+  Closed: SLATE,
   Proposed: BLUE,
   New: BLUE,
   Reviewing: AMBER,
