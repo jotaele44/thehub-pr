@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 from datetime import datetime, timezone
 from ipaddress import ip_address
+from typing import Optional
 
 from fastapi import APIRouter, Header, HTTPException, Request
 from pydantic import BaseModel, Field
@@ -43,7 +44,7 @@ def _origin(request: Request) -> str:
     return origin
 
 
-def _authorize(request: Request, authorization: str | None) -> None:
+def _authorize(request: Request, authorization: Optional[str]) -> None:
     _require_loopback(request)
     origin = _origin(request)
     if not authorization or not authorization.startswith("Bearer "):
@@ -70,13 +71,13 @@ def create_session(body: SessionRequest, request: Request):
 
 
 @router.get("/apps")
-def list_apps(request: Request, authorization: str | None = Header(None)):
+def list_apps(request: Request, authorization: Optional[str] = Header(None)):
     _authorize(request, authorization)
     return read_only_inventory()
 
 
 @router.get("/apps/{app_id}")
-def get_app(app_id: str, request: Request, authorization: str | None = Header(None)):
+def get_app(app_id: str, request: Request, authorization: Optional[str] = Header(None)):
     _authorize(request, authorization)
     for app in read_only_inventory():
         if app["appId"] == app_id:
