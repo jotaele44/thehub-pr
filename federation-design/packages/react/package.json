@@ -1,7 +1,7 @@
 {
   "name": "@pr-federation/react",
-  "version": "0.3.1",
-  "description": "Shared PRII federation design-system primitives (tokens, CSS layer, thin React wrappers). Consumed by the hub app and the six producer frontends.",
+  "version": "0.4.0-rc.1",
+  "description": "Shared PRII federation design-system foundation: semantic tokens, evidence and async-state components, and dependency-light React primitives.",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -15,18 +15,30 @@
   "main": "./src/index.jsx",
   "exports": {
     ".": "./src/index.jsx",
+    "./semantics": "./src/semantics.js",
     "./styles.css": "./dist/federation.css",
     "./tokens.json": "./dist/federation.tokens.json",
+    "./tokens.schema.json": "./dist/federation.tokens.schema.json",
+    "./test-harness.json": "./dist/test-harness.contract.json",
+    "./api-snapshot.json": "./api-snapshot.json",
+    "./release-manifest.json": "./dist/release-manifest.json",
     "./package.json": "./package.json"
   },
   "files": [
     "src",
     "dist",
+    "api-snapshot.json",
     "README.md"
   ],
   "scripts": {
-    "prepack": "node scripts/prepack.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "verify": "npm run test && node scripts/verify.mjs",
+    "build": "node scripts/prepack.mjs",
+    "prepack": "npm run verify && node scripts/prepack.mjs",
     "pack:tarball": "npm pack"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "peerDependencies": {
     "react": ">=18 <20",

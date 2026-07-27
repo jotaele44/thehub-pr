@@ -1,40 +1,50 @@
-// prepack: bundle the canonical design-system assets into ./dist so the packed
-// tarball is self-contained. The authoritative sources live one level up in
-// federation-design/{styles,tokens} (per docs/FEDERATION_DESIGN_SYSTEM_V1.md);
-// this copies them in at pack time rather than committing a divergent duplicate.
-// Runs automatically on `npm pack` / `npm publish`.
-import { copyFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { copyFileSync, mkdirSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
-const pkgRoot = join(here, '..')                 // federation-design/packages/react
-const designRoot = join(pkgRoot, '..', '..')     // federation-design
+const pkgRoot = join(here, '..')
+const designRoot = join(pkgRoot, '..', '..')
 const dist = join(pkgRoot, 'dist')
+const pkg = JSON.parse(readFileSync(join(pkgRoot, 'package.json'), 'utf8'))
+const snapshot = JSON.parse(readFileSync(join(pkgRoot, 'api-snapshot.json'), 'utf8'))
 
 const assets = [
   { from: join(designRoot, 'styles', 'federation.css'), to: join(dist, 'federation.css') },
   { from: join(designRoot, 'tokens', 'federation.tokens.json'), to: join(dist, 'federation.tokens.json') },
+  { from: join(designRoot, 'tokens', 'federation.tokens.schema.json'), to: join(dist, 'federation.tokens.schema.json') },
+  { from: join(designRoot, 'test-harness', 'test-harness.contract.json'), to: join(dist, 'test-harness.contract.json') },
 ]
 
+if (snapshot.packageVersion !== pkg.version) {
+  console.error('[prepack] API snapshot and package versions differ')
+  process.exit(1)
+}
+rmSync(dist, { recursive: true, force: true })
 mkdirSync(dist, { recursive: true })
-
 for (const { from, to } of assets) {
   if (!existsSync(from)) {
     console.error(`[prepack] missing canonical asset: ${from}`)
     process.exit(1)
   }
   copyFileSync(from, to)
-  console.log(`[prepack] bundled ${from} -> ${to}`)
 }
 
-// Fail loudly if the tokens file is not valid JSON — a corrupt token source
-// must not ship in a release tarball.
-try {
-  JSON.parse(readFileSync(join(dist, 'federation.tokens.json'), 'utf8'))
-} catch (err) {
-  console.error(`[prepack] federation.tokens.json is not valid JSON: ${err.message}`)
-  process.exit(1)
+const sha256 = (path) => createHash('sha256').update(readFileSync(path)).digest('hex')
+const sources = [
+  join(pkgRoot, 'package.json'), join(pkgRoot, 'api-snapshot.json'), join(pkgRoot, 'src', 'index.jsx'),
+  join(pkgRoot, 'src', 'semantics.js'), ...assets.map((asset) => asset.from),
+]
+const manifest = {
+  schemaVersion: '1.0.0',
+  package: pkg.name,
+  version: pkg.version,
+  expectedTag: `federation-design-v${pkg.version}`,
+  tokenVersion: JSON.parse(readFileSync(join(designRoot, 'tokens', 'federation.tokens.json'), 'utf8')).version,
+  apiSnapshotSha256: sha256(join(pkgRoot, 'api-snapshot.json')),
+  sourceSha256: Object.fromEntries(sources.map((path) => [relative(designRoot, path).replaceAll('\\', '/'), sha256(path)])),
+  mutableReferencesAllowed: false,
 }
-
-console.log('[prepack] design-system assets bundled into ./dist')
+writeFileSync(join(dist, 'release-manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
+console.log(`[prepack] bundled ${assets.length} canonical assets and deterministic release manifest`)
