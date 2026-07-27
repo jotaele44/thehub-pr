@@ -4,21 +4,9 @@
   "title": "Federation Export Manifest",
   "description": "Generalized manifest describing one packaged producer export. Unlike a single producer's locked manifest, this accepts any producer and a variable set of streams, so the Hub can ingest heterogeneous nodes.",
   "type": "object",
-  "required": [
-    "package_id",
-    "producer",
-    "export_contract_version",
-    "mode",
-    "created_at",
-    "federation",
-    "files"
-  ],
+  "required": ["package_id", "producer", "export_contract_version", "mode", "created_at", "federation", "files"],
   "properties": {
-    "package_id": {
-      "type": "string",
-      "pattern": "^pkg_[a-f0-9]{32}$",
-      "description": "Deterministic ID derived from sorted (filename, sha256) entries plus mode."
-    },
+    "package_id": {"type": "string", "pattern": "^pkg_[a-f0-9]{32}$", "description": "Deterministic ID derived from sorted (filename, sha256) entries plus mode."},
     "producer": {"type": "string", "description": "Producer program_id (e.g. moneysweep-pr)."},
     "producer_version": {"type": "string"},
     "export_contract_version": {"type": "string"},
@@ -37,13 +25,7 @@
         "contract": {"type": "string"}
       }
     },
-    "coverage_window": {
-      "type": "object",
-      "properties": {
-        "fiscal_year_min": {"type": "integer"},
-        "fiscal_year_max": {"type": "integer"}
-      }
-    },
+    "coverage_window": {"type": "object", "properties": {"fiscal_year_min": {"type": "integer"}, "fiscal_year_max": {"type": "integer"}}},
     "files": {
       "type": "array",
       "minItems": 1,
@@ -52,10 +34,7 @@
         "required": ["filename", "stream", "record_count", "sha256", "schema_id"],
         "properties": {
           "filename": {"type": "string"},
-          "stream": {
-            "type": "string",
-            "enum": ["sources", "entities", "relationships", "funding_awards", "transactions", "observations", "alerts"]
-          },
+          "stream": {"type": "string", "enum": ["sources", "entities", "relationships", "funding_awards", "transactions", "observations", "alerts", "federal_documents", "federal_document_releases", "document_findings", "case_activity_candidates", "case_activity_assessments"]},
           "record_count": {"type": "integer", "minimum": 0},
           "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
           "schema_id": {"type": "string"}
