@@ -1,0 +1,68 @@
+{
+  "receipt": {
+    "app_id": "thehub",
+    "argv_redacted": [
+      "hub",
+      "graph-report",
+      "--in",
+      "/tmp/tmp7rlmmb9_/data/aggregate",
+      "--json"
+    ],
+    "argv_sha256": "e6a8298505c7fc535ac5ace37f2c15412cc50a4b5044049fb172ca8018eb7aea",
+    "environment_allowlist": [
+      "HOME",
+      "LC_CTYPE",
+      "PATH",
+      "PRII_APP_ROOT"
+    ],
+    "exit_code": 0,
+    "finished_at": "2026-07-27T06:33:32.057378Z",
+    "inputs": [],
+    "log": {
+      "bytes": 336,
+      "redactions": 0,
+      "sha256": "dc6502468b45d1b0a491a95145727f236ea9940a890f9a8b371f37a469a77709",
+      "truncated": false
+    },
+    "operation_id": "hub.graph_report",
+    "outputs": [],
+    "parameters_redacted": {
+      "in_dir": "aggregate",
+      "json": true
+    },
+    "policy": {
+      "key_id": "prii-operations-test-2026-07",
+      "payload_sha256": "1ac9c0e97d68652fa5269744a506ead4cec42567dfce3ff7d1ae8f2b1e740365",
+      "policy_id": "prii-federation-ui-only-operations",
+      "sequence": 1
+    },
+    "previous_receipt_sha256": "43055315c2d05447fb1530be217112139edc93664b52b6eb875dfcbc8ef5a9b4",
+    "run_id": "ada72b41a8e44ff08bcf3b1f020b5f08",
+    "schema_version": "prii_execution_receipt_v1",
+    "started_at": "2026-07-27T06:33:31.854276Z",
+    "status": "succeeded",
+    "transaction": {
+      "phase_reached": "RECEIPT",
+      "rollback_state": "not_required",
+      "snapshot_sha256": null,
+      "strategy": "none"
+    },
+    "validators": [
+      {
+        "detail": "exit 0",
+        "name": "exit_code",
+        "status": "passed"
+      },
+      {
+        "name": "write_scope",
+        "status": "passed"
+      }
+    ]
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "prii-manager-certification",
+    "payload_sha256": "621f21d4ed18107a75cc20cae9c28dbfe5a6d93c4198f0d12eb440d2dedfe2bd",
+    "value": "j5vWm/fcc7h7IgOu9T7pmCjdRWY1uQk+IVUW6ukCGekXCHHRsAMbq7hjpGr4WH8ASu91AV/W2zmLEmE+2/6bDA=="
+  }
+}

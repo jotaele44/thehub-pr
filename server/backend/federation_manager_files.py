@@ -145,6 +145,11 @@ class FileTokenBroker:
         self._ttl = ttl_seconds
         self._tokens: Dict[str, FileToken] = {}
 
+    @property
+    def intake_root(self) -> Path:
+        """The managed root every staged file lives under."""
+        return self._intake_root
+
     # ── minting ─────────────────────────────────────────────────────────────
 
     def mint(

@@ -390,6 +390,14 @@ def validate_parameters(
             value = supplied[name]
         elif "default" in spec:
             value = spec["default"]
+        elif kind in _TOKEN_TYPES:
+            # A file-token parameter takes its value from the token channel,
+            # not from `parameters`. Requiring it here would demand the caller
+            # send the same thing twice. Token presence is enforced by the
+            # runner before execution and again by build_argv, which refuses to
+            # emit argv without a staged path.
+            resolved[name] = None
+            continue
         elif spec.get("required"):
             raise ParameterValidationError(f"{operation.operation_id}.{name} is required")
         else:
@@ -482,8 +490,19 @@ class ExecutionContext:
     app_root: Path
     data_root: Path
     staging_root: Path
+    #: Where the file broker stages operator-selected inputs. Separate from
+    #: staging_root because intake holds copies of the operator's own files,
+    #: which have a different lifetime and a different audit story from the
+    #: manager's own scratch space.
+    intake_root: Optional[Path] = None
     python_executable: str = "python3"
     make_executable: str = "make"
+
+    def managed_roots(self) -> tuple[Path, ...]:
+        roots = [self.staging_root, self.data_root, self.app_root]
+        if self.intake_root is not None:
+            roots.append(self.intake_root)
+        return tuple(roots)
 
 
 @dataclass(frozen=True)
@@ -538,13 +557,10 @@ def build_argv(
                     argv.pop()
             continue
 
-        if value is None:
-            # An optional parameter with no value drops its own flag too.
-            if argv and argv[-1].startswith("-"):
-                argv.pop()
-            continue
-
         if kind in _TOKEN_TYPES:
+            # Checked before the None branch below: a token parameter's value
+            # always arrives through token_paths, never through `parameters`,
+            # so a resolved value of None is normal rather than "omitted".
             staged = token_paths.get(name)
             if staged is None:
                 raise ParameterValidationError(
@@ -553,6 +569,12 @@ def build_argv(
             contained = _require_contained(staged, context)
             resolved[name] = contained
             argv.append(str(contained))
+            continue
+
+        if value is None:
+            # An optional parameter with no value drops its own flag too.
+            if argv and argv[-1].startswith("-"):
+                argv.pop()
             continue
 
         if kind in _PATH_TYPES:
@@ -573,7 +595,7 @@ def build_argv(
 
 def _require_contained(candidate: Path, context: ExecutionContext) -> Path:
     resolved = candidate.resolve()
-    for root in (context.staging_root, context.data_root, context.app_root):
+    for root in context.managed_roots():
         try:
             resolved.relative_to(root.resolve())
         except ValueError:

@@ -1,0 +1,316 @@
+{
+  "evaluated_at": "2026-07-27T06:34:11.532645Z",
+  "gates": [
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G01_BASELINE_PINNED",
+      "requirement": "All seven repository SHAs and PR94 head/state match the baseline or drift is adjudicated.",
+      "status": "deferred",
+      "status_reason": "Verified by inspection and recorded in the certification report: PR #94 is open, draft, unmerged at 817fb97; TheHub main is 58a159f. Not receipt-derivable, because no operation observes git state."
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G02_PR94_UNCHANGED",
+      "requirement": "PR94 remains open, draft, and unmerged; work is on a successor branch from current main.",
+      "status": "deferred",
+      "status_reason": "Verified by inspection and re-checked before the pull request was opened. Not receipt-derivable."
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G03_NO_ARBITRARY_SHELL",
+      "requirement": "No shell=True, sh -c, os.system, eval, exec, or string command execution.",
+      "status": "deferred",
+      "status_reason": "Enforced by test, not by receipt: tests/test_federation_process.py walks the parsed AST of every federation_manager*.py module and fails on any non-False shell= keyword or banned call. Asserted statically because the claim is about code that must never run, which no execution can demonstrate."
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+          "run_id": "fedd132875c443919206b9c87b6ba6d7",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G04_OPERATION_ACCOUNTING",
+      "requirement": "All 68 operations accounted: 13 Hub + 55 producer; zero unclassified rows.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+          "run_id": "fedd132875c443919206b9c87b6ba6d7",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G05_POLICY_SIGNATURE",
+      "requirement": "Policy verifies Ed25519 signature, pinned key, hash, schema, expiry, anti-rollback.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+          "run_id": "fedd132875c443919206b9c87b6ba6d7",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "43055315c2d05447fb1530be217112139edc93664b52b6eb875dfcbc8ef5a9b4",
+          "run_id": "aa5041a83da44d388c21e435b6a85758",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "621f21d4ed18107a75cc20cae9c28dbfe5a6d93c4198f0d12eb440d2dedfe2bd",
+          "run_id": "ada72b41a8e44ff08bcf3b1f020b5f08",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "7f9447c861c427d86d4229e83a8924d6d6b244dc796c8cf101815bf49980dd63",
+          "run_id": "9b54a6f6ba9b4f4a9ff2cd2dd6c46dd2",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "b828bf43bc69a63e0b39236c3e0262cb495ae02050bd2267058bba9334d962a0",
+          "run_id": "d1fec8b3278448d592c0881abfac8ec0",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G06_TYPED_PARAMETERS",
+      "requirement": "Every operation accepts only fixed values or schema-validated typed parameters.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G07_NATIVE_SECRETS",
+      "requirement": "macOS Keychain provider certified.",
+      "status": "blocked_not_certified",
+      "status_reason": "This vector was built and verified in a headless Linux container. There is no macOS host, no window server, no native file picker, and no Keychain, so the evidence this gate requires cannot be produced here at all."
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+          "run_id": "fedd132875c443919206b9c87b6ba6d7",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G08_PREREQUISITE_CHECKER",
+      "requirement": "Machine-detected install/configuration/data prerequisites with actionable remediation.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G09_REPOSITORY_ACQUISITION",
+      "requirement": "Repository/artifact acquisition is allow-listed, pinned, verified, staged, rollback-safe.",
+      "status": "deferred",
+      "status_reason": "hub.fetch is declared and left disabled in this vector. Nothing acquires a repository, so there is nothing to certify and nothing that could regress."
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "43055315c2d05447fb1530be217112139edc93664b52b6eb875dfcbc8ef5a9b4",
+          "run_id": "aa5041a83da44d388c21e435b6a85758",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G10_FILE_PICKERS",
+      "requirement": "Local input families use brokered tokens, preflight, SHA-256, and managed staging.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+          "run_id": "fedd132875c443919206b9c87b6ba6d7",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G11_STREAMED_LOGS",
+      "requirement": "Operations stream redacted logs, support cancellation, and record a log hash.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+          "run_id": "fedd132875c443919206b9c87b6ba6d7",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "43055315c2d05447fb1530be217112139edc93664b52b6eb875dfcbc8ef5a9b4",
+          "run_id": "aa5041a83da44d388c21e435b6a85758",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "621f21d4ed18107a75cc20cae9c28dbfe5a6d93c4198f0d12eb440d2dedfe2bd",
+          "run_id": "ada72b41a8e44ff08bcf3b1f020b5f08",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "7f9447c861c427d86d4229e83a8924d6d6b244dc796c8cf101815bf49980dd63",
+          "run_id": "9b54a6f6ba9b4f4a9ff2cd2dd6c46dd2",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "b828bf43bc69a63e0b39236c3e0262cb495ae02050bd2267058bba9334d962a0",
+          "run_id": "d1fec8b3278448d592c0881abfac8ec0",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G12_EXECUTION_RECEIPTS",
+      "requirement": "Every execution emits a schema-valid, signed, hash-chained receipt.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G13_ATOMIC_ROLLBACK",
+      "requirement": "Install/update, SQLite, ledgers, and generated outputs pass forced-failure rollback.",
+      "status": "deferred",
+      "status_reason": "Four of seven strategies are certified by forced-failure tests at every boundary (stage_validate_atomic_promote, file_snapshot_restore, sqlite_backup_integrity_check_atomic_swap, versioned_install_pointer_swap, plus ledger_snapshot_restore and run_partition_restore). Three declared by producer operations are not built: dispatch_receipt_compensating_remove, transactional_run_partition_restore, queue_run_partition_delete. Partial coverage is not a pass."
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+          "run_id": "fedd132875c443919206b9c87b6ba6d7",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G14_GATE_BINDING",
+      "requirement": "Readiness gates derive only from valid signed receipts; annotations cannot pass a gate.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G15_7_OF_7_UI_SETUP",
+      "requirement": "All seven apps complete supported macOS setup through the UI with no Terminal.",
+      "status": "blocked_not_certified",
+      "status_reason": "This vector was built and verified in a headless Linux container. There is no macOS host, no window server, no native file picker, and no Keychain, so the evidence this gate requires cannot be produced here at all."
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G16_7_OF_7_UI_VALIDATION",
+      "requirement": "All seven apps run their validation controls through the UI and retain receipts.",
+      "status": "blocked_not_certified",
+      "status_reason": "This vector was built and verified in a headless Linux container. There is no macOS host, no window server, no native file picker, and no Keychain, so the evidence this gate requires cannot be produced here at all."
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G17_6_OF_6_PRODUCER_EXPORTS",
+      "requirement": "All six producers create and validate a canonical export through the UI.",
+      "status": "deferred",
+      "status_reason": "Certification is scoped to TheHub's 13 operations. The 55 producer operations are declared and classified in the signed policy but not enabled, so no receipt can exist for them yet. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md."
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+          "run_id": "fedd132875c443919206b9c87b6ba6d7",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "43055315c2d05447fb1530be217112139edc93664b52b6eb875dfcbc8ef5a9b4",
+          "run_id": "aa5041a83da44d388c21e435b6a85758",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "621f21d4ed18107a75cc20cae9c28dbfe5a6d93c4198f0d12eb440d2dedfe2bd",
+          "run_id": "ada72b41a8e44ff08bcf3b1f020b5f08",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "7f9447c861c427d86d4229e83a8924d6d6b244dc796c8cf101815bf49980dd63",
+          "run_id": "9b54a6f6ba9b4f4a9ff2cd2dd6c46dd2",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "b828bf43bc69a63e0b39236c3e0262cb495ae02050bd2267058bba9334d962a0",
+          "run_id": "d1fec8b3278448d592c0881abfac8ec0",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G18_NO_SECRET_DISCLOSURE",
+      "requirement": "Static, unit, integration, log, and UI tests show zero secret disclosure.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+          "run_id": "fedd132875c443919206b9c87b6ba6d7",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G19_NO_COMMAND_INJECTION",
+      "requirement": "Adversarial parameter/path/environment corpus produces zero injection.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G20_EXPLICIT_DELETION_APPROVAL",
+      "requirement": "Deletion remains disabled in this vector.",
+      "status": "deferred",
+      "status_reason": "No operation in the policy has a deletion category, and the manager exposes no delete endpoint beyond removing a credential the operator stored. Certified by absence, which no receipt can attest to."
+    },
+    {
+      "blocking": true,
+      "derived_from": [
+        {
+          "receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+          "run_id": "fedd132875c443919206b9c87b6ba6d7",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "621f21d4ed18107a75cc20cae9c28dbfe5a6d93c4198f0d12eb440d2dedfe2bd",
+          "run_id": "ada72b41a8e44ff08bcf3b1f020b5f08",
+          "signature_verified": true
+        },
+        {
+          "receipt_sha256": "7f9447c861c427d86d4229e83a8924d6d6b244dc796c8cf101815bf49980dd63",
+          "run_id": "9b54a6f6ba9b4f4a9ff2cd2dd6c46dd2",
+          "signature_verified": true
+        }
+      ],
+      "gate_id": "G21_E2E_SYNTHETIC",
+      "requirement": "Clean-machine synthetic fixture proves the chain through to rollback.",
+      "status": "passed"
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G22_REAL_OPERATOR_MACOS",
+      "requirement": "Local macOS operator run certifies seven launches and six producer exports.",
+      "status": "blocked_not_certified",
+      "status_reason": "This vector was built and verified in a headless Linux container. There is no macOS host, no window server, no native file picker, and no Keychain, so the evidence this gate requires cannot be produced here at all."
+    },
+    {
+      "blocking": true,
+      "derived_from": [],
+      "gate_id": "G23_NO_MERGE",
+      "requirement": "No PR merge, release mutation, tag, deletion, or unrelated repository write occurs.",
+      "status": "deferred",
+      "status_reason": "Verified by inspection: the successor pull request is draft, PR #94 is untouched, and only thehub-pr was modified. Not receipt-derivable."
+    }
+  ],
+  "policy_sha256": "1ac9c0e97d68652fa5269744a506ead4cec42567dfce3ff7d1ae8f2b1e740365",
+  "schema_version": "prii_gate_evidence_v1"
+}

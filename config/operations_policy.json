@@ -837,7 +837,7 @@
             "type": "boolean"
           },
           "out": {
-            "default": "data/aggregate",
+            "default": "aggregate",
             "type": "managed_output_directory"
           },
           "root": {
@@ -898,7 +898,7 @@
             "type": "directory"
           },
           "out": {
-            "default": "data/aggregate/federation_analytics_v2.json",
+            "default": "aggregate/federation_analytics_v2.json",
             "type": "managed_file"
           }
         },
@@ -948,7 +948,7 @@
         "operation_id": "hub.consume_sensor_fusion",
         "parameters": {
           "out": {
-            "default": "data/dashboard/skywatcher_sensor_fusion.json",
+            "default": "dashboard/skywatcher_sensor_fusion.json",
             "type": "managed_file"
           },
           "path": {
@@ -1179,7 +1179,7 @@
         "operation_id": "hub.ingest",
         "parameters": {
           "db": {
-            "default": "data/hub.db",
+            "default": "hub.db",
             "extensions": [
               ".db"
             ],
@@ -2689,7 +2689,7 @@
   "signature": {
     "algorithm": "Ed25519",
     "key_id": "prii-operations-test-2026-07",
-    "payload_sha256": "bc7548af25e70a84e1a4d0f801e13fb20f57a0f26b20d888c564d66877191012",
-    "value": "hXS7Ws+9EaL6Vt5d8YwX9Z163CRGFYQOig6Ra1OE3gk6KAOuLoVXpEm4zoVoHEZk/R/9GdUB+YiH1RhzL2XeDg=="
+    "payload_sha256": "1ac9c0e97d68652fa5269744a506ead4cec42567dfce3ff7d1ae8f2b1e740365",
+    "value": "GW3MAIX2Vw1eqbBFV4UwzaFB//bLXZxpXuE7rxNe236UY0RzkvdtS2HB2KyuvZy1FZ+g17wf1kf7CuJLDzbKAA=="
   }
 }
