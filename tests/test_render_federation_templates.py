@@ -122,6 +122,35 @@ def test_baseline_workflows_are_valid_and_least_privilege():
         assert doc["jobs"], name
 
 
+def test_governance_files_never_name_another_repo(tmp_path):
+    # Substitution is plain string replacement, so the way this breaks is not a
+    # missing var (that already raises) but a *wrong* one — a governance file
+    # rendered into ovnis-pr that points at moneysweep-pr's security advisory
+    # page would look completely normal and quietly route reports to the wrong
+    # repository.
+    # Checked on the GitHub URLs specifically, not on any mention of a sibling:
+    # these files legitimately cite thehub-pr/federation-templates/ as the place
+    # the template lives. It is the *links* that must be self-referential.
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    url = re.compile(r"github\.com/jotaele44/([a-z-]+-pr)")
+    # Files carrying absolute links: every one must point at this repo.
+    for rel in ("SECURITY.md", ".github/ISSUE_TEMPLATE/config.yml"):
+        path = tmp_path / rel
+        assert path.is_file(), rel
+        linked = set(url.findall(path.read_text()))
+        assert linked, f"{rel} links to no repo at all"
+        assert linked == {"ovnis-pr"}, f"{rel} links to {sorted(linked)}, not just ovnis-pr"
+
+    # CONTRIBUTING.md deliberately uses relative links for in-repo files, so it
+    # carries no absolute URLs — check the identity it states in prose instead.
+    contributing = (tmp_path / "CONTRIBUTING.md").read_text()
+    assert not url.findall(contributing), "CONTRIBUTING.md should use relative in-repo links"
+    assert "# Contributing to ovnis-pr" in contributing
+
+
 def test_baseline_actions_are_sha_pinned():
     # A floating tag hands a compromised upstream release whatever token the job
     # holds. Pinning is the whole point of these templates, so assert it rather

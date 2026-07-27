@@ -22,6 +22,23 @@ _audit: &audit
 # repo-specific work.
 _precommit: &precommit
   [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, thehub-pr]
+# Governance. moneysweep-pr keeps its own SECURITY.md, CONTRIBUTING.md and
+# CODE_OF_CONDUCT.md: they cite that repo's STATUS.md, reports/current_status.json,
+# pinned tool versions and the requirements.in -> requirements.lock flow, none of
+# which generalizes. Rendering over them would replace specific, true text with
+# generic text.
+_governance: &governance
+  [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
+# CODEOWNERS and the PR template additionally exclude spiderweb-pr, whose
+# versions encode real per-path review rules (schemas/, docs/contracts/, specific
+# satellite tests) and a repo-specific test-plan checklist.
+_review: &review
+  [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, thehub-pr]
+# Only the three repos that ship no LICENSE at all. The other four already have
+# one and are left untouched — moneysweep-pr's uses contributor-inclusive
+# wording that is deliberately not propagated.
+_needs_license: &needs_license
+  [ovnis-pr, skywatcher-pr, spiderweb-pr]
 
 targets:
   - template: Fix-Gatekeeper.command
@@ -61,3 +78,39 @@ targets:
   - template: baseline/pre-commit-config.yaml
     output: .pre-commit-config.yaml
     repos: *precommit
+
+  # Governance and contributor surface. Shared because the quality gates became
+  # uniform across the federation; anything repo-specific stays in README/docs.
+  - template: baseline/SECURITY.md
+    output: SECURITY.md
+    repos: *governance
+  - template: baseline/CODE_OF_CONDUCT.md
+    output: CODE_OF_CONDUCT.md
+    repos: *governance
+  - template: baseline/CONTRIBUTING.md
+    output: CONTRIBUTING.md
+    repos: *governance
+  - template: baseline/CODEOWNERS
+    output: .github/CODEOWNERS
+    repos: *review
+  - template: baseline/pull_request_template.md
+    output: .github/pull_request_template.md
+    repos: *review
+  - template: baseline/LICENSE
+    output: LICENSE
+    repos: *needs_license
+  - template: baseline/ISSUE_TEMPLATE/config.yml
+    output: .github/ISSUE_TEMPLATE/config.yml
+    repos: *governance
+  - template: baseline/ISSUE_TEMPLATE/bug_report.yml
+    output: .github/ISSUE_TEMPLATE/bug_report.yml
+    repos: *governance
+  - template: baseline/ISSUE_TEMPLATE/feature_request.yml
+    output: .github/ISSUE_TEMPLATE/feature_request.yml
+    repos: *governance
+  - template: baseline/ISSUE_TEMPLATE/improvement.yml
+    output: .github/ISSUE_TEMPLATE/improvement.yml
+    repos: *governance
+  - template: baseline/ISSUE_TEMPLATE/question.yml
+    output: .github/ISSUE_TEMPLATE/question.yml
+    repos: *governance
