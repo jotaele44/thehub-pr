@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "federation_federal_document.schema.json",
+  "title": "Federation Federal Document",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["document_id", "originating_agency", "repository", "title", "document_type", "canonical_identity_basis", "confidence", "lineage", "synthetic", "created_at", "extracted_at"],
+  "properties": {
+    "document_id": {"type": "string", "pattern": "^doc_[a-f0-9]{32}$"},
+    "originating_agency": {"type": "string", "minLength": 1},
+    "custodial_agency": {"type": ["string", "null"]},
+    "repository": {"type": "string", "minLength": 1},
+    "collection_id": {"type": ["string", "null"]},
+    "record_group": {"type": ["string", "null"]},
+    "series": {"type": ["string", "null"]},
+    "archival_identifier": {"type": ["string", "null"]},
+    "title": {"type": "string", "minLength": 1},
+    "document_date_start": {"type": ["string", "null"], "format": "date"},
+    "document_date_end": {"type": ["string", "null"], "format": "date"},
+    "document_type": {"type": "string", "minLength": 1},
+    "jurisdiction": {"type": "string", "enum": ["PR", "US", "MULTI", "UNKNOWN"]},
+    "canonical_identity_basis": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "lineage": {"$ref": "#/definitions/lineage"},
+    "synthetic": {"type": "boolean"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "extracted_at": {"type": "string", "format": "date-time"}
+  },
+  "definitions": {"lineage": {"type": "object", "required": ["producer_script", "producer_phase", "source_inputs"], "properties": {"producer_script": {"type": "string"}, "producer_phase": {"type": "string"}, "source_inputs": {"type": "array", "items": {"type": "string"}}, "extraction_method": {"type": "string"}}, "additionalProperties": true}}
+}
