@@ -24,7 +24,7 @@ requireCondition(tokens.version === '2.0.0', 'token version must be 2.0.0')
 requireCondition(schema.properties?.version?.const === tokens.version, 'token schema version does not match token source')
 requireCondition(Array.isArray(snapshot.exports) && snapshot.exports.length >= 30, 'API snapshot is unexpectedly small')
 requireCondition(harness.viewports.length === 6, 'test harness must define six certified viewports')
-requireCondition(aarness.states.includes('offline') && harness.states.includes('filtered_empty'), 'test harness state matrix is incomplete')
+requireCondition(harness.states.includes('offline') && harness.states.includes('filtered_empty'), 'test harness state matrix is incomplete')
 
 for (const symbol of snapshot.exports) {
   requireCondition(indexSource.includes(symbol) || semanticsSource.includes(symbol), `API snapshot symbol missing from source: ${symbol}`)
@@ -73,7 +73,6 @@ for (const groupName of ['operational', 'workflow', 'evidenceTier', 'confidence'
     requireCondition(Boolean(tokens.semantic.statusRoles[mapping.tone]), `${groupName}.${name} references unknown tone ${mapping.tone}`)
   }
 }
-
 
 const manifestPath = join(pkgRoot, 'dist', 'release-manifest.json')
 if (existsSync(manifestPath)) {
