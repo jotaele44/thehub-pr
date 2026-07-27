@@ -66,11 +66,27 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        {/* Public auth routes — rendered without the app shell. */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        {/* Public auth routes — rendered without the app shell, and only when auth
+            is actually required. In diagnostic mode the backend implements no
+            /auth/login, /auth/register, /auth/verify-otp or /auth/password/*
+            endpoint (they 404), so rendering these forms would offer a sign-in
+            that cannot succeed. Gate them on the same signal that decides whether
+            the app shell is guarded, so the two can never disagree. */}
+        {authRequired ? (
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+          </>
+        ) : (
+          <>
+            <Route path="/login" element={<Navigate to="/" replace />} />
+            <Route path="/register" element={<Navigate to="/" replace />} />
+            <Route path="/forgot-password" element={<Navigate to="/" replace />} />
+            <Route path="/reset-password" element={<Navigate to="/" replace />} />
+          </>
+        )}
 
         {/* Protected application. */}
         <Route element={guard}>

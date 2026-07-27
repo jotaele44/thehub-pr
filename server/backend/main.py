@@ -10,7 +10,11 @@ Start with:
 """
 from __future__ import annotations
 
+import ipaddress
 import json
+import logging
+import os
+import secrets
 import sqlite3
 import uuid
 from contextlib import asynccontextmanager
@@ -19,7 +23,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import yaml
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
@@ -30,10 +34,83 @@ REGISTRY_PATH = REPO_ROOT / "registry" / "producers.yaml"
 
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
 
+log = logging.getLogger("hub.backend")
+
+# ── Write authorization ────────────────────────────────────────────────────────
+# Diagnostic mode ships without authentication: /api/auth/me always 401s and
+# public-settings reports requires_auth=false, so nothing else stands between a
+# caller and a route that writes to data/hub.db.
+#
+#   PRII_WRITE_TOKEN set    -> mutating routes require Authorization: Bearer <token>
+#   PRII_WRITE_TOKEN unset  -> mutating routes are served to clients on a local
+#                              network (loopback, RFC1918 private, link-local)
+#                              and refused for public addresses
+#
+# The private-range allowance is deliberate, not laziness. This repo ships a
+# Dockerfile and docker-compose.yml; when the UI is opened from the host against
+# a container, uvicorn sees the Docker bridge address (typically 172.17.0.1), not
+# 127.0.0.1. A strict loopback-only rule would 403 every write in the documented
+# container deployment, which would simply get this guard reverted. Refusing
+# public addresses still closes the case this is meant to close — an instance
+# accidentally exposed to the internet.
+#
+# Caveat when the token IS set: the browser UI has no write-credential input
+# (federationClient sources only the federation access token, and AuthContext
+# drops that when /api/auth/me 401s), so token mode currently suits API/CLI
+# callers rather than the shipped UI. Wiring a write credential through the
+# frontend is tracked in docs/MATURITY_AUDIT.md — aguayluz-pr's API_SECRET_KEY
+# has the same gap, so it wants one federation-wide answer, not a local patch.
+#
+# Reads are unaffected in every case.
+_WRITE_TOKEN = os.environ.get("PRII_WRITE_TOKEN", "")
+
+
+def _is_local_network(host: str) -> bool:
+    """True for loopback, RFC1918 private, and link-local client addresses."""
+    if host in ("localhost", ""):
+        return host == "localhost"
+    try:
+        ip = ipaddress.ip_address(host)
+    except ValueError:
+        return False
+    return ip.is_loopback or ip.is_private or ip.is_link_local
+
+
+def require_write_access(request: Request) -> None:
+    """Authorize a mutating request, by bearer token or by local-network origin."""
+    if _WRITE_TOKEN:
+        scheme, _, presented = request.headers.get("authorization", "").partition(" ")
+        if scheme.lower() != "bearer" or not secrets.compare_digest(
+            presented, _WRITE_TOKEN
+        ):
+            raise HTTPException(
+                status_code=401, detail="Missing or invalid write token"
+            )
+        return
+
+    if not _is_local_network(request.client.host if request.client else ""):
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                "Writes from public addresses are refused while PRII_WRITE_TOKEN "
+                "is unset. Set it to enable authenticated writes from anywhere."
+            ),
+        )
+
+
+_WRITE_GUARD = [Depends(require_write_access)]
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     _init_db()
     _seed_programs()
+    if not _WRITE_TOKEN:
+        log.warning(
+            "PRII_WRITE_TOKEN is unset — mutating /api routes accept any client on "
+            "a local network and are refused for public addresses. Set the token "
+            "before exposing this server beyond a trusted network."
+        )
     yield
 
 
@@ -208,7 +285,7 @@ def notifications(since: Optional[str] = Query(None), subscriber: str = Query("o
     }
 
 
-@app.post("/api/notifications/ack")
+@app.post("/api/notifications/ack", dependencies=_WRITE_GUARD)
 async def notifications_ack(request: Request):
     """Advance the subscriber's last-seen cursor (marks the digest read)."""
     body = await request.json()
@@ -229,7 +306,7 @@ def get_preferences(subscriber: str = Query("operator")):
             "channels": list(_notif.VALID_CHANNELS), "timing": list(_notif.VALID_TIMING)}
 
 
-@app.put("/api/notifications/preferences")
+@app.put("/api/notifications/preferences", dependencies=_WRITE_GUARD)
 async def set_preferences(request: Request):
     """Set channel (push/sms/none) + timing (asap/brief) prefs, global or per-domain."""
     body = await request.json()
@@ -262,7 +339,7 @@ def list_entities(entity_name: str, sort: str = Query("-created_date"), limit: i
     return [_row(r) for r in rows]
 
 
-@app.post("/api/entities/{entity_name}")
+@app.post("/api/entities/{entity_name}", dependencies=_WRITE_GUARD)
 async def create_entity(entity_name: str, request: Request):
     body = await request.json()
     ts = _now()
@@ -299,7 +376,7 @@ def get_entity(entity_name: str, entity_id: str):
     return _row(row)
 
 
-@app.patch("/api/entities/{entity_name}/{entity_id}")
+@app.patch("/api/entities/{entity_name}/{entity_id}", dependencies=_WRITE_GUARD)
 async def update_entity(entity_name: str, entity_id: str, request: Request):
     patch = await request.json()
     c = _conn()
@@ -324,7 +401,7 @@ async def update_entity(entity_name: str, entity_id: str, request: Request):
     return data
 
 
-@app.delete("/api/entities/{entity_name}/{entity_id}", status_code=204)
+@app.delete("/api/entities/{entity_name}/{entity_id}", status_code=204, dependencies=_WRITE_GUARD)
 def delete_entity(entity_name: str, entity_id: str):
     c = _conn()
     c.execute(
@@ -366,7 +443,7 @@ async def filter_entities(entity_name: str, request: Request):
     return results
 
 
-@app.post("/api/entities/{entity_name}/bulk")
+@app.post("/api/entities/{entity_name}/bulk", dependencies=_WRITE_GUARD)
 async def bulk_create(entity_name: str, request: Request):
     body = await request.json()
     items: list = body.get("items", [])

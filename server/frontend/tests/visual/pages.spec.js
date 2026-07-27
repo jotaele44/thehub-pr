@@ -11,14 +11,21 @@ const ROUTES = [
   { name: 'programs', path: '/programs' },
 ];
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }, testInfo) => {
   // Freeze time so any relative/absolute timestamps render identically.
   await page.clock.setFixedTime(new Date('2026-01-01T00:00:00Z'));
-  // Deterministic API: anonymous mode + empty collections.
+  // The /login route renders only when the app reports that auth is required —
+  // in diagnostic mode App.jsx redirects it to / rather than offering a sign-in
+  // against endpoints the backend does not implement. Report requires_auth=true
+  // for that one test so the auth layout stays under visual coverage, and false
+  // for the rest so the app shell renders anonymously. Between them the suite
+  // now exercises both sides of that gate.
+  const requiresAuth = testInfo.title === 'login';
+  // Deterministic API: empty collections.
   await page.route('**/api/**', (route) => {
     const url = route.request().url();
     const body = url.includes('/apps/public-settings')
-      ? { id: 'thehub', public_settings: { requires_auth: false } }
+      ? { id: 'thehub', public_settings: { requires_auth: requiresAuth } }
       : [];
     return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(body) });
   });
