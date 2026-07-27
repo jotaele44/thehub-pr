@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.example/schemas/gate_attestation.schema.json",
+  "title": "PRII gate attestation",
+  "description": "A signed, machine-produced claim about a property no execution can demonstrate: code that must never run, an absence, or a host this process is not running on. Verified exactly like a receipt, so a gate bound to an attestation is still derived rather than asserted. An attestation is not an annotation and carries no free-text status.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attestation",
+    "signature"
+  ],
+  "properties": {
+    "attestation": {
+      "$ref": "#/$defs/attestation"
+    },
+    "signature": {
+      "$ref": "#/$defs/signature"
+    }
+  },
+  "$defs": {
+    "attestation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "attestation_id",
+        "kind",
+        "produced_by",
+        "produced_at",
+        "result",
+        "environment",
+        "details"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": "prii_gate_attestation_v1"
+        },
+        "attestation_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)+$",
+          "description": "Stable dotted identifier a GateRule binds to, e.g. static.no_arbitrary_shell."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "static_analysis",
+            "forced_failure_test",
+            "operator_certification"
+          ],
+          "description": "Closed set. Adding a kind should be a deliberate act, not something invented at a call site."
+        },
+        "produced_by": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The test node id or script that produced this claim, so a reader can re-run it."
+        },
+        "produced_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "result": {
+          "type": "string",
+          "enum": [
+            "satisfied",
+            "refuted"
+          ],
+          "description": "'refuted' makes a bound gate 'failed', never 'not_run' -- we checked and it did not hold, which is a finding rather than an absence."
+        },
+        "environment": {
+          "type": "object",
+          "description": "Where the claim was produced. An operator_certification attestation naming a Linux platform is self-evidently not macOS evidence."
+        },
+        "details": {
+          "type": "object",
+          "description": "Whatever makes the claim auditable: counts scanned, boundaries exercised, steps completed."
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "key_id",
+        "algorithm",
+        "value",
+        "payload_sha256"
+      ],
+      "properties": {
+        "key_id": {
+          "type": "string"
+        },
+        "algorithm": {
+          "const": "Ed25519"
+        },
+        "value": {
+          "type": "string"
+        },
+        "payload_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}
