@@ -9,11 +9,28 @@ jobs:
     if: github.event.client_payload.canary == true
     runs-on: ubuntu-latest
     steps:
-      - name: Validate canary branch
+      - name: Validate closed canary contract
         env:
-          BRANCH: ${{ github.event.client_payload.canary_branch }}
+          PAYLOAD: ${{ toJSON(github.event.client_payload) }}
         run: |
-          case "$BRANCH" in canary/*) ;; *) echo "unsafe canary branch" >&2; exit 1;; esac
+          python - <<'PY'
+          import json, os
+          p = json.loads(os.environ["PAYLOAD"])
+          assert p["canary"] is True
+          assert p["target_repo"] == "thehub-pr"
+          assert p["canary_branch"].startswith("canary/")
+          assert p["canary_receipt_namespace"] == "artifacts/foia_canary_receipts"
+          assert p["no_production_promotion"] is True
+          e = p["envelope"]
+          assert e["schema_name"] == "prii.foia.finding"
+          assert e["schema_version"] == "0.2.0"
+          assert e["idempotency_key"] == p["idempotency_key"]
+          finding = e["finding"]
+          decision = e["decision"]
+          assert finding["citations"]
+          if finding["extraction_confidence"] < 0.70:
+              assert decision["disposition"] != "export"
+          PY
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.client_payload.canary_branch }}
@@ -21,28 +38,27 @@ jobs:
         id: persist
         env:
           PAYLOAD: ${{ toJSON(github.event.client_payload) }}
-          EXPECTED_REPO: thehub-pr
         run: |
           python - <<'PY'
-          import hashlib,json,os,pathlib
-          p=json.loads(os.environ['PAYLOAD'])
-          assert p['canary'] is True and p['target_repo']==os.environ['EXPECTED_REPO']
-          assert p['canary_branch'].startswith('canary/')
-          assert p['no_production_promotion'] is True
-          env=p['envelope']; key=p['idempotency_key']
-          assert env['schema_name']=='prii.foia.finding' and env['schema_version']=='0.2.0'
-          root=pathlib.Path('artifacts/foia_canary_receipts')
-          out=root/f"{hashlib.sha256(key.encode()).hexdigest()}.json"
-          duplicate=out.exists(); root.mkdir(parents=True,exist_ok=True)
+          import hashlib, json, os, pathlib
+          p = json.loads(os.environ["PAYLOAD"])
+          key = p["idempotency_key"]
+          root = pathlib.Path(p["canary_receipt_namespace"])
+          assert root.as_posix() == "artifacts/foia_canary_receipts"
+          root.mkdir(parents=True, exist_ok=True)
+          out = root / f"{hashlib.sha256(key.encode()).hexdigest()}.json"
+          duplicate = out.exists()
+          record_id = (
+              json.loads(out.read_text())["record_id"]
+              if duplicate
+              else f"{p['destination']}-canary-{hashlib.sha256(key.encode()).hexdigest()[:20]}"
+          )
           if not duplicate:
-              record_id=f"{p['destination']}-canary-{hashlib.sha256(key.encode()).hexdigest()[:20]}"
-              out.write_text(json.dumps({'record_id':record_id,'duplicate':False,'payload':p},indent=2,sort_keys=True)+'\n')
-          else:
-              record_id=json.loads(out.read_text())['record_id']
-          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
-              f.write(f"duplicate={str(duplicate).lower()}\nrecord_id={record_id}\n")
+              out.write_text(json.dumps({"record_id": record_id, "payload": p}, indent=2, sort_keys=True) + "\n")
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write(f"duplicate={str(duplicate).lower()}\nrecord_id={record_id}\n")
           PY
-      - name: Commit canary receipt
+      - name: Commit receipt to canary branch
         run: |
           git config user.name foia-canary-bot
           git config user.email actions@users.noreply.github.com
@@ -54,6 +70,10 @@ jobs:
           TOKEN: ${{ secrets.FEDERATION_DISPATCH_TOKEN }}
           RECORD_ID: ${{ steps.persist.outputs.record_id }}
           DUPLICATE: ${{ steps.persist.outputs.duplicate }}
+          CANARY_BRANCH: ${{ github.event.client_payload.canary_branch }}
+          KEY: ${{ github.event.client_payload.idempotency_key }}
+          DESTINATION: ${{ github.event.client_payload.destination }}
         run: |
           test -n "$TOKEN"
-          curl -sSf -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/jotaele44/centinelas-pr/dispatches -d "{\"event_type\":\"foia-canary-ack\",\"client_payload\":{\"idempotency_key\":\"${{ github.event.client_payload.idempotency_key }}\",\"destination\":\"${{ github.event.client_payload.destination }}\",\"record_id\":\"$RECORD_ID\",\"duplicate\":$DUPLICATE,\"status\":\"acknowledged\"}}"
+          body=$(jq -nc --arg key "$KEY" --arg destination "$DESTINATION" --arg record_id "$RECORD_ID" --arg branch "$CANARY_BRANCH" --argjson duplicate "$DUPLICATE" '{event_type:"foia-canary-ack",client_payload:{idempotency_key:$key,destination:$destination,record_id:$record_id,duplicate:$duplicate,status:"acknowledged",canary:true,canary_branch:$branch,no_production_promotion:true}}')
+          curl -sSf -X POST -H "Authorization: Bearer $TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/jotaele44/centinelas-pr/dispatches -d "$body"
