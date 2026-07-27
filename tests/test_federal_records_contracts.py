@@ -1,6 +1,3 @@
-import json
-from pathlib import Path
-
 import jsonschema
 
 from hub._schemas import STREAM_ID_FIELD, STREAM_SCHEMA, load_schema
@@ -84,7 +81,11 @@ def _fixtures():
             "reviewer_confidence": 1.0,
             "review_status": "human_verified",
             "cointelpro_disposition": "NOT_COINTELPRO",
-            "citation": {"page": 1, "source_url": "https://example.test/document.pdf", "content_sha256": "6" * 64},
+            "citation": {
+                "page": 1,
+                "source_url": "https://example.test/document.pdf",
+                "content_sha256": "6" * 64,
+            },
             "lineage": LINEAGE,
             "synthetic": True,
             "created_at": NOW,
@@ -141,20 +142,25 @@ def test_export_manifest_accepts_new_streams():
     manifest_schema = load_schema("federation_export_manifest.schema.json")
     files = []
     for stream in _fixtures():
-        files.append({
-            "filename": f"{stream}.jsonl",
-            "stream": stream,
-            "record_count": 1,
-            "sha256": "a" * 64,
-            "schema_id": STREAM_SCHEMA[stream],
-        })
+        files.append(
+            {
+                "filename": f"{stream}.jsonl",
+                "stream": stream,
+                "record_count": 1,
+                "sha256": "a" * 64,
+                "schema_id": STREAM_SCHEMA[stream],
+            }
+        )
     manifest = {
         "package_id": "pkg_" + "b" * 32,
         "producer": "synthetic-producer",
         "export_contract_version": "1.1.0",
         "mode": "test",
         "created_at": NOW,
-        "federation": {"producer_repo": "synthetic-producer", "hub_parent": "thehub-pr"},
+        "federation": {
+            "producer_repo": "synthetic-producer",
+            "hub_parent": "thehub-pr",
+        },
         "files": files,
     }
     jsonschema.Draft7Validator(manifest_schema).validate(manifest)
