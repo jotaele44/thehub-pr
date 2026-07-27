@@ -18,10 +18,34 @@ export default function GateStatusPanel({ evidence }) {
     );
   }
 
+  // A gate list means nothing without the scope it was measured against, so the
+  // profile is stated above the gates rather than left for the reader to infer.
+  // Omitting it is how a slice-scoped result gets read as a federation-wide one.
+  const otherProfiles = Object.entries(evidence.additional_profiles || {});
+
   return (
     <div className="space-y-2" data-testid="gate-panel">
+      {evidence.profile_id && (
+        <div className="rounded-lg border border-border bg-muted/40 p-3" data-testid="gate-profile">
+          <p className="text-sm font-medium">
+            Scope: <span className="font-mono">{evidence.profile_id}</span>
+          </p>
+          {evidence.profile_scope && (
+            <p className="text-xs text-muted-foreground mt-1">{evidence.profile_scope}</p>
+          )}
+          {otherProfiles.map(([profileId, profile]) => (
+            <p key={profileId} className="text-xs text-muted-foreground mt-1.5">
+              Also evaluated — <span className="font-mono">{profileId}</span>:{" "}
+              {Object.entries(profile.summary || {})
+                .map(([status, count]) => `${count} ${status.replace(/_/g, " ")}`)
+                .join(", ")}
+            </p>
+          ))}
+        </div>
+      )}
       <p className="text-xs text-muted-foreground">
-        Derived from verified receipts only. Notes are advisory and cannot change a status.
+        Derived from verified receipts and attestations only. Notes are advisory and cannot
+        change a status.
       </p>
       <ul className="divide-y divide-border rounded-lg border border-border">
         {evidence.gates.map((gate) => (
@@ -45,6 +69,16 @@ export default function GateStatusPanel({ evidence }) {
                 {gate.derived_from.length} verified receipt
                 {gate.derived_from.length === 1 ? "" : "s"}:{" "}
                 {gate.derived_from.map((source) => source.receipt_sha256.slice(0, 8)).join(", ")}
+              </p>
+            )}
+
+            {gate.attested_by?.length > 0 && (
+              <p className="text-[11px] text-muted-foreground mt-1.5 font-mono">
+                {gate.attested_by.length} verified attestation
+                {gate.attested_by.length === 1 ? "" : "s"}:{" "}
+                {gate.attested_by
+                  .map((source) => `${source.attestation_id} (${source.result})`)
+                  .join(", ")}
               </p>
             )}
 

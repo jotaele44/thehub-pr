@@ -74,35 +74,38 @@ def test_no_shell_execution_primitives_in_the_manager_plane():
     A substring scan would trip over prose in a docstring that *names* the
     forbidden constructs, and would equally miss ``shell = True`` written with
     spaces. Walking the AST tests the code that actually runs.
+
+    The scan itself lives in ``tools/emit_gate_attestations.py`` and is imported
+    here rather than repeated. The attestation that satisfies G03 is produced by
+    that same function, so a scan that weakened would weaken this test too --
+    two copies could have drifted, leaving the gate green against a check the
+    test no longer performed.
     """
-    import ast
+    from tools.emit_gate_attestations import scan_for_shell_primitives
 
-    # Qualified: os.system is forbidden, platform.system() is ordinary.
-    banned_attributes = {
-        "os": {"system", "popen", "execv", "execve", "execvp", "spawnl", "spawnv", "posix_spawn"},
-        "subprocess": {"getoutput", "getstatusoutput"},
-    }
-    banned_builtins = {"eval", "exec", "compile", "__import__"}
-    offences: list[str] = []
-
-    for module in sorted((REPO_ROOT / "server" / "backend").glob("federation_manager*.py")):
-        tree = ast.parse(module.read_text(encoding="utf-8"), filename=str(module))
-        for node in ast.walk(tree):
-            if not isinstance(node, ast.Call):
-                continue
-            for keyword in node.keywords:
-                if keyword.arg == "shell" and not (
-                    isinstance(keyword.value, ast.Constant) and keyword.value.value is False
-                ):
-                    offences.append(f"{module.name}:{node.lineno} passes a non-False shell=")
-            if isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name):
-                owner = node.func.value.id
-                if node.func.attr in banned_attributes.get(owner, ()):
-                    offences.append(f"{module.name}:{node.lineno} calls {owner}.{node.func.attr}()")
-            elif isinstance(node.func, ast.Name) and node.func.id in banned_builtins:
-                offences.append(f"{module.name}:{node.lineno} calls {node.func.id}()")
+    offences, modules_scanned = scan_for_shell_primitives()
 
     assert offences == []
+    # A scan that silently matched nothing would also report no offences.
+    assert modules_scanned >= 7
+
+
+def test_the_shell_scan_actually_catches_an_offence(tmp_path):
+    """Guard the guard: a check only ever observed to pass proves nothing."""
+    from tools.emit_gate_attestations import scan_for_shell_primitives
+
+    (tmp_path / "federation_manager_bad.py").write_text(
+        "import subprocess\n"
+        "def go(cmd):\n"
+        "    subprocess.run(cmd, shell = True)\n"
+        "    eval('1+1')\n",
+        encoding="utf-8",
+    )
+    offences, scanned = scan_for_shell_primitives(tmp_path)
+
+    assert scanned == 1
+    assert any("shell=" in offence for offence in offences)
+    assert any("eval()" in offence for offence in offences)
 
 
 def test_metacharacters_in_an_argument_are_inert(workdir):

@@ -25,6 +25,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 from server.backend.federation_manager_receipts import (  # noqa: E402
+    AttestationStore,
     GateRule,
     ReceiptSigner,
     ReceiptStore,
@@ -37,6 +38,17 @@ NO_MACOS = (
     "host, no window server, no native file picker, and no Keychain, so the evidence this "
     "gate requires cannot be produced here at all."
 )
+
+#: Attestation IDs the test suite and certification scripts emit. A gate bound
+#: to one of these is still derived: the attestation is signed with the manager
+#: key and verified before it counts, exactly like a receipt.
+A_NO_SHELL = "static.no_arbitrary_shell"
+A_ROLLBACK_ENABLED = "forced_failure.rollback_enabled_operations"
+A_NO_DELETION = "static.no_deletion_capability"
+A_KEYCHAIN = "operator.macos_keychain"
+A_UI_SETUP = "operator.macos_ui_setup"
+A_UI_VALIDATION = "operator.macos_ui_validation"
+A_OPERATOR_E2E = "operator.macos_end_to_end"
 
 PRODUCER_DEFERRED = (
     "Certification is scoped to TheHub's 13 operations. The 55 producer operations are "
@@ -55,6 +67,27 @@ CERTIFIED_HUB_RUNS = [
     "hub.ingest",
     "hub.analytics_v2",
 ]
+
+#: Gates verified by inspecting repository state at merge time rather than from
+#: any artifact this evaluator can read -- no operation observes git. Listed by
+#: id rather than by status so the exemption cannot quietly grow: a new gate
+#: does not become merge-exempt by being marked deferred.
+MERGE_TIME_VERIFIED = frozenset(
+    {"G01_BASELINE_PINNED", "G02_PR94_UNCHANGED", "G23_NO_MERGE"}
+)
+
+HUB_SLICE_SCOPE = (
+    "TheHub's 13 declared operations -- 12 enabled and executed, hub.fetch declared and "
+    "disabled -- on a headless Linux host, plus macOS operator certification of the Hub "
+    "app alone. Says nothing about the 55 producer operations or the other six apps."
+)
+
+FEDERATION_VECTOR_SCOPE = (
+    "The full vector: all 68 operations across all seven apps, including 6-of-6 producer "
+    "exports and a 7-of-7 macOS operator pass. Evaluated and published alongside the "
+    "gating profile so narrowing scope cannot hide what is still incomplete."
+)
+
 
 GATE_RULES = [
     GateRule(
@@ -77,12 +110,7 @@ GATE_RULES = [
     GateRule(
         "G03_NO_ARBITRARY_SHELL",
         "No shell=True, sh -c, os.system, eval, exec, or string command execution.",
-        deferred_reason=(
-            "Enforced by test, not by receipt: tests/test_federation_process.py walks the parsed "
-            "AST of every federation_manager*.py module and fails on any non-False shell= keyword "
-            "or banned call. Asserted statically because the claim is about code that must never "
-            "run, which no execution can demonstrate."
-        ),
+        required_attestations=[A_NO_SHELL],
     ),
     GateRule(
         "G04_OPERATION_ACCOUNTING",
@@ -132,13 +160,19 @@ GATE_RULES = [
         "G13_ATOMIC_ROLLBACK",
         "Install/update, SQLite, ledgers, and generated outputs pass forced-failure rollback.",
         deferred_reason=(
-            "Four of seven strategies are certified by forced-failure tests at every boundary "
-            "(stage_validate_atomic_promote, file_snapshot_restore, "
-            "sqlite_backup_integrity_check_atomic_swap, versioned_install_pointer_swap, plus "
-            "ledger_snapshot_restore and run_partition_restore). Three declared by producer "
-            "operations are not built: dispatch_receipt_compensating_remove, "
-            "transactional_run_partition_restore, queue_run_partition_delete. Partial coverage "
-            "is not a pass."
+            "Six strategies are built and certified by forced-failure tests at every boundary: "
+            "stage_validate_atomic_promote, file_snapshot_restore, "
+            "sqlite_backup_integrity_check_atomic_swap, versioned_install_pointer_swap, "
+            "ledger_snapshot_restore, run_partition_restore. Five declared by producer "
+            "operations are not built: delete_staging_download, "
+            "dispatch_receipt_compensating_remove, queue_run_partition_delete, "
+            "transactional_run_partition_restore, "
+            "transaction_snapshot_and_run_partition_restore. Partial coverage is not a pass. "
+            "Corrects an earlier count of three, which undercounted by inspecting only the "
+            "strategies with implementations rather than every value the policy references. A "
+            "sixth row carried prose rather than an identifier ('delete staging checkout; "
+            "preserve prior current pointer'), which no lookup could match; it has been "
+            "normalised to delete_staging_download and the builder now rejects the shape."
         ),
     ),
     GateRule(
@@ -174,11 +208,7 @@ GATE_RULES = [
     GateRule(
         "G20_EXPLICIT_DELETION_APPROVAL",
         "Deletion remains disabled in this vector.",
-        deferred_reason=(
-            "No operation in the policy has a deletion category, and the manager exposes no "
-            "delete endpoint beyond removing a credential the operator stored. Certified by "
-            "absence, which no receipt can attest to."
-        ),
+        required_attestations=[A_NO_DELETION],
     ),
     GateRule(
         "G21_E2E_SYNTHETIC",
@@ -201,6 +231,128 @@ GATE_RULES = [
 ]
 
 
+#: The vector profile: the original 23 gates, measured against all seven apps
+#: and all 68 operations. Nothing here is narrowed.
+FEDERATION_VECTOR_RULES = GATE_RULES
+
+
+def _override(rules, changes):
+    """Return ``rules`` with the named gates replaced.
+
+    Overriding rather than redefining keeps the two profiles textually close, so
+    a reviewer can see exactly which gates a narrower scope changes and read the
+    rest once.
+    """
+    from dataclasses import replace
+
+    unknown = set(changes) - {rule.gate_id for rule in rules}
+    if unknown:
+        raise KeyError(f"override targets a gate that does not exist: {sorted(unknown)}")
+    return [replace(rule, **changes.get(rule.gate_id, {})) for rule in rules]
+
+
+#: The Hub-slice profile: what PR #99 actually claims. Gates that are inherently
+#: about producers or about all seven apps are re-stated at Hub scope, and the
+#: macOS gates become attestation-bound rather than blocked, because an operator
+#: certification run on a real Mac can now produce that evidence.
+HUB_SLICE_RULES = _override(
+    GATE_RULES,
+    {
+        "G07_NATIVE_SECRETS": dict(
+            requirement="macOS Keychain provider certified on a real macOS host.",
+            blocked_reason="",
+            required_attestations=[A_KEYCHAIN],
+        ),
+        "G13_ATOMIC_ROLLBACK": dict(
+            requirement=(
+                "Every rollback strategy declared by an ENABLED operation passes forced-failure "
+                "rollback at each boundary."
+            ),
+            deferred_reason="",
+            required_attestations=[A_ROLLBACK_ENABLED],
+        ),
+        "G15_7_OF_7_UI_SETUP": dict(
+            requirement="TheHub completes macOS setup through the UI with no Terminal.",
+            blocked_reason="",
+            required_attestations=[A_UI_SETUP],
+        ),
+        "G16_7_OF_7_UI_VALIDATION": dict(
+            requirement="TheHub runs its validation controls through the UI and retains receipts.",
+            blocked_reason="",
+            required_attestations=[A_UI_VALIDATION],
+        ),
+        "G17_6_OF_6_PRODUCER_EXPORTS": dict(
+            requirement="Producer exports are out of scope for the Hub slice.",
+            deferred_reason=(
+                "Inherently a producer gate: it cannot be restated at Hub scope without changing "
+                "what it measures, so it is left deferred here and carried at full width in the "
+                "federation_vector profile. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md."
+            ),
+        ),
+        "G22_REAL_OPERATOR_MACOS": dict(
+            requirement="A macOS operator runs the Hub slice end to end, through to rollback.",
+            blocked_reason="",
+            required_attestations=[A_OPERATOR_E2E],
+        ),
+    },
+)
+
+#: Gates that measure something the Hub slice deliberately does not do. Distinct
+#: from "not finished": no work on this pull request could close them, because
+#: closing them would mean enlarging its scope. Enumerated so the exclusion is a
+#: reviewable list rather than a property of prose in a status_reason.
+HUB_SLICE_OUT_OF_SCOPE = {
+    "G09_REPOSITORY_ACQUISITION": (
+        "hub.fetch is declared and left disabled, so nothing in this slice acquires a "
+        "repository. Carried at full width in federation_vector."
+    ),
+    "G17_6_OF_6_PRODUCER_EXPORTS": (
+        "Producer exports require the 55 producer operations, which this slice does not "
+        "enable. Carried at full width in federation_vector."
+    ),
+}
+
+PROFILES = {
+    "hub_slice": (HUB_SLICE_RULES, HUB_SLICE_SCOPE, HUB_SLICE_OUT_OF_SCOPE),
+    "federation_vector": (FEDERATION_VECTOR_RULES, FEDERATION_VECTOR_SCOPE, {}),
+}
+
+#: Which profile decides whether this pull request may merge.
+GATING_PROFILE = "hub_slice"
+
+
+def merge_readiness(evidence, out_of_scope=None) -> dict:
+    """Say plainly whether the gating profile permits a merge, and why not.
+
+    ``deferred`` is not a free pass. A gate may be set aside only two ways, both
+    of them enumerated by id rather than inferred from status: it is in
+    ``MERGE_TIME_VERIFIED`` (repository state no artifact here can observe), or
+    it is declared out of scope for this profile. Anything else that is not
+    ``passed`` blocks, so no gate can be excused by writing a reason into it.
+    """
+    out_of_scope = out_of_scope or {}
+    blockers = []
+    for gate in evidence["gates"]:
+        if not gate.get("blocking", True):
+            continue
+        status = gate["status"]
+        gate_id = gate["gate_id"]
+        if status == "passed":
+            continue
+        if status == "deferred" and gate_id in MERGE_TIME_VERIFIED:
+            continue
+        if status == "deferred" and gate_id in out_of_scope:
+            continue
+        blockers.append({"gate_id": gate_id, "status": status})
+    return {
+        "profile_id": evidence.get("profile_id", ""),
+        "ready": not blockers,
+        "blocking_gates": blockers,
+        "merge_time_verified": sorted(MERGE_TIME_VERIFIED),
+        "out_of_scope": dict(sorted(out_of_scope.items())),
+    }
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--receipts", type=Path, required=True)
@@ -211,6 +363,20 @@ def main(argv=None) -> int:
             "Public key of the manager that produced the receipts. Omit to use a fresh key, "
             "which verifies nothing -- useful only for demonstrating that unverifiable "
             "receipts contribute no evidence."
+        ),
+    )
+    parser.add_argument(
+        "--attestations",
+        type=Path,
+        help="Directory of signed attestations. Omit and attestation-bound gates report not_run.",
+    )
+    parser.add_argument(
+        "--attestation-public-key",
+        type=Path,
+        help=(
+            "Public key that signed the attestations. Defaults to --public-key. They differ "
+            "whenever an operator certification was produced on the host being certified "
+            "rather than on the machine that ran the operations."
         ),
     )
     parser.add_argument("--out", type=Path, default=REPO_ROOT / "reports" / "federation" / "gate_evidence.json")
@@ -226,21 +392,62 @@ def main(argv=None) -> int:
         public_key = ReceiptSigner.generate("prii-manager-evaluator").public_key_pem()
 
     store = ReceiptStore(args.receipts, ReceiptSigner.generate("unused"))
+    documents = store.all_documents()
 
-    evidence = evaluate_gates(
-        GATE_RULES,
-        store.all_documents(),
-        public_key_pem=public_key,
-        policy_sha256=args.policy_sha256 or None,
+    attestation_key = (
+        args.attestation_public_key.read_bytes() if args.attestation_public_key else None
     )
+
+    attestations = []
+    if args.attestations and args.attestations.exists():
+        attestations = AttestationStore(
+            args.attestations, ReceiptSigner.generate("unused")
+        ).all_documents()
+
+    def evaluate(profile_id):
+        rules, scope, _ = PROFILES[profile_id]
+        return evaluate_gates(
+            rules,
+            documents,
+            public_key_pem=public_key,
+            policy_sha256=args.policy_sha256 or None,
+            attestations=attestations,
+            attestation_public_key_pem=attestation_key,
+            profile_id=profile_id,
+            profile_scope=scope,
+        )
+
+    evidence = evaluate(GATING_PROFILE)
+    evidence["additional_profiles"] = {
+        profile_id: {
+            "profile_scope": PROFILES[profile_id][1],
+            "summary": summarize(other),
+            "gates": other["gates"],
+        }
+        for profile_id in PROFILES
+        if profile_id != GATING_PROFILE
+        for other in [evaluate(profile_id)]
+    }
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
-    counts = summarize(evidence)
     print(f"wrote {args.out}")
-    for status, count in counts.items():
+    print(f"gating profile: {GATING_PROFILE}")
+    for status, count in summarize(evidence).items():
         print(f"  {status}: {count}")
+    for profile_id, block in evidence["additional_profiles"].items():
+        print(f"also evaluated: {profile_id}")
+        for status, count in block["summary"].items():
+            print(f"  {status}: {count}")
+
+    readiness = merge_readiness(evidence, PROFILES[GATING_PROFILE][2])
+    if readiness["ready"]:
+        print(f"\nmerge readiness ({GATING_PROFILE}): READY")
+    else:
+        print(f"\nmerge readiness ({GATING_PROFILE}): NOT READY")
+        for blocker in readiness["blocking_gates"]:
+            print(f"  {blocker['gate_id']}: {blocker['status']}")
     return 0
 
 
