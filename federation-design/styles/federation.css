@@ -66,4 +66,22 @@ body{font-family:var(--fd-font-sans);background:var(--fd-bg);color:var(--fd-text
 .fd-stat-card__value{font-size:1.5rem;font-weight:600;line-height:1.2;color:var(--fd-text)}
 .fd-stat-card__sub{font-size:.75rem;color:var(--fd-text-muted)}
 .fd-stat-card__icon>svg{width:100%;height:100%;display:block}.fd-empty-state__icon>svg{width:1.5rem;height:1.5rem;display:block}
+/* Stat-card value tint — canonical status roles, mirroring .fd-status[data-status].
+   Replaces the per-repo Tailwind literals (text-emerald-300, text-amber-300, …)
+   producers passed as `tone`; theme-aware via the same --fd-st-*-fg tokens. */
+.fd-stat-card__value[data-tone="danger"]{color:var(--fd-st-danger-fg)}
+.fd-stat-card__value[data-tone="success"]{color:var(--fd-st-success-fg)}
+.fd-stat-card__value[data-tone="warning"]{color:var(--fd-st-warning-fg)}
+.fd-stat-card__value[data-tone="info"]{color:var(--fd-st-info-fg)}
+.fd-stat-card__value[data-tone="neutral"]{color:var(--fd-st-neutral-fg)}
+.fd-stat-card__value[data-tone="process"]{color:var(--fd-st-process-fg)}
+.fd-stat-card__value[data-tone="tier"]{color:var(--fd-st-tier-fg)}
+.fd-stat-card__value[data-tone="caution"]{color:var(--fd-st-caution-fg)}
+.fd-stat-card__value[data-tone="elevated"]{color:var(--fd-st-elevated-fg)}
+/* Compact empty state for dense panes/lists: one muted line that sits beside
+   sibling status lines ("Loading…") instead of a 2rem centered block. */
+.fd-empty-state--inline{display:block;padding:.5rem 0;text-align:left;font-size:.8125rem}
+.fd-empty-state--inline .fd-empty-state__title{font-size:inherit;font-weight:400;color:var(--fd-text-muted)}
+.fd-empty-state--inline .fd-empty-state__description{font-size:inherit;margin-top:.125rem}
+.fd-empty-state--inline .fd-empty-state__icon{display:none}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

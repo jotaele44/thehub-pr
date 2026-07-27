@@ -93,11 +93,22 @@ export function FederationStatusBadge({ status, children, className, ...props })
 
 // `icon` is an already-rendered node (e.g. a lucide element) — the package never
 // imports an icon library, keeping it dependency-free.
-export function FederationEmptyState({ icon, title, description, action, className, ...props }) {
+//
+// `inline` renders the compact variant: a single muted line sized to sit inside
+// a dense pane or list, next to sibling status lines like "Loading…". The block
+// variant (default) is the full centered treatment with the icon tile. Inline
+// drops the heading level too — a one-line pane message shouldn't inject an
+// <h2> into the document outline.
+export function FederationEmptyState({ icon, title, description, action, inline, className, ...props }) {
+  const Title = inline ? 'p' : 'h2'
   return (
-    <div className={cx('fd-empty-state', className)} role="status" {...props}>
+    <div
+      className={cx('fd-empty-state', inline && 'fd-empty-state--inline', className)}
+      role="status"
+      {...props}
+    >
       {icon ? <div className="fd-empty-state__icon" aria-hidden="true">{icon}</div> : null}
-      <h2 className="fd-empty-state__title">{title}</h2>
+      <Title className="fd-empty-state__title">{title}</Title>
       {description ? <p className="fd-empty-state__description">{description}</p> : null}
       {action ? <div className="fd-empty-state__action">{action}</div> : null}
     </div>
@@ -106,14 +117,22 @@ export function FederationEmptyState({ icon, title, description, action, classNa
 
 // Metric tile. `value` is the headline figure; `icon` (optional) is a rendered
 // node; `sub` an optional caption; `alert` tints the icon with the danger token.
-export function FederationStatCard({ label, value, icon, sub, alert, className, ...props }) {
+//
+// `tone` tints the *value* with a canonical status role (see
+// FEDERATION_STATUS_ROLES), replacing the per-repo Tailwind literals producers
+// used to pass (`text-emerald-300`, `text-amber-300`, …). Accepts aliases too,
+// so `tone="operational"` resolves to `success`. Omit it for the default text
+// color — untinted tiles stay untouched.
+export function FederationStatCard({ label, value, icon, sub, alert, tone, className, ...props }) {
   return (
     <div className={cx('fd-stat-card', alert && 'fd-stat-card--alert', className)} {...props}>
       <div className="fd-stat-card__head">
         <span className="fd-stat-card__label">{label}</span>
         {icon ? <span className="fd-stat-card__icon" aria-hidden="true">{icon}</span> : null}
       </div>
-      <div className="fd-stat-card__value">{value}</div>
+      <div className="fd-stat-card__value" data-tone={tone ? federationStatusRole(tone) : undefined}>
+        {value}
+      </div>
       {sub ? <div className="fd-stat-card__sub">{sub}</div> : null}
     </div>
   )
