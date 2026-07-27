@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "federation_case_activity_assessment.schema.json",
+  "title": "Federation Case Activity Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["assessment_id", "candidate_id", "case_id", "classification", "explanatory_strength", "evidence_strength", "reasoning_summary", "supports_conventional_explanation", "contradicts_case_claim", "data_gap_codes", "reviewer", "reviewed_at", "review_status", "lineage", "synthetic", "created_at", "extracted_at"],
+  "properties": {
+    "assessment_id": {"type": "string", "pattern": "^assess_[a-f0-9]{32}$"},
+    "candidate_id": {"type": "string", "pattern": "^cand_[a-f0-9]{32}$"},
+    "case_id": {"type": "string", "minLength": 1},
+    "classification": {"type": "string", "enum": ["DIRECT_MATCH", "TEMPORAL_GEOGRAPHIC_MATCH", "PLAUSIBLE_CONTEXT", "WEAK_ASSOCIATION", "CONTRADICTORY", "POST_EVENT_DISCLOSURE", "BACKGROUND_ONLY", "NO_KNOWN_MATCH", "DATA_GAP", "EXCLUDED"]},
+    "explanatory_strength": {"type": "number", "minimum": 0, "maximum": 1},
+    "evidence_strength": {"type": "number", "minimum": 0, "maximum": 1},
+    "reasoning_summary": {"type": "string", "minLength": 1},
+    "supports_conventional_explanation": {"type": "boolean"},
+    "contradicts_case_claim": {"type": "boolean"},
+    "data_gap_codes": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "reviewer": {"type": "string", "minLength": 1},
+    "reviewed_at": {"type": "string", "format": "date-time"},
+    "review_status": {"type": "string", "enum": ["pending", "adjudicated", "excluded", "deferred"]},
+    "lineage": {"$ref": "#/definitions/lineage"}, "synthetic": {"type": "boolean"}, "created_at": {"type": "string", "format": "date-time"}, "extracted_at": {"type": "string", "format": "date-time"}
+  },
+  "allOf": [{"if": {"properties": {"classification": {"const": "DATA_GAP"}}}, "then": {"properties": {"data_gap_codes": {"minItems": 1}}}}],
+  "definitions": {"lineage": {"type": "object", "required": ["producer_script", "producer_phase", "source_inputs"], "properties": {"producer_script": {"type": "string"}, "producer_phase": {"type": "string"}, "source_inputs": {"type": "array", "items": {"type": "string"}}, "extraction_method": {"type": "string"}}, "additionalProperties": true}}
+}
