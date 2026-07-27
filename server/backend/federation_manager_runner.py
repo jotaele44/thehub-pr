@@ -12,6 +12,7 @@ testable without a filesystem, a process, or a clock.
 """
 from __future__ import annotations
 
+import os
 import threading
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -212,6 +213,100 @@ class OperationRunner:
             expected_outputs=tuple(operation.expected_outputs),
             warnings=tuple(warnings),
         )
+
+    # ── prerequisites ───────────────────────────────────────────────────────
+
+    def prerequisites(self, app_id: str) -> List[Dict[str, str]]:
+        """Machine-detected readiness, with an actionable step for each gap.
+
+        Every item is *observed* rather than declared: whether the executable
+        actually resolves, whether the roots exist, whether the credential
+        store answers. A list built from the policy's prose ``prerequisites``
+        strings would look the same and tell an operator nothing about their
+        own machine.
+        """
+        import shutil
+
+        checks: List[Dict[str, str]] = []
+
+        def add(name: str, ok: bool, detail: str, remediation: str = "") -> None:
+            checks.append(
+                {
+                    "name": name,
+                    "status": "met" if ok else "unmet",
+                    "detail": detail,
+                    "remediation": "" if ok else remediation,
+                }
+            )
+
+        add(
+            "Signed operations policy",
+            True,
+            f"policy {self.policy.policy_id} sequence {self.policy.sequence}, "
+            f"expires {self.policy.expires_at}",
+        )
+
+        app_root = self.context.app_root
+        add(
+            "Application root",
+            app_root.is_dir(),
+            str(app_root),
+            "The managed application directory is missing. Install or repair the app first.",
+        )
+
+        executables = sorted(
+            {
+                op.target.identifier
+                for op in self.policy.operations.values()
+                if op.enabled and op.app_id == app_id and op.target.kind == "console_script"
+            }
+        )
+        for executable in executables:
+            resolved = shutil.which(executable)
+            add(
+                f"Console script: {executable}",
+                bool(resolved),
+                resolved or "not found on PATH",
+                f"Install the {app_id} application environment so `{executable}` is on PATH.",
+            )
+
+        data_root = self.context.data_root
+        writable = data_root.is_dir() and os.access(str(data_root), os.W_OK)
+        add(
+            "Managed data root",
+            writable,
+            str(data_root),
+            "The managed data directory is missing or not writable.",
+        )
+
+        receipt_root = self.receipts.root
+        add(
+            "Receipt store",
+            receipt_root.is_dir() and os.access(str(receipt_root), os.W_OK),
+            str(receipt_root),
+            "Receipts cannot be written, so no run could produce gate evidence.",
+        )
+
+        from server.backend.federation_manager_secrets import provider_description
+
+        description = provider_description(self.secrets.provider)
+        required = sorted(
+            {
+                secret
+                for op in self.policy.operations.values()
+                if op.app_id == app_id
+                for secret in op.secret_refs
+            }
+        )
+        if required:
+            add(
+                "Credential store",
+                bool(description["available"]),
+                f"{description['provider']} (persistent: {description['persistent']})",
+                "No OS credential provider is available, so credentials cannot be stored.",
+            )
+
+        return checks
 
     # ── run ─────────────────────────────────────────────────────────────────
 

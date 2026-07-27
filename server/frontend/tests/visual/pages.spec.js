@@ -9,6 +9,11 @@ const ROUTES = [
   { name: 'sources', path: '/sources' },
   { name: 'gates', path: '/gates' },
   { name: 'programs', path: '/programs' },
+  // The operations plane without a native manager session. That is what a
+  // browser-only visitor actually sees, it is fully deterministic (no run
+  // timestamps, no streamed output), and keeping it under visual coverage
+  // means a regression in the unavailable path is caught rather than assumed.
+  { name: 'operations', path: '/operations' },
 ];
 
 test.beforeEach(async ({ page }, testInfo) => {

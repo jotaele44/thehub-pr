@@ -274,6 +274,16 @@ def operations_accounting(request: Request, authorization: Optional[str] = Heade
     }
 
 
+@router.get("/apps/{app_id}/prerequisites")
+def app_prerequisites(
+    app_id: str, request: Request, authorization: Optional[str] = Header(None)
+):
+    """Machine-detected prerequisites for one application."""
+    _authorize(request, authorization)
+    active = _require_runtime()
+    return active.runner.prerequisites(app_id)
+
+
 @router.post("/operations/{operation_id}/plan")
 def plan_operation(
     operation_id: str,
