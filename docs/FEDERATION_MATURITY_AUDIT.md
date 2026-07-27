@@ -493,3 +493,27 @@ this repo always run and must always pass, while the cross-repo half runs strict
 under `--require-all` when `FEDERATION_READ_TOKEN` is present. A missing secret
 never manufactures a red build, and when it is missing the job says which checks
 went unverified rather than letting the summary imply full coverage.
+
+### Correction — spiderweb's frontend is now built in CI (2026-07-27)
+
+The table above says `spiderweb-pr` has "**no npm step in any workflow**". That was
+true when measured and is now stale: its CI runs `npm ci`, `npm run build` and
+`npm run typecheck`. Re-derived from `.github/workflows/` on `main`, not from job
+names — see below for why that distinction matters.
+
+The rest of that table stands, re-checked at the same time:
+
+- **Only `thehub-pr` and `skywatcher-pr` gate `npm run lint`.** Still two of seven.
+- **`spiderweb-pr/server/frontend` still has no `lint` script** —
+  `['build','build:export','dev','preview','snapshot','typecheck']` — so it is still
+  six of seven with one, and there is nothing there to gate.
+
+**Why this nearly became a second error.** Every repo's CI now shows a green job
+named `lint`, and reading those job names suggested four more repos had started
+gating frontend lint. They had not: those are **ruff** jobs. The npm lint gate is
+still two repos. A check-run name is not evidence about what a workflow runs, and
+treating it as such would have put a wrong correction on top of a stale claim.
+The workflows were re-read directly to settle it.
+
+`scripts/verify_audit.py`'s `ROLLUP_LINT_GATED` constant is unchanged for the same
+reason — it was, and remains, correct.
