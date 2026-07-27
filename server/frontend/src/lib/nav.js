@@ -1,12 +1,9 @@
 // Single source of truth for the app's primary navigation. Consumed by both
 // layout/Sidebar.jsx (desktop) and layout/MobileNav.jsx so the two never drift.
-// Grouping gives every routed page a home — previously only Recent Activity, Hub,
-// and the producer modules were reachable from the chrome; the federation/records/
-// tools surfaces were URL-only.
 import {
   Activity, Hexagon, GitCompareArrows, Layers, Share2, Github, Boxes,
   FolderKanban, FileStack, BookOpen, ListChecks, ShieldCheck, Download,
-  BookA, Sparkles, Plug, Network, Radar, Droplets, Banknote, Plane,
+  BookA, Sparkles, Plug, Network, Radar, Droplets, Banknote, Plane, FileSearch,
 } from "lucide-react";
 import { MODULES, domainAccent } from "@/lib/federation";
 
@@ -19,8 +16,6 @@ const MODULE_ICONS = {
   "Centinelas-PR": Radar,
 };
 
-// Producer modules render an accent dot (domain color) instead of an icon, matching
-// the prior sidebar treatment; icon is kept as a fallback for consumers that want it.
 const producerItems = MODULES.map((m) => ({
   label: m.name,
   path: m.path,
@@ -52,6 +47,7 @@ export const NAV_GROUPS = [
     items: [
       { label: "Programs", path: "/programs", icon: FolderKanban },
       { label: "Cases", path: "/cases", icon: FileStack },
+      { label: "Federal Records", path: "/federal-records", icon: FileSearch },
       { label: "Sources", path: "/sources", icon: BookOpen },
       { label: "Tasks", path: "/tasks", icon: ListChecks },
       { label: "Gates", path: "/gates", icon: ShieldCheck },
@@ -69,8 +65,6 @@ export const NAV_GROUPS = [
   },
 ];
 
-// Active-route test. "/" is the Recent Activity landing (also served at /activity);
-// every other entry matches its exact path or a nested child of it.
 export function isNavActive(pathname, path) {
   if (path === "/") return pathname === "/" || pathname.startsWith("/activity");
   return pathname === path || pathname.startsWith(path + "/");
