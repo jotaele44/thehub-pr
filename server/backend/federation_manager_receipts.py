@@ -509,6 +509,15 @@ class GateRule:
     deferred_reason: str = ""
 
 
+def _as_key_list(value) -> List[bytes]:
+    """Normalise one PEM or several into a list. ``None`` means "not configured"."""
+    if value is None:
+        return []
+    if isinstance(value, (bytes, bytearray)):
+        return [bytes(value)]
+    return [bytes(item) for item in value]
+
+
 def evaluate_gates(
     rules: Sequence[GateRule],
     documents: Sequence[Mapping[str, Any]],
@@ -519,7 +528,8 @@ def evaluate_gates(
     policy_sha256: Optional[str] = None,
     attestations: Sequence[Mapping[str, Any]] = (),
     attestation_schema: Optional[Mapping[str, Any]] = None,
-    attestation_public_key_pem: Optional[bytes] = None,
+    #: One PEM, or several when attestations come from different signers.
+    attestation_public_key_pem: Optional[Any] = None,
     profile_id: str = "",
     profile_scope: str = "",
 ) -> Dict[str, Any]:
@@ -537,19 +547,27 @@ def evaluate_gates(
             continue
         verified.append((document["receipt"], digest))
 
-    # Attestations may legitimately come from a different manager than the
-    # receipts: an operator certification is produced on the macOS host being
-    # certified, which is not the machine that ran the headless operations.
-    # Defaulting to the receipt key keeps the single-host case unchanged.
-    attestation_key = attestation_public_key_pem or public_key_pem
+    # Attestations may legitimately come from more than one signer. The static
+    # checks are signed by whatever ran the test suite; an operator
+    # certification is signed on the macOS host being certified, which is not
+    # the machine that ran the headless operations. Each trusted key is tried
+    # in turn, so a document counts if any of them signed it -- and if none did,
+    # it counts for nothing. Defaulting to the receipt key leaves the
+    # single-host case exactly as it was.
+    attestation_keys = _as_key_list(attestation_public_key_pem) or [public_key_pem]
 
     verified_attestations: Dict[str, tuple[Mapping[str, Any], str]] = {}
     for document in attestations:
-        try:
-            digest = verify_attestation(
-                document, public_key_pem=attestation_key, schema=attestation_schema
-            )
-        except (ReceiptError, Exception):  # noqa: BLE001 - unverifiable is simply excluded
+        digest = None
+        for key in attestation_keys:
+            try:
+                digest = verify_attestation(
+                    document, public_key_pem=key, schema=attestation_schema
+                )
+                break
+            except (ReceiptError, Exception):  # noqa: BLE001 - try the next trusted key
+                continue
+        if digest is None:
             continue
         body = document["attestation"]
         verified_attestations[body["attestation_id"]] = (body, digest)

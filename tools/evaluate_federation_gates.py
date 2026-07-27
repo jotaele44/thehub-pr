@@ -373,10 +373,12 @@ def main(argv=None) -> int:
     parser.add_argument(
         "--attestation-public-key",
         type=Path,
+        action="append",
         help=(
-            "Public key that signed the attestations. Defaults to --public-key. They differ "
-            "whenever an operator certification was produced on the host being certified "
-            "rather than on the machine that ran the operations."
+            "Public key that signed the attestations; repeatable. Defaults to --public-key. "
+            "More than one is the normal case: the static checks are signed by whatever ran "
+            "the test suite, while an operator certification is signed on the macOS host "
+            "being certified. An attestation counts if any trusted key signed it."
         ),
     )
     parser.add_argument("--out", type=Path, default=REPO_ROOT / "reports" / "federation" / "gate_evidence.json")
@@ -395,7 +397,9 @@ def main(argv=None) -> int:
     documents = store.all_documents()
 
     attestation_key = (
-        args.attestation_public_key.read_bytes() if args.attestation_public_key else None
+        [path.read_bytes() for path in args.attestation_public_key]
+        if args.attestation_public_key
+        else None
     )
 
     attestations = []
