@@ -17,10 +17,14 @@
     "contradicts_case_claim": {"type": "boolean"},
     "data_gap_codes": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
     "reviewer": {"type": "string", "minLength": 1},
+    "second_reviewer": {"type": ["string", "null"]},
     "reviewed_at": {"type": "string", "format": "date-time"},
-    "review_status": {"type": "string", "enum": ["pending", "adjudicated", "excluded", "deferred"]},
+    "review_status": {"type": "string", "enum": ["pending", "needs_second_review", "adjudicated", "excluded", "deferred"]},
     "lineage": {"$ref": "#/definitions/lineage"}, "synthetic": {"type": "boolean"}, "created_at": {"type": "string", "format": "date-time"}, "extracted_at": {"type": "string", "format": "date-time"}
   },
-  "allOf": [{"if": {"properties": {"classification": {"const": "DATA_GAP"}}}, "then": {"properties": {"data_gap_codes": {"minItems": 1}}}}],
+  "allOf": [
+    {"if": {"properties": {"classification": {"const": "DATA_GAP"}}}, "then": {"properties": {"data_gap_codes": {"minItems": 1}}}},
+    {"if": {"properties": {"review_status": {"const": "adjudicated"}, "classification": {"enum": ["DIRECT_MATCH", "CONTRADICTORY"]}}}, "then": {"required": ["second_reviewer"], "properties": {"second_reviewer": {"type": "string", "minLength": 1}}}}
+  ],
   "definitions": {"lineage": {"type": "object", "required": ["producer_script", "producer_phase", "source_inputs"], "properties": {"producer_script": {"type": "string"}, "producer_phase": {"type": "string"}, "source_inputs": {"type": "array", "items": {"type": "string"}}, "extraction_method": {"type": "string"}}, "additionalProperties": true}}
 }
