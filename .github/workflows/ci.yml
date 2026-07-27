@@ -23,25 +23,8 @@ jobs:
         run: python -c "import json, glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')"
       - name: Registry loads
         run: python -m hub list --registry registry/producers.yaml
-      - name: Generate freeze manifest diagnostic
-        if: matrix.python-version == '3.12'
-        run: python tests/test_schema_freeze.py --update
-      - name: Upload generated freeze manifest
-        if: matrix.python-version == '3.12'
-        uses: actions/upload-artifact@v4
-        with:
-          name: generated-schema-freeze-manifest
-          path: schemas/FROZEN.sha256
-          retention-days: 3
       - name: Tests
-        run: pytest -q --junitxml=junit-python-${{ matrix.python-version }}.xml
-      - name: Upload pytest diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pytest-junit-python-${{ matrix.python-version }}
-          path: junit-python-${{ matrix.python-version }}.xml
-          retention-days: 3
+        run: pytest -q
 
   lock:
     runs-on: ubuntu-latest
