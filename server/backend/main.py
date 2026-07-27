@@ -262,6 +262,9 @@ def auth_me():
 # "operator"), consistent with the diagnostic no-auth mode, but the store is keyed by
 # subscriber so it extends to real multi-user auth without a schema change.
 from server.backend import notifications as _notif  # noqa: E402
+from server.backend.federation_manager_api import router as federation_manager_router  # noqa: E402
+
+app.include_router(federation_manager_router)
 
 _ALERT_COLLECTION = "GovernanceAlerts"
 
