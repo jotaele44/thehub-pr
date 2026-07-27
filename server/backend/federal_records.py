@@ -22,7 +22,12 @@ ID_FIELDS = {
 }
 
 
-def project_stream(conn: sqlite3.Connection, stream: str, rows: Iterable[dict[str, Any]], now: str) -> dict[str, int]:
+def project_stream(
+    conn: sqlite3.Connection,
+    stream: str,
+    rows: Iterable[dict[str, Any]],
+    now: str,
+) -> dict[str, int]:
     if stream not in STREAM_COLLECTIONS:
         raise ValueError(f"unsupported federal-record stream: {stream}")
     collection = STREAM_COLLECTIONS[stream]
@@ -37,7 +42,8 @@ def project_stream(conn: sqlite3.Connection, stream: str, rows: Iterable[dict[st
         ).fetchone()
         if current is None:
             conn.execute(
-                "INSERT INTO entities (entity_type, entity_id, data, updated_at) VALUES (?,?,?,?)",
+                "INSERT INTO entities "
+                "(entity_type, entity_id, data, updated_at) VALUES (?,?,?,?)",
                 (collection, entity_id, canonical, now),
             )
             inserted += 1
@@ -45,7 +51,8 @@ def project_stream(conn: sqlite3.Connection, stream: str, rows: Iterable[dict[st
             unchanged += 1
         else:
             conn.execute(
-                "UPDATE entities SET data=?, updated_at=? WHERE entity_type=? AND entity_id=?",
+                "UPDATE entities SET data=?, updated_at=? "
+                "WHERE entity_type=? AND entity_id=?",
                 (canonical, now, collection, entity_id),
             )
             updated += 1
@@ -70,7 +77,11 @@ def _candidate_id(case_id: str, document_id: str, finding_id: str) -> str:
     return "cand_" + hashlib.sha256(raw).hexdigest()[:32]
 
 
-def correlate_case(case: dict[str, Any], finding: dict[str, Any], document: dict[str, Any]) -> dict[str, Any] | None:
+def correlate_case(
+    case: dict[str, Any],
+    finding: dict[str, Any],
+    document: dict[str, Any],
+) -> dict[str, Any] | None:
     basis: list[str] = []
     score = 0.0
     case_id = str(case.get("id") or case.get("case_id") or "")
@@ -80,13 +91,19 @@ def correlate_case(case: dict[str, Any], finding: dict[str, Any], document: dict
         score += 0.65
 
     case_municipality = str(case.get("municipality") or "").strip().lower()
-    municipalities = {str(v).strip().lower() for v in finding.get("municipalities", [])}
+    municipalities = {
+        str(value).strip().lower() for value in finding.get("municipalities", [])
+    }
     if case_municipality and case_municipality in municipalities:
         basis.append("MUNICIPALITY_MATCH")
         score += 0.2
 
-    case_facilities = {str(v).strip().lower() for v in case.get("facilities", [])}
-    finding_facilities = {str(v).strip().lower() for v in finding.get("facilities", [])}
+    case_facilities = {
+        str(value).strip().lower() for value in case.get("facilities", [])
+    }
+    finding_facilities = {
+        str(value).strip().lower() for value in finding.get("facilities", [])
+    }
     shared_facilities = sorted(case_facilities & finding_facilities)
     if shared_facilities:
         basis.append("FACILITY_MATCH")
@@ -108,6 +125,13 @@ def correlate_case(case: dict[str, Any], finding: dict[str, Any], document: dict
         return None
     finding_id = str(finding["finding_id"])
     document_id = str(document["document_id"])
+    source_timestamp = str(
+        finding.get("extracted_at")
+        or finding.get("created_at")
+        or document.get("extracted_at")
+        or document.get("created_at")
+        or "1970-01-01T00:00:00Z"
+    )
     return {
         "candidate_id": _candidate_id(case_id, document_id, finding_id),
         "case_entity_id": str(case.get("entity_id") or case.get("id")),
@@ -127,8 +151,8 @@ def correlate_case(case: dict[str, Any], finding: dict[str, Any], document: dict
             "source_inputs": [case_id, finding_id, document_id],
         },
         "synthetic": bool(case.get("synthetic") or finding.get("synthetic")),
-        "created_at": datetime.utcnow().isoformat() + "Z",
-        "extracted_at": datetime.utcnow().isoformat() + "Z",
+        "created_at": source_timestamp,
+        "extracted_at": source_timestamp,
     }
 
 
@@ -152,10 +176,21 @@ def generate_candidates(
     return project_stream(conn, "case_activity_candidates", candidates, now)
 
 
-def assessment_surfaces(assessments: Iterable[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+def assessment_surfaces(
+    assessments: Iterable[dict[str, Any]],
+) -> dict[str, list[dict[str, Any]]]:
     rows = list(assessments)
     return {
-        "contradictions": [r for r in rows if r.get("classification") == "CONTRADICTORY" or r.get("contradicts_case_claim")],
-        "data_gaps": [r for r in rows if r.get("classification") == "DATA_GAP"],
-        "no_known_match": [r for r in rows if r.get("classification") == "NO_KNOWN_MATCH"],
+        "contradictions": [
+            row
+            for row in rows
+            if row.get("classification") == "CONTRADICTORY"
+            or row.get("contradicts_case_claim")
+        ],
+        "data_gaps": [
+            row for row in rows if row.get("classification") == "DATA_GAP"
+        ],
+        "no_known_match": [
+            row for row in rows if row.get("classification") == "NO_KNOWN_MATCH"
+        ],
     }
