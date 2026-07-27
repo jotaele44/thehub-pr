@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "federation_document_finding.schema.json",
+  "title": "Federation Document Finding",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["finding_id", "document_id", "release_id", "page_start", "page_end", "finding_type", "context_summary", "evidence_tier", "automated_confidence", "reviewer_confidence", "review_status", "cointelpro_disposition", "citation", "lineage", "synthetic", "created_at", "extracted_at"],
+  "properties": {
+    "finding_id": {"type": "string", "pattern": "^find_[a-f0-9]{32}$"},
+    "document_id": {"type": "string", "pattern": "^doc_[a-f0-9]{32}$"},
+    "release_id": {"type": "string", "pattern": "^relv_[a-f0-9]{32}$"},
+    "page_start": {"type": "integer", "minimum": 1},
+    "page_end": {"type": "integer", "minimum": 1},
+    "finding_type": {"type": "string", "enum": ["PUERTO_RICO_DIRECT", "PUERTO_RICO_LOCALITY", "PUERTO_RICO_FACILITY", "PUERTO_RICO_COORDINATE", "PUERTO_RICO_MAP", "PUERTO_RICO_CONTEXT_INHERITED", "FEDERAL_MILITARY_ACTIVITY", "UAP_DIRECT", "UAP_POSSIBLE", "CONTRADICTION", "BACKGROUND_ONLY"]},
+    "matched_form": {"type": ["string", "null"]},
+    "canonical_entity": {"type": ["string", "null"]},
+    "municipalities": {"type": "array", "items": {"type": "string"}},
+    "facilities": {"type": "array", "items": {"type": "string"}},
+    "coordinates": {"type": "array", "items": {"type": "object", "required": ["lat", "lon"], "properties": {"lat": {"type": "number", "minimum": -90, "maximum": 90}, "lon": {"type": "number", "minimum": -180, "maximum": 180}}, "additionalProperties": false}},
+    "subject_categories": {"type": "array", "items": {"type": "string"}},
+    "context_summary": {"type": "string", "minLength": 1},
+    "evidence_tier": {"type": "string", "enum": ["T1", "T2", "T3", "T4"]},
+    "automated_confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "reviewer_confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "review_status": {"type": "string", "enum": ["pending", "human_verified", "rejected", "needs_second_review"]},
+    "cointelpro_disposition": {"type": "string", "enum": ["NOT_COINTELPRO", "COINTELPRO_EXCLUDED", "MIXED_SCOPE", "UNRESOLVED"]},
+    "citation": {"type": "object", "required": ["page", "source_url", "content_sha256"], "properties": {"page": {"type": "integer", "minimum": 1}, "source_url": {"type": "string", "format": "uri"}, "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}}, "additionalProperties": false},
+    "lineage": {"$ref": "#/definitions/lineage"}, "synthetic": {"type": "boolean"}, "created_at": {"type": "string", "format": "date-time"}, "extracted_at": {"type": "string", "format": "date-time"}
+  },
+  "definitions": {"lineage": {"type": "object", "required": ["producer_script", "producer_phase", "source_inputs"], "properties": {"producer_script": {"type": "string"}, "producer_phase": {"type": "string"}, "source_inputs": {"type": "array", "items": {"type": "string"}}, "extraction_method": {"type": "string"}}, "additionalProperties": true}}
+}
