@@ -5,7 +5,14 @@ came from running the code in a clean container (Python 3.11.15, Node v22.22.2),
 reading it. Commands and raw output are named inline so any claim can be re-checked.
 
 Scope: this repository only. Cross-repo comparisons live in
-[`FEDERATION_MATURITY_AUDIT.md`](FEDERATION_MATURITY_AUDIT.md).
+[`FEDERATION_MATURITY_AUDIT.md`](FEDERATION_MATURITY_AUDIT.md); the code-completion
+view lives in [`ROAD_TO_100.md`](ROAD_TO_100.md) — see *Two completion numbers* below.
+
+> **Corrected 2026-07-27.** The first version of this document said the `hub` CLI had
+> 10 subcommands. It has **13** — the count missed `wrap-bridge`, `analytics-v2` and
+> `consume-sensor-fusion`, which are registered across multiple lines and slipped a
+> single-line regex. `ROAD_TO_100.md` had it right. Route count corrected from 24 to
+> 21 application routes (the original figure counted FastAPI's generated docs routes).
 
 ---
 
@@ -15,7 +22,7 @@ Scored 0–4. 4 = would pass review at a team that ships this for a living.
 
 | Dim | Area | Score | Evidence |
 |---|---|---|---|
-| D1 | Functional completeness | **3** | `hub` CLI has 10 real subcommands; 24 API routes serve; auth surface was dead (fixed below) |
+| D1 | Functional completeness | **3** | `hub` CLI has 13 real subcommands; 21 application routes serve; auth surface was dead (fixed below) |
 | D2 | Data reality | **1** | `data/` is 8 KB — the aggregate has never been run in-tree, so most UI pages render empty |
 | D3 | UI craft | **4** | 28 pages on shared primitives; 30 files handle empty states, 22 handle loading; only repo in the federation with an automated a11y test |
 | D4 | Test & CI coverage | **4** | `388 passed` (pytest, 6.3s) + `16 passed / 7 files` (vitest); Playwright visual harness present |
@@ -35,7 +42,8 @@ never been run into `data/hub.db`, so most of that craft renders blank.
 
 | Module | Evidence |
 |---|---|
-| `src/hub/cli.py` | 10 subcommands (`list`, `validate-manifest`, `validate-package`, `validate-federation`, `fetch`, `aggregate`, `correlate`, `ingest`, `graph-report`, `maintenance`) |
+| `src/hub/cli.py` | **13** subcommands (`list`, `validate-manifest`, `validate-package`, `validate-federation`, `fetch`, `aggregate`, `wrap-bridge`, `correlate`, `ingest`, `graph-report`, `analytics-v2`, `consume-sensor-fusion`, `maintenance`) |
+| `src/hub/bridge.py`, `federation_analytics_v2.py`, `sensor_fusion_consumer.py` | CLI-exposed via `wrap-bridge`, `analytics-v2`, `consume-sensor-fusion` |
 | `src/hub/aggregate.py`, `correlate.py`, `validate.py`, `registry.py`, `manifest.py` | covered by the 388-test suite; mypy-clean |
 | `src/hub/ingest.py` | `ingest_aggregate` + `_project_ui` + four `project_*` helpers (`:111`, `:254`, `:305`, `:396`, `:567`, `:629`) |
 | `server/backend/notifications.py` | pure decision logic, unit-tested, thin HTTP surface over it |
@@ -46,7 +54,7 @@ never been run into `data/hub.db`, so most of that craft renders blank.
 
 | Module | Gap |
 |---|---|
-| `server/backend/main.py` | 24 routes, serves correctly — but sits outside the ruff/mypy scope CI enforces |
+| `server/backend/main.py` | 21 application routes, serves correctly — but sits outside the ruff/mypy scope CI enforces |
 | `server/backend/mcp_api.py` (153 loc) | no direct test module |
 | `federation-design/packages/react` | 120 LOC published as a versioned tarball; six producers depend on it, this repo does not (see below) |
 
@@ -171,3 +179,24 @@ changes add none.
 `@pr-federation/react` but does not consume it — `server/frontend/src/lib/theme.jsx` vendors
 the tokens locally so the app builds standalone, and `src/styles/federation.sync.test.js`
 fails if the two drift. That is a deliberate, tested trade-off, not an oversight.
+
+---
+
+## Maturity score — 64%
+
+Measured 2026-07-27 against 20 explicit criteria (5 points each, 100 total). Every
+lost point is a specific, verifiable work item, so this doubles as the roadmap.
+
+| Dimension | Score | Criteria (5 pts each) |
+|---|---|---|
+| Functional completeness | **17/20** | backend serves domain · no dead UI · entrypoints work · modules wired, no duplicate mass |
+| Data reality | **2/20** | real non-synthetic dataset · refresh automated · offline bundle populated · live-exec gate open |
+| UI craft | **18/20** | pages proportionate to backend · loading+empty+error everywhere · a11y markup **and** automated gate · single consolidated frontend |
+| Tests | **10/15** | suite green · coverage gate enforced · frontend tests run in CI |
+| Hygiene | **9/15** | linters gated in CI · type checking gated in CI · write surface secured *and* client can use it |
+| Docs | **8/10** | docs match code · declared status matches observed maturity |
+| **Total** | **64/100** | |
+
+The earlier 0–4 per-dimension scorecard above is retained for cross-repo comparison,
+but it saturates — `aguayluz-pr` scored 24/24 on it while still having no frontend
+tests. This finer model is the one to plan against.

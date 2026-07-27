@@ -152,3 +152,23 @@ pages render live data.
 
 **Bottom line: the hub is code-complete; the remaining ~10% tracks producer
 readiness, not hub implementation.**
+
+---
+
+## Two completion numbers, and why they differ
+
+This ledger says **~90%**. [`MATURITY_AUDIT.md`](MATURITY_AUDIT.md) says **64%**.
+Both are correct; they measure different things and should be read together.
+
+| | Measures | Counts a thing "done" when |
+|---|---|---|
+| **`ROAD_TO_100.md`** (~90%) | code completeness against intended scope | the code exists, works, and is exercised — the hub is code-complete; the gap is producer readiness |
+| **`MATURITY_AUDIT.md`** (64%) | professional maturity of the repo as an engineering artifact | a **gate** keeps it working: CI-enforced lint, types, coverage, and frontend tests |
+
+The spread is almost entirely **enforcement, not implementation**. Work that this
+ledger correctly counts as finished still costs maturity points while no CI gate
+protects it — a passing suite with no coverage floor, a `typecheck` script no
+workflow runs, a linter configured but not wired in.
+
+Neither number supersedes the other. Use this ledger to answer "what is left to
+build"; use the audit to answer "what would a reviewer refuse to merge".

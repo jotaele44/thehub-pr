@@ -41,6 +41,69 @@ we do this?" argument, it is the one to copy.
 
 ---
 
+## Maturity percentages and the road to 100%
+
+Added 2026-07-27. The 0–4 scorecard above saturates — `aguayluz-pr` scored 24/24 while
+having no frontend tests — so it cannot express "how far from done". This finer model
+scores 20 explicit criteria at 5 points each; every lost point is a work item.
+
+| Repo | Maturity | Function /20 | Data /20 | UI /20 | Tests /15 | Hygiene /15 | Docs /10 | Own `ROAD_TO_100` |
+|---|---|---|---|---|---|---|---|---|
+| `moneysweep-pr` | **73%** | 17 | 15 | 8 | 10 | 12.5 | 10 | — |
+| `aguayluz-pr` | **70%** | 20 | 15 | 15 | 5 | 4.5 | 10 | ~90% |
+| `centinelas-pr` | **69%** | 20 | 16 | 17 | 5 | 3 | 8 | ~90% |
+| `ovnis-pr` | **68%** | 18 | 20 | 12 | 5 | 5 | 8 | ~82% |
+| `thehub-pr` | **64%** | 17 | 2 | 18 | 10 | 9 | 8 | ~90% |
+| `skywatcher-pr` | **61%** | 17 | 6 | 17 | 5 | 5.5 | 10 | ~73% |
+| `spiderweb-pr` | **55%** | 18 | 16 | 2 | 10 | 2.5 | 7 | — |
+
+**Federation mean: 66%.** Note this reorders the 0–4 table: `moneysweep-pr` leads because
+the finer model rewards CI enforcement, where it is untouchable, while `aguayluz-pr`'s
+ceiling-hit concealed four real gaps.
+
+### Reconciling with the per-repo `ROAD_TO_100.md` ledgers
+
+Five repos carry their own completion ledger claiming 73–90%. Those measure **code
+completeness against intended scope**, explicitly excluding data/live-feed blockers. This
+audit measures **professional maturity** — it only counts a thing done when a CI gate keeps
+it working. The spread is almost entirely enforcement, not implementation. Both are correct;
+each repo's `ROAD_TO_100.md` now carries a block explaining the pair.
+
+### The road to 100% — 241 points, phased
+
+**Phase 1 — CI sweeps (S each, ~99 pts).** The cheapest points in the federation are all
+wiring, not features, and each has a working in-house template:
+
+| Sweep | Repos | Points | Template |
+|---|---|---|---|
+| Frontend test harness | 6 | 30 | `thehub-pr/server/frontend` (vitest + Testing Library + `vitest-axe`) |
+| Coverage gate | 5 | 25 | `moneysweep-pr/pytest.ini` `--cov-fail-under`, ratcheted from actuals |
+| Type checking gated | 5 | 27 | includes running the `typecheck` scripts that already exist and fail silently |
+| Linters gated | 5 | 17 | `ovnis-pr` is the cheapest anywhere — 3 findings today |
+
+**Phase 2 — UI states and polish (M, ~50 pts).** a11y gates; `ErrorBoundary` for
+centinelas/ovnis/spiderweb; ovnis's error-vs-empty conflation; aguayluz's empty
+`snapshot.json`; one federation-wide answer for how a frontend supplies a write credential.
+
+**Phase 3 — structural (L, ~72 pts).** spiderweb consolidating three frontends into one
+with routed pages (+18); moneysweep's dashboard (+12); thehub running
+`aggregate/correlate/ingest` into a committed fixture so 23 pages stop rendering empty
+(+18); module consolidation in moneysweep/spiderweb/skywatcher (+7).
+
+**Phase 4 — externally blocked (~20 pts) — the honest ceiling.** Four repos can reach 100%
+on internal effort: `aguayluz-pr`, `centinelas-pr`, `ovnis-pr`, `thehub-pr`. Three cannot:
+
+| Repo | Blocker | Internal ceiling |
+|---|---|---|
+| `skywatcher-pr` | FlightRadar24 captures must be supplied locally | ~86% |
+| `moneysweep-pr` | `PROPUBLICA_API_KEY`, JS-gated cor3 portal, Tranche-B operator drops | ~95% |
+| `spiderweb-pr` | corpus growth beyond the single site observation | ~98% |
+
+Phase 1 alone moves the federation from 66% to roughly 80%, because it is the same four
+changes seven times.
+
+---
+
 ## Verified baseline
 
 | Repo | Python tests | Frontend | UI pages | Py LOC | Lint gate coverage |
