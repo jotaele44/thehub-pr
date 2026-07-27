@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.example/schemas/gate_evidence.schema.json",
+  "title": "PRII gate evidence",
+  "description": "Machine-derived readiness gate status. A gate reaches 'passed' only by deriving it from verified, manager-signed execution receipts. Annotations are advisory text and carry no status-changing power.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "evaluated_at", "gates"],
+  "properties": {
+    "schema_version": { "const": "prii_gate_evidence_v1" },
+    "evaluated_at": { "type": "string", "format": "date-time" },
+    "policy_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "gates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/gate" }
+    }
+  },
+  "$defs": {
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate_id", "status", "blocking", "derived_from"],
+      "properties": {
+        "gate_id": { "type": "string", "pattern": "^G[0-9]{2}_[A-Z0-9_]+$" },
+        "requirement": { "type": "string" },
+        "blocking": { "type": "boolean" },
+        "status": {
+          "type": "string",
+          "enum": ["passed", "failed", "not_run", "blocked_not_certified", "deferred"],
+          "description": "'passed' is reachable only through derived_from receipts that verified. 'blocked_not_certified' records a gate whose evidence cannot be produced in the current environment."
+        },
+        "status_reason": { "type": "string" },
+        "derived_from": {
+          "type": "array",
+          "description": "Verified receipts backing this status. An empty list with status 'passed' is invalid and rejected by the evaluator.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["run_id", "receipt_sha256", "signature_verified"],
+            "properties": {
+              "run_id": { "type": "string", "pattern": "^[0-9a-f]{32}$" },
+              "receipt_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "signature_verified": { "const": true }
+            }
+          }
+        },
+        "annotations": {
+          "type": "array",
+          "description": "Human notes. Advisory only: the evaluator ignores them when computing status.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["author", "note", "recorded_at"],
+            "properties": {
+              "author": { "type": "string", "minLength": 1 },
+              "note": { "type": "string", "minLength": 1 },
+              "recorded_at": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "passed" } }, "required": ["status"] },
+          "then": { "properties": { "derived_from": { "minItems": 1 } } }
+        }
+      ]
+    }
+  }
+}
