@@ -7,7 +7,7 @@
 |---|---:|---:|---:|---|---|---|---|
 | `moneysweep-pr` | **75%** | **73%** | **64%** | D2 | false | `cff93fe15502d58978e06d77e7e4b6ebbff911bd` | 2394 passed, 8 skipped; 51.74% coverage; Python 3.11.15 audit run |
 | `spiderweb-pr` | **85% core pipeline only** | **56%** | **30%** | D1 | true | `ef2701ee626e538d2c188e4b9e40283d72ae503d` | 989 passed, 31 skipped |
-| `aguayluz-pr` | **90%** | **70%** | **78%** | D3 | true | `e3e7e7a931cc3fd5b2fa83b5e49bcba0ae7f4101` | 306 passed |
+| `aguayluz-pr` | **90%** | **70%** | **78%** | D3 | true | `c1a2303ffb6ff7d156aa0d6452977b72407e3b8c` | 306 passed |
 | `ovnis-pr` | **82%** | **68%** | **65%** | D2 | true | `216cbb01bae9a6d72bcb2ea0f6e701fe3a5c6053` | 72 passed |
 | `skywatcher-pr` | **70% provisional** | **61%** | **10%** | D0 | false | `52809c409d95431bf29f8fedc84c900779652ae0` | 807 passed, 13 skipped; PR #100 public workflows green, private gates unverified |
 | `centinelas-pr` | **75% intended product** | **69%** | **60%** | D2 | true | `24d0769061c526a5b765ce0fa71dcd037f9a518e` | 139 passed |
