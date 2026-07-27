@@ -152,3 +152,21 @@ pages render live data.
 
 **Bottom line: the hub is code-complete; the remaining ~10% tracks producer
 readiness, not hub implementation.**
+
+---
+
+## Two completion numbers, and why they differ
+
+This ledger says **~90%**. [`MATURITY_AUDIT.md`](MATURITY_AUDIT.md) says **64%**.
+Both are correct; they measure different things and should be read together.
+
+| | Measures | Counts a thing "done" when |
+|---|---|---|
+| **`ROAD_TO_100.md`** (~90%) | code completeness against intended scope | the code exists and works, with data- and network-blocked items called out separately |
+| **`MATURITY_AUDIT.md`** (64%) | maturity of the repo as an engineering artifact | a **CI gate** keeps it working |
+
+The spread is largely **enforcement rather than implementation**. Concretely, what this
+repo is missing on the audit's axis: no coverage floor; `npm run typecheck` (831 errors) run by no workflow; ruff/mypy gated but only over `packages/` and `src/hub`, leaving `server/` unchecked.
+
+Neither number supersedes the other. Use this ledger to answer "what is left to build";
+use the audit to answer "what would a reviewer refuse to merge".
