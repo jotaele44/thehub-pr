@@ -20,12 +20,31 @@ run. Only `thehub-pr` was modified.
 |---|---|---|
 | PR #94 state | open, draft, unmerged | open, draft, `merged: false`, `mergeable_state: clean` |
 | PR #94 head | `817fb97ddc3617a843ea5b05ff3a4080e60ade79` | matches |
-| TheHub `main` | `58a159ffef69768b093ca19db3f1feb3ceaf8adb` | matches |
+| TheHub `main` | `58a159ffef69768b093ca19db3f1feb3ceaf8adb` | **drifted** to `e668cad` — adjudicated below |
 | PR #94 base | — | `3c195606f22cbbc462ffa881975f608d61499631` (older than main, confirming F017) |
 | Operation count | 68 = 13 Hub + 55 producer | 68, zero unclassified |
 
 PR #94 was not force-pushed, amended, closed, or merged. The successor branch
-was cut from current `main` and PR #94's additive diff replayed by hand.
+was cut from `main` and PR #94's additive diff replayed by hand, then rebased as
+`main` advanced.
+
+### `main` drift, adjudicated
+
+G01 requires the pinned SHAs to match *or the drift to be adjudicated*; this is
+the adjudication. `main` moved from `58a159f` to `e668cad` while this work was in
+progress, adding a coverage gate (`fail_under = 88`), `pre-commit`, an
+`ErrorBoundary`, and design-system v0.3.1, which deleted
+`server/frontend/src/styles/federation.css` in favour of the shared package.
+
+The drift does not invalidate the operations policy. `src/hub/cli.py` — the sole
+source of every enabled operation's argv — is **byte-identical** across
+`58a159f`, `e668cad`, and this branch, so each policy row's
+`source: thehub-pr/src/hub/cli.py@58a159ff` still names the exact content it was
+derived from. This branch modifies no file under `src/hub`.
+
+Re-verified against the rebased tree: 742 Python tests pass, coverage 90.94%
+against the new 88% floor, `uv lock --check` clean, frontend lint/build clean,
+41 frontend unit tests and all 12 visual baselines pass unmodified.
 
 ## Operation accounting
 

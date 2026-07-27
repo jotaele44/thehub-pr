@@ -95,8 +95,12 @@ GATE_RULES = [
         "All seven repository SHAs and PR94 head/state match the baseline or drift is adjudicated.",
         deferred_reason=(
             "Verified by inspection and recorded in the certification report: PR #94 is open, "
-            "draft, unmerged at 817fb97; TheHub main is 58a159f. Not receipt-derivable, because "
-            "no operation observes git state."
+            "draft, unmerged at 817fb97. TheHub main has advanced from the pinned 58a159f to "
+            "e668cad; the drift is adjudicated rather than ignored, which is what this gate's "
+            "second clause provides for. src/hub/cli.py is byte-identical across 58a159f, "
+            "e668cad, and this branch, so every operations-policy provenance pin reading "
+            "cli.py@58a159ff still names the exact content it was derived from. Not "
+            "receipt-derivable, because no operation observes git state."
         ),
     ),
     GateRule(
