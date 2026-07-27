@@ -43,19 +43,25 @@ we do this?" argument, it is the one to copy.
 
 ## Maturity percentages and the road to 100%
 
-Added 2026-07-27. The 0–4 scorecard above saturates — `aguayluz-pr` scored 24/24 while
+Added 2026-07-27. Scores allow **partial credit** where a criterion splits into independent
+halves (e.g. "linters gated in CI" = 2.5 Python + 2.5 JavaScript), so dimension totals are
+not always multiples of five. Exact component sums, before rounding to the nearest whole
+percent: thehub 64, skywatcher 60.5, centinelas 69, moneysweep 72.5, spiderweb 55.5,
+aguayluz 69.5, ovnis 68.
+
+The 0–4 scorecard above saturates — `aguayluz-pr` scored 24/24 while
 having no frontend tests — so it cannot express "how far from done". This finer model
 scores 20 explicit criteria at 5 points each; every lost point is a work item.
 
 | Repo | Maturity | Function /20 | Data /20 | UI /20 | Tests /15 | Hygiene /15 | Docs /10 | Own `ROAD_TO_100` |
 |---|---|---|---|---|---|---|---|---|
-| `moneysweep-pr` | **73%** | 17 | 15 | 8 | 10 | 12.5 | 10 | — |
+| `moneysweep-pr` | **73%** | 17 | 15 | 8 | 10 | 12.5 | 10 | ~75% |
 | `aguayluz-pr` | **70%** | 20 | 15 | 15 | 5 | 4.5 | 10 | ~90% |
 | `centinelas-pr` | **69%** | 20 | 16 | 17 | 5 | 3 | 8 | ~90% |
 | `ovnis-pr` | **68%** | 18 | 20 | 12 | 5 | 5 | 8 | ~82% |
 | `thehub-pr` | **64%** | 17 | 2 | 18 | 10 | 9 | 8 | ~90% |
 | `skywatcher-pr` | **61%** | 17 | 6 | 17 | 5 | 5.5 | 10 | ~73% |
-| `spiderweb-pr` | **55%** | 18 | 16 | 2 | 10 | 2.5 | 7 | — |
+| `spiderweb-pr` | **56%** | 18 | 16 | 2 | 10 | 2.5 | 7 | ~85% |
 
 **Federation mean: 66%.** Note this reorders the 0–4 table: `moneysweep-pr` leads because
 the finer model rewards CI enforcement, where it is untouchable, while `aguayluz-pr`'s
@@ -63,11 +69,15 @@ ceiling-hit concealed four real gaps.
 
 ### Reconciling with the per-repo `ROAD_TO_100.md` ledgers
 
-Five repos carry their own completion ledger claiming 73–90%. Those measure **code
+**All seven** repos carry their own completion ledger, claiming 73–90%. Those measure **code
 completeness against intended scope**, explicitly excluding data/live-feed blockers. This
 audit measures **professional maturity** — it only counts a thing done when a CI gate keeps
-it working. The spread is almost entirely enforcement, not implementation. Both are correct;
-each repo's `ROAD_TO_100.md` now carries a block explaining the pair.
+it working. The spread is largely enforcement, not implementation. Both are correct; each
+repo's `ROAD_TO_100.md` now carries a block naming that repo's specific missing gates.
+
+The two ledgers agree most closely where enforcement is already strong (`moneysweep-pr`,
+~75% vs 73%) and diverge most where it is weakest (`spiderweb-pr`, ~85% vs 56%). That
+spread is itself the clearest single signal in this audit.
 
 ### The road to 100% — 241 points, phased
 

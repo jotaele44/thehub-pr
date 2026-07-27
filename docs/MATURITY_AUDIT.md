@@ -13,6 +13,15 @@ view lives in [`ROAD_TO_100.md`](ROAD_TO_100.md) — see *Two completion numbers
 > `consume-sensor-fusion`, which are registered across multiple lines and slipped a
 > single-line regex. `ROAD_TO_100.md` had it right. Route count corrected from 24 to
 > 21 application routes (the original figure counted FastAPI's generated docs routes).
+>
+> **Route count, with a caveat.** `server/backend/main.py:555-561` mounts an MCP router
+> (`/healthz`, `/readyz`, `/mcp/metrics`, `/mcp/capabilities`, `/mcp/route`) through a
+> guarded `app.include_router(...)`. Those five routes were **not present** when the app
+> was imported and enumerated in-process from a clean checkout — no exception surfaced and
+> the guard logged nothing, so 21 is what is observable here and 26 is what the source
+> implies. That discrepancy is unresolved and is tracked as backlog item 8 below; it is a
+> real question about whether the MCP surface mounts in a standard run, not a doc-only
+> issue.
 
 ---
 
@@ -174,6 +183,7 @@ changes add none.
 | 5 | Either run `npm run typecheck` in CI or stop shipping the script | **M** | 831 errors, zero of them enforced. A green-looking script that no gate runs is worse than no script. |
 | 6 | Prune UI collections with no ingest path, or mark them "awaiting producer" in the UI | **M** | Distinguishes "no data yet" from "broken" for an operator. |
 | 7 | Reconcile `requires_auth` vs `auth_required` naming across the federation | **S** | `thehub-pr`/`skywatcher-pr` use `requires_auth`; `centinelas-pr` uses `auth_required`. Same concept, two keys. |
+| 8 | Determine whether the MCP router actually mounts at runtime | **S** | `build_mcp_api` defines 5 routes and imports cleanly standalone, but they do not appear on `app` after importing `server/backend/main.py`, and the defensive `except` logs nothing. Either the mount silently fails — in which case `/mcp/capabilities` is dead in every deployment — or the enumeration misses them. Worth 30 minutes to settle. |
 
 **Not a defect, recorded so it stops being re-litigated:** this repo publishes
 `@pr-federation/react` but does not consume it — `server/frontend/src/lib/theme.jsx` vendors
@@ -196,6 +206,17 @@ lost point is a specific, verifiable work item, so this doubles as the roadmap.
 | Hygiene | **9/15** | linters gated in CI · type checking gated in CI · write surface secured *and* client can use it |
 | Docs | **8/10** | docs match code · declared status matches observed maturity |
 | **Total** | **64/100** | |
+
+### How the score is computed
+
+20 criteria, 5 points each, 100 total. **Partial credit is allowed** where a criterion
+splits cleanly into independent halves — for example "linters gated in CI" scores 2.5 for
+Python and 2.5 for JavaScript, so a repo that gates one and not the other scores 2.5. That
+is why dimension totals are not always multiples of five.
+
+Components here sum to **64** (17 + 2 + 18 + 10 + 9 + 8), reported as **64%**. Half-points are
+rounded **half up** to the nearest whole percent for the cross-repo table; the exact figure is the one
+above.
 
 The earlier 0–4 per-dimension scorecard above is retained for cross-repo comparison,
 but it saturates — `aguayluz-pr` scored 24/24 on it while still having no frontend
