@@ -3,6 +3,14 @@
 **Version:** `road_to_100_normalization_v0_2`  
 **Effective when merged:** proposed; no current status or readiness gate is changed by this document.
 
+## Companion governance artifacts
+
+- [TheHub normalized status](../ROAD_TO_100_NORMALIZED.md)
+- [Reconciled seven-repository matrix](RECONCILED_7_REPO_MATRIX.md)
+- [Twelve-repository governance ledger](REPOSITORY_GOVERNANCE_LEDGER_12_REPOS.md)
+- [Contradiction register](ROAD_TO_100_CONTRADICTION_REGISTER.md)
+- [Phased remediation queue](ROAD_TO_100_PHASED_REMEDIATION_QUEUE.md)
+
 ## Purpose
 
 ROAD_TO_100 documents must separate implementation, engineering enforcement, and operational evidence. A single unqualified completion percentage is prohibited because it conflates code existence with CI protection and real-data readiness.
