@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "federation_case_activity_candidate.schema.json",
+  "title": "Federation Case Activity Candidate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate_id", "case_entity_id", "document_id", "finding_id", "candidate_basis", "candidate_score", "generated_by", "requires_human_review", "lineage", "synthetic", "created_at", "extracted_at"],
+  "properties": {
+    "candidate_id": {"type": "string", "pattern": "^cand_[a-f0-9]{32}$"},
+    "case_entity_id": {"type": "string", "pattern": "^ent_[a-f0-9]{32}$"},
+    "document_id": {"type": "string", "pattern": "^doc_[a-f0-9]{32}$"},
+    "finding_id": {"type": "string", "pattern": "^find_[a-f0-9]{32}$"},
+    "candidate_basis": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "enum": ["DIRECT_CASE_IDENTIFIER", "EXPLICIT_EVENT_REFERENCE", "TEMPORAL_OVERLAP", "SPATIAL_OVERLAP", "MUNICIPALITY_MATCH", "FACILITY_MATCH", "AGENCY_MATCH", "ENTITY_MATCH", "BACKGROUND_ASSOCIATION"]}},
+    "temporal_distance_seconds": {"type": ["integer", "null"], "minimum": 0},
+    "spatial_distance_km": {"type": ["number", "null"], "minimum": 0},
+    "shared_facilities": {"type": "array", "items": {"type": "string"}},
+    "shared_entities": {"type": "array", "items": {"type": "string"}},
+    "candidate_score": {"type": "number", "minimum": 0, "maximum": 1},
+    "generated_by": {"type": "string", "const": "thehub-pr"},
+    "requires_human_review": {"type": "boolean", "const": true},
+    "lineage": {"$ref": "#/definitions/lineage"}, "synthetic": {"type": "boolean"}, "created_at": {"type": "string", "format": "date-time"}, "extracted_at": {"type": "string", "format": "date-time"}
+  },
+  "definitions": {"lineage": {"type": "object", "required": ["producer_script", "producer_phase", "source_inputs"], "properties": {"producer_script": {"type": "string"}, "producer_phase": {"type": "string"}, "source_inputs": {"type": "array", "items": {"type": "string"}}, "extraction_method": {"type": "string"}}, "additionalProperties": true}}
+}
