@@ -94,6 +94,22 @@ jobs:
       - name: Mypy
         run: mypy src/hub
 
+  # Re-derives the countable claims in the audit documents from the code and
+  # fails when the two disagree. Only this repo is checked out here, so the
+  # cross-repo checks report SKIP and the job enforces the thehub-local subset;
+  # the full set runs from a working copy holding all seven repositories
+  # (`python3 scripts/verify_audit.py --root <dir> --require-all`). Stdlib only,
+  # so it needs no install step.
+  audit-claims:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify audit claims against the code
+        run: python3 scripts/verify_audit.py
+
   # Self-contained sub-project (packages/prii_maintenance) — its own CI, isolated
   # from the root test matrix since its consumers (spiderweb-pr >=3.11,
   # skywatcher-pr 3.10+) don't need the root matrix's Python 3.9 floor.

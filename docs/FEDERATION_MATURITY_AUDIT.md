@@ -11,7 +11,9 @@ lives in each repository's `docs/MATURITY_AUDIT.md`.
 
 The federation's Python engineering is genuinely good and its user interfaces are not
 finished. All seven test suites pass — **5,095 tests green across the federation**, from
-72 in `ovnis-pr` to 2,394 in `moneysweep-pr` — and all seven frontends build and lint clean.
+72 in `ovnis-pr` to 2,394 in `moneysweep-pr` — and every frontend that can be built and
+linted was, cleanly, **by hand in this audit** (see the correction below for what CI
+actually runs).
 What separates "professional" from "could be professional" here is not code quality; it is
 three things: **UI coverage is wildly out of proportion to backend size**, **quality gates
 are enforced on a fraction of the code in three repos**, and **three repos shipped login
@@ -313,9 +315,10 @@ through a differently-named shared component, and it understated four D3 scores:
   Under `docker compose up`, uvicorn sees the Docker bridge address, so it would have 403'd
   every write in `thehub-pr`'s documented container deployment. Now allows loopback + private
   + link-local, refusing public addresses. Caught in review, not by me.
-- `aguayluz-pr` **already had write auth** (`_require_key` / `API_SECRET_KEY` on all five
-  mutating routes). The draft said its routes were unguarded. It is ahead of the hub here,
-  and the finding became the client-credential gap instead.
+- `aguayluz-pr` **already had write auth** (`_require_key` / `API_SECRET_KEY` on five of its
+  six mutating routes — see the 2026-07-27 corrections below). The draft said its routes were
+  unguarded. It is ahead of the hub here, and the finding became the client-credential gap
+  instead.
 - `aguayluz-pr` has no `GET /assets/{id}` endpoint and no `/assets/:id` route — AssetDetail
   is a panel over the `/assets` collection.
 - `centinelas-pr`'s data is **254 live records** (`is_synthetic: false`) against 6 synthetic
@@ -333,6 +336,40 @@ through a differently-named shared component, and it understated four D3 scores:
 - `ovnis-pr` has 7 application routes, not 11 (the draft counted FastAPI's auto-generated
   docs routes), **5 of its 9 test modules import `scripts/` directly**, and it does have a
   JS linter — the gap is Python-side plus a CI gate.
+
+### Second round of corrections — 2026-07-27
+
+Two more claims failed re-verification. Both were mine, and both were the same failure mode:
+a summary sentence generalised past the evidence under it.
+
+- **"`_require_key` … is attached to every mutating route" (`aguayluz-pr`) — false.** The
+  sentence named five routes; six exist. `POST /ai/query` (`server/backend/main.py:413`)
+  carries no `Depends(_require_key)`. That is the one route where the omission has a cost
+  beyond data integrity: it forwards the caller's prompt to `api.anthropic.com` on the
+  operator's `ANTHROPIC_API_KEY`, so an exposed port is a spendable credential. It is now
+  `aguayluz-pr`'s backlog item 1, coupled to the client-header item — guarding it alone
+  would break the dashboard's AI panel, which works today *because* the route is open.
+  Method: parse every `@app.post`/`@app.patch` decorator against its handler signature,
+  rather than trusting the prose list.
+- **"All seven frontends build and lint clean" — false on both halves.** Six of seven have a
+  `lint` script; `spiderweb-pr/server/frontend` has none (`['build','build:export','dev',
+  'preview','snapshot','typecheck']`). And "clean" described *my* manual runs, not CI. What
+  CI actually does:
+
+  | Repo | `npm ci` + build in CI | `npm run lint` in CI |
+  |---|---|---|
+  | `thehub-pr` | yes | **yes** (plus `test`, `test:visual`) |
+  | `skywatcher-pr` | yes | **yes** |
+  | `centinelas-pr`, `aguayluz-pr`, `moneysweep-pr`, `ovnis-pr` | yes | no — script exists, no workflow runs it |
+  | `spiderweb-pr` | **no npm step in any workflow** | no script to run |
+
+  So the enforced position is two repos, not seven. The four middle repos are the cheap fix:
+  the script already exists and passes, it simply is not wired to a gate.
+
+**Why both survived the first pass.** Neither claim was invented — each summarised real
+observations (five guarded routes; seven clean manual runs). The defect is that a
+quantifier got attached to a sample. The harness described below exists so that class of
+error fails a build instead of waiting for a re-read.
 
 ---
 
@@ -357,3 +394,51 @@ its own error rate.
   sibling repo's extras installed `pytesseract` without the `tesseract` binary. Identical
   failures with and without this round's changes; CI does not install `pytesseract` and stays
   green. It did, however, expose a real robustness bug — backlog item 9.
+
+---
+
+## The audit is now gated against itself
+
+`scripts/verify_audit.py` re-derives the countable claims in these documents from the code
+and fails when the two disagree. It is stdlib-only, runs in about a second, and is wired
+into `.github/workflows/ci.yml` as the `audit-claims` job. `tests/test_verify_audit.py`
+covers it — mostly with negative cases, because a gate only ever observed to pass is
+indistinguishable from a gate that always passes.
+
+**What it checks today.** Which mutating routes carry an auth dependency and which do not,
+in `aguayluz-pr`; the hub CLI's subcommand count; the size of `spiderweb-pr`'s CI lint
+allowlist; and the whole frontend lint table — which repos have a `lint` script and which
+actually gate it. Those are precisely the claims that went wrong.
+
+**Four properties that make it worth having.**
+
+- It reads the *asserted* number out of the document and compares it to the derived one, so
+  a stale doc fails with both values printed — not a bare assertion error.
+- Deleting the sentence does not make it green. A claim that no longer matches its pattern
+  fails as "the document was reworded, or the claim was dropped", with the derived value
+  attached.
+- It is bidirectional. Guarding `POST /ai/query` without updating these documents turns the
+  gate red exactly as leaving the documents stale does. The code is the source of truth, but
+  drift is an error in whichever direction it appears.
+- It parses handler *signatures*, not decorator lines. The auth dependency is a default
+  argument and signatures wrap across lines; a decorator-only reading reports every route in
+  `aguayluz-pr` as unguarded, and a first-line-only reading misses `patch_asset`. Both wrong
+  answers were produced during this audit before the parser was written correctly.
+
+**Its stated boundary.** The federation is seven repositories, and a CI job has one checked
+out, so most checks report SKIP there — counted in the summary, never silently passed. The
+full set runs from a working copy holding all seven:
+
+```
+python3 scripts/verify_audit.py --root <dir> --require-all
+```
+
+It also does not check test counts or coverage percentages. Those require the suites to be
+run, which is each repo's own test workflow's job. A claim this gate cannot derive is left
+to the reader rather than approximated — a verifier that guesses is worse than one with a
+boundary written down.
+
+**What it does not touch.** Every judgement in this audit — the 140 criterion scores, the
+effort estimates, the phased roadmap — remains judgement. The harness constrains the
+arithmetic and the counts, which is where both of the confirmed errors lived. It does not
+make the grades objective and is not offered as doing so.
