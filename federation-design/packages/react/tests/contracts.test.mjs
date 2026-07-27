@@ -8,7 +8,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 const pkgRoot = join(here, '..')
 const designRoot = join(pkgRoot, '..', '..')
 const indexSource = readFileSync(join(pkgRoot, 'src', 'index.jsx'), 'utf8')
-const css = readFileSync(join(designRoot, 'styles', 'federation.css'), 'utf8')
+const css = ['foundation.css', 'primitives.css', 'states.css'].map((name) => readFileSync(join(designRoot, 'styles', name), 'utf8')).join('\n')
 const snapshot = JSON.parse(readFileSync(join(pkgRoot, 'api-snapshot.json'), 'utf8'))
 
 test('API snapshot is additive over the v0.3 primitives', () => {

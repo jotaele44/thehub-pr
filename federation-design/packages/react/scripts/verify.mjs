@@ -13,7 +13,7 @@ const schema = readJson(join(designRoot, 'tokens', 'federation.tokens.schema.jso
 const harness = readJson(join(designRoot, 'test-harness', 'test-harness.contract.json'))
 const indexSource = readFileSync(join(pkgRoot, 'src', 'index.jsx'), 'utf8')
 const semanticsSource = readFileSync(join(pkgRoot, 'src', 'semantics.js'), 'utf8')
-const css = readFileSync(join(designRoot, 'styles', 'federation.css'), 'utf8')
+const css = ['foundation.css', 'primitives.css', 'states.css'].map((name) => readFileSync(join(designRoot, 'styles', name), 'utf8')).join('\n')
 
 function fail(message) { console.error(`[verify] ${message}`); process.exitCode = 1 }
 function requireCondition(condition, message) { if (!condition) fail(message) }
@@ -58,15 +58,18 @@ function contrast(a, b) {
 for (const [themeName, surface] of Object.entries({ light: tokens.semantic.light, dark: tokens.semantic.dark })) {
   for (const textKey of ['textPrimary', 'textSecondary']) {
     const ratio = contrast(surface[textKey], surface.background)
-    requireCondition(ratio >= 4.5, `${themeName}.${textKey} contrast ${ratio.toFixed(2)} is below 4.5`)
+    requireCondition(ratio >= 4.5, `${themeName}.${textKey} contrast ${ratio.toFixed(2)} is below 4.5`) 
   }
 }
-for (const groupName of ['statusRoles', 'operational', 'workflow', 'evidenceTier', 'confidence', 'provenance', 'freshness', 'asyncState']) {
-  for (const [name, token] of Object.entries(tokens.semantic[groupName])) {
-    const light = contrast(token.foreground, token.background)
-    const dark = contrast(token.foregroundDark, token.backgroundDark)
-    requireCondition(light >= 4.5, `${groupName}.${name} light contrast ${light.toFixed(2)} is below 4.5`)
-    requireCondition(dark >= 4.5, `${groupName}.${name} dark contrast ${dark.toFixed(2)} is below 4.5`)
+for (const [name, token] of Object.entries(tokens.semantic.statusRoles)) {
+  const light = contrast(token.foreground, token.background)
+  const dark = contrast(token.foregroundDark, token.backgroundDark)
+  requireCondition(light >= 4.5, `statusRoles.${name} light contrast ${light.toFixed(2)} is below 4.5`)
+  requireCondition(dark >= 4.5, `statusRoles.${name} dark contrast ${dark.toFixed(2)} is below 4.5`)
+}
+for (const groupName of ['operational', 'workflow', 'evidenceTier', 'confidence', 'provenance', 'freshness', 'asyncState']) {
+  for (const [name, mapping] of Object.entries(tokens.semantic[groupName])) {
+    requireCondition(Boolean(tokens.semantic.statusRoles[mapping.tone]), `${groupName}.${name} references unknown tone ${mapping.tone}`)
   }
 }
 
