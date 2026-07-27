@@ -15,6 +15,13 @@ _desktop: &desktop
 # rendering over it would break a documented entry point.
 _audit: &audit
   [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
+# moneysweep-pr and spiderweb-pr keep their own .pre-commit-config.yaml: both are
+# tailored well beyond the shared baseline (registry-JSON regeneration and a
+# narrow-scope blocking mypy gate in moneysweep; a release-check smoke and
+# schema-validation hooks in spiderweb). Rendering over them would delete real
+# repo-specific work.
+_precommit: &precommit
+  [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, thehub-pr]
 
 targets:
   - template: Fix-Gatekeeper.command
@@ -51,3 +58,6 @@ targets:
   - template: baseline/pip-audit.yml
     output: .github/workflows/pip-audit.yml
     repos: *audit
+  - template: baseline/pre-commit-config.yaml
+    output: .pre-commit-config.yaml
+    repos: *precommit
