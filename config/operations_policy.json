@@ -1229,9 +1229,8 @@
         "operation_id": "hub.list",
         "parameters": {
           "registry": {
-            "default": "registry/producers.yaml",
-            "max_length": 512,
-            "type": "string"
+            "type": "fixed",
+            "value": "registry/producers.yaml"
           }
         },
         "prerequisites": [
@@ -2690,7 +2689,7 @@
   "signature": {
     "algorithm": "Ed25519",
     "key_id": "prii-operations-test-2026-07",
-    "payload_sha256": "30db8e8f04fadd38e400ee220c66aaf22610e637795db25bafcaf44d41db949b",
-    "value": "IomAo2ps5V6V3Hcopeqg1t7H3VSKGFgG3XquhBjq9PqZTtwKu7VMwtFCGSXcL1Cp6Wx3Wk7wV5WukUw7gFIqBA=="
+    "payload_sha256": "bc7548af25e70a84e1a4d0f801e13fb20f57a0f26b20d888c564d66877191012",
+    "value": "hXS7Ws+9EaL6Vt5d8YwX9Z163CRGFYQOig6Ra1OE3gk6KAOuLoVXpEm4zoVoHEZk/R/9GdUB+YiH1RhzL2XeDg=="
   }
 }

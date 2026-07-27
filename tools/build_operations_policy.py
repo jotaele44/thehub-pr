@@ -102,7 +102,10 @@ def _ref(name: str) -> dict[str, str]:
 HUB_OPERATIONS: dict[str, dict[str, Any]] = {
     "hub.list": {
         "subcommand": "list",
-        "parameters": {"registry": _p("string", default="registry/producers.yaml", max_length=512)},
+        # Fixed rather than a free string: there is exactly one producers
+        # registry, and accepting a caller-supplied path here would be a file
+        # read primitive relative to the pinned app root for no benefit.
+        "parameters": {"registry": _p("fixed", value="registry/producers.yaml")},
         "argv": [_lit("--registry"), _ref("registry")],
     },
     "hub.validate_manifest": {
