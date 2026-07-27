@@ -219,6 +219,10 @@ def run_process(
             else:
                 os.killpg(os.getpgid(process.pid), signal.SIGTERM)
         except (ProcessLookupError, PermissionError, OSError):
+            # Racing a process that has already exited is the expected case, not
+            # an error: the timeout fires and the child finishes at the same
+            # moment. Killing an already-dead group must not mask the real
+            # outcome, which the caller reads from the exit code and timer flag.
             pass
 
     def _on_timeout() -> None:

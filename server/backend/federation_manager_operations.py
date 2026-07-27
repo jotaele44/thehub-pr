@@ -30,7 +30,7 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any, Iterable, Mapping, Optional, Sequence
 
-from jsonschema import Draft202012Validator, FormatChecker
+from jsonschema import Draft202012Validator
 
 from server.backend.federation_manager import RELEASE_FORMAT_CHECKER
 
@@ -353,9 +353,12 @@ def _validate_operation_shape(operation: Operation) -> None:
 
 
 # ── Typed parameter validation ──────────────────────────────────────────────
-
-
-_PARAM_FORMAT_CHECKER = FormatChecker()
+#
+# Parameters are validated by _coerce below rather than by jsonschema. The
+# checks a parameter needs -- null bytes, length ceilings, enum membership,
+# absolute-path and parent-traversal refusal -- are argv-safety checks with no
+# jsonschema `format` equivalent, so there is no FormatChecker here on purpose.
+# Release manifests still go through jsonschema with RELEASE_FORMAT_CHECKER.
 
 
 def validate_parameters(
