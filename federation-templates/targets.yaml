@@ -10,6 +10,11 @@ _all: &all
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
 _desktop: &desktop
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr]
+# moneysweep-pr keeps its own pip-audit workflow: it is tailored to that repo's
+# requirements.lock and is referenced by docs/DEPENDENCY_SECURITY_AUDIT.md, so
+# rendering over it would break a documented entry point.
+_audit: &audit
+  [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
 
 targets:
   - template: Fix-Gatekeeper.command
@@ -30,3 +35,19 @@ targets:
   - template: schemas/federation_export_manifest.schema.json
     output: schemas/federation_export_manifest.schema.json
     repos: *all
+
+  # Engineering baseline — supply-chain and dependency hygiene that every repo
+  # in the federation needs identically. Single-sourced here so a fix lands once
+  # instead of seven times, and so template-drift.yml keeps it from rotting.
+  - template: baseline/dependabot.yml
+    output: .github/dependabot.yml
+    repos: *all
+  - template: baseline/codeql.yml
+    output: .github/workflows/codeql.yml
+    repos: *all
+  - template: baseline/secret-scan.yml
+    output: .github/workflows/secret-scan.yml
+    repos: *all
+  - template: baseline/pip-audit.yml
+    output: .github/workflows/pip-audit.yml
+    repos: *audit

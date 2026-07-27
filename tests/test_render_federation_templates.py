@@ -8,6 +8,8 @@ template-drift.yml workflow.
 
 from __future__ import annotations
 
+import importlib.util
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -17,6 +19,14 @@ import yaml
 _HUB = Path(__file__).resolve().parents[1]
 _TEMPLATES = _HUB / "federation-templates"
 _RENDER = _HUB / "tools" / "render_federation_templates.py"
+
+
+def _renderer():
+    """Import the renderer as a module so the pure helpers can be unit-tested."""
+    spec = importlib.util.spec_from_file_location("_render_fed", _RENDER)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
 
 
 def _vars():
@@ -75,3 +85,48 @@ def test_thehub_own_files_match_templates():
         capture_output=True, text=True,
     )
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+# ── Engineering baseline (Dependabot / CodeQL / secret-scan / pip-audit) ───────
+
+
+def test_per_repo_vars_substitute_beyond_the_slug(tmp_path):
+    # npm_dir differs per repo (dashboard/ vs frontend/ vs server/frontend/), so a
+    # renderer that only knew about app_slug would point Dependabot at the wrong
+    # tree in five of seven repos and silently watch nothing.
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "spiderweb-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    dependabot = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
+    npm = [u for u in dependabot["updates"] if u["package-ecosystem"] == "npm"]
+    assert [u["directory"] for u in npm] == ["/server/frontend"]
+
+
+def test_unresolved_placeholder_is_detected():
+    # The failure this guards is silent: an unsubstituted {{KEY}} written into
+    # seven repos renders a config that parses but does nothing useful.
+    mod = _renderer()
+    assert mod._unresolved(b"directory: {{NPM_DIR}}\n") == ["{{NPM_DIR}}"]
+    assert mod._unresolved(b"") == []
+    # GitHub Actions expressions share the brace syntax and must not trip it.
+    assert mod._unresolved(b"group: codeql-${{ github.ref }}\n") == []
+    assert mod._unresolved(b"TOKEN: ${{ secrets.GITHUB_TOKEN }}\n") == []
+
+
+def test_baseline_workflows_are_valid_and_least_privilege():
+    for name in ("codeql.yml", "secret-scan.yml", "pip-audit.yml"):
+        doc = yaml.safe_load((_TEMPLATES / "baseline" / name).read_text())
+        assert "permissions" in doc, f"{name} must declare a top-level permissions block"
+        assert doc["permissions"] == {"contents": "read"}, name
+        assert doc["jobs"], name
+
+
+def test_baseline_actions_are_sha_pinned():
+    # A floating tag hands a compromised upstream release whatever token the job
+    # holds. Pinning is the whole point of these templates, so assert it rather
+    # than trusting review to catch a regression.
+    pinned = re.compile(r"^[0-9a-f]{40}$")
+    for path in sorted((_TEMPLATES / "baseline").glob("*.yml")):
+        for ref in re.findall(r"uses:\s*\S+@(\S+)", path.read_text()):
+            assert pinned.match(ref), f"{path.name}: {ref} is not a SHA pin"
