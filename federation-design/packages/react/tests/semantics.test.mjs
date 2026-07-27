@@ -10,6 +10,8 @@ import {
 test('legacy status aliases remain backward compatible', () => {
   assert.equal(federationStatusRole('operational'), 'success')
   assert.equal(federationStatusRole('analysis'), 'process')
+  assert.equal(federationStatusRole('warning'), 'warning')
+  assert.equal(federationStatusRole('danger'), 'danger')
   assert.equal(federationStatusRole('unexpected'), 'neutral')
 })
 

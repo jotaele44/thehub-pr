@@ -13,7 +13,7 @@ on:
       - ".github/workflows/federation-design-release.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -36,6 +36,8 @@ jobs:
         run: npm run verify
       - name: Pack immutable release candidate
         run: npm pack
+      - name: Verify release-manifest source hashes
+        run: npm run verify
       - name: Verify tarball contract and write checksum
         run: |
           tgz=$(ls pr-federation-react-*.tgz)
@@ -52,11 +54,6 @@ jobs:
             tar -tzf "$tgz" | grep -qx "$required"
           done
           sha256sum "$tgz" > SHA256SUMS
-      - name: Verify immutable tag matches package version
-        if: startsWith(github.ref, 'refs/tags/federation-design-v')
-        run: |
-          version=$(node -p "JSON.parse(require('fs').readFileSync('package.json')).version")
-          test "$GITHUB_REF_NAME" = "federation-design-v$version"
       - name: Upload candidate artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -66,8 +63,32 @@ jobs:
             federation-design/packages/react/SHA256SUMS
           if-no-files-found: error
           retention-days: 30
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/federation-design-v')
+    needs: verify-and-pack
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: federation-design/packages/react
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+      - name: Rebuild and verify immutable release artifact
+        run: |
+          npm test
+          npm run verify
+          npm pack
+          npm run verify
+          tgz=$(ls pr-federation-react-*.tgz)
+          sha256sum "$tgz" > SHA256SUMS
+          version=$(node -p "JSON.parse(require('fs').readFileSync('package.json')).version")
+          test "$GITHUB_REF_NAME" = "federation-design-v$version"
       - name: Attach immutable tarball and checksum to release
-        if: startsWith(github.ref, 'refs/tags/federation-design-v')
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
           files: |

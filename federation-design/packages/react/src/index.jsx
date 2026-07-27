@@ -98,12 +98,35 @@ export function FederationSemanticBadge({ kind, value, label, children, classNam
   )
 }
 
-export function FederationStatusBadge({ status, kind = 'operational', children, className, ...props }) {
+export function FederationStatusBadge({ status, kind = 'presentation', children, className, ...props }) {
   if (kind === 'presentation') {
     const tone = federationStatusRole(status)
-    return <span className={cx('fd-badge', className)} data-kind="presentation" data-value={tone} data-tone={tone} {...props}>{children ?? String(status ?? tone)}</span>
+    return (
+      <span
+        className={cx('fd-status', 'fd-badge', `fd-status--${tone}`, className)}
+        data-kind="presentation"
+        data-value={String(status ?? tone)}
+        data-status={tone}
+        data-tone={tone}
+        {...props}
+      >
+        {children ?? String(status ?? tone)}
+      </span>
+    )
   }
-  return <FederationSemanticBadge kind={kind} value={status} className={className} {...props}>{children}</FederationSemanticBadge>
+  const semantic = resolveFederationSemantic(kind, status)
+  return (
+    <span
+      className={cx('fd-status', 'fd-badge', `fd-status--${semantic.tone}`, className)}
+      data-kind={semantic.kind}
+      data-value={semantic.value}
+      data-status={semantic.tone}
+      data-tone={semantic.tone}
+      {...props}
+    >
+      {children ?? semantic.label}
+    </span>
+  )
 }
 
 export function FederationEvidenceTierBadge({ tier = 'ungraded', ...props }) {

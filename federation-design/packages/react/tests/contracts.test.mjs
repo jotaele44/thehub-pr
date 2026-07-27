@@ -11,11 +11,28 @@ const indexSource = readFileSync(join(pkgRoot, 'src', 'index.jsx'), 'utf8')
 const css = ['foundation.css', 'primitives.css', 'states.css'].map((name) => readFileSync(join(designRoot, 'styles', name), 'utf8')).join('\n')
 const snapshot = JSON.parse(readFileSync(join(pkgRoot, 'api-snapshot.json'), 'utf8'))
 
-test('API snapshot is additive over the v0.3 primitives', () => {
-  for (const name of ['FederationButton', 'FederationPanel', 'FederationStatusBadge', 'FederationEmptyState', 'FederationStatCard']) {
+test('API snapshot is additive over the complete v0.3 public API', () => {
+  for (const name of [
+    'FEDERATION_STATUS_ROLES', 'FederationThemeProvider', 'useFederationTheme',
+    'FederationButton', 'FederationPanel', 'federationStatusRole', 'federationTone',
+    'FederationStatusBadge', 'FederationEmptyState', 'FederationStatCard',
+  ]) {
     assert.ok(snapshot.exports.includes(name), `${name} missing from snapshot`)
   }
   assert.deepEqual(snapshot.removedExports, [])
+})
+
+test('v0.3 status-badge behavior and style hooks remain the default', () => {
+  assert.match(indexSource, /FederationStatusBadge\(\{ status, kind = 'presentation'/)
+  assert.match(indexSource, /className=\{cx\('fd-status', 'fd-badge'/)
+  assert.match(indexSource, /data-status=\{tone\}/)
+  assert.match(css, /data-status="critical"/)
+})
+
+test('v0.3 empty-state inline descendant rules remain available', () => {
+  assert.match(css, /\.fd-empty-state__icon>svg/)
+  assert.match(css, /\.fd-empty-state--inline \.fd-empty-state__description/)
+  assert.match(css, /\.fd-empty-state--inline \.fd-empty-state__icon\{display:none\}/)
 })
 
 test('async-state family encodes live regions and failure alerts', () => {

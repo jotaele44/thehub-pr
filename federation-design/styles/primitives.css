@@ -15,7 +15,7 @@ body{font-family:var(--fd-font-sans);background:var(--fd-bg);color:var(--fd-text
 .fd-source-badge{background:var(--fd-surface-2);color:var(--fd-text-muted)}
 .fd-source-badge[data-verified="true"]{border-color:var(--fd-tone-success-border);color:var(--fd-tone-success-fg);background:var(--fd-tone-success-bg)}
 
-.fd-badge[data-tone="danger"],.fd-status[data-status="danger"]{color:var(--fd-tone-danger-fg);background:var(--fd-tone-danger-bg);border-color:var(--fd-tone-danger-border)}
+.fd-badge[data-tone="danger"],.fd-status[data-status="danger"],.fd-status[data-status="critical"]{color:var(--fd-tone-danger-fg);background:var(--fd-tone-danger-bg);border-color:var(--fd-tone-danger-border)}
 .fd-badge[data-tone="success"],.fd-status[data-status="success"],.fd-status[data-status="operational"]{color:var(--fd-tone-success-fg);background:var(--fd-tone-success-bg);border-color:var(--fd-tone-success-border)}
 .fd-badge[data-tone="warning"],.fd-status[data-status="warning"],.fd-status[data-status="degraded"]{color:var(--fd-tone-warning-fg);background:var(--fd-tone-warning-bg);border-color:var(--fd-tone-warning-border)}
 .fd-badge[data-tone="info"],.fd-status[data-status="info"],.fd-status[data-status="information"]{color:var(--fd-tone-info-fg);background:var(--fd-tone-info-bg);border-color:var(--fd-tone-info-border)}

@@ -1,5 +1,6 @@
-import { readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { createHash } from 'node:crypto'
+import { existsSync, readFileSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const here = dirname(fileURLToPath(import.meta.url))
@@ -23,7 +24,7 @@ requireCondition(tokens.version === '2.0.0', 'token version must be 2.0.0')
 requireCondition(schema.properties?.version?.const === tokens.version, 'token schema version does not match token source')
 requireCondition(Array.isArray(snapshot.exports) && snapshot.exports.length >= 30, 'API snapshot is unexpectedly small')
 requireCondition(harness.viewports.length === 6, 'test harness must define six certified viewports')
-requireCondition(harness.states.includes('offline') && harness.states.includes('filtered_empty'), 'test harness state matrix is incomplete')
+requireCondition(aarness.states.includes('offline') && harness.states.includes('filtered_empty'), 'test harness state matrix is incomplete')
 
 for (const symbol of snapshot.exports) {
   requireCondition(indexSource.includes(symbol) || semanticsSource.includes(symbol), `API snapshot symbol missing from source: ${symbol}`)
@@ -58,7 +59,7 @@ function contrast(a, b) {
 for (const [themeName, surface] of Object.entries({ light: tokens.semantic.light, dark: tokens.semantic.dark })) {
   for (const textKey of ['textPrimary', 'textSecondary']) {
     const ratio = contrast(surface[textKey], surface.background)
-    requireCondition(ratio >= 4.5, `${themeName}.${textKey} contrast ${ratio.toFixed(2)} is below 4.5`) 
+    requireCondition(ratio >= 4.5, `${themeName}.${textKey} contrast ${ratio.toFixed(2)} is below 4.5`)
   }
 }
 for (const [name, token] of Object.entries(tokens.semantic.statusRoles)) {
@@ -73,4 +74,25 @@ for (const groupName of ['operational', 'workflow', 'evidenceTier', 'confidence'
   }
 }
 
-if (!process.exitCode) console.log(`[verify] ${snapshot.exports.length} exports; tokens, a11y, contrast, reduced motion and harness contracts valid`)
+
+const manifestPath = join(pkgRoot, 'dist', 'release-manifest.json')
+if (existsSync(manifestPath)) {
+  const manifest = readJson(manifestPath)
+  const sha256 = (path) => createHash('sha256').update(readFileSync(path)).digest('hex')
+  requireCondition(manifest.package === pkg.name, 'release manifest package name differs from package.json')
+  requireCondition(manifest.version === pkg.version, 'release manifest version differs from package.json')
+  requireCondition(manifest.expectedTag === `federation-design-v${pkg.version}`, 'release manifest expected tag is incorrect')
+  requireCondition(manifest.mutableReferencesAllowed === false, 'release manifest must prohibit mutable references')
+  requireCondition(manifest.apiSnapshotSha256 === sha256(join(pkgRoot, 'api-snapshot.json')), 'release manifest API snapshot hash differs from source')
+  const designRootResolved = resolve(designRoot)
+  for (const [relativePath, expected] of Object.entries(manifest.sourceSha256 || {})) {
+    const sourcePath = resolve(designRoot, relativePath)
+    requireCondition(sourcePath.startsWith(`${designRootResolved}/`), `release manifest source escapes design root: ${relativePath}`)
+    if (!sourcePath.startsWith(`${designRootResolved}/`)) continue
+    requireCondition(existsSync(sourcePath), `release manifest source is missing: ${relativePath}`)
+    if (!existsSync(sourcePath)) continue
+    requireCondition(sha256(sourcePath) === expected, `release manifest source hash mismatch: ${relativePath}`)
+  }
+}
+
+if (!process.exitCode) console.log(`[verify] ${snapshot.exports.length} exports; tokens, a11y, contrast, reduced motion, harness and available release-manifest contracts valid`)
