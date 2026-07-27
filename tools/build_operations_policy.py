@@ -275,6 +275,45 @@ def _deferral_reason(row: Mapping[str, Any]) -> str:
     return DEFERRAL_REASON
 
 
+#: Rollback strategy names that may appear in a policy row. A strategy does not
+#: have to be implemented to be *declared* -- a producer operation can name one
+#: the manager has not built yet, and the gate evidence reports that honestly --
+#: but it does have to be a name, so that "is this built?" is a lookup rather
+#: than a reading comprehension exercise.
+#:
+#: This exists because a row reached the shipped policy carrying the prose
+#: "delete staging checkout; preserve prior current pointer". Nothing rejected
+#: it, no lookup could ever match it, and it silently inflated the count of
+#: strategies that looked declared-but-unbuilt.
+KNOWN_ROLLBACK_STRATEGIES = frozenset(
+    {
+        "none",
+        "delete_staging_download",
+        "dispatch_receipt_compensating_remove",
+        "file_snapshot_restore",
+        "ledger_snapshot_restore",
+        "queue_run_partition_delete",
+        "run_partition_restore",
+        "sqlite_backup_integrity_check_atomic_swap",
+        "stage_validate_atomic_promote",
+        "transaction_snapshot_and_run_partition_restore",
+        "transactional_run_partition_restore",
+        "versioned_install_pointer_swap",
+    }
+)
+
+
+def validate_rollback_strategy(operation_id: str, value: object) -> str:
+    """Reject anything that is not a known strategy identifier."""
+    if not isinstance(value, str) or value not in KNOWN_ROLLBACK_STRATEGIES:
+        raise ValueError(
+            f"{operation_id}: rollback_strategy {value!r} is not a known strategy identifier. "
+            f"Expected one of {sorted(KNOWN_ROLLBACK_STRATEGIES)}. A prose description here "
+            "cannot be looked up and will be silently miscounted as an unbuilt strategy."
+        )
+    return value
+
+
 def build_policy(sequence: int, key_id: str, issued_at: datetime, valid_days: int) -> dict[str, Any]:
     catalog = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
     operations: list[dict[str, Any]] = []
@@ -294,7 +333,9 @@ def build_policy(sequence: int, key_id: str, issued_at: datetime, valid_days: in
             "local_input_refs": list(row.get("local_input_refs", [])),
             "prerequisites": list(row.get("prerequisites", [])),
             "secret_refs": list(row.get("secret_refs", [])),
-            "rollback_strategy": row["rollback_strategy"],
+            "rollback_strategy": validate_rollback_strategy(
+                operation_id, row["rollback_strategy"]
+            ),
             "promotion_state": row["promotion_state"],
             "provenance": {
                 "source": row["source"],

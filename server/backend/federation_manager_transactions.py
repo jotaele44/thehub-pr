@@ -649,14 +649,21 @@ STRATEGIES: Mapping[str, str] = {
 
 #: Declared by producer operations but not built in this vector. Named
 #: explicitly so a caller gets a clear error instead of a silent no-op.
+#: Strategies a producer operation declares that this vector has not built. Each
+#: raises on use rather than silently no-opping, so enabling one of those
+#: operations fails loudly instead of running without the rollback it claims.
+#:
+#: Five, not six. The sixth entry was the prose string a policy row carried in
+#: place of an identifier; it has been normalised to ``delete_staging_download``
+#: and ``tools/build_operations_policy.py`` now refuses to emit prose here, so
+#: listing it would be guarding against a value that can no longer be produced.
 UNIMPLEMENTED_STRATEGIES = frozenset(
     {
-        "dispatch_receipt_compensating_remove",
-        "transactional_run_partition_restore",
-        "queue_run_partition_delete",
         "delete_staging_download",
+        "dispatch_receipt_compensating_remove",
+        "queue_run_partition_delete",
         "transaction_snapshot_and_run_partition_restore",
-        "delete staging checkout; preserve prior current pointer",
+        "transactional_run_partition_restore",
     }
 )
 
