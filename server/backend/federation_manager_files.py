@@ -110,6 +110,12 @@ class StagedFile:
             try:
                 artifact["managed_path"] = str(self.path.resolve().relative_to(managed_root.resolve()))
             except ValueError:
+                # relative_to raises when the file is not under the managed
+                # root. That is not an error here: the receipt records
+                # managed_path only for files inside managed storage, and
+                # omitting the key is how a file outside it is represented.
+                # Falling back to the absolute path would leak the operator's
+                # filesystem layout into a signed, retained artifact.
                 pass
         return artifact
 
