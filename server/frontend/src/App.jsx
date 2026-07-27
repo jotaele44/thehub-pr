@@ -11,6 +11,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 import AppLayout from '@/components/layout/AppLayout';
 import RouteFallback from '@/components/shared/RouteFallback';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 // Routes are code-split so heavy per-page deps (Leaflet, Recharts, jsPDF) load
 // only when their page is visited, not in the initial bundle. The app shell
@@ -133,7 +134,11 @@ function App() {
         <QueryClientProvider client={queryClientInstance}>
           <Router>
             <ScrollToTop />
-            <AppRoutes />
+            {/* Inside the router so a throw keeps the shell and the URL, and the
+                operator can navigate away instead of facing a blank document. */}
+            <ErrorBoundary>
+              <AppRoutes />
+            </ErrorBoundary>
           </Router>
           <Toaster />
         </QueryClientProvider>
