@@ -81,9 +81,6 @@ def test_write_atomic_leaves_no_temp_files_behind(tmp_path):
 def test_write_atomic_cleans_up_when_writing_fails(tmp_path):
     target = tmp_path / "out.txt"
 
-    class Exploding(bytes):
-        pass
-
     with pytest.raises(TypeError):
         write_atomic(target, 12345)  # type: ignore[arg-type]
     assert not target.exists()
