@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "federation_federal_document_release.schema.json",
+  "title": "Federation Federal Document Release",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["release_id", "document_id", "source_id", "first_observed_at", "baseline_cutoff", "release_state", "access_url", "content_sha256", "byte_size", "mime_type", "page_count", "text_layer_present", "ocr_status", "redaction_state", "attachment_count", "acquisition_receipt_id", "lineage", "synthetic", "created_at", "extracted_at"],
+  "properties": {
+    "release_id": {"type": "string", "pattern": "^relv_[a-f0-9]{32}$"},
+    "document_id": {"type": "string", "pattern": "^doc_[a-f0-9]{32}$"},
+    "source_id": {"type": "string", "pattern": "^src_[a-f0-9]{32}$"},
+    "released_at": {"type": ["string", "null"], "format": "date-time"},
+    "first_observed_at": {"type": "string", "format": "date-time"},
+    "baseline_cutoff": {"type": "string", "const": "2026-07-27T23:59:59-04:00"},
+    "release_state": {"type": "string", "enum": ["NEW_DOCUMENT", "NEW_DIGITIZATION", "NEW_RELEASE_VERSION", "LESS_REDACTED_VERSION", "MORE_REDACTED_VERSION", "NEW_ATTACHMENT", "METADATA_REVISION", "CORPUS_RELOCATION", "WITHDRAWN_OBJECT", "FALSE_DELTA", "BASELINE_DUPLICATE", "PRIOR_DELTA_DUPLICATE"]},
+    "access_url": {"type": "string", "format": "uri"},
+    "content_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "byte_size": {"type": "integer", "minimum": 0},
+    "mime_type": {"type": "string"},
+    "page_count": {"type": "integer", "minimum": 0},
+    "text_layer_present": {"type": "boolean"},
+    "ocr_status": {"type": "string", "enum": ["not_required", "pending", "complete", "failed", "manual_review"]},
+    "redaction_state": {"type": "string", "enum": ["unredacted", "partially_redacted", "fully_withheld", "unknown"]},
+    "attachment_count": {"type": "integer", "minimum": 0},
+    "parent_release_id": {"type": ["string", "null"], "pattern": "^relv_[a-f0-9]{32}$"},
+    "acquisition_receipt_id": {"type": "string", "pattern": "^receipt_[a-f0-9]{32}$"},
+    "lineage": {"$ref": "#/definitions/lineage"},
+    "synthetic": {"type": "boolean"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "extracted_at": {"type": "string", "format": "date-time"}
+  },
+  "definitions": {"lineage": {"type": "object", "required": ["producer_script", "producer_phase", "source_inputs"], "properties": {"producer_script": {"type": "string"}, "producer_phase": {"type": "string"}, "source_inputs": {"type": "array", "items": {"type": "string"}}, "extraction_method": {"type": "string"}}, "additionalProperties": true}}
+}
