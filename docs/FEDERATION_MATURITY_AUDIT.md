@@ -442,3 +442,54 @@ boundary written down.
 effort estimates, the phased roadmap — remains judgement. The harness constrains the
 arithmetic and the counts, which is where both of the confirmed errors lived. It does not
 make the grades objective and is not offered as doing so.
+
+---
+
+## Third round of corrections — 2026-07-27
+
+Both follow-ups this document left open are closed, and closing them exposed a
+third error of my own.
+
+**`POST /ai/query` is now guarded.** `aguayluz-pr`'s six mutating routes all carry
+`Depends(_require_key)`. The client landed with it: the six write paths in
+`dashboard/src/lib/api.js` share one `authHeaders()`, the operator sets the key on
+the System & Tools page, and a 401 now names its cause — no key set versus key
+rejected — instead of surfacing a status code. Proven against a live app in both
+directions: with `API_SECRET_KEY` set, no header and a wrong bearer both 401 while
+the correct bearer reaches the handler; with it unset, every route behaves exactly
+as before.
+
+**The correction.** The 2026-07-27 entry above said the client-credential gap was
+one federation-wide problem. It also said `thehub-pr` and `skywatcher-pr` already
+had working plumbing. **Both halves were wrong, in opposite directions.**
+
+`federationClient.js:45` does read a token and set `Authorization: Bearer`, which
+is what I checked. What I did not check is that it survives startup. In diagnostic
+mode `/api/auth/me` always 401s, and `AuthContext` responds by calling
+`setToken(null)` and nulling `appParams.token` so a stale session token cannot trap
+the app in a login redirect. A write token supplied as `?access_token=` was
+therefore **discarded before the first request went out** — the mechanism read as
+wired and silently was not. Reading the call site was not enough; the token's
+lifetime was the thing that mattered.
+
+So the fix is a genuinely separate slot, not documentation:
+`?write_token=<PRII_WRITE_TOKEN>` stored under `federation_write_token`, which the
+auth cleanup does not touch, used as the last fallback in `request()`. Both
+backends now advertise `write_token_required` in `public_settings` so the UI can
+tell "this server wants a token" from "this server accepts my network" — without
+it, both look identical until a write fails.
+
+| Repo | Guard | Client, before | Client, now |
+|---|---|---|---|
+| `aguayluz-pr` | `_require_key` | no `Authorization` on any write | key entered in System & Tools, `sessionStorage` |
+| `thehub-pr` | `require_write_access` | token plumbed but cleared at boot | `?write_token=`, separate storage slot |
+| `skywatcher-pr` | `require_write_access` | same | same |
+
+**The harness now covers this.** `scripts/verify_audit.py` gained a check that each
+backend advertises the write-token flag, and its aguayluz check flipped from "which
+route is unguarded" to "how many are" — so a new mutating route shipped without a
+guard turns the build red. `audit-claims` is also split: the checks needing only
+this repo always run and must always pass, while the cross-repo half runs strictly
+under `--require-all` when `FEDERATION_READ_TOKEN` is present. A missing secret
+never manufactures a red build, and when it is missing the job says which checks
+went unverified rather than letting the summary imply full coverage.

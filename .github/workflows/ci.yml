@@ -94,14 +94,31 @@ jobs:
       - name: Mypy
         run: mypy src/hub
 
+  # Does FEDERATION_READ_TOKEN exist? Its own job because the `secrets` context
+  # is not dependable inside a job-level `if:`; reading it into a job-level env
+  # and re-emitting it as an output is the portable way to branch on it.
+  audit-claims-preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      has_token: ${{ steps.probe.outputs.has_token }}
+    env:
+      FEDERATION_TOKEN: ${{ secrets.FEDERATION_READ_TOKEN }}
+    steps:
+      - id: probe
+        run: |
+          if [ -n "$FEDERATION_TOKEN" ]; then
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+          fi
+
   # Re-derives the countable claims in the audit documents from the code and
-  # fails when the two disagree. Only this repo is checked out here, so the
-  # cross-repo checks report SKIP and the job enforces the thehub-local subset;
-  # the full set runs from a working copy holding all seven repositories
-  # (`python3 scripts/verify_audit.py --root <dir> --require-all`). Stdlib only,
-  # so it needs no install step.
+  # fails when the two disagree. This job carries the checks that need only this
+  # repository — it always runs, is always strict, and must always pass. Stdlib
+  # only, so it needs no install step.
   audit-claims:
     runs-on: ubuntu-latest
+    needs: audit-claims-preflight
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -109,6 +126,47 @@ jobs:
           python-version: "3.12"
       - name: Verify audit claims against the code
         run: python3 scripts/verify_audit.py
+      # A skipped check that nobody mentions reads as a passing one. If the
+      # cross-repo job cannot run, say so in the log rather than let the summary
+      # line imply full coverage.
+      - name: Note the unenforced cross-repo checks
+        if: needs.audit-claims-preflight.outputs.has_token != 'true'
+        run: |
+          echo "::notice title=Cross-repo audit checks not enforced::\
+          FEDERATION_READ_TOKEN is not set, so audit-claims-federation did not run. \
+          The checks reported SKIP above are unverified on this commit. Add a secret \
+          with read access to the other six federation repositories to enable them."
+
+  # The cross-repo half. Runs only when the token exists, and is strict when it
+  # does: --require-all turns a missing sibling into a failure rather than a
+  # skip. Nothing here can make the build red for want of a secret.
+  audit-claims-federation:
+    runs-on: ubuntu-latest
+    needs: audit-claims-preflight
+    if: needs.audit-claims-preflight.outputs.has_token == 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # actions/checkout refuses to write outside $GITHUB_WORKSPACE, so the
+      # siblings land in _federation/ while this repo stays at the root.
+      # verify_audit.py resolves its own name to the script's tree (SELF_REPO_NAME),
+      # so --root _federation still covers all seven.
+      - uses: actions/checkout@v4
+        with: { repository: jotaele44/skywatcher-pr, path: _federation/skywatcher-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
+      - uses: actions/checkout@v4
+        with: { repository: jotaele44/moneysweep-pr, path: _federation/moneysweep-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
+      - uses: actions/checkout@v4
+        with: { repository: jotaele44/spiderweb-pr, path: _federation/spiderweb-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
+      - uses: actions/checkout@v4
+        with: { repository: jotaele44/centinelas-pr, path: _federation/centinelas-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
+      - uses: actions/checkout@v4
+        with: { repository: jotaele44/aguayluz-pr, path: _federation/aguayluz-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
+      - uses: actions/checkout@v4
+        with: { repository: jotaele44/ovnis-pr, path: _federation/ovnis-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
+      - name: Verify audit claims across the federation
+        run: python3 scripts/verify_audit.py --root _federation --require-all
 
   # Self-contained sub-project (packages/prii_maintenance) — its own CI, isolated
   # from the root test matrix since its consumers (spiderweb-pr >=3.11,
