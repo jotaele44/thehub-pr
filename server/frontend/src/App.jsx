@@ -12,9 +12,6 @@ import ScrollToTop from './components/ScrollToTop';
 import AppLayout from '@/components/layout/AppLayout';
 import RouteFallback from '@/components/shared/RouteFallback';
 
-// Routes are code-split so heavy per-page deps (Leaflet, Recharts, jsPDF) load
-// only when their page is visited, not in the initial bundle. The app shell
-// (layout, nav, auth guard) stays eager.
 const Login = lazy(() => import('@/pages/Login'));
 const Register = lazy(() => import('@/pages/Register'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
@@ -42,12 +39,11 @@ const Hub = lazy(() => import('@/pages/Hub'));
 const RecentActivity = lazy(() => import('@/pages/RecentActivity'));
 const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
+const FederalRecords = lazy(() => import('@/pages/FederalRecords'));
 
 const AppRoutes = () => {
   const { isLoadingPublicSettings, appPublicSettings } = useAuth();
 
-  // Wait for public settings before routing — we need to know whether auth is
-  // required before deciding whether to guard the app routes or render anonymously.
   if (isLoadingPublicSettings) {
     return <RouteFallback />;
   }
@@ -56,9 +52,6 @@ const AppRoutes = () => {
     appPublicSettings?.public_settings?.requires_auth || appParams.requireAuth
   );
 
-  // When auth is required, wrap the app shell in ProtectedRoute (redirects
-  // unauthenticated users to /login). In public/diagnostic mode the layout route
-  // is a pass-through so the app renders anonymously.
   const guard = authRequired
     ? <ProtectedRoute fallback={<RouteFallback />} unauthenticatedElement={<Navigate to="/login" replace />} />
     : <Outlet />;
@@ -66,12 +59,6 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        {/* Public auth routes — rendered without the app shell, and only when auth
-            is actually required. In diagnostic mode the backend implements no
-            /auth/login, /auth/register, /auth/verify-otp or /auth/password/*
-            endpoint (they 404), so rendering these forms would offer a sign-in
-            that cannot succeed. Gate them on the same signal that decides whether
-            the app shell is guarded, so the two can never disagree. */}
         {authRequired ? (
           <>
             <Route path="/login" element={<Login />} />
@@ -88,7 +75,6 @@ const AppRoutes = () => {
           </>
         )}
 
-        {/* Protected application. */}
         <Route element={guard}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<RecentActivity />} />
@@ -115,6 +101,14 @@ const AppRoutes = () => {
             <Route path="/moneysweep" element={<MoneySweep />} />
             <Route path="/skywatcher" element={<Skywatcher />} />
             <Route path="/centinelas" element={<Centinelas />} />
+            <Route path="/federal-records" element={<FederalRecords />} />
+            <Route path="/federal-records/releases" element={<FederalRecords />} />
+            <Route path="/federal-records/findings" element={<FederalRecords />} />
+            <Route path="/federal-records/redaction-changes" element={<FederalRecords />} />
+            <Route path="/federal-records/corpus-versions" element={<FederalRecords />} />
+            <Route path="/cases/:caseId/fedmil-context" element={<FederalRecords />} />
+            <Route path="/cases/:caseId/fedmil-context/contradictions" element={<FederalRecords />} />
+            <Route path="/cases/:caseId/fedmil-context/data-gaps" element={<FederalRecords />} />
           </Route>
         </Route>
 
@@ -124,9 +118,7 @@ const AppRoutes = () => {
   );
 };
 
-
 function App() {
-
   return (
     <ThemeProvider>
       <AuthProvider>
