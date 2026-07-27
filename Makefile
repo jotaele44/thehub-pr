@@ -23,6 +23,18 @@ aggregate:
 ingest:
 	$(PY) -m hub ingest --in data/aggregate --db data/hub.db
 
+# Build data/hub.db from the committed fixture. This is the one command a
+# developer needs before `uvicorn server.backend.main:app` shows populated
+# pages — hub.db is a build artifact (5.8 MB binary) and stays untracked, while
+# the JSONL it is built from is committed and diffable.
+db: ingest
+
+# Regenerate the committed bounded fixture from the producer checkouts in the
+# parent workspace. Run the producers' export commands first (the Hub does this
+# itself in federation-ingest.yml via `hub fetch`).
+fixture:
+	$(PY) scripts/build_hub_fixture.py --root .. --out data
+
 clean:
 	rm -rf data/aggregate/*.jsonl data/aggregate/graph_summary.json
 
