@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import FileResponse
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PARENT = REPO_ROOT.parent
@@ -73,6 +74,19 @@ FEDERATION_REPOS = [
 
 router = APIRouter(prefix="/api/local", tags=["local-launcher"])
 
+# The federation tile art, one 256px PNG per program, kept as a single copy under
+# the hub frontend's public/ dir. launcher.html is served straight off disk and
+# has no sibling static dir, so it reaches the art through the route below.
+#
+# Two locations, in priority order: Vite copies public/ into dist/, and
+# desktop/pyinstaller.spec packages server/frontend/dist — not public/. So in a
+# frozen build only the dist/ copy exists, and checking public/ alone would make
+# every packaged launcher fall back to monograms.
+BRANDING_DIRS = (
+    REPO_ROOT / "server" / "frontend" / "dist" / "branding",
+    REPO_ROOT / "server" / "frontend" / "public" / "branding",
+)
+
 _children: dict[str, subprocess.Popen] = {}
 
 
@@ -89,6 +103,15 @@ def _app_bundle(repo_dir: Path, entry: dict[str, str]) -> Path | None:
     return None
 
 
+def _icon_path(repo: str) -> Path | None:
+    """The program's tile art, or None so the caller can fall back to initials."""
+    for base in BRANDING_DIRS:
+        candidate = base / f"{repo}.png"
+        if candidate.is_file():
+            return candidate
+    return None
+
+
 def _repo_status(entry: dict[str, str]) -> dict[str, Any]:
     repo_dir = PARENT / entry["repo"]
     child = _children.get(entry["repo"])
@@ -96,6 +119,13 @@ def _repo_status(entry: dict[str, str]) -> dict[str, Any]:
     bundle = _app_bundle(repo_dir, entry)
     return {
         **entry,
+        # None when the art is missing; the tile then renders entry["icon"],
+        # the two-letter monogram, exactly as it did before.
+        "icon_url": (
+            f"/api/local/federation/icon/{entry['repo']}"
+            if _icon_path(entry["repo"])
+            else None
+        ),
         "is_hub": entry["repo"] == "thehub-pr",
         "present": repo_dir.is_dir(),
         "has_desktop": bundle is not None or (repo_dir / "desktop" / "launch.py").is_file(),
@@ -109,6 +139,18 @@ def _repo_status(entry: dict[str, str]) -> dict[str, Any]:
 @router.get("/federation")
 def federation_status() -> list[dict[str, Any]]:
     return [_repo_status(entry) for entry in FEDERATION_REPOS]
+
+
+@router.get("/federation/icon/{repo}")
+def federation_icon(repo: str) -> FileResponse:
+    """Serve a program's tile art. Only known program ids resolve, so the path
+    parameter can never walk out of BRANDING_DIR."""
+    if not any(entry["repo"] == repo for entry in FEDERATION_REPOS):
+        raise HTTPException(status_code=404, detail=f"Unknown federation repo: {repo}")
+    path = _icon_path(repo)
+    if path is None:
+        raise HTTPException(status_code=404, detail=f"No icon for {repo}")
+    return FileResponse(path, media_type="image/png")
 
 
 @router.post("/launch/{repo}")
