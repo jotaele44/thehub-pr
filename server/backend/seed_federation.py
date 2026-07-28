@@ -36,6 +36,11 @@ import yaml
 
 log = logging.getLogger("hub.backend")
 
+#: The contract every producer's federation.json is pinned to — a `const` in
+#: schemas/repo_federation_manifest.schema.json. Used when a snapshot predates
+#: manifest_schema_version, and in registry-only mode where no manifest was read.
+_REPO_MANIFEST_SCHEMA = "repo_federation_manifest_v1"
+
 # ── Vocabularies (must match the UI selects, which are closed) ─────────────────
 # server/frontend/src/pages/Integrations.jsx:14
 _INTEGRATION_STATUS = {
@@ -180,7 +185,12 @@ def _from_registry(registry_path: Path) -> Optional[dict[str, Any]]:
 
 
 def _manifest_rows(snapshot: dict[str, Any], ts: str) -> list[dict[str, Any]]:
-    schema_version = snapshot.get("schema_version", "hub_registry_v1")
+    # Two different contracts are in play. The hub is described by the registry
+    # (`hub_registry_v1`); each producer is described by its own federation.json,
+    # which schemas/repo_federation_manifest.schema.json pins to
+    # `repo_federation_manifest_v1`. Reporting the registry's version on a child
+    # row would contradict the same row's note that federation.json validated.
+    hub_schema_version = snapshot.get("schema_version", "hub_registry_v1")
     rows = []
 
     hub_id = snapshot.get("hub", "thehub-pr")
@@ -192,7 +202,7 @@ def _manifest_rows(snapshot: dict[str, Any], ts: str) -> list[dict[str, Any]]:
         "id": f"mf-{hub_id}", "manifest_id": f"mf-{hub_id}",
         "program_id": hub_id,
         "module_role": "ParentControlPlane",
-        "schema_version": schema_version,
+        "schema_version": hub_schema_version,
         "status": "Stable",
         "notes": "Federation control plane. Registry owner and aggregation host.",
         "created_date": ts, "updated_date": ts,
@@ -210,7 +220,11 @@ def _manifest_rows(snapshot: dict[str, Any], ts: str) -> list[dict[str, Any]]:
             "id": f"mf-{pid}", "manifest_id": f"mf-{pid}",
             "program_id": pid,
             "module_role": "ChildModule",
-            "schema_version": schema_version,
+            # What the producer actually declares, when the snapshot captured it;
+            # otherwise the contract that governs the file either way.
+            "schema_version": (
+                producer.get("manifest_schema_version") or _REPO_MANIFEST_SCHEMA
+            ),
             "status": status,
             "notes": note,
             "created_date": ts, "updated_date": ts,

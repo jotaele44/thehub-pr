@@ -36,6 +36,7 @@ import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
@@ -70,9 +71,31 @@ def _relativize(summary: dict, root: Path) -> dict:
     return summary
 
 
+def _manifest_schema_version(manifest_path: Path) -> Optional[str]:
+    """The schema version a producer's own federation.json declares.
+
+    The rollup's top-level ``schema_version`` describes the *registry*
+    (``hub_registry_v1``); a producer manifest is governed by a different
+    contract (``repo_federation_manifest_v1``). Carrying the producer's declared
+    value keeps a child manifest row from reporting the registry's version while
+    claiming its federation.json validated.
+    """
+    try:
+        manifest = json.loads(manifest_path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return None
+    version = manifest.get("schema_version")
+    return str(version) if version else None
+
+
 def build(registry_path: Path, root: Path, generated_at: str) -> dict:
     registry = load_registry(str(registry_path))
-    summary = _relativize(validate_federation(registry, root), root)
+    summary = validate_federation(registry, root)
+    for producer in summary["producers"]:
+        producer["manifest_schema_version"] = _manifest_schema_version(
+            Path(producer["manifest_path"])
+        )
+    summary = _relativize(summary, root)
     summary["kind"] = "federation-readiness-snapshot"
     summary["generated_at"] = generated_at
     summary["note"] = (

@@ -148,6 +148,39 @@ def test_blocking_is_a_real_boolean(conn, tmp_path):
         assert row["blocking"] is True
 
 
+def test_child_rows_report_the_producer_manifest_contract(conn, tmp_path):
+    """A child row describes federation.json, not the registry.
+
+    The rollup's top-level schema_version is `hub_registry_v1`; copying it onto a
+    child row would have that row claim its federation.json validated while
+    reporting a version that file cannot legally carry.
+    """
+    _seed(conn, tmp_path, _snapshot(
+        _producer("declared-pr", manifest_schema_version="repo_federation_manifest_v1"),
+        _producer("legacy-pr"),   # snapshot predating the field
+    ))
+    by_program = {r["program_id"]: r for r in _rows(conn, "FederationManifest")}
+
+    assert by_program["declared-pr"]["schema_version"] == "repo_federation_manifest_v1"
+    assert by_program["legacy-pr"]["schema_version"] == "repo_federation_manifest_v1"
+    # The hub is the one thing the registry does describe.
+    assert by_program["thehub-pr"]["schema_version"] == "hub_registry_v1"
+
+
+def test_child_schema_version_matches_the_repo_manifest_schema():
+    """Pin the fallback to the schema's own `const`, so a bump cannot drift."""
+    import json as _json
+    from pathlib import Path as _Path
+
+    from server.backend.seed_federation import _REPO_MANIFEST_SCHEMA
+
+    schema = _json.loads(
+        (_Path(__file__).resolve().parents[1]
+         / "schemas" / "repo_federation_manifest.schema.json").read_text()
+    )
+    assert schema["properties"]["schema_version"]["const"] == _REPO_MANIFEST_SCHEMA
+
+
 def test_exactly_one_parent_control_plane(conn, tmp_path):
     _seed(conn, tmp_path, _snapshot(_producer("a-pr"), _producer("b-pr")))
     roles = [r["module_role"] for r in _rows(conn, "FederationManifest")]
