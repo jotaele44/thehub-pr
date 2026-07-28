@@ -61,25 +61,27 @@ fix the underlying problem.
    drives the same loopback HTTP surface the UI uses, because G15 and G16 are
    claims about what the UI can do and the UI has nothing else.
 
-## Blocked: there is no host to run
+## Why there is a host script
 
-**This certification cannot currently be completed, and the steps below will not
-work as written until that changes.** Recorded here rather than left for the next
-operator to discover at the fourth prompt.
+**Use `scripts/run_manager_host.py`, not plain `uvicorn`.** Plain uvicorn mounts
+the router but cannot run a certification, and the reason is worth stating because
+it cost a whole operator session to find.
 
-`federation_manager_api.runtime` is `None` at import and **nothing in the
-repository ever assigns it** — the only assignment is
+`federation_manager_api.runtime` is `None` at import, and until this script
+existed **nothing in the repository ever assigned it** — the only assignment was
 `tests/test_federation_operations_api.py:110`, via `monkeypatch`. Fifteen
 endpoints call `_require_runtime()`, including `/receipts`, `/gates`,
 `/secrets/presence` and every `/operations/*`, and each returns
 `503 operations runtime is not configured; start the manager through the native
 host`.
 
-`ManagerRuntime`'s own docstring says it is "assembled by the native host". That
-host does not exist in this repository: `desktop/` never references
-`PRII_MANAGER_*` and never constructs a runtime. `uvicorn server.backend.main:app`
-mounts the router but leaves `runtime` unset, so it serves a manager whose entire
-operations surface is 503.
+`ManagerRuntime`'s docstring says it is "assembled by the native host", and that
+host did not exist: `desktop/` never references `PRII_MANAGER_*` and never
+constructs a runtime. `run_manager_host.py` is that host, minus the packaging. It
+is a separate entry point rather than a startup hook in `main.py` on purpose —
+the operations plane holds real credentials, spawns processes and writes signed
+receipts, so wiring it into the general application would give every Hub
+deployment an execution surface whether it wanted one or not.
 
 Confirmed by a real run, not predicted. All four attestations came back with the
 same single line:
@@ -106,24 +108,34 @@ invisible in the attestation because the handler discarded it. A refuted
 attestation should carry what it learned up to the failure; right now it carries
 only the failure.
 
-Closing this needs a host that assembles `OperationRunner` (verified policy,
-`ExecutionContext` roots, `ReceiptStore` plus signer, `FileTokenBroker`,
-`SecretBroker`) and provisions the browser session the App Center expects. That is
-production wiring the operations vector deliberately scoped out, not a
-documentation fix.
-
-## Running it, once a host exists
+## Running it
 
 Two terminals. Copy the nonce from the first into the second.
 
-**Terminal 1 — the manager:**
+**Terminal 1 — the manager host:**
 
 ```
 export PRII_MANAGER_BOOTSTRAP_NONCE="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
 echo "$PRII_MANAGER_BOOTSTRAP_NONCE"          # copy this
 export PRII_MANAGER_RECEIPT_SIGNING_KEY="$HOME/.prii/manager.pem"
-python3 -m uvicorn server.backend.main:app --port 8000
+python3 scripts/run_manager_host.py
 ```
+
+The host refuses rather than degrading: no bootstrap nonce, an unverifiable
+policy, or an unset signing key all stop it before it serves. That last one is
+deliberate — `signer_from_environment` would otherwise fall back to an ephemeral
+key, and receipts signed with it stop verifying the moment the process exits, so
+gate evidence derived from them is worthless.
+
+State lives under `~/.prii/manager` (`--state-root` to move it). Nothing is
+written inside the repository.
+
+**The browser needs a session token, and nothing puts it there.**
+`managerClient.js` reads `prii.manager.session` from `sessionStorage` and refuses
+when it is absent; no SPA code performs the exchange — also the native host's job.
+The host prints a console snippet on startup that does the exchange for you. Open
+the App Center on an allowed origin, paste it into the console, and re-run it when
+the session expires (the TTL is five minutes).
 
 **Terminal 2 — the certification:**
 
