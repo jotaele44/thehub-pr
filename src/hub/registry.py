@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 import yaml
 
@@ -17,6 +17,10 @@ class Producer:
     federation_manifest: str = "federation.json"
     export_path: str = "exports/federation"
     local_path: Optional[str] = None
+    # Icon path + accent colour, mirroring the producer's own federation.json
+    # "branding" block. Optional so a registry entry written before a producer
+    # had artwork still loads — Producer(**entry) is a strict splat.
+    branding: Optional[Dict[str, Any]] = None
 
     @property
     def repo_name(self) -> str:

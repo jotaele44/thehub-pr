@@ -14,7 +14,7 @@ export default function MobileNav() {
   return (
     <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-sidebar sticky top-0 z-40">
       <div className="flex items-center gap-2">
-        <div className="h-7 w-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-semibold text-xs">PR</div>
+        <img src={`${import.meta.env.BASE_URL}icon-64.png`} alt="" aria-hidden="true" className="h-7 w-7 rounded-lg" />
         <span className="text-sm font-semibold tracking-tight">INTSYS-PR</span>
       </div>
       <div className="flex items-center gap-1">
