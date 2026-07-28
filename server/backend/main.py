@@ -21,12 +21,16 @@ from typing import Any, Optional
 import yaml
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
+
+from hub.project_signs import build_project_signs, render_sign_html, write_project_signs
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 DB_PATH = REPO_ROOT / "data" / "hub.db"
 REGISTRY_PATH = REPO_ROOT / "registry" / "producers.yaml"
+AGGREGATE_PATH = REPO_ROOT / "data" / "aggregate"
+SIGNS_OUT = REPO_ROOT / "reports" / "signs"
 
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
 
@@ -462,6 +466,44 @@ async def files_upload() -> dict[str, Any]:
 @app.get("/api/connectors/{name}/connection")
 def connectors_stub(name: str):
     return {"status": "not_connected", "name": name}
+
+# ── Project consolidation signs ────────────────────────────────────────────────
+# Built live from the current aggregate (data/aggregate) so the UI can generate and
+# preview signs on demand — the same artifact `hub project-signs` writes from the CLI.
+@app.get("/api/project-signs")
+def project_signs():
+    signs = build_project_signs(AGGREGATE_PATH)
+    return {"count": len(signs), "signs": signs}
+
+
+@app.get("/api/project-signs/{project_id}/html", response_class=HTMLResponse)
+def project_sign_html(project_id: str):
+    for sign in build_project_signs(AGGREGATE_PATH):
+        if sign["project_id"] == project_id:
+            return HTMLResponse(render_sign_html(sign))
+    raise HTTPException(status_code=404, detail="project sign not found")
+
+
+@app.post("/api/project-signs/generate")
+async def project_signs_generate(request: Request):
+    # Optional {"write": true} also persists the HTML + index.json to reports/signs,
+    # mirroring the CLI; otherwise it just (re)builds and returns the signs.
+    body: dict[str, Any] = {}
+    try:
+        body = await request.json()
+    except Exception:  # noqa: BLE001 - empty/invalid body is fine
+        body = {}
+    if body.get("write"):
+        summary = write_project_signs(AGGREGATE_PATH, SIGNS_OUT)
+        return {k: v for k, v in summary.items()}
+    signs = build_project_signs(AGGREGATE_PATH)
+    return {
+        "count": len(signs),
+        "out_dir": None,
+        "synthetic_count": sum(1 for s in signs if s["synthetic"]),
+        "signs": signs,
+    }
+
 
 # ── Static frontend (one served product) ───────────────────────────────────────
 # When the frontend is built (`npm --prefix server/frontend run build`), serve it

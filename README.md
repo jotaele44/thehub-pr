@@ -105,6 +105,11 @@ self-contained HTML placard per project plus `index.json` to `reports/signs/`. S
 consolidation-summary artifact, not an official notice, and synthetic/test data renders a
 visible SYNTHETIC ribbon.
 
+The hub app exposes the same output at **Project Signs** (`/project-signs`): it builds signs
+live from the aggregate (`GET /api/project-signs`), previews each placard, and a **Generate
+signs** button writes them to `reports/signs/` — so operators can produce signs from the UI
+without the CLI.
+
 ## Boundary rules
 
 | Rule | Meaning |
