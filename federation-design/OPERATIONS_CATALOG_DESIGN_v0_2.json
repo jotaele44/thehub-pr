@@ -1,0 +1,2235 @@
+{
+  "catalog_id": "federation-ui-only-operations-v0-2",
+  "catalog_sha256": "3d908e6fa5f131c2b4e716aee0c2acf9a42bdd2cc5869c36caf8eca19d33348c",
+  "generated_at": "2026-07-26T23:55:00-04:00",
+  "operations": [
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "inspect",
+      "execution_kind": "console_script",
+      "expected_outputs": [],
+      "fixed_target": "hub:list",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "hub.list",
+      "parameter_schema": {
+        "registry": {
+          "default": "registry/producers.yaml",
+          "type": "file"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub list",
+      "repo": "thehub-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "console_script",
+      "expected_outputs": [],
+      "fixed_target": "hub:validate-manifest",
+      "local_input_refs": [
+        "producer_manifest"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.validate_manifest",
+      "parameter_schema": {
+        "path": {
+          "extensions": [
+            ".json"
+          ],
+          "required": true,
+          "type": "file"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub validate-manifest <path>",
+      "repo": "thehub-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "console_script",
+      "expected_outputs": [],
+      "fixed_target": "hub:validate-package",
+      "local_input_refs": [
+        "export_package_directory"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.validate_package",
+      "parameter_schema": {
+        "path": {
+          "required": true,
+          "type": "directory"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub validate-package <dir>",
+      "repo": "thehub-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "console_script",
+      "expected_outputs": [],
+      "fixed_target": "hub:validate-federation",
+      "local_input_refs": [
+        "workspace"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.validate_federation",
+      "parameter_schema": {
+        "json": {
+          "fixed": true,
+          "type": "boolean"
+        },
+        "root": {
+          "required": true,
+          "type": "directory"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub validate-federation --root <workspace> --json",
+      "repo": "thehub-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "confirm_network_and_disk_write",
+      "category": "acquire",
+      "execution_kind": "internal_builtin",
+      "expected_outputs": [
+        "verified producer checkouts"
+      ],
+      "fixed_target": "repository_acquisition",
+      "local_input_refs": [],
+      "network_policy": "github.com only; repository allow-list; pinned refs",
+      "operation_id": "hub.fetch",
+      "parameter_schema": {
+        "depth": {
+          "default": 1,
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "root": {
+          "required": true,
+          "type": "managed_directory"
+        },
+        "run_exports": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "prerequisites": [
+        "Git",
+        "managed Python >=3.10",
+        "network access to allow-listed GitHub host"
+      ],
+      "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+      "raw_declared_command": "hub fetch --root <workspace> [--run]",
+      "repo": "thehub-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "rollback_strategy": "delete staging checkout; preserve prior current pointer",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "managed app/workspace roots only"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "aggregate JSONL streams",
+        "aggregate manifest"
+      ],
+      "fixed_target": "hub:aggregate",
+      "local_input_refs": [
+        "producer_export_packages"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.aggregate",
+      "parameter_schema": {
+        "non_strict": {
+          "default": false,
+          "type": "boolean"
+        },
+        "out": {
+          "default": "data/aggregate",
+          "type": "managed_output_directory"
+        },
+        "root": {
+          "required": true,
+          "type": "directory"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub aggregate --root <workspace> --out <dir>",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "aggregate staging directory"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "manifest.json"
+      ],
+      "fixed_target": "hub:wrap-bridge",
+      "local_input_refs": [
+        "canonical_jsonl_directory"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.wrap_bridge",
+      "parameter_schema": {
+        "created_at": {
+          "default": "1970-01-01T00:00:00Z",
+          "type": "datetime"
+        },
+        "mode": {
+          "default": "test",
+          "type": "enum",
+          "values": [
+            "test",
+            "production"
+          ]
+        },
+        "path": {
+          "required": true,
+          "type": "directory"
+        },
+        "producer": {
+          "type": "enum",
+          "values": [
+            "spiderweb-pr",
+            "ovnis-pr",
+            "centinelas-pr",
+            "aguayluz-pr",
+            "moneysweep-pr",
+            "skywatcher-pr"
+          ]
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub wrap-bridge <path> --producer <id> --mode <mode>",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "selected package directory/manifest.json"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "correlations.jsonl"
+      ],
+      "fixed_target": "hub:correlate",
+      "local_input_refs": [
+        "aggregate_directory"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.correlate",
+      "parameter_schema": {
+        "in_dir": {
+          "required": true,
+          "type": "directory"
+        },
+        "out": {
+          "required": true,
+          "type": "managed_output_directory"
+        },
+        "threshold_km": {
+          "default": 1.0,
+          "maximum": 10000,
+          "minimum": 0,
+          "type": "number"
+        },
+        "window_days": {
+          "default": 7,
+          "maximum": 3650,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub correlate --in <dir> --out <dir>",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "aggregate correlations output"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "confirm_database_replace",
+      "category": "ingest",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "hub.db",
+        "ingest summary"
+      ],
+      "fixed_target": "hub:ingest",
+      "local_input_refs": [
+        "aggregate_directory"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.ingest",
+      "parameter_schema": {
+        "db": {
+          "default": "data/hub.db",
+          "type": "managed_sqlite_path"
+        },
+        "in_dir": {
+          "required": true,
+          "type": "directory"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub ingest --in <dir> --db <file>",
+      "repo": "thehub-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "rollback_strategy": "sqlite_backup_integrity_check_atomic_swap",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "managed SQLite database"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "inspect",
+      "execution_kind": "console_script",
+      "expected_outputs": [],
+      "fixed_target": "hub:graph-report",
+      "local_input_refs": [
+        "aggregate_directory"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.graph_report",
+      "parameter_schema": {
+        "in_dir": {
+          "required": true,
+          "type": "directory"
+        },
+        "json": {
+          "fixed": true,
+          "type": "boolean"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub graph-report --in <dir> --json",
+      "repo": "thehub-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "federation_analytics_v2.json"
+      ],
+      "fixed_target": "hub:analytics-v2",
+      "local_input_refs": [
+        "aggregate_directory"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.analytics_v2",
+      "parameter_schema": {
+        "in_dir": {
+          "required": true,
+          "type": "directory"
+        },
+        "out": {
+          "default": "data/aggregate/federation_analytics_v2.json",
+          "type": "managed_file"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub analytics-v2 --in <dir> --out <file>",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "managed analytics output"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "ingest",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "skywatcher_sensor_fusion.json"
+      ],
+      "fixed_target": "hub:consume-sensor-fusion",
+      "local_input_refs": [
+        "skywatcher_sensor_fusion_json"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.consume_sensor_fusion",
+      "parameter_schema": {
+        "out": {
+          "default": "data/dashboard/skywatcher_sensor_fusion.json",
+          "type": "managed_file"
+        },
+        "path": {
+          "extensions": [
+            ".json"
+          ],
+          "required": true,
+          "type": "file"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub consume-sensor-fusion <path> --out <file>",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "managed dashboard output"
+    },
+    {
+      "app_id": "thehub",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "reports/federation_maintenance/latest.json"
+      ],
+      "fixed_target": "hub:maintenance",
+      "local_input_refs": [
+        "producer_maintenance_reports"
+      ],
+      "network_policy": "none",
+      "operation_id": "hub.maintenance",
+      "parameter_schema": {
+        "fail_on_blocker": {
+          "default": false,
+          "type": "boolean"
+        },
+        "json": {
+          "fixed": true,
+          "type": "boolean"
+        },
+        "root": {
+          "required": true,
+          "type": "directory"
+        },
+        "write_report": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "hub maintenance --root <workspace> --write-report --json",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "thehub-pr/src/hub/cli.py@58a159ff",
+      "write_scope": "optional maintenance rollup"
+    },
+    {
+      "app_id": "spiderweb",
+      "approval_policy": "confirm_install",
+      "category": "setup",
+      "execution_kind": "composite",
+      "expected_outputs": [
+        "installed environment"
+      ],
+      "fixed_target": "spiderweb:setup",
+      "local_input_refs": [],
+      "network_policy": "github.com + Python package indexes",
+      "operation_id": "spiderweb.setup",
+      "parameter_schema": {},
+      "prerequisites": [
+        "Git",
+        "managed Python >=3.10",
+        "network access to allow-listed GitHub host",
+        "package installer"
+      ],
+      "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+      "raw_declared_command": "[ -d ../thehub-pr ] || git clone ...; python -m pip install uv && uv pip install --system -e .[airspace,earthgpt,server,dev] \"httpx>=0.27\"",
+      "repo": "spiderweb-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "rollback_strategy": "versioned_install_pointer_swap",
+      "secret_refs": [],
+      "source": "spiderweb-pr/federation.json@4f996465",
+      "write_scope": "versioned managed environment"
+    },
+    {
+      "app_id": "spiderweb",
+      "approval_policy": "none",
+      "category": "test",
+      "execution_kind": "python_module",
+      "expected_outputs": [],
+      "fixed_target": "pytest",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "spiderweb.test_suite",
+      "parameter_schema": {
+        "ignored": {
+          "type": "fixed",
+          "value": [
+            "tests/test_io.py",
+            "tests/test_terrain.py"
+          ]
+        },
+        "paths": {
+          "type": "fixed",
+          "value": [
+            "tests/"
+          ]
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python -m pytest tests/ -q --tb=short --ignore=tests/test_io.py --ignore=tests/test_terrain.py",
+      "repo": "spiderweb-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "spiderweb-pr/federation.json@4f996465",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "spiderweb",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "make_target",
+      "expected_outputs": [],
+      "fixed_target": "validate-schemas",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "spiderweb.validate_schemas",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment",
+        "make"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "make validate-schemas",
+      "repo": "spiderweb-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "spiderweb-pr/federation.json@4f996465",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "spiderweb",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "python_script",
+      "expected_outputs": [],
+      "fixed_target": "scripts/validate_export.py",
+      "local_input_refs": [
+        "sample_export_package"
+      ],
+      "network_policy": "none",
+      "operation_id": "spiderweb.validate_export",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "test"
+        },
+        "package": {
+          "type": "fixed_managed_path",
+          "value": "exports/samples"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python scripts/validate_export.py --package exports/samples --mode test",
+      "repo": "spiderweb-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "spiderweb-pr/federation.json@4f996465",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "spiderweb",
+      "approval_policy": "none",
+      "category": "export",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "canonical federation package"
+      ],
+      "fixed_target": "scripts/federation_export.py",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "spiderweb.export_canonical",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "test"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/federation_export.py --mode test",
+      "repo": "spiderweb-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "spiderweb-pr/federation.json@4f996465",
+      "write_scope": "exports/federation staging"
+    },
+    {
+      "app_id": "spiderweb",
+      "approval_policy": "none",
+      "category": "maintenance",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "maintenance receipt"
+      ],
+      "fixed_target": "scripts/run_maintenance.py",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "spiderweb.maintenance",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "audit"
+        },
+        "repo": {
+          "type": "fixed",
+          "value": "spiderweb-pr"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/run_maintenance.py --repo spiderweb-pr --mode audit",
+      "repo": "spiderweb-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "spiderweb-pr/federation.json@4f996465",
+      "write_scope": "reports/maintenance"
+    },
+    {
+      "app_id": "ovnis",
+      "approval_policy": "confirm_install",
+      "category": "setup",
+      "execution_kind": "composite",
+      "expected_outputs": [
+        "installed environment"
+      ],
+      "fixed_target": "ovnis:setup",
+      "local_input_refs": [],
+      "network_policy": "github.com + Python package indexes",
+      "operation_id": "ovnis.setup",
+      "parameter_schema": {},
+      "prerequisites": [
+        "Git",
+        "managed Python >=3.10",
+        "network access to allow-listed GitHub host",
+        "package installer"
+      ],
+      "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+      "raw_declared_command": "[ -d ../thehub-pr ] || git clone ...; python -m pip install -r requirements.txt",
+      "repo": "ovnis-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "rollback_strategy": "versioned_install_pointer_swap",
+      "secret_refs": [],
+      "source": "ovnis-pr/federation.json@858c4e81",
+      "write_scope": "versioned managed environment"
+    },
+    {
+      "app_id": "ovnis",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "python_script",
+      "expected_outputs": [],
+      "fixed_target": "scripts/validate_case_ledgers.py",
+      "local_input_refs": [
+        "candidate and master ledgers"
+      ],
+      "network_policy": "none",
+      "operation_id": "ovnis.validate_ledgers",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/validate_case_ledgers.py",
+      "repo": "ovnis-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "ovnis-pr/federation.json@858c4e81",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "ovnis",
+      "approval_policy": "confirm_ledger_mutation",
+      "category": "derive",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "deduplicated candidate ledger or report"
+      ],
+      "fixed_target": "scripts/dedupe_candidates.py",
+      "local_input_refs": [
+        "candidate ledger"
+      ],
+      "network_policy": "none",
+      "operation_id": "ovnis.dedupe",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/dedupe_candidates.py",
+      "repo": "ovnis-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "rollback_strategy": "ledger_snapshot_restore",
+      "secret_refs": [],
+      "source": "ovnis-pr/federation.json@858c4e81",
+      "write_scope": "candidate ledger/derived reports"
+    },
+    {
+      "app_id": "ovnis",
+      "approval_policy": "confirm_ledger_mutation",
+      "category": "derive",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "scored candidates"
+      ],
+      "fixed_target": "scripts/score_candidates.py",
+      "local_input_refs": [
+        "candidate ledger"
+      ],
+      "network_policy": "none",
+      "operation_id": "ovnis.score",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/score_candidates.py",
+      "repo": "ovnis-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "rollback_strategy": "ledger_snapshot_restore",
+      "secret_refs": [],
+      "source": "ovnis-pr/federation.json@858c4e81",
+      "write_scope": "candidate scores"
+    },
+    {
+      "app_id": "ovnis",
+      "approval_policy": "none",
+      "category": "test",
+      "execution_kind": "python_module",
+      "expected_outputs": [],
+      "fixed_target": "pytest",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "ovnis.test_suite",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python -m pytest -q",
+      "repo": "ovnis-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "ovnis-pr/federation.json@858c4e81",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "ovnis",
+      "approval_policy": "none",
+      "category": "export",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "production canonical package"
+      ],
+      "fixed_target": "scripts/federation_export.py",
+      "local_input_refs": [
+        "reviewed case ledgers"
+      ],
+      "network_policy": "none",
+      "operation_id": "ovnis.export_canonical",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "production"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/federation_export.py --mode production",
+      "repo": "ovnis-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "ovnis-pr/federation.json@858c4e81",
+      "write_scope": "exports/federation staging"
+    },
+    {
+      "app_id": "ovnis",
+      "approval_policy": "none",
+      "category": "maintenance",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "maintenance receipt"
+      ],
+      "fixed_target": "scripts/run_maintenance.py",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "ovnis.maintenance",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "audit"
+        },
+        "repo": {
+          "type": "fixed",
+          "value": "ovnis-pr"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/run_maintenance.py --repo ovnis-pr --mode audit",
+      "repo": "ovnis-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "ovnis-pr/federation.json@858c4e81",
+      "write_scope": "reports/maintenance"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "confirm_install",
+      "category": "setup",
+      "execution_kind": "composite",
+      "expected_outputs": [
+        "installed environment"
+      ],
+      "fixed_target": "centinelas:setup",
+      "local_input_refs": [],
+      "network_policy": "github.com + Python package indexes",
+      "operation_id": "centinelas.setup",
+      "parameter_schema": {},
+      "prerequisites": [
+        "Git",
+        "managed Python >=3.10",
+        "network access to allow-listed GitHub host",
+        "package installer"
+      ],
+      "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+      "raw_declared_command": "[ -d ../thehub-pr ] || git clone ...; python -m pip install uv && uv pip install --system -e .[dev]",
+      "repo": "centinelas-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "rollback_strategy": "versioned_install_pointer_swap",
+      "secret_refs": [],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": "versioned managed environment"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "python_script",
+      "expected_outputs": [],
+      "fixed_target": "scripts/validate_pr_grid.py",
+      "local_input_refs": [
+        "PR grid"
+      ],
+      "network_policy": "none",
+      "operation_id": "centinelas.validate_grid",
+      "parameter_schema": {
+        "require_sha": {
+          "type": "fixed",
+          "value": true
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/validate_pr_grid.py --require-sha",
+      "repo": "centinelas-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "none",
+      "category": "test",
+      "execution_kind": "python_module",
+      "expected_outputs": [],
+      "fixed_target": "pytest",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "centinelas.test_suite",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python -m pytest -q",
+      "repo": "centinelas-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "none",
+      "category": "export",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "production canonical package"
+      ],
+      "fixed_target": "scripts/federation_export.py",
+      "local_input_refs": [
+        "live signal ledger"
+      ],
+      "network_policy": "none",
+      "operation_id": "centinelas.export_canonical",
+      "parameter_schema": {
+        "ledger": {
+          "type": "fixed_managed_path",
+          "value": "data/signals/live_signals.jsonl"
+        },
+        "mode": {
+          "type": "fixed",
+          "value": "production"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/federation_export.py --ledger data/signals/live_signals.jsonl --mode production",
+      "repo": "centinelas-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": "exports/federation staging"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "confirm_network",
+      "category": "ingest",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "queued raw items"
+      ],
+      "fixed_target": "centinelas:ingest",
+      "local_input_refs": [],
+      "network_policy": "source registry allow-list",
+      "operation_id": "centinelas.ingest",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment",
+        "internet"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "centinelas ingest",
+      "repo": "centinelas-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "rollback_strategy": "queue_run_partition_delete",
+      "secret_refs": [],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": ".centinelas queue"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "confirm_external_api",
+      "category": "classify",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "classified items"
+      ],
+      "fixed_target": "centinelas:classify",
+      "local_input_refs": [
+        "queued raw items"
+      ],
+      "network_policy": "Anthropic API only when configured",
+      "operation_id": "centinelas.classify",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "centinelas classify",
+      "repo": "centinelas-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "rollback_strategy": "run_partition_restore",
+      "secret_refs": [
+        "ANTHROPIC_API_KEY"
+      ],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": ".centinelas classified"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "confirm_cross_repo_write",
+      "category": "route",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "dispatch records"
+      ],
+      "fixed_target": "centinelas:route",
+      "local_input_refs": [
+        "classified items"
+      ],
+      "network_policy": "none",
+      "operation_id": "centinelas.route",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "centinelas route",
+      "repo": "centinelas-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "rollback_strategy": "dispatch_receipt_compensating_remove",
+      "secret_refs": [],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": "sibling intake directories and hub-parent log"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "confirm_network_and_cross_repo_write",
+      "category": "pipeline",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "queue",
+        "classified",
+        "dispatch receipts"
+      ],
+      "fixed_target": "centinelas:run",
+      "local_input_refs": [],
+      "network_policy": "source registry + Anthropic allow-list",
+      "operation_id": "centinelas.run_pipeline",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment",
+        "internet"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "centinelas run",
+      "repo": "centinelas-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "rollback_strategy": "transactional_run_partition_restore",
+      "secret_refs": [
+        "ANTHROPIC_API_KEY"
+      ],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": ".centinelas state and sibling intake"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "none",
+      "category": "inspect",
+      "execution_kind": "console_script",
+      "expected_outputs": [],
+      "fixed_target": "centinelas:status",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "centinelas.status",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "centinelas status",
+      "repo": "centinelas-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "confirm_ledger_replace",
+      "category": "derive",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "live_signals.jsonl"
+      ],
+      "fixed_target": "scripts/build_signal_ledger.py",
+      "local_input_refs": [
+        "pipeline state"
+      ],
+      "network_policy": "none",
+      "operation_id": "centinelas.build_signal_ledger",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/build_signal_ledger.py",
+      "repo": "centinelas-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "rollback_strategy": "ledger_snapshot_restore",
+      "secret_refs": [],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": "data/signals/live_signals.jsonl"
+    },
+    {
+      "app_id": "centinelas",
+      "approval_policy": "none",
+      "category": "maintenance",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "maintenance receipt"
+      ],
+      "fixed_target": "scripts/run_maintenance.py",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "centinelas.maintenance",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "audit"
+        },
+        "repo": {
+          "type": "fixed",
+          "value": "centinelas-pr"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/run_maintenance.py --repo centinelas-pr --mode audit",
+      "repo": "centinelas-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "centinelas-pr/federation.json@3ea848fd",
+      "write_scope": "reports/maintenance"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "confirm_install",
+      "category": "setup",
+      "execution_kind": "composite",
+      "expected_outputs": [
+        "installed environment"
+      ],
+      "fixed_target": "aguayluz:setup",
+      "local_input_refs": [],
+      "network_policy": "github.com + Python package indexes",
+      "operation_id": "aguayluz.setup",
+      "parameter_schema": {},
+      "prerequisites": [
+        "Git",
+        "managed Python >=3.10",
+        "network access to allow-listed GitHub host",
+        "package installer"
+      ],
+      "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+      "raw_declared_command": "[ -d ../thehub-pr ] || git clone ...; python -m pip install uv && uv pip install --system -e .[dev]",
+      "repo": "aguayluz-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "rollback_strategy": "versioned_install_pointer_swap",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "versioned managed environment"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "python_script",
+      "expected_outputs": [],
+      "fixed_target": "scripts/validate_repo.py",
+      "local_input_refs": [
+        "repo datasets and reports"
+      ],
+      "network_policy": "none",
+      "operation_id": "aguayluz.validation_gates",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python scripts/validate_repo.py",
+      "repo": "aguayluz-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "none",
+      "category": "lint",
+      "execution_kind": "console_script",
+      "expected_outputs": [],
+      "fixed_target": "ruff:check",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "aguayluz.lint",
+      "parameter_schema": {
+        "path": {
+          "type": "fixed",
+          "value": "."
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "ruff check .",
+      "repo": "aguayluz-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "none",
+      "category": "test",
+      "execution_kind": "python_module",
+      "expected_outputs": [],
+      "fixed_target": "pytest",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "aguayluz.test_suite",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python -m pytest -q",
+      "repo": "aguayluz-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "none",
+      "category": "export",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "test canonical package"
+      ],
+      "fixed_target": "scripts/federation_export.py",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "aguayluz.export_canonical",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "test"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/federation_export.py --mode test",
+      "repo": "aguayluz-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "exports/federation staging"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "none",
+      "category": "maintenance",
+      "execution_kind": "console_script",
+      "expected_outputs": [
+        "maintenance receipt"
+      ],
+      "fixed_target": "aguayluz:maintenance",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "aguayluz.maintenance",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "audit"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "aguayluz maintenance --mode audit",
+      "repo": "aguayluz-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "reports/maintenance"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "confirm_dataset_replace",
+      "category": "ingest",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "power asset records"
+      ],
+      "fixed_target": "scripts/ingest_power.py",
+      "local_input_refs": [
+        "power source datasets"
+      ],
+      "network_policy": "none",
+      "operation_id": "aguayluz.ingest_power",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/ingest_power.py",
+      "repo": "aguayluz-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "rollback_strategy": "ledger_snapshot_restore",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "utility asset ledgers"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "confirm_network",
+      "category": "ingest",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "PREPS service events"
+      ],
+      "fixed_target": "scripts/ingest_preps.py",
+      "local_input_refs": [
+        "PREPS payloads"
+      ],
+      "network_policy": "PREPS official hosts when live",
+      "operation_id": "aguayluz.ingest_preps",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment",
+        "internet or local PREPS snapshots"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/ingest_preps.py",
+      "repo": "aguayluz-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "rollback_strategy": "ledger_snapshot_restore",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "service event ledgers"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "explicit_tos_acknowledgement_each_run",
+      "category": "acquire",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "outages_by_town.json"
+      ],
+      "fixed_target": "scripts/fetch_luma_live.py",
+      "local_input_refs": [],
+      "network_policy": "MiLUMA allow-list; ToS/WAF gated",
+      "operation_id": "aguayluz.fetch_luma_live",
+      "parameter_schema": {
+        "out": {
+          "required": true,
+          "type": "managed_file"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment",
+        "internet"
+      ],
+      "promotion_state": "BLOCKED_UNTIL_TOS_AND_LIVE_SOURCE_CERTIFIED",
+      "raw_declared_command": "python3 scripts/fetch_luma_live.py --out <managed_file>",
+      "repo": "aguayluz-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "rollback_strategy": "delete_staging_download",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "intake staging only"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "confirm_dataset_replace",
+      "category": "ingest",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "incident records"
+      ],
+      "fixed_target": "scripts/ingest_aee.py",
+      "local_input_refs": [
+        "outages_by_town_json"
+      ],
+      "network_policy": "none",
+      "operation_id": "aguayluz.ingest_aee",
+      "parameter_schema": {
+        "snapshot_ts": {
+          "required": true,
+          "type": "datetime"
+        },
+        "src": {
+          "extensions": [
+            ".json"
+          ],
+          "required": true,
+          "type": "file_token"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/ingest_aee.py --src <file> --snapshot-ts <iso8601>",
+      "repo": "aguayluz-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "rollback_strategy": "ledger_snapshot_restore",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "AEE/LUMA incident ledger"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "municipio geometry/centroid files"
+      ],
+      "fixed_target": "scripts/build_pr_municipios_geo.py",
+      "local_input_refs": [
+        "Census gazetteer"
+      ],
+      "network_policy": "none",
+      "operation_id": "aguayluz.build_municipios_geo",
+      "parameter_schema": {
+        "src": {
+          "required": true,
+          "type": "file_token"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/build_pr_municipios_geo.py --src <file>",
+      "repo": "aguayluz-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "managed geo outputs"
+    },
+    {
+      "app_id": "aguayluz",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "municipio and barrio GeoJSON"
+      ],
+      "fixed_target": "scripts/build_pr_geo_boundaries.py",
+      "local_input_refs": [
+        "county shapefile set",
+        "barrios shapefile set"
+      ],
+      "network_policy": "none",
+      "operation_id": "aguayluz.build_geo_boundaries",
+      "parameter_schema": {
+        "barrios": {
+          "family": "shapefile",
+          "required": true,
+          "type": "file_set_token"
+        },
+        "counties": {
+          "family": "shapefile",
+          "required": true,
+          "type": "file_set_token"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment",
+        "geospatial Python dependencies"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/build_pr_geo_boundaries.py --counties <shp> --barrios <shp>",
+      "repo": "aguayluz-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "aguayluz-pr/federation.json@a73cc0f2",
+      "write_scope": "managed geo outputs"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "confirm_install",
+      "category": "setup",
+      "execution_kind": "composite",
+      "expected_outputs": [
+        "installed environment",
+        "setup instructions"
+      ],
+      "fixed_target": "moneysweep:setup",
+      "local_input_refs": [],
+      "network_policy": "GitHub + source/API allow-lists",
+      "operation_id": "moneysweep.setup",
+      "parameter_schema": {},
+      "prerequisites": [
+        "Git",
+        "managed Python >=3.10",
+        "network access to allow-listed GitHub host",
+        "managed Python dependencies"
+      ],
+      "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+      "raw_declared_command": "[ -d ../thehub-pr ] || git clone ...; python3 run_all.py --only-setup",
+      "repo": "moneysweep-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "rollback_strategy": "versioned_install_pointer_swap",
+      "secret_refs": [
+        "CENSUS_API_KEY",
+        "EIA_API_KEY",
+        "FAC_API_KEY",
+        "FEC_API_KEY",
+        "FINANCIALDATA_API_KEY",
+        "FRED_API_KEY",
+        "HIGHERGOV_API_KEY",
+        "OPENSTATES_API_KEY",
+        "SAM_API_KEY",
+        "PROPUBLICA_API_KEY"
+      ],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "versioned managed environment and setup reports"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "preflight reports"
+      ],
+      "fixed_target": "run_all.py",
+      "local_input_refs": [
+        "source registry",
+        "manual-source inventory"
+      ],
+      "network_policy": "none",
+      "operation_id": "moneysweep.strict_preflight",
+      "parameter_schema": {
+        "only_setup": {
+          "type": "fixed",
+          "value": true
+        },
+        "strict_preflight": {
+          "type": "fixed",
+          "value": true
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 run_all.py --only-setup --strict-preflight",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "reports only"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "confirm_network_and_large_data_write",
+      "category": "pipeline",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "pipeline outputs",
+        "failure ledger",
+        "readiness reports"
+      ],
+      "fixed_target": "run_all.py",
+      "local_input_refs": [
+        "manual source slots"
+      ],
+      "network_policy": "149-source registry allow-list",
+      "operation_id": "moneysweep.full_pipeline",
+      "parameter_schema": {
+        "strict_preflight": {
+          "type": "fixed",
+          "value": true
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment",
+        "internet"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 run_all.py --strict-preflight",
+      "repo": "moneysweep-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "rollback_strategy": "transaction_snapshot_and_run_partition_restore",
+      "secret_refs": [
+        "CENSUS_API_KEY",
+        "EIA_API_KEY",
+        "FAC_API_KEY",
+        "FEC_API_KEY",
+        "FINANCIALDATA_API_KEY",
+        "FRED_API_KEY",
+        "HIGHERGOV_API_KEY",
+        "OPENSTATES_API_KEY",
+        "SAM_API_KEY",
+        "PROPUBLICA_API_KEY"
+      ],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "raw/staging/processed/report/export scopes"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "source recovery matrix"
+      ],
+      "fixed_target": "scripts/build_source_recovery_matrix.py",
+      "local_input_refs": [
+        "source registry and reports"
+      ],
+      "network_policy": "none",
+      "operation_id": "moneysweep.materialization_matrix",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/build_source_recovery_matrix.py",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "reports source recovery matrix"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "gap matrix"
+      ],
+      "fixed_target": "scripts/gap_analysis_builder.py",
+      "local_input_refs": [
+        "source registry and pipeline outputs"
+      ],
+      "network_policy": "none",
+      "operation_id": "moneysweep.gap_matrix",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/gap_analysis_builder.py",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "gap reports"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "none",
+      "category": "test",
+      "execution_kind": "python_module",
+      "expected_outputs": [],
+      "fixed_target": "pytest",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "moneysweep.test_suite",
+      "parameter_schema": {
+        "paths": {
+          "type": "fixed",
+          "value": [
+            "tests/"
+          ]
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 -m pytest tests/ -q",
+      "repo": "moneysweep-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "dashboard export"
+      ],
+      "fixed_target": "scripts/build_dashboard_explorer.py",
+      "local_input_refs": [
+        "processed datasets"
+      ],
+      "network_policy": "none",
+      "operation_id": "moneysweep.dashboard_export",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/build_dashboard_explorer.py",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "exports/dashboard"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "unsent draft letters"
+      ],
+      "fixed_target": "scripts/build_foia_letters.py",
+      "local_input_refs": [
+        "source gaps and templates"
+      ],
+      "network_policy": "none",
+      "operation_id": "moneysweep.foia_letters",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/build_foia_letters.py",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "generated FOIA draft outputs"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "confirm_external_api",
+      "category": "ingest",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "NGO integration layer"
+      ],
+      "fixed_target": "scripts/ngo_integration.py",
+      "local_input_refs": [
+        "NGO source data"
+      ],
+      "network_policy": "ProPublica allow-list when live",
+      "operation_id": "moneysweep.ngo_layer",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/ngo_integration.py",
+      "repo": "moneysweep-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "rollback_strategy": "ledger_snapshot_restore",
+      "secret_refs": [
+        "PROPUBLICA_API_KEY"
+      ],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "NGO derived layer"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "none",
+      "category": "export",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "test canonical package"
+      ],
+      "fixed_target": "scripts/federation_export.py",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "moneysweep.export_canonical",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "test"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/federation_export.py --mode test",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "canonical export staging"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "none",
+      "category": "maintenance",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "maintenance receipt"
+      ],
+      "fixed_target": "scripts/run_maintenance.py",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "moneysweep.maintenance",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "audit"
+        },
+        "repo": {
+          "type": "fixed",
+          "value": "moneysweep-pr"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/run_maintenance.py --repo moneysweep-pr --mode audit",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "reports/maintenance"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "confirm_cross_repo_import",
+      "category": "ingest",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "ingested signal records"
+      ],
+      "fixed_target": "scripts/ingest_centinelas_signals.py",
+      "local_input_refs": [
+        "Centinelas dispatch records"
+      ],
+      "network_policy": "none",
+      "operation_id": "moneysweep.ingest_centinelas",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/ingest_centinelas_signals.py",
+      "repo": "moneysweep-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "rollback_strategy": "run_partition_restore",
+      "secret_refs": [],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "Centinelas intake staging"
+    },
+    {
+      "app_id": "moneysweep",
+      "approval_policy": "none",
+      "category": "derive",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "contract finance bundle"
+      ],
+      "fixed_target": "scripts/build_contract_finance_bundle.py",
+      "local_input_refs": [
+        "Centinelas intake records"
+      ],
+      "network_policy": "none",
+      "operation_id": "moneysweep.build_contract_finance_bundle",
+      "parameter_schema": {
+        "export_dir": {
+          "type": "fixed_managed_path",
+          "value": "exports/centinelas_intake"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/build_contract_finance_bundle.py --export-dir exports/centinelas_intake",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "moneysweep-pr/federation.json@891259b0",
+      "write_scope": "exports/centinelas_intake"
+    },
+    {
+      "app_id": "skywatcher",
+      "approval_policy": "confirm_install",
+      "category": "setup",
+      "execution_kind": "composite",
+      "expected_outputs": [
+        "installed environment"
+      ],
+      "fixed_target": "skywatcher:setup",
+      "local_input_refs": [],
+      "network_policy": "github.com + Python package indexes",
+      "operation_id": "skywatcher.setup",
+      "parameter_schema": {},
+      "prerequisites": [
+        "Git",
+        "managed Python >=3.10",
+        "network access to allow-listed GitHub host",
+        "package installer"
+      ],
+      "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+      "raw_declared_command": "[ -d ../thehub-pr ] || git clone ...; python -m pip install -r requirements-dev.txt httpx -r server/backend/requirements.txt",
+      "repo": "skywatcher-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "rollback_strategy": "versioned_install_pointer_swap",
+      "secret_refs": [],
+      "source": "skywatcher-pr/federation.json@a7eb839f",
+      "write_scope": "versioned managed environment"
+    },
+    {
+      "app_id": "skywatcher",
+      "approval_policy": "none",
+      "category": "validate",
+      "execution_kind": "python_script",
+      "expected_outputs": [],
+      "fixed_target": "scripts/validate_airspace_export.py",
+      "local_input_refs": [
+        "synthetic example package"
+      ],
+      "network_policy": "none",
+      "operation_id": "skywatcher.validate_export",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "test"
+        },
+        "package": {
+          "type": "fixed_managed_path",
+          "value": "exports/examples/synthetic_airspace_package"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python scripts/validate_airspace_export.py exports/examples/synthetic_airspace_package --mode test",
+      "repo": "skywatcher-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "skywatcher-pr/federation.json@a7eb839f",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "skywatcher",
+      "approval_policy": "none",
+      "category": "test",
+      "execution_kind": "python_module",
+      "expected_outputs": [],
+      "fixed_target": "pytest",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "skywatcher.test_suite",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python -m pytest -q",
+      "repo": "skywatcher-pr",
+      "risk_class": "R0_READ_ONLY",
+      "rollback_strategy": "none",
+      "secret_refs": [],
+      "source": "skywatcher-pr/federation.json@a7eb839f",
+      "write_scope": "none"
+    },
+    {
+      "app_id": "skywatcher",
+      "approval_policy": "none",
+      "category": "export",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "test canonical package"
+      ],
+      "fixed_target": "scripts/federation_export.py",
+      "local_input_refs": [
+        "airspace observations"
+      ],
+      "network_policy": "none",
+      "operation_id": "skywatcher.export_canonical",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "test"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/federation_export.py --mode test",
+      "repo": "skywatcher-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "stage_validate_atomic_promote",
+      "secret_refs": [],
+      "source": "skywatcher-pr/federation.json@a7eb839f",
+      "write_scope": "exports/federation staging"
+    },
+    {
+      "app_id": "skywatcher",
+      "approval_policy": "confirm_dataset_replace",
+      "category": "ingest",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "PR airport records"
+      ],
+      "fixed_target": "scripts/ingest_airports.py",
+      "local_input_refs": [
+        "FAA/NASR airport source or committed seed"
+      ],
+      "network_policy": "none",
+      "operation_id": "skywatcher.ingest_airports",
+      "parameter_schema": {},
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/ingest_airports.py",
+      "repo": "skywatcher-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "rollback_strategy": "ledger_snapshot_restore",
+      "secret_refs": [],
+      "source": "skywatcher-pr/federation.json@a7eb839f",
+      "write_scope": "airport registry"
+    },
+    {
+      "app_id": "skywatcher",
+      "approval_policy": "none",
+      "category": "maintenance",
+      "execution_kind": "python_script",
+      "expected_outputs": [
+        "maintenance receipt"
+      ],
+      "fixed_target": "scripts/run_maintenance.py",
+      "local_input_refs": [],
+      "network_policy": "none",
+      "operation_id": "skywatcher.maintenance",
+      "parameter_schema": {
+        "mode": {
+          "type": "fixed",
+          "value": "audit"
+        },
+        "repo": {
+          "type": "fixed",
+          "value": "skywatcher-pr"
+        }
+      },
+      "prerequisites": [
+        "managed Python >=3.10",
+        "installed app environment"
+      ],
+      "promotion_state": "PROMOTABLE_AFTER_TESTS",
+      "raw_declared_command": "python3 scripts/run_maintenance.py --repo skywatcher-pr --mode audit",
+      "repo": "skywatcher-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "rollback_strategy": "file_snapshot_restore",
+      "secret_refs": [],
+      "source": "skywatcher-pr/federation.json@a7eb839f",
+      "write_scope": "reports/maintenance"
+    }
+  ],
+  "schema_version": "prii_operations_policy_v1_design",
+  "security_invariants": [
+    "The release catalog remains declarative and contains no command fields.",
+    "This policy is a separate signed artifact verified against a pinned public key.",
+    "No operation may invoke a shell, command string, eval, exec, os.system, or shell=True.",
+    "Executables and scripts must resolve beneath trusted versioned app roots.",
+    "Arguments are constructed only from fixed values and JSON-Schema-validated typed parameters.",
+    "Environment inheritance is deny-by-default; only explicit variables and secret handles are injected.",
+    "Secret values never enter UI payloads, receipts, or persisted logs.",
+    "Writes outside declared managed scopes fail the operation and trigger rollback.",
+    "Only manager-signed validator receipts may satisfy readiness gates."
+  ],
+  "signature": {
+    "key_id": null,
+    "required_algorithm": "Ed25519",
+    "status": "DESIGN_PLACEHOLDER_NOT_SIGNED",
+    "value": null
+  }
+}

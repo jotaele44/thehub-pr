@@ -1,3 +1,5 @@
 fastapi>=0.100
 uvicorn[standard]>=0.22
 PyYAML>=6.0
+# Ed25519 verification for the signed operations policy and execution receipts.
+cryptography>=41
