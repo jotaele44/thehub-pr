@@ -1,0 +1,33 @@
+{
+  "task": "T003 — Create locked Hub runtime",
+  "generated_at": "2026-07-25",
+  "pinned_commit": "70765a2c4bd67470ee6b9892023f3ff4c80913b8",
+  "runtime": {
+    "os": "Linux 6.18.5",
+    "python": "3.11.15",
+    "pip": "24.0",
+    "node": "22.22.2",
+    "npm": "10.9.7",
+    "uv": "0.8.17"
+  },
+  "isolation": "python venv at .venv-audit (untracked); package installed editable from pyproject.toml",
+  "install_command": "pip install -e \".[dev]\" httpx -r server/backend/requirements.txt",
+  "dev_tool_versions": {
+    "pytest": "9.1.1",
+    "ruff": "0.16.0",
+    "mypy": "2.3.0"
+  },
+  "server_optional_requirements": ["fastapi>=0.100", "uvicorn[standard]>=0.22", "PyYAML>=6.0"],
+  "uv_lock_check": {
+    "command": "uv lock --check",
+    "result": "PASS",
+    "resolved_packages": 56,
+    "note": "Lockfile uv.lock is consistent with pyproject.toml; no drift."
+  },
+  "pip_freeze_file": "pip_freeze.txt",
+  "pip_freeze_package_count": 40,
+  "notes": [
+    "Installed toolchain is newer than pyproject minimums (pytest>=7 -> 9.1.1, ruff>=0.4 -> 0.16.0, mypy>=1.10 -> 2.3.0); results recorded against the actually-installed versions.",
+    "Node/npm present for the separate frontend suite (server/frontend), which is out of scope for the Python baseline but recorded for completeness."
+  ]
+}

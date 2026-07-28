@@ -7,8 +7,8 @@ launchers, ``requirements-desktop.txt`` (desktop producers), and the shared
 ``schemas/federation_export_manifest.schema.json`` contract.
 
 Inputs (all under ``thehub-pr/federation-templates/``):
-  - the template files (``{{APP_SLUG}}`` is the only placeholder),
-  - ``producers.vars.yaml`` — program_id -> {app_slug},
+  - the template files (``{{KEY}}`` placeholders, one per vars key),
+  - ``producers.vars.yaml`` — program_id -> {app_slug, npm_dir, ...},
   - ``targets.yaml`` — template -> output path + which repos receive it.
 
 Each producer is a sibling checkout of thehub-pr (federation convention), so the
@@ -26,6 +26,7 @@ Standalone (PyYAML only).
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -33,18 +34,39 @@ import yaml
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]           # thehub-pr/
 _TEMPLATES = _REPO_ROOT / "federation-templates"
-_PLACEHOLDER = "{{APP_SLUG}}"
 
 
 def _load(name: str) -> dict:
     return yaml.safe_load((_TEMPLATES / name).read_text(encoding="utf-8")) or {}
 
 
-def _render_bytes(template: str, slug: str) -> bytes:
+def _placeholders(vars_for_repo: dict) -> dict[str, str]:
+    """Map ``{{KEY}}`` -> value for one repo's entry in producers.vars.yaml.
+
+    Keys are upper-cased, so ``app_slug`` fills ``{{APP_SLUG}}`` exactly as
+    before; any key added to the vars file becomes a placeholder with no code
+    change here. Values are stringified so ints (e.g. a Python minor version)
+    can be written unquoted in YAML.
+    """
+    return {f"{{{{{k.upper()}}}}}": str(v) for k, v in vars_for_repo.items()}
+
+
+def _render_bytes(template: str, subs: dict[str, str]) -> bytes:
     raw = (_TEMPLATES / template).read_bytes()
-    if _PLACEHOLDER.encode() in raw:
-        raw = raw.replace(_PLACEHOLDER.encode(), slug.encode())
+    for placeholder, value in subs.items():
+        if placeholder.encode() in raw:
+            raw = raw.replace(placeholder.encode(), value.encode())
     return raw
+
+
+def _unresolved(raw: bytes) -> list[str]:
+    """Any ``{{...}}`` left after substitution — a typo'd or missing var.
+
+    Silently shipping an unsubstituted placeholder into seven repos is the
+    failure mode this renderer most needs to catch, so callers treat a non-empty
+    result as fatal rather than writing the file.
+    """
+    return sorted({m.decode() for m in re.findall(rb"\{\{[A-Z0-9_]+\}\}", raw)})
 
 
 def _targets_for(program_id: str, targets: list[dict]) -> list[tuple[str, str]]:
@@ -56,13 +78,22 @@ def _targets_for(program_id: str, targets: list[dict]) -> list[tuple[str, str]]:
     return out
 
 
-def render_repo(program_id: str, slug: str, repo_root: Path, targets: list[dict],
-                check: bool) -> list[str]:
+def render_repo(program_id: str, vars_for_repo: dict, repo_root: Path,
+                targets: list[dict], check: bool) -> list[str]:
     """Write (or --check) every target for one repo. Returns list of drifted paths."""
+    subs = _placeholders(vars_for_repo)
     drift = []
     for template, output_tmpl in _targets_for(program_id, targets):
-        content = _render_bytes(template, slug)
-        rel = output_tmpl.replace(_PLACEHOLDER, slug)
+        content = _render_bytes(template, subs)
+        missing = _unresolved(content)
+        if missing:
+            raise SystemExit(
+                f"error: {program_id}: {template} has unresolved placeholder(s) "
+                f"{', '.join(missing)} — add the key to producers.vars.yaml"
+            )
+        rel = output_tmpl
+        for placeholder, value in subs.items():
+            rel = rel.replace(placeholder, value)
         dest = repo_root / rel
         if check:
             current = dest.read_bytes() if dest.exists() else None
@@ -109,9 +140,8 @@ def main(argv: list[str] | None = None) -> int:
         if program_id not in vars_:
             print(f"error: {program_id} not in producers.vars.yaml", file=sys.stderr)
             return 2
-        slug = vars_[program_id]["app_slug"]
         root = args.repo_root or (_REPO_ROOT.parent / program_id)
-        drift = render_repo(program_id, slug, root, targets, args.check)
+        drift = render_repo(program_id, vars_[program_id], root, targets, args.check)
         if args.check:
             if drift:
                 any_drift = True

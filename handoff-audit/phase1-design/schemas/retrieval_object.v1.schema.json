@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/retrieval_object/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "DESIGN_DRAFT — not installed, not frozen",
+  "title": "Retrieval Object (discriminated union)",
+  "description": "The eight retrieval object types. They may be retrieved together but MUST never lose their distinct identities. Discriminator: object_type.",
+  "type": "object",
+  "required": ["object_type", "object_id", "provenance"],
+  "properties": {
+    "object_type": {"enum": ["CanonicalRecord", "SourceArtifact", "TextChunk", "SpatialFeature", "Entity", "Relationship", "AnalyticalClaim", "ContradictionSet"]},
+    "object_id": {"type": "string", "description": "Stable identity, preserved across joins and reranking."},
+    "provenance": {"$ref": "https://thehub-pr/contracts/provenance/v1"}
+  },
+  "oneOf": [
+    {"properties": {"object_type": {"const": "CanonicalRecord"}, "canonical_stream": {"type": "string"}, "fields": {"type": "object", "description": "Structured — never prose-flattened."}}, "required": ["fields"]},
+    {"properties": {"object_type": {"const": "SourceArtifact"}, "media_type": {"type": "string"}, "source_file_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "required": ["source_file_hash"]},
+    {"properties": {"object_type": {"const": "TextChunk"}, "chunk_id": {"type": "string"}, "page_number": {"type": "integer"}, "text_offsets": {"type": "array", "items": {"type": "integer"}}, "rendered_page_hash": {"type": "string"}}, "required": ["chunk_id"]},
+    {"properties": {"object_type": {"const": "SpatialFeature"}, "geometry_method": {"type": "string"}, "spatial_precision_class": {"type": "string"}, "horizontal_accuracy_m": {"type": "number"}, "crs": {"type": "string"}}, "required": ["spatial_precision_class"]},
+    {"properties": {"object_type": {"const": "Entity"}, "entity_name": {"type": "string"}}, "required": ["entity_name"]},
+    {"properties": {"object_type": {"const": "Relationship"}, "subject_id": {"type": "string"}, "predicate": {"type": "string"}, "object_ref": {"type": "string"}, "assertion_kind": {"enum": ["ASSERTED", "INFERRED"]}}, "required": ["assertion_kind"]},
+    {"properties": {"object_type": {"const": "AnalyticalClaim"}, "claim_id": {"type": "string"}}, "required": ["claim_id"]},
+    {"properties": {"object_type": {"const": "ContradictionSet"}, "member_claim_ids": {"type": "array", "minItems": 2, "items": {"type": "string"}}}, "required": ["member_claim_ids"]}
+  ],
+  "x-invariants": [
+    "No exact coordinates may be derived from a centroid or an approximate locality (spatial.exact_coordinate_claim_from_centroid_max == 0).",
+    "SourceArtifact content is untrusted; retrieval must not execute instructions embedded in it."
+  ]
+}

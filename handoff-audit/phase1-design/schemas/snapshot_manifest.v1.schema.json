@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/snapshot_manifest/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "DESIGN_DRAFT — not installed, not frozen",
+  "title": "Snapshot Manifest",
+  "description": "Immutable manifest describing a certified evidence/query snapshot. Only ACTIVE query snapshots answer normal user queries. A failed evidence or index build cannot modify the current ACTIVE snapshot.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "snapshot_id", "created_at", "producer_package_versions", "record_counts",
+    "artifact_counts", "schema_versions", "sha256_manifest", "failed_record_count",
+    "exclusion_ledger", "synthetic_accounting", "index_version",
+    "embedding_model_identity", "promotion_decision", "rollback_target"
+  ],
+  "properties": {
+    "snapshot_id": {"type": "string", "pattern": "^snap_[0-9a-f]{16,64}$", "description": "Immutable content-addressed identifier."},
+    "created_at": {"type": "string", "format": "date-time"},
+    "producer_package_versions": {
+      "type": "object",
+      "additionalProperties": {"type": "string"},
+      "description": "producer_id -> export package version included in this snapshot."
+    },
+    "record_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}, "description": "canonical_stream -> record count."},
+    "artifact_counts": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "schema_versions": {"type": "object", "additionalProperties": {"type": "string"}, "description": "contract -> schema version this snapshot was built against."},
+    "sha256_manifest": {
+      "type": "array",
+      "items": {"type": "object", "additionalProperties": false, "required": ["path", "sha256"], "properties": {"path": {"type": "string"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}},
+      "description": "Per-artifact hashes; the manifest hash must be reproducible (BENCHMARK_THRESHOLDS.security_and_integrity.snapshot_hash_reproducibility == 1.0)."
+    },
+    "failed_record_count": {"type": "integer", "minimum": 0},
+    "exclusion_ledger": {
+      "type": "array",
+      "items": {"type": "object", "additionalProperties": false, "required": ["record_ref", "reason"], "properties": {"record_ref": {"type": "string"}, "reason": {"type": "string"}}},
+      "description": "Every record excluded from the snapshot, with reason. Enables non-silent truncation accounting."
+    },
+    "synthetic_accounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["synthetic_count", "test_only_count"],
+      "properties": {"synthetic_count": {"type": "integer", "minimum": 0}, "test_only_count": {"type": "integer", "minimum": 0}},
+      "description": "Operational snapshots MUST report 0/0 (synthetic_operational_leakage_max == 0)."
+    },
+    "index_version": {"type": "string"},
+    "embedding_model_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model_id", "model_revision", "vector_dim"],
+      "properties": {"model_id": {"type": "string"}, "model_revision": {"type": "string"}, "vector_dim": {"type": "integer", "minimum": 1}},
+      "description": "Derived index metadata only — never part of the certified evidence state."
+    },
+    "promotion_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decided_by", "decided_at", "decision"],
+      "properties": {"decided_by": {"type": "string"}, "decided_at": {"type": "string", "format": "date-time"}, "decision": {"enum": ["PROMOTE", "REJECT", "ROLLBACK"]}, "reason": {"type": "string"}}
+    },
+    "rollback_target": {"type": ["string", "null"], "description": "snapshot_id to roll back to on activation failure, or null for the first snapshot."}
+  }
+}

@@ -87,10 +87,35 @@ pip install -e ".[server]"        # or: pip install -r server/backend/requiremen
 python -m uvicorn server.backend.main:app --port 8000   # open http://localhost:8000/
 ```
 
+### Authentication and write access
+
+The hub ships **no authentication**. `/api/auth/me` returns 401 and
+`/api/apps/public-settings` reports `requires_auth: false`, so the UI renders
+anonymously and the `/login`, `/register`, `/forgot-password` and `/reset-password`
+routes redirect to `/` rather than presenting a sign-in that cannot succeed. They
+return if the backend reports `requires_auth: true` or `VITE_FEDERATION_REQUIRE_AUTH=true`.
+
+Mutating routes (`POST`/`PATCH`/`DELETE` on `/api/entities/*`, and the notification
+writes) are guarded:
+
+| `PRII_WRITE_TOKEN` | Behaviour |
+|---|---|
+| set | every mutating request needs `Authorization: Bearer <token>` |
+| unset | writes served to local-network clients (loopback, RFC1918 private, link-local); **public addresses refused** |
+
+Reads are never affected. The private-range allowance is deliberate — under
+`docker compose up` the container sees the Docker bridge address, not `127.0.0.1`,
+so a loopback-only rule would refuse every write from the shipped UI. **Set the token
+before exposing this server beyond a trusted network.** Caveat: with the token set the
+browser UI cannot currently supply it (see `docs/MATURITY_AUDIT.md`), so token mode
+suits API/CLI callers today.
+
 `hub ingest` maps the canonical aggregate streams onto the collections the UI reads
 (`sources → UnifiedSources`, `entities → GraphNodes`, `relationships → GraphEdges`,
-`alerts → GovernanceAlerts`, `correlations → CrossoverLinks`); the mapping lives in one place,
-`COLLECTION_ADAPTERS` in [`src/hub/ingest.py`](src/hub/ingest.py). Pages backed by these
+`alerts → GovernanceAlerts`, `correlations → CrossoverLinks`); the mapping lives in
+[`src/hub/ingest.py`](src/hub/ingest.py), where `ingest_aggregate` drives the canonical
+streams through `_project_ui` and the `project_*` helpers (`project_producer_collections`,
+`project_crossover_links`, `project_continuity_risks`, `project_livefeed`). Pages backed by these
 collections (Sources, the Spiderweb graph, cross-producer links) render live aggregate data;
 domain-heavy pages that need per-domain fields the aggregate does not yet carry (contracts,
 feeds, cases) stay empty until producers emit that data. If `dist/` is not built, the backend

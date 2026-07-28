@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDisplayName</key>
-	<string>PRII Federation</string>
+	<string>TheHub</string>
 	<key>CFBundleExecutable</key>
 	<string>PRII Federation</string>
 	<key>CFBundleIconFile</key>
@@ -11,7 +11,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>pr.prii.federation.launcher</string>
 	<key>CFBundleName</key>
-	<string>PRII Federation</string>
+	<string>TheHub</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

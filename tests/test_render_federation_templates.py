@@ -8,6 +8,8 @@ template-drift.yml workflow.
 
 from __future__ import annotations
 
+import importlib.util
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -17,6 +19,14 @@ import yaml
 _HUB = Path(__file__).resolve().parents[1]
 _TEMPLATES = _HUB / "federation-templates"
 _RENDER = _HUB / "tools" / "render_federation_templates.py"
+
+
+def _renderer():
+    """Import the renderer as a module so the pure helpers can be unit-tested."""
+    spec = importlib.util.spec_from_file_location("_render_fed", _RENDER)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
 
 
 def _vars():
@@ -75,3 +85,77 @@ def test_thehub_own_files_match_templates():
         capture_output=True, text=True,
     )
     assert r.returncode == 0, r.stdout + r.stderr
+
+
+# ── Engineering baseline (Dependabot / CodeQL / secret-scan / pip-audit) ───────
+
+
+def test_per_repo_vars_substitute_beyond_the_slug(tmp_path):
+    # npm_dir differs per repo (dashboard/ vs frontend/ vs server/frontend/), so a
+    # renderer that only knew about app_slug would point Dependabot at the wrong
+    # tree in five of seven repos and silently watch nothing.
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "spiderweb-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    dependabot = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
+    npm = [u for u in dependabot["updates"] if u["package-ecosystem"] == "npm"]
+    assert [u["directory"] for u in npm] == ["/server/frontend"]
+
+
+def test_unresolved_placeholder_is_detected():
+    # The failure this guards is silent: an unsubstituted {{KEY}} written into
+    # seven repos renders a config that parses but does nothing useful.
+    mod = _renderer()
+    assert mod._unresolved(b"directory: {{NPM_DIR}}\n") == ["{{NPM_DIR}}"]
+    assert mod._unresolved(b"") == []
+    # GitHub Actions expressions share the brace syntax and must not trip it.
+    assert mod._unresolved(b"group: codeql-${{ github.ref }}\n") == []
+    assert mod._unresolved(b"TOKEN: ${{ secrets.GITHUB_TOKEN }}\n") == []
+
+
+def test_baseline_workflows_are_valid_and_least_privilege():
+    for name in ("codeql.yml", "secret-scan.yml", "pip-audit.yml"):
+        doc = yaml.safe_load((_TEMPLATES / "baseline" / name).read_text())
+        assert "permissions" in doc, f"{name} must declare a top-level permissions block"
+        assert doc["permissions"] == {"contents": "read"}, name
+        assert doc["jobs"], name
+
+
+def test_governance_files_never_name_another_repo(tmp_path):
+    # Substitution is plain string replacement, so the way this breaks is not a
+    # missing var (that already raises) but a *wrong* one — a governance file
+    # rendered into ovnis-pr that points at moneysweep-pr's security advisory
+    # page would look completely normal and quietly route reports to the wrong
+    # repository.
+    # Checked on the GitHub URLs specifically, not on any mention of a sibling:
+    # these files legitimately cite thehub-pr/federation-templates/ as the place
+    # the template lives. It is the *links* that must be self-referential.
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    url = re.compile(r"github\.com/jotaele44/([a-z-]+-pr)")
+    # Files carrying absolute links: every one must point at this repo.
+    for rel in ("SECURITY.md", ".github/ISSUE_TEMPLATE/config.yml"):
+        path = tmp_path / rel
+        assert path.is_file(), rel
+        linked = set(url.findall(path.read_text()))
+        assert linked, f"{rel} links to no repo at all"
+        assert linked == {"ovnis-pr"}, f"{rel} links to {sorted(linked)}, not just ovnis-pr"
+
+    # CONTRIBUTING.md deliberately uses relative links for in-repo files, so it
+    # carries no absolute URLs — check the identity it states in prose instead.
+    contributing = (tmp_path / "CONTRIBUTING.md").read_text()
+    assert not url.findall(contributing), "CONTRIBUTING.md should use relative in-repo links"
+    assert "# Contributing to ovnis-pr" in contributing
+
+
+def test_baseline_actions_are_sha_pinned():
+    # A floating tag hands a compromised upstream release whatever token the job
+    # holds. Pinning is the whole point of these templates, so assert it rather
+    # than trusting review to catch a regression.
+    pinned = re.compile(r"^[0-9a-f]{40}$")
+    for path in sorted((_TEMPLATES / "baseline").glob("*.yml")):
+        for ref in re.findall(r"uses:\s*\S+@(\S+)", path.read_text()):
+            assert pinned.match(ref), f"{path.name}: {ref} is not a SHA pin"
