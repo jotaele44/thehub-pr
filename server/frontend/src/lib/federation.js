@@ -4,6 +4,13 @@
 
 export const HUB_REPO = "thehub-pr";
 
+// Per-program tile art, vendored at public/branding/<repo_name>.png and derived
+// from each repo's assets/branding/icon.png. Covers all seven programs, the Hub
+// included, so callers do not need a per-component icon map.
+export function programIconUrl(repoName) {
+  return `${import.meta.env.BASE_URL}branding/${repoName}.png`;
+}
+
 // Child modules of the federation. The Hub itself (ControlPlane) is modeled
 // separately by consumers (Sidebar/MobileNav define their own HUB entry).
 export const MODULES = [
