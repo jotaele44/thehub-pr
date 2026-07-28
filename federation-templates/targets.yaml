@@ -39,6 +39,10 @@ _review: &review
 # wording that is deliberately not propagated.
 _needs_license: &needs_license
   [ovnis-pr, skywatcher-pr, spiderweb-pr]
+# The six producers, excluding thehub-pr — the hub already has its own server
+# tests, and its backend is the one the producers' shells were modelled on.
+_producers: &producers
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr]
 
 targets:
   - template: Fix-Gatekeeper.command
@@ -78,6 +82,14 @@ targets:
   - template: baseline/pre-commit-config.yaml
     output: .pre-commit-config.yaml
     repos: *precommit
+
+  # Every producer ships a FastAPI backend at server/backend/main.py, and three
+  # of them had no test importing it — an import-time break shipped green. The
+  # test is byte-identical everywhere because /health is the only route all six
+  # share; anything deeper belongs in the repo's own tests, not here.
+  - template: baseline/test_server_smoke.py
+    output: tests/test_server_smoke.py
+    repos: *producers
 
   # Governance and contributor surface. Shared because the quality gates became
   # uniform across the federation; anything repo-specific stays in README/docs.
