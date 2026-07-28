@@ -39,10 +39,18 @@ jobs:
           name: mcp-sync-artifacts
           path: sync-artifacts/
       - name: Propagate to producer repos (operator-gated; not run without PAT)
-        if: ${{ secrets.SYNC_PAT != '' }}
+        # The presence check lives in the shell rather than in an `if:`. The
+        # `secrets` context is not available to `if:` at all, and hoisting the
+        # PAT to a job-level `env:` to work around that would expose a
+        # cross-repo write credential to every other step in this job —
+        # including `pip install`, which executes arbitrary package code.
         env:
           SYNC_PAT: ${{ secrets.SYNC_PAT }}
         run: |
+          if [ -z "$SYNC_PAT" ]; then
+            echo "SYNC_PAT not set — skipping cross-repo propagation (dry run)."
+            exit 0
+          fi
           echo "SYNC_PAT present — cross-repo propagation would run here."
           echo "Deliberately a no-op placeholder: opening PRs on sibling"
           echo "producer repos depends on each repo's layout and is the"
