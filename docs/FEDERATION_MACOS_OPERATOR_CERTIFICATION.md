@@ -61,7 +61,58 @@ fix the underlying problem.
    drives the same loopback HTTP surface the UI uses, because G15 and G16 are
    claims about what the UI can do and the UI has nothing else.
 
-## Running it
+## Blocked: there is no host to run
+
+**This certification cannot currently be completed, and the steps below will not
+work as written until that changes.** Recorded here rather than left for the next
+operator to discover at the fourth prompt.
+
+`federation_manager_api.runtime` is `None` at import and **nothing in the
+repository ever assigns it** — the only assignment is
+`tests/test_federation_operations_api.py:110`, via `monkeypatch`. Fifteen
+endpoints call `_require_runtime()`, including `/receipts`, `/gates`,
+`/secrets/presence` and every `/operations/*`, and each returns
+`503 operations runtime is not configured; start the manager through the native
+host`.
+
+`ManagerRuntime`'s own docstring says it is "assembled by the native host". That
+host does not exist in this repository: `desktop/` never references
+`PRII_MANAGER_*` and never constructs a runtime. `uvicorn server.backend.main:app`
+mounts the router but leaves `runtime` unset, so it serves a manager whose entire
+operations surface is 503.
+
+Confirmed by a real run, not predicted. All four attestations came back with the
+same single line:
+
+```json
+{"error": "<HTTPError 503: 'Service Unavailable'>"}
+```
+
+| Gate | Result | Cause |
+|---|---|---|
+| G07 | `refuted` | `secret_presence` 503s |
+| G15 | `refuted` | `len(manager.receipts())` runs ahead of `ask()`, so it refutes *before* printing its prompt |
+| G16 | `refuted` | prompts first, then 503s reading receipts back |
+| G22 | `refuted` | cannot complete a run at all |
+
+One cause, four refutations. This is not four independent macOS problems.
+
+**A second defect is visible in those artifacts.** The step wrapper does
+`outcome = {"satisfied": False, "observations": {"error": repr(exc)}}`, which
+*replaces* every observation gathered before the exception. The operator was
+separately prompted by `security add-generic-password -w` — the Keychain adapter
+reads `/dev/tty`, not stdin, so a piped secret never arrives — but that is
+invisible in the attestation because the handler discarded it. A refuted
+attestation should carry what it learned up to the failure; right now it carries
+only the failure.
+
+Closing this needs a host that assembles `OperationRunner` (verified policy,
+`ExecutionContext` roots, `ReceiptStore` plus signer, `FileTokenBroker`,
+`SecretBroker`) and provisions the browser session the App Center expects. That is
+production wiring the operations vector deliberately scoped out, not a
+documentation fix.
+
+## Running it, once a host exists
 
 Two terminals. Copy the nonce from the first into the second.
 
