@@ -39,17 +39,40 @@ try:
 except ImportError:  # pragma: no cover - dependency guard
     sys.exit("Pillow is required: pip install -r tools/requirements-icons.txt")
 
-# Every repo in the federation, hub included. Paths are relative to this file's
-# repo root's parent, i.e. the sibling-checkout layout the federation assumes.
-PROGRAMS = [
-    "aguayluz-pr",
-    "centinelas-pr",
-    "moneysweep-pr",
-    "ovnis-pr",
-    "skywatcher-pr",
-    "spiderweb-pr",
-    "thehub-pr",
-]
+# Every repo in the federation, hub included, with the two consumer locations
+# that hold their own copy of the art: the repo's Vite frontend and the
+# hand-committed macOS bundle. Paths are relative to this file's repo root's
+# parent, i.e. the sibling-checkout layout the federation assumes.
+#
+# The consumer copies are generated, not hand-placed. Without that, `--check`
+# could pass on assets/branding/ while the shipped UI and .app still carried
+# stale artwork.
+PROGRAMS = {
+    "aguayluz-pr": {"frontend": "dashboard", "bundle": "PRII-AGUAYLUZ.app"},
+    "centinelas-pr": {"frontend": "frontend", "bundle": "PRII-CENTINELAS.app"},
+    "moneysweep-pr": {"frontend": "dashboard", "bundle": "PRII-MONEYSWEEP.app"},
+    "ovnis-pr": {"frontend": "dashboard", "bundle": "PRII-OVNIS.app"},
+    "skywatcher-pr": {"frontend": "frontend", "bundle": "PRII-SKYWATCHER.app"},
+    "spiderweb-pr": {"frontend": "server/frontend", "bundle": "PRII-SPIDERWEB.app"},
+    # The hub ships a second bundle that deliberately mirrors the first.
+    "thehub-pr": {
+        "frontend": "server/frontend",
+        "bundle": "PRII-THEHUB.app",
+        "extra_bundles": ["PRII Federation.app"],
+    },
+}
+
+# Served by the app over HTTP: apple-touch-icon and the PWA manifest pair. The
+# favicon itself is inlined as a data URI in index.html, so it needs no file.
+PUBLIC_FILES = ("icon-180.png", "icon-192.png", "icon-512.png")
+
+# Imported as a module by the frontend and inlined into the bundle, so the
+# offline single-file export stays self-contained.
+SRC_ASSET = "icon-64.png"
+
+# spiderweb-pr's no-build dashboard is copied file-by-file into static exports,
+# so it keeps real files rather than module imports.
+STANDALONE = {"spiderweb-pr": ("dashboard", ("icon-64.png", "icon-180.png"))}
 
 MASTER = Path("assets/branding/icon.png")
 
@@ -143,6 +166,46 @@ def build(master_path: Path, out_dir: Path) -> list[Path]:
     return written
 
 
+def consumer_targets(repo: Path, name: str, staged: Path) -> list[tuple[Path, Path]]:
+    """Every committed copy of the art outside assets/branding/, as (built, dest).
+
+    Each of these is a real file another surface loads, so the generator writes
+    them and --check verifies them. Otherwise a master change could leave the
+    shipped UI or the .app bundle on stale artwork with --check still green.
+    """
+    cfg = PROGRAMS[name]
+    out: list[tuple[Path, Path]] = []
+
+    # macOS reads Contents/Resources/AppIcon.icns out of the committed bundle.
+    for bundle in [cfg["bundle"], *cfg.get("extra_bundles", [])]:
+        out.append((staged / "AppIcon.icns", repo / bundle / "Contents/Resources/AppIcon.icns"))
+
+    frontend = repo / cfg["frontend"]
+    for name_ in PUBLIC_FILES:
+        out.append((staged / name_, frontend / "public" / name_))
+    out.append((staged / SRC_ASSET, frontend / "src" / "assets" / SRC_ASSET))
+
+    if name in STANDALONE:
+        subdir, files = STANDALONE[name]
+        for name_ in files:
+            out.append((staged / name_, repo / subdir / name_))
+
+    return out
+
+
+def sync(pairs: list[tuple[Path, Path]], check: bool) -> list[str]:
+    """Copy each built file to its destination, or list the ones that differ."""
+    drifted: list[str] = []
+    for built, dest in pairs:
+        if check:
+            if not dest.is_file() or not filecmp.cmp(built, dest, shallow=False):
+                drifted.append(str(dest))
+        else:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(built.read_bytes())
+    return drifted
+
+
 def process(repo: Path, check: bool) -> bool:
     master_path = repo / MASTER
     if not master_path.is_file():
@@ -152,23 +215,49 @@ def process(repo: Path, check: bool) -> bool:
     out_dir = repo / MASTER.parent
     accent = sample_accent(Image.open(master_path))
 
-    if not check:
-        written = build(master_path, out_dir)
-        print(f"  accent {accent}  ->  {len(written)} files in {out_dir}")
-        return True
-
     with tempfile.TemporaryDirectory() as tmp:
-        expected = build(master_path, Path(tmp))
-        drifted = [
-            p.name
-            for p in expected
-            if not (out_dir / p.name).is_file()
-            or not filecmp.cmp(p, out_dir / p.name, shallow=False)
-        ]
+        staged = Path(tmp)
+        built = build(master_path, staged)
+        pairs = [(b, out_dir / b.name) for b in built]
+        pairs += consumer_targets(repo, repo.name, staged)
+        drifted = sync(pairs, check)
+
     if drifted:
-        print(f"  DRIFT: {', '.join(drifted)}")
+        print(f"  DRIFT ({len(drifted)}): " + ", ".join(drifted[:4]) + (" …" if len(drifted) > 4 else ""))
         return False
-    print(f"  accent {accent}  ->  ok ({len(expected)} files match)")
+    verb = "verified" if check else "wrote"
+    print(f"  accent {accent}  ->  {verb} {len(pairs)} files")
+    return True
+
+
+def sync_hub_tiles(repos: dict[str, Path], check: bool) -> bool:
+    """The Hub renders every program, so it vendors all seven 256px tiles.
+
+    One copy, under the hub frontend's public/ dir: the React app loads it from
+    the build output and the desktop launcher serves it through
+    /api/local/federation/icon/{repo}.
+    """
+    hub = repos.get("thehub-pr")
+    if hub is None:
+        return True
+    tiles = hub / "server/frontend/public/branding"
+    drifted: list[str] = []
+    for name, repo in repos.items():
+        source = repo / "assets/branding/icon-256.png"
+        if not source.is_file():
+            print(f"  !! hub tile source missing: {source}")
+            return False
+        dest = tiles / f"{name}.png"
+        if check:
+            if not dest.is_file() or not filecmp.cmp(source, dest, shallow=False):
+                drifted.append(str(dest))
+        else:
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(source.read_bytes())
+    if drifted:
+        print(f"hub tiles DRIFT ({len(drifted)}): " + ", ".join(drifted))
+        return False
+    print(f"hub federation tiles: {'verified' if check else 'wrote'} {len(repos)}")
     return True
 
 
@@ -192,13 +281,24 @@ def main() -> int:
         return 2
 
     ok = True
+    done: dict[str, Path] = {}
     for repo in repos:
         print(f"{repo.name}:")
+        if repo.name not in PROGRAMS:
+            print("  !! not a federation program")
+            ok = False
+            continue
         if not repo.is_dir():
             print("  !! not a directory")
             ok = False
             continue
         ok &= process(repo, args.check)
+        done[repo.name] = repo
+
+    # The hub's federation tiles need every program's art, so only refresh them
+    # when the whole set was processed -- a single-repo run cannot know the rest.
+    if len(done) == len(PROGRAMS):
+        ok &= sync_hub_tiles(done, args.check)
 
     if not ok and args.check:
         print("\nIcons are out of date. Re-run without --check and commit the result.")

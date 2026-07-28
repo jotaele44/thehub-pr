@@ -74,11 +74,18 @@ FEDERATION_REPOS = [
 
 router = APIRouter(prefix="/api/local", tags=["local-launcher"])
 
-# The federation tile art, one 256px PNG per program. It lives under the hub
-# frontend's public/ dir so the React app and this launcher share one copy —
-# but launcher.html is served straight off disk, before any frontend build
-# exists, so it cannot reach dist/ and needs the route below instead.
-BRANDING_DIR = REPO_ROOT / "server" / "frontend" / "public" / "branding"
+# The federation tile art, one 256px PNG per program, kept as a single copy under
+# the hub frontend's public/ dir. launcher.html is served straight off disk and
+# has no sibling static dir, so it reaches the art through the route below.
+#
+# Two locations, in priority order: Vite copies public/ into dist/, and
+# desktop/pyinstaller.spec packages server/frontend/dist — not public/. So in a
+# frozen build only the dist/ copy exists, and checking public/ alone would make
+# every packaged launcher fall back to monograms.
+BRANDING_DIRS = (
+    REPO_ROOT / "server" / "frontend" / "dist" / "branding",
+    REPO_ROOT / "server" / "frontend" / "public" / "branding",
+)
 
 _children: dict[str, subprocess.Popen] = {}
 
@@ -98,8 +105,11 @@ def _app_bundle(repo_dir: Path, entry: dict[str, str]) -> Path | None:
 
 def _icon_path(repo: str) -> Path | None:
     """The program's tile art, or None so the caller can fall back to initials."""
-    candidate = BRANDING_DIR / f"{repo}.png"
-    return candidate if candidate.is_file() else None
+    for base in BRANDING_DIRS:
+        candidate = base / f"{repo}.png"
+        if candidate.is_file():
+            return candidate
+    return None
 
 
 def _repo_status(entry: dict[str, str]) -> dict[str, Any]:
