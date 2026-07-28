@@ -1,10 +1,5 @@
 name: federation-design-release
 
-# Packs the shared @pr-federation/react design-system package and, on a
-# federation-design-v* tag, attaches the tarball to the GitHub Release so the
-# six producer frontends can pin it (see federation-design/packages/react/README.md).
-# On PRs that touch the package it only validates that `npm pack` succeeds.
-
 on:
   workflow_dispatch:
   push:
@@ -14,45 +9,88 @@ on:
     branches: [main]
     paths:
       - "federation-design/**"
+      - "docs/FEDERATION_DESIGN_SYSTEM_*"
       - ".github/workflows/federation-design-release.yml"
 
 permissions:
-  contents: write
+  contents: read
 
-# Serialise runs on the same ref without cancelling. This workflow can
-# publish, write data, or hand off to another repo, and killing it
-# mid-flight risks leaving that work half-done.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  pack:
+  verify-and-pack:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: federation-design/packages/react
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "22"
-
-      - name: Pack the package (runs prepack asset bundling)
+      - name: Unit and contract tests
+        run: npm test
+      - name: Verify tokens, accessibility, contrast, reduced motion and API snapshot
+        run: npm run verify
+      - name: Pack immutable release candidate
         run: npm pack
-
-      - name: Verify the tarball bundled the canonical assets
+      - name: Verify release-manifest source hashes
+        run: npm run verify
+      - name: Verify tarball contract and write checksum
         run: |
           tgz=$(ls pr-federation-react-*.tgz)
-          echo "packed: $tgz"
           tar -tzf "$tgz" | sort
-          tar -tzf "$tgz" | grep -q 'package/dist/federation.css'
-          tar -tzf "$tgz" | grep -q 'package/dist/federation.tokens.json'
-          tar -tzf "$tgz" | grep -q 'package/src/index.jsx'
+          for required in \
+            package/dist/federation.css \
+            package/dist/federation.tokens.json \
+            package/dist/federation.tokens.schema.json \
+            package/dist/test-harness.contract.json \
+            package/dist/release-manifest.json \
+            package/api-snapshot.json \
+            package/src/index.jsx \
+            package/src/semantics.js; do
+            tar -tzf "$tgz" | grep -qx "$required"
+          done
+          sha256sum "$tgz" > SHA256SUMS
+      - name: Upload candidate artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: federation-design-${{ github.sha }}
+          path: |
+            federation-design/packages/react/pr-federation-react-*.tgz
+            federation-design/packages/react/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
 
-      - name: Attach to release
-        if: startsWith(github.ref, 'refs/tags/federation-design-v')
+  release:
+    if: startsWith(github.ref, 'refs/tags/federation-design-v')
+    needs: verify-and-pack
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: federation-design/packages/react
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22"
+      - name: Rebuild and verify immutable release artifact
+        run: |
+          npm test
+          npm run verify
+          npm pack
+          npm run verify
+          tgz=$(ls pr-federation-react-*.tgz)
+          sha256sum "$tgz" > SHA256SUMS
+          version=$(node -p "JSON.parse(require('fs').readFileSync('package.json')).version")
+          test "$GITHUB_REF_NAME" = "federation-design-v$version"
+      - name: Attach immutable tarball and checksum to release
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
         with:
-          files: federation-design/packages/react/pr-federation-react-*.tgz
+          files: |
+            federation-design/packages/react/pr-federation-react-*.tgz
+            federation-design/packages/react/SHA256SUMS

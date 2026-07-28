@@ -1,69 +1,46 @@
 # @pr-federation/react
 
-Shared PRII federation design-system package: the canonical design **tokens**
-(`federation-design/tokens/federation.tokens.json`), the **CSS layer**
-(`federation-design/styles/federation.css` — `--fd-*` variables, `[data-theme]`
-and per-repo `[data-repo]` accents, `.fd-*` primitives), and thin **React
-wrappers** (`FederationButton`, `FederationPanel`, `FederationStatusBadge`,
-`FederationEmptyState`).
+Shared PRII federation design-system foundation. The v0.4 release candidate adds a versioned token schema, separate semantic state axes, evidence/provenance badges, a complete async-state family, an accessibility-first icon button, a repository-neutral test-harness contract, and deterministic release metadata.
 
-This is the Phase-3 dedup vehicle from
-[`docs/adr/0001-federated-engines-single-hub.md`](../../../docs/adr/0001-federated-engines-single-hub.md)
-and [`docs/FEDERATION_DESIGN_SYSTEM_V1.md`](../../../docs/FEDERATION_DESIGN_SYSTEM_V1.md):
-one design system, consumed by the hub app and the six producer frontends, so the
-duplicated-and-drifting shadcn kits converge.
+## Package imports
 
-## What ships in the tarball
-
-`npm pack` runs `scripts/prepack.mjs`, which copies the canonical CSS and tokens
-into `./dist/`, so the packed tarball is self-contained:
-
-| Import | Resolves to |
+| Import | Content |
 |---|---|
-| `@pr-federation/react` | `./src/index.jsx` (React wrappers) |
-| `@pr-federation/react/styles.css` | `./dist/federation.css` |
-| `@pr-federation/react/tokens.json` | `./dist/federation.tokens.json` |
+| `@pr-federation/react` | React primitives and semantic resolvers |
+| `@pr-federation/react/semantics` | Dependency-free semantic state model |
+| `@pr-federation/react/styles.css` | Canonical federation CSS |
+| `@pr-federation/react/tokens.json` | Token source v2 |
+| `@pr-federation/react/tokens.schema.json` | Draft 2020-12 token schema |
+| `@pr-federation/react/test-harness.json` | Consumer acceptance contract |
+| `@pr-federation/react/api-snapshot.json` | Public API freeze |
+| `@pr-federation/react/release-manifest.json` | Deterministic source hashes and expected immutable tag |
 
-The consuming app sets `data-theme` and `data-repo` on the root element to pick
-the theme and per-repo accent (e.g. `document.documentElement.dataset.repo = 'ovnis-pr'`).
+## Semantic model
 
-## Consuming it (producers) — pinning policy
+Applications pass domain meaning, not colors:
 
-Delivered exactly like the Python `prii_maintenance` package: **hub-hosted,
-pinned to an immutable git reference, bumped one repo at a time.** Because npm has
-no equivalent of pip's `#subdirectory=`, JS consumers pin the **release tarball**
-published for a tag, not a `git+` URL:
+- operational state
+- workflow state
+- evidence tier T1-T4
+- confidence
+- provenance
+- freshness
+- async/data state
 
-```jsonc
-// <producer>/<frontend>/package.json
-"dependencies": {
-  "@pr-federation/react": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.1.0/pr-federation-react-0.1.0.tgz"
-}
+The package maps those values to presentation tones. Existing v0.3 status aliases and component exports remain available.
+
+## Verification
+
+```bash
+npm test
+npm run verify
+npm pack
 ```
 
-- Pin to a **release tag** (`federation-design-vN`) — never to `main` or a
-  moving ref.
-- **Never force-move an existing tag.** Cut `vN+1` on a new commit and let each
-  producer bump deliberately: edit the one dependency line, open one PR, re-run
-  that producer's frontend build + tests.
-- The pin lives in exactly one place per repo — its frontend `package.json`.
+`verify` checks the API snapshot, token/schema alignment, accessibility source contracts, WCAG AA contrast for light and dark token pairs, reduced-motion behavior, and the consumer test matrix. `npm pack` creates a self-contained tarball and deterministic release manifest.
 
-## Releasing (maintainer)
+## Pinning and release policy
 
-1. Land the token/CSS/component change on `main`.
-2. Tag it: `git tag federation-design-v<N> && git push origin federation-design-v<N>`.
-3. [`.github/workflows/federation-design-release.yml`](../../../.github/workflows/federation-design-release.yml)
-   runs `npm pack` (invoking `prepack`) and attaches the tarball to the GitHub
-   Release for that tag.
+Producer applications consume an immutable GitHub Release tarball. Never pin `main`, never force-move a tag, and migrate one repository at a time. The candidate's expected tag is `federation-design-v0.4.0-rc.1`; no tag or release is created by the implementation PR.
 
-Bump `version` in `package.json` in the same change so the tarball filename tracks the tag.
-
-## Status
-
-- **thehub-pr** (reference) currently loads the CSS layer via a local copy at
-  `server/frontend/src/styles/federation.css`. Repointing it at this package and
-  reconciling that copy's dark-only drift against the canonical light-first +
-  `[data-theme]` source is tracked as the next step (Increment 3b) — it needs a
-  visual-regression check, so it is intentionally out of this packaging change.
-- Producer migration follows the order in
-  [`docs/FEDERATION_FRONTEND_STACK_AUDIT_V1.md`](../../../docs/FEDERATION_FRONTEND_STACK_AUDIT_V1.md).
+TheHub now consumes the package and canonical CSS directly. Consumer migration remains a separate vector; this package change does not edit application shells, routes, APIs, data contracts, offline exports, or producer repositories.
