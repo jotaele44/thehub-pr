@@ -58,7 +58,7 @@ producers:
     npm_dir: /server/frontend
     program_id: spiderweb-pr
     repo_url: https://github.com/jotaele44/spiderweb-pr
-    lock_cmd: "(none — constraints.txt is hand-maintained; see RECOMMENDATIONS.md #3)"
+    lock_cmd: "uv lock --check"
     program_desc: the spatial and operational producer, covering FR24 OCR/GIS flight intelligence and the GEBCO bathymetry pipeline
   thehub-pr:
     app_slug: THEHUB

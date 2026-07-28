@@ -8,8 +8,13 @@
 | **Producer** | `moneysweep-pr` (moneysweep-pr), `spiderweb-pr`, `aguayluz-pr`, `OVNIS` (ovnis-pr), `skywatcher-pr` | Domain node. Emits `federation.json` + an export package of JSONL streams. |
 | **Consumer** | `Puerto-Rico-Integrated-Intelligence-System` (PRIIS) | Downstream analytics. Reads Hub aggregate outputs to rank leads. **Not** the hub. |
 
-The federation is **artifact-based**, not a live network service: producers publish export
-packages in their own repos; the Hub fetches and merges them. There is no shared database or RPC.
+The **producer boundary** is artifact-based, not a live network service: producers publish export
+packages in their own repos; the Hub fetches and merges them. Producers never share a database with
+the Hub and do not depend on Hub RPC. This constraint does not make the Hub's own product surface
+artifact-only: under ADR 0001 and ADR 0003, `server/backend` is a live application and may host the
+Control Plane and read-only Intelligence API. Evidence ingestion runs as separate workers inside the
+Hub deployment boundary. Those workers exchange data with the API only through promoted snapshots;
+no producer contract or producer runtime boundary changes.
 
 **One deliberate, scoped exception (ADR 0001, Phase 3):** `packages/prii_maintenance/` is a
 dependency-free stdlib package hosted in this repo and consumed by producers as a pinned

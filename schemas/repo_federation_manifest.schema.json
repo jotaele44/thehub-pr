@@ -25,6 +25,15 @@
     "active_vector": {"type": "string"},
     "production_status": {"type": "string"},
     "pause_lock_required": {"type": "boolean"},
+    "branding": {
+      "type": "object",
+      "description": "Program visual identity. Icons are derived from icon.png by thehub-pr/tools/build_program_icons.py; accent_color is sampled from that artwork.",
+      "properties": {
+        "icon": { "type": "string", "description": "Repo-relative path to the square master PNG." },
+        "icon_dir": { "type": "string", "description": "Directory holding the derived icon set (PNGs, icon.ico, AppIcon.icns)." },
+        "accent_color": { "type": "string", "pattern": "^#[0-9a-fA-F]{6}$" }
+      }
+    },
     "source_truth": {"type": "object"},
     "hub_callable_commands": {
       "type": "object",
