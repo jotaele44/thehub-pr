@@ -2,45 +2,48 @@
   "cap_per_stream": 400,
   "collections": {
     "Alerts": 400,
-    "Correlations": 7,
-    "CrossoverLinks": 6,
-    "Entities": 400,
+    "ContinuityRisks": 63,
+    "Contracts": 3,
+    "Correlations": 50,
+    "CrossoverLinks": 47,
+    "Entities": 608,
     "FederationSummary": 1,
     "GovernanceAlerts": 400,
     "GraphEdges": 400,
-    "GraphNodes": 400,
-    "InfrastructureAssets": 89,
-    "LiveFeedItems": 398,
+    "GraphNodes": 608,
+    "InfrastructureAssets": 145,
+    "LiveFeedItems": 153,
     "Observations": 400,
-    "PatternObservations": 53,
-    "PublicMatters": 96,
+    "PatternObservations": 108,
+    "PublicMatters": 50,
     "Relationships": 400,
     "Sources": 400,
-    "UnifiedCases": 53,
+    "UnifiedCases": 108,
     "UnifiedSources": 400,
     "Vendors": 11
   },
   "kind": "bounded-sample",
-  "note": "Built by scripts/build_hub_fixture.py from the real aggregate/correlate/ingest pipeline. Records are genuine but truncated: 'sampled' is what this fixture holds, 'actual' is what a full run produced. Counts shown in the UI against this fixture are not federation totals.",
+  "note": "Built by scripts/build_hub_fixture.py from the real aggregate/correlate/ingest pipeline. Records are genuine but truncated: 'sampled' is what this fixture holds, 'actual' is what a full run produced. Counts shown in the UI against this fixture are not federation totals. Streams are sampled round-robin across (producer, record type); 'closure_added' counts entities re-admitted beyond the cap because a surviving relationship or alert refers to them, without which cross-stream projections would drop those rows.",
   "streams": {
     "alerts": {
-      "actual": 3347,
+      "actual": 4349,
       "sampled": 400
     },
     "entities": {
-      "actual": 34671,
-      "sampled": 400
+      "actual": 35888,
+      "closure_added": 208,
+      "sampled": 608
     },
     "observations": {
       "actual": 740,
       "sampled": 400
     },
     "relationships": {
-      "actual": 41804,
+      "actual": 42958,
       "sampled": 400
     },
     "sources": {
-      "actual": 31043,
+      "actual": 32259,
       "sampled": 400
     }
   }

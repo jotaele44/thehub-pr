@@ -61,8 +61,40 @@ hub fetch --run --root ws                    # clone/refresh producers and run e
 hub aggregate --root .. --out data/aggregate # merge discoverable packages
 hub correlate --in data/aggregate            # derive cross-producer relationship edges
 hub ingest --in data/aggregate --db data/hub.db  # load the aggregate into the app store
+make federation-status                       # snapshot readiness for the control-plane pages
 make test
 ```
+
+`make federation-status` runs `hub validate-federation` against the producer checkouts and
+commits the result to `data/federation_status.json`. The server seeds the Gates, Integrations
+and Manifest pages from that snapshot at startup — it cannot recompute it, because a deployed
+hub has no producer checkouts to measure. Re-run it when a producer's manifest or export
+package changes.
+
+### Keeping the fixture fresh
+
+`data/aggregate/*.jsonl` is a committed bounded sample, so it goes stale as producers publish.
+`.github/workflows/federation-ingest.yml` closes that loop: on each producer
+`repository_dispatch` it re-runs every producer's `export_canonical`, rebuilds the bounded
+fixture, and **opens a pull request** when the data actually changed. Nothing lands on `main`
+without review.
+
+Two details worth knowing before touching that workflow:
+
+- **`hub fetch` must be run with `--run`.** Only moneysweep-pr commits its canonical export
+  package; the other five materialise theirs by running their own export command. Without
+  `--run` the aggregate sees one producer and collapses to 200 entities / 9 collections,
+  against 35,888 / 20 with it — a fixture built that way would replace real federation data
+  with a stub.
+- **PRs are gated on substantive drift.** Producers stamp `created_at` and `extracted_at` into
+  every record on every run, so a plain `git status` reports drift every time.
+  `scripts/fixture_drift.py` compares content with those fields removed, so a PR appears only
+  when producer data really moved.
+
+No secrets are required — the producer repos are public and the PR is same-repo, so the
+built-in `GITHUB_TOKEN` covers it. GitHub does not run workflows on a PR that token creates;
+if you want CI on fixture-refresh PRs, set the repo's existing `SYNC_PAT` secret and the
+workflow will use it automatically.
 
 ## The hub app (single product)
 

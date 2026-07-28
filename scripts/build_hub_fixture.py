@@ -58,12 +58,8 @@ def _line_count(path: Path) -> int:
         return sum(1 for line in handle if line.strip())
 
 
-def _producer_of(raw: bytes) -> str:
+def _producer_of(record: dict) -> str:
     """Which producer contributed a record, for stratification."""
-    try:
-        record = json.loads(raw)
-    except (ValueError, UnicodeDecodeError):
-        return "?"
     producers = record.get("_producers")
     if isinstance(producers, list) and producers:
         return str(producers[0])
@@ -72,35 +68,70 @@ def _producer_of(raw: bytes) -> str:
     return str(record.get("producer") or record.get("program_id") or "?")
 
 
-def cap_stream(path: Path, cap: int) -> tuple[int, int]:
+#: Second stratification axis per stream. Producer alone is not enough: within a
+#: producer's bucket the sample is taken in export order, so a record type that
+#: sorts late never surfaces however wide the producer spread is. Measured
+#: against a cap-400 sample stratified by producer only:
+#:
+#:   * moneysweep contributed 96 entities — 60 person, 15 funding_agency,
+#:     11 recipient, 10 municipality — and *zero* of its 3 `contract` entities,
+#:     which sit at indices 177-179 of its 200-row export. Contracts was empty.
+#:   * aguayluz contributed 146 relationships, none of them `energized_by`. Those
+#:     edges are appended last by the producer's water/power crosswalk, behind
+#:     41,000 rows, so ContinuityRisks was empty too.
+#:
+#: Splitting on the record's own type fixes both without raising the cap: a
+#: three-row bucket is drained whole long before a bulk one is.
+_SUBKEY = {
+    "entities": "entity_type",
+    "relationships": "relationship_type",
+    "alerts": "module",
+}
+
+
+def _bucket_key(stream: str, record: dict) -> tuple[str, str]:
+    field = _SUBKEY.get(stream)
+    subkey = str(record.get(field) or "?") if field else ""
+    return _producer_of(record), subkey
+
+
+def cap_stream(path: Path, cap: int, stream: str = "") -> tuple[int, int]:
     """Sample a JSONL stream down to `cap` records. Returns (kept, original).
 
-    Round-robin across producers rather than taking the first `cap` lines. The
-    aggregate concatenates producers and one of them dominates the corpus —
-    aguayluz contributes 96% of entities — so a head-truncated sample contains
-    that producer and nothing else. Measured: head-400 produced 16 collections
-    and silently dropped UnifiedCases, PatternObservations, PublicMatters and
-    ContinuityRisks, because the producers that project them sort last.
+    Round-robin across (producer, record type) rather than taking the first
+    `cap` lines. The aggregate concatenates producers and one of them dominates
+    the corpus — aguayluz contributes 96% of entities — so a head-truncated
+    sample contains that producer and nothing else. Measured: head-400 produced
+    16 collections and silently dropped UnifiedCases, PatternObservations,
+    PublicMatters and ContinuityRisks, because the producers that project them
+    sort last.
 
-    Round-robin keeps every producer represented, which is the point of a
-    fixture that stands in for the federation.
+    Stratifying by producer alone fixed that but left a second head-truncation
+    inside each producer's bucket; see `_SUBKEY` for what that cost. Bucketing on
+    the record type as well keeps every (producer, type) combination
+    represented, which is the point of a fixture that stands in for the
+    federation.
     """
     original = _line_count(path)
     if original <= cap:
         return original, original
 
-    buckets: dict[str, list[bytes]] = {}
+    buckets: dict[tuple[str, str], list[bytes]] = {}
     with path.open("rb") as handle:
         for line in handle:
             if not line.strip():
                 continue
             normalised = line if line.endswith(b"\n") else line + b"\n"
-            buckets.setdefault(_producer_of(normalised), []).append(normalised)
+            try:
+                record = json.loads(normalised)
+            except (ValueError, UnicodeDecodeError):
+                record = {}
+            buckets.setdefault(_bucket_key(stream, record), []).append(normalised)
 
     kept: list[bytes] = []
     index = 0
-    # Smallest producers first, so a cap that cannot fit everyone still favours
-    # breadth of representation over the dominant producer's bulk.
+    # Smallest buckets first, so a cap that cannot fit everyone still favours
+    # breadth of representation over the dominant producer/type's bulk.
     order = sorted(buckets, key=lambda name: len(buckets[name]))
     while len(kept) < cap and any(index < len(buckets[name]) for name in order):
         for name in order:
@@ -114,6 +145,81 @@ def cap_stream(path: Path, cap: int) -> tuple[int, int]:
     return len(kept), original
 
 
+#: Fields that point at an entity from another stream. `project_continuity_risks`
+#: joins relationships -> entities and alerts -> entities, and drops any row whose
+#: endpoint is absent (`src/hub/ingest.py`, the `water_id not in ents` guard).
+_ENTITY_REFERENCES = {
+    "relationships": ("source_entity_id", "target_entity_id"),
+    "alerts": ("entity_id",),
+}
+
+
+def _entity_lines(path: Path) -> dict[str, bytes]:
+    """entity_id -> raw line, taken before the stream is capped."""
+    index: dict[str, bytes] = {}
+    with path.open("rb") as handle:
+        for line in handle:
+            if not line.strip():
+                continue
+            try:
+                record = json.loads(line)
+            except (ValueError, UnicodeDecodeError):
+                continue
+            entity_id = record.get("entity_id")
+            if entity_id:
+                index[str(entity_id)] = line if line.endswith(b"\n") else line + b"\n"
+    return index
+
+
+def _referenced_ids(work: Path) -> set[str]:
+    wanted: set[str] = set()
+    for stream, fields in _ENTITY_REFERENCES.items():
+        path = work / f"{stream}.jsonl"
+        if not path.exists():
+            continue
+        with path.open("rb") as handle:
+            for line in handle:
+                if not line.strip():
+                    continue
+                try:
+                    record = json.loads(line)
+                except (ValueError, UnicodeDecodeError):
+                    continue
+                for field in fields:
+                    value = record.get(field)
+                    if value:
+                        wanted.add(str(value))
+    return wanted
+
+
+def close_entity_references(work: Path, entity_lines: dict[str, bytes]) -> int:
+    """Re-admit entities referenced by surviving relationships and alerts.
+
+    Each stream is capped independently, so a relationship can survive while the
+    entity it points at does not. The Hub-side projections join across streams
+    and silently drop those rows, which is the second half of why
+    ContinuityRisks came out empty: even with `energized_by` edges in the sample,
+    `project_continuity_risks` needs the water asset they name.
+
+    Returns the number of entities added. This deliberately exceeds the entity
+    cap — a sample whose cross-stream joins do not resolve is not a smaller
+    federation, it is a broken one — and the overage is recorded in fixture.json.
+    """
+    path = work / "entities.jsonl"
+    if not path.exists():
+        return 0
+
+    present = set(_entity_lines(path))
+    missing = [
+        entity_id for entity_id in sorted(_referenced_ids(work) - present)
+        if entity_id in entity_lines
+    ]
+    if missing:
+        with path.open("ab") as handle:
+            handle.write(b"".join(entity_lines[entity_id] for entity_id in missing))
+    return len(missing)
+
+
 def build(root: Path, out: Path, cap: int) -> dict:
     out.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as tmp:
@@ -125,13 +231,26 @@ def build(root: Path, out: Path, cap: int) -> dict:
         _run([sys.executable, "-m", "hub.cli", "aggregate",
               "--root", str(root), "--out", str(work)])
 
+        # Index the entities before capping truncates the file — the closure pass
+        # below needs the rows the sample is about to drop.
+        entities_path = work / "entities.jsonl"
+        entity_lines = _entity_lines(entities_path) if entities_path.exists() else {}
+
         provenance: dict[str, dict[str, int]] = {}
         for stream in STREAMS:
             path = work / f"{stream}.jsonl"
             if not path.exists():
                 continue
-            kept, original = cap_stream(path, cap)
+            kept, original = cap_stream(path, cap, stream)
             provenance[stream] = {"sampled": kept, "actual": original}
+
+        # Step 1b — restore cross-stream referential integrity. Runs after every
+        # stream is capped, so it sees the relationships and alerts that actually
+        # survived.
+        added = close_entity_references(work, entity_lines)
+        if added and "entities" in provenance:
+            provenance["entities"]["closure_added"] = added
+            provenance["entities"]["sampled"] += added
 
         # Step 2 and 3 — correlate and ingest run over the *sampled* streams, so
         # the database is internally consistent: no correlation points at a
@@ -198,7 +317,10 @@ def main(argv: list[str] | None = None) -> int:
             "aggregate/correlate/ingest pipeline. Records are genuine but "
             "truncated: 'sampled' is what this fixture holds, 'actual' is what a "
             "full run produced. Counts shown in the UI against this fixture are "
-            "not federation totals."
+            "not federation totals. Streams are sampled round-robin across "
+            "(producer, record type); 'closure_added' counts entities re-admitted "
+            "beyond the cap because a surviving relationship or alert refers to "
+            "them, without which cross-stream projections would drop those rows."
         ),
     }
     (args.out / "fixture.json").write_text(
@@ -210,6 +332,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  {len(counts)} collections, {total} rows, cap={args.cap}/stream")
     for stream, numbers in sorted(provenance.items()):
         marker = "" if numbers["sampled"] == numbers["actual"] else "  (capped)"
+        closure = numbers.get("closure_added")
+        if closure:
+            marker += f"  (+{closure} for reference closure)"
         print(f"  {stream:16} {numbers['sampled']:>6} of {numbers['actual']:>7}{marker}")
     return 0
 

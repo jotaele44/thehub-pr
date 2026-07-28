@@ -29,6 +29,12 @@ datas = [
     (str(REPO_ROOT / "server" / "frontend" / "dist"), "server/frontend/dist"),
     (str(REPO_ROOT / "registry"), "registry"),
     (str(REPO_ROOT / "schemas"), "schemas"),
+    # The committed federation readiness snapshot. The frozen app runs the same
+    # FastAPI lifespan as the served build, and without this file _load_snapshot
+    # returns None, seeding falls back to registry-only, and the Gates page ships
+    # empty in the standalone product. It is a committed file, so a missing one
+    # should fail the build loudly rather than be skipped.
+    (str(REPO_ROOT / "data" / "federation_status.json"), "data"),
 ]
 datas.append((str(REPO_ROOT / "desktop" / "launcher.html"), "desktop"))
 
