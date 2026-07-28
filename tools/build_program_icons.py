@@ -185,7 +185,11 @@ def main() -> int:
     elif args.repo:
         repos = [Path(r).resolve() for r in args.repo]
     else:
-        ap.error("pass --repo <path> or --all")
+        # argparse's error() exits, but returning explicitly keeps it obvious --
+        # to a reader and to static analysis -- that `repos` is always bound below.
+        print("error: pass --repo <path> or --all", file=sys.stderr)
+        ap.print_usage(sys.stderr)
+        return 2
 
     ok = True
     for repo in repos:
