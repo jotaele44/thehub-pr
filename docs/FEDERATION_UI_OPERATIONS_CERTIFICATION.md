@@ -20,7 +20,7 @@ run. Only `thehub-pr` was modified.
 |---|---|---|
 | PR #94 state | open, draft, unmerged | open, draft, `merged: false`, `mergeable_state: clean` |
 | PR #94 head | `817fb97ddc3617a843ea5b05ff3a4080e60ade79` | matches |
-| TheHub `main` | `58a159ffef69768b093ca19db3f1feb3ceaf8adb` | **drifted** to `e668cad` — adjudicated below |
+| TheHub `main` | `58a159ffef69768b093ca19db3f1feb3ceaf8adb` | **drifted** to `cbab79c` — adjudicated below |
 | PR #94 base | — | `3c195606f22cbbc462ffa881975f608d61499631` (older than main, confirming F017) |
 | Operation count | 68 = 13 Hub + 55 producer | 68, zero unclassified |
 
@@ -31,16 +31,24 @@ was cut from `main` and PR #94's additive diff replayed by hand, then rebased as
 ### `main` drift, adjudicated
 
 G01 requires the pinned SHAs to match *or the drift to be adjudicated*; this is
-the adjudication. `main` moved from `58a159f` to `e668cad` while this work was in
-progress, adding a coverage gate (`fail_under = 88`), `pre-commit`, an
+the adjudication. `main` moved from `58a159f` to `cbab79c` while this work was in
+progress, in four steps: a coverage gate (`fail_under = 88`), `pre-commit`, an
 `ErrorBoundary`, and design-system v0.3.1, which deleted
-`server/frontend/src/styles/federation.css` in favour of the shared package.
+`server/frontend/src/styles/federation.css` in favour of the shared package;
+then canary-safe FOIA intake (#125); then the spatial-rag migration design docs
+(#92); then the shared icon pipeline (#127) and #118.
 
 The drift does not invalidate the operations policy. `src/hub/cli.py` — the sole
 source of every enabled operation's argv — is **byte-identical** across
-`58a159f`, `e668cad`, and this branch, so each policy row's
+`58a159f`, `e668cad`, `cbab79c`, and this branch, so each policy row's
 `source: thehub-pr/src/hub/cli.py@58a159ff` still names the exact content it was
 derived from. This branch modifies no file under `src/hub`.
+
+The last of those, #127, is the only one that reached this branch's own
+artifacts: it changed `schemas/repo_federation_manifest.schema.json`, which
+collided with this stack's `schemas/FROZEN.sha256`. That was resolved by
+regenerating the manifest with `tests/test_schema_freeze.py --update`, not by
+hand-editing hashes, so the recorded digests are derived from the merged tree.
 
 Re-verified against the rebased tree: 742 Python tests pass, coverage 90.94%
 against the new 88% floor, `uv lock --check` clean, frontend lint/build clean,
