@@ -71,7 +71,7 @@ never been run into `data/hub.db`, so most of that craft renders blank.
 
 | Item | Why |
 |---|---|
-| 15 of 23 UI collections | The UI reads `UnifiedCases`, `AnomalyFlags`, `Contracts`, `Vendors`, `AirspaceEvents`, `FederationTasks`, `ContinuityRisks`, `LiveFeedItems`, `InfrastructureAssets`, `GovernanceAlerts`, `LiveFeedSources`, `LiveFeedRuns`, `EvidenceStandards`, `DictionaryTerms`, `CorrelationReviews`. `ingest.py` projects only a subset; the rest have no producer path and render empty. `ValidationGates`, `IntegrationStatus` and `FederationManifest` are no longer in this list — they are seeded from `data/federation_status.json` (see below). |
+| 13 of 23 UI collections | The UI reads `AnomalyFlags`, `FederationTasks`, `DictionaryTerms`, `AirspaceEvents`, `EvidenceStandards`, `CorrelationReviews`, `LiveFeedSources`, `LiveFeedRuns`, and others `ingest.py` projects only partially. Five have left this list: `ValidationGates`, `IntegrationStatus` and `FederationManifest` are seeded from `data/federation_status.json`; `Contracts` and `ContinuityRisks` were never missing a producer path at all — they were dropped by the fixture sampler and returned once it stratified by record type (see below). |
 | `/api/files/upload` | returns `_diagnostic_stub(...)` — a placeholder, correctly labelled |
 | `/api/connectors/{name}/connection` | hardcoded `{"status": "not_connected"}` |
 
@@ -128,6 +128,29 @@ and Dictionary are operator-authored ledgers with manual-entry forms — rows ar
 operator's work product, not something to synthesize. `AnomalyFlags` needs anomaly analysis
 no producer currently exports. This matches the standing rule at `src/hub/ingest.py:178-181`:
 collections with no canonical source are not populated with invented records.
+
+### Two collections were never missing a producer path
+
+`Contracts` and `ContinuityRisks` were listed above as unbacked for as long as this audit
+has existed. They were not. `ingest.py` projects both, and the producers export the data —
+the *fixture sampler* was dropping it, which looked identical from the UI.
+
+`cap_stream` sampled round-robin across producers but head-truncated within each producer's
+bucket, so a record type that sorts late never surfaced. Measured at cap 400: moneysweep
+contributed 96 entities and none of its 3 `contract` rows, which sit at indices 177-179 of
+its export; aguayluz contributed 146 relationships and no `energized_by` edges, which its
+water/power crosswalk appends behind 41,000 rows. Separately, each stream was capped
+independently, so a surviving relationship could point at an entity the sample had dropped —
+and `project_continuity_risks` discards any row whose endpoint is absent.
+
+Stratifying on `(producer, record type)` and re-admitting entities that surviving
+relationships and alerts refer to recovers both at the same cap: **Contracts 3,
+ContinuityRisks 63**, with `hub.db` at 6.8 MB. Raising the cap instead was measured and
+rejected — it costs 17 MB and still does not reach the `energized_by` edges.
+
+The lesson worth keeping: a fixture that renders plausible pages is not evidence that the
+sample is representative. `fixture.json` now records `closure_added` alongside the per-stream
+counts so the overage is visible rather than inferred.
 
 ---
 

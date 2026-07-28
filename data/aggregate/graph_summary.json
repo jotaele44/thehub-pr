@@ -9,10 +9,10 @@
   },
   "producers": {
     "aguayluz-pr": {
-      "alerts": 3345,
-      "entities": 33416,
-      "relationships": 41133,
-      "sources": 26266
+      "alerts": 4347,
+      "entities": 34633,
+      "relationships": 42287,
+      "sources": 27482
     },
     "centinelas-pr": {
       "entities": 287,
@@ -45,10 +45,10 @@
     }
   },
   "streams": {
-    "alerts": 3347,
-    "entities": 34671,
+    "alerts": 4349,
+    "entities": 35888,
     "observations": 740,
-    "relationships": 41804,
-    "sources": 31043
+    "relationships": 42958,
+    "sources": 32259
   }
 }
