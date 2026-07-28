@@ -266,6 +266,29 @@ def test_a_configured_key_that_is_missing_refuses_rather_than_falling_back(tmp_p
         signer_from_environment()
 
 
+def test_a_tilde_in_the_configured_path_is_expanded(tmp_path, monkeypatch):
+    """`export VAR="~/.prii/manager.pem"` keeps the tilde literal.
+
+    The shell only expands `~` unquoted, and quoting the value is the natural
+    thing to write. Without expanduser the operator gets "points at
+    ~/.prii/manager.pem, which does not exist" for a file they can see on disk,
+    which reads as a bug in the check rather than in their quoting. Found by an
+    operator on a real macOS run.
+    """
+    home = tmp_path / "home"
+    (home / ".prii").mkdir(parents=True)
+    key_path = home / ".prii" / "manager.pem"
+    key_path.write_bytes(ReceiptSigner.generate("seed").private_key_pem())
+
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.setenv(RECEIPT_SIGNING_KEY_ENV, "~/.prii/manager.pem")
+
+    signer = signer_from_environment("prii-manager")
+    assert signer.public_key_pem() == ReceiptSigner.from_pem(
+        key_path.read_bytes(), "prii-manager"
+    ).public_key_pem()
+
+
 def test_a_non_ed25519_key_is_refused(tmp_path, monkeypatch):
     from cryptography.hazmat.primitives import serialization
     from cryptography.hazmat.primitives.asymmetric import rsa

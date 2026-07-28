@@ -143,7 +143,11 @@ def signer_from_environment(key_id: str = "prii-manager-local") -> ReceiptSigner
     """
     configured = os.environ.get(RECEIPT_SIGNING_KEY_ENV, "").strip()
     if configured:
-        path = Path(configured)
+        # expanduser because a quoted value keeps the tilde literal: the shell
+        # only expands it unquoted, and `export VAR="~/.prii/manager.pem"` is the
+        # natural thing to write. Without this the error names a path the
+        # operator can see on disk, which reads as a bug in the check.
+        path = Path(configured).expanduser()
         if not path.exists():
             raise ReceiptError(
                 f"{RECEIPT_SIGNING_KEY_ENV} points at {path}, which does not exist. "

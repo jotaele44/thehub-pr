@@ -49,21 +49,48 @@ fix the underlying problem.
 
    Keep the private key on the Mac. Only its public half comes back.
 
-3. **The manager running through the native host**, with the App Center reachable
-   in a browser. The script drives the same loopback HTTP surface the UI uses,
-   because G15 and G16 are claims about what the UI can do and the UI has nothing
-   else.
+3. **A bootstrap nonce, which you choose.** Nothing prints one — no code in this
+   repository generates a nonce. `server/backend/federation_manager_api.py` reads
+   `PRII_MANAGER_BOOTSTRAP_NONCE` from the environment at **import** time and
+   hashes it; the script presents the same value to exchange it for a session. So
+   it is a shared secret between two processes, and it must be exported *before*
+   uvicorn starts, in the shell uvicorn runs in. If the manager starts without
+   it, `POST /session` answers `503 native bootstrap is not configured`.
+
+4. **The manager running**, with the App Center reachable in a browser. The script
+   drives the same loopback HTTP surface the UI uses, because G15 and G16 are
+   claims about what the UI can do and the UI has nothing else.
 
 ## Running it
 
-```
-export PRII_MANAGER_RECEIPT_SIGNING_KEY=~/.prii/manager.pem
-export PRII_MANAGER_BOOTSTRAP_NONCE=<the nonce the native host printed>
+Two terminals. Copy the nonce from the first into the second.
 
-python3 scripts/certify_macos_operator.py \
-    --manager-url http://127.0.0.1:8765 \
-    --origin http://127.0.0.1:5173
+**Terminal 1 — the manager:**
+
 ```
+export PRII_MANAGER_BOOTSTRAP_NONCE="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+echo "$PRII_MANAGER_BOOTSTRAP_NONCE"          # copy this
+export PRII_MANAGER_RECEIPT_SIGNING_KEY="$HOME/.prii/manager.pem"
+python3 -m uvicorn server.backend.main:app --port 8000
+```
+
+**Terminal 2 — the certification:**
+
+```
+export PRII_MANAGER_RECEIPT_SIGNING_KEY="$HOME/.prii/manager.pem"
+export PRII_MANAGER_BOOTSTRAP_NONCE='paste-the-value-from-terminal-1'
+python3 scripts/certify_macos_operator.py
+```
+
+The defaults now point at `http://127.0.0.1:8000/api/federation-manager`, so the
+flags are only needed if you serve the app somewhere else. **The router prefix is
+not optional**: the manager API is mounted on the main app at
+`/api/federation-manager`, and a bare host answers `405` on `POST /session`
+because the SPA catch-all matches that path for `GET`.
+
+Quote the nonce in Terminal 2. Keep each command on one line — a blank line
+between backslash continuations ends the command, and the remaining flags then
+run as their own commands.
 
 It works through four steps, pausing where you need to act.
 
