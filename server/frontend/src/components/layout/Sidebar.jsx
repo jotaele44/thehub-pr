@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NAV_GROUPS, isNavActive } from "@/lib/nav";
 import ThemeToggle from "@/components/shared/ThemeToggle";
+import brandMark from "@/assets/icon-64.png?inline";
 
 function NavItem({ item, active }) {
   const Icon = item.icon;
@@ -33,7 +34,7 @@ export default function Sidebar() {
     <aside className="hidden lg:flex flex-col w-64 shrink-0 bg-sidebar border-r border-sidebar-border h-screen sticky top-0">
       <div className="px-5 py-5 border-b border-sidebar-border">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-semibold text-sm">PR</div>
+          <img src={brandMark} alt="" aria-hidden="true" className="h-8 w-8 rounded-lg" />
           <div>
             <div className="text-sm font-semibold text-sidebar-accent-foreground tracking-tight">INTSYS-PR</div>
             <div className="text-[10px] text-sidebar-foreground uppercase tracking-widest">Control Plane</div>
