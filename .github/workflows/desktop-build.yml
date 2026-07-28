@@ -68,9 +68,12 @@ jobs:
           pip install pytest
           python -m pytest packages/prii_desktop/tests -q
 
+      - name: Verify canonical icon derivatives
+        if: runner.os == 'Linux'
+        run: python tools/build_program_icons.py --repo . --check
+
       - name: Verify visual branding and accessibility contract
         run: |
-          python tools/build_program_icons.py --repo . --check
           python tools/verify_desktop_branding.py --repo .
 
       - name: Freeze console build (for smoke test)
