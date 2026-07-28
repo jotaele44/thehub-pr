@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import os
 import threading
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Mapping, Optional, Sequence
 
@@ -141,7 +141,14 @@ class OperationRunner:
         env_allowlist: Sequence[str] = DEFAULT_ENV_ALLOWLIST,
     ):
         self.policy = policy
-        self.context = context
+        # The file broker's intake directory is a managed root too, so path
+        # containment must know about it. Filling it in here rather than asking
+        # every caller to keep the two in sync removes a way to get it wrong.
+        self.context = (
+            context
+            if context.intake_root is not None
+            else replace(context, intake_root=files.intake_root)
+        )
         self.receipts = receipts
         self.files = files
         self.secrets = secrets
@@ -398,6 +405,18 @@ class OperationRunner:
             argv_redacted = redact_argv(built.argv)
             argv_sha256 = built.argv_sha256
 
+            # Create the parent of every managed output path. The child is a
+            # producer CLI that generally will not mkdir -p for us, and failing
+            # for a missing directory the manager itself chose is a confusing
+            # way to lose a run. Containment was already enforced by build_argv,
+            # so these paths are known to be inside a managed root.
+            for name, resolved_path in built.resolved_paths.items():
+                kind = operation.parameters[name]["type"]
+                if kind == "managed_output_directory":
+                    resolved_path.mkdir(parents=True, exist_ok=True)
+                elif kind in ("managed_file", "managed_sqlite_path"):
+                    resolved_path.parent.mkdir(parents=True, exist_ok=True)
+
             # SNAPSHOT: inventory the write scope so post-run drift is detectable.
             tx.enter(Phase.SNAPSHOT)
             audit_root = self.context.data_root
@@ -443,14 +462,19 @@ class OperationRunner:
             )
 
             after = observed_paths(audit_root)
-            offending = unexpected_writes(diff_paths(before, after), [operation.write_scope])
-            if offending and operation.write_scope not in ("none", ""):
+            offending = unexpected_writes(
+                diff_paths(before, after), _declared_write_scopes(operation, built, self.context)
+            )
+            if offending:
                 tx.record_write_audit(offending)
                 validators.append(
                     {
                         "name": "write_scope",
                         "status": "failed",
-                        "detail": f"wrote outside {operation.write_scope!r}: {offending[:5]}",
+                        "detail": (
+                            f"wrote outside its declared outputs "
+                            f"({operation.write_scope}): {offending[:5]}"
+                        ),
                     }
                 )
             else:
@@ -462,7 +486,7 @@ class OperationRunner:
                 status = "timed_out"
             elif not result.succeeded:
                 status = "failed"
-            elif offending and operation.write_scope not in ("none", ""):
+            elif offending:
                 # A run that wrote outside its declared scope is quarantined even
                 # though the process itself exited zero.
                 status = "quarantined"
@@ -521,6 +545,39 @@ class OperationRunner:
             )
         )
         return document
+
+
+#: Parameter types whose resolved path is somewhere the operation may write.
+_OUTPUT_TYPES = frozenset({"managed_output_directory", "managed_file", "managed_sqlite_path"})
+
+#: SQLite writes these alongside the database itself.
+_SQLITE_SIDECARS = ("-wal", "-shm", "-journal")
+
+
+def _declared_write_scopes(operation: Operation, built, context) -> List[str]:
+    """The paths this run is permitted to touch, relative to the data root.
+
+    Derived from the run's own resolved output parameters rather than from the
+    catalog's ``write_scope``, which is prose ("managed SQLite database") and
+    can never match a path. Comparing paths against prose flagged every write
+    as unexpected and quarantined runs that had done nothing wrong.
+
+    A read-only operation yields an empty list, which correctly means *any*
+    write is unexpected.
+    """
+    scopes: List[str] = []
+    data_root = context.data_root.resolve()
+    for name, resolved_path in built.resolved_paths.items():
+        if operation.parameters[name]["type"] not in _OUTPUT_TYPES:
+            continue
+        try:
+            relative = resolved_path.resolve().relative_to(data_root)
+        except ValueError:
+            continue
+        scopes.append(str(relative))
+        if operation.parameters[name]["type"] == "managed_sqlite_path":
+            scopes.extend(f"{relative}{suffix}" for suffix in _SQLITE_SIDECARS)
+    return scopes
 
 
 def _redact_parameters(operation: Operation, resolved: Mapping[str, Any]) -> Dict[str, Any]:

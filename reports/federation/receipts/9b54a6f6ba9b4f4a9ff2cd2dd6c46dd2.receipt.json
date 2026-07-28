@@ -1,0 +1,69 @@
+{
+  "receipt": {
+    "app_id": "thehub",
+    "argv_redacted": [
+      "hub",
+      "ingest",
+      "--in",
+      "/tmp/tmp7rlmmb9_/data/aggregate",
+      "--db",
+      "/tmp/tmp7rlmmb9_/data/hub.db"
+    ],
+    "argv_sha256": "2203bc74f1e13462a8fb578e84fa830b3849fbbf37c4f4c9260f86549599fc8a",
+    "environment_allowlist": [
+      "HOME",
+      "LC_CTYPE",
+      "PATH",
+      "PRII_APP_ROOT"
+    ],
+    "exit_code": 0,
+    "finished_at": "2026-07-27T06:33:32.301572Z",
+    "inputs": [],
+    "log": {
+      "bytes": 128,
+      "redactions": 0,
+      "sha256": "162d56a585620a20647904f63c75cdbf899b2ca14c5583785088a2051dbb1381",
+      "truncated": false
+    },
+    "operation_id": "hub.ingest",
+    "outputs": [],
+    "parameters_redacted": {
+      "db": "hub.db",
+      "in_dir": "aggregate"
+    },
+    "policy": {
+      "key_id": "prii-operations-test-2026-07",
+      "payload_sha256": "1ac9c0e97d68652fa5269744a506ead4cec42567dfce3ff7d1ae8f2b1e740365",
+      "policy_id": "prii-federation-ui-only-operations",
+      "sequence": 1
+    },
+    "previous_receipt_sha256": "621f21d4ed18107a75cc20cae9c28dbfe5a6d93c4198f0d12eb440d2dedfe2bd",
+    "run_id": "9b54a6f6ba9b4f4a9ff2cd2dd6c46dd2",
+    "schema_version": "prii_execution_receipt_v1",
+    "started_at": "2026-07-27T06:33:32.098186Z",
+    "status": "succeeded",
+    "transaction": {
+      "phase_reached": "RECEIPT",
+      "rollback_state": "not_required",
+      "snapshot_sha256": null,
+      "strategy": "sqlite_backup_integrity_check_atomic_swap"
+    },
+    "validators": [
+      {
+        "detail": "exit 0",
+        "name": "exit_code",
+        "status": "passed"
+      },
+      {
+        "name": "write_scope",
+        "status": "passed"
+      }
+    ]
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "prii-manager-certification",
+    "payload_sha256": "7f9447c861c427d86d4229e83a8924d6d6b244dc796c8cf101815bf49980dd63",
+    "value": "SHTrqE81F/m5xnDDZW33Mnwp3ufWhkxWgTpuZF5ZayoGv4OPzut2Fc8QnXz7MRpNSN5Ap+lrFYks//6mDruKAg=="
+  }
+}

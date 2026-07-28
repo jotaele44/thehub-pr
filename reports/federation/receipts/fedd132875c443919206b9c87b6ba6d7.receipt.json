@@ -1,0 +1,66 @@
+{
+  "receipt": {
+    "app_id": "thehub",
+    "argv_redacted": [
+      "hub",
+      "list",
+      "--registry",
+      "registry/producers.yaml"
+    ],
+    "argv_sha256": "874ec3deaa481c7d80aedb6ec2a8faa8ad3d3c8d896acc3f3cbb6d04d0156937",
+    "environment_allowlist": [
+      "HOME",
+      "LC_CTYPE",
+      "PATH",
+      "PRII_APP_ROOT"
+    ],
+    "exit_code": 0,
+    "finished_at": "2026-07-27T06:33:31.617920Z",
+    "inputs": [],
+    "log": {
+      "bytes": 621,
+      "redactions": 0,
+      "sha256": "cee62fee578431b424af04a398a5218a42c1a944531f0fcb827eb06f8d9cb5c6",
+      "truncated": false
+    },
+    "operation_id": "hub.list",
+    "outputs": [],
+    "parameters_redacted": {
+      "registry": "registry/producers.yaml"
+    },
+    "policy": {
+      "key_id": "prii-operations-test-2026-07",
+      "payload_sha256": "1ac9c0e97d68652fa5269744a506ead4cec42567dfce3ff7d1ae8f2b1e740365",
+      "policy_id": "prii-federation-ui-only-operations",
+      "sequence": 1
+    },
+    "previous_receipt_sha256": null,
+    "run_id": "fedd132875c443919206b9c87b6ba6d7",
+    "schema_version": "prii_execution_receipt_v1",
+    "started_at": "2026-07-27T06:33:31.414654Z",
+    "status": "succeeded",
+    "transaction": {
+      "phase_reached": "RECEIPT",
+      "rollback_state": "not_required",
+      "snapshot_sha256": null,
+      "strategy": "none"
+    },
+    "validators": [
+      {
+        "detail": "exit 0",
+        "name": "exit_code",
+        "status": "passed"
+      },
+      {
+        "name": "write_scope",
+        "status": "passed"
+      }
+    ]
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "prii-manager-certification",
+    "payload_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+    "value": "cKDIWatiZipphz7A3QU3qrhXcZNITbE3sMTKwPSBca5N10TiJkRXszYqu1Qmomg59qbXM2+SIqWB3nPGZ7PlCg=="
+  }
+}

@@ -130,7 +130,7 @@ HUB_OPERATIONS: dict[str, dict[str, Any]] = {
         "subcommand": "aggregate",
         "parameters": {
             "root": _p("directory", required=True),
-            "out": _p("managed_output_directory", default="data/aggregate"),
+            "out": _p("managed_output_directory", default="aggregate"),
             "non_strict": _p("boolean", default=False),
         },
         "argv": [
@@ -194,7 +194,7 @@ HUB_OPERATIONS: dict[str, dict[str, Any]] = {
         "subcommand": "ingest",
         "parameters": {
             "in_dir": _p("directory", required=True),
-            "db": _p("managed_sqlite_path", default="data/hub.db", extensions=[".db"]),
+            "db": _p("managed_sqlite_path", default="hub.db", extensions=[".db"]),
         },
         "argv": [_lit("--in"), _ref("in_dir"), _lit("--db"), _ref("db")],
     },
@@ -210,7 +210,7 @@ HUB_OPERATIONS: dict[str, dict[str, Any]] = {
         "subcommand": "analytics-v2",
         "parameters": {
             "in_dir": _p("directory", required=True),
-            "out": _p("managed_file", default="data/aggregate/federation_analytics_v2.json"),
+            "out": _p("managed_file", default="aggregate/federation_analytics_v2.json"),
         },
         "argv": [_lit("--in"), _ref("in_dir"), _lit("--out"), _ref("out")],
     },
@@ -218,7 +218,7 @@ HUB_OPERATIONS: dict[str, dict[str, Any]] = {
         "subcommand": "consume-sensor-fusion",
         "parameters": {
             "path": _p("file_token", required=True, extensions=[".json"]),
-            "out": _p("managed_file", default="data/dashboard/skywatcher_sensor_fusion.json"),
+            "out": _p("managed_file", default="dashboard/skywatcher_sensor_fusion.json"),
         },
         "argv": [_ref("path"), _lit("--out"), _ref("out")],
     },
