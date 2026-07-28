@@ -73,3 +73,41 @@ def test_backend_requirements_cover_unconditional_imports():
     }
     for package in ("fastapi", "uvicorn", "pyyaml", "cryptography", "jsonschema"):
         assert package in listed, f"{package} is imported by the backend but unlisted"
+
+
+def _ingest_workflow() -> str:
+    return (REPO_ROOT / ".github" / "workflows" / "federation-ingest.yml").read_text()
+
+
+def test_ingest_runs_the_producer_exports():
+    """`hub fetch` without `--run` silently degrades the fixture.
+
+    Only moneysweep-pr commits its canonical export package; the other five
+    materialise theirs by running their own export_canonical. Measured: without
+    --run the aggregate collapses to 200 entities / 9 collections, against 35,888
+    and 20 with it. A refresh PR built that way would replace real federation
+    data with a moneysweep-only stub, so this is pinned rather than trusted.
+    """
+    assert "hub fetch --root ws --run" in _ingest_workflow()
+
+
+def test_ingest_commits_the_bounded_sample_not_the_raw_aggregate():
+    """A full run is ~77 MB of JSONL and a 281 MB hub.db — not committable."""
+    workflow = _ingest_workflow()
+    assert "scripts/build_hub_fixture.py" in workflow
+    assert "hub aggregate --root ws" not in workflow
+
+
+def test_ingest_never_commits_the_database():
+    """data/hub.db is a gitignored build artifact, not fixture input."""
+    workflow = _ingest_workflow()
+    assert "git add data/aggregate data/fixture.json" in workflow
+    assert "git add data/hub.db" not in workflow
+    assert "data/hub.db" in (REPO_ROOT / ".gitignore").read_text()
+
+
+def test_ingest_gates_its_pr_on_substantive_drift():
+    """Without the gate this opens a timestamp-churn PR on every dispatch."""
+    workflow = _ingest_workflow()
+    assert "scripts/fixture_drift.py" in workflow
+    assert "steps.drift.outputs.drift == 'true'" in workflow
