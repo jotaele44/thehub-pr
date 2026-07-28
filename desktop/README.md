@@ -1,80 +1,46 @@
-# Run THEHUB as a desktop app
+# TheHub desktop
 
-Double-click the launcher for your system in the repo root:
+## Install on macOS — no Terminal
 
-| System | File |
-|---|---|
-| macOS | `PRII-THEHUB.command` |
-| Windows | `PRII-THEHUB.bat` |
-| Linux | `PRII-THEHUB.sh` |
+1. Open this repository's **Releases** page and download the latest
+   `PRII-THEHUB-macOS.dmg`.
+2. Open the disk image and drag **TheHub** to **Applications**.
+3. Open TheHub from Applications.
 
-The **first run** needs an internet connection once: it creates a private
-`.venv`, installs the Python dependencies, and builds the dashboard
-(requires [Python 3.10+](https://www.python.org/downloads/) and
-[Node.js](https://nodejs.org) to be installed). Every later run starts
-instantly and **works offline** — the app serves the data committed in this
-repository from a local server and shows it in a native window.
+The release contains its own Python runtime, local federation backend, compiled
+interface, registry, schemas, and readiness snapshot. Python, Node.js, Git,
+Homebrew, and Terminal are not required.
 
-Offline caveat: map basemap tiles are fetched from the internet
-(OpenStreetMap), so without a connection the map background is blank while
-all data, tables, and charts keep working.
+On first launch, the native **Setup & Repair** screen asks for a writable data
+location, verifies packaged resources and private loopback networking, and
+starts the app. TheHub creates its mutable SQLite store in that location.
+**Setup & Diagnostics** remains available in the lower-right corner; repair
+does not delete the store.
 
-## How it works
+## If macOS blocks the first open
 
-- `desktop/config.py` — the only per-repo file (title, paths, requirements).
-- `desktop/app_server.py` — reuses the existing FastAPI backend and also
-  serves the built dashboard from the same port (no CORS, one process).
-- `desktop/launch.py` — picks a free port, starts uvicorn, opens a native
-  [pywebview](https://pywebview.flowrl.com/) window (falls back to the
-  default browser). Flags: `--no-window`, `--browser`, `--smoke`.
-- `desktop/setup.py` — idempotent one-time setup (`--force` to redo).
+Open **System Settings → Privacy & Security**, find the message naming TheHub,
+and choose **Open Anyway**. No quarantine command is required. Release CI
+applies an ad-hoc integrity signature, but public downloads are not
+Apple-notarized unless a release is signed with project Developer ID
+credentials.
 
-## Command line
+The `PRII-THEHUB.app` committed in a source checkout is a Finder-only download
+helper. The self-contained product is the app inside the release disk image.
+`PRII Federation.app` is a legacy Finder-only alias to the same release helper;
+it is not required to use TheHub.
 
-```bash
-python desktop/setup.py          # one-time setup
-.venv/bin/python desktop/launch.py            # native window
-.venv/bin/python desktop/launch.py --browser  # browser tab instead
-.venv/bin/python desktop/launch.py --no-window  # server only
-```
+## Shared runtime and release contract
 
-## macOS app icon
+`packages/prii_desktop` owns native setup, repair, diagnostics, storage
+selection, single-instance handling, local-service lifecycle, and accessible
+in-app setup controls. Producer repositories contain only configuration and
+specialized server adapters.
 
-`PRII-THEHUB.app` is a double-click macOS app (Apple-silicon and Intel). Double-click
-it in Finder and the dashboard opens in its own window — no Terminal. The first
-launch runs the one-time setup (needs internet once, plus Node.js for the
-dashboard build); after that it starts straight away and works offline.
+The `desktop-build` workflow runs shared runtime tests, builds on clean Linux,
+macOS, and Windows runners, and tests both the fresh-machine setup contract and
+backend health on the frozen executable. macOS CI verifies the bundle signature
+before producing the `.dmg`.
 
-This repo also ships **`PRII Federation.app`** — the unified launcher. Double-click it to open a window listing all seven federation apps, each with a Launch button (it drives the sibling repos, so keep them cloned next to `thehub-pr`).
-
-Because the app is a small self-locating wrapper around `desktop/launch.py`, it
-must stay at the repo root (it finds the repo from its own location). If macOS
-blocks the first open, see **If macOS won't open the app** below.
-No-Python-required standalone builds are still produced separately by the
-`desktop-build` workflow.
-
-## If macOS won't open the app
-
-The apps are safe — both `PRII-THEHUB.app` and `PRII Federation.app` are
-open-source launcher scripts you can read in `Contents/MacOS/`. macOS blocks
-them only because they aren't signed with a paid Apple Developer ID or notarized
-by Apple, so the first open may show *"cannot be opened because Apple cannot
-check it for malicious software"* or an *"unidentified developer"* notice. That's
-macOS quarantining files downloaded from the internet (it happens especially with
-GitHub's **Download ZIP**). Any one of the following clears it — you only do this
-once per download:
-
-- **Easiest — run the helper.** Double-click **`Fix-Gatekeeper.command`** in the
-  repo root; it clears both apps at once. Then open either app normally. If the
-  helper is itself blocked, right-click it → **Open** to run it once.
-- **Terminal (always works).** Paste this into Terminal (pasting a command is
-  never blocked), then press Return:
-  ```bash
-  xattr -dr com.apple.quarantine "/path/to/thehub-pr/PRII-THEHUB.app" "/path/to/thehub-pr/PRII Federation.app"
-  ```
-  Tip: type `xattr -dr com.apple.quarantine ` (with a trailing space) and drag
-  each app onto the Terminal window to fill in its path.
-- **System Settings.** Double-click the app, let macOS block it, then open
-  **System Settings → Privacy & Security**, scroll to the message naming the app,
-  and click **Open Anyway**. On macOS Sequoia 15 and later this replaces the old
-  right-click → **Open** trick.
+Source-checkout setup scripts remain developer conveniences and are not part of
+end-user installation.

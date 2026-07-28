@@ -16,7 +16,8 @@ pytest.importorskip("httpx")
 from fastapi import FastAPI  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
-from prii_desktop import attach_spa  # noqa: E402
+from prii_desktop import appserver, attach_spa  # noqa: E402
+from prii_desktop.config import DesktopConfig  # noqa: E402
 
 
 def _minimal_app():
@@ -88,4 +89,19 @@ def test_missing_build_shows_setup_page(tmp_path):
     with TestClient(app) as client:
         r = client.get("/", headers={"accept": "text/html"})
     assert r.status_code == 503
-    assert "desktop/setup.py" in r.text
+    assert "Setup &amp; Repair" in r.text
+    assert "desktop/setup.py" not in r.text
+
+
+def test_preassembled_desktop_app_is_returned_directly(tmp_path, monkeypatch):
+    marker = object()
+    config = DesktopConfig(
+        app_title="Custom",
+        app_import="unused:app",
+        repo_root=tmp_path,
+        dist_dir=tmp_path,
+        desktop_app_import="desktop.app_server:app",
+    )
+    monkeypatch.setattr(appserver, "_load_object", lambda *_args: marker)
+
+    assert appserver.make_desktop_app(config) is marker

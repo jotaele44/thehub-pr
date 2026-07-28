@@ -24,8 +24,8 @@
     --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    --primary: 222 47% 11%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 225.5 89.7% 41.8%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
     --muted: 210 40% 96%;
@@ -36,20 +36,20 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214 32% 88%;
     --input: 214 32% 88%;
-    --ring: 217 91% 60%;
-    --chart-1: 217 80% 52%;
+    --ring: 225.5 89.7% 41.8%;
+    --chart-1: 225.5 89.7% 41.8%;
     --chart-2: 160 70% 36%;
     --chart-3: 38 92% 45%;
     --chart-4: 270 60% 55%;
     --chart-5: 200 80% 45%;
     --sidebar-background: 210 40% 98%;
     --sidebar-foreground: 215 16% 40%;
-    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary: 225.5 89.7% 41.8%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 40% 94%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 32% 88%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-ring: 225.5 89.7% 41.8%;
 
     /* Semantic status tokens. `-fg` is the readable text tone (darker on light),
        the base is used for tinted bg/border. */
@@ -71,8 +71,8 @@
     --card-foreground: 210 20% 92%;
     --popover: 223 17% 11%;
     --popover-foreground: 210 20% 92%;
-    --primary: 210 20% 92%;
-    --primary-foreground: 222 18% 7%;
+    --primary: 225.5 89.7% 41.8%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 223 15% 16%;
     --secondary-foreground: 210 20% 92%;
     --muted: 223 15% 16%;
@@ -83,20 +83,20 @@
     --destructive-foreground: 210 20% 98%;
     --border: 223 14% 18%;
     --input: 223 14% 18%;
-    --ring: 217 60% 60%;
-    --chart-1: 217 70% 60%;
+    --ring: 225.5 89.7% 58%;
+    --chart-1: 225.5 89.7% 58%;
     --chart-2: 160 60% 45%;
     --chart-3: 38 90% 58%;
     --chart-4: 270 60% 65%;
     --chart-5: 200 80% 60%;
     --sidebar-background: 224 20% 9%;
     --sidebar-foreground: 215 16% 65%;
-    --sidebar-primary: 217 70% 60%;
+    --sidebar-primary: 225.5 89.7% 41.8%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 223 15% 15%;
     --sidebar-accent-foreground: 210 20% 92%;
     --sidebar-border: 223 14% 15%;
-    --sidebar-ring: 217 60% 60%;
+    --sidebar-ring: 225.5 89.7% 58%;
 
     /* Dark status tones — `-fg` is the lighter text tone for dark surfaces. */
     --status-danger: 0 84.2% 60.2%;    --status-danger-fg: 0 93.5% 81.8%;

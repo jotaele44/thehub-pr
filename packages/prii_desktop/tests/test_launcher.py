@@ -11,11 +11,11 @@ import json
 import os
 import socket
 import sys
-from pathlib import Path
 
 import pytest
 
 from prii_desktop import launcher as launch
+from prii_desktop.config import DesktopConfig
 
 
 def test_display_url_plain():
@@ -88,6 +88,27 @@ def test_running_instance_within_startup_grace(tmp_path, monkeypatch):
     assert launch.running_instance_base(lock) == "http://127.0.0.1:1234"
 
 
+def test_write_lock_creates_writable_state_directory(tmp_path):
+    lock = tmp_path / "Application Support" / "thehub" / ".running"
+    launch.write_lock(lock, "http://127.0.0.1:1234", "http://127.0.0.1:1234/health")
+    assert json.loads(lock.read_text(encoding="utf-8"))["pid"] == os.getpid()
+
+
+def test_runtime_lock_is_outside_application_bundle(tmp_path, monkeypatch):
+    config = DesktopConfig(
+        app_title="TheHub",
+        app_import="server.backend.main:app",
+        repo_root=tmp_path / "TheHub.app",
+        dist_dir=tmp_path,
+        app_id="thehub",
+    )
+    support = tmp_path / "Application Support" / "PRII" / "thehub"
+    monkeypatch.setattr(launch, "state_directory", lambda _config: support)
+
+    assert launch.runtime_lock_file(config) == support / ".running"
+    assert not launch.runtime_lock_file(config).is_relative_to(config.repo_root)
+
+
 def test_running_instance_requires_health_after_grace(tmp_path, monkeypatch):
     lock = tmp_path / ".running"
     stale = {
@@ -115,3 +136,19 @@ def test_stale_pid_clears_lock(tmp_path):
     )
     assert launch.running_instance_base(lock) is None
     assert not lock.exists()
+
+
+def test_native_setup_control_is_keyboard_accessible(tmp_path):
+    config = DesktopConfig(
+        app_title="TheHub",
+        app_import="server.backend.main:app",
+        repo_root=tmp_path,
+        dist_dir=tmp_path,
+        app_id="thehub",
+        accent="#0B39CA",
+    )
+    script = launch.native_controls_js(config)
+    assert "Setup & Diagnostics" in script
+    assert "aria-label" in script
+    assert "minHeight: '44px'" in script
+    assert "open_setup()" in script

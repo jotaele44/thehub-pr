@@ -12,9 +12,15 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 # User-facing window title of the desktop app.
 APP_TITLE = "TheHub"
+APP_ID = "thehub"
+APP_ACCENT = "#0B39CA"
+APP_ICON = REPO_ROOT / "assets" / "branding" / "icon-256.png"
+RELEASES_URL = "https://github.com/jotaele44/thehub-pr/releases"
+SETUP_VERSION = 1
 
 # Dotted import path of the FastAPI application object.
 APP_IMPORT = "server.backend.main:app"
+DESKTOP_APP_IMPORT = "desktop.app_server:app"
 
 # Directory containing the Vite frontend (with package.json).
 FRONTEND_DIR = REPO_ROOT / "server" / "frontend"

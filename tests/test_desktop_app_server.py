@@ -72,4 +72,5 @@ def test_missing_build_shows_setup_page(tmp_path, monkeypatch):
     with TestClient(app_server.app) as client:
         r = client.get("/x/y/z", headers={"accept": "text/html"})
     assert r.status_code == 503
-    assert "desktop/setup.py" in r.text
+    assert "Setup &amp; Repair" in r.text
+    assert "Terminal" not in r.text

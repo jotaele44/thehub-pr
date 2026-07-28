@@ -12,6 +12,12 @@ on:
     branches: [main]
     paths:
       - "desktop/**"
+      - "assets/branding/**"
+      - "packages/prii_desktop/**"
+      - "server/frontend/**"
+      - "server/backend/**"
+      - "tools/build_program_icons.py"
+      - "tools/verify_desktop_branding.py"
       - "requirements-desktop.txt"
       - ".github/workflows/desktop-build.yml"
 
@@ -57,6 +63,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r server/backend/requirements.txt -r requirements-desktop.txt pyinstaller
 
+      - name: Test shared native setup runtime
+        run: |
+          pip install pytest
+          python -m pytest packages/prii_desktop/tests -q
+
+      - name: Verify visual branding and accessibility contract
+        run: |
+          python tools/build_program_icons.py --repo . --check
+          python tools/verify_desktop_branding.py --repo .
+
       - name: Freeze console build (for smoke test)
         env:
           PRII_CONSOLE: "1"
@@ -68,11 +84,19 @@ jobs:
           import pathlib, subprocess, sys
           name = "PRII-THEHUB"
           exe = pathlib.Path("dist-smoke") / name / (name + (".exe" if sys.platform == "win32" else ""))
-          result = subprocess.run([str(exe), "--smoke"], timeout=120)
-          sys.exit(result.returncode)
+          for mode in ("--setup-smoke", "--smoke"):
+              result = subprocess.run([str(exe), mode], timeout=120)
+              if result.returncode:
+                  sys.exit(result.returncode)
 
       - name: Freeze desktop app (windowed release)
         run: pyinstaller desktop/pyinstaller.spec --distpath dist-desktop --noconfirm
+
+      - name: Sign and verify macOS app integrity
+        if: runner.os == 'macOS'
+        run: |
+          codesign --force --deep --sign - "dist-desktop/PRII-THEHUB.app"
+          codesign --verify --deep --strict "dist-desktop/PRII-THEHUB.app"
 
       - name: Package bundle
         shell: bash

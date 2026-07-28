@@ -34,27 +34,29 @@ _MISSING_BUILD_CSS = (
 _MISSING_BUILD_PAGE = (
     '<!doctype html><html><head><meta charset="utf-8"><title>Setup needed</title>'
     f"<style>{_MISSING_BUILD_CSS}</style></head>"
-    "<body><h1>The dashboard isn't built yet</h1>"
-    "<p>Run <code>python desktop/setup.py</code> from the repository once (it "
-    "needs internet the first time) to build the interface, then reopen the app.</p>"
+    "<body><h1>The packaged interface is unavailable</h1>"
+    "<p>Open Setup &amp; Repair from the application to run diagnostics, or "
+    "reinstall the latest application release.</p>"
     "</body></html>"
 )
 
 
-def _load_app(config: DesktopConfig):
-    """Import the producer's FastAPI app object from ``config.app_import``."""
+def _load_object(import_path: str, repo_root: Path):
+    """Import an object from ``module:attribute`` inside a producer checkout."""
     # The repo root must be importable so "server.backend.main" resolves.
-    root = str(Path(config.repo_root).resolve())
+    root = str(Path(repo_root).resolve())
     if root not in sys.path:
         sys.path.insert(0, root)
-    module_path, _, attr = config.app_import.partition(":")
+    module_path, _, attr = import_path.partition(":")
     module = importlib.import_module(module_path)
     return getattr(module, attr or "app")
 
 
 def make_desktop_app(config: DesktopConfig):
     """Return the producer's FastAPI app augmented with same-origin SPA serving."""
-    app = _load_app(config)
+    if config.desktop_app_import:
+        return _load_object(config.desktop_app_import, config.repo_root)
+    app = _load_object(config.app_import, config.repo_root)
     return attach_spa(app, config.dist_dir)
 
 

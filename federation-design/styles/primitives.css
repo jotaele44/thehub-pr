@@ -7,7 +7,7 @@ body{font-family:var(--fd-font-sans);background:var(--fd-bg);color:var(--fd-text
 .fd-button{gap:.5rem;padding:.5rem .875rem}
 .fd-icon-button{min-width:var(--fd-touch-min);padding:.5rem;background:transparent;color:var(--fd-text)}
 .fd-button:disabled,.fd-icon-button:disabled{cursor:not-allowed;opacity:.55}
-.fd-button--primary{background:var(--fd-accent);color:#fff}
+.fd-button--primary{background:var(--fd-accent);color:var(--fd-accent-foreground,#fff)}
 .fd-button--secondary{background:var(--fd-surface-2);border-color:var(--fd-border);color:var(--fd-text)}
 .fd-button--ghost{background:transparent;color:var(--fd-text)}
 

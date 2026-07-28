@@ -1,9 +1,8 @@
 """Launch a PRII producer as a local desktop window (shared runtime).
 
-Starts uvicorn on a free localhost port in a background thread, waits for the
-backend health endpoint, then opens a native window (pywebview) — showing a
-"starting…" splash until the backend is ready. Falls back to the default browser
-when pywebview is unavailable.
+Opens a native first-run/repair surface, then starts uvicorn on a free localhost
+port in a background thread and loads the app after its health endpoint answers.
+Packaged users never need a shell, Python, Node.js, or Git.
 
 Ported verbatim from the per-repo ``desktop/launch.py``; the only difference is
 that the app title, health path, the ASGI app, and the single-instance lock file
@@ -15,6 +14,9 @@ Flags (from ``sys.argv``):
   --browser     skip pywebview and open the default browser
   --route PATH  open the window/browser on a client route (e.g. /launcher)
   --smoke       start, verify health, exit 0 (used by CI and setup checks)
+  --setup       open native setup and diagnostics before starting
+  --repair      alias for --setup
+  --setup-smoke verify the frozen first-run contract and exit (used by CI)
 """
 
 from __future__ import annotations
@@ -31,6 +33,15 @@ from pathlib import Path
 
 from .appserver import make_desktop_app
 from .config import DesktopConfig
+from .setup_ui import (
+    SetupBridge,
+    accent_foreground,
+    apply_setup_environment,
+    render_setup_html,
+    setup_complete,
+    setup_smoke,
+    state_directory,
+)
 
 # A just-launched instance is trusted for this long before its health endpoint
 # comes up, so a double-click during startup reuses it rather than racing a
@@ -145,6 +156,7 @@ def write_lock(lock_file: Path, base: str, health_url: str) -> None:
         {"pid": os.getpid(), "base": base, "health": health_url, "born": time.time()}
     )
     with contextlib.suppress(Exception):  # the lock is best-effort
+        lock_file.parent.mkdir(parents=True, exist_ok=True)
         lock_file.write_text(payload, encoding="utf-8")
 
 
@@ -160,8 +172,9 @@ def finish(server, lock_file: Path) -> None:
     path must end the process explicitly.
     """
     clear_lock(lock_file)
-    server.should_exit = True
-    time.sleep(0.3)
+    if server is not None:
+        server.should_exit = True
+        time.sleep(0.3)
     os._exit(0)
 
 
@@ -169,6 +182,11 @@ def free_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.bind(("127.0.0.1", 0))
         return sock.getsockname()[1]
+
+
+def runtime_lock_file(config: DesktopConfig) -> Path:
+    """Writable single-instance state outside the signed application bundle."""
+    return state_directory(config) / ".running"
 
 
 def start_server(config: DesktopConfig, port: int):
@@ -227,31 +245,112 @@ def _splash_html(message: str) -> str:
 def _error_html(message: str, detail: str) -> str:
     return _page(
         f"<h1>{message} could not start</h1>"
-        "<p>The local server did not become ready. Try again, or run "
-        "<code>python desktop/setup.py</code> from the repo to repair it.</p>"
+        "<p>The packaged local service did not become ready. Reopen Setup &amp; "
+        "Repair to run diagnostics, or reinstall the latest application release.</p>"
         f'<p style="color:#64748b">{detail}</p>'
     )
 
 
-def _run_window(server, config: DesktopConfig, lock_file: Path, base: str, url: str) -> None:
-    """Open a native window on a splash, then load the app once it is healthy."""
+def native_controls_js(config: DesktopConfig) -> str:
+    """Install the shared keyboard-accessible Setup & Diagnostics control."""
+    accent = json.dumps(config.accent)
+    foreground = json.dumps(accent_foreground(config.accent))
+    return f"""
+(() => {{
+  if (!/^https?:$/.test(window.location.protocol)) return;
+  if (document.getElementById('prii-native-setup')) return;
+  const button = document.createElement('button');
+  button.id = 'prii-native-setup';
+  button.type = 'button';
+  button.textContent = 'Setup & Diagnostics';
+  button.setAttribute('aria-label', 'Open native setup, repair, and diagnostics');
+  Object.assign(button.style, {{
+    position: 'fixed', right: '18px', bottom: '18px', zIndex: '2147483647',
+    minHeight: '44px', padding: '0 16px', borderRadius: '12px',
+    border: '1px solid rgba(255,255,255,.24)', background: {accent},
+    color: {foreground}, font: '700 13px -apple-system,Segoe UI,sans-serif',
+    boxShadow: '0 12px 34px rgba(0,0,0,.32)', cursor: 'pointer'
+  }});
+  button.addEventListener('focus', () => {{
+    button.style.outline = '3px solid ' + {accent};
+    button.style.outlineOffset = '3px';
+  }});
+  button.addEventListener('blur', () => {{ button.style.outline = 'none'; }});
+  button.addEventListener('click', () => window.pywebview.api.open_setup());
+  document.body.appendChild(button);
+}})();
+"""
+
+
+def _run_window(
+    config: DesktopConfig,
+    lock_file: Path,
+    base: str,
+    url: str,
+    *,
+    force_setup: bool = False,
+) -> None:
+    """Open one native window and lazily start the packaged local service."""
     import webview
 
-    window = webview.create_window(
-        config.app_title, html=_splash_html(config.app_title), width=1280, height=860
+    server_holder: dict[str, object] = {}
+    start_lock = threading.Lock()
+
+    def _start_app() -> None:
+        with start_lock:
+            try:
+                apply_setup_environment(config)
+                if "server" not in server_holder:
+                    server_holder["server"] = start_server(config, int(base.rsplit(":", 1)[1]))
+                wait_healthy(base + config.health_path)
+                window.load_url(url)
+            except BaseException as exc:  # noqa: BLE001 - keep recovery UI available
+                clear_lock(lock_file)
+                log(f"backend failed to start: {exc}")
+                window.load_html(
+                    render_setup_html(
+                        config,
+                        message=f"The packaged local service could not start: {exc}",
+                    )
+                )
+
+    bridge = SetupBridge(
+        config,
+        health_url=base + config.health_path,
+        start_callback=_start_app,
     )
+    needs_setup = force_setup or not setup_complete(config)
+    initial_html = (
+        render_setup_html(config)
+        if needs_setup
+        else _splash_html(config.app_title)
+    )
+    window = webview.create_window(
+        config.app_title,
+        html=initial_html,
+        js_api=bridge,
+        width=1280,
+        height=860,
+        background_color="#080b12",
+    )
+    bridge.bind_window(window)
+
+    def _install_native_controls() -> None:
+        with contextlib.suppress(Exception):
+            window.evaluate_js(native_controls_js(config))
+
+    window.events.loaded += _install_native_controls
 
     def _on_ready() -> None:
-        try:
-            wait_healthy(base + config.health_path)
-            window.load_url(url)
-        except BaseException as exc:  # noqa: BLE001 - show a friendly page, keep window open
-            clear_lock(lock_file)  # this instance never became ready
-            log(f"backend failed to start: {exc}")
-            window.load_html(_error_html(config.app_title, str(exc)))
+        if not needs_setup:
+            threading.Thread(
+                target=_start_app,
+                name="prii-start-packaged-app",
+                daemon=True,
+            ).start()
 
     webview.start(_on_ready)
-    finish(server, lock_file)
+    finish(server_holder.get("server"), lock_file)
 
 
 def _block_until_interrupt(server, lock_file: Path) -> None:
@@ -273,8 +372,9 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
     argv = list(sys.argv[1:] if argv is None else argv)
     args = set(argv)
     # Records the running instance (pid + url) so a second double-click reuses it
-    # instead of starting another server. Lives beside the repo's desktop shim.
-    lock_file = Path(config.repo_root) / "desktop" / ".running"
+    # instead of starting another server. Application Support stays writable
+    # when the signed bundle itself lives in read-only /Applications.
+    lock_file = runtime_lock_file(config)
 
     port = free_port()
     base = f"http://127.0.0.1:{port}"
@@ -284,7 +384,7 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
     # reuse a running instance instead of starting a second server, applying THIS
     # launch's --route to the existing origin. Claim the lock up front so a
     # double-click during startup reuses us rather than racing a second server.
-    if not (args & {"--smoke", "--no-window"}):
+    if not (args & {"--smoke", "--setup-smoke", "--no-window"}):
         existing = running_instance_base(lock_file)
         if existing:
             import webbrowser
@@ -295,8 +395,27 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
             return
         write_lock(lock_file, base, base + config.health_path)
 
-    server = start_server(config, port)
+    if "--setup-smoke" in args:
+        ok, checks = setup_smoke(config)
+        log(json.dumps({"ok": ok, "checks": checks}, sort_keys=True))
+        raise SystemExit(0 if ok else 1)
 
+    if "--browser" not in args and not (args & {"--smoke", "--no-window"}):
+        try:
+            _run_window(
+                config,
+                lock_file,
+                base,
+                url,
+                force_setup=bool(args & {"--setup", "--repair"}),
+            )
+            return
+        except Exception as exc:  # noqa: BLE001 - dev-only browser fallback
+            clear_lock(lock_file)
+            log(f"native window unavailable ({exc}); opening the default browser.")
+
+    apply_setup_environment(config)
+    server = start_server(config, port)
     if "--smoke" in args:
         # Absolute backstop: a frozen build must never hang the CI job. If the
         # normal exit below is somehow not reached, force-terminate.
@@ -324,13 +443,6 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
         log(f"{config.app_title} running at {url} (Ctrl+C to stop)")
         _block_until_interrupt(server, lock_file)
         return
-
-    if "--browser" not in args:
-        try:
-            _run_window(server, config, lock_file, base, url)
-            return
-        except Exception as exc:  # noqa: BLE001 - fall back to the browser
-            log(f"pywebview unavailable ({exc}); opening the default browser.")
 
     import webbrowser
 

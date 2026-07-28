@@ -26,6 +26,8 @@ so CI or a reviewer can prove the committed binaries match the master.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import json
 import filecmp
 import math
 import statistics
@@ -62,9 +64,21 @@ PROGRAMS = {
     },
 }
 
+# Deliberate accessible UI accents. Artwork sampling remains useful as an audit
+# signal, but product colours are stable API and must not drift when an image
+# encoder or sampling implementation changes.
+BRAND_ACCENTS = {
+    "aguayluz-pr": "#12E0D6",
+    "centinelas-pr": "#E3680F",
+    "skywatcher-pr": "#0B9DEE",
+    "spiderweb-pr": "#DC1606",
+    "thehub-pr": "#0B39CA",
+}
+
 # Served by the app over HTTP: apple-touch-icon and the PWA manifest pair. The
-# favicon itself is inlined as a data URI in index.html, so it needs no file.
-PUBLIC_FILES = ("icon-180.png", "icon-192.png", "icon-512.png")
+# favicon is a normal file so browsers, installed PWAs, and package audits all
+# consume the same generated source.
+PUBLIC_FILES = ("icon-32.png", "icon-180.png", "icon-192.png", "icon-512.png")
 
 # Imported as a module by the frontend and inlined into the bundle, so the
 # offline single-file export stays self-contained.
@@ -72,7 +86,12 @@ SRC_ASSET = "icon-64.png"
 
 # spiderweb-pr's no-build dashboard is copied file-by-file into static exports,
 # so it keeps real files rather than module imports.
-STANDALONE = {"spiderweb-pr": ("dashboard", ("icon-64.png", "icon-180.png"))}
+STANDALONE = {
+    "spiderweb-pr": (
+        "dashboard",
+        ("icon-32.png", "icon-64.png", "icon-180.png"),
+    )
+}
 
 MASTER = Path("assets/branding/icon.png")
 
@@ -166,6 +185,41 @@ def build(master_path: Path, out_dir: Path) -> list[Path]:
     return written
 
 
+def sha256(path: Path) -> str:
+    """Return a lowercase SHA-256 digest for a committed branding artifact."""
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def write_manifest(
+    master_path: Path,
+    built: list[Path],
+    out_dir: Path,
+    *,
+    accent: str,
+) -> Path:
+    """Record source provenance and every deterministic derivative digest."""
+    with Image.open(master_path) as master:
+        dimensions = list(master.size)
+        mode = master.mode
+    manifest = {
+        "schema": "prii-branding/v1",
+        "source": "icon.png",
+        "source_sha256": sha256(master_path),
+        "source_dimensions": dimensions,
+        "source_mode": mode,
+        "accent": accent,
+        "derivatives": {
+            path.name: {"sha256": sha256(path)} for path in sorted(built)
+        },
+    }
+    destination = out_dir / "manifest.json"
+    destination.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return destination
+
+
 def consumer_targets(repo: Path, name: str, staged: Path) -> list[tuple[Path, Path]]:
     """Every committed copy of the art outside assets/branding/, as (built, dest).
 
@@ -213,12 +267,20 @@ def process(repo: Path, check: bool) -> bool:
         return False
 
     out_dir = repo / MASTER.parent
-    accent = sample_accent(Image.open(master_path))
+    sampled_accent = sample_accent(Image.open(master_path))
+    accent = BRAND_ACCENTS.get(repo.name, sampled_accent).upper()
 
     with tempfile.TemporaryDirectory() as tmp:
         staged = Path(tmp)
         built = build(master_path, staged)
+        manifest = write_manifest(
+            master_path,
+            built,
+            staged,
+            accent=accent,
+        )
         pairs = [(b, out_dir / b.name) for b in built]
+        pairs.append((manifest, out_dir / manifest.name))
         pairs += consumer_targets(repo, repo.name, staged)
         drifted = sync(pairs, check)
 
@@ -226,7 +288,8 @@ def process(repo: Path, check: bool) -> bool:
         print(f"  DRIFT ({len(drifted)}): " + ", ".join(drifted[:4]) + (" …" if len(drifted) > 4 else ""))
         return False
     verb = "verified" if check else "wrote"
-    print(f"  accent {accent}  ->  {verb} {len(pairs)} files")
+    sample_note = "" if accent.lower() == sampled_accent else f" (sample {sampled_accent})"
+    print(f"  accent {accent}{sample_note}  ->  {verb} {len(pairs)} files")
     return True
 
 
