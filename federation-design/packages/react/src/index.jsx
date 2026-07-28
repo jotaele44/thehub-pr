@@ -1,18 +1,17 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import {
+  FEDERATION_PRESENTATION_TONES,
+  federationStatusRole,
+  federationTone,
+  resolveFederationSemantic,
+} from './semantics.js'
+
+export * from './semantics.js'
 
 function cx(...values) {
   return values.filter(Boolean).join(' ')
 }
 
-/*
- * Shared theme controller for the whole federation. It writes BOTH signals so
- * the two styling layers stay in agreement:
- *   - `.dark` class on <html>      → Tailwind `darkMode: ["class"]`
- *   - `data-theme="dark|light"`    → shared federation.css tokens
- * It also stamps `data-repo` so each app picks up its own accent from
- * federation.css. Preference resolves stored value → OS preference → light,
- * and is persisted per-repo so sibling apps don't fight over one key.
- */
 const ThemeContext = createContext(null)
 
 function resolveInitialTheme(storageKey) {
@@ -22,9 +21,10 @@ function resolveInitialTheme(storageKey) {
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
-export function FederationThemeProvider({ repo, defaultTheme, children }) {
+export function FederationThemeProvider({ repo, defaultTheme, allowedThemes = ['light', 'dark'], children }) {
   const storageKey = `fd-theme:${repo || 'default'}`
-  const [theme, setThemeState] = useState(() => defaultTheme || resolveInitialTheme(storageKey))
+  const initial = defaultTheme || resolveInitialTheme(storageKey)
+  const [theme, setThemeState] = useState(() => allowedThemes.includes(initial) ? initial : allowedThemes[0] || 'light')
 
   useEffect(() => {
     const root = document.documentElement
@@ -34,14 +34,15 @@ export function FederationThemeProvider({ repo, defaultTheme, children }) {
     try { window.localStorage.setItem(storageKey, theme) } catch { /* private mode */ }
   }, [theme, repo, storageKey])
 
-  const setTheme = useCallback((next) => setThemeState(next === 'dark' ? 'dark' : 'light'), [])
-  const toggleTheme = useCallback(() => setThemeState((t) => (t === 'dark' ? 'light' : 'dark')), [])
+  const setTheme = useCallback((next) => {
+    if (allowedThemes.includes(next)) setThemeState(next)
+  }, [allowedThemes])
+  const toggleTheme = useCallback(() => {
+    if (allowedThemes.length < 2) return
+    setThemeState((current) => current === 'dark' ? 'light' : 'dark')
+  }, [allowedThemes])
 
-  return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  )
+  return <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, allowedThemes }}>{children}</ThemeContext.Provider>
 }
 
 export function useFederationTheme() {
@@ -50,79 +51,172 @@ export function useFederationTheme() {
   return ctx
 }
 
-export function FederationButton({ variant = 'primary', className, type = 'button', ...props }) {
-  return <button type={type} className={cx('fd-button', `fd-button--${variant}`, 'fd-focus', className)} {...props} />
+export function FederationButton({ variant = 'primary', className, type = 'button', loading = false, disabled, children, ...props }) {
+  return (
+    <button
+      type={type}
+      className={cx('fd-button', `fd-button--${variant}`, 'fd-focus', className)}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      {...props}
+    >
+      {loading ? <span className="fd-spinner" aria-hidden="true" /> : null}
+      {children}
+    </button>
+  )
+}
+
+export function FederationIconButton({ label, 'aria-label': ariaLabel, className, type = 'button', children, ...props }) {
+  const accessibleName = ariaLabel || label
+  if (!accessibleName) throw new Error('FederationIconButton requires label or aria-label')
+  return (
+    <button type={type} className={cx('fd-icon-button', 'fd-focus', className)} aria-label={accessibleName} {...props}>
+      <span aria-hidden="true">{children}</span>
+    </button>
+  )
 }
 
 export function FederationPanel({ as: Component = 'section', className, ...props }) {
   return <Component className={cx('fd-panel', className)} {...props} />
 }
 
-// Canonical federation status vocabulary — the single shared set across the hub
-// and producers (see federation.css --fd-st-* + thehub-pr src/lib/chips.js).
-export const FEDERATION_STATUS_ROLES = [
-  'danger', 'success', 'warning', 'info', 'neutral', 'process', 'tier', 'caution', 'elevated',
-]
+export const FEDERATION_STATUS_ROLES = FEDERATION_PRESENTATION_TONES
+export { federationStatusRole, federationTone }
 
-// Coarse node-health aliases → canonical roles, so existing `.fd-status` values keep working.
-const STATUS_ALIASES = {
-  operational: 'success', degraded: 'warning', critical: 'danger',
-  offline: 'neutral', information: 'info', analysis: 'process',
-}
-
-// Resolve any status value (canonical role or alias) to a canonical role.
-export function federationStatusRole(status) {
-  const v = String(status || 'neutral').toLowerCase()
-  return STATUS_ALIASES[v] || v
-}
-
-// Style your own element as a status pill without importing the badge component:
-// <span {...federationTone('warning')}>…</span>
-export function federationTone(status) {
-  return { className: 'fd-status', 'data-status': federationStatusRole(status) }
-}
-
-export function FederationStatusBadge({ status, children, className, ...props }) {
-  const role = federationStatusRole(status)
+export function FederationSemanticBadge({ kind, value, label, children, className, ...props }) {
+  const semantic = resolveFederationSemantic(kind, value)
   return (
-    <span className={cx('fd-status', `fd-status--${role}`, className)} data-status={role} {...props}>
-      {children ?? String(status ?? role)}
+    <span
+      className={cx('fd-badge', className)}
+      data-kind={semantic.kind}
+      data-value={semantic.value}
+      data-tone={semantic.tone}
+      {...props}
+    >
+      {children ?? label ?? semantic.label}
     </span>
   )
 }
 
-// `icon` is an already-rendered node (e.g. a lucide element) — the package never
-// imports an icon library, keeping it dependency-free.
-//
-// `inline` renders the compact variant: a single muted line sized to sit inside
-// a dense pane or list, next to sibling status lines like "Loading…". The block
-// variant (default) is the full centered treatment with the icon tile. Inline
-// drops the heading level too — a one-line pane message shouldn't inject an
-// <h2> into the document outline.
+export function FederationStatusBadge({ status, kind = 'presentation', children, className, ...props }) {
+  if (kind === 'presentation') {
+    const tone = federationStatusRole(status)
+    return (
+      <span
+        className={cx('fd-status', 'fd-badge', `fd-status--${tone}`, className)}
+        data-kind="presentation"
+        data-value={String(status ?? tone)}
+        data-status={tone}
+        data-tone={tone}
+        {...props}
+      >
+        {children ?? String(status ?? tone)}
+      </span>
+    )
+  }
+  const semantic = resolveFederationSemantic(kind, status)
+  return (
+    <span
+      className={cx('fd-status', 'fd-badge', `fd-status--${semantic.tone}`, className)}
+      data-kind={semantic.kind}
+      data-value={semantic.value}
+      data-status={semantic.tone}
+      data-tone={semantic.tone}
+      {...props}
+    >
+      {children ?? semantic.label}
+    </span>
+  )
+}
+
+export function FederationEvidenceTierBadge({ tier = 'ungraded', ...props }) {
+  return <FederationSemanticBadge kind="evidenceTier" value={tier} {...props} />
+}
+
+export function FederationConfidenceBadge({ confidence = 'unknown', ...props }) {
+  return <FederationSemanticBadge kind="confidence" value={confidence} {...props} />
+}
+
+export function FederationProvenanceBadge({ state = 'missing', ...props }) {
+  return <FederationSemanticBadge kind="provenance" value={state} {...props} />
+}
+
+export function FederationFreshnessBadge({ freshness = 'unknown', ...props }) {
+  return <FederationSemanticBadge kind="freshness" value={freshness} {...props} />
+}
+
+export function FederationSourceBadge({ source, sourceId, verified = false, className, children, ...props }) {
+  const text = children ?? source ?? sourceId ?? 'Unknown source'
+  return (
+    <span className={cx('fd-source-badge', className)} data-verified={verified ? 'true' : 'false'} {...props}>
+      {text}
+    </span>
+  )
+}
+
+// Emits both class families on purpose. `fd-state*` is the v0.4 vocabulary;
+// `fd-empty-state*` is the v0.3 hook that consumers may already style or query.
+// states.css keeps the v0.3 rules and tests/contracts.test.mjs asserts they stay
+// available — but those rules only mean anything if the component still emits
+// the classes they match, so the compatibility contract is enforced here.
 export function FederationEmptyState({ icon, title, description, action, inline, className, ...props }) {
   const Title = inline ? 'p' : 'h2'
   return (
     <div
-      className={cx('fd-empty-state', inline && 'fd-empty-state--inline', className)}
+      className={cx(
+        'fd-state', 'fd-state--empty', 'fd-empty-state',
+        inline && 'fd-state--inline', inline && 'fd-empty-state--inline',
+        className,
+      )}
       role="status"
+      aria-live="polite"
       {...props}
     >
-      {icon ? <div className="fd-empty-state__icon" aria-hidden="true">{icon}</div> : null}
-      <Title className="fd-empty-state__title">{title}</Title>
-      {description ? <p className="fd-empty-state__description">{description}</p> : null}
-      {action ? <div className="fd-empty-state__action">{action}</div> : null}
+      {icon ? <div className="fd-state__icon fd-empty-state__icon" aria-hidden="true">{icon}</div> : null}
+      <Title className="fd-state__title fd-empty-state__title">{title}</Title>
+      {description ? <p className="fd-state__description fd-empty-state__description">{description}</p> : null}
+      {action ? <div className="fd-state__action fd-empty-state__action">{action}</div> : null}
     </div>
   )
 }
 
-// Metric tile. `value` is the headline figure; `icon` (optional) is a rendered
-// node; `sub` an optional caption; `alert` tints the icon with the danger token.
-//
-// `tone` tints the *value* with a canonical status role (see
-// FEDERATION_STATUS_ROLES), replacing the per-repo Tailwind literals producers
-// used to pass (`text-emerald-300`, `text-amber-300`, …). Accepts aliases too,
-// so `tone="operational"` resolves to `success`. Omit it for the default text
-// color — untinted tiles stay untouched.
+function FederationStateMessage({ state, title, description, action, icon, inline, busy = false, className, ...props }) {
+  const semantic = resolveFederationSemantic('asyncState', state)
+  const role = semantic.value === 'error' ? 'alert' : 'status'
+  const live = semantic.value === 'error' ? 'assertive' : 'polite'
+  const Title = inline ? 'p' : 'h2'
+  return (
+    <div
+      className={cx('fd-state', `fd-state--${semantic.value}`, inline && 'fd-state--inline', className)}
+      data-tone={semantic.tone}
+      role={role}
+      aria-live={live}
+      aria-busy={busy || undefined}
+      {...props}
+    >
+      {icon ? <div className="fd-state__icon" aria-hidden="true">{icon}</div> : null}
+      {semantic.value === 'loading' ? <span className="fd-spinner fd-state__spinner" aria-hidden="true" /> : null}
+      <Title className="fd-state__title">{title ?? semantic.label}</Title>
+      {description ? <p className="fd-state__description">{description}</p> : null}
+      {action ? <div className="fd-state__action">{action}</div> : null}
+    </div>
+  )
+}
+
+export function FederationLoadingState(props) { return <FederationStateMessage state="loading" busy {...props} /> }
+export function FederationErrorState(props) { return <FederationStateMessage state="error" {...props} /> }
+export function FederationFilteredEmptyState(props) { return <FederationStateMessage state="filtered_empty" {...props} /> }
+export function FederationOfflineState(props) { return <FederationStateMessage state="offline" {...props} /> }
+export function FederationDegradedState(props) { return <FederationStateMessage state="degraded" {...props} /> }
+export function FederationPartialDataState(props) { return <FederationStateMessage state="partial" {...props} /> }
+export function FederationStaleDataState(props) { return <FederationStateMessage state="stale" {...props} /> }
+
+export function FederationAsyncState({ state = 'idle', children, ...props }) {
+  if (state === 'ready' || state === 'success') return children
+  if (state === 'empty') return <FederationEmptyState {...props} />
+  return <FederationStateMessage state={state} {...props} />
+}
+
 export function FederationStatCard({ label, value, icon, sub, alert, tone, className, ...props }) {
   return (
     <div className={cx('fd-stat-card', alert && 'fd-stat-card--alert', className)} {...props}>
@@ -130,9 +224,7 @@ export function FederationStatCard({ label, value, icon, sub, alert, tone, class
         <span className="fd-stat-card__label">{label}</span>
         {icon ? <span className="fd-stat-card__icon" aria-hidden="true">{icon}</span> : null}
       </div>
-      <div className="fd-stat-card__value" data-tone={tone ? federationStatusRole(tone) : undefined}>
-        {value}
-      </div>
+      <div className="fd-stat-card__value" data-tone={tone ? federationStatusRole(tone) : undefined}>{value}</div>
       {sub ? <div className="fd-stat-card__sub">{sub}</div> : null}
     </div>
   )
