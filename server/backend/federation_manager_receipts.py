@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import base64
 import json
+import logging
 import os
 import uuid
 from dataclasses import dataclass
@@ -31,7 +32,10 @@ from server.backend.federation_manager_operations import canonical_json, sha256_
 from server.backend.federation_manager_transactions import write_atomic
 
 RECEIPT_SCHEMA_VERSION = "prii_execution_receipt_v1"
-GATE_EVIDENCE_SCHEMA_VERSION = "prii_gate_evidence_v1"
+ATTESTATION_SCHEMA_VERSION = "prii_gate_attestation_v1"
+#: v2 adds gate profiles. A profile records *what a gate set measures*, so a
+#: slice-scoped run cannot be mistaken for a vector-wide one.
+GATE_EVIDENCE_SCHEMA_VERSION = "prii_gate_evidence_v2"
 
 
 class ReceiptError(RuntimeError):
@@ -92,10 +96,10 @@ class ReceiptSigner:
             format=serialization.PublicFormat.SubjectPublicKeyInfo,
         )
 
-    def sign(self, body: Mapping[str, Any]) -> Dict[str, Any]:
+    def _sign_envelope(self, body: Mapping[str, Any], envelope_key: str) -> Dict[str, Any]:
         payload = canonical_json(body)
         return {
-            "receipt": dict(body),
+            envelope_key: dict(body),
             "signature": {
                 "key_id": self.key_id,
                 "algorithm": "Ed25519",
@@ -103,6 +107,58 @@ class ReceiptSigner:
                 "payload_sha256": sha256_hex(payload),
             },
         }
+
+    def sign(self, body: Mapping[str, Any]) -> Dict[str, Any]:
+        return self._sign_envelope(body, "receipt")
+
+    def sign_attestation(self, body: Mapping[str, Any]) -> Dict[str, Any]:
+        return self._sign_envelope(body, "attestation")
+
+    def private_key_pem(self) -> bytes:
+        from cryptography.hazmat.primitives import serialization
+
+        return self._key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption(),
+        )
+
+
+#: Path to the manager's persisted Ed25519 signing key, in PEM form.
+RECEIPT_SIGNING_KEY_ENV = "PRII_MANAGER_RECEIPT_SIGNING_KEY"
+
+
+def signer_from_environment(key_id: str = "prii-manager-local") -> ReceiptSigner:
+    """Load the manager signing key from disk, falling back to an ephemeral one.
+
+    Receipts *are* the gate evidence, so a key that dies with the process
+    silently invalidates every receipt written before the last restart: the
+    documents remain on disk and keep parsing, but nothing verifies them any
+    more, so gates that were derived quietly stop being derivable. That failure
+    is invisible at the point it matters, which is why the persisted key is the
+    supported deployment.
+
+    The ephemeral fallback is kept so a developer run works with no setup, but
+    it says so at WARNING rather than degrading quietly.
+    """
+    configured = os.environ.get(RECEIPT_SIGNING_KEY_ENV, "").strip()
+    if configured:
+        path = Path(configured)
+        if not path.exists():
+            raise ReceiptError(
+                f"{RECEIPT_SIGNING_KEY_ENV} points at {path}, which does not exist. "
+                "Refusing to fall back to an ephemeral key: a deployment that asked for "
+                "durable receipts should fail loudly rather than write evidence that "
+                "stops verifying at the next restart."
+            )
+        return ReceiptSigner.from_pem(path.read_bytes(), key_id)
+
+    logging.getLogger("hub.manager.receipts").warning(
+        "%s is unset; signing receipts with an ephemeral key. Receipts written by this "
+        "process will not verify after a restart and will stop counting as gate evidence.",
+        RECEIPT_SIGNING_KEY_ENV,
+    )
+    return ReceiptSigner.generate(key_id)
 
 
 def verify_receipt(
@@ -304,6 +360,138 @@ class ReceiptStore:
         return problems
 
 
+# ── attestations ────────────────────────────────────────────────────────────
+
+
+@dataclass
+class AttestationInputs:
+    """A machine-produced claim about something no execution can demonstrate.
+
+    Some gates are about code that must *never* run (no ``shell=True``), about
+    an absence (no deletion endpoint exists), or about a host this process is
+    not running on (a real macOS Keychain). No receipt can attest to any of
+    them, because a receipt is a record of something that executed.
+
+    An attestation closes that gap without reopening the hole G14 exists to
+    shut: it is emitted by a test run or a certification script, signed with the
+    same manager key, and verified the same way. A human cannot write one by
+    hand any more than they can forge a receipt, so ``passed`` remains derived
+    rather than asserted.
+    """
+
+    attestation_id: str
+    kind: str
+    produced_by: str
+    result: str
+    environment: Mapping[str, Any]
+    details: Mapping[str, Any]
+
+
+#: Attestation kinds. Deliberately a closed set -- a new kind should be a
+#: deliberate act, not something a caller invents at a call site.
+ATTESTATION_KINDS = ("static_analysis", "forced_failure_test", "operator_certification")
+
+ATTESTATION_RESULTS = ("satisfied", "refuted")
+
+
+def build_attestation_body(data: AttestationInputs) -> Dict[str, Any]:
+    if data.kind not in ATTESTATION_KINDS:
+        raise ReceiptError(f"unknown attestation kind: {data.kind}")
+    if data.result not in ATTESTATION_RESULTS:
+        raise ReceiptError(f"unknown attestation result: {data.result}")
+    return {
+        "schema_version": ATTESTATION_SCHEMA_VERSION,
+        "attestation_id": data.attestation_id,
+        "kind": data.kind,
+        "produced_by": data.produced_by,
+        "produced_at": utc_now_iso(),
+        "result": data.result,
+        "environment": dict(data.environment),
+        "details": dict(data.details),
+    }
+
+
+def verify_attestation(
+    document: Mapping[str, Any],
+    *,
+    public_key_pem: bytes,
+    schema: Optional[Mapping[str, Any]] = None,
+) -> str:
+    """Verify one attestation and return its canonical digest.
+
+    Raises rather than returning a boolean, for the same reason
+    ``verify_receipt`` does: a caller who forgets to check a boolean would treat
+    a forged claim as evidence.
+    """
+    from cryptography.exceptions import InvalidSignature
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+    from cryptography.hazmat.primitives.serialization import load_pem_public_key
+
+    if schema is not None:
+        Draft202012Validator(schema, format_checker=RELEASE_FORMAT_CHECKER).validate(document)
+
+    body = document["attestation"]
+    signature = document["signature"]
+    payload = canonical_json(body)
+    digest = sha256_hex(payload)
+
+    if digest != signature["payload_sha256"]:
+        raise ReceiptError("attestation digest does not match its signature block")
+
+    key = load_pem_public_key(public_key_pem)
+    if not isinstance(key, Ed25519PublicKey):
+        raise ReceiptError("attestation verification key is not Ed25519")
+    try:
+        key.verify(base64.b64decode(signature["value"], validate=True), payload)
+    except (InvalidSignature, ValueError) as exc:
+        raise ReceiptError("attestation signature verification failed") from exc
+
+    return digest
+
+
+class AttestationStore:
+    """Attestations on disk. Flat, not chained.
+
+    Receipts are chained because the *sequence* of executions is part of what
+    they prove. An attestation is a standalone claim about a property, so a
+    chain would add ordering semantics that carry no meaning and would break
+    whenever two independent test runs wrote in either order.
+    """
+
+    def __init__(self, root: Path, signer: ReceiptSigner, schema: Optional[Mapping[str, Any]] = None):
+        self.root = Path(root)
+        self.root.mkdir(parents=True, exist_ok=True)
+        self._signer = signer
+        self._schema = schema
+
+    @property
+    def signer(self) -> ReceiptSigner:
+        return self._signer
+
+    def path_for(self, attestation_id: str) -> Path:
+        return self.root / f"{attestation_id}.attestation.json"
+
+    def write(self, data: AttestationInputs) -> Dict[str, Any]:
+        document = self._signer.sign_attestation(build_attestation_body(data))
+        if self._schema is not None:
+            Draft202012Validator(self._schema, format_checker=RELEASE_FORMAT_CHECKER).validate(
+                document
+            )
+        write_atomic(
+            self.path_for(data.attestation_id),
+            json.dumps(document, indent=2, sort_keys=True) + "\n",
+        )
+        return document
+
+    def all_documents(self) -> List[Dict[str, Any]]:
+        documents = [
+            json.loads(path.read_text(encoding="utf-8"))
+            for path in self.root.glob("*.attestation.json")
+        ]
+        documents.sort(key=lambda d: d["attestation"]["produced_at"])
+        return documents
+
+
 # ── gate evaluation ─────────────────────────────────────────────────────────
 
 
@@ -314,9 +502,20 @@ class GateRule:
     blocking: bool = True
     #: Operations whose successful receipts satisfy this gate.
     required_operations: Sequence[str] = ()
+    #: Attestation IDs that must be present, verified, and ``satisfied``.
+    required_attestations: Sequence[str] = ()
     #: Set when the gate cannot be evaluated from receipts in this environment.
     blocked_reason: str = ""
     deferred_reason: str = ""
+
+
+def _as_key_list(value) -> List[bytes]:
+    """Normalise one PEM or several into a list. ``None`` means "not configured"."""
+    if value is None:
+        return []
+    if isinstance(value, (bytes, bytearray)):
+        return [bytes(value)]
+    return [bytes(item) for item in value]
 
 
 def evaluate_gates(
@@ -327,11 +526,17 @@ def evaluate_gates(
     schema: Optional[Mapping[str, Any]] = None,
     annotations: Optional[Mapping[str, Sequence[Mapping[str, Any]]]] = None,
     policy_sha256: Optional[str] = None,
+    attestations: Sequence[Mapping[str, Any]] = (),
+    attestation_schema: Optional[Mapping[str, Any]] = None,
+    #: One PEM, or several when attestations come from different signers.
+    attestation_public_key_pem: Optional[Any] = None,
+    profile_id: str = "",
+    profile_scope: str = "",
 ) -> Dict[str, Any]:
-    """Derive gate status from verified receipts only.
+    """Derive gate status from verified receipts and attestations only.
 
     A receipt that fails verification contributes nothing -- it is not "evidence
-    we could not check", it is not evidence.
+    we could not check", it is not evidence. The same is true of an attestation.
     """
     annotations = annotations or {}
     verified: List[tuple[Mapping[str, Any], str]] = []
@@ -341,6 +546,31 @@ def evaluate_gates(
         except (ReceiptError, Exception):  # noqa: BLE001 - unverifiable is simply excluded
             continue
         verified.append((document["receipt"], digest))
+
+    # Attestations may legitimately come from more than one signer. The static
+    # checks are signed by whatever ran the test suite; an operator
+    # certification is signed on the macOS host being certified, which is not
+    # the machine that ran the headless operations. Each trusted key is tried
+    # in turn, so a document counts if any of them signed it -- and if none did,
+    # it counts for nothing. Defaulting to the receipt key leaves the
+    # single-host case exactly as it was.
+    attestation_keys = _as_key_list(attestation_public_key_pem) or [public_key_pem]
+
+    verified_attestations: Dict[str, tuple[Mapping[str, Any], str]] = {}
+    for document in attestations:
+        digest = None
+        for key in attestation_keys:
+            try:
+                digest = verify_attestation(
+                    document, public_key_pem=key, schema=attestation_schema
+                )
+                break
+            except (ReceiptError, Exception):  # noqa: BLE001 - try the next trusted key
+                continue
+        if digest is None:
+            continue
+        body = document["attestation"]
+        verified_attestations[body["attestation_id"]] = (body, digest)
 
     gates: List[Dict[str, Any]] = []
     for rule in rules:
@@ -379,12 +609,48 @@ def evaluate_gates(
             for receipt, digest in satisfying
         ]
 
-        if not rule.required_operations:
+        attested = [
+            (attestation_id, verified_attestations[attestation_id])
+            for attestation_id in rule.required_attestations
+            if attestation_id in verified_attestations
+        ]
+        gate["attested_by"] = [
+            {
+                "attestation_id": attestation_id,
+                "attestation_sha256": digest,
+                "kind": body["kind"],
+                "produced_by": body["produced_by"],
+                "result": body["result"],
+                "signature_verified": True,
+            }
+            for attestation_id, (body, digest) in attested
+        ]
+        missing_attestations = sorted(
+            set(rule.required_attestations) - set(verified_attestations)
+        )
+        refuted = sorted(
+            attestation_id
+            for attestation_id, (body, _) in attested
+            if body["result"] != "satisfied"
+        )
+
+        if not rule.required_operations and not rule.required_attestations:
             gate["status"] = "not_run"
-            gate["status_reason"] = "no receipt-producing operation is bound to this gate"
+            gate["status_reason"] = "no receipt or attestation is bound to this gate"
+        elif refuted:
+            # A refuted attestation is a *finding*, not an absence. Reporting it
+            # as not_run would read as "we didn't check" when in fact we checked
+            # and it failed.
+            gate["status"] = "failed"
+            gate["status_reason"] = f"attestation refuted the requirement: {refuted}"
         elif missing:
             gate["status"] = "not_run"
             gate["status_reason"] = f"no verified successful receipt for: {missing}"
+        elif missing_attestations:
+            gate["status"] = "not_run"
+            gate["status_reason"] = (
+                f"no verified attestation for: {missing_attestations}"
+            )
         else:
             gate["status"] = "passed"
 
@@ -395,6 +661,10 @@ def evaluate_gates(
         "evaluated_at": utc_now_iso(),
         "gates": gates,
     }
+    if profile_id:
+        evidence["profile_id"] = profile_id
+    if profile_scope:
+        evidence["profile_scope"] = profile_scope
     if policy_sha256:
         evidence["policy_sha256"] = policy_sha256
     return evidence

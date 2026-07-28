@@ -139,30 +139,49 @@ class MacOSKeychainProvider(SecretProvider):
 class WindowsCredentialManagerProvider(SecretProvider):  # pragma: no cover - Windows only
     """Windows Credential Manager, driven through a fixed cmdlet argv.
 
-    Known limitation, recorded rather than hidden: ``New-StoredCredential``
-    takes the password as a parameter, so during a write the value is briefly
-    visible in the process argument vector to a local user who can enumerate
-    processes. macOS and Linux avoid this by writing through stdin. Windows is
-    not a certified target in this vector; closing this needs a credential
-    write that accepts a pipe, and it is tracked in the failure ledger.
+    The write reads its value from stdin, matching macOS and Linux. Passing it
+    as ``-Password <value>`` would put the secret in the process argument
+    vector, which on Windows is worse than the POSIX equivalent: a local
+    unprivileged user can read another process's command line through WMI,
+    whereas reading its stdin requires debug privilege.
+
+    The script is passed with ``-EncodedCommand`` so that stdin carries only the
+    secret. Encoding is a transport detail, not a security measure -- the script
+    is fixed text with no interpolation, and the value it consumes never appears
+    in it.
     """
+
+    #: Reads exactly one line from stdin and stores it. No format string, no
+    #: interpolation: the target and username arrive as bound parameters, so
+    #: neither an app id nor a secret id can close a quote and add a statement.
+    _WRITE_SCRIPT = (
+        "param($Target, $UserName)\n"
+        "$ErrorActionPreference = 'Stop'\n"
+        "$secure = [Console]::In.ReadLine() | ConvertTo-SecureString -AsPlainText -Force\n"
+        "New-StoredCredential -Target $Target -UserName $UserName "
+        "-SecurePassword $secure -Persist LocalMachine | Out-Null\n"
+    )
 
     def _cmdlet(self, *args: str) -> Sequence[str]:
         return ["powershell.exe", "-NoProfile", "-NonInteractive", "-Command", *args]
 
     def set(self, app_id: str, secret_id: str, value: str) -> None:
+        import base64
+
+        encoded = base64.b64encode(self._WRITE_SCRIPT.encode("utf-16-le")).decode("ascii")
         result = _run(
-            self._cmdlet(
-                "New-StoredCredential",
+            [
+                "powershell.exe",
+                "-NoProfile",
+                "-NonInteractive",
+                "-EncodedCommand",
+                encoded,
                 "-Target",
                 f"{_service_name(app_id)}/{secret_id}",
                 "-UserName",
                 secret_id,
-                "-Password",
-                value,
-                "-Persist",
-                "LocalMachine",
-            )
+            ],
+            input_text=value + "\n",
         )
         if result.returncode != 0:
             raise SecretAccessError(f"credential manager write failed for {secret_id}")

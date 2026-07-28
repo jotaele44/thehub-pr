@@ -169,7 +169,7 @@
       "raw_declared_command": "hub fetch --root <workspace> [--run]",
       "repo": "thehub-pr",
       "risk_class": "R3_LIFECYCLE",
-      "rollback_strategy": "delete staging checkout; preserve prior current pointer",
+      "rollback_strategy": "delete_staging_download",
       "secret_refs": [],
       "source": "thehub-pr/src/hub/cli.py@58a159ff",
       "write_scope": "managed app/workspace roots only"

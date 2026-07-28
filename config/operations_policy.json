@@ -1086,7 +1086,7 @@
         },
         "repo": "thehub-pr",
         "risk_class": "R3_LIFECYCLE",
-        "rollback_strategy": "delete staging checkout; preserve prior current pointer",
+        "rollback_strategy": "delete_staging_download",
         "secret_refs": [],
         "target": {
           "identifier": "repository_acquisition",
@@ -2689,7 +2689,7 @@
   "signature": {
     "algorithm": "Ed25519",
     "key_id": "prii-operations-test-2026-07",
-    "payload_sha256": "1ac9c0e97d68652fa5269744a506ead4cec42567dfce3ff7d1ae8f2b1e740365",
-    "value": "GW3MAIX2Vw1eqbBFV4UwzaFB//bLXZxpXuE7rxNe236UY0RzkvdtS2HB2KyuvZy1FZ+g17wf1kf7CuJLDzbKAA=="
+    "payload_sha256": "9d52ef878dc5c2bf963745f31656b44c0e4f128780304a8e049cf713898c4f9d",
+    "value": "Tykr1WeyLCyTh3IREBhVz/fDdpwG19BwfAas/BH7bXcLi+kn1uQJFHe1KZk8m4wzgvVEmfd2a7srW1ET0yLRCQ=="
   }
 }
