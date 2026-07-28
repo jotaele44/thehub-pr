@@ -1,0 +1,4 @@
+# Build-time only: used by tools/build_program_icons.py to derive the per-program
+# icon set (rounded PNGs, icon.ico, AppIcon.icns) from assets/branding/icon.png.
+# Not needed to run the Hub — install it when regenerating branding assets.
+Pillow>=11,<13

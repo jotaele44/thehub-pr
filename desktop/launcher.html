@@ -28,6 +28,15 @@
       box-shadow: inset 0 1px 0 rgb(255 255 255 / .08), 0 6px 18px rgb(0 0 0 / .22);
       color: #f8fafc; font-size: 13px; font-weight: 800; letter-spacing: .05em;
     }
+    /* The art already carries its own rounded shape and colour, so it drops the
+       monogram chip's gradient, border and inner highlight. */
+    .app-icon-img {
+      display: block;
+      object-fit: cover;
+      background: none;
+      border: none;
+      box-shadow: 0 6px 18px rgb(0 0 0 / .22);
+    }
     .card .info { flex: 1; min-width: 0; }
     .card .name { font-weight: 700; }
     .card .domain { color: #94a3b8; font-size: 13px; }
@@ -80,7 +89,11 @@
           : r.present && r.has_desktop
             ? '<button data-repo="' + r.repo + '"' + (canLaunch && !busy ? "" : " disabled") + ">" + (busy ? "Launching…" : r.running ? "Running" : "Launch") + "</button>"
             : '<a href="' + r.github_url + '" target="_blank" rel="noopener noreferrer">GitHub ↗</a>';
-        return '<div class="card"><div class="app-icon" aria-hidden="true">' + r.icon + '</div>' +
+        // Real program art when it is on disk; the two-letter monogram otherwise.
+        const mark = r.icon_url
+          ? '<img class="app-icon app-icon-img" src="' + r.icon_url + '" alt="" aria-hidden="true">'
+          : '<div class="app-icon" aria-hidden="true">' + r.icon + '</div>';
+        return '<div class="card">' + mark +
           '<div class="info"><div class="name">' + r.name + '</div>' +
           '<div class="domain">' + r.domain + '</div></div>' + chip(r) + action + '</div>';
       }).join("");
