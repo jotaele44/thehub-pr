@@ -61,8 +61,15 @@ hub fetch --run --root ws                    # clone/refresh producers and run e
 hub aggregate --root .. --out data/aggregate # merge discoverable packages
 hub correlate --in data/aggregate            # derive cross-producer relationship edges
 hub ingest --in data/aggregate --db data/hub.db  # load the aggregate into the app store
+make federation-status                       # snapshot readiness for the control-plane pages
 make test
 ```
+
+`make federation-status` runs `hub validate-federation` against the producer checkouts and
+commits the result to `data/federation_status.json`. The server seeds the Gates, Integrations
+and Manifest pages from that snapshot at startup — it cannot recompute it, because a deployed
+hub has no producer checkouts to measure. Re-run it when a producer's manifest or export
+package changes.
 
 ## The hub app (single product)
 
