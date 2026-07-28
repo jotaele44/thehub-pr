@@ -6,11 +6,18 @@
 # Hub's view of the producer's current integration tier.
 schema_version: hub_registry_v1
 hub: thehub-pr
+# The Hub publishes no federation.json of its own, so its branding is declared here.
+hub_branding:
+  icon: assets/branding/icon.png
+  accent_color: "#0529a8"
 
 producers:
   - program_id: moneysweep-pr
     repo: jotaele44/moneysweep-pr
     role: public_money_intelligence_node
+    branding:
+      icon: assets/branding/icon.png
+      accent_color: "#8ec50c"
     federation_manifest: federation.json
     export_path: data/exports/canonical_v1_federation   # canonical_v1 bridge streams (auto-wrapped by the Hub)
     status: ready_for_discovery        # 9/14 required sources live-materialized (runtime keys supplied); live exec blocked: Tranche-B manual exports + cor3 portal export (JS-gated) + PROPUBLICA_API_KEY
@@ -25,6 +32,9 @@ producers:
   - program_id: spiderweb-pr
     repo: jotaele44/spiderweb-pr
     role: spatial_operational_producer
+    branding:
+      icon: assets/branding/icon.png
+      accent_color: "#ca0c02"
     federation_manifest: federation.json
     status: ready_for_live             # first real production package (1 site observation + 9 airport reference locations) hub-validated; ready_for_hub_live_execution=true (operator-approved 2026-07-03); corpus grows with the revived intake lane
     # Finance/location fusion pair (see docs/FEDERATION_TOPOLOGY.md): SpiderWeb owns
@@ -36,6 +46,9 @@ producers:
   - program_id: aguayluz-pr
     repo: jotaele44/aguayluz-pr
     role: water_grid_monitoring_node
+    branding:
+      icon: assets/branding/icon.png
+      accent_color: "#0de3d8"
     federation_manifest: federation.json
     status: ready_for_live             # real power/PREPS/water data wired; ready_for_hub_live_execution=true; outage granularity caveated (snapshot-grade until MiLUMA data-sharing resolved)
     # Also emits the canonical `alerts` stream (operational alert system; federation_alert.schema.json),
@@ -44,17 +57,26 @@ producers:
   - program_id: ovnis-pr
     repo: jotaele44/ovnis-pr
     role: anomaly_intelligence_node
+    branding:
+      icon: assets/branding/icon.png
+      accent_color: "#8a148c"
     federation_manifest: federation.json
     status: ready_for_live             # 470 real master cases on main (0 synthetic); ready_for_hub_live_execution=true; production_status=PRODUCTION. export_canonical is --mode production on main; verified locally via federation_export.py --mode production (manifest.json emitted, synthetic rows rejected)
 
   - program_id: skywatcher-pr
     repo: jotaele44/skywatcher-pr
     role: airspace_intelligence_node
+    branding:
+      icon: assets/branding/icon.png
+      accent_color: "#0573e4"
     federation_manifest: federation.json
     status: ready_for_discovery        # FR24 ingest/OCR/RLSM pipeline on main; live exec blocked: needs real FlightRadar24 capture to flip ready_for_hub_live_execution
 
   - program_id: centinelas-pr
     repo: jotaele44/centinelas-pr
     role: pre_officialization_signal_producer
+    branding:
+      icon: assets/branding/icon.png
+      accent_color: "#df630d"
     federation_manifest: federation.json
     status: ready_for_live             # manifest federation_readiness_gate.ready_for_hub_live_execution=true (production_status=PRODUCTION). 274 real RSS signals bridged into data/signals/live_signals.jsonl; production export passed hub validate-package (operator-approved sweep). Reconciled 2026-07-09 to match the producer manifest.
