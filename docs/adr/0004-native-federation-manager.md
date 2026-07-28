@@ -1,4 +1,4 @@
-# ADR 0002: Native Federation Manager foundation
+# ADR 0004: Native Federation Manager foundation
 
 Status: Adopted for Phase 1 foundation
 Date: 2026-07-26
