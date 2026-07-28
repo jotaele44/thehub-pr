@@ -53,3 +53,23 @@ def test_docker_image_carries_the_data_directory():
     assert "COPY data ./data" in dockerfile
     ignored = (REPO_ROOT / ".dockerignore").read_text().splitlines()
     assert not any(line.strip().rstrip("/") == "data" for line in ignored)
+
+
+def test_backend_requirements_cover_unconditional_imports():
+    """desktop-build.yml installs this file, never the project itself.
+
+    `server/backend/main.py` imports `federation_manager_api` unconditionally,
+    which imports `federation_manager`, which imports `jsonschema` at module
+    scope. The Dockerfile installs the project (`pip install -e ".[server]"`) so
+    it picks jsonschema up as a core dependency, but the desktop build installs
+    only this file plus requirements-desktop.txt — so an omission here crashes
+    the frozen app on startup rather than degrading.
+    """
+    text = (REPO_ROOT / "server" / "backend" / "requirements.txt").read_text()
+    listed = {
+        line.split(">=")[0].split("==")[0].split("[")[0].strip().lower()
+        for line in text.splitlines()
+        if line.strip() and not line.startswith("#")
+    }
+    for package in ("fastapi", "uvicorn", "pyyaml", "cryptography", "jsonschema"):
+        assert package in listed, f"{package} is imported by the backend but unlisted"
