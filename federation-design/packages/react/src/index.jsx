@@ -154,14 +154,28 @@ export function FederationSourceBadge({ source, sourceId, verified = false, clas
   )
 }
 
+// Emits both class families on purpose. `fd-state*` is the v0.4 vocabulary;
+// `fd-empty-state*` is the v0.3 hook that consumers may already style or query.
+// states.css keeps the v0.3 rules and tests/contracts.test.mjs asserts they stay
+// available — but those rules only mean anything if the component still emits
+// the classes they match, so the compatibility contract is enforced here.
 export function FederationEmptyState({ icon, title, description, action, inline, className, ...props }) {
   const Title = inline ? 'p' : 'h2'
   return (
-    <div className={cx('fd-state', 'fd-state--empty', inline && 'fd-state--inline', className)} role="status" aria-live="polite" {...props}>
-      {icon ? <div className="fd-state__icon" aria-hidden="true">{icon}</div> : null}
-      <Title className="fd-state__title">{title}</Title>
-      {description ? <p className="fd-state__description">{description}</p> : null}
-      {action ? <div className="fd-state__action">{action}</div> : null}
+    <div
+      className={cx(
+        'fd-state', 'fd-state--empty', 'fd-empty-state',
+        inline && 'fd-state--inline', inline && 'fd-empty-state--inline',
+        className,
+      )}
+      role="status"
+      aria-live="polite"
+      {...props}
+    >
+      {icon ? <div className="fd-state__icon fd-empty-state__icon" aria-hidden="true">{icon}</div> : null}
+      <Title className="fd-state__title fd-empty-state__title">{title}</Title>
+      {description ? <p className="fd-state__description fd-empty-state__description">{description}</p> : null}
+      {action ? <div className="fd-state__action fd-empty-state__action">{action}</div> : null}
     </div>
   )
 }
