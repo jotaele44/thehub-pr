@@ -55,4 +55,12 @@
 @media (forced-colors: active) {
   :where(button,a,input,select,textarea,[tabindex]):focus-visible,.fd-focus:focus-visible{outline-color:Highlight}
   .fd-badge,.fd-status,.fd-source-badge,.fd-panel{border-color:CanvasText}
+  /* Both the skeleton and the accent bar are drawn with background alone, which the
+     forced palette flattens to Canvas — they would disappear entirely. Redraw each
+     with a system color so the loading and accent affordances survive. The skeleton
+     uses an inset outline rather than a border so the card's height does not shift. */
+  .fd-stat-card__value--loading{outline:1px solid CanvasText;outline-offset:-1px}
+  /* Must carry the attribute selector: the per-role rules above are (0,2,1), so a
+     bare .fd-stat-card--accent::before would lose the cascade on every accented card. */
+  .fd-stat-card--accent::before,.fd-stat-card--accent[data-accent]::before{background:CanvasText}
 }
