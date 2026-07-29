@@ -98,6 +98,32 @@ targets:
     output: tests/test_server_smoke.py
     repos: *producers
 
+  # End-to-end GUI capability parity. The detector, policy, agent rule, CI gate,
+  # validator tests, and browser smoke are byte-identical or FRONTEND_DIR-
+  # parameterized across all seven repositories. Each repo owns only its
+  # capability manifest and generated legacy-debt baseline.
+  - template: baseline/AGENTS.md
+    output: AGENTS.md
+    repos: *all
+  - template: baseline/GUI_CAPABILITY_PARITY.md
+    output: docs/GUI_CAPABILITY_PARITY.md
+    repos: *all
+  - template: baseline/check_gui_parity.py
+    output: scripts/check_gui_parity.py
+    repos: *all
+  - template: baseline/test_gui_parity.py
+    output: tests/test_gui_parity.py
+    repos: *all
+  - template: baseline/gui-capability-parity.yml
+    output: .github/workflows/gui-capability-parity.yml
+    repos: *all
+  - template: baseline/gui-parity.playwright.config.js
+    output: "{{FRONTEND_DIR}}/gui-parity.playwright.config.mjs"
+    repos: *all
+  - template: baseline/gui-parity.spec.js
+    output: "{{FRONTEND_DIR}}/tests/gui-parity.spec.mjs"
+    repos: *all
+
   # The frontend lint config. These five already held this file byte-identical,
   # so rendering changes nothing today — it just stops them drifting apart, and
   # gives the CI lint gates being added alongside a single source of truth.

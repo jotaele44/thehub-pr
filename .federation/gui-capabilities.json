@@ -1,0 +1,358 @@
+{
+  "schema_version": "prii.gui-capability/v1",
+  "repository": "jotaele44/thehub-pr",
+  "policy": {
+    "mode": "ratchet",
+    "baseline": ".federation/gui-parity-baseline.json",
+    "require_discoverable_gui": true,
+    "require_e2e": true,
+    "terminal_free_user_path": true
+  },
+  "discovery": {
+    "backend_roots": [
+      "server/backend",
+      "desktop"
+    ],
+    "production_roots": [
+      "src/hub",
+      "packages",
+      "desktop"
+    ],
+    "analysis_roots": [
+      "src/hub/analytics_adapter.py",
+      "src/hub/correlate.py",
+      "src/hub/federation_analytics_v2.py",
+      "src/hub/graph_report.py",
+      "src/hub/sensor_fusion_consumer.py",
+      "src/hub/threshold_tuning.py",
+      "scripts",
+      "tools"
+    ],
+    "frontend_roots": [
+      "server/frontend/src"
+    ],
+    "frontend_capability_roots": [
+      "server/frontend/src/pages"
+    ],
+    "frontend_api_roots": [
+      "server/frontend/src/api",
+      "server/frontend/src/components/manager/managerClient.js"
+    ],
+    "route_files": [
+      "server/frontend/src/App.jsx"
+    ],
+    "navigation_files": [
+      "server/frontend/src/lib/nav.js",
+      "server/frontend/src/components/layout/Sidebar.jsx",
+      "server/frontend/src/components/layout/MobileNav.jsx"
+    ],
+    "implicit_routes": [],
+    "exclude": [
+      "**/tests/**",
+      "**/*.test.*",
+      "**/*.spec.*",
+      "**/components/ui/**",
+      "scripts/check_gui_parity.py"
+    ]
+  },
+  "capabilities": [
+    {
+      "id": "federation-record-workspace",
+      "classification": "operator",
+      "status": "active",
+      "requires_terminal": false,
+      "backend": {
+        "files": [
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /api/apps/public-settings",
+          "GET /api/auth/me",
+          "GET /api/notifications",
+          "POST /api/notifications/ack",
+          "GET /api/notifications/preferences",
+          "PUT /api/notifications/preferences",
+          "GET /api/entities/{entity_name}",
+          "POST /api/entities/{entity_name}",
+          "GET /api/entities/{entity_name}/{entity_id}",
+          "PATCH /api/entities/{entity_name}/{entity_id}",
+          "DELETE /api/entities/{entity_name}/{entity_id}",
+          "POST /api/entities/{entity_name}/filter",
+          "POST /api/entities/{entity_name}/bulk"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/",
+          "/programs",
+          "/cases",
+          "/sources",
+          "/tasks",
+          "/gates",
+          "/exports",
+          "/dictionary",
+          "/manifest"
+        ],
+        "e2e_routes": [
+          "/",
+          "/programs",
+          "/cases",
+          "/sources",
+          "/tasks",
+          "/gates",
+          "/exports",
+          "/dictionary",
+          "/manifest"
+        ],
+        "components": [
+          "server/frontend/src/api/federationClient.js",
+          "server/frontend/src/components/notifications/NotificationBell.jsx",
+          "server/frontend/src/pages/RecentActivity.jsx",
+          "server/frontend/src/pages/Programs.jsx",
+          "server/frontend/src/pages/Cases.jsx",
+          "server/frontend/src/pages/Sources.jsx",
+          "server/frontend/src/pages/Tasks.jsx",
+          "server/frontend/src/pages/Gates.jsx",
+          "server/frontend/src/pages/Exports.jsx",
+          "server/frontend/src/pages/Dictionary.jsx",
+          "server/frontend/src/pages/Manifest.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_notifications.py",
+          "tests/test_manifest.py",
+          "tests/test_federation_operations.py"
+        ],
+        "contract": [
+          "server/frontend/src/lib/nav.test.js",
+          "tests/test_gui_parity.py"
+        ],
+        "e2e": [
+          "server/frontend/tests/gui-parity.spec.mjs"
+        ]
+      }
+    },
+    {
+      "id": "federation-operations-manager",
+      "classification": "operator",
+      "status": "active",
+      "requires_terminal": false,
+      "backend": {
+        "files": [
+          "server/backend/federation_manager_api.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "POST /session",
+          "GET /apps",
+          "GET /apps/{app_id}",
+          "GET /operations",
+          "GET /operations/accounting",
+          "GET /apps/{app_id}/prerequisites",
+          "POST /operations/{operation_id}/plan",
+          "POST /operations/{operation_id}/run",
+          "POST /runs/{run_id}/cancel",
+          "GET /runs/{run_id}/receipt",
+          "GET /receipts",
+          "GET /gates",
+          "POST /secrets",
+          "POST /secrets/presence",
+          "DELETE /secrets/{app_id}/{secret_id}",
+          "POST /files/slots",
+          "DELETE /files/slots/{file_token}",
+          "POST /runs/{run_id}/log-ticket",
+          "GET /runs/{run_id}/logs/{ticket}",
+          "GET /runs/{run_id}/logs",
+          "POST /api/files/upload",
+          "GET /api/connectors/{name}/connection"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/apps",
+          "/operations",
+          "/readiness",
+          "/control",
+          "/integrations"
+        ],
+        "e2e_routes": [
+          "/apps",
+          "/operations",
+          "/readiness",
+          "/control",
+          "/integrations"
+        ],
+        "components": [
+          "server/frontend/src/components/manager/managerClient.js",
+          "server/frontend/src/components/manager/GateStatusPanel.jsx",
+          "server/frontend/src/components/manager/OperationForm.jsx",
+          "server/frontend/src/components/manager/PrerequisitePanel.jsx",
+          "server/frontend/src/components/manager/RunConsole.jsx",
+          "server/frontend/src/components/manager/SecretPresencePanel.jsx",
+          "server/frontend/src/pages/AppCenter.jsx",
+          "server/frontend/src/pages/Operations.jsx",
+          "server/frontend/src/pages/ModuleReadiness.jsx",
+          "server/frontend/src/pages/ControlLedgers.jsx",
+          "server/frontend/src/pages/Integrations.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_federation_operations_api.py",
+          "tests/test_federation_operations_e2e.py",
+          "tests/test_federation_secrets_and_files.py"
+        ],
+        "frontend": [
+          "server/frontend/src/pages/Operations.test.jsx",
+          "server/frontend/src/pages/AppCenter.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/gui-parity.spec.mjs"
+        ]
+      }
+    },
+    {
+      "id": "cross-domain-analysis",
+      "classification": "analysis",
+      "status": "active",
+      "requires_terminal": false,
+      "analysis": {
+        "files": [
+          "src/hub/analytics_adapter.py",
+          "src/hub/correlate.py",
+          "src/hub/federation_analytics_v2.py",
+          "src/hub/graph_report.py",
+          "src/hub/sensor_fusion_consumer.py",
+          "src/hub/threshold_tuning.py"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/crossover",
+          "/anomaly-overlap",
+          "/transition",
+          "/research"
+        ],
+        "e2e_routes": [
+          "/crossover",
+          "/anomaly-overlap",
+          "/transition",
+          "/research"
+        ],
+        "components": [
+          "server/frontend/src/pages/FederationCrossoverWorkspace.jsx",
+          "server/frontend/src/pages/AnomalyOverlap.jsx",
+          "server/frontend/src/pages/TransitionAudit.jsx",
+          "server/frontend/src/pages/ResearchAssistant.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_correlate.py",
+          "tests/test_federation_analytics_v2.py",
+          "tests/test_analytics_adapter.py"
+        ],
+        "contract": [
+          "tests/test_gui_parity.py"
+        ],
+        "e2e": [
+          "server/frontend/tests/gui-parity.spec.mjs"
+        ]
+      }
+    },
+    {
+      "id": "producer-module-views",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "backend": {
+        "files": [
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /api/entities/{entity_name}",
+          "GET /api/entities/{entity_name}/{entity_id}",
+          "POST /api/entities/{entity_name}/filter"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/spiderweb",
+          "/ovnis",
+          "/aguayluz",
+          "/moneysweep",
+          "/skywatcher",
+          "/centinelas"
+        ],
+        "e2e_routes": [
+          "/spiderweb",
+          "/ovnis",
+          "/aguayluz",
+          "/moneysweep",
+          "/skywatcher",
+          "/centinelas"
+        ],
+        "components": [
+          "server/frontend/src/pages/Spiderweb.jsx",
+          "server/frontend/src/pages/Ovnis.jsx",
+          "server/frontend/src/pages/AguaYLuz.jsx",
+          "server/frontend/src/pages/MoneySweep.jsx",
+          "server/frontend/src/pages/Skywatcher.jsx",
+          "server/frontend/src/pages/Centinelas.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/lib/federation.js"
+        ]
+      },
+      "tests": {
+        "contract": [
+          "server/frontend/src/lib/nav.test.js",
+          "tests/test_gui_parity.py"
+        ],
+        "e2e": [
+          "server/frontend/tests/gui-parity.spec.mjs"
+        ]
+      }
+    },
+    {
+      "id": "service-health-and-spa-host",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Health, MCP introspection, and SPA fallback endpoints support supervision and delivery rather than separate user workflows.",
+      "backend": {
+        "files": [
+          "server/backend/main.py",
+          "server/backend/mcp_api.py"
+        ],
+        "endpoints": [
+          "GET /health",
+          "GET /api/health",
+          "GET /healthz",
+          "GET /readyz",
+          "GET /mcp/metrics",
+          "GET /mcp/capabilities",
+          "GET /{full_path:path}"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_desktop_app_server.py",
+          "tests/test_mcp_server.py"
+        ]
+      }
+    }
+  ],
+  "exceptions": []
+}

@@ -11,6 +11,7 @@
     "typecheck": "tsc -p ./jsconfig.json",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:gui-parity": "playwright test -c gui-parity.playwright.config.mjs",
     "test:watch": "vitest",
     "test:visual": "playwright test",
     "test:visual:update": "playwright test --update-snapshots"
