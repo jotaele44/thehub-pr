@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NAV_GROUPS, isNavActive } from "@/lib/nav";
+import ThemeToggle from "@/components/shared/ThemeToggle";
+import brandMark from "@/assets/icon-64.png?inline";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -13,13 +15,15 @@ export default function MobileNav() {
   return (
     <div className="lg:hidden flex items-center justify-between px-4 py-3 border-b border-border bg-sidebar sticky top-0 z-40">
       <div className="flex items-center gap-2">
-        <div className="h-7 w-7 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-semibold text-xs">PR</div>
+        <img src={brandMark} alt="" aria-hidden="true" className="h-7 w-7 rounded-lg" />
         <span className="text-sm font-semibold tracking-tight">INTSYS-PR</span>
       </div>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Open navigation menu"><Menu className="h-5 w-5" /></Button>
-        </SheetTrigger>
+      <div className="flex items-center gap-1">
+        <ThemeToggle />
+        <Sheet open={open} onOpenChange={setOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Open navigation menu"><Menu className="h-5 w-5" /></Button>
+          </SheetTrigger>
         <SheetContent side="left" className="w-72 bg-sidebar border-sidebar-border p-0">
           <nav aria-label="Primary" className="px-3 py-5 space-y-4 overflow-y-auto h-full">
             {NAV_GROUPS.map((group) => (
@@ -49,7 +53,8 @@ export default function MobileNav() {
             ))}
           </nav>
         </SheetContent>
-      </Sheet>
+        </Sheet>
+      </div>
     </div>
   );
 }

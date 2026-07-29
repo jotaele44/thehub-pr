@@ -5,11 +5,13 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
+import { ThemeProvider } from '@/lib/theme';
 import { appParams } from '@/lib/app-params';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
 import AppLayout from '@/components/layout/AppLayout';
 import RouteFallback from '@/components/shared/RouteFallback';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 // Routes are code-split so heavy per-page deps (Leaflet, Recharts, jsPDF) load
 // only when their page is visited, not in the initial bundle. The app shell
@@ -41,6 +43,8 @@ const Hub = lazy(() => import('@/pages/Hub'));
 const RecentActivity = lazy(() => import('@/pages/RecentActivity'));
 const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
+const AppCenter = lazy(() => import('@/pages/AppCenter'));
+const Operations = lazy(() => import('@/pages/Operations'));
 
 const AppRoutes = () => {
   const { isLoadingPublicSettings, appPublicSettings } = useAuth();
@@ -65,11 +69,27 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        {/* Public auth routes — rendered without the app shell. */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        {/* Public auth routes — rendered without the app shell, and only when auth
+            is actually required. In diagnostic mode the backend implements no
+            /auth/login, /auth/register, /auth/verify-otp or /auth/password/*
+            endpoint (they 404), so rendering these forms would offer a sign-in
+            that cannot succeed. Gate them on the same signal that decides whether
+            the app shell is guarded, so the two can never disagree. */}
+        {authRequired ? (
+          <>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+          </>
+        ) : (
+          <>
+            <Route path="/login" element={<Navigate to="/" replace />} />
+            <Route path="/register" element={<Navigate to="/" replace />} />
+            <Route path="/forgot-password" element={<Navigate to="/" replace />} />
+            <Route path="/reset-password" element={<Navigate to="/" replace />} />
+          </>
+        )}
 
         {/* Protected application. */}
         <Route element={guard}>
@@ -77,6 +97,8 @@ const AppRoutes = () => {
             <Route path="/" element={<RecentActivity />} />
             <Route path="/activity" element={<RecentActivity />} />
             <Route path="/programs" element={<Programs />} />
+            <Route path="/apps" element={<AppCenter />} />
+            <Route path="/operations" element={<Operations />} />
             <Route path="/cases" element={<Cases />} />
             <Route path="/sources" element={<Sources />} />
             <Route path="/tasks" element={<Tasks />} />
@@ -111,15 +133,21 @@ const AppRoutes = () => {
 function App() {
 
   return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClientInstance}>
-        <Router>
-          <ScrollToTop />
-          <AppRoutes />
-        </Router>
-        <Toaster />
-      </QueryClientProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <QueryClientProvider client={queryClientInstance}>
+          <Router>
+            <ScrollToTop />
+            {/* Inside the router so a throw keeps the shell and the URL, and the
+                operator can navigate away instead of facing a blank document. */}
+            <ErrorBoundary>
+              <AppRoutes />
+            </ErrorBoundary>
+          </Router>
+          <Toaster />
+        </QueryClientProvider>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }
 

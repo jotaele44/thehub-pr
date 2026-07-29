@@ -35,6 +35,12 @@ export default [
       "unused-imports": pluginUnusedImports,
     },
     rules: {
+      // The two config spreads above both set `rules`, and this block overrides
+      // them, so nothing from `pluginJs.configs.recommended` actually applied —
+      // including no-undef. A component referencing a chip map it forgot to import
+      // therefore linted and built clean and only failed at render. Set it here,
+      // where it survives the override.
+      "no-undef": "error",
       "no-unused-vars": "off",
       "react/jsx-uses-vars": "error",
       "react/jsx-uses-react": "error",

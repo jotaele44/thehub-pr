@@ -95,7 +95,7 @@ plus `schemas/`, `src/`, `server/`, `docs/`, and `tests/`.
 | MoneySweep | partial | present | `false` | [VERIFIED] source-count drift (now reconciled on this branch); [CONNECTOR] Tranche-B manual ingest + runtime keys block live exec |
 | Spiderweb | partial | present | `false` | [CONNECTOR] discovery-ready; production export needs non-synthetic rows + Hub validation |
 | OVNIS / PRUFON | near-complete | present | producer `true`; data supports it | [VERIFIED] 470 real cases, 0 synthetic; Hub registry note is stale; real gap is `export_canonical` still `--mode test` on main (§4.2) |
-| AguaYLuz | near-complete | present | `true` (caveated) | [CONNECTOR] live-ready; outage granularity snapshot-grade; alert-stream split across paired PRs |
+| AguaYLuz | near-complete | present | `true` (caveated) | [CONNECTOR] live-ready; outage granularity snapshot-grade; alert stream landed (schema wired both sides) |
 | Skywatcher | partial | present | `false` | [CONNECTOR] discovery-ready; live blocked on real FR24 capture + runtime proof |
 
 ---
@@ -155,11 +155,15 @@ live-ready and remove the contradiction: (a) land the `export_canonical` →
 (b) correct/refresh the stale Hub registry note. Then confirm with
 `hub fetch --run` + `hub validate-federation` reporting `blocker_class: ready`.
 
-### 4.3 AguaYLuz alert-stream split — [CONNECTOR]
+### 4.3 AguaYLuz alert-stream split — [RESOLVED]
 
-The producer-side alert capability (AguaYLuz PR #14) depends on the Hub-side alert
-schema/stream (TheHub PR #22). Both are draft. They should be resolved as a paired
-migration to avoid a producer/Hub schema split.
+~~The producer-side alert capability (AguaYLuz PR #14) depends on the Hub-side alert
+schema/stream (TheHub PR #22). Both are draft.~~ **Resolved.** The Hub side has
+landed: `schemas/federation_alert.schema.json` is wired into `STREAM_SCHEMA` /
+`STREAM_ID_FIELD` (`src/hub/_schemas.py`), `correlate_alerts` emits
+`alert_affects_entity` edges, and the `alerts` stream ingests into `GovernanceAlerts`
+(see `docs/FEDERATION_STATUS.md` Part 6). The producer now emits real data-driven
+alerts (aguayluz-pr water-monitoring PR) against that same schema — no schema split.
 
 ### 4.4 Spiderweb / Skywatcher: CI green ≠ live-ready — [CONNECTOR]
 
@@ -179,7 +183,7 @@ Ordered, with risk class and whether each is code-only or live-data/operational.
 | 1 | Reconcile MoneySweep source counts (136→141, 90→95) | moneysweep-pr | code-only | low — **done on this branch** |
 | 2 | Land OVNIS `export_canonical` → `--mode production` (PR #12, resolve conflicts) and refresh the stale Hub registry note for `ovnis-pr` | ovnis-pr + thehub-pr | code-only | medium — data already supports live; verify via `hub validate-federation` |
 | 3 | Fix MoneySweep PR #332 lint / pre-commit failure | moneysweep-pr | code-only | low |
-| 4 | Resolve TheHub #22 + AguaYLuz #14 as a paired alert-stream migration | thehub-pr + aguayluz-pr | code-only | medium — schema coupling |
+| 4 | ~~Resolve TheHub #22 + AguaYLuz #14 alert-stream migration~~ DONE — schema wired both sides; producer emits real alerts | thehub-pr + aguayluz-pr | code-only | resolved |
 | 5 | Review/merge TheHub #23 (INTSYS P0 frontend) if required for setup-complete | thehub-pr | code-only | medium |
 | 6 | Split or deeply validate MoneySweep #331 before merge | moneysweep-pr | code-only | high — very large diff |
 | 7 | Triage Skywatcher PR queue: #20 → #18 → #12 → #22 (#22 has explicit no-merge stop) | skywatcher-pr | mixed | medium |

@@ -1,0 +1,81 @@
+# Per-producer template variables for the federation boilerplate renderer.
+# The ONLY per-repo data needed to render the shared launcher/desktop/schema
+# boilerplate, the engineering baseline, and the governance files.
+# See tools/render_federation_templates.py.
+#
+#   app_slug     — launcher/app naming (PRII-<SLUG>.command, etc.)
+#   frontend_dir — the same directory as npm_dir but WITHOUT the leading
+#                  slash, for rendered output paths. npm_dir cannot be reused
+#                  there: the renderer does `repo_root / rel`, and a leading
+#                  slash makes Path treat it as absolute, writing outside the
+#                  repo entirely.
+#   npm_dir      — the repo's single npm package root, for Dependabot's npm
+#                  ecosystem. Each repo has exactly one committed
+#                  package-lock.json; the path differs because the frontends
+#                  grew independently (dashboard/ vs frontend/ vs
+#                  server/frontend/).
+#   program_id   — the repo name. Needed as a literal in prose (SECURITY.md,
+#                  CONTRIBUTING.md); the mapping key itself is not substitutable
+#                  because the renderer does plain string replacement.
+#   repo_url     — canonical GitHub URL, for the Security Advisory link.
+#   program_desc — one clause completing "<program_id> is ...", taken from each
+#                  repo's own pyproject description or README lede so the shared
+#                  CONTRIBUTING opens with something true about that repo.
+schema_version: prii_federation_template_vars_v1
+producers:
+  aguayluz-pr:
+    app_slug: AGUAYLUZ
+    frontend_dir: dashboard
+    npm_dir: /dashboard
+    program_id: aguayluz-pr
+    repo_url: https://github.com/jotaele44/aguayluz-pr
+    lock_cmd: "uv lock --check"
+    program_desc: the Puerto Rico water, power and utility infrastructure intelligence producer
+  centinelas-pr:
+    app_slug: CENTINELAS
+    frontend_dir: frontend
+    npm_dir: /frontend
+    program_id: centinelas-pr
+    repo_url: https://github.com/jotaele44/centinelas-pr
+    lock_cmd: "uv lock --check"
+    program_desc: the universal online intelligence monitor and routing engine
+  moneysweep-pr:
+    app_slug: MONEYSWEEP
+    frontend_dir: dashboard
+    npm_dir: /dashboard
+    program_id: moneysweep-pr
+    repo_url: https://github.com/jotaele44/moneysweep-pr
+    lock_cmd: "uv pip compile requirements.in --universal --python-version 3.13 -o requirements.lock"
+    program_desc: the public-money intelligence producer
+  ovnis-pr:
+    app_slug: OVNIS
+    frontend_dir: dashboard
+    npm_dir: /dashboard
+    program_id: ovnis-pr
+    repo_url: https://github.com/jotaele44/ovnis-pr
+    lock_cmd: "uv pip compile requirements.txt --universal --python-version 3.12 -o requirements.lock"
+    program_desc: the historical case-corpus producer for Puerto Rico-centered anomalous-event research
+  skywatcher-pr:
+    app_slug: SKYWATCHER
+    frontend_dir: frontend
+    npm_dir: /frontend
+    program_id: skywatcher-pr
+    repo_url: https://github.com/jotaele44/skywatcher-pr
+    lock_cmd: "uv pip compile requirements.txt --universal --python-version 3.12 -o requirements.lock"
+    program_desc: the airspace and aircraft-intelligence producer
+  spiderweb-pr:
+    app_slug: SPIDERWEB
+    frontend_dir: server/frontend
+    npm_dir: /server/frontend
+    program_id: spiderweb-pr
+    repo_url: https://github.com/jotaele44/spiderweb-pr
+    lock_cmd: "uv lock --check"
+    program_desc: the spatial and operational producer, covering FR24 OCR/GIS flight intelligence and the GEBCO bathymetry pipeline
+  thehub-pr:
+    app_slug: THEHUB
+    frontend_dir: server/frontend
+    npm_dir: /server/frontend
+    program_id: thehub-pr
+    repo_url: https://github.com/jotaele44/thehub-pr
+    lock_cmd: "uv lock --check"
+    program_desc: the federation Hub — producer registry, conformance validation, and aggregation

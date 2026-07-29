@@ -13,23 +13,43 @@ name: Federation ingest
 
 on:
   repository_dispatch:
-    types: [moneysweep-export]
+    # Any producer that lands a fresh canonical export triggers a Hub re-aggregate,
+    # so hazard alerts (seismic, weather, contamination) reach users in minutes
+    # instead of waiting for the Hub's own schedule. Add new producers' export
+    # events here as they wire up their dispatch step.
+    types: [moneysweep-export, aguayluz-export, centinelas-export]
   workflow_dispatch: {}
 
+# Wider than this repo's usual `contents: read` because this workflow is the one
+# that closes the ingest loop: it pushes a branch carrying the refreshed fixture
+# and opens a pull request for it. `pull-requests: write` is the first in this
+# repo — the refreshed data is proposed for review, never committed to main.
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
+
+# Serialise runs on the same ref without cancelling. This workflow can
+# publish, write data, or hand off to another repo, and killing it
+# mid-flight risks leaving that work half-done.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   ingest:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
+          cache: pip
 
+      # prii_export_utils is what every producer's federation_export.py imports;
+      # apart from it they are pure stdlib, so this one line is the whole
+      # dependency story for running all six exports below.
       - name: Install
-        run: pip install -e ".[dev]"
+        run: pip install -e ".[dev]" -e packages/prii_export_utils
 
       - name: Configure git auth for producer clones
         env:
@@ -44,18 +64,103 @@ jobs:
             echo "No FEDERATION_DISPATCH_TOKEN — assuming public producer repos."
           fi
 
-      - name: Fetch producers (clone/refresh)
-        run: hub fetch --root ws
+      # Keep a copy of the committed fixture to compare against, before the
+      # build below overwrites it in place.
+      - name: Snapshot the committed fixture
+        run: cp -r data/aggregate "$RUNNER_TEMP/baseline"
 
-      - name: Aggregate -> correlate -> ingest
+      # `--run` is required, not an optimisation. Only moneysweep-pr commits its
+      # canonical export package; the other five materialise theirs by running
+      # their own export_canonical command. Without --run the aggregate sees one
+      # producer and collapses to 200 entities / 9 collections, against 35,888
+      # and 20 with it — so a fixture built without --run would replace real
+      # federation data with a moneysweep-only stub.
+      - name: Fetch producers and run their exports
+        run: hub fetch --root ws --run
+
+      # The bounded sample, not the raw aggregate: a full run is ~77 MB of JSONL
+      # and a 281 MB hub.db, neither of which is committable. This runs the same
+      # aggregate -> correlate -> ingest internally, capped per stream.
+      - name: Build the bounded fixture
+        run: python3 scripts/build_hub_fixture.py --root ws --out data
+
+      # Fan newly-ingested alerts out to subscribers (push/SMS). Offline-safe: no-ops
+      # cleanly when provider secrets are unset, still advancing the dispatch cursor.
+      - name: Dispatch notifications for new alerts
+        env:
+          HUB_VAPID_PRIVATE_KEY: ${{ secrets.HUB_VAPID_PRIVATE_KEY }}
+          HUB_SMS_API_KEY: ${{ secrets.HUB_SMS_API_KEY }}
+          HUB_SMTP_URL: ${{ secrets.HUB_SMTP_URL }}
+        run: python scripts/dispatch_notifications.py --db data/hub.db
+
+      # Producers stamp created_at/extracted_at into every record on every run,
+      # so `git status` reports drift even when nothing upstream moved. Gate the
+      # PR on content with those fields removed, or this opens a ~2,000-line
+      # timestamp-churn PR on every dispatch forever.
+      - name: Has the data actually changed?
+        id: drift
         run: |
-          hub aggregate --root ws --out data/aggregate
-          hub correlate --in data/aggregate
-          hub ingest --in data/aggregate --db data/hub.db
+          python3 scripts/fixture_drift.py "$RUNNER_TEMP/baseline" data/aggregate \
+            >> "$GITHUB_OUTPUT"
+
+      - name: Open a fixture-refresh PR
+        if: steps.drift.outputs.drift == 'true'
+        env:
+          # The built-in token is enough to open the PR, but GitHub deliberately
+          # does not run workflows on a PR it creates, so that PR arrives without
+          # CI. SYNC_PAT — already this repo's cross-repo write secret — makes the
+          # checks run when an operator has set it. Neither is required.
+          GH_TOKEN: ${{ secrets.SYNC_PAT || github.token }}
+          # Presence, not the value — the secret itself never reaches the shell.
+          HAS_SYNC_PAT: ${{ secrets.SYNC_PAT != '' }}
+        run: |
+          branch="fixture-refresh-${{ github.run_id }}"
+          git config user.name  "prii-federation-bot"
+          git config user.email "noreply@github.com"
+          git checkout -b "$branch"
+          # hub.db is a build artifact and gitignored; only the JSONL the fixture
+          # is rebuilt from, plus its manifest, belong in the commit.
+          git add data/aggregate data/fixture.json
+          git commit -m "data: refresh the committed federation fixture
+
+          Regenerated by federation-ingest.yml from the producers' own exports.
+          Opened because the record content changed, not merely the per-run
+          timestamps every export rewrites."
+          git push -u origin "$branch"
+          gh pr create \
+            --base main --head "$branch" \
+            --title "Refresh the committed federation fixture" \
+            --body "$(printf '%s\n' \
+              "Automated refresh from \`federation-ingest.yml\` (run ${{ github.run_id }})." \
+              "" \
+              "\`hub fetch --root ws --run\` re-ran every producer's \`export_canonical\`," \
+              "then \`scripts/build_hub_fixture.py\` rebuilt the bounded sample." \
+              "" \
+              "Opened because \`scripts/fixture_drift.py\` found a change in record" \
+              "content — the per-run \`created_at\`/\`extracted_at\` stamps are excluded," \
+              "so this is real movement in producer data, not export churn." \
+              "" \
+              "Review \`data/fixture.json\` first: its collection counts and stream" \
+              "totals summarise what moved." \
+              "" \
+              "---" \
+              "_Generated by [Claude Code](https://claude.ai/code)_")"
+          if [ "$HAS_SYNC_PAT" != "true" ]; then
+            echo "::notice title=PR opened without CI::Created with the built-in \
+            GITHUB_TOKEN, which does not trigger workflow runs. Set SYNC_PAT to \
+            have checks run on fixture-refresh PRs, or push an empty commit."
+          fi
+
+      - name: Note that the fixture was already current
+        if: steps.drift.outputs.drift == 'false'
+        run: |
+          echo "::notice title=No fixture refresh needed::The pipeline ran and the \
+          producer data is unchanged; only per-run timestamps moved, so no PR was \
+          opened."
 
       - name: Upload aggregate + hub.db
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: hub-aggregate
           path: |

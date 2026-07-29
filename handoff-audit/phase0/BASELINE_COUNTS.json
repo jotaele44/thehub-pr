@@ -1,0 +1,90 @@
+{
+  "task": "T001/T002 — Acquire complete pinned tree + count exact repository objects",
+  "repository": "jotaele44/thehub-pr",
+  "pinned_commit": "70765a2c4bd67470ee6b9892023f3ff4c80913b8",
+  "generated_at": "2026-07-25",
+  "method": "Direct enumeration of the pinned working tree (git ls-tree/ls-files/grep at HEAD). Every number below is reproducible from the commands recorded in `commands`.",
+  "tree": {
+    "tracked_files": 460,
+    "tracked_directories": 99,
+    "inventory_file": "PINNED_TREE_INVENTORY.tsv",
+    "inventory_file_sha256": "2def1a07551508d95156395a12aa9f0e79bce6362ae577eef00d04bf3d63eaf7",
+    "inventory_format": "<blob_sha>\\t<path>, one row per tracked file"
+  },
+  "python": {
+    "modules_tracked": 134
+  },
+  "tests": {
+    "root_suite_dir": "tests/",
+    "root_test_files": 46,
+    "root_test_functions": 346,
+    "root_conftest": 1,
+    "root_fixtures_files": 7,
+    "root_suite_hermetic": true,
+    "hermetic_note": "No test opens a real socket or connects to a live DB server; SQLite tests use tmp_path files. `tests/test_mcp_oauth_networked.py` uses in-process fakes despite its name.",
+    "subpackage_test_files": 10,
+    "subpackage_test_functions": 59,
+    "subpackages": ["packages/prii_maintenance", "packages/prii_export_utils", "packages/prii_desktop"],
+    "frontend_test_files": 8,
+    "frontend_note": "server/frontend JS suite (vitest + playwright visual) — separate toolchain, out of Python baseline scope."
+  },
+  "schemas": {
+    "json_schema_files_under_schemas_dir": 16,
+    "json_schema_files_total_tracked": 17,
+    "duplicate": "federation-templates/schemas/federation_export_manifest.schema.json duplicates schemas/federation_export_manifest.schema.json",
+    "frozen_contract_schemas": 16,
+    "frozen_manifest": "schemas/FROZEN.sha256 (enforced by tests/test_schema_freeze.py)",
+    "loader": "src/hub/_schemas.py (schema_dir/load_schema)"
+  },
+  "migrations": {
+    "sql_files": 0,
+    "migration_framework": "none (no Alembic, no migrations/ dir)",
+    "schema_creation": "Imperative inline CREATE TABLE IF NOT EXISTS DDL in two independent creators: src/hub/ingest.py and server/backend/main.py; no schema versioning.",
+    "database_baseline": "SQLite data/hub.db (not committed; data/ ships only data/aggregate/.gitkeep)"
+  },
+  "cli": {
+    "entrypoint": "hub = hub.cli:main (also python -m hub)",
+    "subcommands_count": 13,
+    "subcommands": ["list", "validate-manifest", "validate-package", "validate-federation", "fetch", "aggregate", "wrap-bridge", "correlate", "ingest", "graph-report", "analytics-v2", "consume-sensor-fusion", "maintenance"]
+  },
+  "api_routes": {
+    "backend_framework": "FastAPI (optional server extra)",
+    "main_py_route_decorators": 18,
+    "main_py_api_endpoints": 17,
+    "main_py_spa_fallback": 1,
+    "mcp_api_router_routes": 5,
+    "total_http_route_decorators": 23,
+    "total_api_endpoints_excluding_spa_fallback": 22
+  },
+  "ui_routes": {
+    "frontend": "server/frontend (React + Vite)",
+    "page_components": 28,
+    "declared_routes_in_App_jsx": 31
+  },
+  "producers": {
+    "count": 6,
+    "ids": ["moneysweep-pr", "spiderweb-pr", "aguayluz-pr", "ovnis-pr", "skywatcher-pr", "centinelas-pr"],
+    "registry": "registry/producers.yaml (schema_version: hub_registry_v1)"
+  },
+  "canonical_streams": {
+    "count": 8,
+    "streams": ["sources", "entities", "relationships", "funding_awards", "transactions", "observations", "alerts", "correlations"],
+    "note": "Per THEHUB_BASELINE_MANIFEST.json. Seven have a federation_*.schema.json; 'correlations' is Hub-derived by src/hub/correlate.py."
+  },
+  "discrepancies_vs_handoff_manifest": [
+    "THEHUB_BASELINE_MANIFEST.json cli_commands list is accurate (13 incl. wrap-bridge); the Explore prompt's paraphrase had omitted wrap-bridge — no defect in the repo.",
+    "THEHUB_BASELINE_MANIFEST.json 'counts_not_verified' (6 items) are now all VERIFIED by this artifact.",
+    "No plain `validate` subcommand exists — validation is three commands: validate-manifest / validate-package / validate-federation."
+  ],
+  "commands": {
+    "inventory": "git ls-tree -r HEAD --format='%(objectname)\\t%(path)'",
+    "tracked_files": "git ls-files | wc -l",
+    "py_modules": "git ls-files '*.py' | wc -l",
+    "root_test_files": "git ls-files 'tests/**test_*.py' | wc -l",
+    "root_test_functions": "git grep -h -E '^\\s*def test_' HEAD -- 'tests/**.py' | wc -l",
+    "schemas": "git ls-files 'schemas/**.json' | wc -l",
+    "cli_subcommands": "grep -nE 'add_parser\\(' src/hub/cli.py",
+    "routes_main": "grep -cE '@app\\.(get|post|put|patch|delete)' server/backend/main.py",
+    "producers": "grep -cE '^\\s*- program_id:' registry/producers.yaml"
+  }
+}

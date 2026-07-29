@@ -1,0 +1,4 @@
+# Generated at pack time by scripts/prepack.mjs (canonical sources live in
+# federation-design/{styles,tokens}); never commit the bundled copies.
+dist/
+*.tgz

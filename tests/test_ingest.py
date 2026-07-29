@@ -128,6 +128,35 @@ def test_ingest_projects_governance_alerts(tmp_path):
     assert ga["severity"] == 3
 
 
+def test_governance_alerts_keep_producer_attribution(tmp_path):
+    """GovernanceAlerts is federation-wide, so each row must say who exported it.
+
+    The AguaYLuz page's Operational Alerts tab scopes on `_producers`, and the
+    dashboard rollup labels rows with it — both break silently if the alias drops it.
+    """
+    agg = tmp_path / "agg"
+    agg.mkdir()
+    alerts = [
+        {"alert_id": "alrt_1111111111111111111111111111aaaa", "module": "SEISMIC_GEO",
+         "severity": 4, "is_critical": True, "status": "active",
+         "_producers": ["aguayluz-pr"]},
+        {"alert_id": "alrt_2222222222222222222222222222bbbb", "module": "HYDRO_OPS",
+         "severity": 2, "status": "active", "_producers": ["ovnis-pr"]},
+    ]
+    (agg / "alerts.jsonl").write_text("".join(json.dumps(a) + "\n" for a in alerts))
+
+    ingest_aggregate(agg, tmp_path / "hub.db")
+    rows = _rows(tmp_path / "hub.db", "GovernanceAlerts")
+
+    ayl = rows["alrt_1111111111111111111111111111aaaa"]
+    assert ayl["_producers"] == ["aguayluz-pr"]
+    assert ayl["is_critical"] is True
+    assert ayl["module"] == "SEISMIC_GEO"
+
+    # A like-named module from another producer must not be attributed to aguayluz.
+    assert rows["alrt_2222222222222222222222222222bbbb"]["_producers"] == ["ovnis-pr"]
+
+
 def test_ingest_is_idempotent(valid_package, tmp_path):
     agg = tmp_path / "agg"
     aggregate({"moneysweep-pr": valid_package}, agg)

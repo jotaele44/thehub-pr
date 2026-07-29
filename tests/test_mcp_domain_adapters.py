@@ -6,6 +6,7 @@ from hub.mcp_runtime.adapters import (
     ContractsAdapter,
     FieldOpsAdapter,
     FlightAdapter,
+    OshaAdapter,
     RegulationsAdapter,
     TerrainAdapter,
     UtilitiesAdapter,
@@ -170,6 +171,67 @@ def test_contracts_injects_key_but_keeps_it_out_of_provenance(router, monkeypatc
     assert "SECRET123" not in str(result.provenance)
 
 
+def test_osha_requires_api_key(router, monkeypatch):
+    monkeypatch.delenv("MCP_OSHA_API_KEY", raising=False)
+    router.register_adapter(OshaAdapter(client=FakeClient({})))
+    with pytest.raises(PermissionError, match="authenticate"):
+        router.route(
+            MCPRequest(
+                project="aguayluz", capability="osha", action="inspections",
+                params={"state": "PR"},
+            )
+        )
+
+
+def test_osha_defaults_to_pr_filter_and_injects_key(router, monkeypatch):
+    monkeypatch.setenv("MCP_OSHA_API_KEY", "OSHAKEY")
+    client = FakeClient({"data": [{"activity_nr": 1}, {"activity_nr": 2}]})
+    router.register_adapter(OshaAdapter(client=client))
+    result = router.route(
+        MCPRequest(
+            project="aguayluz", capability="osha", action="inspections",
+        )
+    )
+    assert result.data["count"] == 2
+    assert result.data["state"] == "PR"
+    url, params = client.calls[0]
+    # DOL v4 record endpoint for the OSHA inspection dataset.
+    assert url == "https://apiprod.dol.gov/v4/get/OSHA/inspection/json"
+    # PR jurisdiction filter defaulted on as a flat {field,operator,value} object.
+    assert params["filter_object"] == '{"field": "site_state", "operator": "eq", "value": "PR"}'
+    # DOL /v4/get authenticates on the X-API-KEY query param (the header is 401).
+    assert params["X-API-KEY"] == "OSHAKEY"
+    # secret never leaks into the audit/provenance block.
+    assert "OSHAKEY" not in str(result.provenance)
+    assert result.provenance["upstream"] == "dol_osha"
+
+
+def test_osha_serializes_structured_filter_object(router, monkeypatch):
+    monkeypatch.setenv("MCP_OSHA_API_KEY", "OSHAKEY")
+    client = FakeClient({"data": []})
+    router.register_adapter(OshaAdapter(client=client))
+    router.route(
+        MCPRequest(
+            project="aguayluz", capability="osha", action="violations",
+            params={"filter_object": [{"field": "naics_code", "operator": "eq", "value": "331110"}]},
+        )
+    )
+    _, params = client.calls[0]
+    # A caller-supplied list is JSON-serialized (valid JSON, double quotes), not repr'd.
+    assert params["filter_object"] == '[{"field": "naics_code", "operator": "eq", "value": "331110"}]'
+
+
+def test_osha_unknown_action_raises(router, monkeypatch):
+    monkeypatch.setenv("MCP_OSHA_API_KEY", "OSHAKEY")
+    router.register_adapter(OshaAdapter(client=FakeClient({"data": []})))
+    with pytest.raises(ValueError, match="unknown action"):
+        router.route(
+            MCPRequest(
+                project="aguayluz", capability="osha", action="citations",
+            )
+        )
+
+
 def test_regulations_search(router, monkeypatch):
     monkeypatch.setenv("MCP_REGULATIONS_API_KEY", "RK")
     client = FakeClient({"data": [{"id": "d1"}, {"id": "d2"}]})
@@ -225,5 +287,5 @@ def test_domain_adapter_registry_is_complete():
     caps = {a.capability_name for a in DOMAIN_ADAPTERS}
     assert caps == {
         "flight", "weather", "terrain", "contracts",
-        "regulations", "utilities", "field-ops",
+        "regulations", "osha", "utilities", "field-ops",
     }

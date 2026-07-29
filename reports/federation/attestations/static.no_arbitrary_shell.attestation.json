@@ -1,0 +1,25 @@
+{
+  "attestation": {
+    "attestation_id": "static.no_arbitrary_shell",
+    "details": {
+      "modules_scanned": 9,
+      "offences": []
+    },
+    "environment": {
+      "platform": "linux",
+      "python": "3.11.15",
+      "release": "6.18.5"
+    },
+    "kind": "static_analysis",
+    "produced_at": "2026-07-27T20:51:08.526058Z",
+    "produced_by": "tools/emit_gate_attestations.py::scan_for_shell_primitives",
+    "result": "satisfied",
+    "schema_version": "prii_gate_attestation_v1"
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "prii-attestations-test-2026-07",
+    "payload_sha256": "585ae24bbbb70058f34eb77130fb7a91796dfda0210eb4ca1a2d42ca7a6cad4e",
+    "value": "5Evj++0dm8eOE+r/egi4uJmAS8kaoB6JPMlrieBqcbM5bj1f8O5fpyMu8aeRzmF5fAu9RePDMo4YMZZ/yOD3Ag=="
+  }
+}

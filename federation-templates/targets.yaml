@@ -1,0 +1,144 @@
+# Which canonical template renders to which path, in which repos.
+# {{APP_SLUG}} in an output path is substituted per-repo from producers.vars.yaml.
+# Verbatim templates carry no placeholder; slug-parameterized ones ({{APP_SLUG}})
+# substitute in content too. requirements-desktop.txt is desktop-producers-only
+# (spiderweb's desktop model differs; thehub keeps its own). The schema and
+# Fix-Gatekeeper are byte-identical across all 7.
+schema_version: prii_federation_template_targets_v1
+
+_all: &all
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
+_desktop: &desktop
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr]
+# moneysweep-pr keeps its own pip-audit workflow: it is tailored to that repo's
+# requirements.lock and is referenced by docs/DEPENDENCY_SECURITY_AUDIT.md, so
+# rendering over it would break a documented entry point.
+_audit: &audit
+  [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
+# moneysweep-pr and spiderweb-pr keep their own .pre-commit-config.yaml: both are
+# tailored well beyond the shared baseline (registry-JSON regeneration and a
+# narrow-scope blocking mypy gate in moneysweep; a release-check smoke and
+# schema-validation hooks in spiderweb). Rendering over them would delete real
+# repo-specific work.
+_precommit: &precommit
+  [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, thehub-pr]
+# Governance. moneysweep-pr keeps its own SECURITY.md, CONTRIBUTING.md and
+# CODE_OF_CONDUCT.md: they cite that repo's STATUS.md, reports/current_status.json,
+# pinned tool versions and the requirements.in -> requirements.lock flow, none of
+# which generalizes. Rendering over them would replace specific, true text with
+# generic text.
+_governance: &governance
+  [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
+# CODEOWNERS and the PR template additionally exclude spiderweb-pr, whose
+# versions encode real per-path review rules (schemas/, docs/contracts/, specific
+# satellite tests) and a repo-specific test-plan checklist.
+_review: &review
+  [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, thehub-pr]
+# Only the three repos that ship no LICENSE at all. The other four already have
+# one and are left untouched — moneysweep-pr's uses contributor-inclusive
+# wording that is deliberately not propagated.
+_needs_license: &needs_license
+  [ovnis-pr, skywatcher-pr, spiderweb-pr]
+# The six producers, excluding thehub-pr — the hub already has its own server
+# tests, and its backend is the one the producers' shells were modelled on.
+_producers: &producers
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr]
+# The five producers whose frontends are React/JSX and already carry this exact
+# eslint config byte-for-byte. spiderweb-pr is excluded because its frontend is
+# TypeScript — no src/pages/, no Layout.jsx, zero .jsx files — so this config's
+# globs would match nothing there and produce a gate that lints no files at all.
+# thehub-pr keeps its own variant, which additionally sets no-undef.
+_jsx_frontend: &jsx_frontend
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr]
+
+targets:
+  - template: Fix-Gatekeeper.command
+    output: Fix-Gatekeeper.command
+    repos: *all
+  - template: PRII-APP.command
+    output: PRII-{{APP_SLUG}}.command
+    repos: *all
+  - template: PRII-APP.bat
+    output: PRII-{{APP_SLUG}}.bat
+    repos: *all
+  - template: PRII-APP.sh
+    output: PRII-{{APP_SLUG}}.sh
+    repos: *all
+  - template: requirements-desktop.txt
+    output: requirements-desktop.txt
+    repos: *desktop
+  - template: schemas/federation_export_manifest.schema.json
+    output: schemas/federation_export_manifest.schema.json
+    repos: *all
+
+  # Engineering baseline — supply-chain and dependency hygiene that every repo
+  # in the federation needs identically. Single-sourced here so a fix lands once
+  # instead of seven times, and so template-drift.yml keeps it from rotting.
+  - template: baseline/dependabot.yml
+    output: .github/dependabot.yml
+    repos: *all
+  - template: baseline/codeql.yml
+    output: .github/workflows/codeql.yml
+    repos: *all
+  - template: baseline/secret-scan.yml
+    output: .github/workflows/secret-scan.yml
+    repos: *all
+  - template: baseline/pip-audit.yml
+    output: .github/workflows/pip-audit.yml
+    repos: *audit
+  - template: baseline/pre-commit-config.yaml
+    output: .pre-commit-config.yaml
+    repos: *precommit
+
+  # Every producer ships a FastAPI backend at server/backend/main.py, and three
+  # of them had no test importing it — an import-time break shipped green. The
+  # test is byte-identical everywhere because /health is the only route all six
+  # share; anything deeper belongs in the repo's own tests, not here.
+  - template: baseline/test_server_smoke.py
+    output: tests/test_server_smoke.py
+    repos: *producers
+
+  # The frontend lint config. These five already held this file byte-identical,
+  # so rendering changes nothing today — it just stops them drifting apart, and
+  # gives the CI lint gates being added alongside a single source of truth.
+  # {{FRONTEND_DIR}} rather than {{NPM_DIR}}: the latter carries a leading slash
+  # for Dependabot, which would make `repo_root / rel` resolve absolute.
+  - template: baseline/eslint.config.js
+    output: "{{FRONTEND_DIR}}/eslint.config.js"
+    repos: *jsx_frontend
+
+  # Governance and contributor surface. Shared because the quality gates became
+  # uniform across the federation; anything repo-specific stays in README/docs.
+  - template: baseline/SECURITY.md
+    output: SECURITY.md
+    repos: *governance
+  - template: baseline/CODE_OF_CONDUCT.md
+    output: CODE_OF_CONDUCT.md
+    repos: *governance
+  - template: baseline/CONTRIBUTING.md
+    output: CONTRIBUTING.md
+    repos: *governance
+  - template: baseline/CODEOWNERS
+    output: .github/CODEOWNERS
+    repos: *review
+  - template: baseline/pull_request_template.md
+    output: .github/pull_request_template.md
+    repos: *review
+  - template: baseline/LICENSE
+    output: LICENSE
+    repos: *needs_license
+  - template: baseline/ISSUE_TEMPLATE/config.yml
+    output: .github/ISSUE_TEMPLATE/config.yml
+    repos: *governance
+  - template: baseline/ISSUE_TEMPLATE/bug_report.yml
+    output: .github/ISSUE_TEMPLATE/bug_report.yml
+    repos: *governance
+  - template: baseline/ISSUE_TEMPLATE/feature_request.yml
+    output: .github/ISSUE_TEMPLATE/feature_request.yml
+    repos: *governance
+  - template: baseline/ISSUE_TEMPLATE/improvement.yml
+    output: .github/ISSUE_TEMPLATE/improvement.yml
+    repos: *governance
+  - template: baseline/ISSUE_TEMPLATE/question.yml
+    output: .github/ISSUE_TEMPLATE/question.yml
+    repos: *governance

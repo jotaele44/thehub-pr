@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/provenance/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "DESIGN_DRAFT — not installed, not frozen",
+  "title": "Provenance",
+  "description": "Provenance block every retrievable object carries. Evidence tier authority follows the fixed priority order; machine suggestions remain PROVISIONAL.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["producer_id", "canonical_stream", "artifact_sha256", "snapshot_id", "schema_version", "evidence_tier", "tier_authority", "synthetic_status", "access_classification"],
+  "properties": {
+    "producer_id": {"type": "string"},
+    "canonical_stream": {"enum": ["sources", "entities", "relationships", "funding_awards", "transactions", "observations", "alerts", "correlations"]},
+    "canonical_record_id": {"type": "string"},
+    "artifact_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "snapshot_id": {"type": "string", "pattern": "^snap_[0-9a-f]{16,64}$"},
+    "schema_version": {"type": "string"},
+    "source_url": {"type": ["string", "null"], "format": "uri"},
+    "evidence_tier": {"type": "string"},
+    "tier_authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tier_value", "tier_source", "tier_review_status"],
+      "properties": {
+        "tier_value": {"type": "string"},
+        "tier_source": {"enum": ["producer-certified", "source-registry rule", "manual adjudication", "provisional machine suggestion"]},
+        "tier_rule_id": {"type": ["string", "null"]},
+        "tier_assigned_by": {"type": ["string", "null"]},
+        "tier_assigned_at": {"type": ["string", "null"], "format": "date-time"},
+        "tier_confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "tier_review_status": {"enum": ["PROVISIONAL", "REVIEWED", "CONFIRMED"]}
+      },
+      "allOf": [
+        {"if": {"properties": {"tier_source": {"const": "provisional machine suggestion"}}}, "then": {"properties": {"tier_review_status": {"const": "PROVISIONAL"}}}}
+      ],
+      "description": "Machine-suggested tiers MUST stay PROVISIONAL until human/producer authority upgrades them."
+    },
+    "synthetic_status": {"enum": ["REAL", "SYNTHETIC", "TEST_ONLY"]},
+    "access_classification": {"$ref": "https://thehub-pr/contracts/access_classification/v1"},
+    "temporal": {"type": "object"},
+    "spatial_precision": {"type": "object"},
+    "supersedes": {"type": ["string", "null"]},
+    "contradiction_refs": {"type": "array", "items": {"type": "string"}}
+  }
+}

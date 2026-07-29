@@ -1,0 +1,44 @@
+{
+  "task": "T004 — Run Hub unit tests; T005 — Run lint and typecheck",
+  "pinned_commit": "70765a2c4bd67470ee6b9892023f3ff4c80913b8",
+  "generated_at": "2026-07-25",
+  "runtime": {"python": "3.11.15", "pytest": "9.1.1", "ruff": "0.16.0", "mypy": "2.3.0"},
+  "ci_parity_note": "CI (.github/workflows/ci.yml) runs the test matrix on Python 3.9/3.10/3.11/3.12; this audit reproduced on 3.11 only. Installed tool versions exceed pyproject minimums (pytest>=7, ruff>=0.4, mypy>=1.10) and still pass, which is a strong forward-compat signal but not a substitute for the full CI matrix.",
+  "schema_wellformedness": {
+    "command": "python -c \"import json,glob;[json.load(open(f)) for f in glob.glob('schemas/*.json')]\"",
+    "result": "PASS"
+  },
+  "suites": [
+    {
+      "name": "root",
+      "path": "tests/",
+      "command": "pytest -q",
+      "collected": 387,
+      "passed": 386,
+      "failed": 0,
+      "skipped": 1,
+      "xfailed": 0,
+      "errors": 0,
+      "duration_s": 4.78,
+      "result": "PASS",
+      "skips": [
+        {
+          "nodeid": "tests/test_status_consistency.py:110",
+          "reason": "no producer checkouts available for manifest cross-check",
+          "class": "environmental (requires sibling producer repos cloned locally); not a defect"
+        }
+      ],
+      "warnings": [
+        "tests/test_desktop_app_server.py:21 StarletteDeprecationWarning: using httpx with starlette.testclient is deprecated (upstream dependency deprecation, non-blocking)."
+      ]
+    },
+    {"name": "prii_maintenance", "path": "packages/prii_maintenance/tests", "passed": 28, "failed": 0, "skipped": 0, "duration_s": 0.07, "result": "PASS"},
+    {"name": "prii_export_utils", "path": "packages/prii_export_utils/tests", "passed": 7, "failed": 0, "skipped": 0, "duration_s": 0.03, "result": "PASS"},
+    {"name": "prii_desktop", "path": "packages/prii_desktop/tests", "passed": 24, "failed": 0, "skipped": 0, "duration_s": 1.02, "result": "PASS"}
+  ],
+  "totals": {"passed": 445, "failed": 0, "skipped": 1, "errors": 0},
+  "lint": {"command": "ruff check src/hub tests", "result": "PASS", "message": "All checks passed!"},
+  "typecheck": {"command": "mypy src/hub", "result": "PASS", "message": "Success: no issues found in 40 source files"},
+  "uv_lock": {"command": "uv lock --check", "result": "PASS"},
+  "verdict": "Existing Hub test/lint/typecheck baseline is GREEN at the pinned commit (Python 3.11). Gate P1-G09 (backward compatibility) evidence recorded."
+}
