@@ -39,16 +39,10 @@ def test_launcher_route_is_attached(client):
     assert "text/html" in response.headers["content-type"]
 
 
-def test_local_setup_api_is_attached():
-    paths = {
-        route.path
-        for route in app_server.app.routes
-        if hasattr(route, "path")
-    }
-    assert "/api/local/setup/status" in paths
-    assert "/api/local/setup/save" in paths
-    assert "/api/local/setup/repair" in paths
-    assert "/api/local/setup/diagnostics" in paths
+def test_local_federation_api_is_attached(client):
+    response = client.get("/api/local/federation")
+    assert response.status_code == 200
+    assert isinstance(response.json(), list)
 
 
 def test_adapter_keeps_runtime_configuration_private():
