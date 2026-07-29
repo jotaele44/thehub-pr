@@ -1,6 +1,6 @@
 {
   "name": "@pr-federation/react",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Shared PRII federation design-system foundation: semantic tokens, evidence and async-state components, and dependency-light React primitives.",
   "license": "MIT",
   "repository": {

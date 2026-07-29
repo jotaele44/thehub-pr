@@ -217,14 +217,28 @@ export function FederationAsyncState({ state = 'idle', children, ...props }) {
   return <FederationStateMessage state={state} {...props} />
 }
 
-export function FederationStatCard({ label, value, icon, sub, alert, tone, className, ...props }) {
+// `tone` tints the value by status role; `accent` draws a role-tinted bar down the
+// leading edge; `loading` swaps the value for a skeleton while the figure is unknown.
+// A metric that is still loading must not render a stale or placeholder number, so
+// `loading` suppresses `value` entirely and marks the card aria-busy.
+export function FederationStatCard({ label, value, icon, sub, alert, tone, accent, loading, className, ...props }) {
+  const accentRole = accent ? federationStatusRole(accent) : undefined
   return (
-    <div className={cx('fd-stat-card', alert && 'fd-stat-card--alert', className)} {...props}>
+    <div
+      className={cx('fd-stat-card', alert && 'fd-stat-card--alert', accentRole && 'fd-stat-card--accent', className)}
+      data-accent={accentRole}
+      aria-busy={loading || undefined}
+      {...props}
+    >
       <div className="fd-stat-card__head">
         <span className="fd-stat-card__label">{label}</span>
         {icon ? <span className="fd-stat-card__icon" aria-hidden="true">{icon}</span> : null}
       </div>
-      <div className="fd-stat-card__value" data-tone={tone ? federationStatusRole(tone) : undefined}>{value}</div>
+      {loading ? (
+        <div className="fd-stat-card__value fd-stat-card__value--loading" aria-hidden="true" />
+      ) : (
+        <div className="fd-stat-card__value" data-tone={tone ? federationStatusRole(tone) : undefined}>{value}</div>
+      )}
       {sub ? <div className="fd-stat-card__sub">{sub}</div> : null}
     </div>
   )
