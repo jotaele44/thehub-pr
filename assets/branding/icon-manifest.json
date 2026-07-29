@@ -1,0 +1,21 @@
+{
+  "derivatives": {
+    "AppIcon.icns": "250b2a88d2bb3b9f399ca753504672b0c959d37a989918f077df4baebc4597b1",
+    "icon-180.png": "6d3be1888f4172dab7863e37ca706dda5dba95a1b2d9996c3df96b669c629544",
+    "icon-192.png": "7ccdcb1443fa8e92f327a97364cf908efe9a6ce2bab0a35d71f711e85ba3ead5",
+    "icon-256.png": "a0f14617d37b94249033e035758bcb4a5fe8f63c514cc4579be8bd9a15777cb9",
+    "icon-32.png": "a6fd68435d6861cf3b5873d6b0d0687a396cc1645e5d67bc9455155b57498899",
+    "icon-512.png": "71b779870d6f207121eb128c550e92be53f6c359b5ae3073cece57e3559d9170",
+    "icon-64.png": "fd1a3b8e0c0851e2dfc66750f2d8f58e271b976ef9c9ef70e54291dd3eb2f0ae",
+    "icon.ico": "86e0b546a5b09a6f3d63eec200900c1c10845f1d85940c03c0035170c0bdfd3f"
+  },
+  "mask": {
+    "exponent": 5.0,
+    "kind": "superellipse",
+    "supersample": 4
+  },
+  "sampled_accent": "#0529a8",
+  "schema_version": 1,
+  "source": "icon.png",
+  "source_sha256": "981fb8c6f36cca7d451f21210c7f54f19bf102c022b01066ebb56d2e710d76dc"
+}

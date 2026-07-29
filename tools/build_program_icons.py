@@ -26,7 +26,9 @@ so CI or a reviewer can prove the committed binaries match the master.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import filecmp
+import json
 import math
 import statistics
 import colorsys
@@ -162,6 +164,32 @@ def build(master_path: Path, out_dir: Path) -> list[Path]:
     icns = out_dir / "AppIcon.icns"
     rounded(master, ICNS_SIZE).save(icns, format="ICNS")
     written.append(icns)
+
+    manifest = out_dir / "icon-manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "source": MASTER.name,
+                "source_sha256": hashlib.sha256(master_path.read_bytes()).hexdigest(),
+                "sampled_accent": sample_accent(master),
+                "mask": {
+                    "kind": "superellipse",
+                    "exponent": SQUIRCLE_N,
+                    "supersample": SUPERSAMPLE,
+                },
+                "derivatives": {
+                    path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+                    for path in written
+                },
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    written.append(manifest)
 
     return written
 
