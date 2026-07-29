@@ -31,7 +31,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install
-        run: pip install -e ".[dev]" httpx -r server/backend/requirements.txt
+        run: |
+          pip install -e ".[dev]" httpx -r server/backend/requirements.txt
+          if [ "${{ matrix.python-version }}" != "3.9" ]; then
+            pip install -e packages/prii_desktop
+          fi
       - name: Schemas are well-formed JSON
         run: python -c "import json, glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')"
       - name: Registry loads

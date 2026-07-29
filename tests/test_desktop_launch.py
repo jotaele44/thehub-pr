@@ -15,6 +15,8 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+pytest.importorskip("prii_desktop")
+
 from desktop import launch  # noqa: E402
 
 

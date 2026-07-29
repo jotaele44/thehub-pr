@@ -53,10 +53,12 @@ test('native setup is accessible, responsive, and visually reviewable', async ({
     element.tagName !== 'IMG' || element.naturalWidth > 0
   ))).toBe(true)
 
-  const controls = page.locator('button')
+  const controls = page.locator('button:visible')
   expect(await controls.count()).toBeGreaterThanOrEqual(5)
   for (const control of await controls.all()) {
-    expect((await control.boundingBox())?.height).toBeGreaterThanOrEqual(44)
+    const box = await control.boundingBox()
+    expect(box).not.toBeNull()
+    expect(box.height).toBeGreaterThanOrEqual(44)
   }
 
   if (artifactDir) {

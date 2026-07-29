@@ -21,6 +21,8 @@
 #   program_desc — one clause completing "<program_id> is ...", taken from each
 #                  repo's own pyproject description or README lede so the shared
 #                  CONTRIBUTING opens with something true about that repo.
+#   desktop_extra_requirements — optional repo-specific lines appended after the
+#                  shared prii_desktop dependency by requirements-desktop.txt.
 schema_version: prii_federation_template_vars_v1
 producers:
   aguayluz-pr:
@@ -30,6 +32,7 @@ producers:
     program_id: aguayluz-pr
     repo_url: https://github.com/jotaele44/aguayluz-pr
     lock_cmd: "uv lock --check"
+    desktop_extra_requirements: "\n-e ../thehub-pr/packages/prii_export_utils\njsonschema>=4.21.0\nPyYAML>=6.0"
     program_desc: the Puerto Rico water, power and utility infrastructure intelligence producer
   centinelas-pr:
     app_slug: CENTINELAS
@@ -38,6 +41,7 @@ producers:
     program_id: centinelas-pr
     repo_url: https://github.com/jotaele44/centinelas-pr
     lock_cmd: "uv lock --check"
+    desktop_extra_requirements: ""
     program_desc: the universal online intelligence monitor and routing engine
   moneysweep-pr:
     app_slug: MONEYSWEEP
@@ -46,6 +50,7 @@ producers:
     program_id: moneysweep-pr
     repo_url: https://github.com/jotaele44/moneysweep-pr
     lock_cmd: "uv pip compile requirements.in --universal --python-version 3.13 -o requirements.lock"
+    desktop_extra_requirements: ""
     program_desc: the public-money intelligence producer
   ovnis-pr:
     app_slug: OVNIS
@@ -54,6 +59,7 @@ producers:
     program_id: ovnis-pr
     repo_url: https://github.com/jotaele44/ovnis-pr
     lock_cmd: "uv pip compile requirements.txt --universal --python-version 3.12 -o requirements.lock"
+    desktop_extra_requirements: ""
     program_desc: the historical case-corpus producer for Puerto Rico-centered anomalous-event research
   skywatcher-pr:
     app_slug: SKYWATCHER
@@ -62,6 +68,7 @@ producers:
     program_id: skywatcher-pr
     repo_url: https://github.com/jotaele44/skywatcher-pr
     lock_cmd: "uv pip compile requirements.txt --universal --python-version 3.12 -o requirements.lock"
+    desktop_extra_requirements: ""
     program_desc: the airspace and aircraft-intelligence producer
   spiderweb-pr:
     app_slug: SPIDERWEB

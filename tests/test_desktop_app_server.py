@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 pytest.importorskip("fastapi")
 pytest.importorskip("httpx")
+pytest.importorskip("prii_desktop")
 
 from starlette.testclient import TestClient  # noqa: E402
 
