@@ -27,6 +27,7 @@ CONSOLE = os.environ.get("PRII_CONSOLE") == "1"
 
 datas = [
     (str(REPO_ROOT / "server" / "frontend" / "dist"), "server/frontend/dist"),
+    (str(BRANDING / "icon-256.png"), "assets/branding"),
     (str(REPO_ROOT / "registry"), "registry"),
     (str(REPO_ROOT / "schemas"), "schemas"),
     # The committed federation readiness snapshot. The frozen app runs the same
@@ -51,6 +52,11 @@ a = Analysis(
         "uvicorn.lifespan.on",
         "desktop.app_server",
         "server.backend.main",
+        "prii_desktop",
+        "prii_desktop.launcher",
+        "prii_desktop.appserver",
+        "prii_desktop.config",
+        "prii_desktop.setup_center",
     ],
     noarchive=False,
 )
@@ -78,4 +84,8 @@ if sys.platform == "darwin":
         name=f"{APP_NAME}.app",
         icon=str(BRANDING / "AppIcon.icns"),
         bundle_identifier="pr.prii.thehub",
+        info_plist={
+            "CFBundleDisplayName": "TheHub",
+            "CFBundleName": "TheHub",
+        },
     )

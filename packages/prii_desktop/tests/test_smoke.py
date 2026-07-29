@@ -15,6 +15,8 @@ def test_public_api():
     assert hasattr(prii_desktop, "launch")
     assert hasattr(prii_desktop, "make_desktop_app")
     assert hasattr(prii_desktop, "DesktopConfig")
+    assert hasattr(prii_desktop, "SetupBridge")
+    assert hasattr(prii_desktop, "diagnostics")
 
 
 def test_desktop_config_from_module():
@@ -24,12 +26,19 @@ def test_desktop_config_from_module():
         REPO_ROOT = Path("/tmp/ovnis")
         DIST_DIR = Path("/tmp/ovnis/dashboard/dist")
         HEALTH_PATH = "/health"
+        APP_ID = "OVNIS"
+        BRAND_ACCENT = "#7c3aed"
+        BRAND_ACCENT_STRONG = "#5b21b6"
+        DATA_ENV_VAR = "OVNIS_DATA_HOME"
 
     cfg = DesktopConfig.from_module(_Mod)
     assert cfg.app_title == "OVNIS — PRII Case Corpus"
     assert cfg.app_import == "server.backend.main:app"
     assert cfg.health_path == "/health"
     assert cfg.repo_root == Path("/tmp/ovnis")
+    assert cfg.app_id == "OVNIS"
+    assert cfg.brand_accent == "#7c3aed"
+    assert cfg.data_env_var == "OVNIS_DATA_HOME"
 
 
 def test_display_url_route():

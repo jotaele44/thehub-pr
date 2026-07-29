@@ -31,7 +31,12 @@ from fastapi.staticfiles import StaticFiles
 from server.backend.seed_federation import seed_federation_collections
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-DB_PATH = REPO_ROOT / "data" / "hub.db"
+_desktop_data_home = os.environ.get("THEHUB_DATA_HOME", "").strip()
+DB_PATH = (
+    Path(_desktop_data_home) / "data" / "hub.db"
+    if _desktop_data_home
+    else REPO_ROOT / "data" / "hub.db"
+)
 REGISTRY_PATH = REPO_ROOT / "registry" / "producers.yaml"
 STATUS_PATH = REPO_ROOT / "data" / "federation_status.json"
 

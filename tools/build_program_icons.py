@@ -19,14 +19,18 @@ same way ``render_federation_templates.py`` is invoked:
     python3 tools/build_program_icons.py --repo ../aguayluz-pr
     python3 tools/build_program_icons.py --all --check
 
-Output is deterministic: ``--check`` regenerates into a temp dir and byte-compares,
-so CI or a reviewer can prove the committed binaries match the master.
+``--check`` regenerates into a temp dir and compares decoded image variants
+across platforms while verifying every committed derivative SHA in the
+manifest. PNG, ICO, and ICNS container encoding can differ between ARM macOS
+and x86 runners even when every decoded icon image is identical.
 """
 
 from __future__ import annotations
 
 import argparse
+import hashlib
 import filecmp
+import json
 import math
 import statistics
 import colorsys
@@ -163,6 +167,32 @@ def build(master_path: Path, out_dir: Path) -> list[Path]:
     rounded(master, ICNS_SIZE).save(icns, format="ICNS")
     written.append(icns)
 
+    manifest = out_dir / "icon-manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "source": MASTER.name,
+                "source_sha256": hashlib.sha256(master_path.read_bytes()).hexdigest(),
+                "sampled_accent": sample_accent(master),
+                "mask": {
+                    "kind": "superellipse",
+                    "exponent": SQUIRCLE_N,
+                    "supersample": SUPERSAMPLE,
+                },
+                "derivatives": {
+                    path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+                    for path in written
+                },
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    written.append(manifest)
+
     return written
 
 
@@ -198,12 +228,72 @@ def sync(pairs: list[tuple[Path, Path]], check: bool) -> list[str]:
     drifted: list[str] = []
     for built, dest in pairs:
         if check:
-            if not dest.is_file() or not filecmp.cmp(built, dest, shallow=False):
+            if not dest.is_file() or not equivalent_file(built, dest):
                 drifted.append(str(dest))
         else:
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_bytes(built.read_bytes())
     return drifted
+
+
+def equivalent_file(built: Path, committed: Path) -> bool:
+    """Compare image meaning where encoders vary, bytes everywhere else."""
+    suffix = built.suffix.lower()
+    if suffix not in {".png", ".ico", ".icns"}:
+        return filecmp.cmp(built, committed, shallow=False)
+    try:
+        with Image.open(built) as generated, Image.open(committed) as current:
+            if suffix == ".ico":
+                generated_sizes = sorted(generated.ico.sizes())
+                current_sizes = sorted(current.ico.sizes())
+                return generated_sizes == current_sizes and all(
+                    generated.ico.getimage(size).convert("RGBA").tobytes()
+                    == current.ico.getimage(size).convert("RGBA").tobytes()
+                    for size in generated_sizes
+                )
+            if suffix == ".icns":
+                generated_sizes = list(generated.icns.itersizes())
+                current_sizes = list(current.icns.itersizes())
+                return generated_sizes == current_sizes and all(
+                    generated.icns.getimage(size).convert("RGBA").tobytes()
+                    == current.icns.getimage(size).convert("RGBA").tobytes()
+                    for size in generated_sizes
+                )
+            return generated.size == current.size and (
+                generated.convert("RGBA").tobytes()
+                == current.convert("RGBA").tobytes()
+            )
+    except (AttributeError, OSError, ValueError):
+        return False
+
+
+def committed_manifest_matches(
+    generated: Path, committed: Path, derivatives_dir: Path
+) -> bool:
+    """Verify stable metadata plus hashes of the committed encoded derivatives."""
+    try:
+        expected = json.loads(generated.read_text(encoding="utf-8"))
+        current = json.loads(committed.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return False
+
+    expected_stable = {k: v for k, v in expected.items() if k != "derivatives"}
+    current_stable = {k: v for k, v in current.items() if k != "derivatives"}
+    if expected_stable != current_stable:
+        return False
+
+    generated_names = set(expected.get("derivatives", {}))
+    committed_hashes = current.get("derivatives", {})
+    if generated_names != set(committed_hashes):
+        return False
+    for filename, digest in committed_hashes.items():
+        derivative = derivatives_dir / filename
+        if (
+            not derivative.is_file()
+            or hashlib.sha256(derivative.read_bytes()).hexdigest() != digest
+        ):
+            return False
+    return True
 
 
 def process(repo: Path, check: bool) -> bool:
@@ -218,15 +308,28 @@ def process(repo: Path, check: bool) -> bool:
     with tempfile.TemporaryDirectory() as tmp:
         staged = Path(tmp)
         built = build(master_path, staged)
-        pairs = [(b, out_dir / b.name) for b in built]
+        generated_manifest = staged / "icon-manifest.json"
+        committed_manifest = out_dir / "icon-manifest.json"
+        pairs = [
+            (b, out_dir / b.name)
+            for b in built
+            if b.name != "icon-manifest.json"
+        ]
         pairs += consumer_targets(repo, repo.name, staged)
         drifted = sync(pairs, check)
+        if check:
+            if not committed_manifest_matches(
+                generated_manifest, committed_manifest, out_dir
+            ):
+                drifted.append(str(committed_manifest))
+        else:
+            sync([(generated_manifest, committed_manifest)], check=False)
 
     if drifted:
         print(f"  DRIFT ({len(drifted)}): " + ", ".join(drifted[:4]) + (" …" if len(drifted) > 4 else ""))
         return False
     verb = "verified" if check else "wrote"
-    print(f"  accent {accent}  ->  {verb} {len(pairs)} files")
+    print(f"  accent {accent}  ->  {verb} {len(pairs) + 1} files")
     return True
 
 
