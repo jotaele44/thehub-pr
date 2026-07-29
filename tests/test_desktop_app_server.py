@@ -40,7 +40,11 @@ def test_launcher_route_is_attached(client):
 
 
 def test_local_setup_api_is_attached():
-    paths = {route.path for route in app_server.app.routes}
+    paths = {
+        route.path
+        for route in app_server.app.routes
+        if hasattr(route, "path")
+    }
     assert "/api/local/setup/status" in paths
     assert "/api/local/setup/save" in paths
     assert "/api/local/setup/repair" in paths
