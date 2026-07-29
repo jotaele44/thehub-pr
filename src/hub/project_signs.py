@@ -45,7 +45,9 @@ def _read_jsonl(path: Path) -> List[dict]:
             try:
                 rows.append(json.loads(line))
             except json.JSONDecodeError:
-                pass
+                # Skip malformed lines: a stream is best-effort input here, and one
+                # bad row must not abort building signs from the rest of the file.
+                continue
     return rows
 
 

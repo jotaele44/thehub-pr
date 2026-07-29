@@ -31,9 +31,9 @@ Scored 0–4. 4 = would pass review at a team that ships this for a living.
 
 | Dim | Area | Score | Evidence |
 |---|---|---|---|
-| D1 | Functional completeness | **3** | `hub` CLI has 13 real subcommands; 21 application routes serve; auth surface was dead (fixed below) |
+| D1 | Functional completeness | **3** | `hub` CLI has 14 real subcommands; 22 application routes serve; auth surface was dead (fixed below) |
 | D2 | Data reality | **1** | `data/` is 8 KB — the aggregate has never been run in-tree, so most UI pages render empty |
-| D3 | UI craft | **4** | 28 pages on shared primitives; 30 files handle empty states, 22 handle loading; only repo in the federation with an automated a11y test |
+| D3 | UI craft | **4** | 29 pages on shared primitives; 30 files handle empty states, 22 handle loading; only repo in the federation with an automated a11y test |
 | D4 | Test & CI coverage | **4** | `388 passed` (pytest, 6.3s) + `16 passed / 7 files` (vitest); Playwright visual harness present |
 | D5 | Engineering hygiene | **3** | ruff+mypy clean on enforced scope (`mypy`: 50 files, no issues) — but `server/` is outside that scope and `npm run typecheck` reports 831 errors that no workflow runs |
 | D6 | Doc accuracy | **3** | README pointed at a symbol that does not exist (fixed below); otherwise accurate and unusually thorough |
@@ -51,7 +51,7 @@ never been run into `data/hub.db`, so most of that craft renders blank.
 
 | Module | Evidence |
 |---|---|
-| `src/hub/cli.py` | **13** subcommands (`list`, `validate-manifest`, `validate-package`, `validate-federation`, `fetch`, `aggregate`, `wrap-bridge`, `correlate`, `ingest`, `graph-report`, `analytics-v2`, `consume-sensor-fusion`, `maintenance`) |
+| `src/hub/cli.py` | **14** subcommands (`list`, `validate-manifest`, `validate-package`, `validate-federation`, `fetch`, `aggregate`, `wrap-bridge`, `correlate`, `ingest`, `graph-report`, `analytics-v2`, `consume-sensor-fusion`, `project-signs`, `maintenance`) |
 | `src/hub/bridge.py`, `federation_analytics_v2.py`, `sensor_fusion_consumer.py` | CLI-exposed via `wrap-bridge`, `analytics-v2`, `consume-sensor-fusion` |
 | `src/hub/aggregate.py`, `correlate.py`, `validate.py`, `registry.py`, `manifest.py` | covered by the 388-test suite; mypy-clean |
 | `src/hub/ingest.py` | `ingest_aggregate` + `_project_ui` + four `project_*` helpers (`:111`, `:254`, `:305`, `:396`, `:567`, `:629`) |
