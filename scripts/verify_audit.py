@@ -277,10 +277,19 @@ FRONTENDS = {
 }
 
 #: Repos the rollup says gate `npm run lint` in CI. Derived and compared below.
-ROLLUP_LINT_GATED = {"thehub-pr", "skywatcher-pr"}
+#: Now all seven: aguayluz gained a Lint step in its existing dashboard-build
+#: job, centinelas/ovnis/moneysweep gained a frontend job outright, and
+#: spiderweb gained the eslint config it never had.
+ROLLUP_LINT_GATED = {
+    "aguayluz-pr", "centinelas-pr", "moneysweep-pr", "ovnis-pr",
+    "skywatcher-pr", "spiderweb-pr", "thehub-pr",
+}
 
-#: Repos the rollup says have no `lint` script at all.
-ROLLUP_NO_LINT_SCRIPT = {"spiderweb-pr"}
+#: Repos the rollup says have no `lint` script at all. Empty since spiderweb-pr
+#: got one — its config is local rather than rendered from the federation
+#: templates, because that shared config is JSX-flavoured and would match none
+#: of spiderweb's TypeScript sources.
+ROLLUP_NO_LINT_SCRIPT: set[str] = set()
 
 
 _NUMBER_WORDS = {
