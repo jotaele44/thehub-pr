@@ -19,10 +19,10 @@ same way ``render_federation_templates.py`` is invoked:
     python3 tools/build_program_icons.py --repo ../aguayluz-pr
     python3 tools/build_program_icons.py --all --check
 
-``--check`` regenerates into a temp dir and compares decoded PNG pixels across
-platforms, while retaining exact-byte checks for ICO/ICNS and verifying every
-committed derivative SHA in the manifest. PNG compression can differ between
-the ARM macOS and x86 runner builds even when the decoded artwork is identical.
+``--check`` regenerates into a temp dir and compares decoded image variants
+across platforms while verifying every committed derivative SHA in the
+manifest. PNG, ICO, and ICNS container encoding can differ between ARM macOS
+and x86 runners even when every decoded icon image is identical.
 """
 
 from __future__ import annotations
@@ -238,16 +238,32 @@ def sync(pairs: list[tuple[Path, Path]], check: bool) -> list[str]:
 
 def equivalent_file(built: Path, committed: Path) -> bool:
     """Compare image meaning where encoders vary, bytes everywhere else."""
-    if built.suffix.lower() != ".png":
+    suffix = built.suffix.lower()
+    if suffix not in {".png", ".ico", ".icns"}:
         return filecmp.cmp(built, committed, shallow=False)
     try:
         with Image.open(built) as generated, Image.open(committed) as current:
-            return (
-                generated.size == current.size
-                and generated.convert("RGBA").tobytes()
+            if suffix == ".ico":
+                generated_sizes = sorted(generated.ico.sizes())
+                current_sizes = sorted(current.ico.sizes())
+                return generated_sizes == current_sizes and all(
+                    generated.ico.getimage(size).convert("RGBA").tobytes()
+                    == current.ico.getimage(size).convert("RGBA").tobytes()
+                    for size in generated_sizes
+                )
+            if suffix == ".icns":
+                generated_sizes = list(generated.icns.itersizes())
+                current_sizes = list(current.icns.itersizes())
+                return generated_sizes == current_sizes and all(
+                    generated.icns.getimage(size).convert("RGBA").tobytes()
+                    == current.icns.getimage(size).convert("RGBA").tobytes()
+                    for size in generated_sizes
+                )
+            return generated.size == current.size and (
+                generated.convert("RGBA").tobytes()
                 == current.convert("RGBA").tobytes()
             )
-    except (OSError, ValueError):
+    except (AttributeError, OSError, ValueError):
         return False
 
 

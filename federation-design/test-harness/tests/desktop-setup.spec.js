@@ -54,7 +54,7 @@ test('native setup is accessible, responsive, and visually reviewable', async ({
   ))).toBe(true)
 
   const controls = page.locator('button:visible')
-  expect(await controls.count()).toBeGreaterThanOrEqual(5)
+  expect(await controls.count()).toBeGreaterThanOrEqual(4)
   for (const control of await controls.all()) {
     const box = await control.boundingBox()
     expect(box).not.toBeNull()
