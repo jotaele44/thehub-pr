@@ -10,6 +10,7 @@
     hub ingest [--in d --db f]       load an aggregate into the server entity store
     hub analytics-v2 [--in d]        build Federation Analytics v2 from an aggregate
     hub consume-sensor-fusion <p>    validate skywatcher sensor-fusion export -> dashboard
+    hub project-signs [--in d]       render per-project consolidation signs from an aggregate
     hub maintenance [--root ..]      roll up producer maintenance reports + gate
 """
 from __future__ import annotations
@@ -31,6 +32,7 @@ from .graph_report import graph_report
 from .ingest import ingest_aggregate
 from .maintenance import build_rollup
 from .manifest import load_and_validate_manifest
+from .project_signs import write_project_signs
 from .registry import load_registry
 from .sensor_fusion_consumer import write_dashboard_surface
 from .validate import validate_package
@@ -110,6 +112,11 @@ def _build_parser() -> argparse.ArgumentParser:
         default="data/dashboard/skywatcher_sensor_fusion.json",
         help="dashboard surface output path",
     )
+
+    ps = sub.add_parser("project-signs", help="render per-project consolidation signs from an aggregate")
+    ps.add_argument("--in", dest="in_dir", default="data/aggregate", help="aggregate dir to read (entities/funding_awards/relationships.jsonl)")
+    ps.add_argument("--out", default="reports/signs", help="dir to write per-project sign HTML + index.json")
+    ps.add_argument("--json", action="store_true", help="print the sign index as JSON")
 
     mt = sub.add_parser("maintenance", help="roll up producer maintenance reports and compute the promotion gate")
     mt.add_argument("--registry", default=DEFAULT_REGISTRY)
@@ -299,6 +306,20 @@ def main(argv: Optional[List[str]] = None) -> int:
             for e in surface["errors"][:20]:
                 print("  -", e)
             return 1
+        return 0
+
+    if args.cmd == "project-signs":
+        summary = write_project_signs(args.in_dir, args.out)
+        if not summary["count"]:
+            print(f"no funding awards found under {args.in_dir!r} — no project signs to render")
+            return 1
+        print(
+            f"wrote {summary['count']} project sign(s) -> {summary['out_dir']} "
+            f"({summary['synthetic_count']} synthetic)"
+        )
+        if args.json:
+            print(json.dumps({"count": summary["count"], "signs": summary["signs"]},
+                             indent=2, sort_keys=True))
         return 0
 
     if args.cmd == "maintenance":

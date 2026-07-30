@@ -40,6 +40,7 @@ const FederationCrossoverWorkspace = lazy(() => import('@/pages/FederationCrosso
 const AnomalyOverlap = lazy(() => import('@/pages/AnomalyOverlap'));
 const ControlLedgers = lazy(() => import('@/pages/ControlLedgers'));
 const Hub = lazy(() => import('@/pages/Hub'));
+const ProjectSigns = lazy(() => import('@/pages/ProjectSigns'));
 const RecentActivity = lazy(() => import('@/pages/RecentActivity'));
 const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
@@ -111,6 +112,7 @@ const AppRoutes = () => {
             <Route path="/anomaly-overlap" element={<AnomalyOverlap />} />
             <Route path="/control" element={<ControlLedgers />} />
             <Route path="/hub" element={<Hub />} />
+            <Route path="/project-signs" element={<ProjectSigns />} />
             <Route path="/research" element={<ResearchAssistant />} />
             <Route path="/dictionary" element={<Dictionary />} />
             <Route path="/manifest" element={<Manifest />} />
