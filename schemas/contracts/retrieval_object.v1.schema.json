@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/retrieval_object/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "FROZEN — schemas/contracts (Phase 1)",
+  "title": "Retrieval Object (discriminated union)",
+  "description": "The eight retrieval object types. They may be retrieved together but MUST never lose their distinct identities. Discriminator: object_type. Reconciled from handoff-audit/phase1-design/schemas/retrieval_object.v1.schema.json against docs/spatialrag_migration/DATA_CONTRACTS.md §1/§6/§7 (see schemas/contracts/README.md).",
+  "type": "object",
+  "required": ["object_type", "object_id", "provenance"],
+  "properties": {
+    "object_type": {"enum": ["CanonicalRecord", "SourceArtifact", "TextChunk", "SpatialFeature", "Entity", "Relationship", "AnalyticalClaim", "ContradictionSet"]},
+    "object_id": {"type": "string", "description": "Stable identity, preserved across joins and reranking."},
+    "provenance": {"$ref": "https://thehub-pr/contracts/provenance/v1"}
+  },
+  "oneOf": [
+    {"properties": {"object_type": {"const": "CanonicalRecord"}, "canonical_stream": {"type": "string"}, "fields": {"type": "object", "description": "Structured — never prose-flattened."}}, "required": ["fields"]},
+    {"properties": {"object_type": {"const": "SourceArtifact"}, "media_type": {"type": "string"}, "source_file_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}, "required": ["source_file_hash"]},
+    {
+      "properties": {
+        "object_type": {"const": "TextChunk"},
+        "chunk_id": {"type": "string"},
+        "page_number": {"type": "integer"},
+        "text_offsets": {"type": "array", "items": {"type": "integer"}},
+        "rendered_page_hash": {"type": "string"},
+        "ocr_bounding_box": {
+          "type": ["array", "null"],
+          "items": {"type": "object", "additionalProperties": false, "required": ["x", "y", "width", "height"], "properties": {"x": {"type": "number"}, "y": {"type": "number"}, "width": {"type": "number"}, "height": {"type": "number"}}},
+          "description": "Per-token or per-line OCR bounding box, when OCR-derived. Lets a Document Viewer highlight the exact supporting passage or region (DATA_CONTRACTS.md §7)."
+        },
+        "extraction_method": {"enum": ["native_text", "ocr", null]},
+        "ocr_confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+        "source_file_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "Distinct from chunk_id — hash of the originating source file, not the extracted chunk."}
+      },
+      "required": ["chunk_id"]
+    },
+    {
+      "properties": {
+        "object_type": {"const": "SpatialFeature"},
+        "geometry_method": {"type": "string"},
+        "spatial_precision_class": {"type": "string"},
+        "horizontal_accuracy_m": {"type": "number"},
+        "crs": {"type": "string"},
+        "geometry_source": {"enum": ["regex_extraction", "geocoder", "manual", "producer_supplied", null], "description": "DATA_CONTRACTS.md §6 — a municipality mention must not be displayed as an exact facility coordinate."},
+        "geocoder": {"type": ["string", "null"], "description": "Which geocoding service produced this feature, if any."},
+        "geocoded_at": {"type": ["string", "null"], "format": "date-time"},
+        "manual_review_status": {"type": ["string", "null"]}
+      },
+      "required": ["spatial_precision_class"]
+    },
+    {"properties": {"object_type": {"const": "Entity"}, "entity_name": {"type": "string"}}, "required": ["entity_name"]},
+    {"properties": {"object_type": {"const": "Relationship"}, "subject_id": {"type": "string"}, "predicate": {"type": "string"}, "object_ref": {"type": "string"}, "assertion_kind": {"enum": ["ASSERTED", "INFERRED"]}}, "required": ["assertion_kind"]},
+    {"properties": {"object_type": {"const": "AnalyticalClaim"}, "claim_id": {"type": "string"}}, "required": ["claim_id"]},
+    {"properties": {"object_type": {"const": "ContradictionSet"}, "member_claim_ids": {"type": "array", "minItems": 2, "items": {"type": "string"}}}, "required": ["member_claim_ids"]}
+  ],
+  "x-invariants": [
+    "No exact coordinates may be derived from a centroid or an approximate locality (spatial.exact_coordinate_claim_from_centroid_max == 0).",
+    "SourceArtifact content is untrusted; retrieval must not execute instructions embedded in it."
+  ]
+}
