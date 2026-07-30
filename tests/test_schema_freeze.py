@@ -1,12 +1,16 @@
-"""Schema-freeze gate (ADR 0001 Phase 0).
+"""Schema-freeze gate for ADR 0001, Phase 1, and ADR 0006 contracts.
 
-The contract schemas under ``schemas/`` are the frozen boundary between the
-producer engines and the Hub product. This test pins every schema file to the
-SHA-256 recorded in ``schemas/FROZEN.sha256`` so a drive-by edit (or an
-accidental add/remove) fails CI, while a deliberate contract change is a
-one-line manifest update reviewed alongside the schema diff.
+The frozen contract boundary has three logical zones:
 
-Regenerate the manifest after a deliberate change:
+- ``schemas/*.json`` — ADR 0001 producer/Hub contracts.
+- ``schemas/contracts/*.json`` — authoritative Phase 1 Evidence Engine,
+  Intelligence Engine, and Control Plane contracts.
+- ``schemas/contracts/**/*.json`` — additive child namespaces, including the
+  ADR 0006 Skywatcher AI/imagery receipts and provisional-output contracts.
+
+Every JSON schema is pinned to ``schemas/FROZEN.sha256`` using its path relative
+to ``schemas/``. A drive-by edit, addition, or removal fails CI. Regenerate only
+for a deliberate reviewed contract change:
 
     python tests/test_schema_freeze.py --update
 """
@@ -18,14 +22,24 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCHEMA_DIR = REPO_ROOT / "schemas"
+CONTRACTS_DIR = SCHEMA_DIR / "contracts"
 MANIFEST = SCHEMA_DIR / "FROZEN.sha256"
 
 
 def _current_hashes() -> dict[str, str]:
-    return {
+    hashes = {
         path.name: hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sorted(SCHEMA_DIR.glob("*.json"))
     }
+    hashes.update(
+        {
+            path.relative_to(SCHEMA_DIR).as_posix(): hashlib.sha256(
+                path.read_bytes()
+            ).hexdigest()
+            for path in sorted(CONTRACTS_DIR.rglob("*.json"))
+        }
+    )
+    return hashes
 
 
 def _recorded_hashes() -> dict[str, str]:
@@ -68,8 +82,11 @@ def test_schemas_match_freeze_manifest() -> None:
 
 
 def _update() -> None:
-    lines = ["# SHA-256 freeze manifest for the ADR 0001 contract schemas.",
-             "# Regenerate with: python tests/test_schema_freeze.py --update"]
+    lines = [
+        "# SHA-256 freeze manifest for ADR 0001 and recursive schemas/contracts/ contracts.",
+        "# Includes the Phase 1 flat namespace and ADR 0006 child namespaces.",
+        "# Regenerate with: python tests/test_schema_freeze.py --update",
+    ]
     lines += [f"{digest}  {name}" for name, digest in _current_hashes().items()]
     MANIFEST.write_text("\n".join(lines) + "\n")
     print(f"wrote {MANIFEST} ({len(_current_hashes())} schemas)")
