@@ -171,12 +171,22 @@ def _resolve_intended_classification(
         raise IntakeValidationError("inherited_classifications must be an array")
     for entry in inherited:
         if not isinstance(entry, Mapping):
-            raise IntakeValidationError("classification inheritance entries must be objects")
+            raise IntakeValidationError(
+                "classification inheritance entries must be objects"
+            )
         sources.append(
             _classification_source(
                 str(entry.get("level") or ""),
-                str(entry.get("object_id")) if entry.get("object_id") is not None else None,
-                str(entry.get("reason")) if entry.get("reason") is not None else None,
+                (
+                    str(entry.get("object_id"))
+                    if entry.get("object_id") is not None
+                    else None
+                ),
+                (
+                    str(entry.get("reason"))
+                    if entry.get("reason") is not None
+                    else None
+                ),
             )
         )
 
@@ -195,6 +205,19 @@ def _resolve_intended_classification(
         "restriction_floor": restriction_floor,
         "test_only": test_only,
         "sources": sources,
+    }
+
+
+def _classification_summary(intended: Mapping[str, Any]) -> Dict[str, Any]:
+    source_levels = sorted(
+        {str(source["level"]) for source in intended.get("sources", [])}
+    )
+    return {
+        "level": str(intended["level"]),
+        "restriction_floor": str(intended["restriction_floor"]),
+        "test_only": bool(intended["test_only"]),
+        "source_levels": source_levels,
+        "lineage_complete": True,
     }
 
 
@@ -219,7 +242,9 @@ def _safe_write_once(path: Path, data: bytes) -> bool:
             created = True
         except FileExistsError:
             if path.read_bytes() != data:
-                raise ArtifactIntakeError("immutable path content conflict: " + str(path))
+                raise ArtifactIntakeError(
+                    "immutable path content conflict: " + str(path)
+                )
             created = False
         return created
     finally:
@@ -228,6 +253,18 @@ def _safe_write_once(path: Path, data: bytes) -> bool:
 
 def _write_json_once(path: Path, value: Mapping[str, Any]) -> bool:
     return _safe_write_once(path, _canonical_bytes(dict(value)) + b"\n")
+
+
+def _load_json_object(path: Path, label: str) -> Dict[str, Any]:
+    if not path.is_file() or path.is_symlink():
+        raise ArtifactIntakeError(label + " is not a regular file")
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ArtifactIntakeError(label + " is not valid UTF-8 JSON") from exc
+    if not isinstance(value, dict):
+        raise ArtifactIntakeError(label + " must contain a JSON object")
+    return value
 
 
 def _receipt_ledger_path(root: Path, receipt_id: str) -> Path:
@@ -244,7 +281,9 @@ def _manifest_fingerprint(items: Sequence[Mapping[str, Any]]) -> str:
                 "sha256": item.get("sha256"),
                 "declared_mime_type": item.get("declared_mime_type"),
                 "classification": item.get("classification"),
-                "inherited_classifications": item.get("inherited_classifications", []),
+                "inherited_classifications": item.get(
+                    "inherited_classifications", []
+                ),
             }
         )
     normalized.sort(key=lambda value: str(value.get("artifact_id") or ""))
@@ -258,12 +297,33 @@ def _replay_existing_ledger(
 ) -> Optional[Dict[str, Any]]:
     if not ledger_path.exists():
         return None
-    existing = json.loads(ledger_path.read_text(encoding="utf-8"))
+    existing = _load_json_object(ledger_path, "intake ledger")
     if existing.get("receipt_digest") != receipt_digest:
-        raise ArtifactIntakeError("receipt_id already exists with different receipt content")
+        raise ArtifactIntakeError(
+            "receipt_id already exists with different receipt content"
+        )
     if existing.get("input_manifest_digest") != manifest_digest:
-        raise ArtifactIntakeError("receipt_id already exists with different artifact manifest")
+        raise ArtifactIntakeError(
+            "receipt_id already exists with different artifact manifest"
+        )
     return existing
+
+
+def _content_record_is_compatible(
+    record: Mapping[str, Any],
+    *,
+    artifact_id: str,
+    digest: str,
+    quarantine_locator: str,
+) -> bool:
+    return (
+        record.get("schema_version") == "content_addressed_artifact.v1"
+        and record.get("artifact_id") == artifact_id
+        and record.get("sha256") == digest
+        and record.get("quarantine_locator") == quarantine_locator
+        and record.get("lifecycle_state") == "QUARANTINED"
+        and record.get("active_snapshot_eligible") is False
+    )
 
 
 def intake_local_artifacts(
@@ -292,15 +352,25 @@ def intake_local_artifacts(
         artifact_id = str(item.get("artifact_id") or "").strip()
         expected_sha = str(item.get("sha256") or "").strip()
         if not artifact_id or not expected_sha:
-            raise IntakeValidationError("every artifact requires artifact_id and sha256")
-        if len(expected_sha) != 64 or any(ch not in "0123456789abcdef" for ch in expected_sha):
-            raise IntakeValidationError("artifact sha256 must be lowercase hexadecimal")
+            raise IntakeValidationError(
+                "every artifact requires artifact_id and sha256"
+            )
+        if len(expected_sha) != 64 or any(
+            ch not in "0123456789abcdef" for ch in expected_sha
+        ):
+            raise IntakeValidationError(
+                "artifact sha256 must be lowercase hexadecimal"
+            )
         declared_ids.append(artifact_id)
     if len(set(declared_ids)) != len(declared_ids):
-        raise IntakeValidationError("artifact manifest contains duplicate artifact_id values")
+        raise IntakeValidationError(
+            "artifact manifest contains duplicate artifact_id values"
+        )
     receipt_ids = list(receipt.get("artifact_ids", []))
     if sorted(receipt_ids) != sorted(declared_ids):
-        raise IntakeValidationError("receipt artifact_ids must exactly match the intake manifest")
+        raise IntakeValidationError(
+            "receipt artifact_ids must exactly match the intake manifest"
+        )
 
     root = Path(storage_root)
     allowed = set(
@@ -309,12 +379,16 @@ def intake_local_artifacts(
         else allowed_mime_types
     )
     if not allowed or not allowed <= _DEFAULT_ALLOWED_MIME_TYPES:
-        raise IntakeValidationError("allowed_mime_types contains an unsupported or empty set")
+        raise IntakeValidationError(
+            "allowed_mime_types contains an unsupported or empty set"
+        )
 
     receipt_digest = _sha256_bytes(_canonical_bytes(dict(receipt)))
     manifest_digest = _manifest_fingerprint(items)
     ledger_path = _receipt_ledger_path(root, str(receipt["receipt_id"]))
-    replay = _replay_existing_ledger(ledger_path, receipt_digest, manifest_digest)
+    replay = _replay_existing_ledger(
+        ledger_path, receipt_digest, manifest_digest
+    )
     if replay is not None:
         return replay
 
@@ -379,17 +453,20 @@ def intake_local_artifacts(
             continue
         actual_sha = _sha256_bytes(data)
         actual_id = _artifact_id(actual_sha)
-        quarantine_path = root / "quarantine" / "sha256" / actual_sha[:2] / actual_sha
+        quarantine_path = (
+            root / "quarantine" / "sha256" / actual_sha[:2] / actual_sha
+        )
         quarantine_created = _safe_write_once(quarantine_path, data)
         if quarantine_created:
             counters["quarantine_written"] += 1
         else:
             counters["quarantine_existing"] += 1
+        quarantine_locator = quarantine_path.relative_to(root).as_posix()
         disposition.update(
             {
                 "actual_artifact_id": actual_id,
                 "actual_sha256": actual_sha,
-                "quarantine_locator": quarantine_path.relative_to(root).as_posix(),
+                "quarantine_locator": quarantine_locator,
             }
         )
 
@@ -429,31 +506,92 @@ def intake_local_artifacts(
             continue
 
         intended = _resolve_intended_classification(receipt, item)
+        intended_summary = _classification_summary(intended)
+        record_path = (
+            root
+            / "registry"
+            / "content"
+            / actual_sha[:2]
+            / (actual_sha + ".json")
+        )
         content_record = {
             "schema_version": "content_addressed_artifact.v1",
             "artifact_id": actual_id,
             "sha256": actual_sha,
             "size_bytes": size_bytes,
             "mime_type": detected_mime,
-            "quarantine_locator": quarantine_path.relative_to(root).as_posix(),
+            "quarantine_locator": quarantine_locator,
             "lifecycle_state": "QUARANTINED",
             "effective_classification": {
                 "level": "QUARANTINED",
                 "inherited_from": actual_id,
-                "reason": "quarantine-first intake; no operational snapshot eligibility",
+                "reason": (
+                    "quarantine-first intake; no operational snapshot eligibility"
+                ),
             },
+            "intended_classification": intended_summary,
+            "classification_lineage_complete": True,
             "active_snapshot_eligible": False,
         }
-        record_path = root / "registry" / "content" / actual_sha[:2] / (actual_sha + ".json")
-        created = _write_json_once(record_path, content_record)
+
+        if record_path.exists():
+            existing_record = _load_json_object(
+                record_path, "content record"
+            )
+            if not _content_record_is_compatible(
+                existing_record,
+                artifact_id=actual_id,
+                digest=actual_sha,
+                quarantine_locator=quarantine_locator,
+            ):
+                raise ArtifactIntakeError(
+                    "existing content record is incompatible: " + str(record_path)
+                )
+            existing_intended = existing_record.get(
+                "intended_classification"
+            )
+            if (
+                existing_intended is not None
+                and existing_intended != intended_summary
+            ):
+                disposition.update(
+                    {
+                        "disposition": "REJECTED_QUARANTINED",
+                        "reason": "classification_lineage_conflict",
+                        "intended_classification": intended,
+                        "classification_lineage_complete": False,
+                    }
+                )
+                counters["rejected"] += 1
+                dispositions.append(disposition)
+                continue
+            created = False
+            lineage_complete = bool(
+                existing_record.get("classification_lineage_complete")
+                and isinstance(existing_intended, Mapping)
+            )
+        else:
+            created = _write_json_once(record_path, content_record)
+            lineage_complete = True
+
         disposition.update(
             {
                 "disposition": (
-                    "REGISTERED_QUARANTINED" if created else "EXISTING_QUARANTINED"
+                    "REGISTERED_QUARANTINED"
+                    if created
+                    else "EXISTING_QUARANTINED"
                 ),
                 "reason": "accepted_into_quarantine_registry",
                 "intended_classification": intended,
-                "effective_classification": content_record["effective_classification"],
+                "effective_classification": {
+                    "level": "QUARANTINED",
+                    "inherited_from": actual_id,
+                    "reason": (
+                        "quarantine-first intake; "
+                        "no operational snapshot eligibility"
+                    ),
+                },
+                "classification_lineage_complete": lineage_complete,
                 "content_record_locator": record_path.relative_to(root).as_posix(),
                 "active_snapshot_eligible": False,
             }
@@ -464,9 +602,15 @@ def intake_local_artifacts(
             counters["existing"] += 1
         dispositions.append(disposition)
 
-    if counters["inputs"] != counters["registered"] + counters["existing"] + counters["rejected"]:
+    if counters["inputs"] != (
+        counters["registered"] + counters["existing"] + counters["rejected"]
+    ):
         raise ArtifactIntakeError("intake accounting partition is incomplete")
-    if counters["inputs"] != counters["quarantine_written"] + counters["quarantine_existing"] + counters["not_stored"]:
+    if counters["inputs"] != (
+        counters["quarantine_written"]
+        + counters["quarantine_existing"]
+        + counters["not_stored"]
+    ):
         raise ArtifactIntakeError("storage accounting partition is incomplete")
 
     report = {
