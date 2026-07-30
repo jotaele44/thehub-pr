@@ -17,36 +17,43 @@ The implementation requires the content record and quarantine bytes to exist loc
 
 H03 recomputes SHA-256 over the quarantine bytes and fails closed when identity, MIME, schema, content-record state, or local-file requirements do not hold. Every input receives exactly one outcome: `VALIDATED` or `FAILED` with a stable failure code.
 
+Caller-supplied JSON Schemas are meta-validated as Draft 2020-12. Only local fragment references beginning with `#` are permitted. External or file references fail as `SCHEMA_EXTERNAL_REF_DENIED`; malformed schemas and evaluation failures receive stable schema failure codes rather than escaping the input-accounting loop.
+
 ## Deterministic derivatives
 
 Supported normalization algorithms are deliberately bounded:
 
-- `canonical-json-v1`: UTF-8 JSON serialized with sorted keys and canonical separators plus one trailing newline;
-- `utf8-newline-v1`: UTF-8 text with CRLF/CR converted to LF and at most one required trailing newline.
+- `canonical-json-v1`: UTF-8 JSON serialized with sorted keys and canonical separators plus exactly one trailing LF;
+- `utf8-newline-v1`: CRLF/CR converted to LF, all trailing LFs removed, then exactly one LF appended. Empty text therefore normalizes to one LF byte.
 
-Derivative identity is `artifact-sha256-<derivative_digest>`. Bytes and provenance records use immutable write-once paths:
+Derivative identity is `artifact-sha256-<derivative_digest>`. Derivative content and source-specific provenance are separate immutable objects:
 
 ```text
 <storage-root>/
 ├── normalized/sha256/<prefix>/<derivative_sha256>
-├── registry/derivatives/<prefix>/<derivative_sha256>.json
+├── registry/derivative_content/<prefix>/<derivative_sha256>.json
+├── registry/provenance_edges/<prefix>/<edge_sha256>.json
 └── registry/validation_runs/<sha256(validation_run_id)>.json
 ```
 
-A later validation run for the same source content reuses an identical derivative. Reusing one validation-run ID with a different request set fails closed.
+A provenance edge key is the SHA-256 of the canonical tuple `(source_sha256, derivative_sha256, normalization_algorithm)`. Distinct source artifacts may therefore reuse the same normalized derivative without colliding or overwriting source-specific provenance.
+
+A later validation run for the same request set replays the immutable ledger. Reusing one validation-run ID with a different request set fails closed.
 
 ## Provenance and access
 
-Every derivative provenance record preserves:
+Every provenance edge preserves:
 
 - source and derivative artifact IDs;
 - source and derivative SHA-256 digests;
 - normalization algorithm and MIME type;
-- inherited source access classification;
+- H02 intended-classification level, restriction floor, `TEST_ONLY` marker and lineage-completeness state;
 - `lifecycle_state = QUARANTINED`;
 - `active_snapshot_eligible = false`.
 
-H03 does not mutate source bytes, source content records, or H02 intake ledgers.
+Legacy H02 records without persisted intended lineage are represented explicitly with `lineage_complete=false`. H03 does not silently infer the missing restriction floor. H04 blocks certification for those edges.
+
+H03 does not mutate source bytes, H02 content records or H02 intake ledgers.
 
 ## Accounting
 
