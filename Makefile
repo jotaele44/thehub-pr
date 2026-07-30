@@ -1,4 +1,4 @@
-.PHONY: setup test list validate-cs aggregate ingest clean lock smoke-fetch
+.PHONY: setup test list validate-cs aggregate ingest clean lock smoke-fetch federation-status
 
 PY ?= python3
 
@@ -34,6 +34,13 @@ db: ingest
 # itself in federation-ingest.yml via `hub fetch`).
 fixture:
 	$(PY) scripts/build_hub_fixture.py --root .. --out data
+
+# Regenerate the committed federation readiness snapshot the server seeds the
+# Gates / Integrations / Manifest pages from. Like `fixture`, this needs the
+# producer checkouts in the parent workspace — a deployed hub has none, which is
+# exactly why the measurement is committed rather than taken at startup.
+federation-status:
+	$(PY) scripts/build_federation_status.py --root .. --out data
 
 clean:
 	rm -rf data/aggregate/*.jsonl data/aggregate/graph_summary.json

@@ -1,0 +1,69 @@
+{
+  "receipt": {
+    "app_id": "thehub",
+    "argv_redacted": [
+      "hub",
+      "analytics-v2",
+      "--in",
+      "/tmp/tmp7rlmmb9_/data/aggregate",
+      "--out",
+      "/tmp/tmp7rlmmb9_/data/aggregate/federation_analytics_v2.json"
+    ],
+    "argv_sha256": "aa1cd0d5eac97c666a75e637422a5aa748bbc5979f699d8949ec30a6423054a1",
+    "environment_allowlist": [
+      "HOME",
+      "LC_CTYPE",
+      "PATH",
+      "PRII_APP_ROOT"
+    ],
+    "exit_code": 0,
+    "finished_at": "2026-07-27T06:33:32.513604Z",
+    "inputs": [],
+    "log": {
+      "bytes": 162,
+      "redactions": 0,
+      "sha256": "c2e4602607aab3bcdcf8560110770d43773d0260d8e258bf14705c9221bce208",
+      "truncated": false
+    },
+    "operation_id": "hub.analytics_v2",
+    "outputs": [],
+    "parameters_redacted": {
+      "in_dir": "aggregate",
+      "out": "aggregate/federation_analytics_v2.json"
+    },
+    "policy": {
+      "key_id": "prii-operations-test-2026-07",
+      "payload_sha256": "1ac9c0e97d68652fa5269744a506ead4cec42567dfce3ff7d1ae8f2b1e740365",
+      "policy_id": "prii-federation-ui-only-operations",
+      "sequence": 1
+    },
+    "previous_receipt_sha256": "7f9447c861c427d86d4229e83a8924d6d6b244dc796c8cf101815bf49980dd63",
+    "run_id": "d1fec8b3278448d592c0881abfac8ec0",
+    "schema_version": "prii_execution_receipt_v1",
+    "started_at": "2026-07-27T06:33:32.310523Z",
+    "status": "succeeded",
+    "transaction": {
+      "phase_reached": "RECEIPT",
+      "rollback_state": "not_required",
+      "snapshot_sha256": null,
+      "strategy": "stage_validate_atomic_promote"
+    },
+    "validators": [
+      {
+        "detail": "exit 0",
+        "name": "exit_code",
+        "status": "passed"
+      },
+      {
+        "name": "write_scope",
+        "status": "passed"
+      }
+    ]
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "prii-manager-certification",
+    "payload_sha256": "b828bf43bc69a63e0b39236c3e0262cb495ae02050bd2267058bba9334d962a0",
+    "value": "xOLvwy1q6F8fi5fgrEhwvCKh2ScHl3p05JKuvgG3O5u5H5XVR5dtIyn+/HrBw732QjupjFC+ywWKqJ/26xJ9DA=="
+  }
+}

@@ -39,6 +39,17 @@ _review: &review
 # wording that is deliberately not propagated.
 _needs_license: &needs_license
   [ovnis-pr, skywatcher-pr, spiderweb-pr]
+# The six producers, excluding thehub-pr — the hub already has its own server
+# tests, and its backend is the one the producers' shells were modelled on.
+_producers: &producers
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr]
+# The five producers whose frontends are React/JSX and already carry this exact
+# eslint config byte-for-byte. spiderweb-pr is excluded because its frontend is
+# TypeScript — no src/pages/, no Layout.jsx, zero .jsx files — so this config's
+# globs would match nothing there and produce a gate that lints no files at all.
+# thehub-pr keeps its own variant, which additionally sets no-undef.
+_jsx_frontend: &jsx_frontend
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr]
 
 targets:
   - template: Fix-Gatekeeper.command
@@ -78,6 +89,23 @@ targets:
   - template: baseline/pre-commit-config.yaml
     output: .pre-commit-config.yaml
     repos: *precommit
+
+  # Every producer ships a FastAPI backend at server/backend/main.py, and three
+  # of them had no test importing it — an import-time break shipped green. The
+  # test is byte-identical everywhere because /health is the only route all six
+  # share; anything deeper belongs in the repo's own tests, not here.
+  - template: baseline/test_server_smoke.py
+    output: tests/test_server_smoke.py
+    repos: *producers
+
+  # The frontend lint config. These five already held this file byte-identical,
+  # so rendering changes nothing today — it just stops them drifting apart, and
+  # gives the CI lint gates being added alongside a single source of truth.
+  # {{FRONTEND_DIR}} rather than {{NPM_DIR}}: the latter carries a leading slash
+  # for Dependabot, which would make `repo_root / rel` resolve absolute.
+  - template: baseline/eslint.config.js
+    output: "{{FRONTEND_DIR}}/eslint.config.js"
+    repos: *jsx_frontend
 
   # Governance and contributor surface. Shared because the quality gates became
   # uniform across the federation; anything repo-specific stays in README/docs.

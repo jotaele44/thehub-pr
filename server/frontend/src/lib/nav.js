@@ -6,7 +6,7 @@
 import {
   Activity, Hexagon, GitCompareArrows, Layers, Share2, Github, Boxes,
   FolderKanban, FileStack, BookOpen, ListChecks, ShieldCheck, Download,
-  BookA, Sparkles, Plug, Network, Radar, Droplets, Banknote, Plane, Signpost,
+  BookA, Sparkles, Plug, Network, Radar, Droplets, Banknote, Plane, Signpost, AppWindow, TerminalSquare,
 } from "lucide-react";
 import { MODULES, domainAccent } from "@/lib/federation";
 
@@ -52,6 +52,8 @@ export const NAV_GROUPS = [
     items: [
       { label: "Programs", path: "/programs", icon: FolderKanban },
       { label: "Project Signs", path: "/project-signs", icon: Signpost },
+      { label: "App Center", path: "/apps", icon: AppWindow },
+      { label: "Operations", path: "/operations", icon: TerminalSquare },
       { label: "Cases", path: "/cases", icon: FileStack },
       { label: "Sources", path: "/sources", icon: BookOpen },
       { label: "Tasks", path: "/tasks", icon: ListChecks },

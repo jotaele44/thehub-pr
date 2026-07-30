@@ -14,6 +14,8 @@ Flags (from ``sys.argv``):
   --no-window   serve only; print the URL and block (Ctrl+C to stop)
   --browser     skip pywebview and open the default browser
   --route PATH  open the window/browser on a client route (e.g. /launcher)
+  --setup       open the native Setup & Diagnostics center
+  --repair      open Setup & Diagnostics with the existing workspace selected
   --smoke       start, verify health, exit 0 (used by CI and setup checks)
 """
 
@@ -31,6 +33,13 @@ from pathlib import Path
 
 from .appserver import make_desktop_app
 from .config import DesktopConfig
+from .setup_center import (
+    SetupBridge,
+    application_support_dir,
+    apply_environment,
+    render_setup_html,
+    setup_complete,
+)
 
 # A just-launched instance is trusted for this long before its health endpoint
 # comes up, so a double-click during startup reuses it rather than racing a
@@ -152,6 +161,27 @@ def clear_lock(lock_file: Path) -> None:
     lock_file.unlink(missing_ok=True)
 
 
+def restart_process(lock_file: Path, argv: list[str]) -> None:
+    """Restart from the signed app itself after UI setup or repair changes.
+
+    The short delay lets pywebview return the bridge call to JavaScript before
+    the process image is replaced. Removing setup-only flags prevents a repair
+    launch from reopening the setup center in a loop.
+    """
+    clean_args = [arg for arg in argv if arg not in {"--setup", "--repair"}]
+
+    def _restart() -> None:
+        time.sleep(0.25)
+        clear_lock(lock_file)
+        if getattr(sys, "frozen", False):
+            exec_args = [sys.executable, *clean_args]
+        else:
+            exec_args = [sys.executable, sys.argv[0], *clean_args]
+        os.execv(sys.executable, exec_args)
+
+    threading.Thread(target=_restart, name="app-restart", daemon=True).start()
+
+
 def finish(server, lock_file: Path) -> None:
     """Stop the server and end the process, including lingering threads.
 
@@ -220,38 +250,94 @@ def _page(body: str) -> str:
     )
 
 
-def _splash_html(message: str) -> str:
-    return _page(f'<div class="spin"></div><p>Starting {message}…</p>')
+def _splash_html(message: str, accent: str = "#818cf8") -> str:
+    page = _page(f'<div class="spin"></div><p>Starting {message}…</p>')
+    return page.replace("#818cf8", accent)
 
 
-def _error_html(message: str, detail: str) -> str:
+def _error_html(message: str, detail: str, accent: str = "#2563eb") -> str:
     return _page(
         f"<h1>{message} could not start</h1>"
-        "<p>The local server did not become ready. Try again, or run "
-        "<code>python desktop/setup.py</code> from the repo to repair it.</p>"
+        "<p>The local service did not become ready. Open Setup &amp; Diagnostics "
+        "to check the installation and repair generated configuration.</p>"
+        f'<button style="min-height:44px;border:0;border-radius:8px;padding:10px 16px;'
+        f'background:{accent};color:#fff;font:600 14px inherit;cursor:pointer" '
+        'onclick="window.pywebview.api.open_setup()">'
+        "Open Setup &amp; Diagnostics</button>"
         f'<p style="color:#64748b">{detail}</p>'
     )
 
 
-def _run_window(server, config: DesktopConfig, lock_file: Path, base: str, url: str) -> None:
-    """Open a native window on a splash, then load the app once it is healthy."""
+def _run_window(
+    config: DesktopConfig, lock_file: Path, argv: list[str]
+) -> None:
+    """Run first-launch setup and the producer in one native window."""
     import webview
 
-    window = webview.create_window(
-        config.app_title, html=_splash_html(config.app_title), width=1280, height=860
+    show_setup = (
+        not setup_complete(config)
+        or "--setup" in argv
+        or "--repair" in argv
     )
+    bridge = SetupBridge(
+        config,
+        restart_app=lambda: restart_process(lock_file, argv),
+    )
+    initial_html = (
+        render_setup_html(config)
+        if show_setup
+        else _splash_html(config.app_title, config.brand_accent)
+    )
+    window = webview.create_window(
+        config.app_title,
+        html=initial_html,
+        js_api=bridge,
+        width=1280,
+        height=860,
+        min_size=(760, 560),
+    )
+    bridge.bind_window(window)
+    runtime: dict[str, object] = {}
+    window_closed = threading.Event()
+
+    def _on_closed() -> None:
+        window_closed.set()
+        # Release a first-run worker waiting for Save when the user closes the
+        # window. It must exit cleanly instead of leaving a background thread.
+        bridge.completed.set()
+
+    window.events.closed += _on_closed
 
     def _on_ready() -> None:
+        if show_setup:
+            bridge.completed.wait()
+            if window_closed.is_set() or not setup_complete(config):
+                return
+
+        apply_environment(config)
+        port = free_port()
+        base = f"http://127.0.0.1:{port}"
+        url = display_url(base, argv)
+        bridge.set_app_url(url)
+        write_lock(lock_file, base, base + config.health_path)
+        server = start_server(config, port)
+        runtime["server"] = server
+        window.load_html(_splash_html(config.app_title, config.brand_accent))
         try:
             wait_healthy(base + config.health_path)
             window.load_url(url)
         except BaseException as exc:  # noqa: BLE001 - show a friendly page, keep window open
             clear_lock(lock_file)  # this instance never became ready
             log(f"backend failed to start: {exc}")
-            window.load_html(_error_html(config.app_title, str(exc)))
+            window.load_html(
+                _error_html(config.app_title, str(exc), config.brand_accent_strong)
+            )
 
     webview.start(_on_ready)
-    finish(server, lock_file)
+    server = runtime.get("server")
+    if server is not None:
+        finish(server, lock_file)
+    clear_lock(lock_file)
 
 
 def _block_until_interrupt(server, lock_file: Path) -> None:
@@ -272,13 +358,11 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
 
     argv = list(sys.argv[1:] if argv is None else argv)
     args = set(argv)
-    # Records the running instance (pid + url) so a second double-click reuses it
-    # instead of starting another server. Lives beside the repo's desktop shim.
-    lock_file = Path(config.repo_root) / "desktop" / ".running"
-
-    port = free_port()
-    base = f"http://127.0.0.1:{port}"
-    url = display_url(base, argv)
+    # Per-user state must remain writable when the signed bundle lives under
+    # /Applications, and it must remain stable across PyInstaller extraction dirs.
+    state_dir = application_support_dir(config)
+    state_dir.mkdir(parents=True, exist_ok=True)
+    lock_file = state_dir / ".running"
 
     # Single-instance guard (user-facing launches only; dev modes are exempt):
     # reuse a running instance instead of starting a second server, applying THIS
@@ -293,8 +377,21 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
             log(f"{config.app_title} is already running; opening {target}")
             webbrowser.open(target)
             return
-        write_lock(lock_file, base, base + config.health_path)
+    if "--browser" not in args and not (args & {"--smoke", "--no-window"}):
+        try:
+            _run_window(config, lock_file, argv)
+            return
+        except Exception as exc:  # noqa: BLE001 - fall back to the browser
+            log(f"pywebview unavailable ({exc}); opening the default browser.")
 
+    # CLI developer/CI modes do not require first-run interaction. Release
+    # launches use the native setup center above.
+    apply_environment(config)
+    port = free_port()
+    base = f"http://127.0.0.1:{port}"
+    url = display_url(base, argv)
+    if not (args & {"--smoke", "--no-window"}):
+        write_lock(lock_file, base, base + config.health_path)
     server = start_server(config, port)
 
     if "--smoke" in args:
@@ -324,13 +421,6 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
         log(f"{config.app_title} running at {url} (Ctrl+C to stop)")
         _block_until_interrupt(server, lock_file)
         return
-
-    if "--browser" not in args:
-        try:
-            _run_window(server, config, lock_file, base, url)
-            return
-        except Exception as exc:  # noqa: BLE001 - fall back to the browser
-            log(f"pywebview unavailable ({exc}); opening the default browser.")
 
     import webbrowser
 

@@ -29,12 +29,19 @@ from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from hub.project_signs import build_project_signs, render_sign_html, write_project_signs
+from server.backend.seed_federation import seed_federation_collections
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-DB_PATH = REPO_ROOT / "data" / "hub.db"
+_desktop_data_home = os.environ.get("THEHUB_DATA_HOME", "").strip()
+DB_PATH = (
+    Path(_desktop_data_home) / "data" / "hub.db"
+    if _desktop_data_home
+    else REPO_ROOT / "data" / "hub.db"
+)
 REGISTRY_PATH = REPO_ROOT / "registry" / "producers.yaml"
 AGGREGATE_PATH = REPO_ROOT / "data" / "aggregate"
 SIGNS_OUT = REPO_ROOT / "reports" / "signs"
+STATUS_PATH = REPO_ROOT / "data" / "federation_status.json"
 
 # ── Lifecycle ─────────────────────────────────────────────────────────────────
 
@@ -109,6 +116,7 @@ _WRITE_GUARD = [Depends(require_write_access)]
 async def lifespan(app: FastAPI):
     _init_db()
     _seed_programs()
+    _seed_federation()
     if not _WRITE_TOKEN:
         log.warning(
             "PRII_WRITE_TOKEN is unset — mutating /api routes accept any client on "
@@ -222,6 +230,22 @@ def _seed_programs() -> None:
     c.commit()
     c.close()
 
+
+def _seed_federation() -> None:
+    """Fill the three federation control-plane collections from the snapshot.
+
+    Kept thin on purpose — the projection lives in seed_federation.py, which
+    explains why the readiness measurement is committed rather than computed
+    here (this process has no producer checkouts to measure).
+    """
+    c = _conn()
+    try:
+        seed_federation_collections(
+            c, _now(), status_path=STATUS_PATH, registry_path=REGISTRY_PATH
+        )
+    finally:
+        c.close()
+
 # ── System / health ────────────────────────────────────────────────────────────
 
 @app.get("/health")
@@ -266,6 +290,9 @@ def auth_me():
 # "operator"), consistent with the diagnostic no-auth mode, but the store is keyed by
 # subscriber so it extends to real multi-user auth without a schema change.
 from server.backend import notifications as _notif  # noqa: E402
+from server.backend.federation_manager_api import router as federation_manager_router  # noqa: E402
+
+app.include_router(federation_manager_router)
 
 _ALERT_COLLECTION = "GovernanceAlerts"
 

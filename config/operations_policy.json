@@ -1,0 +1,2695 @@
+{
+  "policy": {
+    "expires_at": "2036-07-24T00:00:00Z",
+    "issued_at": "2026-07-27T00:00:00Z",
+    "key_id": "prii-operations-test-2026-07",
+    "minimum_accepted_sequence": 1,
+    "operations": [
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "derive",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "municipio and barrio GeoJSON"
+        ],
+        "local_input_refs": [
+          "county shapefile set",
+          "barrios shapefile set"
+        ],
+        "network_policy": "none",
+        "operation_id": "aguayluz.build_geo_boundaries",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment",
+          "geospatial Python dependencies"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/build_pr_geo_boundaries.py --counties <shp> --barrios <shp>",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/build_pr_geo_boundaries.py",
+          "kind": "python_script"
+        },
+        "write_scope": "managed geo outputs"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "derive",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "municipio geometry/centroid files"
+        ],
+        "local_input_refs": [
+          "Census gazetteer"
+        ],
+        "network_policy": "none",
+        "operation_id": "aguayluz.build_municipios_geo",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/build_pr_municipios_geo.py --src <file>",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/build_pr_municipios_geo.py",
+          "kind": "python_script"
+        },
+        "write_scope": "managed geo outputs"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "export",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "test canonical package"
+        ],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "aguayluz.export_canonical",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/federation_export.py --mode test",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/federation_export.py",
+          "kind": "python_script"
+        },
+        "write_scope": "exports/federation staging"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "explicit_tos_acknowledgement_each_run",
+        "argv": [],
+        "category": "acquire",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "MiLUMA acquisition is ToS and WAF gated. It stays policy-disabled pending explicit source authorization; no amount of implementation work substitutes for that decision.",
+        "expected_outputs": [
+          "outages_by_town.json"
+        ],
+        "local_input_refs": [],
+        "network_policy": "MiLUMA allow-list; ToS/WAF gated",
+        "operation_id": "aguayluz.fetch_luma_live",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment",
+          "internet"
+        ],
+        "promotion_state": "BLOCKED_UNTIL_TOS_AND_LIVE_SOURCE_CERTIFIED",
+        "provenance": {
+          "declared_source_text": "python3 scripts/fetch_luma_live.py --out <managed_file>",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R2_NETWORK_INGEST",
+        "rollback_strategy": "delete_staging_download",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/fetch_luma_live.py",
+          "kind": "python_script"
+        },
+        "write_scope": "intake staging only"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "confirm_dataset_replace",
+        "argv": [],
+        "category": "ingest",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "incident records"
+        ],
+        "local_input_refs": [
+          "outages_by_town_json"
+        ],
+        "network_policy": "none",
+        "operation_id": "aguayluz.ingest_aee",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/ingest_aee.py --src <file> --snapshot-ts <iso8601>",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R2_DATA_MUTATION",
+        "rollback_strategy": "ledger_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/ingest_aee.py",
+          "kind": "python_script"
+        },
+        "write_scope": "AEE/LUMA incident ledger"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "confirm_dataset_replace",
+        "argv": [],
+        "category": "ingest",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "power asset records"
+        ],
+        "local_input_refs": [
+          "power source datasets"
+        ],
+        "network_policy": "none",
+        "operation_id": "aguayluz.ingest_power",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/ingest_power.py",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R2_DATA_MUTATION",
+        "rollback_strategy": "ledger_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/ingest_power.py",
+          "kind": "python_script"
+        },
+        "write_scope": "utility asset ledgers"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "confirm_network",
+        "argv": [],
+        "category": "ingest",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "PREPS service events"
+        ],
+        "local_input_refs": [
+          "PREPS payloads"
+        ],
+        "network_policy": "PREPS official hosts when live",
+        "operation_id": "aguayluz.ingest_preps",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment",
+          "internet or local PREPS snapshots"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/ingest_preps.py",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R2_NETWORK_INGEST",
+        "rollback_strategy": "ledger_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/ingest_preps.py",
+          "kind": "python_script"
+        },
+        "write_scope": "service event ledgers"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "lint",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "aguayluz.lint",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "ruff check .",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "ruff",
+          "kind": "console_script",
+          "subcommand": "check"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "maintenance",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "maintenance receipt"
+        ],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "aguayluz.maintenance",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "aguayluz maintenance --mode audit",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "aguayluz",
+          "kind": "console_script",
+          "subcommand": "maintenance"
+        },
+        "write_scope": "reports/maintenance"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "confirm_install",
+        "argv": [],
+        "category": "setup",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Declared as a shell composite (conditional clone followed by an installer invocation). It has no trusted executable identity and cannot be represented in any permitted execution form without first being decomposed into declarative steps.",
+        "expected_outputs": [
+          "installed environment"
+        ],
+        "local_input_refs": [],
+        "network_policy": "github.com + Python package indexes",
+        "operation_id": "aguayluz.setup",
+        "parameters": {},
+        "prerequisites": [
+          "Git",
+          "managed Python >=3.10",
+          "network access to allow-listed GitHub host",
+          "package installer"
+        ],
+        "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+        "provenance": {
+          "declared_source_text": "[ -d ../thehub-pr ] || git clone ...; python -m pip install uv && uv pip install --system -e .[dev]",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R3_LIFECYCLE",
+        "rollback_strategy": "versioned_install_pointer_swap",
+        "secret_refs": [],
+        "target": {
+          "identifier": "aguayluz_setup",
+          "kind": "composite_unresolved"
+        },
+        "write_scope": "versioned managed environment"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "test",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "aguayluz.test_suite",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python -m pytest -q",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "pytest",
+          "kind": "python_module"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "aguayluz",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "validate",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [
+          "repo datasets and reports"
+        ],
+        "network_policy": "none",
+        "operation_id": "aguayluz.validation_gates",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python scripts/validate_repo.py",
+          "source": "aguayluz-pr/federation.json@a73cc0f2"
+        },
+        "repo": "aguayluz-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/validate_repo.py",
+          "kind": "python_script"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "confirm_ledger_replace",
+        "argv": [],
+        "category": "derive",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "live_signals.jsonl"
+        ],
+        "local_input_refs": [
+          "pipeline state"
+        ],
+        "network_policy": "none",
+        "operation_id": "centinelas.build_signal_ledger",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/build_signal_ledger.py",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R2_DATA_MUTATION",
+        "rollback_strategy": "ledger_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/build_signal_ledger.py",
+          "kind": "python_script"
+        },
+        "write_scope": "data/signals/live_signals.jsonl"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "confirm_external_api",
+        "argv": [],
+        "category": "classify",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "classified items"
+        ],
+        "local_input_refs": [
+          "queued raw items"
+        ],
+        "network_policy": "Anthropic API only when configured",
+        "operation_id": "centinelas.classify",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "centinelas classify",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R2_NETWORK_INGEST",
+        "rollback_strategy": "run_partition_restore",
+        "secret_refs": [
+          "ANTHROPIC_API_KEY"
+        ],
+        "target": {
+          "identifier": "centinelas",
+          "kind": "console_script",
+          "subcommand": "classify"
+        },
+        "write_scope": ".centinelas classified"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "export",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "production canonical package"
+        ],
+        "local_input_refs": [
+          "live signal ledger"
+        ],
+        "network_policy": "none",
+        "operation_id": "centinelas.export_canonical",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/federation_export.py --ledger data/signals/live_signals.jsonl --mode production",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/federation_export.py",
+          "kind": "python_script"
+        },
+        "write_scope": "exports/federation staging"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "confirm_network",
+        "argv": [],
+        "category": "ingest",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "queued raw items"
+        ],
+        "local_input_refs": [],
+        "network_policy": "source registry allow-list",
+        "operation_id": "centinelas.ingest",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment",
+          "internet"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "centinelas ingest",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R2_NETWORK_INGEST",
+        "rollback_strategy": "queue_run_partition_delete",
+        "secret_refs": [],
+        "target": {
+          "identifier": "centinelas",
+          "kind": "console_script",
+          "subcommand": "ingest"
+        },
+        "write_scope": ".centinelas queue"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "maintenance",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "maintenance receipt"
+        ],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "centinelas.maintenance",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/run_maintenance.py --repo centinelas-pr --mode audit",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/run_maintenance.py",
+          "kind": "python_script"
+        },
+        "write_scope": "reports/maintenance"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "confirm_cross_repo_write",
+        "argv": [],
+        "category": "route",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "dispatch records"
+        ],
+        "local_input_refs": [
+          "classified items"
+        ],
+        "network_policy": "none",
+        "operation_id": "centinelas.route",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "centinelas route",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R2_DATA_MUTATION",
+        "rollback_strategy": "dispatch_receipt_compensating_remove",
+        "secret_refs": [],
+        "target": {
+          "identifier": "centinelas",
+          "kind": "console_script",
+          "subcommand": "route"
+        },
+        "write_scope": "sibling intake directories and hub-parent log"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "confirm_network_and_cross_repo_write",
+        "argv": [],
+        "category": "pipeline",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "queue",
+          "classified",
+          "dispatch receipts"
+        ],
+        "local_input_refs": [],
+        "network_policy": "source registry + Anthropic allow-list",
+        "operation_id": "centinelas.run_pipeline",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment",
+          "internet"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "centinelas run",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R2_NETWORK_INGEST",
+        "rollback_strategy": "transactional_run_partition_restore",
+        "secret_refs": [
+          "ANTHROPIC_API_KEY"
+        ],
+        "target": {
+          "identifier": "centinelas",
+          "kind": "console_script",
+          "subcommand": "run"
+        },
+        "write_scope": ".centinelas state and sibling intake"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "confirm_install",
+        "argv": [],
+        "category": "setup",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Declared as a shell composite (conditional clone followed by an installer invocation). It has no trusted executable identity and cannot be represented in any permitted execution form without first being decomposed into declarative steps.",
+        "expected_outputs": [
+          "installed environment"
+        ],
+        "local_input_refs": [],
+        "network_policy": "github.com + Python package indexes",
+        "operation_id": "centinelas.setup",
+        "parameters": {},
+        "prerequisites": [
+          "Git",
+          "managed Python >=3.10",
+          "network access to allow-listed GitHub host",
+          "package installer"
+        ],
+        "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+        "provenance": {
+          "declared_source_text": "[ -d ../thehub-pr ] || git clone ...; python -m pip install uv && uv pip install --system -e .[dev]",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R3_LIFECYCLE",
+        "rollback_strategy": "versioned_install_pointer_swap",
+        "secret_refs": [],
+        "target": {
+          "identifier": "centinelas_setup",
+          "kind": "composite_unresolved"
+        },
+        "write_scope": "versioned managed environment"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "inspect",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "centinelas.status",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "centinelas status",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "centinelas",
+          "kind": "console_script",
+          "subcommand": "status"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "test",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "centinelas.test_suite",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python -m pytest -q",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "pytest",
+          "kind": "python_module"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "centinelas",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "validate",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [
+          "PR grid"
+        ],
+        "network_policy": "none",
+        "operation_id": "centinelas.validate_grid",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/validate_pr_grid.py --require-sha",
+          "source": "centinelas-pr/federation.json@3ea848fd"
+        },
+        "repo": "centinelas-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/validate_pr_grid.py",
+          "kind": "python_script"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "literal": "--root"
+          },
+          {
+            "param": "root"
+          },
+          {
+            "literal": "--out"
+          },
+          {
+            "param": "out"
+          },
+          {
+            "literal": "--non-strict"
+          },
+          {
+            "param": "non_strict"
+          }
+        ],
+        "category": "derive",
+        "enablement": "ENABLED",
+        "expected_outputs": [
+          "aggregate JSONL streams",
+          "aggregate manifest"
+        ],
+        "local_input_refs": [
+          "producer_export_packages"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.aggregate",
+        "parameters": {
+          "non_strict": {
+            "default": false,
+            "type": "boolean"
+          },
+          "out": {
+            "default": "aggregate",
+            "type": "managed_output_directory"
+          },
+          "root": {
+            "required": true,
+            "type": "directory"
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub aggregate --root <workspace> --out <dir>",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "aggregate"
+        },
+        "write_scope": "aggregate staging directory"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "literal": "--in"
+          },
+          {
+            "param": "in_dir"
+          },
+          {
+            "literal": "--out"
+          },
+          {
+            "param": "out"
+          }
+        ],
+        "category": "derive",
+        "enablement": "ENABLED",
+        "expected_outputs": [
+          "federation_analytics_v2.json"
+        ],
+        "local_input_refs": [
+          "aggregate_directory"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.analytics_v2",
+        "parameters": {
+          "in_dir": {
+            "required": true,
+            "type": "directory"
+          },
+          "out": {
+            "default": "aggregate/federation_analytics_v2.json",
+            "type": "managed_file"
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub analytics-v2 --in <dir> --out <file>",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "analytics-v2"
+        },
+        "write_scope": "managed analytics output"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "param": "path"
+          },
+          {
+            "literal": "--out"
+          },
+          {
+            "param": "out"
+          }
+        ],
+        "category": "ingest",
+        "enablement": "ENABLED",
+        "expected_outputs": [
+          "skywatcher_sensor_fusion.json"
+        ],
+        "local_input_refs": [
+          "skywatcher_sensor_fusion_json"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.consume_sensor_fusion",
+        "parameters": {
+          "out": {
+            "default": "dashboard/skywatcher_sensor_fusion.json",
+            "type": "managed_file"
+          },
+          "path": {
+            "extensions": [
+              ".json"
+            ],
+            "required": true,
+            "type": "file_token"
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub consume-sensor-fusion <path> --out <file>",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "consume-sensor-fusion"
+        },
+        "write_scope": "managed dashboard output"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "literal": "--in"
+          },
+          {
+            "param": "in_dir"
+          },
+          {
+            "literal": "--out"
+          },
+          {
+            "param": "out"
+          },
+          {
+            "literal": "--window-days"
+          },
+          {
+            "param": "window_days"
+          },
+          {
+            "literal": "--threshold-km"
+          },
+          {
+            "param": "threshold_km"
+          }
+        ],
+        "category": "derive",
+        "enablement": "ENABLED",
+        "expected_outputs": [
+          "correlations.jsonl"
+        ],
+        "local_input_refs": [
+          "aggregate_directory"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.correlate",
+        "parameters": {
+          "in_dir": {
+            "required": true,
+            "type": "directory"
+          },
+          "out": {
+            "required": true,
+            "type": "managed_output_directory"
+          },
+          "threshold_km": {
+            "default": 1.0,
+            "maximum": 10000,
+            "minimum": 0,
+            "type": "number"
+          },
+          "window_days": {
+            "default": 7,
+            "maximum": 3650,
+            "minimum": 0,
+            "type": "integer"
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub correlate --in <dir> --out <dir>",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "correlate"
+        },
+        "write_scope": "aggregate correlations output"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "confirm_network_and_disk_write",
+        "argv": [],
+        "category": "acquire",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Repository acquisition is an R3 lifecycle operation requiring network egress, an allow-listed and pinned source, checksum or signature verification, and a staged rollback-safe checkout. Gate G09 is not certified in this vector, so the operation is declared and left disabled.",
+        "expected_outputs": [
+          "verified producer checkouts"
+        ],
+        "local_input_refs": [],
+        "network_policy": "github.com only; repository allow-list; pinned refs",
+        "operation_id": "hub.fetch",
+        "parameters": {},
+        "prerequisites": [
+          "Git",
+          "managed Python >=3.10",
+          "network access to allow-listed GitHub host"
+        ],
+        "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+        "provenance": {
+          "declared_source_text": "hub fetch --root <workspace> [--run]",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R3_LIFECYCLE",
+        "rollback_strategy": "delete_staging_download",
+        "secret_refs": [],
+        "target": {
+          "identifier": "repository_acquisition",
+          "kind": "internal_builtin"
+        },
+        "write_scope": "managed app/workspace roots only"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "literal": "--in"
+          },
+          {
+            "param": "in_dir"
+          },
+          {
+            "literal": "--json"
+          },
+          {
+            "param": "json"
+          }
+        ],
+        "category": "inspect",
+        "enablement": "ENABLED",
+        "expected_outputs": [],
+        "local_input_refs": [
+          "aggregate_directory"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.graph_report",
+        "parameters": {
+          "in_dir": {
+            "required": true,
+            "type": "directory"
+          },
+          "json": {
+            "type": "fixed",
+            "value": true
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub graph-report --in <dir> --json",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "graph-report"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "confirm_database_replace",
+        "argv": [
+          {
+            "literal": "--in"
+          },
+          {
+            "param": "in_dir"
+          },
+          {
+            "literal": "--db"
+          },
+          {
+            "param": "db"
+          }
+        ],
+        "category": "ingest",
+        "enablement": "ENABLED",
+        "expected_outputs": [
+          "hub.db",
+          "ingest summary"
+        ],
+        "local_input_refs": [
+          "aggregate_directory"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.ingest",
+        "parameters": {
+          "db": {
+            "default": "hub.db",
+            "extensions": [
+              ".db"
+            ],
+            "type": "managed_sqlite_path"
+          },
+          "in_dir": {
+            "required": true,
+            "type": "directory"
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub ingest --in <dir> --db <file>",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R2_DATA_MUTATION",
+        "rollback_strategy": "sqlite_backup_integrity_check_atomic_swap",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "ingest"
+        },
+        "write_scope": "managed SQLite database"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "literal": "--registry"
+          },
+          {
+            "param": "registry"
+          }
+        ],
+        "category": "inspect",
+        "enablement": "ENABLED",
+        "expected_outputs": [],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "hub.list",
+        "parameters": {
+          "registry": {
+            "type": "fixed",
+            "value": "registry/producers.yaml"
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub list",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "list"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "literal": "--root"
+          },
+          {
+            "param": "root"
+          },
+          {
+            "literal": "--write-report"
+          },
+          {
+            "param": "write_report"
+          },
+          {
+            "literal": "--fail-on-blocker"
+          },
+          {
+            "param": "fail_on_blocker"
+          },
+          {
+            "literal": "--json"
+          },
+          {
+            "param": "json"
+          }
+        ],
+        "category": "validate",
+        "enablement": "ENABLED",
+        "expected_outputs": [
+          "reports/federation_maintenance/latest.json"
+        ],
+        "local_input_refs": [
+          "producer_maintenance_reports"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.maintenance",
+        "parameters": {
+          "fail_on_blocker": {
+            "default": false,
+            "type": "boolean"
+          },
+          "json": {
+            "type": "fixed",
+            "value": true
+          },
+          "root": {
+            "required": true,
+            "type": "directory"
+          },
+          "write_report": {
+            "default": true,
+            "type": "boolean"
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub maintenance --root <workspace> --write-report --json",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "maintenance"
+        },
+        "write_scope": "optional maintenance rollup"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "literal": "--root"
+          },
+          {
+            "param": "root"
+          },
+          {
+            "literal": "--json"
+          },
+          {
+            "param": "json"
+          }
+        ],
+        "category": "validate",
+        "enablement": "ENABLED",
+        "expected_outputs": [],
+        "local_input_refs": [
+          "workspace"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.validate_federation",
+        "parameters": {
+          "json": {
+            "type": "fixed",
+            "value": true
+          },
+          "root": {
+            "required": true,
+            "type": "directory"
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub validate-federation --root <workspace> --json",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "validate-federation"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "param": "path"
+          }
+        ],
+        "category": "validate",
+        "enablement": "ENABLED",
+        "expected_outputs": [],
+        "local_input_refs": [
+          "producer_manifest"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.validate_manifest",
+        "parameters": {
+          "path": {
+            "extensions": [
+              ".json"
+            ],
+            "required": true,
+            "type": "file_token"
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub validate-manifest <path>",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "validate-manifest"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "param": "path"
+          }
+        ],
+        "category": "validate",
+        "enablement": "ENABLED",
+        "expected_outputs": [],
+        "local_input_refs": [
+          "export_package_directory"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.validate_package",
+        "parameters": {
+          "path": {
+            "required": true,
+            "type": "directory"
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub validate-package <dir>",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "validate-package"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "thehub",
+        "approval_policy": "none",
+        "argv": [
+          {
+            "param": "path"
+          },
+          {
+            "literal": "--producer"
+          },
+          {
+            "param": "producer"
+          },
+          {
+            "literal": "--mode"
+          },
+          {
+            "param": "mode"
+          },
+          {
+            "literal": "--created-at"
+          },
+          {
+            "param": "created_at"
+          }
+        ],
+        "category": "derive",
+        "enablement": "ENABLED",
+        "expected_outputs": [
+          "manifest.json"
+        ],
+        "local_input_refs": [
+          "canonical_jsonl_directory"
+        ],
+        "network_policy": "none",
+        "operation_id": "hub.wrap_bridge",
+        "parameters": {
+          "created_at": {
+            "default": "1970-01-01T00:00:00Z",
+            "type": "datetime"
+          },
+          "mode": {
+            "default": "test",
+            "type": "enum",
+            "values": [
+              "test",
+              "production"
+            ]
+          },
+          "path": {
+            "required": true,
+            "type": "directory"
+          },
+          "producer": {
+            "required": true,
+            "type": "enum",
+            "values": [
+              "spiderweb-pr",
+              "ovnis-pr",
+              "centinelas-pr",
+              "aguayluz-pr",
+              "moneysweep-pr",
+              "skywatcher-pr"
+            ]
+          }
+        },
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "hub wrap-bridge <path> --producer <id> --mode <mode>",
+          "source": "thehub-pr/src/hub/cli.py@58a159ff"
+        },
+        "repo": "thehub-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "hub",
+          "kind": "console_script",
+          "subcommand": "wrap-bridge"
+        },
+        "write_scope": "selected package directory/manifest.json"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "derive",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "contract finance bundle"
+        ],
+        "local_input_refs": [
+          "Centinelas intake records"
+        ],
+        "network_policy": "none",
+        "operation_id": "moneysweep.build_contract_finance_bundle",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/build_contract_finance_bundle.py --export-dir exports/centinelas_intake",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/build_contract_finance_bundle.py",
+          "kind": "python_script"
+        },
+        "write_scope": "exports/centinelas_intake"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "derive",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "dashboard export"
+        ],
+        "local_input_refs": [
+          "processed datasets"
+        ],
+        "network_policy": "none",
+        "operation_id": "moneysweep.dashboard_export",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/build_dashboard_explorer.py",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/build_dashboard_explorer.py",
+          "kind": "python_script"
+        },
+        "write_scope": "exports/dashboard"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "export",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "test canonical package"
+        ],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "moneysweep.export_canonical",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/federation_export.py --mode test",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/federation_export.py",
+          "kind": "python_script"
+        },
+        "write_scope": "canonical export staging"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "derive",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "unsent draft letters"
+        ],
+        "local_input_refs": [
+          "source gaps and templates"
+        ],
+        "network_policy": "none",
+        "operation_id": "moneysweep.foia_letters",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/build_foia_letters.py",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/build_foia_letters.py",
+          "kind": "python_script"
+        },
+        "write_scope": "generated FOIA draft outputs"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "confirm_network_and_large_data_write",
+        "argv": [],
+        "category": "pipeline",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "pipeline outputs",
+          "failure ledger",
+          "readiness reports"
+        ],
+        "local_input_refs": [
+          "manual source slots"
+        ],
+        "network_policy": "149-source registry allow-list",
+        "operation_id": "moneysweep.full_pipeline",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment",
+          "internet"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 run_all.py --strict-preflight",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R2_NETWORK_INGEST",
+        "rollback_strategy": "transaction_snapshot_and_run_partition_restore",
+        "secret_refs": [
+          "CENSUS_API_KEY",
+          "EIA_API_KEY",
+          "FAC_API_KEY",
+          "FEC_API_KEY",
+          "FINANCIALDATA_API_KEY",
+          "FRED_API_KEY",
+          "HIGHERGOV_API_KEY",
+          "OPENSTATES_API_KEY",
+          "SAM_API_KEY",
+          "PROPUBLICA_API_KEY"
+        ],
+        "target": {
+          "identifier": "run_all.py",
+          "kind": "python_script"
+        },
+        "write_scope": "raw/staging/processed/report/export scopes"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "derive",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "gap matrix"
+        ],
+        "local_input_refs": [
+          "source registry and pipeline outputs"
+        ],
+        "network_policy": "none",
+        "operation_id": "moneysweep.gap_matrix",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/gap_analysis_builder.py",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/gap_analysis_builder.py",
+          "kind": "python_script"
+        },
+        "write_scope": "gap reports"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "confirm_cross_repo_import",
+        "argv": [],
+        "category": "ingest",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "ingested signal records"
+        ],
+        "local_input_refs": [
+          "Centinelas dispatch records"
+        ],
+        "network_policy": "none",
+        "operation_id": "moneysweep.ingest_centinelas",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/ingest_centinelas_signals.py",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R2_DATA_MUTATION",
+        "rollback_strategy": "run_partition_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/ingest_centinelas_signals.py",
+          "kind": "python_script"
+        },
+        "write_scope": "Centinelas intake staging"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "maintenance",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "maintenance receipt"
+        ],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "moneysweep.maintenance",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/run_maintenance.py --repo moneysweep-pr --mode audit",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/run_maintenance.py",
+          "kind": "python_script"
+        },
+        "write_scope": "reports/maintenance"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "derive",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "source recovery matrix"
+        ],
+        "local_input_refs": [
+          "source registry and reports"
+        ],
+        "network_policy": "none",
+        "operation_id": "moneysweep.materialization_matrix",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/build_source_recovery_matrix.py",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/build_source_recovery_matrix.py",
+          "kind": "python_script"
+        },
+        "write_scope": "reports source recovery matrix"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "confirm_external_api",
+        "argv": [],
+        "category": "ingest",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "NGO integration layer"
+        ],
+        "local_input_refs": [
+          "NGO source data"
+        ],
+        "network_policy": "ProPublica allow-list when live",
+        "operation_id": "moneysweep.ngo_layer",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/ngo_integration.py",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R2_NETWORK_INGEST",
+        "rollback_strategy": "ledger_snapshot_restore",
+        "secret_refs": [
+          "PROPUBLICA_API_KEY"
+        ],
+        "target": {
+          "identifier": "scripts/ngo_integration.py",
+          "kind": "python_script"
+        },
+        "write_scope": "NGO derived layer"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "confirm_install",
+        "argv": [],
+        "category": "setup",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Declared as a shell composite (conditional clone followed by an installer invocation). It has no trusted executable identity and cannot be represented in any permitted execution form without first being decomposed into declarative steps.",
+        "expected_outputs": [
+          "installed environment",
+          "setup instructions"
+        ],
+        "local_input_refs": [],
+        "network_policy": "GitHub + source/API allow-lists",
+        "operation_id": "moneysweep.setup",
+        "parameters": {},
+        "prerequisites": [
+          "Git",
+          "managed Python >=3.10",
+          "network access to allow-listed GitHub host",
+          "managed Python dependencies"
+        ],
+        "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+        "provenance": {
+          "declared_source_text": "[ -d ../thehub-pr ] || git clone ...; python3 run_all.py --only-setup",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R3_LIFECYCLE",
+        "rollback_strategy": "versioned_install_pointer_swap",
+        "secret_refs": [
+          "CENSUS_API_KEY",
+          "EIA_API_KEY",
+          "FAC_API_KEY",
+          "FEC_API_KEY",
+          "FINANCIALDATA_API_KEY",
+          "FRED_API_KEY",
+          "HIGHERGOV_API_KEY",
+          "OPENSTATES_API_KEY",
+          "SAM_API_KEY",
+          "PROPUBLICA_API_KEY"
+        ],
+        "target": {
+          "identifier": "moneysweep_setup",
+          "kind": "composite_unresolved"
+        },
+        "write_scope": "versioned managed environment and setup reports"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "validate",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "preflight reports"
+        ],
+        "local_input_refs": [
+          "source registry",
+          "manual-source inventory"
+        ],
+        "network_policy": "none",
+        "operation_id": "moneysweep.strict_preflight",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 run_all.py --only-setup --strict-preflight",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "run_all.py",
+          "kind": "python_script"
+        },
+        "write_scope": "reports only"
+      },
+      {
+        "app_id": "moneysweep",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "test",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "moneysweep.test_suite",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 -m pytest tests/ -q",
+          "source": "moneysweep-pr/federation.json@891259b0"
+        },
+        "repo": "moneysweep-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "pytest",
+          "kind": "python_module"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "ovnis",
+        "approval_policy": "confirm_ledger_mutation",
+        "argv": [],
+        "category": "derive",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "deduplicated candidate ledger or report"
+        ],
+        "local_input_refs": [
+          "candidate ledger"
+        ],
+        "network_policy": "none",
+        "operation_id": "ovnis.dedupe",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/dedupe_candidates.py",
+          "source": "ovnis-pr/federation.json@858c4e81"
+        },
+        "repo": "ovnis-pr",
+        "risk_class": "R2_DATA_MUTATION",
+        "rollback_strategy": "ledger_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/dedupe_candidates.py",
+          "kind": "python_script"
+        },
+        "write_scope": "candidate ledger/derived reports"
+      },
+      {
+        "app_id": "ovnis",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "export",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "production canonical package"
+        ],
+        "local_input_refs": [
+          "reviewed case ledgers"
+        ],
+        "network_policy": "none",
+        "operation_id": "ovnis.export_canonical",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/federation_export.py --mode production",
+          "source": "ovnis-pr/federation.json@858c4e81"
+        },
+        "repo": "ovnis-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/federation_export.py",
+          "kind": "python_script"
+        },
+        "write_scope": "exports/federation staging"
+      },
+      {
+        "app_id": "ovnis",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "maintenance",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "maintenance receipt"
+        ],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "ovnis.maintenance",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/run_maintenance.py --repo ovnis-pr --mode audit",
+          "source": "ovnis-pr/federation.json@858c4e81"
+        },
+        "repo": "ovnis-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/run_maintenance.py",
+          "kind": "python_script"
+        },
+        "write_scope": "reports/maintenance"
+      },
+      {
+        "app_id": "ovnis",
+        "approval_policy": "confirm_ledger_mutation",
+        "argv": [],
+        "category": "derive",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "scored candidates"
+        ],
+        "local_input_refs": [
+          "candidate ledger"
+        ],
+        "network_policy": "none",
+        "operation_id": "ovnis.score",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/score_candidates.py",
+          "source": "ovnis-pr/federation.json@858c4e81"
+        },
+        "repo": "ovnis-pr",
+        "risk_class": "R2_DATA_MUTATION",
+        "rollback_strategy": "ledger_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/score_candidates.py",
+          "kind": "python_script"
+        },
+        "write_scope": "candidate scores"
+      },
+      {
+        "app_id": "ovnis",
+        "approval_policy": "confirm_install",
+        "argv": [],
+        "category": "setup",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Declared as a shell composite (conditional clone followed by an installer invocation). It has no trusted executable identity and cannot be represented in any permitted execution form without first being decomposed into declarative steps.",
+        "expected_outputs": [
+          "installed environment"
+        ],
+        "local_input_refs": [],
+        "network_policy": "github.com + Python package indexes",
+        "operation_id": "ovnis.setup",
+        "parameters": {},
+        "prerequisites": [
+          "Git",
+          "managed Python >=3.10",
+          "network access to allow-listed GitHub host",
+          "package installer"
+        ],
+        "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+        "provenance": {
+          "declared_source_text": "[ -d ../thehub-pr ] || git clone ...; python -m pip install -r requirements.txt",
+          "source": "ovnis-pr/federation.json@858c4e81"
+        },
+        "repo": "ovnis-pr",
+        "risk_class": "R3_LIFECYCLE",
+        "rollback_strategy": "versioned_install_pointer_swap",
+        "secret_refs": [],
+        "target": {
+          "identifier": "ovnis_setup",
+          "kind": "composite_unresolved"
+        },
+        "write_scope": "versioned managed environment"
+      },
+      {
+        "app_id": "ovnis",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "test",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "ovnis.test_suite",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python -m pytest -q",
+          "source": "ovnis-pr/federation.json@858c4e81"
+        },
+        "repo": "ovnis-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "pytest",
+          "kind": "python_module"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "ovnis",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "validate",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [
+          "candidate and master ledgers"
+        ],
+        "network_policy": "none",
+        "operation_id": "ovnis.validate_ledgers",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/validate_case_ledgers.py",
+          "source": "ovnis-pr/federation.json@858c4e81"
+        },
+        "repo": "ovnis-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/validate_case_ledgers.py",
+          "kind": "python_script"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "skywatcher",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "export",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "test canonical package"
+        ],
+        "local_input_refs": [
+          "airspace observations"
+        ],
+        "network_policy": "none",
+        "operation_id": "skywatcher.export_canonical",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/federation_export.py --mode test",
+          "source": "skywatcher-pr/federation.json@a7eb839f"
+        },
+        "repo": "skywatcher-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/federation_export.py",
+          "kind": "python_script"
+        },
+        "write_scope": "exports/federation staging"
+      },
+      {
+        "app_id": "skywatcher",
+        "approval_policy": "confirm_dataset_replace",
+        "argv": [],
+        "category": "ingest",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "PR airport records"
+        ],
+        "local_input_refs": [
+          "FAA/NASR airport source or committed seed"
+        ],
+        "network_policy": "none",
+        "operation_id": "skywatcher.ingest_airports",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/ingest_airports.py",
+          "source": "skywatcher-pr/federation.json@a7eb839f"
+        },
+        "repo": "skywatcher-pr",
+        "risk_class": "R2_DATA_MUTATION",
+        "rollback_strategy": "ledger_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/ingest_airports.py",
+          "kind": "python_script"
+        },
+        "write_scope": "airport registry"
+      },
+      {
+        "app_id": "skywatcher",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "maintenance",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "maintenance receipt"
+        ],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "skywatcher.maintenance",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/run_maintenance.py --repo skywatcher-pr --mode audit",
+          "source": "skywatcher-pr/federation.json@a7eb839f"
+        },
+        "repo": "skywatcher-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/run_maintenance.py",
+          "kind": "python_script"
+        },
+        "write_scope": "reports/maintenance"
+      },
+      {
+        "app_id": "skywatcher",
+        "approval_policy": "confirm_install",
+        "argv": [],
+        "category": "setup",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Declared as a shell composite (conditional clone followed by an installer invocation). It has no trusted executable identity and cannot be represented in any permitted execution form without first being decomposed into declarative steps.",
+        "expected_outputs": [
+          "installed environment"
+        ],
+        "local_input_refs": [],
+        "network_policy": "github.com + Python package indexes",
+        "operation_id": "skywatcher.setup",
+        "parameters": {},
+        "prerequisites": [
+          "Git",
+          "managed Python >=3.10",
+          "network access to allow-listed GitHub host",
+          "package installer"
+        ],
+        "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+        "provenance": {
+          "declared_source_text": "[ -d ../thehub-pr ] || git clone ...; python -m pip install -r requirements-dev.txt httpx -r server/backend/requirements.txt",
+          "source": "skywatcher-pr/federation.json@a7eb839f"
+        },
+        "repo": "skywatcher-pr",
+        "risk_class": "R3_LIFECYCLE",
+        "rollback_strategy": "versioned_install_pointer_swap",
+        "secret_refs": [],
+        "target": {
+          "identifier": "skywatcher_setup",
+          "kind": "composite_unresolved"
+        },
+        "write_scope": "versioned managed environment"
+      },
+      {
+        "app_id": "skywatcher",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "test",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "skywatcher.test_suite",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python -m pytest -q",
+          "source": "skywatcher-pr/federation.json@a7eb839f"
+        },
+        "repo": "skywatcher-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "pytest",
+          "kind": "python_module"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "skywatcher",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "validate",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [
+          "synthetic example package"
+        ],
+        "network_policy": "none",
+        "operation_id": "skywatcher.validate_export",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python scripts/validate_airspace_export.py exports/examples/synthetic_airspace_package --mode test",
+          "source": "skywatcher-pr/federation.json@a7eb839f"
+        },
+        "repo": "skywatcher-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/validate_airspace_export.py",
+          "kind": "python_script"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "spiderweb",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "export",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "canonical federation package"
+        ],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "spiderweb.export_canonical",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/federation_export.py --mode test",
+          "source": "spiderweb-pr/federation.json@4f996465"
+        },
+        "repo": "spiderweb-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "stage_validate_atomic_promote",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/federation_export.py",
+          "kind": "python_script"
+        },
+        "write_scope": "exports/federation staging"
+      },
+      {
+        "app_id": "spiderweb",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "maintenance",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [
+          "maintenance receipt"
+        ],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "spiderweb.maintenance",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python3 scripts/run_maintenance.py --repo spiderweb-pr --mode audit",
+          "source": "spiderweb-pr/federation.json@4f996465"
+        },
+        "repo": "spiderweb-pr",
+        "risk_class": "R1_DERIVED_WRITE",
+        "rollback_strategy": "file_snapshot_restore",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/run_maintenance.py",
+          "kind": "python_script"
+        },
+        "write_scope": "reports/maintenance"
+      },
+      {
+        "app_id": "spiderweb",
+        "approval_policy": "confirm_install",
+        "argv": [],
+        "category": "setup",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Declared as a shell composite (conditional clone followed by an installer invocation). It has no trusted executable identity and cannot be represented in any permitted execution form without first being decomposed into declarative steps.",
+        "expected_outputs": [
+          "installed environment"
+        ],
+        "local_input_refs": [],
+        "network_policy": "github.com + Python package indexes",
+        "operation_id": "spiderweb.setup",
+        "parameters": {},
+        "prerequisites": [
+          "Git",
+          "managed Python >=3.10",
+          "network access to allow-listed GitHub host",
+          "package installer"
+        ],
+        "promotion_state": "REQUIRES_DECOMPOSITION_AND_SIGNATURE",
+        "provenance": {
+          "declared_source_text": "[ -d ../thehub-pr ] || git clone ...; python -m pip install uv && uv pip install --system -e .[airspace,earthgpt,server,dev] \"httpx>=0.27\"",
+          "source": "spiderweb-pr/federation.json@4f996465"
+        },
+        "repo": "spiderweb-pr",
+        "risk_class": "R3_LIFECYCLE",
+        "rollback_strategy": "versioned_install_pointer_swap",
+        "secret_refs": [],
+        "target": {
+          "identifier": "spiderweb_setup",
+          "kind": "composite_unresolved"
+        },
+        "write_scope": "versioned managed environment"
+      },
+      {
+        "app_id": "spiderweb",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "test",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "spiderweb.test_suite",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python -m pytest tests/ -q --tb=short --ignore=tests/test_io.py --ignore=tests/test_terrain.py",
+          "source": "spiderweb-pr/federation.json@4f996465"
+        },
+        "repo": "spiderweb-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "pytest",
+          "kind": "python_module"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "spiderweb",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "validate",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [
+          "sample_export_package"
+        ],
+        "network_policy": "none",
+        "operation_id": "spiderweb.validate_export",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "python scripts/validate_export.py --package exports/samples --mode test",
+          "source": "spiderweb-pr/federation.json@4f996465"
+        },
+        "repo": "spiderweb-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "scripts/validate_export.py",
+          "kind": "python_script"
+        },
+        "write_scope": "none"
+      },
+      {
+        "app_id": "spiderweb",
+        "approval_policy": "none",
+        "argv": [],
+        "category": "validate",
+        "enablement": "DECLARED_NOT_ENABLED",
+        "enablement_reason": "Producer operation. Declared and classified for accounting, but not enabled in this vector: certification is scoped to TheHub's 13 operations, and enabling a producer operation requires its rollback strategy, entry-point hardening, and adapter to be built and verified first. See docs/FEDERATION_UI_OPERATIONS_HANDOFF_NEXT.md.",
+        "expected_outputs": [],
+        "local_input_refs": [],
+        "network_policy": "none",
+        "operation_id": "spiderweb.validate_schemas",
+        "parameters": {},
+        "prerequisites": [
+          "managed Python >=3.10",
+          "installed app environment",
+          "make"
+        ],
+        "promotion_state": "PROMOTABLE_AFTER_TESTS",
+        "provenance": {
+          "declared_source_text": "make validate-schemas",
+          "source": "spiderweb-pr/federation.json@4f996465"
+        },
+        "repo": "spiderweb-pr",
+        "risk_class": "R0_READ_ONLY",
+        "rollback_strategy": "none",
+        "secret_refs": [],
+        "target": {
+          "identifier": "validate-schemas",
+          "kind": "make_target"
+        },
+        "write_scope": "none"
+      }
+    ],
+    "policy_id": "prii-federation-ui-only-operations",
+    "schema_version": "prii_operations_policy_v1",
+    "security_invariants": [
+      "The release catalog remains declarative and contains no command fields.",
+      "This policy is a separate signed artifact verified against a pinned public key.",
+      "No operation may invoke a shell, command string, eval, exec, os.system, or shell=True.",
+      "Executables and scripts must resolve beneath trusted versioned app roots.",
+      "Arguments are constructed only from fixed values and JSON-Schema-validated typed parameters.",
+      "Environment inheritance is deny-by-default; only explicit variables and secret handles are injected.",
+      "Secret values never enter UI payloads, receipts, or persisted logs.",
+      "Writes outside declared managed scopes fail the operation and trigger rollback.",
+      "Only manager-signed validator receipts may satisfy readiness gates."
+    ],
+    "sequence": 1
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "prii-operations-test-2026-07",
+    "payload_sha256": "9d52ef878dc5c2bf963745f31656b44c0e4f128780304a8e049cf713898c4f9d",
+    "value": "Tykr1WeyLCyTh3IREBhVz/fDdpwG19BwfAas/BH7bXcLi+kn1uQJFHe1KZk8m4wzgvVEmfd2a7srW1ET0yLRCQ=="
+  }
+}

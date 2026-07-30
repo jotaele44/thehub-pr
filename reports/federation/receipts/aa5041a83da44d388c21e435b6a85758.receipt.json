@@ -1,0 +1,87 @@
+{
+  "receipt": {
+    "app_id": "thehub",
+    "argv_redacted": [
+      "hub",
+      "validate-manifest",
+      "/tmp/tmp7rlmmb9_/intake/aa5041a83da44d388c21e435b6a85758/intake/manifest.json"
+    ],
+    "argv_sha256": "a3c94c6080512d9b850251b87029aa6874e14c1675ac41b1fa7fda631966c422",
+    "environment_allowlist": [
+      "HOME",
+      "LC_CTYPE",
+      "PATH",
+      "PRII_APP_ROOT"
+    ],
+    "exit_code": 0,
+    "finished_at": "2026-07-27T06:33:31.844169Z",
+    "inputs": [
+      {
+        "bytes": 2636,
+        "logical_name": "manifest.json",
+        "media_type": "application/json",
+        "sha256": "4627d876986a96c030f1e392e0aa81a2e06b8841baf04664682f7a3a03a4a2aa"
+      }
+    ],
+    "log": {
+      "bytes": 47,
+      "redactions": 0,
+      "sha256": "fa132b775916b6e2cbbb57729272aed8de121ce31a9ae2e9f13e9dff2237f1ba",
+      "truncated": false
+    },
+    "operation_id": "hub.validate_manifest",
+    "outputs": [],
+    "parameters_redacted": {
+      "path": null
+    },
+    "policy": {
+      "key_id": "prii-operations-test-2026-07",
+      "payload_sha256": "1ac9c0e97d68652fa5269744a506ead4cec42567dfce3ff7d1ae8f2b1e740365",
+      "policy_id": "prii-federation-ui-only-operations",
+      "sequence": 1
+    },
+    "previous_receipt_sha256": "b5dcbb59b37a4c650255b1a19ec335c4dd0a4aa13dd1309738eed8ee88639930",
+    "run_id": "aa5041a83da44d388c21e435b6a85758",
+    "schema_version": "prii_execution_receipt_v1",
+    "started_at": "2026-07-27T06:33:31.637665Z",
+    "status": "succeeded",
+    "transaction": {
+      "phase_reached": "RECEIPT",
+      "rollback_state": "not_required",
+      "snapshot_sha256": null,
+      "strategy": "none"
+    },
+    "validators": [
+      {
+        "detail": "",
+        "name": "preflight.manifest.json.non_empty",
+        "status": "passed"
+      },
+      {
+        "detail": "",
+        "name": "preflight.manifest.json.size_limit",
+        "status": "passed"
+      },
+      {
+        "detail": "",
+        "name": "preflight.manifest.json.extension",
+        "status": "passed"
+      },
+      {
+        "detail": "exit 0",
+        "name": "exit_code",
+        "status": "passed"
+      },
+      {
+        "name": "write_scope",
+        "status": "passed"
+      }
+    ]
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "prii-manager-certification",
+    "payload_sha256": "43055315c2d05447fb1530be217112139edc93664b52b6eb875dfcbc8ef5a9b4",
+    "value": "fP9hDoRdV+65rWHyly07Or9+p1yMKxM9m1j76FVjSYn7HXvlX8F5pPsQ7jwx3zq9zwvkKFEkH12ufyx/1fMwCQ=="
+  }
+}
