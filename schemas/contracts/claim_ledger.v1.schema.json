@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/claim_ledger/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "FROZEN — schemas/contracts (Phase 1)",
+  "title": "Claim Ledger",
+  "description": "Every rendered answer originates from a structured claim ledger. A fact claim MUST cite supporting evidence; unsupported claims are prohibited (claims.unsupported_claims_max == 0). Reconciled from handoff-audit/phase1-design/schemas/claim_ledger.v1.schema.json against docs/spatialrag_migration/DATA_CONTRACTS.md §3 (see schemas/contracts/README.md).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["snapshot_id", "abstention", "claims"],
+  "properties": {
+    "snapshot_id": {"type": "string", "pattern": "^snap_[0-9a-f]{16,64}$"},
+    "abstention": {"$ref": "https://thehub-pr/contracts/abstention/v1"},
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["claim_id", "claim_text", "claim_type", "supporting_evidence_ids", "contradicting_evidence_ids", "producer_ids", "confidence", "confidence_basis", "snapshot_id", "generated_at"],
+        "properties": {
+          "claim_id": {"type": "string"},
+          "claim_text": {"type": "string"},
+          "claim_type": {"enum": ["FACT", "INFERENCE", "HYPOTHESIS", "COMPARISON"], "description": "Widened from the original FACT|INFERENCE draft to include HYPOTHESIS and COMPARISON per DATA_CONTRACTS.md §3."},
+          "supporting_evidence_ids": {"type": "array", "items": {"type": "string"}},
+          "contradicting_evidence_ids": {"type": "array", "items": {"type": "string"}},
+          "producer_ids": {"type": "array", "items": {"type": "string"}},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "confidence_basis": {
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1,
+            "description": "Named signals (e.g. [\"tier_1_source\", \"cross_producer_corroboration\", \"high_retrieval_score\"]), not a bare confidence float with no explanation. Widened from a single string in the original draft per DATA_CONTRACTS.md §3."
+          },
+          "snapshot_id": {"type": "string", "pattern": "^snap_[0-9a-f]{16,64}$"},
+          "model_id": {"type": ["string", "null"], "description": "null for no-LLM structured/exact-ID claims."},
+          "prompt_version": {"type": ["string", "null"]},
+          "generated_at": {"type": "string", "format": "date-time"}
+        },
+        "allOf": [
+          {"if": {"properties": {"claim_type": {"const": "FACT"}}}, "then": {"properties": {"supporting_evidence_ids": {"minItems": 1}}, "description": "fact_claim_support_rate == 1.0"}}
+        ]
+      }
+    }
+  },
+  "x-invariants": [
+    "Contradictions are preserved, never silently reconciled (contradictions.silent_conflict_resolution_max == 0).",
+    "Citations resolve to document page and exact region (citations.exact_page_resolution_min == 0.98)."
+  ]
+}

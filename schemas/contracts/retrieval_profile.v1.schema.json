@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/retrieval_profile/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "FROZEN — schemas/contracts (Phase 1)",
+  "title": "Retrieval Profile",
+  "description": "Named, versioned retrieval weight bundle, replacing a single hard-coded 0.4 BM25 + 0.4 vector + 0.2 spatial split. New schema — not present in handoff-audit/phase1-design/schemas/; added per docs/spatialrag_migration/DATA_CONTRACTS.md §4 (see schemas/contracts/README.md).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile_id", "weights", "hyde_enabled"],
+  "properties": {
+    "profile_id": {"type": "string"},
+    "description": {"type": ["string", "null"]},
+    "weights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lexical", "vector", "spatial", "temporal", "graph", "source_authority", "quality", "freshness"],
+      "properties": {
+        "lexical": {"type": "number", "minimum": 0, "maximum": 1},
+        "vector": {"type": "number", "minimum": 0, "maximum": 1},
+        "spatial": {"type": "number", "minimum": 0, "maximum": 1},
+        "temporal": {"type": "number", "minimum": 0, "maximum": 1},
+        "graph": {"type": "number", "minimum": 0, "maximum": 1},
+        "source_authority": {"type": "number", "minimum": 0, "maximum": 1},
+        "quality": {"type": "number", "minimum": 0, "maximum": 1},
+        "freshness": {"type": "number", "minimum": 0, "maximum": 1}
+      },
+      "description": "Eight named signals. Logged explicitly per query — never fixed or hidden. Freshness must never automatically outrank authoritative older evidence; it is one signal among eight, not a tiebreaker applied after the fact."
+    },
+    "hyde_enabled": {"type": "boolean", "default": false, "description": "Disabled by default for forensic/FOIA-style work. An opt-in experimental run setting this true MUST log a non-HyDE baseline comparison alongside (see analytical_run_receipt.v1's hyde_enabled const false requirement for the default profile set)."}
+  },
+  "x-invariants": [
+    "weights should sum to 1 (retrieval_profile.weights_sum_to_1) — enforced by a Phase 2 contract test, not expressible as a JSON Schema cross-field constraint.",
+    "hyde_enabled=true requires a logged non-HyDE baseline comparison and must not affect evidence tier or confidence.",
+    "The query planner may recommend a profile; the selected profile_id is always logged against the resulting Claim/AnalyticalClaim (see analytical_run_receipt.v1)."
+  ],
+  "x-starter-profiles": [
+    {"profile_id": "exact_identifier", "description": "Exact identifier lookup.", "weights": {"lexical": 0.7, "vector": 0.1, "spatial": 0.0, "temporal": 0.1, "graph": 0.1, "source_authority": 0.0, "quality": 0.0, "freshness": 0.0}, "hyde_enabled": false},
+    {"profile_id": "contract_search", "description": "Contract search.", "weights": {"lexical": 0.5, "vector": 0.3, "spatial": 0.05, "temporal": 0.05, "graph": 0.1, "source_authority": 0.0, "quality": 0.0, "freshness": 0.0}, "hyde_enabled": false},
+    {"profile_id": "spatial_investigation", "description": "Spatial investigation.", "weights": {"lexical": 0.15, "vector": 0.25, "spatial": 0.4, "temporal": 0.1, "graph": 0.1, "source_authority": 0.0, "quality": 0.0, "freshness": 0.0}, "hyde_enabled": false},
+    {"profile_id": "entity_lineage", "description": "Entity lineage.", "weights": {"lexical": 0.15, "vector": 0.25, "spatial": 0.05, "temporal": 0.05, "graph": 0.5, "source_authority": 0.0, "quality": 0.0, "freshness": 0.0}, "hyde_enabled": false},
+    {"profile_id": "narrative_comparison", "description": "Narrative comparison.", "weights": {"lexical": 0.2, "vector": 0.5, "spatial": 0.05, "temporal": 0.1, "graph": 0.15, "source_authority": 0.0, "quality": 0.0, "freshness": 0.0}, "hyde_enabled": false},
+    {"profile_id": "chronology", "description": "Chronology.", "weights": {"lexical": 0.35, "vector": 0.15, "spatial": 0.05, "temporal": 0.3, "graph": 0.15, "source_authority": 0.0, "quality": 0.0, "freshness": 0.0}, "hyde_enabled": false}
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/access_classification/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "FROZEN — schemas/contracts (Phase 1)",
+  "title": "Access Classification",
+  "description": "Seven access classes with inheritance. Access-class filters apply before retrieval AND before model context (SECURITY_MODEL.controls). Deny by default.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["level"],
+  "properties": {
+    "level": {"enum": ["PUBLIC", "INTERNAL", "RESTRICTED", "SENSITIVE_LOCATION", "LEGAL_HOLD", "QUARANTINED", "TEST_ONLY"]},
+    "inherited_from": {"type": ["string", "null"], "description": "object_id whose classification this object inherits; the most restrictive of self vs. inherited wins."},
+    "reason": {"type": ["string", "null"]}
+  },
+  "x-inheritance-rule": "An object's effective classification is the MOST RESTRICTIVE of its own level and every ancestor it inherits from. Ordering (least→most restrictive): PUBLIC < INTERNAL < RESTRICTED < SENSITIVE_LOCATION < LEGAL_HOLD < QUARANTINED. TEST_ONLY is orthogonal and must never surface in operational (non-test) snapshots.",
+  "x-invariants": [
+    "Policy parity: the same access decision governs search, map, export, document viewer, and model context (citation_access_policy_violations_max == 0).",
+    "QUARANTINED and TEST_ONLY objects are never returned to operational queries or placed in model context."
+  ]
+}
