@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/analytical_run_receipt/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "FROZEN — schemas/contracts (Phase 1)",
+  "title": "Analytical Run Receipt",
+  "description": "Immutable receipt capturing exactly how an answer was produced, for reproducibility and audit. Cache keys derive from this receipt (snapshot + policy + profile + model + prompt + tenant). Reconciled from handoff-audit/phase1-design/schemas/analytical_run_receipt.v1.schema.json against docs/spatialrag_migration/DATA_CONTRACTS.md §4/§10 (see schemas/contracts/README.md).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "snapshot_id", "retrieval_profile", "provider_config", "evidence_ids", "access_context", "created_at"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "snapshot_id": {"type": "string", "pattern": "^snap_[0-9a-f]{16,64}$"},
+    "retrieval_profile": {
+      "$ref": "https://thehub-pr/contracts/retrieval_profile/v1",
+      "description": "Replaces the original draft's inline {profile_id, weights, hyde_enabled} object with a full $ref to the richer retrieval_profile/v1 contract (8 named signals + starter profiles) per DATA_CONTRACTS.md §4."
+    },
+    "provider_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "llm": {"oneOf": [{"$ref": "https://thehub-pr/contracts/provider_reference/v1"}, {"type": "null"}], "description": "null for no-LLM structured/exact-ID runs."},
+        "embedding": {"oneOf": [{"$ref": "https://thehub-pr/contracts/provider_reference/v1"}, {"type": "null"}]},
+        "reranker": {"oneOf": [{"$ref": "https://thehub-pr/contracts/provider_reference/v1"}, {"type": "null"}]},
+        "ocr": {"oneOf": [{"$ref": "https://thehub-pr/contracts/provider_reference/v1"}, {"type": "null"}], "description": "Added per DATA_CONTRACTS.md §10's OCRProvider abstraction — absent from the original draft."},
+        "geocoder": {"oneOf": [{"$ref": "https://thehub-pr/contracts/provider_reference/v1"}, {"type": "null"}], "description": "Added per DATA_CONTRACTS.md §10's GeocoderProvider abstraction — absent from the original draft."}
+      },
+      "description": "Replaces the original draft's loosely-typed llm/embedding/reranker slots (bare nullable objects, plus top-level model_id/prompt_version strings) with typed provider_reference/v1 references carrying model_revision/prompt_template_version/system_policy_version/temperature."
+    },
+    "evidence_ids": {"type": "array", "items": {"type": "string"}},
+    "access_context": {"$ref": "https://thehub-pr/contracts/access_classification/v1"},
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "x-invariants": [
+    "Exact-ID and structured search MUST succeed with llm == null (no LLM dependency for structured search).",
+    "No model context may bypass access policy: access_context governs which evidence_ids may enter the prompt.",
+    "hyde_enabled is read from retrieval_profile.hyde_enabled; the default starter profiles all set it false."
+  ]
+}
