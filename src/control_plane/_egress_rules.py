@@ -32,6 +32,13 @@ _DECISIONS = {
     "USE_LOCAL_PRIVATE",
     "DENIED",
 }
+
+
+def _decision_enum_valid() -> bool:
+    """Verify the closed decision vocabulary used by the public policy layer."""
+    return len(_DECISIONS) == 4 and "DENIED" in _DECISIONS
+
+
 _NON_FALLBACK_BLOCKERS = {
     "ACCESS_CONTEXT_INVALID",
     "ARTIFACT_IDENTITY_INVALID",
@@ -358,6 +365,8 @@ def _fallback_selection(
 
 
 def _provider_structure_valid(policy: Mapping[str, Any]) -> bool:
+    if not _decision_enum_valid():
+        return False
     providers = policy.get("providers")
     if not isinstance(providers, list) or not providers:
         return False
