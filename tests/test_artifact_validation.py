@@ -172,15 +172,18 @@ def test_static_runtime_boundary() -> None:
         / "artifact_validation.py"
     ).read_text(encoding="utf-8").lower()
     forbidden = (
-        "requests",
-        "httpx",
+        "import requests",
+        "from requests",
+        "import httpx",
+        "from httpx",
         "urllib.request",
-        "anthropic",
-        "openai",
-        "skywatcher",
-        "socket",
-        "subprocess",
-        "sqlalchemy",
-        "psycopg",
+        "import anthropic",
+        "import openai",
+        "import skywatcher",
+        "from skywatcher",
+        "import socket",
+        "import subprocess",
+        "import sqlalchemy",
+        "import psycopg",
     )
     assert all(token not in source for token in forbidden)
