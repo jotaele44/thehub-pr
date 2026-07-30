@@ -4,8 +4,8 @@ from .egress_policy import (
     EgressPolicyError,
     compute_egress_policy_decision,
     record_egress_decision,
-    record_model_run_receipt,
 )
+from .model_run_receipt import record_model_run_receipt
 from .snapshot_gate import (
     SnapshotCertificationError,
     certify_validation_report,
