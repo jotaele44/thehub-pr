@@ -15,19 +15,25 @@ Artifact identity is `artifact-sha256-<sha256>`. Bytes that pass the regular-fil
 
 ## Registration and replay
 
-Content records are immutable and keyed by SHA-256. Re-registering identical bytes through a later receipt reuses the existing content record. Replaying the same receipt and artifact manifest returns the existing intake ledger. Reusing a receipt ID with different receipt content or a different manifest fails closed.
+Content records are immutable and keyed by SHA-256. Re-registering identical bytes through a later receipt reuses the existing content record only when the persisted intended-classification summary is compatible. A conflicting classification lineage fails closed as `classification_lineage_conflict`; the bytes remain quarantined.
+
+Replaying the same receipt and artifact manifest returns the existing intake ledger. Reusing a receipt ID with different receipt content or a different manifest fails closed.
 
 No accepted artifact leaves `QUARANTINED` lifecycle state in H02. The content record explicitly sets `active_snapshot_eligible=false`, and the intake report explicitly sets `active_snapshot_promoted=false`.
 
 ## Access classification
 
-The intake binding preserves all classification sources:
+The receipt-scoped intake disposition preserves all classification sources:
 
 - receipt classification;
 - artifact-manifest classification;
 - caller-supplied ancestor classifications.
 
-The intended classification uses the most restrictive non-test level defined by `access_classification.v1`. `TEST_ONLY` remains an orthogonal marker and is retained with its non-test restriction floor. While the artifact is in intake quarantine, its effective access classification is always `QUARANTINED`.
+The content record persists a deterministic intended-classification summary containing the resolved level, non-test restriction floor, `TEST_ONLY` marker, contributing source levels and `lineage_complete=true`. Receipt- or case-specific object identifiers remain in the immutable intake ledger rather than the content-addressed record so identical content can be reused safely.
+
+Legacy H02 content records that predate the summary remain immutable. They are accepted as legacy records with `classification_lineage_complete=false`; H03 may validate them, but H04 must block certification until lineage is reconstructed through a new immutable artifact or disposition process.
+
+While the artifact is in intake quarantine, its effective access classification is always `QUARANTINED`.
 
 ## Complete accounting
 
