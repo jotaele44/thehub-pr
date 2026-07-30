@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/schemas/contracts/skywatcher_ai/satim_provisional_signal.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "signal_id", "source_artifact_ids", "method", "method_version", "parameters", "result", "confidence", "provisional", "review_status", "created_at"],
+  "properties": {
+    "schema_version": {"const": "satim_provisional_signal.v1"},
+    "signal_id": {"type": "string"},
+    "source_artifact_ids": {"type": "array", "minItems": 1, "items": {"type": "string"}, "uniqueItems": true},
+    "method": {"enum": ["PIXEL_DIFFERENCE", "CALIBRATED_CHANGE_DETECTION", "TILE_SEAM_CLASSIFICATION", "OTHER"]},
+    "method_version": {"type": "string"},
+    "parameters": {"type": "object"},
+    "result": {"type": "object"},
+    "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "provisional": {"const": true},
+    "review_status": {"$ref": "skywatcher_ai_common.v1.schema.json#/$defs/review"},
+    "created_at": {"$ref": "skywatcher_ai_common.v1.schema.json#/$defs/timestamp"}
+  }
+}
