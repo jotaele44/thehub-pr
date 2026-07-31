@@ -41,75 +41,56 @@ from .setup_center import (
     setup_complete,
 )
 
-# A just-launched instance is trusted for this long before its health endpoint
-# comes up, so a double-click during startup reuses it rather than racing a
-# second server.
 STARTUP_GRACE_SECONDS = 40.0
 
 
 def _ensure_streams() -> None:
-    # Frozen windowed builds can leave the standard streams as None; give every
-    # library (uvicorn logging, asyncio) a real sink so nothing deadlocks or
-    # raises on a missing stream.
-    for _name in ("stdout", "stderr"):
-        if getattr(sys, _name, None) is None:
-            setattr(sys, _name, open(os.devnull, "w"))  # noqa: SIM115
+    for name in ("stdout", "stderr"):
+        if getattr(sys, name, None) is None:
+            setattr(sys, name, open(os.devnull, "w"))  # noqa: SIM115
 
 
 def log(message: str) -> None:
-    """Print without ever raising.
-
-    Frozen windowed builds (notably on Windows) have sys.stdout/stderr set to
-    None, so a bare print() raises AttributeError. If that happened before the
-    os._exit() in finish(), the process would hang on non-daemon asyncio executor
-    threads until it was killed. Route all output through here.
-    """
+    """Write a diagnostic without allowing logging to break control flow."""
     stream = sys.stdout
     if stream is None:
         return
     try:
         stream.write(f"{message}\n")
         stream.flush()
-    except Exception:  # noqa: BLE001 - logging must never break control flow
+    except Exception:  # noqa: BLE001 - logging is best-effort
         pass
 
 
 def display_url(base: str, argv: list[str]) -> str:
-    """Build the URL to open in the window/browser.
-
-    --route <path> opens a specific client route (e.g. the federation launcher at
-    /launcher); health checks still target the server root (base).
-    """
     if "--route" in argv:
         value_index = argv.index("--route") + 1
         if value_index >= len(argv) or argv[value_index].startswith("--"):
             raise SystemExit("--route requires a PATH value (e.g. --route /launcher)")
-        route = argv[value_index]
-        return base + "/" + route.lstrip("/")
+        return base + "/" + argv[value_index].lstrip("/")
     return base
 
 
 def _pid_alive(pid: int) -> bool:
-    """Non-destructive 'is this process running?' check.
-
-    On POSIX, signal 0 is a liveness probe. On Windows os.kill(pid, 0) instead
-    calls TerminateProcess (it would KILL the process), so use OpenProcess +
-    GetExitCodeProcess there and never signal it.
-    """
+    """Perform a non-destructive process-liveness check."""
     if os.name == "nt":
         import ctypes
 
-        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
-        STILL_ACTIVE = 259
+        process_query_limited_information = 0x1000
+        still_active = 259
         kernel32 = ctypes.windll.kernel32
-        handle = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+        handle = kernel32.OpenProcess(
+            process_query_limited_information,
+            False,
+            pid,
+        )
         if not handle:
             return False
         try:
             code = ctypes.c_ulong()
             if not kernel32.GetExitCodeProcess(handle, ctypes.byref(code)):
                 return False
-            return code.value == STILL_ACTIVE
+            return code.value == still_active
         finally:
             kernel32.CloseHandle(handle)
     try:
@@ -123,24 +104,19 @@ def _health_ok(health_url: str) -> bool:
     try:
         with urllib.request.urlopen(health_url, timeout=1) as response:
             return response.status == 200
-    except Exception:  # noqa: BLE001 - unreachable == not our instance
+    except Exception:  # noqa: BLE001 - unreachable means not reusable
         return False
 
 
 def running_instance_base(lock_file: Path) -> str | None:
-    """Return the base origin of a live prior instance, or None (clean stale locks).
-
-    Accepts the lock when the recorded process is alive AND either its health URL
-    answers or it is still within its startup grace window — so a crash, a reused
-    PID, or a double-click mid-startup are all handled correctly.
-    """
+    """Return a live prior instance origin and clear stale locks."""
     try:
         data = json.loads(lock_file.read_text(encoding="utf-8"))
         pid = int(data["pid"])
         base = data["base"]
         health = data["health"]
         born = float(data["born"])
-    except Exception:  # noqa: BLE001 - missing/garbled lock == no instance
+    except Exception:  # noqa: BLE001 - absent or invalid lock means no instance
         return None
     starting = (time.time() - born) < STARTUP_GRACE_SECONDS
     if _pid_alive(pid) and (_health_ok(health) or starting):
@@ -151,9 +127,14 @@ def running_instance_base(lock_file: Path) -> str | None:
 
 def write_lock(lock_file: Path, base: str, health_url: str) -> None:
     payload = json.dumps(
-        {"pid": os.getpid(), "base": base, "health": health_url, "born": time.time()}
+        {
+            "pid": os.getpid(),
+            "base": base,
+            "health": health_url,
+            "born": time.time(),
+        }
     )
-    with contextlib.suppress(Exception):  # the lock is best-effort
+    with contextlib.suppress(Exception):
         lock_file.write_text(payload, encoding="utf-8")
 
 
@@ -162,15 +143,10 @@ def clear_lock(lock_file: Path) -> None:
 
 
 def restart_process(lock_file: Path, argv: list[str]) -> None:
-    """Restart from the signed app itself after UI setup or repair changes.
-
-    The short delay lets pywebview return the bridge call to JavaScript before
-    the process image is replaced. Removing setup-only flags prevents a repair
-    launch from reopening the setup center in a loop.
-    """
+    """Restart from the signed app after setup or repair changes."""
     clean_args = [arg for arg in argv if arg not in {"--setup", "--repair"}]
 
-    def _restart() -> None:
+    def restart() -> None:
         time.sleep(0.25)
         clear_lock(lock_file)
         if getattr(sys, "frozen", False):
@@ -179,16 +155,10 @@ def restart_process(lock_file: Path, argv: list[str]) -> None:
             exec_args = [sys.executable, sys.argv[0], *clean_args]
         os.execv(sys.executable, exec_args)
 
-    threading.Thread(target=_restart, name="app-restart", daemon=True).start()
+    threading.Thread(target=restart, name="app-restart", daemon=True).start()
 
 
 def finish(server, lock_file: Path) -> None:
-    """Stop the server and end the process, including lingering threads.
-
-    In frozen (PyInstaller) builds — notably windowed Windows exes — event-loop
-    threads can keep the process alive after main() returns, so every terminal
-    path must end the process explicitly.
-    """
     clear_lock(lock_file)
     server.should_exit = True
     time.sleep(0.3)
@@ -205,15 +175,19 @@ def start_server(config: DesktopConfig, port: int):
     import uvicorn
 
     app = make_desktop_app(config)
-
-    uv_config = uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
-    server = uvicorn.Server(uv_config)
-    thread = threading.Thread(target=server.run, name="uvicorn", daemon=True)
-    thread.start()
+    uvicorn_config = uvicorn.Config(
+        app,
+        host="127.0.0.1",
+        port=port,
+        log_level="warning",
+    )
+    server = uvicorn.Server(uvicorn_config)
+    threading.Thread(target=server.run, name="uvicorn", daemon=True).start()
     return server
 
 
 def wait_healthy(url: str, timeout: float = 30.0) -> None:
+    """Wait for a healthy backend or terminate the current launch path."""
     deadline = time.monotonic() + timeout
     last_error: Exception | None = None
     while time.monotonic() < deadline:
@@ -227,7 +201,6 @@ def wait_healthy(url: str, timeout: float = 30.0) -> None:
     raise SystemExit(f"Backend did not become healthy at {url}: {last_error}")
 
 
-# Kept as short pieces so every source line stays within strict line-length lints.
 _FONT = "-apple-system,Segoe UI,Roboto,sans-serif"
 _PAGE_CSS = (
     "html,body{height:100%;margin:0}"
@@ -268,9 +241,7 @@ def _error_html(message: str, detail: str, accent: str = "#2563eb") -> str:
     )
 
 
-def _run_window(
-    config: DesktopConfig, lock_file: Path, argv: list[str]
-) -> None:
+def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None:
     """Run first-launch setup and the producer in one native window."""
     import webview
 
@@ -300,15 +271,13 @@ def _run_window(
     runtime: dict[str, object] = {}
     window_closed = threading.Event()
 
-    def _on_closed() -> None:
+    def on_closed() -> None:
         window_closed.set()
-        # Release a first-run worker waiting for Save when the user closes the
-        # window. It must exit cleanly instead of leaving a background thread.
         bridge.completed.set()
 
-    window.events.closed += _on_closed
+    window.events.closed += on_closed
 
-    def _on_ready() -> None:
+    def on_ready() -> None:
         if show_setup:
             bridge.completed.wait()
             if window_closed.is_set() or not setup_complete(config):
@@ -326,14 +295,18 @@ def _run_window(
         try:
             wait_healthy(base + config.health_path)
             window.load_url(url)
-        except BaseException as exc:  # noqa: BLE001 - show a friendly page, keep window open
-            clear_lock(lock_file)  # this instance never became ready
+        except (SystemExit, Exception) as exc:
+            clear_lock(lock_file)
             log(f"backend failed to start: {exc}")
             window.load_html(
-                _error_html(config.app_title, str(exc), config.brand_accent_strong)
+                _error_html(
+                    config.app_title,
+                    str(exc),
+                    config.brand_accent_strong,
+                )
             )
 
-    webview.start(_on_ready)
+    webview.start(on_ready)
     server = runtime.get("server")
     if server is not None:
         finish(server, lock_file)
@@ -349,25 +322,18 @@ def _block_until_interrupt(server, lock_file: Path) -> None:
 
 
 def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
-    """Entry point: run the producer described by ``config`` as a desktop app."""
+    """Run the producer described by ``config`` as a desktop app."""
     _ensure_streams()
-    # The repo root must be importable so the backend (config.app_import) resolves.
     root = str(Path(config.repo_root).resolve())
     if root not in sys.path:
         sys.path.insert(0, root)
 
     argv = list(sys.argv[1:] if argv is None else argv)
     args = set(argv)
-    # Per-user state must remain writable when the signed bundle lives under
-    # /Applications, and it must remain stable across PyInstaller extraction dirs.
     state_dir = application_support_dir(config)
     state_dir.mkdir(parents=True, exist_ok=True)
     lock_file = state_dir / ".running"
 
-    # Single-instance guard (user-facing launches only; dev modes are exempt):
-    # reuse a running instance instead of starting a second server, applying THIS
-    # launch's --route to the existing origin. Claim the lock up front so a
-    # double-click during startup reuses us rather than racing a second server.
     if not (args & {"--smoke", "--no-window"}):
         existing = running_instance_base(lock_file)
         if existing:
@@ -377,15 +343,14 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
             log(f"{config.app_title} is already running; opening {target}")
             webbrowser.open(target)
             return
+
     if "--browser" not in args and not (args & {"--smoke", "--no-window"}):
         try:
             _run_window(config, lock_file, argv)
             return
-        except Exception as exc:  # noqa: BLE001 - fall back to the browser
+        except Exception as exc:  # noqa: BLE001 - fall back to browser
             log(f"pywebview unavailable ({exc}); opening the default browser.")
 
-    # CLI developer/CI modes do not require first-run interaction. Release
-    # launches use the native setup center above.
     apply_environment(config)
     port = free_port()
     base = f"http://127.0.0.1:{port}"
@@ -395,21 +360,20 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
     server = start_server(config, port)
 
     if "--smoke" in args:
-        # Absolute backstop: a frozen build must never hang the CI job. If the
-        # normal exit below is somehow not reached, force-terminate.
-        def _watchdog() -> None:
+        def watchdog() -> None:
             time.sleep(60)
             os._exit(2)
 
-        threading.Thread(target=_watchdog, name="smoke-watchdog", daemon=True).start()
-
-        # Self-contained so os._exit() always runs — even if the health check
-        # fails — so a frozen build can never hang CI on lingering threads.
+        threading.Thread(
+            target=watchdog,
+            name="smoke-watchdog",
+            daemon=True,
+        ).start()
         try:
             wait_healthy(base + config.health_path)
             log(f"smoke ok: {base}{config.health_path}")
             code = 0
-        except BaseException as exc:  # noqa: BLE001 - report and exit non-zero
+        except (SystemExit, Exception) as exc:
             log(f"smoke failed: {exc}")
             code = 1
         server.should_exit = True

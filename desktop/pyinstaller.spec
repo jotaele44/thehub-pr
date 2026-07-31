@@ -41,7 +41,10 @@ datas.append((str(REPO_ROOT / "desktop" / "launcher.html"), "desktop"))
 
 a = Analysis(
     [str(REPO_ROOT / "desktop" / "launch.py")],
-    pathex=[str(REPO_ROOT)],
+    # The application imports ``hub`` from src/hub. The normal editable install
+    # exposes that package during development, but the frozen build analyzes the
+    # source tree directly and therefore needs src/ as an explicit search root.
+    pathex=[str(REPO_ROOT), str(REPO_ROOT / "src")],
     datas=datas,
     hiddenimports=[
         "desktop.launcher_api",
