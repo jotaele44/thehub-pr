@@ -187,7 +187,7 @@ def start_server(config: DesktopConfig, port: int):
 
 
 def wait_healthy(url: str, timeout: float = 30.0) -> None:
-    """Wait for a healthy backend or raise a normal runtime failure."""
+    """Wait for a healthy backend or terminate the current launch path."""
     deadline = time.monotonic() + timeout
     last_error: Exception | None = None
     while time.monotonic() < deadline:
@@ -198,7 +198,7 @@ def wait_healthy(url: str, timeout: float = 30.0) -> None:
         except Exception as exc:  # noqa: BLE001 - retried until deadline
             last_error = exc
         time.sleep(0.2)
-    raise RuntimeError(f"Backend did not become healthy at {url}: {last_error}")
+    raise SystemExit(f"Backend did not become healthy at {url}: {last_error}")
 
 
 _FONT = "-apple-system,Segoe UI,Roboto,sans-serif"
@@ -295,7 +295,7 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
         try:
             wait_healthy(base + config.health_path)
             window.load_url(url)
-        except Exception as exc:  # noqa: BLE001 - show failure in the native window
+        except (SystemExit, Exception) as exc:
             clear_lock(lock_file)
             log(f"backend failed to start: {exc}")
             window.load_html(
@@ -373,7 +373,7 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
             wait_healthy(base + config.health_path)
             log(f"smoke ok: {base}{config.health_path}")
             code = 0
-        except Exception as exc:  # noqa: BLE001 - report and exit non-zero
+        except (SystemExit, Exception) as exc:
             log(f"smoke failed: {exc}")
             code = 1
         server.should_exit = True
