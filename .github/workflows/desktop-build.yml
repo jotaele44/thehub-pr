@@ -34,6 +34,9 @@ jobs:
           python-version: "3.11"
           cache: pip
 
+      - name: Install harness registry dependency
+        run: python3.11 -m pip install PyYAML
+
       - name: Verify exact target harness and clean runner
         shell: bash
         run: |
@@ -102,8 +105,9 @@ jobs:
             done
             echo
             echo "private_venvs:"
-            find "$CERT_ROOT" -mindepth 2 -maxdepth 2 -type d -name .venv -print 2>/dev/null | sort
+            { find "$CERT_ROOT" -mindepth 2 -maxdepth 2 -type d -name .venv -print 2>/dev/null || true; } | sort
           } > reports/preclone_workspace/workspace_diagnostics.txt
+          exit 0
 
       - name: Upload certification evidence
         if: always()
