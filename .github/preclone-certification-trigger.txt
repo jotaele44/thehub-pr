@@ -1,0 +1,3 @@
+PRII pre-clone macOS certification trigger v0.2
+Target ledger: registry/preclone-certification-heads.json
+No merge, production export, live execution, or permanent feature-branch baseline authorized.
