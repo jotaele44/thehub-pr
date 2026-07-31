@@ -56,6 +56,15 @@ def test_duplicated_execution_receipt_denied() -> None:
         validate_dual_run_records(camp, policy, lanes, rollback, schema_dir=SCHEMA_DIR)
 
 
+def test_duplicated_execution_receipt_sha_denied() -> None:
+    camp, policy, lanes, rollback = valid_bundle()
+    lanes[1]["execution_receipt"]["receipt_sha256"] = lanes[0][
+        "execution_receipt"
+    ]["receipt_sha256"]
+    with pytest.raises(DualRunReadinessError, match="duplicated execution"):
+        validate_dual_run_records(camp, policy, lanes, rollback, schema_dir=SCHEMA_DIR)
+
+
 def test_source_set_drift_denied() -> None:
     camp, policy, lanes, rollback = valid_bundle()
     lanes[0]["source_set_sha256"] = "0" * 64
@@ -81,7 +90,9 @@ def test_deterministic_output_set_mismatch_denied() -> None:
     camp, policy, lanes, _rollback = valid_bundle()
     candidate = lanes[1]
     candidate["deterministic_outputs"].pop()
-    comparison = compute_dual_run_pair_comparison(camp, policy, lanes[0], candidate, completed_at=NOW)
+    comparison = compute_dual_run_pair_comparison(
+        camp, policy, lanes[0], candidate, completed_at=NOW
+    )
     assert comparison["outcome"] == "NON_EQUIVALENT"
     assert comparison["deterministic_accounting"]["MISSING"] == 1
 
@@ -89,27 +100,44 @@ def test_deterministic_output_set_mismatch_denied() -> None:
 def test_deterministic_digest_mismatch_denied() -> None:
     camp, policy, lanes, _rollback = valid_bundle()
     lanes[1]["deterministic_outputs"][0]["normalized_sha256"] = "0" * 64
-    comparison = compute_dual_run_pair_comparison(camp, policy, lanes[0], lanes[1], completed_at=NOW)
+    comparison = compute_dual_run_pair_comparison(
+        camp, policy, lanes[0], lanes[1], completed_at=NOW
+    )
     assert comparison["deterministic_accounting"]["UNEQUAL"] == 1
     assert comparison["outcome"] == "NON_EQUIVALENT"
 
 
 def test_model_field_exact_and_versioned_comparators_accept() -> None:
     camp, policy, lanes, _rollback = valid_bundle()
-    comparison = compute_dual_run_pair_comparison(camp, policy, lanes[0], lanes[1], completed_at=NOW)
-    assert comparison["model_field_accounting"]["EQUIVALENT"] == len(camp["required_model_fields"])
+    comparison = compute_dual_run_pair_comparison(
+        camp, policy, lanes[0], lanes[1], completed_at=NOW
+    )
+    assert comparison["model_field_accounting"]["EQUIVALENT"] == len(
+        camp["required_model_fields"]
+    )
     assert comparison["outcome"] == "EQUIVALENT"
 
 
 def test_relative_numeric_comparator() -> None:
-    ok, detail = compare_values(100.0, 101.0, {"comparator": "NUMERIC_RELATIVE_TOLERANCE", "parameters": {"tolerance": 0.01}})
+    ok, detail = compare_values(
+        100.0,
+        101.0,
+        {
+            "comparator": "NUMERIC_RELATIVE_TOLERANCE",
+            "parameters": {"tolerance": 0.01},
+        },
+    )
     assert ok is True
     assert detail["relative_delta"] <= 0.01
 
 
 def test_enum_comparator() -> None:
-    assert compare_values("A", "A", {"comparator": "ENUM_EXACT", "parameters": {}})[0]
-    assert not compare_values("A", "B", {"comparator": "ENUM_EXACT", "parameters": {}})[0]
+    assert compare_values(
+        "A", "A", {"comparator": "ENUM_EXACT", "parameters": {}}
+    )[0]
+    assert not compare_values(
+        "A", "B", {"comparator": "ENUM_EXACT", "parameters": {}}
+    )[0]
 
 
 def test_wildcard_or_ignore_rule_denied() -> None:
@@ -122,7 +150,9 @@ def test_wildcard_or_ignore_rule_denied() -> None:
 def test_missing_model_field_denied() -> None:
     camp, policy, lanes, _rollback = valid_bundle()
     lanes[1]["model_fields"].pop()
-    comparison = compute_dual_run_pair_comparison(camp, policy, lanes[0], lanes[1], completed_at=NOW)
+    comparison = compute_dual_run_pair_comparison(
+        camp, policy, lanes[0], lanes[1], completed_at=NOW
+    )
     assert comparison["model_field_accounting"]["MISSING"] == 1
 
 
@@ -131,7 +161,9 @@ def test_additional_model_field_denied() -> None:
     extra = copy.deepcopy(lanes[1]["model_fields"][0])
     extra["field_key"] = "unexpected"
     lanes[1]["model_fields"].append(extra)
-    comparison = compute_dual_run_pair_comparison(camp, policy, lanes[0], lanes[1], completed_at=NOW)
+    comparison = compute_dual_run_pair_comparison(
+        camp, policy, lanes[0], lanes[1], completed_at=NOW
+    )
     assert comparison["model_field_accounting"]["ADDITIONAL"] == 1
 
 
@@ -139,20 +171,26 @@ def test_duplicate_model_field_denied() -> None:
     camp, policy, lanes, _rollback = valid_bundle()
     lanes[1]["model_fields"].append(copy.deepcopy(lanes[1]["model_fields"][0]))
     with pytest.raises(DualRunReadinessError, match="duplicate model field"):
-        compute_dual_run_pair_comparison(camp, policy, lanes[0], lanes[1], completed_at=NOW)
+        compute_dual_run_pair_comparison(
+            camp, policy, lanes[0], lanes[1], completed_at=NOW
+        )
 
 
 def test_model_provenance_drift_denied() -> None:
     camp, policy, lanes, _rollback = valid_bundle()
     lanes[1]["model_fields"][0]["provenance"]["model_revision"] = "drifted"
-    comparison = compute_dual_run_pair_comparison(camp, policy, lanes[0], lanes[1], completed_at=NOW)
+    comparison = compute_dual_run_pair_comparison(
+        camp, policy, lanes[0], lanes[1], completed_at=NOW
+    )
     assert comparison["outcome"] == "NON_EQUIVALENT"
 
 
 def test_unresolved_review_blocks() -> None:
     camp, policy, lanes, _rollback = valid_bundle()
     lanes[1]["model_fields"][0]["review_status"] = "UNRESOLVED_REVIEW"
-    comparison = compute_dual_run_pair_comparison(camp, policy, lanes[0], lanes[1], completed_at=NOW)
+    comparison = compute_dual_run_pair_comparison(
+        camp, policy, lanes[0], lanes[1], completed_at=NOW
+    )
     assert comparison["model_field_accounting"]["UNRESOLVED"] == 1
 
 
@@ -177,10 +215,37 @@ def test_incomplete_input_accounting_blocks() -> None:
         validate_dual_run_records(camp, policy, lanes, rollback, schema_dir=SCHEMA_DIR)
 
 
+def test_input_accounting_must_match_campaign_source_set() -> None:
+    camp, policy, lanes, rollback = valid_bundle()
+    lanes[0]["input_accounting"] = {
+        "inputs": 1,
+        "processed": 1,
+        "excluded": 0,
+        "failed": 0,
+    }
+    with pytest.raises(DualRunReadinessError, match="campaign source set"):
+        validate_dual_run_records(camp, policy, lanes, rollback, schema_dir=SCHEMA_DIR)
+
+
 def test_incomplete_output_accounting_blocks() -> None:
     camp, policy, lanes, rollback = valid_bundle()
     lanes[0]["output_accounting"]["produced"] = 1
     with pytest.raises(DualRunReadinessError, match="output accounting"):
+        validate_dual_run_records(camp, policy, lanes, rollback, schema_dir=SCHEMA_DIR)
+
+
+def test_output_accounting_must_match_campaign_required_outputs() -> None:
+    camp, policy, lanes, rollback = valid_bundle()
+    lanes[0]["deterministic_outputs"].pop()
+    lanes[0]["output_accounting"] = {"required": 1, "produced": 1, "failed": 0}
+    with pytest.raises(DualRunReadinessError, match="campaign required outputs"):
+        validate_dual_run_records(camp, policy, lanes, rollback, schema_dir=SCHEMA_DIR)
+
+
+def test_produced_output_accounting_must_match_output_records() -> None:
+    camp, policy, lanes, rollback = valid_bundle()
+    lanes[0]["output_accounting"] = {"required": 2, "produced": 1, "failed": 1}
+    with pytest.raises(DualRunReadinessError, match="output records"):
         validate_dual_run_records(camp, policy, lanes, rollback, schema_dir=SCHEMA_DIR)
 
 
@@ -201,7 +266,14 @@ def test_signed_attestation_can_support_rollback() -> None:
     camp, policy, lanes, rollback = valid_bundle()
     rollback["execution_receipt"]["signature_verified"] = False
     rollback["execution_receipt"]["rollback_state"] = "failed"
-    rollback["attestations"] = [{"attestation_id": "operator.rollback", "attestation_sha256": "a" * 64, "signature_verified": True, "result": "satisfied"}]
+    rollback["attestations"] = [
+        {
+            "attestation_id": "operator.rollback",
+            "attestation_sha256": "a" * 64,
+            "signature_verified": True,
+            "result": "satisfied",
+        }
+    ]
     validate_dual_run_records(camp, policy, lanes, rollback, schema_dir=SCHEMA_DIR)
 
 
@@ -242,10 +314,26 @@ def test_static_boundary_has_no_prohibited_runtime() -> None:
         )
     ).lower()
     forbidden = (
-        "import subprocess", "from subprocess", "docker", "kubernetes",
-        "import requests", "from requests", "import httpx", "from httpx",
-        "urllib.request", "boto3", "anthropic", "openai", "import sqlalchemy",
-        "import psycopg", "database_url", "launch_worker", "execute_model",
-        "answer_query", "retrieval_engine", "promote_snapshot", "certify_evidence",
+        "import subprocess",
+        "from subprocess",
+        "docker",
+        "kubernetes",
+        "import requests",
+        "from requests",
+        "import httpx",
+        "from httpx",
+        "urllib.request",
+        "boto3",
+        "anthropic",
+        "openai",
+        "import sqlalchemy",
+        "import psycopg",
+        "database_url",
+        "launch_worker",
+        "execute_model",
+        "answer_query",
+        "retrieval_engine",
+        "promote_snapshot",
+        "certify_evidence",
     )
     assert all(token not in source for token in forbidden)
