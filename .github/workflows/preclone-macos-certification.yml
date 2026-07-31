@@ -8,13 +8,15 @@ on:
       - "scripts/certify_preclone_workspace_macos.py"
       - "registry/preclone-certification-heads.json"
       - ".github/workflows/preclone-macos-certification.yml"
+      - ".github/preclone-certification-trigger.txt"
   pull_request:
     branches:
-      - "agent/prii-preclone-normalization-v0-1"
+      - "agent/prii-preclone-macos-certification-base-v0-2"
     paths:
       - "scripts/certify_preclone_workspace_macos.py"
       - "registry/preclone-certification-heads.json"
       - ".github/workflows/preclone-macos-certification.yml"
+      - ".github/preclone-certification-trigger.txt"
   workflow_dispatch:
 
 permissions:
