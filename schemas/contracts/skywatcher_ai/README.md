@@ -8,10 +8,13 @@ The schemas define records only. They add no provider SDK, model execution, netw
 
 - `acquisition_receipt.v1.schema.json`
 - `bounded_producer_job.v1.schema.json`
+- `bounded_producer_job.v2.schema.json`
 - `legacy_artifact_disposition.v1.schema.json`
 - `model_field_provenance.v1.schema.json`
 - `satim_provisional_signal.v1.schema.json`
 - `skywatcher_ai_common.v1.schema.json`
+
+`bounded_producer_job.v2` is the signed, pinned and fail-closed H06 execution-boundary contract. It adds immutable content identities, detached-signature metadata, authorization and audit references, H05 egress binding, explicit provisional-input handling, resource limits, strict workspace isolation and designated-output accounting. It remains a record contract and does not launch a worker.
 
 ## Phase-1 contract compatibility
 
@@ -21,7 +24,7 @@ Compatibility rules:
 
 - `classification` uses the same seven level values as `access_classification.v1`; the broader contract remains authoritative for inheritance and effective-access calculation.
 - `model_field_provenance.v1` stores immutable field-level copies of provider/model identifiers and also requires `model_run_receipt_id`; it does not replace `provider_reference.v1` or `analytical_run_receipt.v1`.
-- `acquisition_receipt.v1` and `bounded_producer_job.v1` are operational child receipts that may be referenced by a later analytical-run envelope.
+- `acquisition_receipt.v1` and both bounded-producer job versions are operational child records that may be referenced by a later analytical-run envelope.
 - No schema in this directory defines an `ACTIVE` snapshot, retrieval object, claim ledger or citation surface.
 
 `tests/test_skywatcher_ai_contracts.py` activates cross-namespace checks automatically when the Phase-1 schemas are present on the target branch.
