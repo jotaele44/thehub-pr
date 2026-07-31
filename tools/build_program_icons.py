@@ -1,39 +1,15 @@
 #!/usr/bin/env python3
-"""Generate every derived program icon from a repo's branding master.
-
-Each PRII repo keeps its artwork at ``assets/branding/icon.png`` — the delivered
-square master, committed verbatim. This script derives everything else from it:
-the rounded-mask PNGs the web surfaces use, the multi-size ``icon.ico`` that
-serves both the favicon and the Windows PyInstaller ``EXE``, and the
-``AppIcon.icns`` that macOS reads out of the ``PRII-<SLUG>.app`` bundle.
-
-The masters are full-bleed squares (MoneySweep's has rounded corners already
-baked in over black), so every derivative gets one shared squircle mask. That
-keeps the seven icons a family in the Dock and in UI tiles, and clips
-MoneySweep's black corners away.
-
-Run it from a checkout of thehub-pr against a sibling producer checkout, the
-same way ``render_federation_templates.py`` is invoked:
-
-    pip install -r tools/requirements-icons.txt
-    python3 tools/build_program_icons.py --repo ../aguayluz-pr
-    python3 tools/build_program_icons.py --all --check
-
-``--check`` regenerates into a temp dir and compares decoded image variants
-across platforms while verifying every committed derivative SHA in the
-manifest. PNG, ICO, and ICNS container encoding can differ between ARM macOS
-and x86 runners even when every decoded icon image is identical.
-"""
+"""Generate and verify PRII program icons from each repository's branding master."""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
+import colorsys
 import filecmp
+import hashlib
 import json
 import math
 import statistics
-import colorsys
 import sys
 import tempfile
 from pathlib import Path
@@ -43,14 +19,6 @@ try:
 except ImportError:  # pragma: no cover - dependency guard
     sys.exit("Pillow is required: pip install -r tools/requirements-icons.txt")
 
-# Every repo in the federation, hub included, with the two consumer locations
-# that hold their own copy of the art: the repo's Vite frontend and the
-# hand-committed macOS bundle. Paths are relative to this file's repo root's
-# parent, i.e. the sibling-checkout layout the federation assumes.
-#
-# The consumer copies are generated, not hand-placed. Without that, `--check`
-# could pass on assets/branding/ while the shipped UI and .app still carried
-# stale artwork.
 PROGRAMS = {
     "aguayluz-pr": {"frontend": "dashboard", "bundle": "PRII-AGUAYLUZ.app"},
     "centinelas-pr": {"frontend": "frontend", "bundle": "PRII-CENTINELAS.app"},
@@ -58,7 +26,6 @@ PROGRAMS = {
     "ovnis-pr": {"frontend": "dashboard", "bundle": "PRII-OVNIS.app"},
     "skywatcher-pr": {"frontend": "frontend", "bundle": "PRII-SKYWATCHER.app"},
     "spiderweb-pr": {"frontend": "server/frontend", "bundle": "PRII-SPIDERWEB.app"},
-    # The hub ships a second bundle that deliberately mirrors the first.
     "thehub-pr": {
         "frontend": "server/frontend",
         "bundle": "PRII-THEHUB.app",
@@ -66,108 +33,103 @@ PROGRAMS = {
     },
 }
 
-# Served by the app over HTTP: apple-touch-icon and the PWA manifest pair. The
-# favicon itself is inlined as a data URI in index.html, so it needs no file.
 PUBLIC_FILES = ("icon-180.png", "icon-192.png", "icon-512.png")
-
-# Imported as a module by the frontend and inlined into the bundle, so the
-# offline single-file export stays self-contained.
 SRC_ASSET = "icon-64.png"
-
-# spiderweb-pr's no-build dashboard is copied file-by-file into static exports,
-# so it keeps real files rather than module imports.
-STANDALONE = {"spiderweb-pr": ("dashboard", ("icon-64.png", "icon-180.png"))}
-
 MASTER = Path("assets/branding/icon.png")
-
-# Web/UI sizes. 180 is apple-touch-icon, 192/512 are the PWA manifest pair, and
-# 256 doubles as the hub's federation tile.
 PNG_SIZES = (512, 256, 192, 180, 64, 32)
-
-# Favicon + Windows EXE icon in one file.
 ICO_SIZES = (16, 32, 48, 64, 128, 256)
-
-# Matches the chunk set already present in the committed bundles, which is
-# exactly what Pillow's ICNS encoder emits.
 ICNS_SIZE = 1024
-
-# Squircle exponent. 4-5 reads as the macOS/iOS continuous corner; 2 would be an
-# ellipse and a large exponent approaches a plain square.
 SQUIRCLE_N = 5.0
 SUPERSAMPLE = 4
 
 
 def squircle_mask(size: int) -> Image.Image:
-    """An antialiased superellipse mask — the macOS continuous-corner shape."""
-    hi = size * SUPERSAMPLE
-    mask = Image.new("L", (hi, hi), 0)
+    """Return an antialiased superellipse mask."""
+    high_size = size * SUPERSAMPLE
+    mask = Image.new("L", (high_size, high_size), 0)
     draw = ImageDraw.Draw(mask)
-    r = hi / 2.0
-    # |x/r|^n + |y/r|^n = 1, solved per scanline so the corners stay continuous
-    # instead of the circular-arc corners ImageDraw.rounded_rectangle would give.
-    for py in range(hi):
-        y = (py + 0.5 - r) / r
-        t = 1.0 - abs(y) ** SQUIRCLE_N
-        if t <= 0:
+    radius = high_size / 2.0
+    for y_pixel in range(high_size):
+        y_value = (y_pixel + 0.5 - radius) / radius
+        remainder = 1.0 - abs(y_value) ** SQUIRCLE_N
+        if remainder <= 0:
             continue
-        x = t ** (1.0 / SQUIRCLE_N)
-        draw.line([(r - x * r, py), (r + x * r - 1, py)], fill=255)
-    return mask.resize((size, size), Image.LANCZOS)
+        x_value = remainder ** (1.0 / SQUIRCLE_N)
+        draw.line(
+            [
+                (radius - x_value * radius, y_pixel),
+                (radius + x_value * radius - 1, y_pixel),
+            ],
+            fill=255,
+        )
+    return mask.resize((size, size), Image.Resampling.LANCZOS)
 
 
 def rounded(master: Image.Image, size: int) -> Image.Image:
-    """Downscale the master to ``size`` and apply the shared squircle mask."""
-    im = master.convert("RGBA").resize((size, size), Image.LANCZOS)
-    im.putalpha(squircle_mask(size))
-    return im
+    image = master.convert("RGBA").resize(
+        (size, size),
+        Image.Resampling.LANCZOS,
+    )
+    image.putalpha(squircle_mask(size))
+    return image
 
 
 def sample_accent(master: Image.Image) -> str:
-    """Derive the program's accent from its own artwork.
-
-    Drops the black silhouette, the blown-out sun, and the washed halo, then
-    takes a saturation-weighted circular mean of hue so a large bright region
-    cannot drag the result off the colour the tile actually reads as.
-    """
-    im = master.convert("RGB").resize((200, 200), Image.LANCZOS)
-    pts = []
-    for r8, g8, b8 in im.get_flattened_data():
-        h, s, v = colorsys.rgb_to_hsv(r8 / 255, g8 / 255, b8 / 255)
-        if not (0.30 <= v <= 0.97) or s < 0.35:
+    image = master.convert("RGB").resize((200, 200), Image.Resampling.LANCZOS)
+    points: list[tuple[float, float, float]] = []
+    for red, green, blue in image.getdata():
+        hue, saturation, value = colorsys.rgb_to_hsv(
+            red / 255,
+            green / 255,
+            blue / 255,
+        )
+        if not 0.30 <= value <= 0.97 or saturation < 0.35:
             continue
-        pts.append((h, s, v))
-    if not pts:
+        points.append((hue, saturation, value))
+    if not points:
         return "#888888"
-    x = sum(math.cos(2 * math.pi * h) * s for h, s, _ in pts)
-    y = sum(math.sin(2 * math.pi * h) * s for h, s, _ in pts)
-    hue = (math.atan2(y, x) / (2 * math.pi)) % 1.0
-    sat = min(1.0, max(statistics.median(p[1] for p in pts), 0.55))
-    val = min(0.92, max(statistics.median(p[2] for p in pts), 0.55))
-    r, g, b = colorsys.hsv_to_rgb(hue, sat, val)
-    return "#%02x%02x%02x" % (round(r * 255), round(g * 255), round(b * 255))
+    x_axis = sum(
+        math.cos(2 * math.pi * hue) * saturation
+        for hue, saturation, _ in points
+    )
+    y_axis = sum(
+        math.sin(2 * math.pi * hue) * saturation
+        for hue, saturation, _ in points
+    )
+    hue = (math.atan2(y_axis, x_axis) / (2 * math.pi)) % 1.0
+    saturation = min(1.0, max(statistics.median(p[1] for p in points), 0.55))
+    value = min(0.92, max(statistics.median(p[2] for p in points), 0.55))
+    red, green, blue = colorsys.hsv_to_rgb(hue, saturation, value)
+    return "#%02x%02x%02x" % (
+        round(red * 255),
+        round(green * 255),
+        round(blue * 255),
+    )
 
 
-def build(master_path: Path, out_dir: Path) -> list[Path]:
+def build(master_path: Path, output_dir: Path) -> list[Path]:
     master = Image.open(master_path)
-    out_dir.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
 
     for size in PNG_SIZES:
-        dest = out_dir / f"icon-{size}.png"
-        rounded(master, size).save(dest, format="PNG", optimize=True)
-        written.append(dest)
+        destination = output_dir / f"icon-{size}.png"
+        rounded(master, size).save(destination, format="PNG", optimize=True)
+        written.append(destination)
 
-    ico = out_dir / "icon.ico"
+    ico = output_dir / "icon.ico"
     rounded(master, max(ICO_SIZES)).save(
-        ico, format="ICO", sizes=[(s, s) for s in ICO_SIZES]
+        ico,
+        format="ICO",
+        sizes=[(size, size) for size in ICO_SIZES],
     )
     written.append(ico)
 
-    icns = out_dir / "AppIcon.icns"
+    icns = output_dir / "AppIcon.icns"
     rounded(master, ICNS_SIZE).save(icns, format="ICNS")
     written.append(icns)
 
-    manifest = out_dir / "icon-manifest.json"
+    manifest = output_dir / "icon-manifest.json"
     manifest.write_text(
         json.dumps(
             {
@@ -192,108 +154,109 @@ def build(master_path: Path, out_dir: Path) -> list[Path]:
         encoding="utf-8",
     )
     written.append(manifest)
-
     return written
 
 
-def consumer_targets(repo: Path, name: str, staged: Path) -> list[tuple[Path, Path]]:
-    """Every committed copy of the art outside assets/branding/, as (built, dest).
+def consumer_targets(
+    repo: Path,
+    program_name: str,
+    staged: Path,
+) -> list[tuple[Path, Path]]:
+    """Return authoritative generated consumers for one repository.
 
-    Each of these is a real file another surface loads, so the generator writes
-    them and --check verifies them. Otherwise a master change could leave the
-    shipped UI or the .app bundle on stale artwork with --check still green.
+    A repository's declared frontend is the only web consumer. Legacy duplicate
+    surfaces are not regenerated or required.
     """
-    cfg = PROGRAMS[name]
-    out: list[tuple[Path, Path]] = []
+    config = PROGRAMS[program_name]
+    targets: list[tuple[Path, Path]] = []
 
-    # macOS reads Contents/Resources/AppIcon.icns out of the committed bundle.
-    for bundle in [cfg["bundle"], *cfg.get("extra_bundles", [])]:
-        out.append((staged / "AppIcon.icns", repo / bundle / "Contents/Resources/AppIcon.icns"))
+    for bundle in [config["bundle"], *config.get("extra_bundles", [])]:
+        targets.append(
+            (
+                staged / "AppIcon.icns",
+                repo / bundle / "Contents/Resources/AppIcon.icns",
+            )
+        )
 
-    frontend = repo / cfg["frontend"]
-    for name_ in PUBLIC_FILES:
-        out.append((staged / name_, frontend / "public" / name_))
-    out.append((staged / SRC_ASSET, frontend / "src" / "assets" / SRC_ASSET))
-
-    if name in STANDALONE:
-        subdir, files = STANDALONE[name]
-        for name_ in files:
-            out.append((staged / name_, repo / subdir / name_))
-
-    return out
-
-
-def sync(pairs: list[tuple[Path, Path]], check: bool) -> list[str]:
-    """Copy each built file to its destination, or list the ones that differ."""
-    drifted: list[str] = []
-    for built, dest in pairs:
-        if check:
-            if not dest.is_file() or not equivalent_file(built, dest):
-                drifted.append(str(dest))
-        else:
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            dest.write_bytes(built.read_bytes())
-    return drifted
+    frontend = repo / config["frontend"]
+    for filename in PUBLIC_FILES:
+        targets.append(
+            (staged / filename, frontend / "public" / filename)
+        )
+    targets.append(
+        (staged / SRC_ASSET, frontend / "src" / "assets" / SRC_ASSET)
+    )
+    return targets
 
 
-def equivalent_file(built: Path, committed: Path) -> bool:
-    """Compare image meaning where encoders vary, bytes everywhere else."""
-    suffix = built.suffix.lower()
+def equivalent_file(generated: Path, committed: Path) -> bool:
+    suffix = generated.suffix.lower()
     if suffix not in {".png", ".ico", ".icns"}:
-        return filecmp.cmp(built, committed, shallow=False)
+        return filecmp.cmp(generated, committed, shallow=False)
     try:
-        with Image.open(built) as generated, Image.open(committed) as current:
+        with Image.open(generated) as expected, Image.open(committed) as actual:
             if suffix == ".ico":
-                generated_sizes = sorted(generated.ico.sizes())
-                current_sizes = sorted(current.ico.sizes())
-                return generated_sizes == current_sizes and all(
-                    generated.ico.getimage(size).convert("RGBA").tobytes()
-                    == current.ico.getimage(size).convert("RGBA").tobytes()
-                    for size in generated_sizes
+                expected_sizes = sorted(expected.ico.sizes())
+                actual_sizes = sorted(actual.ico.sizes())
+                return expected_sizes == actual_sizes and all(
+                    expected.ico.getimage(size).convert("RGBA").tobytes()
+                    == actual.ico.getimage(size).convert("RGBA").tobytes()
+                    for size in expected_sizes
                 )
             if suffix == ".icns":
-                generated_sizes = list(generated.icns.itersizes())
-                current_sizes = list(current.icns.itersizes())
-                return generated_sizes == current_sizes and all(
-                    generated.icns.getimage(size).convert("RGBA").tobytes()
-                    == current.icns.getimage(size).convert("RGBA").tobytes()
-                    for size in generated_sizes
+                expected_sizes = list(expected.icns.itersizes())
+                actual_sizes = list(actual.icns.itersizes())
+                return expected_sizes == actual_sizes and all(
+                    expected.icns.getimage(size).convert("RGBA").tobytes()
+                    == actual.icns.getimage(size).convert("RGBA").tobytes()
+                    for size in expected_sizes
                 )
-            return generated.size == current.size and (
-                generated.convert("RGBA").tobytes()
-                == current.convert("RGBA").tobytes()
+            return expected.size == actual.size and (
+                expected.convert("RGBA").tobytes()
+                == actual.convert("RGBA").tobytes()
             )
     except (AttributeError, OSError, ValueError):
         return False
 
 
+def sync(pairs: list[tuple[Path, Path]], check: bool) -> list[str]:
+    drifted: list[str] = []
+    for generated, destination in pairs:
+        if check:
+            if not destination.is_file() or not equivalent_file(generated, destination):
+                drifted.append(str(destination))
+            continue
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(generated.read_bytes())
+    return drifted
+
+
 def committed_manifest_matches(
-    generated: Path, committed: Path, derivatives_dir: Path
+    generated: Path,
+    committed: Path,
+    derivatives_dir: Path,
 ) -> bool:
-    """Verify stable metadata plus hashes of the committed encoded derivatives."""
     try:
         expected = json.loads(generated.read_text(encoding="utf-8"))
-        current = json.loads(committed.read_text(encoding="utf-8"))
+        actual = json.loads(committed.read_text(encoding="utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError):
         return False
 
-    expected_stable = {k: v for k, v in expected.items() if k != "derivatives"}
-    current_stable = {k: v for k, v in current.items() if k != "derivatives"}
-    if expected_stable != current_stable:
+    expected_stable = {key: value for key, value in expected.items() if key != "derivatives"}
+    actual_stable = {key: value for key, value in actual.items() if key != "derivatives"}
+    if expected_stable != actual_stable:
         return False
 
-    generated_names = set(expected.get("derivatives", {}))
-    committed_hashes = current.get("derivatives", {})
-    if generated_names != set(committed_hashes):
+    expected_names = set(expected.get("derivatives", {}))
+    actual_hashes = actual.get("derivatives", {})
+    if expected_names != set(actual_hashes):
         return False
-    for filename, digest in committed_hashes.items():
-        derivative = derivatives_dir / filename
-        if (
-            not derivative.is_file()
-            or hashlib.sha256(derivative.read_bytes()).hexdigest() != digest
-        ):
-            return False
-    return True
+    return all(
+        (derivatives_dir / filename).is_file()
+        and hashlib.sha256((derivatives_dir / filename).read_bytes()).hexdigest()
+        == digest
+        for filename, digest in actual_hashes.items()
+    )
 
 
 def process(repo: Path, check: bool) -> bool:
@@ -302,89 +265,89 @@ def process(repo: Path, check: bool) -> bool:
         print(f"  !! missing master: {master_path}")
         return False
 
-    out_dir = repo / MASTER.parent
+    output_dir = repo / MASTER.parent
     accent = sample_accent(Image.open(master_path))
-
-    with tempfile.TemporaryDirectory() as tmp:
-        staged = Path(tmp)
+    with tempfile.TemporaryDirectory() as temporary:
+        staged = Path(temporary)
         built = build(master_path, staged)
         generated_manifest = staged / "icon-manifest.json"
-        committed_manifest = out_dir / "icon-manifest.json"
+        committed_manifest = output_dir / "icon-manifest.json"
         pairs = [
-            (b, out_dir / b.name)
-            for b in built
-            if b.name != "icon-manifest.json"
+            (path, output_dir / path.name)
+            for path in built
+            if path.name != "icon-manifest.json"
         ]
-        pairs += consumer_targets(repo, repo.name, staged)
+        pairs.extend(consumer_targets(repo, repo.name, staged))
         drifted = sync(pairs, check)
         if check:
             if not committed_manifest_matches(
-                generated_manifest, committed_manifest, out_dir
+                generated_manifest,
+                committed_manifest,
+                output_dir,
             ):
                 drifted.append(str(committed_manifest))
         else:
             sync([(generated_manifest, committed_manifest)], check=False)
 
     if drifted:
-        print(f"  DRIFT ({len(drifted)}): " + ", ".join(drifted[:4]) + (" …" if len(drifted) > 4 else ""))
+        preview = ", ".join(drifted[:4])
+        suffix = " …" if len(drifted) > 4 else ""
+        print(f"  DRIFT ({len(drifted)}): {preview}{suffix}")
         return False
-    verb = "verified" if check else "wrote"
-    print(f"  accent {accent}  ->  {verb} {len(pairs) + 1} files")
+    action = "verified" if check else "wrote"
+    print(f"  accent {accent}  ->  {action} {len(pairs) + 1} files")
     return True
 
 
-def sync_hub_tiles(repos: dict[str, Path], check: bool) -> bool:
-    """The Hub renders every program, so it vendors all seven 256px tiles.
-
-    One copy, under the hub frontend's public/ dir: the React app loads it from
-    the build output and the desktop launcher serves it through
-    /api/local/federation/icon/{repo}.
-    """
-    hub = repos.get("thehub-pr")
+def sync_hub_tiles(repositories: dict[str, Path], check: bool) -> bool:
+    hub = repositories.get("thehub-pr")
     if hub is None:
         return True
-    tiles = hub / "server/frontend/public/branding"
+    tile_directory = hub / "server/frontend/public/branding"
     drifted: list[str] = []
-    for name, repo in repos.items():
+    for program_name, repo in repositories.items():
         source = repo / "assets/branding/icon-256.png"
         if not source.is_file():
             print(f"  !! hub tile source missing: {source}")
             return False
-        dest = tiles / f"{name}.png"
+        destination = tile_directory / f"{program_name}.png"
         if check:
-            if not dest.is_file() or not filecmp.cmp(source, dest, shallow=False):
-                drifted.append(str(dest))
-        else:
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            dest.write_bytes(source.read_bytes())
+            if not destination.is_file() or not filecmp.cmp(
+                source,
+                destination,
+                shallow=False,
+            ):
+                drifted.append(str(destination))
+            continue
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        destination.write_bytes(source.read_bytes())
     if drifted:
         print(f"hub tiles DRIFT ({len(drifted)}): " + ", ".join(drifted))
         return False
-    print(f"hub federation tiles: {'verified' if check else 'wrote'} {len(repos)}")
+    action = "verified" if check else "wrote"
+    print(f"hub federation tiles: {action} {len(repositories)}")
     return True
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--repo", action="append", default=[], help="path to a repo checkout")
-    ap.add_argument("--all", action="store_true", help="every federation repo, as siblings")
-    ap.add_argument("--check", action="store_true", help="verify committed output matches")
-    args = ap.parse_args()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repo", action="append", default=[], help="path to a repo checkout")
+    parser.add_argument("--all", action="store_true", help="every federation repo, as siblings")
+    parser.add_argument("--check", action="store_true", help="verify committed output matches")
+    args = parser.parse_args()
 
     if args.all:
         siblings = Path(__file__).resolve().parents[2]
         repos = [siblings / name for name in PROGRAMS]
     elif args.repo:
-        repos = [Path(r).resolve() for r in args.repo]
+        repos = [Path(repo).resolve() for repo in args.repo]
     else:
-        # argparse's error() exits, but returning explicitly keeps it obvious --
-        # to a reader and to static analysis -- that `repos` is always bound below.
         print("error: pass --repo <path> or --all", file=sys.stderr)
-        ap.print_usage(sys.stderr)
+        parser.print_usage(sys.stderr)
         return 2
 
     ok = True
-    done: dict[str, Path] = {}
+    completed: dict[str, Path] = {}
     for repo in repos:
         print(f"{repo.name}:")
         if repo.name not in PROGRAMS:
@@ -396,12 +359,10 @@ def main() -> int:
             ok = False
             continue
         ok &= process(repo, args.check)
-        done[repo.name] = repo
+        completed[repo.name] = repo
 
-    # The hub's federation tiles need every program's art, so only refresh them
-    # when the whole set was processed -- a single-repo run cannot know the rest.
-    if len(done) == len(PROGRAMS):
-        ok &= sync_hub_tiles(done, args.check)
+    if len(completed) == len(PROGRAMS):
+        ok &= sync_hub_tiles(completed, args.check)
 
     if not ok and args.check:
         print("\nIcons are out of date. Re-run without --check and commit the result.")
