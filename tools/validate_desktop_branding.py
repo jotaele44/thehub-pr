@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""Validate supplied-icon provenance, native bundle wiring, and AA brand colors.
-
-This intentionally uses only the standard library so every producer can run it
-before dependency installation. The full icon byte-for-byte regeneration still
-lives in build_program_icons.py; this is the fast fresh-checkout CI contract.
-"""
+"""Validate supplied-icon provenance, native bundle wiring, and AA brand colors."""
 
 from __future__ import annotations
 
@@ -12,12 +7,12 @@ import argparse
 import hashlib
 import json
 import plistlib
-import re
 import struct
 import sys
 from pathlib import Path
+from typing import Any
 
-PROGRAMS = {
+PROGRAMS: dict[str, dict[str, Any]] = {
     "centinelas-pr": {
         "name": "Centinelas",
         "accent": "#df630d",
@@ -85,8 +80,9 @@ def _linear(channel: int) -> float:
 
 
 def luminance(color: str) -> float:
-    channels = [int(color[index : index + 2], 16) for index in (1, 3, 5)]
-    red, green, blue = (_linear(channel) for channel in channels)
+    red, green, blue = (
+        _linear(int(color[index : index + 2], 16)) for index in (1, 3, 5)
+    )
     return 0.2126 * red + 0.7152 * green + 0.0722 * blue
 
 
@@ -115,8 +111,9 @@ def validate(repo: Path) -> list[str]:
             "branding master is not the supplied source file",
             failures,
         )
+        width, height = png_size(master)
         require(
-            png_size(master)[0] >= 1024 and png_size(master)[0] == png_size(master)[1],
+            width >= 1024 and width == height,
             "branding master must be a square image of at least 1024px",
             failures,
         )
@@ -136,19 +133,19 @@ def validate(repo: Path) -> list[str]:
             failures,
         )
         for filename, expected in manifest.get("derivatives", {}).items():
-            path = branding / filename
+            derivative = branding / filename
             require(
-                path.is_file() and sha256(path) == expected,
+                derivative.is_file() and sha256(derivative) == expected,
                 f"derived icon drift: {filename}",
                 failures,
             )
 
     for size in PNG_SIZES:
-        path = branding / f"icon-{size}.png"
-        require(path.is_file(), f"missing icon-{size}.png", failures)
-        if path.is_file():
+        derivative = branding / f"icon-{size}.png"
+        require(derivative.is_file(), f"missing icon-{size}.png", failures)
+        if derivative.is_file():
             require(
-                png_size(path) == (size, size),
+                png_size(derivative) == (size, size),
                 f"icon-{size}.png has the wrong dimensions",
                 failures,
             )
@@ -173,10 +170,9 @@ def validate(repo: Path) -> list[str]:
             failures,
         )
 
-    frontend = repo / str(config["frontend"])
-    index = frontend / "index.html"
-    if repo.name == "spiderweb-pr":
-        index = repo / "dashboard" / "dashboard.html"
+    # Each repository's declared frontend is authoritative. There are no
+    # repository-specific legacy entry-point overrides.
+    index = repo / str(config["frontend"]) / "index.html"
     require(index.is_file(), f"missing web entry point: {index}", failures)
     if index.is_file():
         require(
@@ -193,9 +189,10 @@ def validate(repo: Path) -> list[str]:
         "frontend palette marker is missing",
         failures,
     )
+    ratio = contrast(str(config["strong"]), "#ffffff")
     require(
-        contrast(str(config["strong"]), "#ffffff") >= 4.5,
-        f"primary brand color fails WCAG AA with white ({contrast(str(config['strong']), '#ffffff'):.2f}:1)",
+        ratio >= 4.5,
+        f"primary brand color fails WCAG AA with white ({ratio:.2f}:1)",
         failures,
     )
 
@@ -225,10 +222,7 @@ def validate(repo: Path) -> list[str]:
             ("prii_desktop/tests", "fresh-machine setup tests are not in CI"),
             ("desktop-setup.spec.js", "browser visual setup smoke is not in CI"),
             ("PRII_SETUP_FIXTURE", "visual smoke does not use the real setup UI"),
-            (
-                "Upload native setup visual evidence",
-                "native setup screenshots are not retained",
-            ),
+            ("Upload native setup visual evidence", "native setup screenshots are not retained"),
         ):
             require(marker in workflow, message, failures)
     return failures
@@ -238,13 +232,12 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, required=True)
     args = parser.parse_args()
-    repo = args.repo.resolve()
-    failures = validate(repo)
+    failures = validate(args.repo.resolve())
     if failures:
         for failure in failures:
             print(f"FAIL: {failure}", file=sys.stderr)
         return 1
-    print(f"branding/setup contract ok: {repo.name}")
+    print(f"branding/setup contract ok: {args.repo.resolve().name}")
     return 0
 
 
