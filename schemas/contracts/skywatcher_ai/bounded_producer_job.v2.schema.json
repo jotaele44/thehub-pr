@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/schemas/contracts/skywatcher_ai/bounded_producer_job.v2.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "job_id",
+    "producer",
+    "producer_revision",
+    "operation_id",
+    "signed_command_policy_id",
+    "authorization_reference",
+    "audit_event_reference",
+    "workflow_mode",
+    "capabilities",
+    "secret_references",
+    "input_artifacts",
+    "output_contract",
+    "pins",
+    "workspace_policy",
+    "network_policy",
+    "resource_limits",
+    "requested_by",
+    "created_at",
+    "signature"
+  ],
+  "properties": {
+    "schema_version": {"const": "bounded_producer_job.v2"},
+    "job_id": {"type": "string", "pattern": "^producer-job-sha256-[0-9a-f]{64}$"},
+    "producer": {"const": "skywatcher-pr"},
+    "producer_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "operation_id": {"type": "string", "minLength": 1},
+    "signed_command_policy_id": {"type": "string", "minLength": 1},
+    "authorization_reference": {"type": "string", "minLength": 1},
+    "audit_event_reference": {"type": "string", "minLength": 1},
+    "workflow_mode": {"enum": ["ACTIVE_EVIDENCE", "PROVISIONAL_PROCESSING"]},
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network_access", "model_operation"],
+      "properties": {
+        "network_access": {"type": "boolean"},
+        "model_operation": {"type": "boolean"}
+      }
+    },
+    "h05_egress_reference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision_receipt_id", "sha256"],
+      "properties": {
+        "decision_receipt_id": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"}
+      }
+    },
+    "secret_references": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^secret://[^\\s]+$"}
+    },
+    "input_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "sha256",
+          "size_bytes",
+          "read_only_locator",
+          "read_only",
+          "snapshot_state",
+          "provisional",
+          "classification"
+        ],
+        "properties": {
+          "artifact_id": {"type": "string", "pattern": "^artifact-sha256-[0-9a-f]{64}$"},
+          "sha256": {"$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"},
+          "size_bytes": {"type": "integer", "minimum": 0},
+          "read_only_locator": {"type": "string", "pattern": "^content://sha256/[0-9a-f]{64}$"},
+          "read_only": {"const": true},
+          "snapshot_state": {"enum": ["ACTIVE", "CERTIFIED", "QUARANTINED"]},
+          "provisional": {"type": "boolean"},
+          "classification": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["level", "restriction_floor", "test_only", "lineage_complete"],
+            "properties": {
+              "level": {"$ref": "skywatcher_ai_common.v1.schema.json#/$defs/classification"},
+              "restriction_floor": {"enum": ["PUBLIC", "INTERNAL", "RESTRICTED", "SENSITIVE_LOCATION", "LEGAL_HOLD", "QUARANTINED"]},
+              "test_only": {"type": "boolean"},
+              "lineage_complete": {"const": true}
+            }
+          }
+        }
+      }
+    },
+    "output_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_id", "schema_version", "write_root", "required_outputs"],
+      "properties": {
+        "schema_id": {"type": "string", "minLength": 1},
+        "schema_version": {"type": "string", "minLength": 1},
+        "write_root": {"type": "string", "pattern": "^[A-Za-z0-9._-]+$"},
+        "required_outputs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "pins": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["worker_profile", "schema_revisions"],
+      "properties": {
+        "worker_profile": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["profile_id", "version", "sha256"],
+          "properties": {
+            "profile_id": {"type": "string", "minLength": 1},
+            "version": {"type": "string", "minLength": 1},
+            "sha256": {"$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"}
+          }
+        },
+        "schema_revisions": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "workspace_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ephemeral",
+        "persistent_db_mounts",
+        "skywatcher_db_access",
+        "thehub_db_access",
+        "secret_readback",
+        "unrestricted_shell",
+        "database_mounts",
+        "persistent_mounts"
+      ],
+      "properties": {
+        "ephemeral": {"const": true},
+        "persistent_db_mounts": {"const": false},
+        "skywatcher_db_access": {"const": false},
+        "thehub_db_access": {"const": false},
+        "secret_readback": {"const": false},
+        "unrestricted_shell": {"const": false},
+        "database_mounts": {"type": "array", "maxItems": 0},
+        "persistent_mounts": {"type": "array", "maxItems": 0}
+      }
+    },
+    "network_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["default", "approved_hosts", "max_requests"],
+      "properties": {
+        "default": {"const": "DENY"},
+        "approved_hosts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "max_requests": {"type": "integer", "minimum": 0},
+        "exception_authorization_reference": {"type": "string", "minLength": 1}
+      }
+    },
+    "resource_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_duration_seconds",
+        "max_input_bytes",
+        "max_output_bytes",
+        "max_output_files",
+        "max_file_bytes"
+      ],
+      "properties": {
+        "max_duration_seconds": {"type": "integer", "minimum": 1},
+        "max_input_bytes": {"type": "integer", "minimum": 1},
+        "max_output_bytes": {"type": "integer", "minimum": 1},
+        "max_output_files": {"type": "integer", "minimum": 1},
+        "max_file_bytes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "requested_by": {"type": "string", "minLength": 1},
+    "created_at": {"$ref": "skywatcher_ai_common.v1.schema.json#/$defs/timestamp"},
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scheme", "signer_id", "payload_sha256", "value"],
+      "properties": {
+        "scheme": {"type": "string", "minLength": 1},
+        "signer_id": {"type": "string", "minLength": 1},
+        "payload_sha256": {"$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"},
+        "value": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
