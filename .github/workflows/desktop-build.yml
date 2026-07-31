@@ -1,151 +1,159 @@
 name: desktop-build
 
-# Builds the standalone double-click desktop app (PyInstaller) for each OS.
-# Runs on demand, and attaches the bundles to the release on desktop-v* tags.
-
 on:
-  workflow_dispatch:
-  push:
-    tags:
-      - "desktop-v*"
   pull_request:
     branches: [main]
     paths:
-      - "desktop/**"
-      - "assets/branding/**"
-      - "packages/prii_desktop/**"
-      - "server/frontend/**"
-      - "server/backend/**"
-      - "federation-design/**"
-      - "tools/build_program_icons.py"
-      - "tools/render_desktop_setup.py"
-      - "tools/validate_desktop_branding.py"
-      - "requirements-desktop.txt"
+      - "scripts/certify_preclone_workspace_macos.py"
+      - "registry/preclone-certification-heads-v2.json"
+      - ".github/preclone-certification-trigger-v2.txt"
       - ".github/workflows/desktop-build.yml"
 
 permissions:
-  contents: write
+  contents: read
 
-# Serialise runs on the same ref without cancelling. This workflow can
-# publish, write data, or hand off to another repo, and killing it
-# mid-flight risks leaving that work half-done.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: preclone-macos-certification-v2-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
-  build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+  preclone-certification:
+    if: github.head_ref == 'agent/prii-preclone-macos-certification-v2-0'
+    runs-on: macos-14
+    timeout-minutes: 180
 
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+    steps:
+      - name: Checkout isolated certification harness
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+
+      - name: Select canonical Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.11"
           cache: pip
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: "22"
+      - name: Install harness registry dependency
+        run: python3.11 -m pip install PyYAML
 
-      - name: Build frontend (same-origin)
-        env:
-          VITE_API_BASE: ""
+      - name: Verify exact target harness and clean runner
+        shell: bash
         run: |
-          npm ci --no-audit --no-fund
-          npm run build
-        working-directory: server/frontend
+          set -euo pipefail
+          test "$RUNNER_OS" = "macOS"
+          git merge-base --is-ancestor \
+            80534737a6f314ea48108020501ce48f5d9ff6f1 HEAD
+          test "$(python3.11 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')" = "3.11"
+          CERT_ROOT="$RUNNER_TEMP/prii-preclone-v2-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          RECEIPT="$GITHUB_WORKSPACE/reports/preclone_workspace/macos_certification.json"
+          test ! -e "$CERT_ROOT"
+          mkdir -p "$(dirname "$RECEIPT")"
+          echo "CERT_ROOT=$CERT_ROOT" >> "$GITHUB_ENV"
+          echo "RECEIPT=$RECEIPT" >> "$GITHUB_ENV"
+          {
+            echo "runner_os=$RUNNER_OS"
+            echo "runner_arch=$RUNNER_ARCH"
+            echo "harness_commit=$(git rev-parse HEAD)"
+            echo "python=$(command -v python3.11)"
+            echo "python_version=$(python3.11 --version)"
+            echo "cert_root=$CERT_ROOT"
+          } > reports/preclone_workspace/harness_environment.txt
 
-      - name: Install Python dependencies
+      - name: Execute exact-head clean-workspace certification
+        id: certification
+        continue-on-error: true
+        shell: bash
         run: |
-          python -m pip install --upgrade pip
-          pip install -r server/backend/requirements.txt -r requirements-desktop.txt -r tools/requirements-icons.txt pyinstaller pytest httpx
+          set -o pipefail
+          python3.11 scripts/certify_preclone_workspace_macos.py \
+            --root "$CERT_ROOT" \
+            --python python3.11 \
+            --depth 1 \
+            --expected-heads registry/preclone-certification-heads-v2.json \
+            --receipt "$RECEIPT" \
+            2>&1 | tee reports/preclone_workspace/certification.log
 
-      - name: Verify supplied artwork, AA palette, and fresh-machine setup
+      - name: Collect deterministic diagnostic evidence
+        if: always()
+        shell: bash
         run: |
-          python tools/build_program_icons.py --repo . --check
-          python tools/validate_desktop_branding.py --repo .
-          python -m pytest packages/prii_desktop/tests -q
+          set +e
+          mkdir -p reports/preclone_workspace
+          cp registry/preclone-certification-heads-v2.json \
+            reports/preclone_workspace/preclone-certification-heads.json
+          shasum -a 256 \
+            scripts/certify_preclone_workspace_macos.py \
+            registry/preclone-certification-heads-v2.json \
+            .github/workflows/desktop-build.yml \
+            .github/preclone-certification-trigger-v2.txt \
+            > reports/preclone_workspace/harness-inputs.sha256
+          if [ -f "$RECEIPT" ]; then
+            shasum -a 256 "$RECEIPT" \
+              > reports/preclone_workspace/macos_certification.json.sha256
+          fi
+          {
+            echo "repository_heads:"
+            for repo in thehub-pr moneysweep-pr spiderweb-pr skywatcher-pr centinelas-pr aguayluz-pr ovnis-pr; do
+              path="$CERT_ROOT/$repo"
+              if [ -d "$path/.git" ]; then
+                printf "%s " "$repo"
+                git -C "$path" rev-parse HEAD
+                git -C "$path" status --short --branch
+              else
+                echo "$repo MISSING"
+              fi
+            done
+            echo
+            echo "private_venvs:"
+            { find "$CERT_ROOT" -mindepth 2 -maxdepth 2 -type d -name .venv -print 2>/dev/null || true; } | sort
+          } > reports/preclone_workspace/workspace_diagnostics.txt
+          exit 0
 
-      - name: Visual and accessibility smoke for native setup
-        if: runner.os == 'Linux'
-        env:
-          PRII_REPO_SLUG: thehub-pr
-          PRII_SETUP_FIXTURE: ${{ github.workspace }}/desktop-ui-artifacts/setup.html
-          PRII_VISUAL_DIR: ${{ github.workspace }}/desktop-ui-artifacts
-        run: |
-          python tools/render_desktop_setup.py \
-            --repo . --output desktop-ui-artifacts/setup.html
-          cd federation-design/test-harness
-          npm ci --no-audit --no-fund
-          npx playwright install --with-deps chromium
-          npx playwright test tests/desktop-setup.spec.js \
-            --project=tablet-768 --project=desktop-1280
-
-      - name: Upload native setup visual evidence
-        if: runner.os == 'Linux' && always()
+      - name: Upload certification evidence
+        if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: thehub-pr-native-setup-visuals
-          path: desktop-ui-artifacts/*.png
-          if-no-files-found: warn
-          retention-days: 30
+          name: prii-preclone-macos-certification-v2-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/preclone_workspace/
+          if-no-files-found: error
+          retention-days: 90
 
-      - name: Freeze console build (for smoke test)
-        env:
-          PRII_CONSOLE: "1"
-        run: pyinstaller desktop/pyinstaller.spec --distpath dist-smoke --noconfirm
-
-      - name: Smoke test frozen app
-        shell: python
-        run: |
-          import pathlib, subprocess, sys
-          name = "PRII-THEHUB"
-          exe = pathlib.Path("dist-smoke") / name / (name + (".exe" if sys.platform == "win32" else ""))
-          result = subprocess.run([str(exe), "--smoke"], timeout=120)
-          sys.exit(result.returncode)
-
-      - name: Freeze desktop app (windowed release)
-        run: pyinstaller desktop/pyinstaller.spec --distpath dist-desktop --noconfirm
-
-      - name: Package bundle
+      - name: Enforce passed receipt
+        if: always()
         shell: bash
         run: |
-          cd dist-desktop
-          if [ "$RUNNER_OS" = "macOS" ] && [ -d "PRII-THEHUB.app" ]; then
-            zip -qry "PRII-THEHUB-${RUNNER_OS}.zip" "PRII-THEHUB.app"
-          else
-            7z a -bd "PRII-THEHUB-${RUNNER_OS}.zip" "PRII-THEHUB" > /dev/null
-          fi
+          python3.11 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
 
-      - name: Package .dmg (macOS)
-        if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          cd dist-desktop
-          staging="dmg-staging"
-          rm -rf "$staging" && mkdir "$staging"
-          cp -R "PRII-THEHUB.app" "$staging/"
-          ln -s /Applications "$staging/Applications"
-          hdiutil create -volname "PRII-THEHUB" -srcfolder "$staging" \
-            -ov -format UDZO "PRII-THEHUB-macOS.dmg"
-          rm -rf "$staging"
-
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: PRII-THEHUB-${{ runner.os }}
-          path: |
-            dist-desktop/PRII-THEHUB-*.zip
-            dist-desktop/PRII-THEHUB-*.dmg
-
-      - name: Attach to release
-        if: startsWith(github.ref, 'refs/tags/desktop-v')
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
-        with:
-          files: |
-            dist-desktop/PRII-THEHUB-*.zip
-            dist-desktop/PRII-THEHUB-*.dmg
+          receipt_path = Path(os.environ["RECEIPT"])
+          if not receipt_path.is_file():
+              raise SystemExit("certification receipt is missing")
+          receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+          if receipt.get("status") != "passed":
+              raise SystemExit(f"certification failed: {receipt.get('error', 'unknown error')}")
+          if receipt.get("clone_mode") != "exact_detached_commits":
+              raise SystemExit("certification did not use exact detached commits")
+          observed = receipt.get("observed_heads") or {}
+          validation = receipt.get("workspace_validation") or {}
+          repositories = validation.get("repositories") or []
+          errors = validation.get("errors") or []
+          if len(observed) != 7:
+              raise SystemExit(f"expected seven observed heads, found {len(observed)}")
+          if len(repositories) != 7:
+              raise SystemExit(f"expected seven validated repositories, found {len(repositories)}")
+          if not validation.get("valid") or errors:
+              raise SystemExit(f"post-bootstrap validation failed: {errors}")
+          venvs = [Path(item["path"]) / ".venv" for item in repositories]
+          missing = [str(path) for path in venvs if not path.is_dir()]
+          if missing:
+              raise SystemExit("missing private venvs: " + ", ".join(missing))
+          if len({path.resolve() for path in venvs}) != 7:
+              raise SystemExit("private venv paths are not unique")
+          shared = Path(receipt["root"]) / ".venv"
+          if shared.exists():
+              raise SystemExit(f"shared root venv exists: {shared}")
+          print("PRII authority-aligned macOS pre-clone certification PASSED")
+          PY

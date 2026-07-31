@@ -1,0 +1,5 @@
+PRII authority-aligned exact-head macOS certification v2.0
+TheHub normalization head: 80534737a6f314ea48108020501ce48f5d9ff6f1
+Ledger: registry/preclone-certification-heads-v2.json
+Classification: authority-aligned candidate cohort, not final all-main cohort.
+Preservation: draft-only, no merge, no main write, no force push, no shared venv, no production, no live execution.
