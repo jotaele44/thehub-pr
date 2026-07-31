@@ -9,6 +9,14 @@ on:
       - "registry/preclone-certification-heads.json"
       - ".github/workflows/preclone-macos-certification-v1.yml"
       - ".github/preclone-certification-trigger-v1.txt"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/certify_preclone_workspace_macos.py"
+      - "registry/preclone-certification-heads.json"
+      - ".github/workflows/preclone-macos-certification-v1.yml"
+      - ".github/preclone-certification-trigger-v1.txt"
   workflow_dispatch:
 
 permissions:
