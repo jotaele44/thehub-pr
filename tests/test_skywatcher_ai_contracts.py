@@ -29,7 +29,7 @@ def _registry(schemas: dict[str, dict]) -> Registry:
 
 def test_all_contracts_are_valid_draft_2020_12() -> None:
     schemas = _schemas()
-    assert len(schemas) == 7
+    assert len(schemas) == 12
     for schema in schemas.values():
         Draft202012Validator.check_schema(schema)
 

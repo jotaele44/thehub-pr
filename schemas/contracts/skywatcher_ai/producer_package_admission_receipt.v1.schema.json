@@ -1,0 +1,197 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/schemas/contracts/skywatcher_ai/producer_package_admission_receipt.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "admission_receipt_id",
+    "admission_id",
+    "job_record_sha256",
+    "run_receipt_sha256",
+    "package_manifest_sha256",
+    "lineage_manifest_sha256",
+    "package_sha256",
+    "outcome",
+    "reason_codes",
+    "authorization_reference",
+    "audit_event_reference",
+    "entry_accounting",
+    "source_accounting",
+    "dispositions",
+    "completed_at",
+    "quarantine_before_registry",
+    "acquisition_receipt_used",
+    "certified_state_created",
+    "active_snapshot_promoted",
+    "answer_eligible",
+    "claim_eligible",
+    "retrieval_eligible",
+    "citation_eligible",
+    "output_record_ids",
+    "provenance_edge_ids"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "producer_package_admission_receipt.v1"
+    },
+    "admission_receipt_id": {
+      "type": "string",
+      "pattern": "^producer-admission-sha256-[0-9a-f]{64}$"
+    },
+    "admission_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "job_record_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "run_receipt_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "package_manifest_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "lineage_manifest_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "package_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "outcome": {
+      "enum": [
+        "ADMITTED",
+        "DENIED"
+      ]
+    },
+    "reason_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "authorization_reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "audit_event_reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "entry_accounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected",
+        "admitted",
+        "excluded",
+        "failed",
+        "complete"
+      ],
+      "properties": {
+        "expected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "admitted": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excluded": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "complete": {
+          "const": true
+        }
+      }
+    },
+    "source_accounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected",
+        "used",
+        "excluded",
+        "failed",
+        "complete"
+      ],
+      "properties": {
+        "expected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "used": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excluded": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "complete": {
+          "const": true
+        }
+      }
+    },
+    "dispositions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "completed_at": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/timestamp"
+    },
+    "quarantine_before_registry": {
+      "type": "boolean"
+    },
+    "acquisition_receipt_used": {
+      "const": false
+    },
+    "certified_state_created": {
+      "const": false
+    },
+    "active_snapshot_promoted": {
+      "const": false
+    },
+    "answer_eligible": {
+      "const": false
+    },
+    "claim_eligible": {
+      "const": false
+    },
+    "retrieval_eligible": {
+      "const": false
+    },
+    "citation_eligible": {
+      "const": false
+    },
+    "output_record_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^producer-output-sha256-[0-9a-f]{64}$"
+      }
+    },
+    "provenance_edge_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^producer-provenance-sha256-[0-9a-f]{64}$"
+      }
+    }
+  }
+}
