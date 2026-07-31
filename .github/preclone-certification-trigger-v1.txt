@@ -1,0 +1,4 @@
+PRII refreshed exact-head macOS certification v1.0
+TheHub normalization head: 09602595a42d932b7c971eabe9fc1a1e4c050f48
+Ledger: registry/preclone-certification-heads.json
+Preservation: draft-only, no merge, no main write, no force push, no production, no live execution.
