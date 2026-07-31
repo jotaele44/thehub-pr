@@ -8,6 +8,13 @@ on:
       - "scripts/certify_preclone_workspace_macos.py"
       - "registry/preclone-certification-heads.json"
       - ".github/workflows/preclone-macos-certification.yml"
+  pull_request:
+    branches:
+      - "agent/prii-preclone-normalization-v0-1"
+    paths:
+      - "scripts/certify_preclone_workspace_macos.py"
+      - "registry/preclone-certification-heads.json"
+      - ".github/workflows/preclone-macos-certification.yml"
   workflow_dispatch:
 
 permissions:
@@ -28,6 +35,8 @@ jobs:
     steps:
       - name: Checkout isolated certification harness
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
 
       - name: Select canonical Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
@@ -135,8 +144,7 @@ jobs:
               raise SystemExit(f"expected seven validated repositories, found {len(repositories)}")
           if not validation.get("valid"):
               raise SystemExit("post-bootstrap workspace validation is not valid")
-          root = Path(receipt["root"])
-          venvs = [root / item["program_id"] / ".venv" for item in repositories]
+          venvs = [Path(item["path"]) / ".venv" for item in repositories]
           missing = [str(path) for path in venvs if not path.is_dir()]
           if missing:
               raise SystemExit("missing private venvs: " + ", ".join(missing))
