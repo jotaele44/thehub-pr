@@ -111,6 +111,49 @@ def test_mode_falls_back_to_the_extension_contract():
     assert mod._mode_for("SECURITY.md", {}) is None
 
 
+def test_declared_mode_accepts_both_yaml_spellings():
+    # YAML 1.1 resolves an unquoted 0755 to the int 493, so a renderer that
+    # always parsed base 8 would raise on the digit 9 and take rendering down
+    # the moment anyone wrote the mode the natural way.
+    mod = _renderer()
+    assert yaml.safe_load("mode: 0755\n")["mode"] == 493  # documents the trap
+    assert mod._mode_for("x", {"mode": 0o755}) == 0o755
+    assert mod._mode_for("x", {"mode": "0755"}) == 0o755
+    assert mod._mode_for("x", {"mode": 0o644}) == 0o644
+
+
+def test_implausible_mode_is_rejected_with_a_usable_message():
+    mod = _renderer()
+    try:
+        mod._mode_for("PRII-OVNIS.app/Contents/MacOS/PRII-OVNIS", {"mode": 0o10000})
+    except SystemExit as exc:
+        assert "permission mask" in str(exc)
+    else:
+        raise AssertionError("expected SystemExit")
+
+
+def test_check_requires_the_owner_execute_bit(tmp_path):
+    # A file left group/other-executable only cannot be run by the owner, so
+    # accepting "any exec bit" would report a broken launcher as matching.
+    # 0700 must still pass: that is what a umask 077 checkout legitimately gives.
+    mod = _renderer()
+    rel = "PRII-OVNIS.app/Contents/MacOS/PRII-OVNIS"
+    target = {
+        "template": "PRII-APP.command",
+        "output": "PRII-{{APP_SLUG}}.app/Contents/MacOS/PRII-{{APP_SLUG}}",
+        "repos": ["ovnis-pr"],
+        "mode": 0o755,
+    }
+    mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], False)
+    dest = tmp_path / rel
+
+    dest.chmod(0o055)  # group + other exec, owner cannot run it
+    assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], True) == [rel]
+
+    dest.chmod(0o700)  # umask 077 checkout — owner can run it, not drift
+    assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], True) == []
+
+
 def test_declared_mode_covers_outputs_the_extension_rule_cannot_see(tmp_path):
     # An executable inside a macOS .app bundle has no suffix, so the extension
     # rule leaves it 0644 on a first render and --check cannot tell that the app

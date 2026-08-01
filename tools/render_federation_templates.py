@@ -80,7 +80,18 @@ def _mode_for(output_tmpl: str, target: dict) -> int | None:
     """
     declared = target.get("mode")
     if declared is not None:
-        return int(str(declared), 8)
+        # Both spellings have to work, because both are natural to write here.
+        # YAML 1.1 resolves an unquoted ``0755`` to the int 493 — already the
+        # mode meant — while a quoted ``"0755"`` arrives as text needing base 8.
+        # Round-tripping the int through str() and int(…, 8) instead would raise
+        # on the digit 9 and take rendering down with it.
+        mode = declared if isinstance(declared, int) else int(declared, 8)
+        if not 0 <= mode <= 0o7777:
+            raise SystemExit(
+                f"error: {output_tmpl}: mode {declared!r} is not a permission "
+                "mask — write it as 0755 or \"0755\""
+            )
+        return mode
     if output_tmpl.endswith((".sh", ".command")):
         return 0o755
     return None
@@ -118,14 +129,18 @@ def render_repo(program_id: str, vars_for_repo: dict, repo_root: Path,
             # Launchers are part of a 0755 contract (the write path chmods them);
             # a mode-only change that drops the executable bit breaks the
             # double-click launchers on Linux/macOS while content still matches.
-            # Only the exec bits are compared: git records 100644 vs 100755 and
-            # nothing finer, so demanding the full mode would flag umask noise.
+            # Only the owner exec bit is compared: git records 100644 vs 100755
+            # and nothing finer, and a restrictive umask legitimately checks an
+            # executable out as 0700 — so demanding the full mode, or all three
+            # exec bits, would flag umask noise. Testing the owner bit rather
+            # than "any exec bit" still catches a file left group-executable
+            # only (0055), which the owner cannot run.
             if (
                 not drifted
                 and mode is not None
-                and mode & 0o111
+                and mode & 0o100
                 and dest.exists()
-                and not (dest.stat().st_mode & 0o111)
+                and not (dest.stat().st_mode & 0o100)
             ):
                 drifted = True
             if drifted:
