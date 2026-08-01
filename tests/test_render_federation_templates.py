@@ -147,7 +147,9 @@ def test_check_requires_the_owner_execute_bit(tmp_path):
     mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], False)
     dest = tmp_path / rel
 
-    dest.chmod(0o055)  # group + other exec, owner cannot run it
+    # Owner keeps read (--check has to read the file to compare it) but loses
+    # exec, while group and other keep theirs.
+    dest.chmod(0o455)
     assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], True) == [rel]
 
     dest.chmod(0o700)  # umask 077 checkout — owner can run it, not drift
