@@ -103,6 +103,40 @@ def test_per_repo_vars_substitute_beyond_the_slug(tmp_path):
     assert [u["directory"] for u in npm] == ["/server/frontend"]
 
 
+def test_mode_falls_back_to_the_extension_contract():
+    # The implicit rule the launchers have always relied on.
+    mod = _renderer()
+    assert mod._mode_for("PRII-OVNIS.sh", {}) == 0o755
+    assert mod._mode_for("PRII-OVNIS.command", {}) == 0o755
+    assert mod._mode_for("SECURITY.md", {}) is None
+
+
+def test_declared_mode_covers_outputs_the_extension_rule_cannot_see(tmp_path):
+    # An executable inside a macOS .app bundle has no suffix, so the extension
+    # rule leaves it 0644 on a first render and --check cannot tell that the app
+    # is broken, because the content still matches. A declared mode fixes both
+    # halves; this exercises them against a synthetic target.
+    mod = _renderer()
+    rel = "PRII-OVNIS.app/Contents/MacOS/PRII-OVNIS"
+    target = {
+        "template": "PRII-APP.command",
+        "output": "PRII-{{APP_SLUG}}.app/Contents/MacOS/PRII-{{APP_SLUG}}",
+        "repos": ["ovnis-pr"],
+        "mode": "0755",
+    }
+    assert mod._mode_for(target["output"], target) == 0o755
+
+    # First render into a tree where the file does not exist yet.
+    assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], False) == []
+    dest = tmp_path / rel
+    assert dest.stat().st_mode & 0o111, "bundle executable rendered non-executable"
+    assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], True) == []
+
+    # Content untouched, exec bit dropped — must be reported as drift.
+    dest.chmod(0o644)
+    assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], True) == [rel]
+
+
 def test_unresolved_placeholder_is_detected():
     # The failure this guards is silent: an unsubstituted {{KEY}} written into
     # seven repos renders a config that parses but does nothing useful.

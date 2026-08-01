@@ -69,12 +69,29 @@ def _unresolved(raw: bytes) -> list[str]:
     return sorted({m.decode() for m in re.findall(rb"\{\{[A-Z0-9_]+\}\}", raw)})
 
 
-def _targets_for(program_id: str, targets: list[dict]) -> list[tuple[str, str]]:
-    """Return (template, output_relpath) pairs that apply to this repo."""
+def _mode_for(output_tmpl: str, target: dict) -> int | None:
+    """Permission bits the rendered file must carry, or None to leave it alone.
+
+    ``.sh``/``.command`` launchers have always been part of a 0755 contract, so
+    that rule stays implicit. An explicit ``mode:`` in targets.yaml extends it to
+    outputs the extension rule cannot see — the executable inside a macOS ``.app``
+    bundle has no suffix at all, and shipping it non-executable breaks the app
+    while its content still matches the template.
+    """
+    declared = target.get("mode")
+    if declared is not None:
+        return int(str(declared), 8)
+    if output_tmpl.endswith((".sh", ".command")):
+        return 0o755
+    return None
+
+
+def _targets_for(program_id: str, targets: list[dict]) -> list[tuple[str, str, int | None]]:
+    """Return (template, output_relpath, mode) triples that apply to this repo."""
     out = []
     for t in targets:
         if program_id in t["repos"]:
-            out.append((t["template"], t["output"]))
+            out.append((t["template"], t["output"], _mode_for(t["output"], t)))
     return out
 
 
@@ -83,7 +100,7 @@ def render_repo(program_id: str, vars_for_repo: dict, repo_root: Path,
     """Write (or --check) every target for one repo. Returns list of drifted paths."""
     subs = _placeholders(vars_for_repo)
     drift = []
-    for template, output_tmpl in _targets_for(program_id, targets):
+    for template, output_tmpl, mode in _targets_for(program_id, targets):
         content = _render_bytes(template, subs)
         missing = _unresolved(content)
         if missing:
@@ -101,9 +118,12 @@ def render_repo(program_id: str, vars_for_repo: dict, repo_root: Path,
             # Launchers are part of a 0755 contract (the write path chmods them);
             # a mode-only change that drops the executable bit breaks the
             # double-click launchers on Linux/macOS while content still matches.
+            # Only the exec bits are compared: git records 100644 vs 100755 and
+            # nothing finer, so demanding the full mode would flag umask noise.
             if (
                 not drifted
-                and rel.endswith((".sh", ".command"))
+                and mode is not None
+                and mode & 0o111
                 and dest.exists()
                 and not (dest.stat().st_mode & 0o111)
             ):
@@ -113,9 +133,11 @@ def render_repo(program_id: str, vars_for_repo: dict, repo_root: Path,
         else:
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_bytes(content)
-            # Preserve the executable bit on the shell/command launchers.
-            if rel.endswith((".sh", ".command")):
-                dest.chmod(0o755)
+            # write_bytes keeps an existing file's mode, so this also has to run
+            # for a first render into a fresh checkout, where the file is created
+            # 0644 and would otherwise ship non-executable.
+            if mode is not None:
+                dest.chmod(mode)
     return drift
 
 
