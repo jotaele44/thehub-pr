@@ -9,11 +9,13 @@ template-drift.yml workflow.
 from __future__ import annotations
 
 import importlib.util
+import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 import yaml
 
 _HUB = Path(__file__).resolve().parents[1]
@@ -180,6 +182,25 @@ def test_declared_mode_covers_outputs_the_extension_rule_cannot_see(tmp_path):
     # Content untouched, exec bit dropped — must be reported as drift.
     dest.chmod(0o644)
     assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], True) == [rel]
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root bypasses permission bits")
+def test_unreadable_file_is_drift_not_a_crash(tmp_path):
+    # --check has to read a file to compare it. If it cannot, the honest answer
+    # is drift: letting the OSError propagate would abandon the report for every
+    # later file, and under --all every later repo.
+    mod = _renderer()
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    launcher = tmp_path / "PRII-OVNIS.sh"
+    launcher.chmod(0o000)
+    try:
+        drift = mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, _targets(), True)
+    finally:
+        launcher.chmod(0o644)  # so tmp_path cleanup can remove it
+    assert "PRII-OVNIS.sh" in drift
 
 
 def test_unresolved_placeholder_is_detected():

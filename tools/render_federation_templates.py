@@ -124,7 +124,17 @@ def render_repo(program_id: str, vars_for_repo: dict, repo_root: Path,
             rel = rel.replace(placeholder, value)
         dest = repo_root / rel
         if check:
-            current = dest.read_bytes() if dest.exists() else None
+            # A file this gate cannot read or stat is not in its expected state,
+            # which is what drift means — and letting the OSError propagate
+            # would abandon the report for every later file and, under --all,
+            # every later repo. Scoped to these two calls so the deliberate
+            # SystemExit above still escapes.
+            try:
+                current = dest.read_bytes() if dest.exists() else None
+                dest_mode = dest.stat().st_mode if dest.exists() else None
+            except OSError:
+                drift.append(rel)
+                continue
             drifted = current != content
             # Launchers are part of a 0755 contract (the write path chmods them);
             # a mode-only change that drops the executable bit breaks the
@@ -139,8 +149,8 @@ def render_repo(program_id: str, vars_for_repo: dict, repo_root: Path,
                 not drifted
                 and mode is not None
                 and mode & 0o100
-                and dest.exists()
-                and not (dest.stat().st_mode & 0o100)
+                and dest_mode is not None
+                and not (dest_mode & 0o100)
             ):
                 drifted = True
             if drifted:
