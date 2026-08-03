@@ -9,11 +9,13 @@ template-drift.yml workflow.
 from __future__ import annotations
 
 import importlib.util
+import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 import yaml
 
 _HUB = Path(__file__).resolve().parents[1]
@@ -101,6 +103,104 @@ def test_per_repo_vars_substitute_beyond_the_slug(tmp_path):
     dependabot = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
     npm = [u for u in dependabot["updates"] if u["package-ecosystem"] == "npm"]
     assert [u["directory"] for u in npm] == ["/server/frontend"]
+
+
+def test_mode_falls_back_to_the_extension_contract():
+    # The implicit rule the launchers have always relied on.
+    mod = _renderer()
+    assert mod._mode_for("PRII-OVNIS.sh", {}) == 0o755
+    assert mod._mode_for("PRII-OVNIS.command", {}) == 0o755
+    assert mod._mode_for("SECURITY.md", {}) is None
+
+
+def test_declared_mode_accepts_both_yaml_spellings():
+    # YAML 1.1 resolves an unquoted 0755 to the int 493, so a renderer that
+    # always parsed base 8 would raise on the digit 9 and take rendering down
+    # the moment anyone wrote the mode the natural way.
+    mod = _renderer()
+    assert yaml.safe_load("mode: 0755\n")["mode"] == 493  # documents the trap
+    assert mod._mode_for("x", {"mode": 0o755}) == 0o755
+    assert mod._mode_for("x", {"mode": "0755"}) == 0o755
+    assert mod._mode_for("x", {"mode": 0o644}) == 0o644
+
+
+def test_implausible_mode_is_rejected_with_a_usable_message():
+    mod = _renderer()
+    try:
+        mod._mode_for("PRII-OVNIS.app/Contents/MacOS/PRII-OVNIS", {"mode": 0o10000})
+    except SystemExit as exc:
+        assert "permission mask" in str(exc)
+    else:
+        raise AssertionError("expected SystemExit")
+
+
+def test_check_requires_the_owner_execute_bit(tmp_path):
+    # A file left group/other-executable only cannot be run by the owner, so
+    # accepting "any exec bit" would report a broken launcher as matching.
+    # 0700 must still pass: that is what a umask 077 checkout legitimately gives.
+    mod = _renderer()
+    rel = "PRII-OVNIS.app/Contents/MacOS/PRII-OVNIS"
+    target = {
+        "template": "PRII-APP.command",
+        "output": "PRII-{{APP_SLUG}}.app/Contents/MacOS/PRII-{{APP_SLUG}}",
+        "repos": ["ovnis-pr"],
+        "mode": 0o755,
+    }
+    mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], False)
+    dest = tmp_path / rel
+
+    # Owner keeps read (--check has to read the file to compare it) but loses
+    # exec, while group and other keep theirs.
+    dest.chmod(0o455)
+    assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], True) == [rel]
+
+    dest.chmod(0o700)  # umask 077 checkout — owner can run it, not drift
+    assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], True) == []
+
+
+def test_declared_mode_covers_outputs_the_extension_rule_cannot_see(tmp_path):
+    # An executable inside a macOS .app bundle has no suffix, so the extension
+    # rule leaves it 0644 on a first render and --check cannot tell that the app
+    # is broken, because the content still matches. A declared mode fixes both
+    # halves; this exercises them against a synthetic target.
+    mod = _renderer()
+    rel = "PRII-OVNIS.app/Contents/MacOS/PRII-OVNIS"
+    target = {
+        "template": "PRII-APP.command",
+        "output": "PRII-{{APP_SLUG}}.app/Contents/MacOS/PRII-{{APP_SLUG}}",
+        "repos": ["ovnis-pr"],
+        "mode": "0755",
+    }
+    assert mod._mode_for(target["output"], target) == 0o755
+
+    # First render into a tree where the file does not exist yet.
+    assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], False) == []
+    dest = tmp_path / rel
+    assert dest.stat().st_mode & 0o111, "bundle executable rendered non-executable"
+    assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], True) == []
+
+    # Content untouched, exec bit dropped — must be reported as drift.
+    dest.chmod(0o644)
+    assert mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, [target], True) == [rel]
+
+
+@pytest.mark.skipif(os.geteuid() == 0, reason="root bypasses permission bits")
+def test_unreadable_file_is_drift_not_a_crash(tmp_path):
+    # --check has to read a file to compare it. If it cannot, the honest answer
+    # is drift: letting the OSError propagate would abandon the report for every
+    # later file, and under --all every later repo.
+    mod = _renderer()
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    launcher = tmp_path / "PRII-OVNIS.sh"
+    launcher.chmod(0o000)
+    try:
+        drift = mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, _targets(), True)
+    finally:
+        launcher.chmod(0o644)  # so tmp_path cleanup can remove it
+    assert "PRII-OVNIS.sh" in drift
 
 
 def test_unresolved_placeholder_is_detected():
