@@ -1,18 +1,20 @@
 {
-  "schema_version":"1.0.0",
+  "schema_version":"1.1.0",
   "audit_date":"2026-08-04",
   "scoring_method":"simple mean of repository normalized weighted scores; no repository is allowed to substitute its former self-declared percentage",
-  "federation_normalized_score":71.94,
+  "federation_normalized_score":72.00,
+  "prior_federation_normalized_score":71.94,
+  "rebind_reason":"AguaYLuz PR #118 adds exact-head operator verification evidence but remains context_only and unmerged",
   "weights":{"code_completeness":20,"main_branch_availability":15,"ci_enforcement":15,"data_materialization":15,"operator_verification":15,"gui_completeness":10,"federation_readiness":10},
   "repositories":[
     {"order":1,"repository":"jotaele44/thehub-pr","score":69.55,"priority":"high","critical_vector":"isolated authority and final all-main certification"},
     {"order":2,"repository":"jotaele44/centinelas-pr","score":75.35,"priority":"high","critical_vector":"Puerto Rico source tranche and Matter lifecycle"},
-    {"order":3,"repository":"jotaele44/aguayluz-pr","score":81.10,"priority":"critical","critical_vector":"USGS and cave-karst stack reconciliation"},
+    {"order":3,"repository":"jotaele44/aguayluz-pr","score":81.55,"prior_score":81.10,"priority":"critical","critical_vector":"USGS and cave-karst stack reconciliation plus Laguna Cartagena direct-observation gap","score_change":{"dimension":"operator_verification","from":65,"to":68,"reason":"PR #118 exact-head live probe and replay receipts","unchanged_boundaries":["context_only","direct_current_observations=0","current_condition.status=unknown","no automatic leakage finding","no root-cause claim"]}},
     {"order":4,"repository":"jotaele44/ovnis-pr","score":79.90,"priority":"medium","critical_vector":"recurring governed intake and GIS backfill"},
     {"order":5,"repository":"jotaele44/spiderweb-pr","score":70.90,"priority":"high","critical_vector":"offline V2 implementation backlog"},
     {"order":6,"repository":"jotaele44/moneysweep-pr","score":61.70,"priority":"critical","critical_vector":"required-source materialization and production lineage"},
     {"order":7,"repository":"jotaele44/skywatcher-pr","score":65.05,"priority":"critical","critical_vector":"spatial truth, real captures and production export"}
   ],
-  "critical_path":["moneysweep-pr required-source closure","skywatcher-pr spatial-truth operator execution","aguayluz-pr stack reconciliation","thehub-pr final all-main certification"],
+  "critical_path":["moneysweep-pr required-source closure","skywatcher-pr spatial-truth operator execution","aguayluz-pr stack reconciliation and direct current-condition evidence","thehub-pr final all-main certification"],
   "completion_rule":"An item closes only with evidence on main. Open PR, external-data, operator-run, rescue and governance-only states remain separately classified and cannot be collapsed into done."
 }
