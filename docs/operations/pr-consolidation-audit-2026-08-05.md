@@ -118,6 +118,7 @@
 - `spiderweb-pr` #216 -> `bc49875cb6b695186431b7b3eebaaca154f91786`
 - `spiderweb-pr` #122 -> `3c5dd01dbbdfce5dcf12ee95b6623f440488d820`
 - `moneysweep-pr` #420 -> `995194af35a37bda2539eb25a0ee61ed77077f07`; stale Dependabot head `b4700cf7bc2e53cd688d4080487654c41ae18fa3` was refreshed with current `main` into `bf1af444dc63b71b3f15a2d1569b258f155ae6a2`, all 33 refreshed checks passed, required review was approved with local verification notes, and the head branch was auto-deleted after merge.
+- `moneysweep-pr` #423 -> `ab30e34e6307c6bb2782a1573e8d5ec7923af544`; stale Dependabot head `48bce861d1538037a761c6635f781729d48a802f` was refreshed with current `main` into `4518e73c64ad5591f4c184a4975d11befcb834bb`, all 35 refreshed checks passed, required review was approved with local verification notes, and the head branch was auto-deleted after merge.
 
 `spiderweb-pr` dependency queue exhausted on 2026-08-05 after GitHub returned no open `dependabot/*` pull requests; remaining Spiderweb PRs are non-dependency feature or audit branches and require vector review before action.
 
