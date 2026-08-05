@@ -120,7 +120,56 @@
 
 - Reopen federal-records work only as a contract-first replacement vector: canonical schemas, export-manifest enum, validation fixtures, and freeze hash before Hub API/ingest/UI surfaces.
 - Review #161 unified skillpack scope before promotion; lint blocker is resolved in `2880af8`.
-- Dependency queue from this audit pass is exhausted; recreate closed invalid/template-blocked dependency updates only as focused replacement PRs.
+- Hub dependency queue from this audit pass is exhausted; recreate closed invalid/template-blocked dependency updates only as focused replacement PRs.
+
+## Federation Remote Queue Snapshot
+
+Remote inspection on 2026-08-05 found only `thehub-pr` cloned locally under `/Users/jotaele/Documents/GitHub`; producer repositories were inspected read-only through GitHub. No producer branch was deleted or mutated during this snapshot.
+
+| Repository | Open PRs | Draft PRs | Non-draft PRs | Conflicting PRs | Dependabot PRs | Dependabot all-success | Dependabot with failures |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `thehub-pr` | 7 | 7 | 0 | 0 | 0 | 0 | 0 |
+| `spiderweb-pr` | 21 | 10 | 11 | 5 | 9 | 4 | 5 |
+| `moneysweep-pr` | 27 | 8 | 19 | 2 | 9 | 9 | 0 |
+| `skywatcher-pr` | 36 | 21 | 15 | 7 | 10 | 7 | 3 |
+| `ovnis-pr` | 17 | 7 | 10 | 1 | 10 | 5 | 5 |
+| `aguayluz-pr` | 41 | 28 | 13 | 14 | 10 | 0 | 4 |
+| `centinelas-pr` | 24 | 13 | 11 | 2 | 10 | 2 | 8 |
+| `Puerto-Rico-Airspace-Intelligence-Tool` | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+
+Dependency cleanup continues one PR at a time. Treat `SKIPPED,SUCCESS` dependency check sets as requiring manual review before merge, not as all-success. Current low-risk starting candidates are green, mergeable Dependabot PRs with narrow action or package bumps; mixed `FAILURE,SUCCESS` dependency PRs require local reproduction or closure rationale before any merge.
+
+### Producer Dependency Queue
+
+| Repository | PR | State | Checks | Branch | Title |
+| --- | --- | --- | --- | --- | --- |
+| `spiderweb-pr` | #244 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/server/frontend/npm-minor-patch-818eedfb1a` | deps: bump the npm-minor-patch group across 1 directory with 10 updates |
+| `spiderweb-pr` | #217 | MERGEABLE | SUCCESS | `dependabot/github_actions/softprops/action-gh-release-3.0.2` | ci: bump softprops/action-gh-release from 2.6.2 to 3.0.2 |
+| `spiderweb-pr` | #216 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/upload-artifact-7.0.1` | ci: bump actions/upload-artifact from 4.6.2 to 7.0.1 |
+| `spiderweb-pr` | #122 | MERGEABLE | SUCCESS | `dependabot/pip/praw-gte-7.8.1-and-lt-9` | Update praw requirement from <8,>=7.8.1 to >=7.8.1,<9 |
+| `moneysweep-pr` | #433 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/dashboard/npm-minor-patch-18fb5ab90d` | deps: bump the npm-minor-patch group across 1 directory with 10 updates |
+| `moneysweep-pr` | #424 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/setup-python-7.0.0` | ci: bump actions/setup-python from 5.6.0 to 7.0.0 |
+| `moneysweep-pr` | #423 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/upload-artifact-7.0.1` | ci: bump actions/upload-artifact from 4.6.2 to 7.0.1 |
+| `moneysweep-pr` | #422 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/setup-node-7.0.0` | ci: bump actions/setup-node from 4.4.0 to 7.0.0 |
+| `moneysweep-pr` | #421 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/checkout-7.0.1` | ci: bump actions/checkout from 4 to 7 |
+| `moneysweep-pr` | #420 | MERGEABLE | SUCCESS | `dependabot/github_actions/softprops/action-gh-release-3.0.2` | ci: bump softprops/action-gh-release from 2.6.2 to 3.0.2 |
+| `moneysweep-pr` | #419 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/dashboard/react-router-dom-7.18.1` | deps: bump react-router-dom from 6.30.4 to 7.18.2 in /dashboard |
+| `moneysweep-pr` | #418 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/dashboard/recharts-3.10.1` | deps: bump recharts from 2.15.4 to 3.10.1 in /dashboard |
+| `moneysweep-pr` | #417 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/dashboard/multi-287cc95123` | deps: bump react-dom and @types/react-dom in /dashboard |
+| `skywatcher-pr` | #117 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/upload-artifact-7.0.1` | ci: bump actions/upload-artifact from 4.6.2 to 7.0.1 |
+| `skywatcher-pr` | #116 | MERGEABLE | SUCCESS | `dependabot/github_actions/softprops/action-gh-release-3.0.2` | ci: bump softprops/action-gh-release from 2.6.2 to 3.0.2 |
+| `skywatcher-pr` | #115 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/setup-node-7.0.0` | ci: bump actions/setup-node from 4.4.0 to 7.0.0 |
+| `skywatcher-pr` | #114 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/frontend/globals-17.8.0` | deps: bump globals from 15.15.0 to 17.8.0 in /frontend |
+| `skywatcher-pr` | #113 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/frontend/types/node-26.1.2` | deps: bump @types/node from 22.19.11 to 26.1.2 in /frontend |
+| `skywatcher-pr` | #112 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/frontend/react-router-dom-7.18.1` | deps: bump react-router-dom from 6.30.3 to 7.18.1 in /frontend |
+| `skywatcher-pr` | #111 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/frontend/npm-minor-patch-5a8adfe954` | deps: bump the npm-minor-patch group across 1 directory with 34 updates |
+| `ovnis-pr` | #56 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/dashboard/react-router-dom-7.18.1` | deps: bump react-router-dom from 6.30.4 to 7.18.1 in /dashboard |
+| `ovnis-pr` | #55 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/dashboard/npm-minor-patch-96a45a33d9` | deps: bump the npm-minor-patch group across 1 directory with 31 updates |
+| `ovnis-pr` | #52 | MERGEABLE | SUCCESS | `dependabot/github_actions/peter-evans/create-pull-request-8.1.1` | ci: bump peter-evans/create-pull-request from 6.1.0 to 8.1.1 |
+| `ovnis-pr` | #51 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/setup-node-7.0.0` | ci: bump actions/setup-node from 4.4.0 to 7.0.0 |
+| `ovnis-pr` | #50 | MERGEABLE | SUCCESS | `dependabot/github_actions/softprops/action-gh-release-3.0.2` | ci: bump softprops/action-gh-release from 2.6.2 to 3.0.2 |
+| `centinelas-pr` | #81 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/frontend/npm-minor-patch-6737f648b8` | deps: bump the npm-minor-patch group across 1 directory with 8 updates |
+| `centinelas-pr` | #60 | MERGEABLE | SUCCESS | `dependabot/github_actions/softprops/action-gh-release-3.0.2` | ci: bump softprops/action-gh-release from 2.6.2 to 3.0.2 |
 
 ## Branch Retirement Audit
 
