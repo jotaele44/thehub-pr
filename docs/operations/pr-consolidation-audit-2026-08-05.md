@@ -35,16 +35,16 @@
 | #134 | agent/federation-branding-ui-setup-v0-1 | DOCTRINE_BLOCKED_CLOSE | Branding/UI/desktop app scope; conflicting; backend readiness not clean. | CLOSED 2026-08-05 with sequencing rationale; branch retained. |
 | #131 | claude/federation-ui-operations-z0n1fc | MERGE_CANDIDATE | Operator-certification support: macOS runbook, certification default URL, receipt key-path expansion, manager host, and tests; no schema/UI-first product expansion. | Keep open; refresh current-head CI before merge because last checks are from 2026-07-28. |
 | #126 | agent/federation-design-system-foundation-v0-2 | DOCTRINE_BLOCKED_CLOSE | Design-system scope; conflicting; backend readiness not clean. | CLOSED 2026-08-05 with sequencing rationale; branch retained. |
-| #113 | dependabot/npm_and_yarn/server/frontend/testing-library/jest-dom-7.0.0 | DEPENDENCY_QUEUE | Frontend dependency bump. | Defer; handle one dependency PR at a time. |
-| #112 | dependabot/npm_and_yarn/server/frontend/multi-287cc95123 | DEPENDENCY_QUEUE | Frontend dependency bump. | Defer; handle one dependency PR at a time. |
+| #113 | dependabot/npm_and_yarn/server/frontend/testing-library/jest-dom-7.0.0 | DEPENDENCY_QUEUE | Frontend dependency bump; checks passing. | Defer; handle one dependency PR at a time after workflow-action queue. |
+| #112 | dependabot/npm_and_yarn/server/frontend/multi-287cc95123 | INVALID_DEPENDENCY_CLOSE | `npm ci` fails with ERESOLVE: `@types/react-dom@19.x` requires `@types/react@19.x` while the project remains on React 18 typings. | CLOSED 2026-08-05; recreate only as coordinated React type/runtime upgrade. |
 | #111 | dependabot/npm_and_yarn/server/frontend/vitest-4.1.10 | DEPENDENCY_QUEUE | Frontend dependency bump. | Defer; handle one dependency PR at a time. |
 | #110 | dependabot/npm_and_yarn/server/frontend/recharts-3.10.1 | DEPENDENCY_QUEUE | Frontend dependency bump. | Defer; handle one dependency PR at a time. |
 | #109 | dependabot/npm_and_yarn/server/frontend/npm-minor-patch-60a0483391 | DEPENDENCY_QUEUE | Grouped frontend dependency bump. | Defer; handle after smaller dependency PRs. |
-| #108 | dependabot/github_actions/actions/setup-python-7.0.0 | DEPENDENCY_QUEUE | GitHub Actions dependency bump; some tests failing. | Defer until failing checks are understood. |
+| #108 | dependabot/github_actions/actions/setup-python-7.0.0 | TEMPLATE_SYNC_REQUIRED_CLOSE | Failing tests prove generated workflow drift: `.github/workflows/pip-audit.yml`. | CLOSED 2026-08-05; replace with template-aware setup-python bump. |
 | #107 | dependabot/github_actions/actions/upload-artifact-7.0.1 | DEPENDENCY_QUEUE | GitHub Actions dependency bump. | Defer; handle one dependency PR at a time. |
-| #106 | dependabot/github_actions/gitleaks/gitleaks-action-3.0.0 | DEPENDENCY_QUEUE | GitHub Actions dependency bump; tests failing. | Defer until failing checks are understood. |
-| #105 | dependabot/github_actions/softprops/action-gh-release-3.0.2 | DEPENDENCY_QUEUE | GitHub Actions dependency bump; build checks failing. | Defer until failing checks are understood. |
-| #104 | dependabot/github_actions/actions/github-script-9.0.0 | DEPENDENCY_QUEUE | Small GitHub Actions dependency bump. | Defer; likely first dependency merge candidate after readiness queue. |
+| #106 | dependabot/github_actions/gitleaks/gitleaks-action-3.0.0 | TEMPLATE_SYNC_REQUIRED_CLOSE | Failing tests prove generated workflow drift: `.github/workflows/secret-scan.yml`. | CLOSED 2026-08-05; replace with template-aware gitleaks-action bump. |
+| #105 | dependabot/github_actions/softprops/action-gh-release-3.0.2 | BLOCKED_DEPENDENCY_CLOSE | Desktop build fails before release publication: packaged app raises `ModuleNotFoundError: No module named 'jsonschema'`. | CLOSED 2026-08-05; recreate after desktop packaging dependency is fixed. |
+| #104 | dependabot/github_actions/actions/github-script-9.0.0 | MERGED_DEPENDENCY | One-file scheduled MCP drift workflow action pin; checks passing; no v9-incompatible `@actions/github` require pattern. | MERGED 2026-08-05 as `b39df272d5e9`; GitHub auto-deleted the Dependabot head branch. |
 | #100 | codex/federal-records-contracts-v1 | REPLACEMENT_REQUIRED_CLOSE | Unique federal-records contract intent, but branch is conflicting and mixes schemas, Hub registration, MCP/API, ingest tooling, tests, and frontend routes. | CLOSED 2026-08-05; branch retained; replace with contract-first vector before any API/UI work. |
 | #98 | audit/road-to-100-normalization-v0-2 | MERGE_CANDIDATE | Mergeable draft; governance normalization docs; checks passing. | Keep open; reconcile ordering with #160. |
 | #94 | codex/federation-manager-foundation-v0-3 | SUPERSEDED_CLOSE | Main contains the manager foundation via commit `25c0fe6` and later split hardening modules. | CLOSED 2026-08-05; branch retained. |
@@ -58,6 +58,8 @@
 - File inspection showed #131 contains operator certification and backend receipt/manager-host changes, so it is promoted to merge candidate rather than treated as UI-only.
 - #94 is superseded by mainline commit `25c0fe6` plus later manager hardening modules.
 - #100 has unique federal-records contract intent, but was closed because it combines contract, API, ingest, test, and UI work in one conflicting branch; salvage requires a fresh contract-first vector.
+- #104 was merged as the first dependency-queue item; branch deletion was automatic GitHub cleanup, not an explicit branch-deletion operation.
+- #112 is invalid against the current React 18 type stack; #108 and #106 require template-aware replacements; #105 is blocked by desktop packaging missing `jsonschema`.
 - UI-first closures are reversible and do not delete branches.
 
 ## Closures Completed In This Pass
@@ -72,9 +74,17 @@
 - #155
 - #94
 - #100
+- #112
+- #108
+- #106
+- #105
+
+## Dependency Merges Completed In This Pass
+
+- #104 -> `b39df272d5e9`
 
 ## Deferred Actions
 
 - Reopen federal-records work only as a contract-first replacement vector: canonical schemas, export-manifest enum, validation fixtures, and freeze hash before Hub API/ingest/UI surfaces.
 - Review #161 unified skillpack scope before promotion; lint blocker is resolved in `2880af8`.
-- Process dependency PRs after readiness/governance queue is stable.
+- Process remaining green dependency PRs one at a time: #107, #113, #111, #110, then #109 only after the smaller frontend dependency bumps are resolved.
