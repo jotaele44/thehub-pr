@@ -113,7 +113,7 @@
 
 ## Branch Retirement Audit
 
-Current remote branch count after fetch/prune: 31 including `main`.
+Current remote branch count before explicit branch deletion: 31 including `main`.
 
 | Branch | PR state | Retirement category | Action |
 | --- | --- | --- | --- |
@@ -146,5 +146,7 @@ Current remote branch count after fetch/prune: 31 including `main`.
 | `gpt/patch-intsys-p0-gaps` | #23 closed | CLOSED_PR_RETAINED | Retain per closure comment. |
 | `main` | default branch | PROTECTED | Retain. |
 | `prii-pr-consolidation-audit` | #162 open | ACTIVE_PR | Retain. |
-| `security/semgrep-rollout-v1` | #74 merged | SAFE_DELETE_MERGED | Delete remote branch after audit update. |
+| `security/semgrep-rollout-v1` | #74 merged | SAFE_DELETE_MERGED | DELETED 2026-08-05 after audit update. |
 | `semgrep-pre-rebase-8b877ffe` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain as likely pre-rebase recovery branch. |
+
+Remote branch count after explicit branch deletion: 30 including `main`.
