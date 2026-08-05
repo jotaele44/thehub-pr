@@ -2,6 +2,16 @@ name: Federation Ontology CI
 
 on:
   workflow_dispatch:
+  push:
+    branches: ["ontology/federation-canon-v0-1"]
+    paths:
+      - "federation/ontology/**"
+      - "tools/ontology/**"
+      - "schemas/common/lineage.schema.json"
+      - "tests/test_ontology_*.py"
+      - ".github/CODEOWNERS"
+      - "federation-templates/baseline/CODEOWNERS"
+      - ".github/workflows/ontology-ci.yml"
   pull_request:
     branches: [main]
     paths:
