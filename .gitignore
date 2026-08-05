@@ -221,9 +221,12 @@ __marimo__/
 .DS_Store
 .remember/
 
-# generated aggregate outputs (keep the dir, not its contents)
-data/aggregate/*.jsonl
-data/aggregate/graph_summary.json
+# The committed bounded fixture lives in data/aggregate (see data/fixture.json
+# and scripts/build_hub_fixture.py). It is deliberately tracked: ignoring it is
+# why the hub shipped with an empty data directory and most of its pages
+# rendered nothing. Text and diffable, so a regeneration is reviewable.
+# A full unbounded aggregate is 77 MB and stays out of the repo — regenerate it
+# locally with `make aggregate` when you need the real corpus.
 
 # generated federation maintenance rollup (audit artifact, not committed)
 reports/federation_maintenance/
@@ -236,3 +239,19 @@ server/frontend/node_modules/
 server/frontend/export-standalone/
 server/frontend/.env.local
 server/frontend/dist/
+
+# The Python `lib/` rule above (build artifacts) unintentionally matches the
+# frontend's client-logic layer. That is source, not a build dir — keep it.
+!server/frontend/src/lib/
+!server/frontend/src/lib/**
+
+# Desktop wrapper (see desktop/README.md)
+.venv/
+server/frontend/node_modules/
+server/frontend/export-standalone/
+desktop/.setup-complete
+!desktop/pyinstaller.spec
+dist-desktop/
+build/
+desktop/.running
+dist-smoke/

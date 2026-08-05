@@ -1,48 +1,67 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* Fonts are self-hosted via @fontsource (imported in main.jsx) — no third-party
+   font request, keeping first paint and offline builds clean. */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Theme-independent tokens (radius + font stacks) live on :root so they apply
+     in both themes. Color tokens are defined per-theme: :root = light (default),
+     .dark = dark. The ThemeProvider toggles the `.dark` class AND `data-theme`
+     so both Tailwind (darkMode:["class"]) and the shared federation.css agree. */
   :root {
-    --background: 222 18% 7%;
-    --foreground: 210 20% 92%;
-    --card: 223 17% 11%;
-    --card-foreground: 210 20% 92%;
-    --popover: 223 17% 11%;
-    --popover-foreground: 210 20% 92%;
-    --primary: 210 20% 92%;
-    --primary-foreground: 222 18% 7%;
-    --secondary: 223 15% 16%;
-    --secondary-foreground: 210 20% 92%;
-    --muted: 223 15% 16%;
-    --muted-foreground: 215 14% 55%;
-    --accent: 223 15% 18%;
-    --accent-foreground: 210 20% 92%;
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 223 14% 18%;
-    --input: 223 14% 18%;
-    --ring: 217 60% 60%;
-    --chart-1: 217 70% 60%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 38 90% 58%;
-    --chart-4: 270 60% 65%;
-    --chart-5: 200 80% 60%;
     --radius: 0.5rem;
-    --font-heading: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
-    --sidebar-background: 224 20% 9%;
-    --sidebar-foreground: 215 16% 65%;
-    --sidebar-primary: 217 70% 60%;
+
+    /* Light theme */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 226.7 94.2% 33.9%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 40%;
+    --accent: 220 100% 96%;
+    --accent-foreground: 226.7 94.2% 33.9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
+    --ring: 226.7 94.2% 33.9%;
+    --chart-1: 226.7 94.2% 42%;
+    --chart-2: 160 70% 36%;
+    --chart-3: 38 92% 45%;
+    --chart-4: 270 60% 55%;
+    --chart-5: 200 80% 45%;
+    --sidebar-background: 210 40% 98%;
+    --sidebar-foreground: 215 16% 40%;
+    --sidebar-primary: 226.7 94.2% 33.9%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 223 15% 15%;
-    --sidebar-accent-foreground: 210 20% 92%;
-    --sidebar-border: 223 14% 15%;
-    --sidebar-ring: 217 60% 60%;
+    --sidebar-accent: 220 100% 96%;
+    --sidebar-accent-foreground: 226.7 94.2% 33.9%;
+    --sidebar-border: 214 32% 88%;
+    --sidebar-ring: 226.7 94.2% 33.9%;
+
+    /* Semantic status tokens. `-fg` is the readable text tone (darker on light),
+       the base is used for tinted bg/border. */
+    --status-danger: 0 84% 60%;      --status-danger-fg: 0 74% 42%;
+    --status-success: 160 84% 39%;   --status-success-fg: 161 84% 26%;
+    --status-warning: 37 92% 50%;    --status-warning-fg: 32 81% 36%;
+    --status-info: 199 89% 48%;      --status-info-fg: 201 90% 34%;
+    --status-neutral: 215 16% 47%;   --status-neutral-fg: 215 25% 30%;
+    --status-process: 258 90% 66%;   --status-process-fg: 259 60% 48%;
+    --status-tier: 173 80% 40%;      --status-tier-fg: 174 84% 26%;
+    --status-caution: 45 93% 47%;    --status-caution-fg: 32 81% 36%;
+    --status-elevated: 25 95% 53%;   --status-elevated-fg: 21 90% 42%;
   }
 
   .dark {
@@ -52,27 +71,43 @@
     --card-foreground: 210 20% 92%;
     --popover: 223 17% 11%;
     --popover-foreground: 210 20% 92%;
-    --primary: 210 20% 92%;
-    --primary-foreground: 222 18% 7%;
+    --primary: 220.7 100% 71.4%;
+    --primary-foreground: 226 75% 10%;
     --secondary: 223 15% 16%;
     --secondary-foreground: 210 20% 92%;
     --muted: 223 15% 16%;
     --muted-foreground: 215 14% 55%;
-    --accent: 223 15% 18%;
-    --accent-foreground: 210 20% 92%;
+    --accent: 225 35% 18%;
+    --accent-foreground: 220 100% 86%;
     --destructive: 0 70% 55%;
     --destructive-foreground: 210 20% 98%;
     --border: 223 14% 18%;
     --input: 223 14% 18%;
-    --ring: 217 60% 60%;
+    --ring: 220.7 100% 71.4%;
+    --chart-1: 220.7 100% 71.4%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 38 90% 58%;
+    --chart-4: 270 60% 65%;
+    --chart-5: 200 80% 60%;
     --sidebar-background: 224 20% 9%;
     --sidebar-foreground: 215 16% 65%;
-    --sidebar-primary: 217 70% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 223 15% 15%;
-    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-primary: 220.7 100% 71.4%;
+    --sidebar-primary-foreground: 226 75% 10%;
+    --sidebar-accent: 225 35% 18%;
+    --sidebar-accent-foreground: 220 100% 86%;
     --sidebar-border: 223 14% 15%;
-    --sidebar-ring: 217 60% 60%;
+    --sidebar-ring: 220.7 100% 71.4%;
+
+    /* Dark status tones — `-fg` is the lighter text tone for dark surfaces. */
+    --status-danger: 0 84.2% 60.2%;    --status-danger-fg: 0 93.5% 81.8%;
+    --status-success: 160.1 84.1% 39.4%; --status-success-fg: 156.2 71.6% 66.9%;
+    --status-warning: 37.7 92.1% 50.2%;  --status-warning-fg: 45.9 96.7% 64.5%;
+    --status-info: 198.6 88.7% 48.4%;    --status-info-fg: 199.4 95.5% 73.9%;
+    --status-neutral: 215.4 16.3% 46.9%; --status-neutral-fg: 212.7 26.8% 83.9%;
+    --status-process: 258.3 89.5% 66.3%; --status-process-fg: 252.5 94.7% 85.1%;
+    --status-tier: 173.4 80.4% 40%;      --status-tier-fg: 170.6 76.9% 64.3%;
+    --status-caution: 45.4 93.4% 47.5%;  --status-caution-fg: 50.4 97.8% 63.5%;
+    --status-elevated: 24.6 95% 53.1%;   --status-elevated-fg: 30.7 97.2% 72.4%;
   }
 }
 
@@ -93,5 +128,18 @@
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(223 14% 20%); border-radius: 6px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(223 14% 26%); }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
+
+/* Respect the user's reduced-motion preference: neutralize spinners, pulses,
+   and transitions app-wide (WCAG 2.2 — no continuous/large motion). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

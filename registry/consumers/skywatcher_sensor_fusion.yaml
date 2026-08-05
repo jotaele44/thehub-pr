@@ -1,0 +1,16 @@
+consumer_id: skywatcher_sensor_fusion
+producer_id: skywatcher-pr
+consumer_repo: thehub-pr
+source_export: outputs/federation/thehub_sensor_fusion_analytics.json
+schema: schemas/skywatcher_sensor_fusion_analytics.schema.json
+contract: sensor_fusion_analytics_v1
+dashboard_surface: data/dashboard/skywatcher_sensor_fusion.json
+operator_use: review_context_only
+guardrails:
+  live_tracking: false
+  operational_cueing: false
+  context_only: true
+validation:
+  command: python scripts/ingest_skywatcher_sensor_fusion.py --input <export-json>
+  tests:
+    - tests/test_skywatcher_sensor_fusion_consumer.py

@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "project_mcp_manifest.schema.json",
+  "title": "Project MCP Manifest",
+  "description": "Declares the MCP capabilities a project repo requires. TheHub's capability registry and validators are the authority on what each capability grants.",
+  "type": "object",
+  "required": ["project", "inherits", "capabilities", "write_policy"],
+  "additionalProperties": false,
+  "properties": {
+    "project": {
+      "type": "string",
+      "enum": [
+        "thehub",
+        "skywatcher",
+        "ovnis",
+        "spiderweb",
+        "centinelas",
+        "moneysweep",
+        "aguayluz"
+      ]
+    },
+    "inherits": {
+      "type": "array",
+      "items": {"type": "string"},
+      "minItems": 1
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "write_policy": {
+      "type": "object",
+      "required": ["default"],
+      "additionalProperties": false,
+      "properties": {
+        "default": {
+          "type": "string",
+          "enum": ["read_only", "gated_write", "write_disabled"]
+        },
+        "allowed_writes": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  }
+}

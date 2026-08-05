@@ -1,0 +1,20 @@
+# MCP manifest — Skywatcher (Air/SATIM/RLSM)
+# Declares capabilities only; TheHub's capability registry and validators
+# are the source of truth for what each capability means and permits.
+project: skywatcher
+
+inherits:
+  - federation-core
+  - github-bridge
+  - provenance
+
+capabilities:
+  - geospatial
+  - terrain
+  - flight
+  - weather
+  - satellite
+
+write_policy:
+  default: read_only
+  allowed_writes: []

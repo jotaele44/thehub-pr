@@ -1,0 +1,19 @@
+# MCP manifest — Spiderweb (infrastructure/GIS)
+# Declares capabilities only; TheHub's capability registry and validators
+# are the source of truth for what each capability means and permits.
+project: spiderweb
+
+inherits:
+  - federation-core
+  - github-bridge
+  - provenance
+
+capabilities:
+  - geospatial
+  - regulations
+  - parcels
+  - routing
+
+write_policy:
+  default: read_only
+  allowed_writes: []

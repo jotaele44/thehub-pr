@@ -15,10 +15,10 @@ const ANOMALY_CLOSED = ["Rejected", "FalsePositive"];
 const RISK_CLOSED = ["Mitigated", "Archived"];
 
 function heatClass(ratio) {
-  if (ratio >= 0.8) return "bg-red-500/80 text-white";
-  if (ratio >= 0.55) return "bg-orange-500/70 text-white";
-  if (ratio >= 0.3) return "bg-amber-500/60 text-slate-900";
-  if (ratio > 0) return "bg-yellow-500/40 text-slate-900";
+  if (ratio >= 0.8) return "bg-status-danger/80 text-white";
+  if (ratio >= 0.55) return "bg-status-elevated/70 text-white";
+  if (ratio >= 0.3) return "bg-status-warning/60 text-slate-900";
+  if (ratio > 0) return "bg-status-caution/40 text-slate-900";
   return "bg-secondary text-muted-foreground";
 }
 
@@ -59,7 +59,7 @@ export default function RiskHeatmap() {
   return (
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="flex items-center gap-2 mb-1">
-        <Flame className="h-4 w-4 text-orange-300" />
+        <Flame className="h-4 w-4 text-status-elevated-fg" />
         <h3 className="text-sm font-semibold">Municipality Risk Heatmap</h3>
       </div>
       <p className="text-xs text-muted-foreground mb-4">
@@ -94,10 +94,10 @@ export default function RiskHeatmap() {
       {ranked.length > 0 && (
         <div className="flex items-center gap-3 mt-4 text-[11px] text-muted-foreground">
           <span>Intensity:</span>
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-yellow-500/40" /> low</span>
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-amber-500/60" /> moderate</span>
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-orange-500/70" /> elevated</span>
-          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-500/80" /> high</span>
+          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-status-caution/40" /> low</span>
+          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-status-warning/60" /> moderate</span>
+          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-status-elevated/70" /> elevated</span>
+          <span className="inline-flex items-center gap-1"><span className="w-3 h-3 rounded bg-status-danger/80" /> high</span>
         </div>
       )}
     </div>

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub.local/schemas/release-manifest-v1.json",
+  "title": "PRII Signed Release Catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "catalogVersion", "generatedAt", "signingKeyId", "apps", "signature"],
+  "properties": {
+    "schemaVersion": {"const": "prii-release-catalog-v1"},
+    "catalogVersion": {"type": "integer", "minimum": 1},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "signingKeyId": {"type": "string", "minLength": 8},
+    "apps": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {"$ref": "#/$defs/app"},
+      "allOf": [
+        {"contains": {"properties": {"appId": {"const": "thehub"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "ovnis"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "centinelas"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "skywatcher"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "aguayluz"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "spiderweb"}}}, "minContains": 1, "maxContains": 1},
+        {"contains": {"properties": {"appId": {"const": "moneysweep"}}}, "minContains": 1, "maxContains": 1}
+      ]
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "value"],
+      "properties": {
+        "algorithm": {"const": "ed25519"},
+        "value": {"type": "string", "minLength": 32}
+      }
+    }
+  },
+  "$defs": {
+    "app": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["appId", "displayName", "version", "sourceCommit", "channel", "artifacts", "compatibility"],
+      "properties": {
+        "appId": {"enum": ["thehub", "ovnis", "centinelas", "skywatcher", "aguayluz", "spiderweb", "moneysweep"]},
+        "displayName": {"enum": ["TheHub", "OVNIS", "Centinelas", "Skywatcher", "AguaYLuz", "Spiderweb", "MoneySweep"]},
+        "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$"},
+        "sourceCommit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "channel": {"enum": ["stable", "beta", "developer"]},
+        "artifacts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/artifact"}},
+        "compatibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["manager", "federationContract"],
+          "properties": {
+            "manager": {"type": "string"},
+            "thehub": {"type": "string"},
+            "federationContract": {"type": "string"}
+          }
+        }
+      },
+      "allOf": [
+        {"if": {"properties": {"appId": {"const": "thehub"}}}, "then": {"properties": {"displayName": {"const": "TheHub"}}}},
+        {"if": {"properties": {"appId": {"const": "ovnis"}}}, "then": {"properties": {"displayName": {"const": "OVNIS"}}}},
+        {"if": {"properties": {"appId": {"const": "centinelas"}}}, "then": {"properties": {"displayName": {"const": "Centinelas"}}}},
+        {"if": {"properties": {"appId": {"const": "skywatcher"}}}, "then": {"properties": {"displayName": {"const": "Skywatcher"}}}},
+        {"if": {"properties": {"appId": {"const": "aguayluz"}}}, "then": {"properties": {"displayName": {"const": "AguaYLuz"}}}},
+        {"if": {"properties": {"appId": {"const": "spiderweb"}}}, "then": {"properties": {"displayName": {"const": "Spiderweb"}}}},
+        {"if": {"properties": {"appId": {"const": "moneysweep"}}}, "then": {"properties": {"displayName": {"const": "MoneySweep"}}}}
+      ]
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["os", "arch", "format", "url", "size", "sha256", "signature"],
+      "properties": {
+        "os": {"enum": ["macos", "windows", "linux"]},
+        "arch": {"enum": ["x86_64", "arm64", "universal2"]},
+        "format": {"enum": ["dmg", "pkg", "msix", "exe", "zip", "appimage", "deb", "tar.zst"]},
+        "url": {"type": "string", "format": "uri", "pattern": "^https://"},
+        "size": {"type": "integer", "minimum": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "signature": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["algorithm", "value"],
+          "properties": {
+            "algorithm": {"enum": ["ed25519", "authenticode", "apple-codesign"]},
+            "value": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    }
+  }
+}

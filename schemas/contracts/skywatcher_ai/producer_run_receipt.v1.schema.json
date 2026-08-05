@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/schemas/contracts/skywatcher_ai/producer_run_receipt.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "producer_run_receipt_id",
+    "run_id",
+    "job_spec_id",
+    "job_spec_sha256",
+    "run_report_sha256",
+    "producer_package_id",
+    "package_sha256",
+    "outcome",
+    "reason_codes",
+    "authorization_reference",
+    "audit_event_reference",
+    "signature",
+    "h05_egress_verified",
+    "input_accounting",
+    "output_accounting",
+    "output_failures",
+    "resource_accounting",
+    "complete_accounting",
+    "completed_at",
+    "secret_material_serialized",
+    "worker_execution_performed_by_this_module",
+    "provider_execution_performed",
+    "model_execution_performed",
+    "active_snapshot_promoted",
+    "runtime_query_answered"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "producer_run_receipt.v1"
+    },
+    "producer_run_receipt_id": {
+      "type": "string",
+      "pattern": "^producer-run-sha256-[0-9a-f]{64}$"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "job_spec_id": {
+      "type": "string",
+      "pattern": "^producer-job-sha256-[0-9a-f]{64}$"
+    },
+    "job_spec_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "run_report_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "producer_package_id": {
+      "type": "string",
+      "pattern": "^producer-package-sha256-[0-9a-f]{64}$"
+    },
+    "package_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "outcome": {
+      "enum": [
+        "SUCCEEDED",
+        "PARTIAL",
+        "FAILED"
+      ]
+    },
+    "reason_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "authorization_reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "audit_event_reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verified",
+        "signer_id",
+        "scheme"
+      ],
+      "properties": {
+        "verified": {
+          "const": true
+        },
+        "signer_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scheme": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "h05_egress_verified": {
+      "type": "boolean"
+    },
+    "input_accounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expected",
+        "processed",
+        "excluded",
+        "failed",
+        "complete",
+        "processed_inputs",
+        "excluded_inputs",
+        "failed_inputs"
+      ],
+      "properties": {
+        "expected": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "processed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excluded": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "complete": {
+          "type": "boolean"
+        },
+        "processed_inputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "excluded_inputs": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "failed_inputs": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "output_accounting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "declared_outputs",
+        "verified_outputs",
+        "declared_failures",
+        "verification_failures",
+        "complete"
+      ],
+      "properties": {
+        "required": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "declared_outputs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verified_outputs": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "declared_failures": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "verification_failures": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "complete": {
+          "type": "boolean"
+        }
+      }
+    },
+    "output_failures": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "resource_accounting": {
+      "type": "object"
+    },
+    "complete_accounting": {
+      "type": "boolean"
+    },
+    "completed_at": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/timestamp"
+    },
+    "secret_material_serialized": {
+      "const": false
+    },
+    "worker_execution_performed_by_this_module": {
+      "const": false
+    },
+    "provider_execution_performed": {
+      "const": false
+    },
+    "model_execution_performed": {
+      "const": false
+    },
+    "active_snapshot_promoted": {
+      "const": false
+    },
+    "runtime_query_answered": {
+      "const": false
+    }
+  }
+}

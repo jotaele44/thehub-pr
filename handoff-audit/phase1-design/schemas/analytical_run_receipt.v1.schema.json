@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/analytical_run_receipt/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "DESIGN_DRAFT — not installed, not frozen",
+  "title": "Analytical Run Receipt",
+  "description": "Immutable receipt capturing exactly how an answer was produced, for reproducibility and audit. Cache keys derive from this receipt (snapshot + policy + profile + model + prompt + tenant).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "snapshot_id", "retrieval_profile", "provider_config", "evidence_ids", "access_context", "created_at"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "snapshot_id": {"type": "string", "pattern": "^snap_[0-9a-f]{16,64}$"},
+    "retrieval_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "weights", "hyde_enabled"],
+      "properties": {
+        "profile_id": {"type": "string"},
+        "weights": {"type": "object", "additionalProperties": {"type": "number"}, "description": "Logged, explicit weights — never fixed/hidden."},
+        "hyde_enabled": {"const": false, "description": "HyDE disabled by default; an opt-in experimental run would set this true and MUST log a non-HyDE baseline alongside."}
+      }
+    },
+    "provider_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "llm": {"type": ["object", "null"], "description": "null for no-LLM structured/exact-ID runs."},
+        "embedding": {"type": ["object", "null"]},
+        "reranker": {"type": ["object", "null"]},
+        "model_id": {"type": ["string", "null"]},
+        "prompt_version": {"type": ["string", "null"]}
+      }
+    },
+    "evidence_ids": {"type": "array", "items": {"type": "string"}},
+    "access_context": {"$ref": "https://thehub-pr/contracts/access_classification/v1"},
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "x-invariants": [
+    "Exact-ID and structured search MUST succeed with llm == null (no LLM dependency for structured search).",
+    "No model context may bypass access policy: access_context governs which evidence_ids may enter the prompt."
+  ]
+}

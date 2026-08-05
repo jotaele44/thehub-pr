@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const colors = require("tailwindcss/colors");
+
 module.exports = {
     darkMode: ["class"],
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
@@ -59,6 +61,26 @@ module.exports = {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
+  			},
+  			status: {
+  				danger: { DEFAULT: 'hsl(var(--status-danger))', fg: 'hsl(var(--status-danger-fg))' },
+  				success: { DEFAULT: 'hsl(var(--status-success))', fg: 'hsl(var(--status-success-fg))' },
+  				warning: { DEFAULT: 'hsl(var(--status-warning))', fg: 'hsl(var(--status-warning-fg))' },
+  				info: { DEFAULT: 'hsl(var(--status-info))', fg: 'hsl(var(--status-info-fg))' },
+  				neutral: { DEFAULT: 'hsl(var(--status-neutral))', fg: 'hsl(var(--status-neutral-fg))' },
+  				process: { DEFAULT: 'hsl(var(--status-process))', fg: 'hsl(var(--status-process-fg))' },
+  				tier: { DEFAULT: 'hsl(var(--status-tier))', fg: 'hsl(var(--status-tier-fg))' },
+  				caution: { DEFAULT: 'hsl(var(--status-caution))', fg: 'hsl(var(--status-caution-fg))' },
+  				elevated: { DEFAULT: 'hsl(var(--status-elevated))', fg: 'hsl(var(--status-elevated-fg))' }
+  			},
+  			fed: {
+  				controlplane: { DEFAULT: colors.slate[500], dot: colors.slate[300], fg: colors.slate[300] },
+  				networkgraph: { DEFAULT: colors.violet[500], dot: colors.violet[400], fg: colors.violet[300] },
+  				uap: { DEFAULT: colors.lime[500], dot: colors.lime[400], fg: colors.lime[300] },
+  				infrastructure: { DEFAULT: colors.teal[500], dot: colors.teal[400], fg: colors.teal[300] },
+  				contracts: { DEFAULT: colors.emerald[500], dot: colors.emerald[400], fg: colors.emerald[300] },
+  				airspace: { DEFAULT: colors.sky[500], dot: colors.sky[400], fg: colors.sky[300] },
+  				signals: { DEFAULT: colors.orange[500], dot: colors.orange[400], fg: colors.orange[300] }
   			}
   		},
   		fontFamily: {

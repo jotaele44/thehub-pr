@@ -70,7 +70,9 @@ export default function Skywatcher() {
           <EntityLedger entityName="AirspaceEvents" fields={eventFields} columns={eventColumns}
             searchKeys={["title", "event_id", "municipality"]}
             filterDefs={[{ key: "event_type", label: "Type", options: EVENT_TYPES }, { key: "status", label: "Status", options: ["New", "Reviewing", "Correlated", "RuledOut", "Archived"] }]}
-            addLabel="New Event" emptyTitle="No events" searchPlaceholder="Search events…" />
+            addLabel="New Event" emptyTitle="No events"
+            emptyDescription="Skywatcher-PR's current export is synthetic-only — real events populate once it ships a live FR24 capture."
+            searchPlaceholder="Search events…" />
         </TabsContent>
         <TabsContent value="map">
           <ModuleMapTab
@@ -88,7 +90,9 @@ export default function Skywatcher() {
           <EntityLedger entityName="CorrelationReviews" fields={corrFields} columns={corrColumns}
             searchKeys={["review_id", "airspace_event_id", "rationale"]}
             filterDefs={[{ key: "correlation_type", label: "Type", options: CORR_TYPES }, { key: "confidence", label: "Confidence", options: ["Low", "Medium", "High"] }]}
-            addLabel="New Review" emptyTitle="No reviews" searchPlaceholder="Search reviews…" />
+            addLabel="New Review" emptyTitle="No reviews"
+            emptyDescription="Correlation review records aren't in the canonical federation export yet — data pending richer Skywatcher-PR intake."
+            searchPlaceholder="Search reviews…" />
         </TabsContent>
       </Tabs>
     </div>

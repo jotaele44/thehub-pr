@@ -1,0 +1,24 @@
+# OpenAI-runtime agent manifest for prii-validate-producer-manifest.
+# SKILL.md is canonical; keep fields synced with skill-registry.yaml.
+schema_version: prii_openai_agent_v1
+name: prii-validate-producer-manifest
+description: >-
+  Read-only validation of a producer federation.json against the Hub-owned
+  manifest schema via the authoritative `hub validate-manifest` command. Reports
+  validity, schema version, and any missing/invalid keys; never edits or
+  promotes the producer's manifest or export.
+instructions_ref: ../SKILL.md
+owner_repo: jotaele44/thehub-pr
+default_mode: read_only
+allowed_modes: [read_only]
+command_ids: [validate-manifest]
+stop_conditions:
+  - producer manifest violates the Hub-owned schema
+result_envelope:
+  - status
+  - commands_considered
+  - commands_run
+  - artifacts
+  - blockers
+  - contradictions
+  - next_safe_action

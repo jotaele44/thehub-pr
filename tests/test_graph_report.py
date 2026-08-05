@@ -184,3 +184,52 @@ def test_match_basis_unknown_when_field_absent(tmp_path):
     _write_jsonl(tmp_path / "correlations.jsonl", [row])
     report = graph_report(tmp_path)
     assert report["match_basis_distribution"].get("unknown") == 1
+
+
+# ── observations ──────────────────────────────────────────────────────────────
+
+def _observation(obs_id, *, entity_id=None):
+    o = {
+        "observation_id": obs_id, "source_id": SRC,
+        "observation_type": "aircraft_transit", "observed_at": _TS,
+        "confidence": 0.9, "lineage": _LINEAGE, "synthetic": True,
+        "created_at": _TS, "extracted_at": _TS,
+    }
+    if entity_id:
+        o["entity_id"] = entity_id
+    return o
+
+
+def test_observation_count_reported(tmp_path):
+    _write_jsonl(tmp_path / "observations.jsonl", [
+        _observation("obs_" + "a" * 32, entity_id=ENT_A),
+        _observation("obs_" + "b" * 32),  # unanchored
+    ])
+    _write_jsonl(tmp_path / "entities.jsonl", [_entity(ENT_A)])
+    report = graph_report(tmp_path)
+    assert report["observation_count"] == 2
+    assert report["anchored_observations"] == 1  # only the ENT_A-anchored one
+
+
+def test_observation_anchor_prevents_orphan(tmp_path):
+    # ENT_A appears in no relationship/correlation, only as an observation anchor
+    _write_jsonl(tmp_path / "entities.jsonl", [_entity(ENT_A), _entity(ENT_B)])
+    _write_jsonl(tmp_path / "observations.jsonl", [_observation("obs_" + "a" * 32, entity_id=ENT_A)])
+    report = graph_report(tmp_path)
+    assert report["orphan_entities"] == 1  # ENT_B orphan; ENT_A anchored by observation
+
+
+def test_correlation_real_fields_satisfy_orphan_check(tmp_path):
+    # A correlation row carrying ONLY the real source/target fields (as `hub
+    # correlate` emits) must satisfy the orphan check.
+    _write_jsonl(tmp_path / "entities.jsonl", [_entity(ENT_A), _entity(ENT_B)])
+    row = {
+        "relationship_id": "rel_" + "0" * 32, "source_id": SRC,
+        "source_entity_id": ENT_A, "target_entity_id": ENT_B,
+        "relationship_type": "entity_correlation", "evidence_source_id": SRC,
+        "confidence": 0.9, "match_basis": "normalized_name",
+        "lineage": _LINEAGE, "synthetic": True, "created_at": _TS, "extracted_at": _TS,
+    }
+    _write_jsonl(tmp_path / "correlations.jsonl", [row])
+    report = graph_report(tmp_path)
+    assert report["orphan_entities"] == 0

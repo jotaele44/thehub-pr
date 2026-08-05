@@ -39,7 +39,7 @@ export default function RecordSheet({ open, onOpenChange, title, fields, initial
         <div className="grid grid-cols-2 gap-4 py-4 flex-1">
           {fields.map((f) => (
             <div key={f.key} className={f.full || f.type === "textarea" ? "col-span-2 space-y-1.5" : "space-y-1.5"}>
-              <Label className="text-xs">{f.label}{f.required && <span className="text-red-400"> *</span>}</Label>
+              <Label className="text-xs">{f.label}{f.required && <span className="text-status-danger-fg"> *</span>}</Label>
               {f.type === "select" ? (
                 <Select value={form[f.key] ?? ""} onValueChange={(v) => set(f.key, v)}>
                   <SelectTrigger className="bg-background border-border"><SelectValue placeholder={f.placeholder || "Select…"} /></SelectTrigger>

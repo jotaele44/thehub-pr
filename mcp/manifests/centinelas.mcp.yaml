@@ -1,0 +1,18 @@
+# MCP manifest — Centinelas (field operations)
+# Declares capabilities only; TheHub's capability registry and validators
+# are the source of truth for what each capability means and permits.
+project: centinelas
+
+inherits:
+  - federation-core
+  - github-bridge
+  - provenance
+
+capabilities:
+  - weather
+  - field-ops
+  - offline-cache
+
+write_policy:
+  default: read_only
+  allowed_writes: []

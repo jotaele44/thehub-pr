@@ -215,9 +215,9 @@ LANGUAGE: ${langInstruction}`;
       </Card>
 
       {error && (
-        <Card className="p-4 mb-6 border-red-500/30 flex items-start gap-2">
-          <AlertTriangle className="h-4 w-4 text-red-300 mt-0.5 shrink-0" />
-          <p className="text-sm text-red-300">{error}</p>
+        <Card className="p-4 mb-6 border-status-danger/30 flex items-start gap-2">
+          <AlertTriangle className="h-4 w-4 text-status-danger-fg mt-0.5 shrink-0" />
+          <p className="text-sm text-status-danger-fg">{error}</p>
         </Card>
       )}
 

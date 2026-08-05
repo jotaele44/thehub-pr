@@ -1,0 +1,54 @@
+{
+  "errors": {
+    "aguayluz-pr": [],
+    "centinelas-pr": [],
+    "moneysweep-pr": [],
+    "ovnis-pr": [],
+    "skywatcher-pr": [],
+    "spiderweb-pr": []
+  },
+  "producers": {
+    "aguayluz-pr": {
+      "alerts": 4347,
+      "entities": 34633,
+      "relationships": 42287,
+      "sources": 27482
+    },
+    "centinelas-pr": {
+      "entities": 287,
+      "observations": 268,
+      "relationships": 24,
+      "sources": 15
+    },
+    "moneysweep-pr": {
+      "entities": 200,
+      "relationships": 64,
+      "sources": 4480
+    },
+    "ovnis-pr": {
+      "entities": 758,
+      "observations": 470,
+      "relationships": 563,
+      "sources": 278
+    },
+    "skywatcher-pr": {
+      "alerts": 2,
+      "entities": 6,
+      "observations": 2,
+      "relationships": 4,
+      "sources": 2
+    },
+    "spiderweb-pr": {
+      "entities": 12,
+      "relationships": 16,
+      "sources": 2
+    }
+  },
+  "streams": {
+    "alerts": 4349,
+    "entities": 35888,
+    "observations": 740,
+    "relationships": 42958,
+    "sources": 32259
+  }
+}

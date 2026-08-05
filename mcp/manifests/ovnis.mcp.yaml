@@ -1,0 +1,20 @@
+# MCP manifest — Ovnis (case archive)
+# Declares capabilities only; TheHub's capability registry and validators
+# are the source of truth for what each capability means and permits.
+project: ovnis
+
+inherits:
+  - federation-core
+  - github-bridge
+  - provenance
+
+capabilities:
+  - documents
+  - source-registry
+  - citations
+  - archive-search
+  - deduplication
+
+write_policy:
+  default: read_only
+  allowed_writes: []

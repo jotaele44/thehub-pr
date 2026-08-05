@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr.local/schemas/skywatcher_sensor_fusion_analytics.schema.json",
+  "title": "Skywatcher Sensor Fusion Analytics Export",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "producer",
+    "consumer",
+    "export_contract",
+    "generated_at",
+    "live_tracking",
+    "operational_cueing",
+    "operator_action",
+    "anomaly_count",
+    "guardrails"
+  ],
+  "properties": {
+    "producer": {"const": "skywatcher-pr"},
+    "consumer": {"const": "thehub-pr"},
+    "export_contract": {"const": "sensor_fusion_analytics_v1"},
+    "generated_at": {"type": "string"},
+    "live_tracking": {"const": false},
+    "operational_cueing": {"const": false},
+    "operator_action": {"const": "review_context_only"},
+    "anomaly_count": {"type": "integer", "minimum": 0},
+    "dashboard": {"type": "string"},
+    "metrics": {"type": "object"},
+    "review_bands": {"type": "object"},
+    "guardrails": {
+      "type": "object",
+      "required": ["context_only", "public_live_tracking", "operational_cueing"],
+      "properties": {
+        "context_only": {"const": true},
+        "public_live_tracking": {"const": false},
+        "operational_cueing": {"const": false}
+      }
+    }
+  }
+}

@@ -48,7 +48,7 @@ export default function CaseEvidenceTimeline() {
     <div className="rounded-xl border border-border bg-card p-5">
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="flex items-center gap-2 mr-auto">
-          <History className="h-4 w-4 text-sky-300" />
+          <History className="h-4 w-4 text-status-info-fg" />
           <h3 className="text-sm font-semibold">Case Evidence Timeline</h3>
         </div>
 
@@ -75,8 +75,8 @@ export default function CaseEvidenceTimeline() {
               onClick={() => setFilter(f.key)}
             >
               {f.label}
-              {f.key === "confirmed" && <span className="ml-1 text-emerald-300">{confirmedCount}</span>}
-              {f.key === "pending" && <span className="ml-1 text-amber-300">{pendingCount}</span>}
+              {f.key === "confirmed" && <span className="ml-1 text-status-success-fg">{confirmedCount}</span>}
+              {f.key === "pending" && <span className="ml-1 text-status-warning-fg">{pendingCount}</span>}
             </Button>
           ))}
         </div>
@@ -98,7 +98,7 @@ export default function CaseEvidenceTimeline() {
         <ol className="relative border-l border-border ml-2 space-y-5">
           {timeline.map((s) => (
             <li key={s.id} className="ml-5">
-              <span className="absolute -left-[7px] mt-1 h-3 w-3 rounded-full border-2 border-card bg-sky-400" />
+              <span className="absolute -left-[7px] mt-1 h-3 w-3 rounded-full border-2 border-card bg-status-info" />
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <span className="text-xs font-mono-id text-foreground/80">
                   {sortDate(s) || "Undated"}
@@ -113,7 +113,7 @@ export default function CaseEvidenceTimeline() {
                 <IdCode>{s.source_id}</IdCode>
                 {s.publisher && <span className="text-muted-foreground">{s.publisher}</span>}
                 {s.url && (
-                  <a href={s.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-sky-300 hover:underline">
+                  <a href={s.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-status-info-fg hover:underline">
                     Source <ExternalLink className="h-3 w-3" />
                   </a>
                 )}

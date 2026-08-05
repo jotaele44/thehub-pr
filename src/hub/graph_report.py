@@ -34,16 +34,24 @@ def graph_report(aggregate_dir: str | Path) -> Dict[str, Any]:
     entities = _read_jsonl(agg / "entities.jsonl")
     relationships = _read_jsonl(agg / "relationships.jsonl")
     correlations = _read_jsonl(agg / "correlations.jsonl")
+    observations = _read_jsonl(agg / "observations.jsonl")
 
-    # Orphan entities: entity IDs that appear in no relationship or correlation edge
+    # Orphan entities: entity IDs that appear in no relationship, correlation edge,
+    # or observation anchor. Correlation rows written by `hub correlate` use the
+    # canonical `source_entity_id`/`target_entity_id` fields; the legacy
+    # `entity_a_id`/`entity_b_id` aliases are also honoured for back-compat.
     entity_ids = {e["entity_id"] for e in entities if "entity_id" in e}
     referenced: set = set()
     for r in relationships:
         referenced.add(r.get("source_entity_id"))
         referenced.add(r.get("target_entity_id"))
     for c in correlations:
+        referenced.add(c.get("source_entity_id"))
+        referenced.add(c.get("target_entity_id"))
         referenced.add(c.get("entity_a_id"))
         referenced.add(c.get("entity_b_id"))
+    for o in observations:
+        referenced.add(o.get("entity_id"))
     referenced.discard(None)
     orphan_count = len(entity_ids - referenced)
 
@@ -79,11 +87,19 @@ def graph_report(aggregate_dir: str | Path) -> Dict[str, Any]:
         basis = c.get("match_basis") or "unknown"
         basis_dist[basis] += 1
 
+    # Observation participation: how many observations carry an entity anchor that
+    # exists in the aggregate (i.e. actually join the graph vs. float unanchored).
+    anchored_observations = sum(
+        1 for o in observations if o.get("entity_id") in entity_ids
+    )
+
     return {
         "aggregate_dir": str(agg),
         "entity_count": len(entities),
         "relationship_count": len(relationships),
         "correlation_count": len(correlations),
+        "observation_count": len(observations),
+        "anchored_observations": anchored_observations,
         "orphan_entities": orphan_count,
         "duplicate_external_ids": duplicate_external_ids,
         "low_confidence_edges": low_confidence_edges,

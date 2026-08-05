@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.example/schemas/gate_evidence.schema.json",
+  "title": "PRII gate evidence",
+  "description": "Machine-derived readiness gate status. A gate reaches 'passed' only by deriving it from verified, manager-signed execution receipts or attestations. Annotations are advisory text and carry no status-changing power.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "evaluated_at", "gates"],
+  "properties": {
+    "schema_version": { "const": "prii_gate_evidence_v2" },
+    "evaluated_at": { "type": "string", "format": "date-time" },
+    "profile_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$",
+      "description": "Which gate profile 'gates' represents. A profile records what a gate set measures, so a slice-scoped evaluation cannot be read as a vector-wide one."
+    },
+    "profile_scope": {
+      "type": "string",
+      "description": "Prose statement of what this profile does and does not cover."
+    },
+    "additional_profiles": {
+      "type": "object",
+      "description": "Other profiles evaluated in the same run, keyed by profile_id. Published so that narrowing the gating profile cannot quietly hide a wider set that is still incomplete.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["profile_scope", "summary", "gates"],
+        "properties": {
+          "profile_scope": { "type": "string" },
+          "summary": { "type": "object", "additionalProperties": { "type": "integer" } },
+          "gates": { "type": "array", "items": { "$ref": "#/$defs/gate" } }
+        }
+      }
+    },
+    "policy_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "gates": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/gate" }
+    }
+  },
+  "$defs": {
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate_id", "status", "blocking", "derived_from"],
+      "properties": {
+        "gate_id": { "type": "string", "pattern": "^G[0-9]{2}_[A-Z0-9_]+$" },
+        "requirement": { "type": "string" },
+        "blocking": { "type": "boolean" },
+        "status": {
+          "type": "string",
+          "enum": ["passed", "failed", "not_run", "blocked_not_certified", "deferred"],
+          "description": "'passed' is reachable only through derived_from receipts that verified. 'blocked_not_certified' records a gate whose evidence cannot be produced in the current environment."
+        },
+        "status_reason": { "type": "string" },
+        "derived_from": {
+          "type": "array",
+          "description": "Verified receipts backing this status. An empty list with status 'passed' is invalid and rejected by the evaluator.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["run_id", "receipt_sha256", "signature_verified"],
+            "properties": {
+              "run_id": { "type": "string", "pattern": "^[0-9a-f]{32}$" },
+              "receipt_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "signature_verified": { "const": true }
+            }
+          }
+        },
+        "attested_by": {
+          "type": "array",
+          "description": "Verified attestations backing this status. Used by gates about code that must never run, about an absence, or about a host this process is not running on -- none of which any receipt can evidence.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["attestation_id", "attestation_sha256", "kind", "result", "signature_verified"],
+            "properties": {
+              "attestation_id": { "type": "string", "pattern": "^[a-z0-9_]+(\\.[a-z0-9_]+)+$" },
+              "attestation_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "kind": {
+                "type": "string",
+                "enum": ["static_analysis", "forced_failure_test", "operator_certification"]
+              },
+              "produced_by": { "type": "string" },
+              "result": { "type": "string", "enum": ["satisfied", "refuted"] },
+              "signature_verified": { "const": true }
+            }
+          }
+        },
+        "annotations": {
+          "type": "array",
+          "description": "Human notes. Advisory only: the evaluator ignores them when computing status.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["author", "note", "recorded_at"],
+            "properties": {
+              "author": { "type": "string", "minLength": 1 },
+              "note": { "type": "string", "minLength": 1 },
+              "recorded_at": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "description": "'passed' must rest on at least one verified artifact. Either kind will do, but a gate that passed on nothing at all is a bug in the evaluator, not a clean gate.",
+          "if": { "properties": { "status": { "const": "passed" } }, "required": ["status"] },
+          "then": {
+            "anyOf": [
+              { "properties": { "derived_from": { "minItems": 1 } } },
+              { "properties": { "attested_by": { "minItems": 1 } }, "required": ["attested_by"] }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

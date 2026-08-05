@@ -1,0 +1,50 @@
+name: Skills Validation
+
+on:
+  pull_request:
+    paths:
+      - "skill-registry.yaml"
+      - "activation-matrix.yaml"
+      - "dependency-graph.yaml"
+      - "skills/**"
+      - "scripts/validate_skills.py"
+      - "schemas/skills/**"
+      - "tests/skill_contract/**"
+      - ".github/workflows/skills-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "skill-registry.yaml"
+      - "activation-matrix.yaml"
+      - "dependency-graph.yaml"
+      - "skills/**"
+      - "scripts/validate_skills.py"
+      - "schemas/skills/**"
+      - "tests/skill_contract/**"
+      - ".github/workflows/skills-validation.yml"
+
+permissions:
+  contents: read
+
+# Supersede older runs of this workflow on the same ref: a newer push
+# makes the in-flight result irrelevant, so cancel it and free the runner.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: pip install jsonschema pyyaml pytest
+      - name: Validate skill packet
+        run: python scripts/validate_skills.py
+      - name: Run skill contract tests
+        run: pytest tests/skill_contract -q

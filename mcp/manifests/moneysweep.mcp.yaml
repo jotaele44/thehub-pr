@@ -1,0 +1,17 @@
+# MCP manifest — MoneySweep (contracts/finance)
+# Declares capabilities only; TheHub's capability registry and validators
+# are the source of truth for what each capability means and permits.
+project: moneysweep
+
+inherits:
+  - federation-core
+  - github-bridge
+  - provenance
+
+capabilities:
+  - contracts
+  - entity-resolution
+
+write_policy:
+  default: read_only
+  allowed_writes: []

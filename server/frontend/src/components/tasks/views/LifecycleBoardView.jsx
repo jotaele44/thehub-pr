@@ -28,10 +28,10 @@ export default function LifecycleBoardView({ board, role, onEdit, onStatusChange
                     onClick={() => onEdit?.(t)}
                     className={cn(
                       "rounded-lg border bg-card p-2.5 cursor-pointer hover:bg-secondary/40 transition-colors",
-                      t._warning ? "border-red-500/50" : "border-border"
+                      t._warning ? "border-status-danger/50" : "border-border"
                     )}
                   >
-                    {t._warning && <div className="flex items-center gap-1 mb-1 text-[10px] text-red-300"><AlarmClock className="h-3 w-3" />Due soon · high priority</div>}
+                    {t._warning && <div className="flex items-center gap-1 mb-1 text-[10px] text-status-danger-fg"><AlarmClock className="h-3 w-3" />Due soon · high priority</div>}
                     <p className="text-xs font-medium leading-snug mb-1.5">{t.title}</p>
                     <div className="flex flex-wrap items-center gap-1 mb-1">
                       <StatusChip map={PRIORITY} value={t._priority} />

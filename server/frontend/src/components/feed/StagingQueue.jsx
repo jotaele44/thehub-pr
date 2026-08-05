@@ -5,14 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Check, Clock, AlertCircle, ExternalLink, ShieldCheck } from "lucide-react";
 
 const SYNC = {
-  New: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  Updated: "bg-sky-500/15 text-sky-300 border-sky-500/30",
-  Matched: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  NeedsReview: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  Verified: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  Promoted: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
+  New: "bg-status-info/15 text-status-info-fg border-status-info/30",
+  Updated: "bg-status-info/15 text-status-info-fg border-status-info/30",
+  Matched: "bg-status-success/15 text-status-success-fg border-status-success/30",
+  NeedsReview: "bg-status-warning/15 text-status-warning-fg border-status-warning/30",
+  Verified: "bg-status-success/15 text-status-success-fg border-status-success/30",
+  Promoted: "bg-status-success/15 text-status-success-fg border-status-success/30",
   Deferred: "bg-muted text-muted-foreground border-border",
-  Failed: "bg-red-500/15 text-red-300 border-red-500/30",
+  Failed: "bg-status-danger/15 text-status-danger-fg border-status-danger/30",
 };
 
 // renderMeta(item) -> small inline metadata node (module-specific).
@@ -57,7 +57,7 @@ export default function StagingQueue({ items, onSetStatus, renderMeta, saving })
                 <Clock className="h-3.5 w-3.5 mr-1" /> Defer
               </Button>
               {it.source_url && (
-                <a href={it.source_url} target="_blank" rel="noreferrer" className="text-xs text-sky-300 flex items-center gap-1 px-2">
+                <a href={it.source_url} target="_blank" rel="noreferrer" className="text-xs text-status-info-fg flex items-center gap-1 px-2">
                   <ExternalLink className="h-3 w-3" /> Source
                 </a>
               )}

@@ -19,7 +19,7 @@ export default function TaskRollup({ scope }) {
       <div className="rounded-xl border border-border bg-card p-5">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold flex items-center gap-2"><ListChecks className="h-4 w-4" /> Module Tasks</h3>
-          <Link to={`/tasks?program=${scope}`} className="text-xs text-sky-300 hover:underline flex items-center gap-1">
+          <Link to={`/tasks?program=${scope}`} className="text-xs text-status-info-fg hover:underline flex items-center gap-1">
             Open <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
@@ -54,9 +54,9 @@ export default function TaskRollup({ scope }) {
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard label="Open Tasks" value={rollups.open} icon={ListChecks} />
-        <StatCard label="Overdue" value={rollups.overdue} icon={AlertOctagon} accent="text-red-300" alert={rollups.overdue > 0} />
-        <StatCard label="Blocked" value={rollups.blocked} icon={Ban} accent="text-red-300" alert={rollups.blocked > 0} />
-        <StatCard label="High Priority" value={rollups.high} icon={Flame} accent="text-amber-300" />
+        <StatCard label="Overdue" value={rollups.overdue} icon={AlertOctagon} accent="text-status-danger-fg" alert={rollups.overdue > 0} />
+        <StatCard label="Blocked" value={rollups.blocked} icon={Ban} accent="text-status-danger-fg" alert={rollups.blocked > 0} />
+        <StatCard label="High Priority" value={rollups.high} icon={Flame} accent="text-status-warning-fg" />
         <StatCard label="Due This Week" value={rollups.dueThisWeek} icon={CalendarDays} />
       </div>
 
@@ -64,7 +64,7 @@ export default function TaskRollup({ scope }) {
         <div className="lg:col-span-2 rounded-xl border border-border bg-card p-5">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold">Open Tasks by Program</h3>
-            <Link to="/tasks" className="text-xs text-sky-300 hover:underline flex items-center gap-1">Task control plane <ArrowRight className="h-3 w-3" /></Link>
+            <Link to="/tasks" className="text-xs text-status-info-fg hover:underline flex items-center gap-1">Task control plane <ArrowRight className="h-3 w-3" /></Link>
           </div>
           <div className="space-y-2">
             {rollups.byProgram.map((p) => {
@@ -80,7 +80,7 @@ export default function TaskRollup({ scope }) {
             })}
           </div>
           {rollups.unassigned > 0 && (
-            <div className="mt-3 flex items-center gap-2 text-xs text-amber-300">
+            <div className="mt-3 flex items-center gap-2 text-xs text-status-warning-fg">
               <MapPinOff className="h-3.5 w-3.5" />
               {rollups.unassigned} unassigned task gap{rollups.unassigned === 1 ? "" : "s"} need program mapping
             </div>
@@ -115,7 +115,7 @@ export default function TaskRollup({ scope }) {
 function MiniStat({ label, value, alert }) {
   return (
     <div className="rounded-lg border border-border bg-secondary/30 p-2.5">
-      <div className={cn("text-lg font-semibold font-mono-id", alert && value > 0 ? "text-red-300" : "text-foreground")}>{value}</div>
+      <div className={cn("text-lg font-semibold font-mono-id", alert && value > 0 ? "text-status-danger-fg" : "text-foreground")}>{value}</div>
       <div className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</div>
     </div>
   );

@@ -5,7 +5,7 @@ import { domainAccent } from "@/lib/federation";
 function Metric({ label, value, alert }) {
   if (!value) return <span className="text-[11px] text-muted-foreground/60">{label} 0</span>;
   return (
-    <span className={cn("text-[11px]", alert ? "text-red-300 font-medium" : "text-muted-foreground")}>
+    <span className={cn("text-[11px]", alert ? "text-status-danger-fg font-medium" : "text-muted-foreground")}>
       {label} <span className="font-mono-id">{value}</span>
     </span>
   );

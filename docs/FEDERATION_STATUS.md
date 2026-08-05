@@ -1,7 +1,7 @@
 # PRII Federation — Gap-Closure Status
 
 _Authoritative status of the Puerto Rico Integrated Intelligence (PRII) federation._
-_Last updated: 2026-07-04 (follow-up sweep: spiderweb + centinelas promoted to live execution)._ 
+_Last updated: 2026-07-09 (reconciled centinelas live-exec back up to live to match its producer manifest — real RSS intake bridged, production export hub-validated; spiderweb remains live)._ 
 
 The federation is **artifact-based**: producers emit a discovery manifest
 (`federation.json`) plus a canonical export package (`sources/entities/
@@ -19,7 +19,7 @@ from GitHub, so aggregation no longer assumes local checkouts.
 | `aguayluz-pr` | water/grid | ✅ | ✅ | ✅ 273/273 assets | power + PREPS + water/wastewater live; outage granularity remains caveated |
 | `ovnis-pr` (OVNIS) | historical case corpus | ✅ | ✅ | n/a | 470 real master cases (0 synthetic); production canonical export live |
 | `skywatcher-pr` | airspace | ✅ | ⛔ | ✅ observations | synthetic package only — needs real FR24 capture/export |
-| `centinelas-pr` | pre-officialization signal monitor | ✅ | ✅ | n/a | LIVE: 274 real RSS signals bridged into the ledger; production export hub-validated; PR-matter source families remain future intake |
+| `centinelas-pr` | pre-officialization signal monitor | ✅ | ✅ | n/a | Live per the producer manifest (`ready_for_hub_live_execution=true`, `PRODUCTION`): 274 real RSS signals bridged into `data/signals/live_signals.jsonl` (2026-07-03); `federation_export --mode production` passed and `hub validate-package` returned VALID (operator-approved sweep) |
 
 ## What is closed
 
@@ -59,6 +59,36 @@ spatial layers).
   hydro/power/weather/contamination/dam-safety active). The Hub validates,
   aggregates, and — via `hub correlate` — links an alert's anchor entity to
   co-located cross-producer entities (`alert_affects_entity`, match_basis `location`).
+
+**Part 7 — UI surface consolidation (ADR 0001, Phase 2):**
+- The single supported product surface is the Hub app
+  (`thehub-pr/server/frontend`): one page per producer plus the cross-domain
+  Crossover/Anomaly views only the Hub can host. The Hub UI consolidation —
+  grouped navigation, mounted auth routes, Hub-vs-route de-duplication, and
+  dead-code/dependency prune — landed here.
+- The six producer frontends are **demoted to diagnostic-only** (retained, not
+  deleted): each producer frontend carries a "Diagnostic-only surface (ADR 0001,
+  Phase 2)" note pointing operators to the Hub as the product surface. This does
+  not change any producer runtime, schema, or readiness gate.
+
+**Part 8 — ANOMALOUS intake lane (Centinelas → OVNIS → Hub):**
+- Closed the last producer→producer hop so a sentinel Internet find in the
+  `ANOMALOUS` domain reaches the OVNIS case corpus. Centinelas already classified
+  anomalous items and mapped them to `ovnis-pr`; it now has the egress workflow
+  (`dispatch-signals-ovnis.yml`) that emits a `centinelas-signal`
+  `repository_dispatch`, and its ovnis payload now carries resolved
+  `municipalities` so OVNIS can set a case `location_name`.
+- OVNIS gained the matching consumer: `scripts/ingest_centinelas_dispatch.py`
+  adapts the dispatched signal into a candidate feed, and `centinelas-intake.yml`
+  runs the existing reviewed `import_candidates.py --apply` pipeline (normalize →
+  score → dedupe → route into candidate/aux ledgers, master read-only, human-gated
+  PR). Non-PR / location-less signals are quarantined by OVNIS's schema gate.
+- **The Hub side required no change.** The federation stays artifact-based
+  (ADR 0001): once OVNIS promotes and exports these cases, the Hub's existing
+  `aggregate → correlate → ingest` path pulls them (`uap_case` →
+  `UnifiedCases`/`PatternObservations`) and correlates them with the rest of the
+  Federation exactly as before — this entry records that the upstream lane feeding
+  those cases is now wired end to end.
 
 ## Blocked gaps — fully specified, waiting on a named external input
 

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/evidence_lifecycle/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "DESIGN_DRAFT — not installed, not frozen",
+  "title": "Evidence Lifecycle State + Transition",
+  "description": "Immutable evidence lifecycle. States and legal transitions per SNAPSHOT_STATE_MACHINE.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["evidence_ref", "state", "transitioned_at"],
+  "$defs": {
+    "state": {"enum": ["DISCOVERED", "INGESTING", "VALIDATED", "NORMALIZED", "CERTIFIED", "SUPERSEDED", "QUARANTINED"]}
+  },
+  "properties": {
+    "evidence_ref": {"type": "string"},
+    "state": {"$ref": "#/$defs/state"},
+    "previous_state": {"oneOf": [{"$ref": "#/$defs/state"}, {"type": "null"}]},
+    "transitioned_at": {"type": "string", "format": "date-time"},
+    "actor": {"type": "string"},
+    "reason": {"type": "string"}
+  },
+  "x-legal-transitions": {
+    "DISCOVERED": ["INGESTING", "QUARANTINED"],
+    "INGESTING": ["VALIDATED", "QUARANTINED"],
+    "VALIDATED": ["NORMALIZED", "QUARANTINED"],
+    "NORMALIZED": ["CERTIFIED", "QUARANTINED"],
+    "CERTIFIED": ["SUPERSEDED", "QUARANTINED"],
+    "SUPERSEDED": [],
+    "QUARANTINED": ["INGESTING"]
+  },
+  "x-invariants": [
+    "CERTIFIED evidence is immutable; corrections create a new evidence record that SUPERSEDES it.",
+    "QUARANTINED evidence never enters a snapshot until cleared back through INGESTING."
+  ]
+}
