@@ -146,7 +146,7 @@ class RepositoryScannerBase:
             self.eligible_files += 1
             try:
                 text = read_text(path)
-            except Exception as exc:
+            except Exception as exc:  # unreadable eligible file is a coverage failure
                 self.failures.append({"path": path.relative_to(self.root).as_posix(), "error": f"{type(exc).__name__}: {exc}"})
                 continue
             try:
@@ -156,7 +156,10 @@ class RepositoryScannerBase:
                 self._scan_lexical_fallback(path, text, exc)
             self.scanned_files += 1
         unique = {record.observation_id: record for record in self.records}
-        self.records = sorted(unique.values(), key=lambda r: (r.path, r.line, r.term_kind, r.normalized_label, r.observation_id))
+        self.records = sorted(
+            unique.values(),
+            key=lambda r: (r.path, r.line, r.term_kind, r.normalized_label, r.observation_id),
+        )
         coverage = 100.0 if self.eligible_files == 0 else round(self.scanned_files / self.eligible_files * 100, 4)
         return {
             "program_id": self.program_id,
@@ -175,6 +178,7 @@ class RepositoryScannerBase:
         }
 
     def _scan_lexical_fallback(self, path: Path, text: str, exc: Exception) -> None:
+        """Inventory obvious identifiers when a format-specific parser rejects a tracked file."""
         lines = text.splitlines()
         artifact = self._artifact_kind(path)
         patterns = [
@@ -187,32 +191,57 @@ class RepositoryScannerBase:
             for pattern in patterns:
                 for match in pattern.finditer(line):
                     term = match.group(1)
-                    self.emit(path=path, line=line_no, symbol=f"fallback:{line_no}:{match.start()}", term=term, term_kind="parser_fallback_identifier", artifact_kind=artifact, evidence_tier="T2", context=context_line(lines, line_no), extractor_rule="lexical.parser_fallback", authority_surface=self.owner)
+                    self.emit(
+                        path=path, line=line_no, symbol=f"fallback:{line_no}:{match.start()}", term=term,
+                        term_kind="parser_fallback_identifier", artifact_kind=artifact, evidence_tier="T2",
+                        context=context_line(lines, line_no), extractor_rule="lexical.parser_fallback",
+                        authority_surface=self.owner,
+                    )
                     emitted += 1
             if emitted >= 10000:
                 break
         if emitted == 0:
-            self.emit(path=path, line=1, symbol="parser_fallback", term=path.stem, term_kind="parser_fallback_file", artifact_kind=artifact, evidence_tier="T2", context=f"Parser fallback after {type(exc).__name__}: {exc}", extractor_rule="lexical.parser_fallback_file", authority_surface=self.owner)
+            self.emit(
+                path=path, line=1, symbol="parser_fallback", term=path.stem,
+                term_kind="parser_fallback_file", artifact_kind=artifact, evidence_tier="T2",
+                context=f"Parser fallback after {type(exc).__name__}: {exc}",
+                extractor_rule="lexical.parser_fallback_file", authority_surface=self.owner,
+            )
 
     def _scan_file(self, path: Path, text: str) -> None:
         suffix = path.suffix.lower()
-        if suffix == ".py": self._scan_python(path, text)
-        elif suffix == ".json": self._scan_json(path, text)
-        elif suffix == ".jsonl": self._scan_jsonl(path, text)
-        elif suffix in {".yaml", ".yml"}: self._scan_yaml(path, text)
-        elif suffix == ".toml": self._scan_toml(path, text)
-        elif suffix in {".ini", ".cfg"}: self._scan_ini(path, text)
-        elif suffix == ".csv": self._scan_csv(path, text)
-        elif suffix in {".md", ".rst", ".txt"}: self._scan_docs(path, text)
-        elif suffix in {".ts", ".tsx", ".js", ".jsx"}: self._scan_js(path, text)
+        if suffix == ".py":
+            self._scan_python(path, text)
+        elif suffix == ".json":
+            self._scan_json(path, text)
+        elif suffix == ".jsonl":
+            self._scan_jsonl(path, text)
+        elif suffix in {".yaml", ".yml"}:
+            self._scan_yaml(path, text)
+        elif suffix == ".toml":
+            self._scan_toml(path, text)
+        elif suffix in {".ini", ".cfg"}:
+            self._scan_ini(path, text)
+        elif suffix == ".csv":
+            self._scan_csv(path, text)
+        elif suffix in {".md", ".rst", ".txt"}:
+            self._scan_docs(path, text)
+        elif suffix in {".ts", ".tsx", ".js", ".jsx"}:
+            self._scan_js(path, text)
 
     def _artifact_kind(self, path: Path) -> str:
         rel = path.relative_to(self.root).as_posix().lower()
         name = path.name.lower()
-        if "test" in path.parts or name.startswith("test_") or name.endswith("_test.py"): return "test"
-        if "schema" in name or "/schemas/" in f"/{rel}": return "schema"
-        if name == "federation.json" or "manifest" in name: return "manifest"
-        if any(token in rel for token in ("config/", "registry/", ".github/workflows/")) or "config" in name: return "configuration"
-        if path.suffix.lower() in {".md", ".rst", ".txt"}: return "documentation"
-        if path.suffix.lower() in {".ts", ".tsx", ".js", ".jsx"}: return "frontend_code"
+        if "test" in path.parts or name.startswith("test_") or name.endswith("_test.py"):
+            return "test"
+        if "schema" in name or "/schemas/" in f"/{rel}":
+            return "schema"
+        if name == "federation.json" or "manifest" in name:
+            return "manifest"
+        if any(token in rel for token in ("config/", "registry/", ".github/workflows/")) or "config" in name:
+            return "configuration"
+        if path.suffix.lower() in {".md", ".rst", ".txt"}:
+            return "documentation"
+        if path.suffix.lower() in {".ts", ".tsx", ".js", ".jsx"}:
+            return "frontend_code"
         return "source_code"

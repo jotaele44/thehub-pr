@@ -41,7 +41,7 @@ class PythonScannerMixin:
                 return None
             try:
                 return ast.unparse(node)
-            except Exception:
+            except Exception:  # pragma: no cover - Python 3.9 has ast.unparse
                 return dotted(node) or type(node).__name__
 
         scanner = self
@@ -60,7 +60,12 @@ class PythonScannerMixin:
                     kind = "python_model"
                 else:
                     kind = "python_class"
-                scanner.emit(path=path, line=node.lineno, symbol=node.name, term=node.name, term_kind=kind, artifact_kind=artifact, evidence_tier="T1", context=context_line(lines, node.lineno), extractor_rule="python.class", data_type="class", authority_surface=scanner.owner)
+                scanner.emit(
+                    path=path, line=node.lineno, symbol=node.name, term=node.name,
+                    term_kind=kind, artifact_kind=artifact, evidence_tier="T1",
+                    context=context_line(lines, node.lineno), extractor_rule="python.class",
+                    data_type="class", authority_surface=scanner.owner,
+                )
                 class_stack.append(node.name)
                 for child in node.body:
                     if isinstance(child, ast.AnnAssign) and isinstance(child.target, ast.Name):
@@ -69,13 +74,29 @@ class PythonScannerMixin:
                         cardinality = "many" if ann and any(t in ann for t in ("list[", "List[", "Sequence[", "set[", "Set[")) else "one"
                         value = literal(child.value) if child.value is not None else None
                         lifecycle = value if looks_like_lifecycle(child.target.id) and isinstance(value, (list, tuple, set)) else []
-                        scanner.emit(path=path, line=child.lineno, symbol=f"{node.name}.{child.target.id}", term=child.target.id, term_kind="model_field" if kind in {"python_model", "python_dataclass"} else "class_attribute", artifact_kind=artifact, evidence_tier="T1", context=context_line(lines, child.lineno), extractor_rule="python.class_field", data_type=ann, cardinality=cardinality, required=required, lifecycle_values=[str(v) for v in lifecycle] if lifecycle else (), authority_surface=scanner.owner)
+                        scanner.emit(
+                            path=path, line=child.lineno,
+                            symbol=f"{node.name}.{child.target.id}", term=child.target.id,
+                            term_kind="model_field" if kind in {"python_model", "python_dataclass"} else "class_attribute",
+                            artifact_kind=artifact, evidence_tier="T1",
+                            context=context_line(lines, child.lineno), extractor_rule="python.class_field",
+                            data_type=ann, cardinality=cardinality, required=required,
+                            lifecycle_values=[str(v) for v in lifecycle] if lifecycle else (),
+                            authority_surface=scanner.owner,
+                        )
                     elif kind == "python_enum" and isinstance(child, (ast.Assign, ast.AnnAssign)):
                         target = child.targets[0] if isinstance(child, ast.Assign) and child.targets else child.target
                         if isinstance(target, ast.Name):
                             value_node = child.value
                             value = literal(value_node) if value_node is not None else None
-                            scanner.emit(path=path, line=child.lineno, symbol=f"{node.name}.{target.id}", term=str(value) if isinstance(value, str) else target.id, term_kind="enum_member", artifact_kind=artifact, evidence_tier="T1", context=context_line(lines, child.lineno), extractor_rule="python.enum_member", data_type="enum", lifecycle_values=[str(value)] if looks_like_lifecycle(node.name) and value is not None else (), authority_surface=scanner.owner)
+                            scanner.emit(
+                                path=path, line=child.lineno, symbol=f"{node.name}.{target.id}",
+                                term=str(value) if isinstance(value, str) else target.id,
+                                term_kind="enum_member", artifact_kind=artifact, evidence_tier="T1",
+                                context=context_line(lines, child.lineno), extractor_rule="python.enum_member",
+                                data_type="enum", lifecycle_values=[str(value)] if looks_like_lifecycle(node.name) and value is not None else (),
+                                authority_surface=scanner.owner,
+                            )
                 self.generic_visit(node)
                 class_stack.pop()
 
@@ -92,11 +113,21 @@ class PythonScannerMixin:
                         if name in ROUTE_METHODS and decorator.args:
                             route = literal(decorator.args[0])
                             if isinstance(route, str):
-                                scanner.emit(path=path, line=node.lineno, symbol=node.name, term=route, term_kind="api_route", artifact_kind=artifact, evidence_tier="T1", context=context_line(lines, node.lineno), extractor_rule="python.route_decorator", data_type=name.upper(), authority_surface=scanner.owner)
+                                scanner.emit(
+                                    path=path, line=node.lineno, symbol=node.name, term=route,
+                                    term_kind="api_route", artifact_kind=artifact, evidence_tier="T1",
+                                    context=context_line(lines, node.lineno), extractor_rule="python.route_decorator",
+                                    data_type=name.upper(), authority_surface=scanner.owner,
+                                )
                         if name in COMMAND_DECORATORS:
                             command = literal(decorator.args[0]) if decorator.args else None
                             command = command if isinstance(command, str) else node.name.replace("_", "-")
-                            scanner.emit(path=path, line=node.lineno, symbol=node.name, term=command, term_kind="cli_command", artifact_kind=artifact, evidence_tier="T1", context=context_line(lines, node.lineno), extractor_rule="python.command_decorator", authority_surface=scanner.owner)
+                            scanner.emit(
+                                path=path, line=node.lineno, symbol=node.name, term=command,
+                                term_kind="cli_command", artifact_kind=artifact, evidence_tier="T1",
+                                context=context_line(lines, node.lineno), extractor_rule="python.command_decorator",
+                                authority_surface=scanner.owner,
+                            )
                 self.generic_visit(node)
 
             def visit_Assign(self, node: ast.Assign) -> None:
@@ -105,41 +136,90 @@ class PythonScannerMixin:
                     if not isinstance(target, ast.Name):
                         continue
                     if target.id.isupper() or looks_like_lifecycle(target.id):
-                        lifecycle = value if looks_like_lifecycle(target.id) and isinstance(value, (list, tuple, set)) else ()
-                        scanner.emit(path=path, line=node.lineno, symbol=target.id, term=target.id, term_kind="constant", artifact_kind=artifact, evidence_tier="T1", context=context_line(lines, node.lineno), extractor_rule="python.constant", data_type=type(value).__name__ if value is not None else None, lifecycle_values=[str(v) for v in lifecycle], authority_surface=scanner.owner)
+                        lifecycle: Sequence[Any] = value if looks_like_lifecycle(target.id) and isinstance(value, (list, tuple, set)) else ()
+                        scanner.emit(
+                            path=path, line=node.lineno, symbol=target.id, term=target.id,
+                            term_kind="constant", artifact_kind=artifact, evidence_tier="T1",
+                            context=context_line(lines, node.lineno), extractor_rule="python.constant",
+                            data_type=type(value).__name__ if value is not None else None,
+                            lifecycle_values=[str(v) for v in lifecycle], authority_surface=scanner.owner,
+                        )
                 self.generic_visit(node)
 
             def visit_Call(self, node: ast.Call) -> None:
                 name = dotted(node.func).split(".")[-1]
                 if name == "add_parser" and node.args:
                     value = literal(node.args[0])
-                    if isinstance(value, str): scanner.emit(path=path, line=node.lineno, symbol="add_parser", term=value, term_kind="cli_command", artifact_kind=artifact, evidence_tier="T1", context=context_line(lines, node.lineno), extractor_rule="python.argparse_command", authority_surface=scanner.owner)
+                    if isinstance(value, str):
+                        scanner.emit(
+                            path=path, line=node.lineno, symbol="add_parser", term=value,
+                            term_kind="cli_command", artifact_kind=artifact, evidence_tier="T1",
+                            context=context_line(lines, node.lineno), extractor_rule="python.argparse_command",
+                            authority_surface=scanner.owner,
+                        )
                 elif name == "add_argument" and node.args:
                     for arg in node.args:
                         value = literal(arg)
-                        if isinstance(value, str) and value.startswith("-"): scanner.emit(path=path, line=node.lineno, symbol="add_argument", term=value, term_kind="cli_option", artifact_kind=artifact, evidence_tier="T1", context=context_line(lines, node.lineno), extractor_rule="python.argparse_option", authority_surface=scanner.owner)
+                        if isinstance(value, str) and value.startswith("-"):
+                            scanner.emit(
+                                path=path, line=node.lineno, symbol="add_argument", term=value,
+                                term_kind="cli_option", artifact_kind=artifact, evidence_tier="T1",
+                                context=context_line(lines, node.lineno), extractor_rule="python.argparse_option",
+                                authority_surface=scanner.owner,
+                            )
                 elif name in EVENT_CALLS and node.args:
                     value = literal(node.args[0])
-                    if isinstance(value, str): scanner.emit(path=path, line=node.lineno, symbol=name, term=value, term_kind="event_name", artifact_kind=artifact, evidence_tier="T1", context=context_line(lines, node.lineno), extractor_rule="python.event_call", authority_surface=scanner.owner)
+                    if isinstance(value, str):
+                        scanner.emit(
+                            path=path, line=node.lineno, symbol=name, term=value,
+                            term_kind="event_name", artifact_kind=artifact, evidence_tier="T1",
+                            context=context_line(lines, node.lineno), extractor_rule="python.event_call",
+                            authority_surface=scanner.owner,
+                        )
                 elif name == "parametrize" and node.args:
                     names = literal(node.args[0])
                     if isinstance(names, str):
-                        for parameter in [p.strip() for p in names.split(",") if p.strip()]: scanner.emit(path=path, line=node.lineno, symbol="pytest.parametrize", term=parameter, term_kind="test_parameter", artifact_kind="test", evidence_tier="T1", context=context_line(lines, node.lineno), extractor_rule="python.pytest_parameter", authority_surface=scanner.owner)
+                        for parameter in [p.strip() for p in names.split(",") if p.strip()]:
+                            scanner.emit(
+                                path=path, line=node.lineno, symbol="pytest.parametrize", term=parameter,
+                                term_kind="test_parameter", artifact_kind="test", evidence_tier="T1",
+                                context=context_line(lines, node.lineno), extractor_rule="python.pytest_parameter",
+                                authority_surface=scanner.owner,
+                            )
                 self.generic_visit(node)
 
             def visit_Raise(self, node: ast.Raise) -> None:
                 exc = node.exc
-                name = dotted(exc.func) if isinstance(exc, ast.Call) else dotted(exc)
-                if name: scanner.emit(path=path, line=node.lineno, symbol="raise", term=name.split(".")[-1], term_kind="raised_error", artifact_kind=artifact, evidence_tier="T1", context=context_line(lines, node.lineno), extractor_rule="python.raise", authority_surface=scanner.owner)
+                name = ""
+                if isinstance(exc, ast.Call):
+                    name = dotted(exc.func)
+                else:
+                    name = dotted(exc)
+                if name:
+                    scanner.emit(
+                        path=path, line=node.lineno, symbol="raise", term=name.split(".")[-1],
+                        term_kind="raised_error", artifact_kind=artifact, evidence_tier="T1",
+                        context=context_line(lines, node.lineno), extractor_rule="python.raise",
+                        authority_surface=scanner.owner,
+                    )
                 self.generic_visit(node)
 
             def visit_Assert(self, node: ast.Assert) -> None:
                 terms: list[str] = []
                 for child in ast.walk(node.test):
-                    if isinstance(child, ast.Name): terms.append(child.id)
-                    elif isinstance(child, ast.Attribute): terms.append(child.attr)
-                    elif isinstance(child, ast.Constant) and isinstance(child.value, str) and len(child.value) <= 100: terms.append(child.value)
-                for term in unique_preserve(terms): scanner.emit(path=path, line=node.lineno, symbol="assert", term=term, term_kind="test_assertion_term", artifact_kind="test", evidence_tier="T1", context=context_line(lines, node.lineno), extractor_rule="python.assert", authority_surface=scanner.owner)
+                    if isinstance(child, ast.Name):
+                        terms.append(child.id)
+                    elif isinstance(child, ast.Attribute):
+                        terms.append(child.attr)
+                    elif isinstance(child, ast.Constant) and isinstance(child.value, str) and len(child.value) <= 100:
+                        terms.append(child.value)
+                for term in unique_preserve(terms):
+                    scanner.emit(
+                        path=path, line=node.lineno, symbol="assert", term=term,
+                        term_kind="test_assertion_term", artifact_kind="test", evidence_tier="T1",
+                        context=context_line(lines, node.lineno), extractor_rule="python.assert",
+                        authority_surface=scanner.owner,
+                    )
                 self.generic_visit(node)
 
         Visitor().visit(tree)
