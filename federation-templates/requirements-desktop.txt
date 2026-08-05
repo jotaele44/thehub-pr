@@ -3,4 +3,4 @@ pywebview>=5.0
 # Shared desktop-wrapper runtime (native-window launcher + same-origin ASGI app),
 # resolved from the sibling thehub-pr checkout as an editable local path so the
 # code is edited once for the whole federation (frozen builds bundle it).
--e ../thehub-pr/packages/prii_desktop
+-e ../thehub-pr/packages/prii_desktop{{DESKTOP_EXTRA_REQUIREMENTS}}

@@ -199,6 +199,18 @@ const system = {
   })),
 };
 
+// Project consolidation signs — built live from the current aggregate.
+const projectSigns = {
+  list: () => request('/project-signs'),
+  // Optionally persist the HTML + index.json to reports/signs (mirrors the CLI).
+  generate: (write = false) =>
+    request('/project-signs/generate', { method: 'POST', body: { write } }),
+  htmlUrl: (projectId) => {
+    const base = trimSlash(appParams.apiBaseUrl || '/api');
+    return `${base}/project-signs/${encode(projectId)}/html`;
+  },
+};
+
 // "What's new since you last looked" + per-subscriber push/SMS preferences.
 const notifications = {
   list: (since) =>
@@ -221,5 +233,6 @@ export const federation = {
   notifications,
   asServiceRole: { entities, connectors },
   system,
+  projectSigns,
   request,
 };

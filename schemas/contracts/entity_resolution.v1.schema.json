@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/entity_resolution/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "FROZEN — schemas/contracts (Phase 1)",
+  "title": "Entity Resolution Ledger (discriminated union)",
+  "description": "Contradiction-preserving entity resolution. Every merge decision is reversible and requires an explicit reason code and evidence — never merged solely on similar names, shared address, shared coordinates, co-occurrence, or embedding similarity. New schema — not present in handoff-audit/phase1-design/schemas/; added per docs/spatialrag_migration/DATA_CONTRACTS.md §5 (see schemas/contracts/README.md). Discriminator: decision_type.",
+  "type": "object",
+  "required": ["decision_type", "decision_id", "reason_code", "evidence_ids", "created_at"],
+  "properties": {
+    "decision_type": {"enum": ["entity_match_candidate", "entity_identity_decision", "relationship_assertion", "canonical_entity", "alias", "rejected_match", "superseded_decision"]},
+    "decision_id": {"type": "string", "description": "Stable identity, immutable once recorded."},
+    "reason_code": {
+      "type": "string",
+      "minLength": 1,
+      "not": {"enum": ["similar_name", "shared_address", "shared_coordinates", "co_occurrence", "embedding_similarity"]},
+      "description": "A bare similarity score or one of the disallowed generic signals is never a valid reason_code on its own — see x-invariants."
+    },
+    "evidence_ids": {"type": "array", "items": {"type": "string"}, "minItems": 1},
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "oneOf": [
+    {"properties": {"decision_type": {"const": "entity_match_candidate"}, "candidate_entity_ids": {"type": "array", "minItems": 2, "items": {"type": "string"}}, "similarity_signals": {"type": "object", "description": "Informational only — never sufficient by itself to justify a merge."}}, "required": ["candidate_entity_ids"]},
+    {"properties": {"decision_type": {"const": "entity_identity_decision"}, "candidate_ref": {"type": "string"}, "outcome": {"enum": ["MERGE", "DISTINCT", "DEFER"]}, "decided_by": {"type": "string"}}, "required": ["candidate_ref", "outcome", "decided_by"]},
+    {"properties": {"decision_type": {"const": "relationship_assertion"}, "subject_id": {"type": "string"}, "predicate": {"type": "string"}, "object_ref": {"type": "string"}, "assertion_kind": {"enum": ["corroborates", "contradicts", "supersedes"]}}, "required": ["subject_id", "predicate", "object_ref", "assertion_kind"]},
+    {"properties": {"decision_type": {"const": "canonical_entity"}, "entity_id": {"type": "string"}, "canonical_name": {"type": "string"}, "member_alias_ids": {"type": "array", "items": {"type": "string"}}}, "required": ["entity_id", "canonical_name"]},
+    {"properties": {"decision_type": {"const": "alias"}, "alias_of_entity_id": {"type": "string"}, "alias_text": {"type": "string"}}, "required": ["alias_of_entity_id", "alias_text"]},
+    {"properties": {"decision_type": {"const": "rejected_match"}, "candidate_ref": {"type": "string"}, "rejected_by": {"type": "string"}}, "required": ["candidate_ref", "rejected_by"]},
+    {"properties": {"decision_type": {"const": "superseded_decision"}, "supersedes_decision_id": {"type": "string"}, "superseded_by": {"type": "string"}}, "required": ["supersedes_decision_id", "superseded_by"]}
+  ],
+  "x-invariants": [
+    "Never merge solely because of similar names, shared address, shared coordinates, co-occurrence, or embedding similarity — reason_code must name an explicit, reviewable basis beyond those signals.",
+    "Every merge decision (entity_identity_decision.outcome == MERGE) is reversible: a later superseded_decision record can reverse it without deleting the original.",
+    "rejected_match and superseded_decision records are retained for audit, never deleted."
+  ]
+}

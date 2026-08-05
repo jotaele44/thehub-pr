@@ -1,0 +1,22 @@
+# Federation-wide generated and dependency paths.
+# Repository-specific additions belong below this shared baseline.
+.git/
+.github/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+node_modules/
+coverage/
+htmlcov/
+archive/
+artifacts/
+exports/
+output/
+outputs/
+data/raw/

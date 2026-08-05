@@ -12,9 +12,15 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 # User-facing window title of the desktop app.
 APP_TITLE = "TheHub"
+APP_ID = "TheHub"
+BRAND_ACCENT = "#0529a8"
+BRAND_ACCENT_STRONG = "#0529a8"
+ICON_PATH = REPO_ROOT / "assets" / "branding" / "icon-256.png"
+SETUP_VERSION = 1
+DATA_ENV_VAR = "THEHUB_DATA_HOME"
 
 # Dotted import path of the FastAPI application object.
-APP_IMPORT = "server.backend.main:app"
+APP_IMPORT = "desktop.app_server:app"
 
 # Directory containing the Vite frontend (with package.json).
 FRONTEND_DIR = REPO_ROOT / "server" / "frontend"
@@ -30,6 +36,10 @@ REQUIREMENT_FILES = [
 
 # Health endpoint used to detect that the backend is up.
 HEALTH_PATH = "/health"
+
+# desktop/app_server.py attaches the Hub-only native federation launcher before
+# delegating SPA serving to the shared runtime.
+ATTACH_FRONTEND = False
 
 # The hub API imports the repo package (yaml/jsonschema); install it editable
 # with the fastapi/uvicorn server extra into the private venv.

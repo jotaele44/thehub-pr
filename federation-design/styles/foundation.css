@@ -1,0 +1,76 @@
+:root {
+  --fd-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --fd-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --fd-bg: #f8fafc;
+  --fd-surface: #ffffff;
+  --fd-surface-2: #f1f5f9;
+  --fd-text: #0f172a;
+  --fd-text-muted: #475569;
+  --fd-border: #cbd5e1;
+  --fd-accent: #0529a8;
+  --fd-radius-sm: .375rem;
+  --fd-radius-md: .5rem;
+  --fd-radius-lg: .75rem;
+  --fd-radius-xl: 1rem;
+  --fd-shadow-1: 0 1px 2px rgba(0,0,0,.18);
+  --fd-shadow-2: 0 4px 12px rgba(0,0,0,.22);
+  --fd-motion-fast: 120ms cubic-bezier(.2,.8,.2,1);
+  --fd-motion-normal: 180ms cubic-bezier(.2,.8,.2,1);
+  --fd-touch-min: 2.75rem;
+  --fd-focus-width: 2px;
+  --fd-focus-offset: 2px;
+
+  --fd-tone-danger: #dc2626; --fd-tone-danger-fg: #991b1b; --fd-tone-danger-bg: #fee2e2; --fd-tone-danger-border: #fca5a5;
+  --fd-tone-success: #16a34a; --fd-tone-success-fg: #166534; --fd-tone-success-bg: #dcfce7; --fd-tone-success-border: #86efac;
+  --fd-tone-warning: #d97706; --fd-tone-warning-fg: #854d0e; --fd-tone-warning-bg: #fef3c7; --fd-tone-warning-border: #fcd34d;
+  --fd-tone-info: #0284c7; --fd-tone-info-fg: #1e40af; --fd-tone-info-bg: #dbeafe; --fd-tone-info-border: #93c5fd;
+  --fd-tone-neutral: #64748b; --fd-tone-neutral-fg: #334155; --fd-tone-neutral-bg: #e2e8f0; --fd-tone-neutral-border: #94a3b8;
+  --fd-tone-process: #7c3aed; --fd-tone-process-fg: #5b21b6; --fd-tone-process-bg: #ede9fe; --fd-tone-process-border: #c4b5fd;
+  --fd-tone-tier: #0d9488; --fd-tone-tier-fg: #115e59; --fd-tone-tier-bg: #ccfbf1; --fd-tone-tier-border: #5eead4;
+  --fd-tone-caution: #ca8a04; --fd-tone-caution-fg: #713f12; --fd-tone-caution-bg: #fef9c3; --fd-tone-caution-border: #fde047;
+  --fd-tone-elevated: #ea580c; --fd-tone-elevated-fg: #9a3412; --fd-tone-elevated-bg: #ffedd5; --fd-tone-elevated-border: #fdba74;
+
+  /* Backward-compatible v1 aliases. */
+  --fd-operational-fg: var(--fd-tone-success-fg); --fd-operational-bg: var(--fd-tone-success-bg); --fd-operational-signal: var(--fd-tone-success);
+  --fd-degraded-fg: var(--fd-tone-warning-fg); --fd-degraded-bg: var(--fd-tone-warning-bg); --fd-degraded-signal: var(--fd-tone-warning);
+  --fd-critical-fg: var(--fd-tone-danger-fg); --fd-critical-bg: var(--fd-tone-danger-bg); --fd-critical-signal: var(--fd-tone-danger);
+  --fd-offline-fg: var(--fd-tone-neutral-fg); --fd-offline-bg: var(--fd-tone-neutral-bg); --fd-offline-signal: var(--fd-tone-neutral);
+  --fd-information-fg: var(--fd-tone-info-fg); --fd-information-bg: var(--fd-tone-info-bg); --fd-information-signal: var(--fd-tone-info);
+  --fd-analysis-fg: var(--fd-tone-process-fg); --fd-analysis-bg: var(--fd-tone-process-bg); --fd-analysis-signal: var(--fd-tone-process);
+  --fd-st-danger: var(--fd-tone-danger); --fd-st-danger-fg: var(--fd-tone-danger-fg);
+  --fd-st-success: var(--fd-tone-success); --fd-st-success-fg: var(--fd-tone-success-fg);
+  --fd-st-warning: var(--fd-tone-warning); --fd-st-warning-fg: var(--fd-tone-warning-fg);
+  --fd-st-info: var(--fd-tone-info); --fd-st-info-fg: var(--fd-tone-info-fg);
+  --fd-st-neutral: var(--fd-tone-neutral); --fd-st-neutral-fg: var(--fd-tone-neutral-fg);
+  --fd-st-process: var(--fd-tone-process); --fd-st-process-fg: var(--fd-tone-process-fg);
+  --fd-st-tier: var(--fd-tone-tier); --fd-st-tier-fg: var(--fd-tone-tier-fg);
+  --fd-st-caution: var(--fd-tone-caution); --fd-st-caution-fg: var(--fd-tone-caution-fg);
+  --fd-st-elevated: var(--fd-tone-elevated); --fd-st-elevated-fg: var(--fd-tone-elevated-fg);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --fd-bg: #070b14;
+  --fd-surface: #0f172a;
+  --fd-surface-2: #172033;
+  --fd-text: #f8fafc;
+  --fd-text-muted: #94a3b8;
+  --fd-border: #334155;
+  --fd-tone-danger-fg: #fecaca; --fd-tone-danger-bg: #450a0a; --fd-tone-danger-border: #991b1b;
+  --fd-tone-success-fg: #bbf7d0; --fd-tone-success-bg: #052e16; --fd-tone-success-border: #166534;
+  --fd-tone-warning-fg: #fde68a; --fd-tone-warning-bg: #451a03; --fd-tone-warning-border: #92400e;
+  --fd-tone-info-fg: #bae6fd; --fd-tone-info-bg: #082f49; --fd-tone-info-border: #0369a1;
+  --fd-tone-neutral-fg: #e2e8f0; --fd-tone-neutral-bg: #1e293b; --fd-tone-neutral-border: #475569;
+  --fd-tone-process-fg: #ddd6fe; --fd-tone-process-bg: #2e1065; --fd-tone-process-border: #6d28d9;
+  --fd-tone-tier-fg: #99f6e4; --fd-tone-tier-bg: #134e4a; --fd-tone-tier-border: #0f766e;
+  --fd-tone-caution-fg: #fef08a; --fd-tone-caution-bg: #422006; --fd-tone-caution-border: #a16207;
+  --fd-tone-elevated-fg: #fed7aa; --fd-tone-elevated-bg: #431407; --fd-tone-elevated-border: #c2410c;
+}
+
+[data-repo="thehub-pr"]{--fd-accent:#0529a8}
+[data-repo="spiderweb-pr"]{--fd-accent:#ca0c02}
+[data-repo="skywatcher-pr"]{--fd-accent:#0573e4}
+[data-repo="moneysweep-pr"]{--fd-accent:#16a34a}
+[data-repo="centinelas-pr"]{--fd-accent:#df630d}
+[data-repo="aguayluz-pr"]{--fd-accent:#0de3d8}
+[data-repo="ovnis-pr"]{--fd-accent:#7c3aed}

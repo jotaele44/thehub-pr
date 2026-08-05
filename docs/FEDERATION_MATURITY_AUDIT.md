@@ -501,12 +501,21 @@ true when measured and is now stale: its CI runs `npm ci`, `npm run build` and
 `npm run typecheck`. Re-derived from `.github/workflows/` on `main`, not from job
 names — see below for why that distinction matters.
 
-The rest of that table stands, re-checked at the same time:
+The rest of that table stood when written, and both remaining claims have since
+been closed rather than merely re-checked:
 
-- **Only `thehub-pr` and `skywatcher-pr` gate `npm run lint`.** Still two of seven.
-- **`spiderweb-pr/server/frontend` still has no `lint` script** —
-  `['build','build:export','dev','preview','snapshot','typecheck']` — so it is still
-  six of seven with one, and there is nothing there to gate.
+- ~~**Only `thehub-pr` and `skywatcher-pr` gate `npm run lint`.**~~ **All seven now
+  gate it.** aguayluz gained a `Lint` step in `validate.yml`'s existing
+  `dashboard-build` job; centinelas, ovnis and moneysweep gained a `frontend` job
+  outright (moneysweep already ran lint via `verify:pilot`, but only on pull
+  requests touching `dashboard/**` and never on push); spiderweb gained the config
+  it had never had.
+- ~~**`spiderweb-pr/server/frontend` still has no `lint` script**~~ — **it has one
+  now**, backed by a *local* eslint config rather than the shared federation
+  template. That frontend is TypeScript with no `src/pages/` and no `Layout.jsx`,
+  while the shared config globs exactly those at `.{js,mjs,cjs,jsx}`; rendering it
+  there would have linted zero files and reported a passing gate over nothing.
+  So it is seven of seven with a `lint` script, but not seven with the same config.
 
 **Why this nearly became a second error.** Every repo's CI now shows a green job
 named `lint`, and reading those job names suggested four more repos had started
@@ -515,5 +524,8 @@ still two repos. A check-run name is not evidence about what a workflow runs, an
 treating it as such would have put a wrong correction on top of a stale claim.
 The workflows were re-read directly to settle it.
 
-`scripts/verify_audit.py`'s `ROLLUP_LINT_GATED` constant is unchanged for the same
-reason — it was, and remains, correct.
+`scripts/verify_audit.py`'s `ROLLUP_LINT_GATED` and `ROLLUP_NO_LINT_SCRIPT`
+constants were updated in step with the two corrections above. They are
+hard-coded mirrors of this section rather than being parsed from it, so the two
+have to move together: changing the constants alone would make the verifier pass
+while blessing a stale claim here — precisely the drift it exists to catch.

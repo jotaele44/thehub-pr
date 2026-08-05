@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prii-desktop"
-version = "0.1.0"
-description = "Shared desktop-wrapper runtime for PRII producers (same-origin ASGI app + native-window launcher)."
+version = "0.2.0"
+description = "Shared self-contained desktop runtime with native setup, repair, diagnostics, same-origin ASGI serving, and pywebview."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }

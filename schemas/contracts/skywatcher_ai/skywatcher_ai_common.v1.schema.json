@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/schemas/contracts/skywatcher_ai/skywatcher_ai_common.v1.schema.json",
+  "$defs": {
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "classification": {"enum": ["PUBLIC", "INTERNAL", "RESTRICTED", "SENSITIVE_LOCATION", "LEGAL_HOLD", "QUARANTINED", "TEST_ONLY"]},
+    "review": {"enum": ["UNREVIEWED", "NEEDS_REVIEW", "APPROVED", "REJECTED", "SUPERSEDED"]},
+    "outcome": {"enum": ["SUCCEEDED", "PARTIAL", "DENIED_POLICY", "DENIED_EGRESS", "PROVIDER_ERROR", "AUTH_ERROR", "RATE_LIMITED", "INVALID_RESPONSE", "SCHEMA_REJECTED", "WORKER_ERROR", "CANCELLED"]}
+  }
+}
