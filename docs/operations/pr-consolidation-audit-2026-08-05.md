@@ -25,11 +25,11 @@
 | --- | --- | --- | --- | --- |
 | #161 | chore/unified-skillpacks-v1.0.0-bf4c9d85 | NEEDS_INSPECTION | Mergeable draft; 7 files; lint check failing. | Keep open; fix lint before promotion. |
 | #160 | docs/road-to-100-critical-path-v1 | MERGE_CANDIDATE | Mergeable draft; 1 governance freeze file; checks passing. | Keep open; mark ready only when governance review approves. |
-| #158 | agent/prii-preclone-macos-certification-v3-0 | MERGE_CANDIDATE | Latest certification line; mergeable draft; checks passing. | Keep as certification keeper candidate. |
+| #158 | agent/prii-preclone-macos-certification-v3-0 | MERGE_CANDIDATE | Latest certification line; mergeable draft; historical lineage preserved in commit `fc49ace`. | Keep as certification keeper candidate. |
 | #157 | codex/remove-mandatory-sibling-coupling-v0-1 | MERGE_CANDIDATE | Mergeable draft; isolated-clone policy scope; checks passing. | Keep open; promote after readiness review. |
-| #155 | agent/prii-preclone-macos-certification-v2-0 | NEEDS_INSPECTION | Has unique commit not cherry-picked into #158. | Keep open until unique commit is reviewed against #158. |
-| #154 | agent/prii-preclone-macos-certification-v1-0 | NEEDS_INSPECTION | Has unique commits not cherry-picked into #158. | Keep open until unique commits are reviewed against #158. |
-| #149 | agent/prii-preclone-macos-certification-v0-2 | NEEDS_INSPECTION | Has unique commits not cherry-picked into #158. | Keep open until unique commits are reviewed against #158. |
+| #155 | agent/prii-preclone-macos-certification-v2-0 | SUPERSEDED_CLOSE | Unique authority-aligned heads archived in #158 commit `fc49ace`. | CLOSED 2026-08-05; branch retained. |
+| #154 | agent/prii-preclone-macos-certification-v1-0 | SUPERSEDED_CLOSE | Unique refreshed heads archived in #158 commit `fc49ace`. | CLOSED 2026-08-05; branch retained. |
+| #149 | agent/prii-preclone-macos-certification-v0-2 | SUPERSEDED_CLOSE | Original certification receipt and heads archived in #158 commit `fc49ace`. | CLOSED 2026-08-05; branch retained. |
 | #148 | agent/prii-preclone-normalization-v0-1 | MERGE_CANDIDATE | Mergeable draft; pre-clone normalization; checks passing. | Keep open; promote after certification/policy ordering review. |
 | #138 | agent/gui-capability-parity-v0-2 | DOCTRINE_BLOCKED_CLOSE | GUI parity scope; tests and drift failing; backend readiness not clean. | CLOSED 2026-08-05 with sequencing rationale; branch retained. |
 | #134 | agent/federation-branding-ui-setup-v0-1 | DOCTRINE_BLOCKED_CLOSE | Branding/UI/desktop app scope; conflicting; backend readiness not clean. | CLOSED 2026-08-05 with sequencing rationale; branch retained. |
@@ -54,7 +54,7 @@
 
 ## Verification Notes
 
-- Certification comparison command found unique commits in #149, #154, and #155 that are not cherry-picked into #158; these PRs were not considered safe for immediate closure.
+- Certification comparison command found unique commits in #149, #154, and #155 that were not cherry-picked into #158; reusable lineage was preserved in #158 commit `fc49ace` before closure.
 - File inspection showed #131 contains operator certification and backend receipt/manager-host changes, so it is not treated as UI-only.
 - UI-first closures are reversible and do not delete branches.
 
@@ -65,10 +65,12 @@
 - #126
 - #134
 - #138
+- #149
+- #154
+- #155
 
 ## Deferred Actions
 
-- Review certification unique commits across #149, #154, #155, and #158 before declaring older certification PRs superseded.
 - Review #94 and #100 for backend-critical extraction or clean replacement.
 - Fix #161 lint before promotion.
 - Process dependency PRs after readiness/governance queue is stable.
