@@ -1,0 +1,66 @@
+.fd-state{display:grid;justify-items:center;gap:.5rem;padding:2rem;text-align:center;color:var(--fd-text-muted)}
+.fd-state__icon{display:inline-flex;align-items:center;justify-content:center;width:3rem;height:3rem;border-radius:var(--fd-radius-lg);background:var(--fd-surface-2);border:1px solid var(--fd-border);color:var(--fd-text-muted);margin-bottom:.25rem}
+.fd-state__title{margin:0;color:var(--fd-text);font-size:1.125rem}
+.fd-state__description{max-width:42rem;margin:0}
+.fd-state__action{margin-top:.5rem}
+.fd-state__icon>svg{width:1.5rem;height:1.5rem;display:block}
+.fd-state[data-tone="danger"] .fd-state__title{color:var(--fd-tone-danger-fg)}
+.fd-state[data-tone="warning"] .fd-state__title{color:var(--fd-tone-warning-fg)}
+.fd-state[data-tone="caution"] .fd-state__title{color:var(--fd-tone-caution-fg)}
+.fd-state--inline{display:block;padding:.5rem 0;text-align:left;font-size:.8125rem}
+.fd-state--inline .fd-state__title{font-size:inherit;font-weight:400;color:var(--fd-text-muted)}
+.fd-state--inline .fd-state__description{font-size:inherit;margin-top:.125rem}
+.fd-state--inline .fd-state__icon,.fd-state--inline .fd-state__spinner{display:none}
+/* v0.3 compatibility class names. */
+.fd-empty-state{display:grid;justify-items:center;gap:.5rem;padding:2rem;text-align:center;color:var(--fd-text-muted)}
+.fd-empty-state__icon{display:inline-flex;align-items:center;justify-content:center;width:3rem;height:3rem;border-radius:var(--fd-radius-lg);background:var(--fd-surface-2);border:1px solid var(--fd-border);color:var(--fd-text-muted);margin-bottom:.25rem}
+.fd-empty-state__title{margin:0;color:var(--fd-text);font-size:1.125rem}.fd-empty-state__description{max-width:42rem;margin:0}.fd-empty-state__action{margin-top:.5rem}
+.fd-empty-state__icon>svg{width:1.5rem;height:1.5rem;display:block}
+.fd-empty-state--inline{display:block;padding:.5rem 0;text-align:left;font-size:.8125rem}
+.fd-empty-state--inline .fd-empty-state__title{font-size:inherit;font-weight:400;color:var(--fd-text-muted)}
+.fd-empty-state--inline .fd-empty-state__description{font-size:inherit;margin-top:.125rem}
+.fd-empty-state--inline .fd-empty-state__icon{display:none}
+
+.fd-spinner{display:inline-block;width:1rem;height:1rem;border:.125rem solid currentColor;border-right-color:transparent;border-radius:50%;animation:fd-spin .75s linear infinite}
+.fd-state__spinner{width:1.5rem;height:1.5rem}
+@keyframes fd-spin{to{transform:rotate(360deg)}}
+
+.fd-stat-card{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:.5rem;background:var(--fd-surface);border:1px solid var(--fd-border);border-radius:var(--fd-radius-lg);padding:1rem}
+.fd-stat-card__head{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.fd-stat-card__label{font-size:.75rem;font-weight:500;letter-spacing:.03em;text-transform:uppercase;color:var(--fd-text-muted)}
+.fd-stat-card__icon{width:1rem;height:1rem;color:var(--fd-text-muted);flex:none}.fd-stat-card--alert .fd-stat-card__icon{color:var(--fd-tone-danger-fg)}
+.fd-stat-card__value{font-family:var(--fd-font-mono);letter-spacing:-.02em;font-size:1.5rem;font-weight:600;line-height:1.2;color:var(--fd-text)}.fd-stat-card__sub{font-size:.75rem;color:var(--fd-text-muted)}
+.fd-stat-card__icon>svg{width:100%;height:100%;display:block}
+.fd-stat-card__value[data-tone="danger"]{color:var(--fd-tone-danger-fg)}.fd-stat-card__value[data-tone="success"]{color:var(--fd-tone-success-fg)}.fd-stat-card__value[data-tone="warning"]{color:var(--fd-tone-warning-fg)}.fd-stat-card__value[data-tone="info"]{color:var(--fd-tone-info-fg)}.fd-stat-card__value[data-tone="neutral"]{color:var(--fd-tone-neutral-fg)}.fd-stat-card__value[data-tone="process"]{color:var(--fd-tone-process-fg)}.fd-stat-card__value[data-tone="tier"]{color:var(--fd-tone-tier-fg)}.fd-stat-card__value[data-tone="caution"]{color:var(--fd-tone-caution-fg)}.fd-stat-card__value[data-tone="elevated"]{color:var(--fd-tone-elevated-fg)}
+/* Accent bar down the leading edge, tinted by status role. A pseudo-element so the
+   card needs no extra DOM; inset-inline-start keeps it on the correct edge in RTL. */
+.fd-stat-card--accent::before{content:"";position:absolute;inset-block:0;inset-inline-start:0;width:.25rem;background:var(--fd-tone-neutral-fg)}
+.fd-stat-card--accent[data-accent="danger"]::before{background:var(--fd-tone-danger-fg)}
+.fd-stat-card--accent[data-accent="success"]::before{background:var(--fd-tone-success-fg)}
+.fd-stat-card--accent[data-accent="warning"]::before{background:var(--fd-tone-warning-fg)}
+.fd-stat-card--accent[data-accent="info"]::before{background:var(--fd-tone-info-fg)}
+.fd-stat-card--accent[data-accent="neutral"]::before{background:var(--fd-tone-neutral-fg)}
+.fd-stat-card--accent[data-accent="process"]::before{background:var(--fd-tone-process-fg)}
+.fd-stat-card--accent[data-accent="tier"]::before{background:var(--fd-tone-tier-fg)}
+.fd-stat-card--accent[data-accent="caution"]::before{background:var(--fd-tone-caution-fg)}
+.fd-stat-card--accent[data-accent="elevated"]::before{background:var(--fd-tone-elevated-fg)}
+/* Skeleton stand-in while the figure is unknown. Sized from the value's own line box
+   so the card does not resize when the real number arrives. */
+.fd-stat-card__value--loading{min-height:1.8rem;border-radius:var(--fd-radius-sm);background:var(--fd-surface-2);animation:fd-pulse 1.4s ease-in-out infinite}
+@keyframes fd-pulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
+@media (forced-colors: active) {
+  :where(button,a,input,select,textarea,[tabindex]):focus-visible,.fd-focus:focus-visible{outline-color:Highlight}
+  .fd-badge,.fd-status,.fd-source-badge,.fd-panel{border-color:CanvasText}
+  /* Both the skeleton and the accent bar are drawn with background alone, which the
+     forced palette flattens to Canvas — they would disappear entirely. Redraw each
+     with a system color so the loading and accent affordances survive. The skeleton
+     uses an inset outline rather than a border so the card's height does not shift. */
+  .fd-stat-card__value--loading{outline:1px solid CanvasText;outline-offset:-1px}
+  /* Must carry the attribute selector: the per-role rules above are (0,2,1), so a
+     bare .fd-stat-card--accent::before would lose the cascade on every accented card. */
+  .fd-stat-card--accent::before,.fd-stat-card--accent[data-accent]::before{background:CanvasText}
+}

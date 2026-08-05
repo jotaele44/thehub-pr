@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/provider_reference/v1",
+  "x-contract-version": "1.0.0",
+  "x-status": "FROZEN — schemas/contracts (Phase 1)",
+  "title": "Provider Reference",
+  "description": "Reproducibility record for one provider slot (LLM, embedding, reranker, OCR, or geocoder) used in an analytical run. New schema — not present in handoff-audit/phase1-design/schemas/; added per docs/spatialrag_migration/DATA_CONTRACTS.md §10 so a model upgrade never silently alters historical answers (see schemas/contracts/README.md).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["provider", "model"],
+  "properties": {
+    "provider": {"type": "string", "description": "e.g. LLMProvider/EmbeddingProvider/RerankerProvider/OCRProvider/GeocoderProvider implementation name."},
+    "model": {"type": "string"},
+    "model_revision": {"type": ["string", "null"], "description": "Where available."},
+    "prompt_template_version": {"type": ["string", "null"]},
+    "system_policy_version": {"type": ["string", "null"]},
+    "temperature": {"type": ["number", "null"]}
+  },
+  "x-invariants": [
+    "A model upgrade must not silently alter historical answers — every analytical run's provider slots are recorded, not inferred after the fact."
+  ]
+}

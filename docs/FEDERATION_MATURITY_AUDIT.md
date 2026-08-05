@@ -442,3 +442,90 @@ boundary written down.
 effort estimates, the phased roadmap — remains judgement. The harness constrains the
 arithmetic and the counts, which is where both of the confirmed errors lived. It does not
 make the grades objective and is not offered as doing so.
+
+---
+
+## Third round of corrections — 2026-07-27
+
+Both follow-ups this document left open are closed, and closing them exposed a
+third error of my own.
+
+**`POST /ai/query` is now guarded.** `aguayluz-pr`'s six mutating routes all carry
+`Depends(_require_key)`. The client landed with it: the six write paths in
+`dashboard/src/lib/api.js` share one `authHeaders()`, the operator sets the key on
+the System & Tools page, and a 401 now names its cause — no key set versus key
+rejected — instead of surfacing a status code. Proven against a live app in both
+directions: with `API_SECRET_KEY` set, no header and a wrong bearer both 401 while
+the correct bearer reaches the handler; with it unset, every route behaves exactly
+as before.
+
+**The correction.** The 2026-07-27 entry above said the client-credential gap was
+one federation-wide problem. It also said `thehub-pr` and `skywatcher-pr` already
+had working plumbing. **Both halves were wrong, in opposite directions.**
+
+`federationClient.js:45` does read a token and set `Authorization: Bearer`, which
+is what I checked. What I did not check is that it survives startup. In diagnostic
+mode `/api/auth/me` always 401s, and `AuthContext` responds by calling
+`setToken(null)` and nulling `appParams.token` so a stale session token cannot trap
+the app in a login redirect. A write token supplied as `?access_token=` was
+therefore **discarded before the first request went out** — the mechanism read as
+wired and silently was not. Reading the call site was not enough; the token's
+lifetime was the thing that mattered.
+
+So the fix is a genuinely separate slot, not documentation:
+`?write_token=<PRII_WRITE_TOKEN>` stored under `federation_write_token`, which the
+auth cleanup does not touch, used as the last fallback in `request()`. Both
+backends now advertise `write_token_required` in `public_settings` so the UI can
+tell "this server wants a token" from "this server accepts my network" — without
+it, both look identical until a write fails.
+
+| Repo | Guard | Client, before | Client, now |
+|---|---|---|---|
+| `aguayluz-pr` | `_require_key` | no `Authorization` on any write | key entered in System & Tools, `sessionStorage` |
+| `thehub-pr` | `require_write_access` | token plumbed but cleared at boot | `?write_token=`, separate storage slot |
+| `skywatcher-pr` | `require_write_access` | same | same |
+
+**The harness now covers this.** `scripts/verify_audit.py` gained a check that each
+backend advertises the write-token flag, and its aguayluz check flipped from "which
+route is unguarded" to "how many are" — so a new mutating route shipped without a
+guard turns the build red. `audit-claims` is also split: the checks needing only
+this repo always run and must always pass, while the cross-repo half runs strictly
+under `--require-all` when `FEDERATION_READ_TOKEN` is present. A missing secret
+never manufactures a red build, and when it is missing the job says which checks
+went unverified rather than letting the summary imply full coverage.
+
+### Correction — spiderweb's frontend is now built in CI (2026-07-27)
+
+The table above says `spiderweb-pr` has "**no npm step in any workflow**". That was
+true when measured and is now stale: its CI runs `npm ci`, `npm run build` and
+`npm run typecheck`. Re-derived from `.github/workflows/` on `main`, not from job
+names — see below for why that distinction matters.
+
+The rest of that table stood when written, and both remaining claims have since
+been closed rather than merely re-checked:
+
+- ~~**Only `thehub-pr` and `skywatcher-pr` gate `npm run lint`.**~~ **All seven now
+  gate it.** aguayluz gained a `Lint` step in `validate.yml`'s existing
+  `dashboard-build` job; centinelas, ovnis and moneysweep gained a `frontend` job
+  outright (moneysweep already ran lint via `verify:pilot`, but only on pull
+  requests touching `dashboard/**` and never on push); spiderweb gained the config
+  it had never had.
+- ~~**`spiderweb-pr/server/frontend` still has no `lint` script**~~ — **it has one
+  now**, backed by a *local* eslint config rather than the shared federation
+  template. That frontend is TypeScript with no `src/pages/` and no `Layout.jsx`,
+  while the shared config globs exactly those at `.{js,mjs,cjs,jsx}`; rendering it
+  there would have linted zero files and reported a passing gate over nothing.
+  So it is seven of seven with a `lint` script, but not seven with the same config.
+
+**Why this nearly became a second error.** Every repo's CI now shows a green job
+named `lint`, and reading those job names suggested four more repos had started
+gating frontend lint. They had not: those are **ruff** jobs. The npm lint gate is
+still two repos. A check-run name is not evidence about what a workflow runs, and
+treating it as such would have put a wrong correction on top of a stale claim.
+The workflows were re-read directly to settle it.
+
+`scripts/verify_audit.py`'s `ROLLUP_LINT_GATED` and `ROLLUP_NO_LINT_SCRIPT`
+constants were updated in step with the two corrections above. They are
+hard-coded mirrors of this section rather than being parsed from it, so the two
+have to move together: changing the constants alone would make the verifier pass
+while blessing a stale claim here — precisely the drift it exists to catch.

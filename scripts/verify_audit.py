@@ -57,6 +57,25 @@ from typing import Callable, Iterable, NamedTuple
 HTTP_VERBS = ("get", "post", "put", "patch", "delete", "head", "options")
 MUTATING_VERBS = ("post", "put", "patch", "delete")
 
+#: The repository this script ships in. `actions/checkout` refuses to write
+#: outside $GITHUB_WORKSPACE, so in CI the siblings land in a subdirectory while
+#: this repo sits at the workspace root — meaning `<root>/thehub-pr` does not
+#: exist. Resolving this one name to the script's own tree makes the CI layout
+#: work and, incidentally, makes `--root` optional when running from inside the
+#: repo.
+SELF_REPO_NAME = "thehub-pr"
+SELF_REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def resolve_repo(root: Path, name: str) -> Path | None:
+    """Locate a federation repository, or None if it is not available."""
+    candidate = root / name
+    if candidate.is_dir():
+        return candidate
+    if name == SELF_REPO_NAME and SELF_REPO_ROOT.is_dir():
+        return SELF_REPO_ROOT
+    return None
+
 
 # --------------------------------------------------------------------------
 # Derivers — each answers one countable question about a checked-out repo.
@@ -175,11 +194,6 @@ def argparse_subcommand_count(repo: Path, source_file: str) -> int:
     return len(re.findall(r'add_parser\(\s*[\'"]([^\'"]+)', source, flags=re.S))
 
 
-def python_file_count(repo: Path, subdir: str = ".") -> int:
-    root = repo / subdir
-    if not root.is_dir():
-        return 0
-    return len([p for p in root.rglob("*.py") if ".venv" not in p.parts and "node_modules" not in p.parts])
 
 
 # --------------------------------------------------------------------------
@@ -212,11 +226,12 @@ CHECKS: list[Check] = [
     Check(
         repo="aguayluz-pr",
         doc="docs/MATURITY_AUDIT.md",
-        # Captures whichever route the document names, so pointing at the wrong
-        # one fails as a value mismatch rather than as a missing claim.
-        pattern=r"`POST (/[\w/{}.-]+)` \(`:\d+`\) is \*\*not\*\* guarded",
-        derive=lambda r: _sole_unguarded(r, "server/backend/main.py", "_require_key"),
-        label="aguayluz: the unguarded mutating route is /ai/query",
+        # The previous revision of this check captured *which* route was unguarded.
+        # /ai/query is now guarded, so the claim under test becomes the count, and
+        # the check fails the moment a new mutating route ships without the guard.
+        pattern=r"\*\*(\d+)\*\* unguarded mutating routes",
+        derive=lambda r: len(unguarded_mutating_routes(r, "server/backend/main.py", "_require_key")),
+        label="aguayluz: count of unguarded mutating routes",
     ),
     Check(
         repo="thehub-pr",
@@ -224,6 +239,20 @@ CHECKS: list[Check] = [
         pattern=r"\*\*(\d+)\*\* subcommands",
         derive=lambda r: argparse_subcommand_count(r, "src/hub/cli.py"),
         label="thehub: hub CLI subcommand count",
+    ),
+    Check(
+        repo="thehub-pr",
+        doc="server/frontend/README.md",
+        pattern=r"`public_settings` advertises `(\w+)`",
+        derive=lambda r: _public_settings_write_key(r, "server/backend/main.py"),
+        label="thehub: public_settings advertises the write-token flag",
+    ),
+    Check(
+        repo="skywatcher-pr",
+        doc="frontend/README.md",
+        pattern=r"`public_settings` advertises `(\w+)`",
+        derive=lambda r: _public_settings_write_key(r, "server/backend/main.py"),
+        label="skywatcher: public_settings advertises the write-token flag",
     ),
     Check(
         repo="spiderweb-pr",
@@ -248,10 +277,19 @@ FRONTENDS = {
 }
 
 #: Repos the rollup says gate `npm run lint` in CI. Derived and compared below.
-ROLLUP_LINT_GATED = {"thehub-pr", "skywatcher-pr"}
+#: Now all seven: aguayluz gained a Lint step in its existing dashboard-build
+#: job, centinelas/ovnis/moneysweep gained a frontend job outright, and
+#: spiderweb gained the eslint config it never had.
+ROLLUP_LINT_GATED = {
+    "aguayluz-pr", "centinelas-pr", "moneysweep-pr", "ovnis-pr",
+    "skywatcher-pr", "spiderweb-pr", "thehub-pr",
+}
 
-#: Repos the rollup says have no `lint` script at all.
-ROLLUP_NO_LINT_SCRIPT = {"spiderweb-pr"}
+#: Repos the rollup says have no `lint` script at all. Empty since spiderweb-pr
+#: got one — its config is local rather than rendered from the federation
+#: templates, because that shared config is JSX-flavoured and would match none
+#: of spiderweb's TypeScript sources.
+ROLLUP_NO_LINT_SCRIPT: set[str] = set()
 
 
 _NUMBER_WORDS = {
@@ -266,11 +304,21 @@ def _spelled(ratio: str) -> str:
     return f"{_NUMBER_WORDS.get(int(guarded), guarded)} of the {_NUMBER_WORDS.get(int(total), total)}"
 
 
-def _sole_unguarded(repo: Path, main_py: str, guard: str) -> str:
-    open_routes = unguarded_mutating_routes(repo, main_py, guard)
-    if len(open_routes) != 1:
-        return f"<{len(open_routes)} unguarded routes: {open_routes}>"
-    return open_routes[0].split()[1]
+def _public_settings_write_key(repo: Path, main_py: str) -> str:
+    """The write-token flag advertised in the `public_settings` object, if any.
+
+    The browser cannot see backend env vars, so a UI that holds a write token has
+    no way to tell "this server wants the token" from "this server accepts writes
+    from my network" — both look like a working request until one 401s. This
+    derives the flag name actually present in the response so the README cannot
+    drift from it.
+    """
+    source = _read(repo / main_py)
+    match = re.search(r'"public_settings":\s*\{([^}]*)\}', source, flags=re.S)
+    if not match:
+        return "<no public_settings object>"
+    keys = re.findall(r'"(\w*write[_\w]*)"\s*:', match.group(1))
+    return keys[0] if keys else "<absent>"
 
 
 def _lint_allowlist_size(repo: Path) -> int:
@@ -299,8 +347,8 @@ def run_checks(root: Path, require_all: bool) -> list[Result]:
     results: list[Result] = []
 
     for check in CHECKS:
-        repo = root / check.repo
-        if not repo.is_dir():
+        repo = resolve_repo(root, check.repo)
+        if repo is None:
             results.append(Result(
                 "FAIL" if require_all else "SKIP",
                 check.label,
@@ -345,8 +393,8 @@ def _check_frontend_lint_table(root: Path, require_all: bool) -> list[Result]:
     gated: set[str] = set()
 
     for name, frontend in FRONTENDS.items():
-        repo = root / name
-        if not repo.is_dir():
+        repo = resolve_repo(root, name)
+        if repo is None:
             missing.append(name)
             continue
         if has_npm_script(repo, f"{frontend}/package.json", "lint"):

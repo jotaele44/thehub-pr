@@ -10,6 +10,22 @@ const getStoredToken = () => {
   return window.localStorage.getItem(TOKEN_STORAGE_KEY) || window.localStorage.getItem('access_token') || null;
 };
 
+const WRITE_TOKEN_STORAGE_KEY = 'federation_write_token';
+
+// PRII_WRITE_TOKEN, kept in its own slot. AuthContext clears the *access* token
+// whenever /api/auth/me 401s — which it always does in diagnostic mode — so a
+// write token stored alongside it would be discarded before the first request.
+export const getWriteToken = () => {
+  if (typeof window === 'undefined') return null;
+  return window.localStorage.getItem(WRITE_TOKEN_STORAGE_KEY) || null;
+};
+
+export const setWriteToken = (token) => {
+  if (typeof window === 'undefined') return;
+  if (token) window.localStorage.setItem(WRITE_TOKEN_STORAGE_KEY, token);
+  else window.localStorage.removeItem(WRITE_TOKEN_STORAGE_KEY);
+};
+
 const setStoredToken = (token) => {
   if (typeof window === 'undefined') return;
   if (token) {
@@ -44,7 +60,10 @@ const normalizeError = async (response) => {
 
 async function request(path, options = {}) {
   const baseUrl = trimSlash(options.baseUrl || appParams.apiBaseUrl || '/api');
-  const token = options.token ?? appParams.token ?? getStoredToken();
+  // Write token last: it only applies once no session token is in play, which is
+  // exactly the diagnostic-mode case the write guard exists for.
+  const token = options.token ?? appParams.token ?? getStoredToken()
+    ?? appParams.writeToken ?? getWriteToken();
   const headers = new Headers(options.headers || {});
 
   if (!(options.body instanceof FormData) && !headers.has('Content-Type')) {
@@ -180,6 +199,18 @@ const system = {
   })),
 };
 
+// Project consolidation signs — built live from the current aggregate.
+const projectSigns = {
+  list: () => request('/project-signs'),
+  // Optionally persist the HTML + index.json to reports/signs (mirrors the CLI).
+  generate: (write = false) =>
+    request('/project-signs/generate', { method: 'POST', body: { write } }),
+  htmlUrl: (projectId) => {
+    const base = trimSlash(appParams.apiBaseUrl || '/api');
+    return `${base}/project-signs/${encode(projectId)}/html`;
+  },
+};
+
 // "What's new since you last looked" + per-subscriber push/SMS preferences.
 const notifications = {
   list: (since) =>
@@ -202,5 +233,6 @@ export const federation = {
   notifications,
   asServiceRole: { entities, connectors },
   system,
+  projectSigns,
   request,
 };

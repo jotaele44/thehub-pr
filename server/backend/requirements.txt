@@ -1,3 +1,12 @@
 fastapi>=0.100
 uvicorn[standard]>=0.22
 PyYAML>=6.0
+# Ed25519 verification for the signed operations policy and execution receipts.
+cryptography>=41
+# federation_manager validates manifests at import time, and main.py imports it
+# unconditionally via federation_manager_api. It is already a core dependency in
+# pyproject.toml, so installs that go through `pip install -e ".[server]"` (the
+# Dockerfile) get it either way — but desktop-build.yml installs this file plus
+# requirements-desktop.txt and never the project, so leaving it out crashed the
+# frozen app on startup with ModuleNotFoundError.
+jsonschema>=4.0

@@ -141,11 +141,11 @@ def test_missing_package_json_is_not_a_lint_script(tmp_path):
 # --- the runner's verdicts ------------------------------------------------
 
 
-def _claim_doc(repo: Path, guarded_phrase: str, unguarded_route: str) -> None:
+def _claim_doc(repo: Path, guarded_phrase: str, unguarded_count: int) -> None:
     (repo / "docs" / "MATURITY_AUDIT.md").write_text(
         f"bearer auth, and it is attached to **{guarded_phrase}**\n"
         f"mutating routes — see below.\n\n"
-        f"`POST {unguarded_route}` (`:44`) is **not** guarded, and no client sends the header.\n",
+        f"There are **{unguarded_count}** unguarded mutating routes.\n",
         encoding="utf-8",
     )
 
@@ -155,33 +155,34 @@ def _run(tmp_path):
 
 
 AGUAYLUZ_RATIO = "aguayluz: mutating routes carrying _require_key"
-AGUAYLUZ_ROUTE = "aguayluz: the unguarded mutating route is /ai/query"
+AGUAYLUZ_OPEN = "aguayluz: count of unguarded mutating routes"
 
 
 def test_accurate_document_passes(tmp_path):
     repo = _make_repo(tmp_path, "aguayluz-pr")
-    _claim_doc(repo, "two of the three", "/ai/query")
+    _claim_doc(repo, "two of the three", 1)
     results = _run(tmp_path)
     assert results[AGUAYLUZ_RATIO].status == "PASS"
-    assert results[AGUAYLUZ_ROUTE].status == "PASS"
+    assert results[AGUAYLUZ_OPEN].status == "PASS"
 
 
 def test_overstated_count_fails_and_names_both_sides(tmp_path):
     """The exact defect this gate was built for."""
     repo = _make_repo(tmp_path, "aguayluz-pr")
-    _claim_doc(repo, "three of the three", "/ai/query")
+    _claim_doc(repo, "three of the three", 1)
     result = _run(tmp_path)[AGUAYLUZ_RATIO]
     assert result.status == "FAIL"
     assert "'three of the three'" in result.detail
     assert "'two of the three'" in result.detail
 
 
-def test_wrong_route_named_fails(tmp_path):
+def test_wrong_unguarded_count_fails(tmp_path):
+    """Claiming a clean sheet while a route is open is the dangerous direction."""
     repo = _make_repo(tmp_path, "aguayluz-pr")
-    _claim_doc(repo, "two of the three", "/notify")
-    result = _run(tmp_path)[AGUAYLUZ_ROUTE]
+    _claim_doc(repo, "two of the three", 0)
+    result = _run(tmp_path)[AGUAYLUZ_OPEN]
     assert result.status == "FAIL"
-    assert "/notify" in result.detail and "/ai/query" in result.detail
+    assert "'0'" in result.detail and "'1'" in result.detail
 
 
 def test_dropping_the_claim_fails_rather_than_passing_vacuously(tmp_path):
@@ -201,11 +202,11 @@ def test_code_change_alone_turns_the_gate_red(tmp_path):
             "async def ai_query(request):", "async def ai_query(request, _: None = Depends(_require_key)):"
         ),
     )
-    _claim_doc(repo, "two of the three", "/ai/query")
+    _claim_doc(repo, "two of the three", 1)
     results = _run(tmp_path)
     assert results[AGUAYLUZ_RATIO].status == "FAIL"
     assert "'three of the three'" in results[AGUAYLUZ_RATIO].detail
-    assert results[AGUAYLUZ_ROUTE].status == "FAIL"
+    assert results[AGUAYLUZ_OPEN].status == "FAIL"
 
 
 def test_absent_repo_skips_by_default_and_fails_under_require_all(tmp_path):
@@ -237,3 +238,65 @@ def test_this_repo_passes_its_own_local_checks():
     results = verify_audit.run_checks(REPO_ROOT.parent, require_all=False)
     failures = [r for r in results if r.status == "FAIL"]
     assert not failures, "\n".join(f"{r.label}: {r.detail}" for r in failures)
+
+
+# --- self-resolution (the CI layout) --------------------------------------
+
+
+def test_this_repo_resolves_without_being_under_root(tmp_path):
+    """The layout CI is forced into.
+
+    `actions/checkout` cannot write outside $GITHUB_WORKSPACE, so the siblings
+    land in a subdirectory and this repo stays at the root — `<root>/thehub-pr`
+    never exists. Resolving that one name to the script's own tree is what makes
+    `--root _federation` cover all seven.
+    """
+    assert not (tmp_path / "thehub-pr").exists()
+    assert verify_audit.resolve_repo(tmp_path, "thehub-pr") == REPO_ROOT
+    assert verify_audit.resolve_repo(tmp_path, "aguayluz-pr") is None
+
+
+def test_a_checked_out_copy_wins_over_the_self_fallback(tmp_path):
+    """Self-resolution is a fallback, not an override.
+
+    If a run really does place thehub-pr under --root, that copy is the one
+    under test — silently auditing the script's own tree instead would report on
+    the wrong commit.
+    """
+    (tmp_path / "thehub-pr").mkdir()
+    assert verify_audit.resolve_repo(tmp_path, "thehub-pr") == tmp_path / "thehub-pr"
+
+
+# --- write-token flag -----------------------------------------------------
+
+
+PUBLIC_SETTINGS = '''
+@app.get("/api/apps/public-settings")
+def public_settings():
+    return {
+        "id": "thehub-pr",
+        "public_settings": {
+            "requires_auth": False,
+            "mode": "diagnostic",
+            "write_token_required": bool(_WRITE_TOKEN),
+        },
+    }
+'''
+
+
+def test_write_token_flag_is_read_from_public_settings(tmp_path):
+    repo = tmp_path / "r"
+    (repo / "server" / "backend").mkdir(parents=True)
+    (repo / "server" / "backend" / "main.py").write_text(PUBLIC_SETTINGS, encoding="utf-8")
+    assert verify_audit._public_settings_write_key(repo, "server/backend/main.py") == "write_token_required"
+
+
+def test_absent_write_token_flag_is_reported_not_guessed(tmp_path):
+    """A UI that cannot tell 'token required' from 'open network' 401s blind."""
+    repo = tmp_path / "r"
+    (repo / "server" / "backend").mkdir(parents=True)
+    (repo / "server" / "backend" / "main.py").write_text(
+        PUBLIC_SETTINGS.replace('            "write_token_required": bool(_WRITE_TOKEN),\n', ""),
+        encoding="utf-8",
+    )
+    assert verify_audit._public_settings_write_key(repo, "server/backend/main.py") == "<absent>"

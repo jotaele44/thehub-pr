@@ -6,7 +6,9 @@ import '@fontsource/jetbrains-mono'
 import App from '@/App.jsx'
 import { resolveInitialTheme, applyTheme } from '@/lib/theme'
 import '@/index.css'
-import '@/styles/federation.css'
+// Canonical federation layer, imported straight from the design-system source.
+// There is no local copy to drift from, so no sync guard is needed.
+import '@federation-design/styles/federation.css'
 
 // Repo accent for the shared federation.css.
 document.documentElement.dataset.repo = 'thehub-pr'

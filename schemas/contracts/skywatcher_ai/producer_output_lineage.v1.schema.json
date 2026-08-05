@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/schemas/contracts/skywatcher_ai/producer_output_lineage.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "lineage_manifest_id",
+    "producer_package_id",
+    "package_sha256",
+    "job_spec_id",
+    "entries",
+    "source_dispositions",
+    "created_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "producer_output_lineage.v1"
+    },
+    "lineage_manifest_id": {
+      "type": "string",
+      "pattern": "^producer-lineage-sha256-[0-9a-f]{64}$"
+    },
+    "producer_package_id": {
+      "type": "string",
+      "pattern": "^producer-package-sha256-[0-9a-f]{64}$"
+    },
+    "package_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "job_spec_id": {
+      "type": "string",
+      "pattern": "^producer-job-sha256-[0-9a-f]{64}$"
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "output_id",
+          "output_sha256",
+          "source_artifact_ids",
+          "classification",
+          "derivation_kind",
+          "method",
+          "method_version",
+          "output_schema_id",
+          "output_schema_version"
+        ],
+        "properties": {
+          "output_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "output_sha256": {
+            "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+          },
+          "source_artifact_ids": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^artifact-sha256-[0-9a-f]{64}$"
+            }
+          },
+          "classification": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "level",
+              "restriction_floor",
+              "test_only",
+              "lineage_complete"
+            ],
+            "properties": {
+              "level": {
+                "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/classification"
+              },
+              "restriction_floor": {
+                "enum": [
+                  "PUBLIC",
+                  "INTERNAL",
+                  "RESTRICTED",
+                  "SENSITIVE_LOCATION",
+                  "LEGAL_HOLD",
+                  "QUARANTINED"
+                ]
+              },
+              "test_only": {
+                "type": "boolean"
+              },
+              "lineage_complete": {
+                "const": true
+              }
+            }
+          },
+          "derivation_kind": {
+            "enum": [
+              "DETERMINISTIC",
+              "MODEL_DERIVED",
+              "SATIM_PROVISIONAL"
+            ]
+          },
+          "method": {
+            "type": "string",
+            "minLength": 1
+          },
+          "method_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "output_schema_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "output_schema_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "model_field_provenance": {
+            "type": "array",
+            "items": {
+              "$ref": "model_field_provenance.v1.schema.json"
+            }
+          },
+          "satim_signal": {
+            "$ref": "satim_provisional_signal.v1.schema.json"
+          }
+        }
+      }
+    },
+    "source_dispositions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact_id",
+          "disposition"
+        ],
+        "properties": {
+          "artifact_id": {
+            "type": "string",
+            "pattern": "^artifact-sha256-[0-9a-f]{64}$"
+          },
+          "disposition": {
+            "enum": [
+              "USED",
+              "EXCLUDED",
+              "FAILED"
+            ]
+          },
+          "reason_code": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "disposition": {
+                  "enum": [
+                    "EXCLUDED",
+                    "FAILED"
+                  ]
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "reason_code"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "created_at": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/timestamp"
+    }
+  }
+}

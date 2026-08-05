@@ -8,9 +8,27 @@ Public API:
 
 from __future__ import annotations
 
-from .appserver import attach_spa, make_desktop_app
+from .appserver import attach_spa, desktop_controls_script, make_desktop_app
 from .config import DesktopConfig
 from .launcher import launch
+from .setup_center import (
+    SetupBridge,
+    application_support_dir,
+    diagnostics,
+    render_setup_html,
+    setup_complete,
+)
 
-__all__ = ["DesktopConfig", "make_desktop_app", "attach_spa", "launch"]
-__version__ = "0.1.0"
+__all__ = [
+    "DesktopConfig",
+    "SetupBridge",
+    "application_support_dir",
+    "attach_spa",
+    "desktop_controls_script",
+    "diagnostics",
+    "launch",
+    "make_desktop_app",
+    "render_setup_html",
+    "setup_complete",
+]
+__version__ = "0.2.0"

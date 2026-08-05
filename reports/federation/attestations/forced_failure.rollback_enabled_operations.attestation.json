@@ -1,0 +1,32 @@
+{
+  "attestation": {
+    "attestation_id": "forced_failure.rollback_enabled_operations",
+    "details": {
+      "enabled_operations": 12,
+      "satisfied": true,
+      "strategies_declared": [
+        "file_snapshot_restore",
+        "none",
+        "sqlite_backup_integrity_check_atomic_swap",
+        "stage_validate_atomic_promote"
+      ],
+      "strategies_uncovered": []
+    },
+    "environment": {
+      "platform": "linux",
+      "python": "3.11.15",
+      "release": "6.18.5"
+    },
+    "kind": "forced_failure_test",
+    "produced_at": "2026-07-27T20:51:08.533294Z",
+    "produced_by": "tools/emit_gate_attestations.py::check_enabled_rollback_coverage",
+    "result": "satisfied",
+    "schema_version": "prii_gate_attestation_v1"
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "prii-attestations-test-2026-07",
+    "payload_sha256": "41e691e0efbb9c91afe967d713ce81aad9f9d99f4f4b2e3a7ba7595fe55c1b7a",
+    "value": "YIOVSKc49lwNGQfYwKN8IU2vR4LISKtGsj01U8gyLpNO2q2J0+iJIVSoSlr8g4Ujb02vd6kPW400+EQu/co8Bg=="
+  }
+}
