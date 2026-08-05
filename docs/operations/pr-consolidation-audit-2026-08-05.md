@@ -41,7 +41,7 @@
 | #110 | dependabot/npm_and_yarn/server/frontend/recharts-3.10.1 | DEPENDENCY_QUEUE | Frontend dependency bump. | Defer; handle one dependency PR at a time. |
 | #109 | dependabot/npm_and_yarn/server/frontend/npm-minor-patch-60a0483391 | DEPENDENCY_QUEUE | Grouped frontend dependency bump. | Defer; handle after smaller dependency PRs. |
 | #108 | dependabot/github_actions/actions/setup-python-7.0.0 | TEMPLATE_SYNC_REQUIRED_CLOSE | Failing tests prove generated workflow drift: `.github/workflows/pip-audit.yml`. | CLOSED 2026-08-05; replace with template-aware setup-python bump. |
-| #107 | dependabot/github_actions/actions/upload-artifact-7.0.1 | DEPENDENCY_QUEUE | GitHub Actions dependency bump. | Defer; handle one dependency PR at a time. |
+| #107 | dependabot/github_actions/actions/upload-artifact-7.0.1 | MERGED_DEPENDENCY | Updates pinned `actions/upload-artifact` SHAs across artifact upload steps; CI, desktop build, release packaging, and template drift checks passing. | MERGED 2026-08-05 as `fcd9ad91f317`; GitHub auto-deleted the Dependabot head branch. |
 | #106 | dependabot/github_actions/gitleaks/gitleaks-action-3.0.0 | TEMPLATE_SYNC_REQUIRED_CLOSE | Failing tests prove generated workflow drift: `.github/workflows/secret-scan.yml`. | CLOSED 2026-08-05; replace with template-aware gitleaks-action bump. |
 | #105 | dependabot/github_actions/softprops/action-gh-release-3.0.2 | BLOCKED_DEPENDENCY_CLOSE | Desktop build fails before release publication: packaged app raises `ModuleNotFoundError: No module named 'jsonschema'`. | CLOSED 2026-08-05; recreate after desktop packaging dependency is fixed. |
 | #104 | dependabot/github_actions/actions/github-script-9.0.0 | MERGED_DEPENDENCY | One-file scheduled MCP drift workflow action pin; checks passing; no v9-incompatible `@actions/github` require pattern. | MERGED 2026-08-05 as `b39df272d5e9`; GitHub auto-deleted the Dependabot head branch. |
@@ -59,6 +59,7 @@
 - #94 is superseded by mainline commit `25c0fe6` plus later manager hardening modules.
 - #100 has unique federal-records contract intent, but was closed because it combines contract, API, ingest, test, and UI work in one conflicting branch; salvage requires a fresh contract-first vector.
 - #104 was merged as the first dependency-queue item; branch deletion was automatic GitHub cleanup, not an explicit branch-deletion operation.
+- #107 was merged after #104 as the next one-at-a-time dependency item; branch deletion was automatic GitHub cleanup, not an explicit branch-deletion operation.
 - #112 is invalid against the current React 18 type stack; #108 and #106 require template-aware replacements; #105 is blocked by desktop packaging missing `jsonschema`.
 - UI-first closures are reversible and do not delete branches.
 
@@ -82,9 +83,10 @@
 ## Dependency Merges Completed In This Pass
 
 - #104 -> `b39df272d5e9`
+- #107 -> `fcd9ad91f317`
 
 ## Deferred Actions
 
 - Reopen federal-records work only as a contract-first replacement vector: canonical schemas, export-manifest enum, validation fixtures, and freeze hash before Hub API/ingest/UI surfaces.
 - Review #161 unified skillpack scope before promotion; lint blocker is resolved in `2880af8`.
-- Process remaining green dependency PRs one at a time: #107, #113, #111, #110, then #109 only after the smaller frontend dependency bumps are resolved.
+- Process remaining green dependency PRs one at a time: #113, #111, #110, then #109 only after the smaller frontend dependency bumps are resolved.
