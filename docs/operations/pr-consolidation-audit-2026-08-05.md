@@ -33,7 +33,7 @@
 | #148 | agent/prii-preclone-normalization-v0-1 | MERGE_CANDIDATE | Mergeable draft; pre-clone normalization; checks passing. | Keep open; promote after certification/policy ordering review. |
 | #138 | agent/gui-capability-parity-v0-2 | DOCTRINE_BLOCKED_CLOSE | GUI parity scope; tests and drift failing; backend readiness not clean. | CLOSED 2026-08-05 with sequencing rationale; branch retained. |
 | #134 | agent/federation-branding-ui-setup-v0-1 | DOCTRINE_BLOCKED_CLOSE | Branding/UI/desktop app scope; conflicting; backend readiness not clean. | CLOSED 2026-08-05 with sequencing rationale; branch retained. |
-| #131 | claude/federation-ui-operations-z0n1fc | NEEDS_INSPECTION | Title mentions UI, but files include macOS certification, receipts, and manager host tests. | Keep open; inspect as operator-certification support, not UI-only work. |
+| #131 | claude/federation-ui-operations-z0n1fc | MERGE_CANDIDATE | Operator-certification support: macOS runbook, certification default URL, receipt key-path expansion, manager host, and tests; no schema/UI-first product expansion. | Keep open; refresh current-head CI before merge because last checks are from 2026-07-28. |
 | #126 | agent/federation-design-system-foundation-v0-2 | DOCTRINE_BLOCKED_CLOSE | Design-system scope; conflicting; backend readiness not clean. | CLOSED 2026-08-05 with sequencing rationale; branch retained. |
 | #113 | dependabot/npm_and_yarn/server/frontend/testing-library/jest-dom-7.0.0 | DEPENDENCY_QUEUE | Frontend dependency bump. | Defer; handle one dependency PR at a time. |
 | #112 | dependabot/npm_and_yarn/server/frontend/multi-287cc95123 | DEPENDENCY_QUEUE | Frontend dependency bump. | Defer; handle one dependency PR at a time. |
@@ -55,7 +55,7 @@
 ## Verification Notes
 
 - Certification comparison command found unique commits in #149, #154, and #155 that were not cherry-picked into #158; reusable lineage was preserved in #158 commit `fc49ace` before closure.
-- File inspection showed #131 contains operator certification and backend receipt/manager-host changes, so it is not treated as UI-only.
+- File inspection showed #131 contains operator certification and backend receipt/manager-host changes, so it is promoted to merge candidate rather than treated as UI-only.
 - #94 is superseded by mainline commit `25c0fe6` plus later manager hardening modules.
 - #100 has unique federal-records contract intent, but was closed because it combines contract, API, ingest, test, and UI work in one conflicting branch; salvage requires a fresh contract-first vector.
 - UI-first closures are reversible and do not delete branches.
