@@ -23,7 +23,7 @@
 
 | PR | Branch | Category | Evidence | Intended action |
 | --- | --- | --- | --- | --- |
-| #161 | chore/unified-skillpacks-v1.0.0-bf4c9d85 | NEEDS_INSPECTION | Mergeable draft; 7 files; lint check failing. | Keep open; fix lint before promotion. |
+| #161 | chore/unified-skillpacks-v1.0.0-bf4c9d85 | MERGE_CANDIDATE | Mergeable draft; 7 files; lint repaired in `2880af8`; checks passing. | Keep open; promote only after governance review approves unified skillpack scope. |
 | #160 | docs/road-to-100-critical-path-v1 | MERGE_CANDIDATE | Mergeable draft; 1 governance freeze file; checks passing. | Keep open; mark ready only when governance review approves. |
 | #158 | agent/prii-preclone-macos-certification-v3-0 | MERGE_CANDIDATE | Latest certification line; mergeable draft; historical lineage preserved in commit `fc49ace`. | Keep as certification keeper candidate. |
 | #157 | codex/remove-mandatory-sibling-coupling-v0-1 | MERGE_CANDIDATE | Mergeable draft; isolated-clone policy scope; checks passing. | Keep open; promote after readiness review. |
@@ -72,5 +72,5 @@
 ## Deferred Actions
 
 - Review #94 and #100 for backend-critical extraction or clean replacement.
-- Fix #161 lint before promotion.
+- Review #161 unified skillpack scope before promotion; lint blocker is resolved in `2880af8`.
 - Process dependency PRs after readiness/governance queue is stable.
