@@ -39,7 +39,7 @@
 | #112 | dependabot/npm_and_yarn/server/frontend/multi-287cc95123 | INVALID_DEPENDENCY_CLOSE | `npm ci` fails with ERESOLVE: `@types/react-dom@19.x` requires `@types/react@19.x` while the project remains on React 18 typings. | CLOSED 2026-08-05; recreate only as coordinated React type/runtime upgrade. |
 | #111 | dependabot/npm_and_yarn/server/frontend/vitest-4.1.10 | MERGED_DEPENDENCY | Frontend Vitest major bump; refreshed on current `main` in `5e730b4` to preserve #113; local `npm ci`, lint, unit tests, and build passed; refreshed CI and desktop build checks passed. | MERGED 2026-08-05 as `2ebfe953496e9316cbfd8054e30cc26c0ff3cae8`; GitHub auto-deleted the Dependabot head branch. |
 | #110 | dependabot/npm_and_yarn/server/frontend/recharts-3.10.1 | MERGED_DEPENDENCY | Frontend Recharts major bump; current diff preserved #113, #111, and `@pr-federation/react`; local `npm ci`, lint, unit tests, and build passed; CI and desktop build checks passed. | MERGED 2026-08-05 as `a5631e619926e5e71941f061c7d7688d03b747c0`; GitHub auto-deleted the Dependabot head branch. |
-| #109 | dependabot/npm_and_yarn/server/frontend/npm-minor-patch-60a0483391 | DEPENDENCY_QUEUE | Grouped frontend dependency bump. | Defer; handle after smaller dependency PRs. |
+| #109 | dependabot/npm_and_yarn/server/frontend/npm-minor-patch-60a0483391 | MERGED_DEPENDENCY | Grouped frontend minor/patch bump; Dependabot refreshed after #110 to preserve Recharts 3.10.1, #113, #111, and `@pr-federation/react`; local equivalent `npm ci`, lint, unit tests, and build passed; remote CI and desktop build checks passed. | MERGED 2026-08-05 as `d91882cfb10bfb7d03d85eda4c4fedc55df0b2d5`; GitHub auto-deleted the Dependabot head branch. |
 | #108 | dependabot/github_actions/actions/setup-python-7.0.0 | TEMPLATE_SYNC_REQUIRED_CLOSE | Failing tests prove generated workflow drift: `.github/workflows/pip-audit.yml`. | CLOSED 2026-08-05; replace with template-aware setup-python bump. |
 | #107 | dependabot/github_actions/actions/upload-artifact-7.0.1 | MERGED_DEPENDENCY | Updates pinned `actions/upload-artifact` SHAs across artifact upload steps; CI, desktop build, release packaging, and template drift checks passing. | MERGED 2026-08-05 as `fcd9ad91f317`; GitHub auto-deleted the Dependabot head branch. |
 | #106 | dependabot/github_actions/gitleaks/gitleaks-action-3.0.0 | TEMPLATE_SYNC_REQUIRED_CLOSE | Failing tests prove generated workflow drift: `.github/workflows/secret-scan.yml`. | CLOSED 2026-08-05; replace with template-aware gitleaks-action bump. |
@@ -64,6 +64,7 @@
 - #113 was merged after local frontend verification; branch deletion was automatic GitHub cleanup, not an explicit branch-deletion operation.
 - #111 was refreshed on current `main` before merge because the stale Dependabot branch would otherwise have reverted #113; branch deletion was automatic GitHub cleanup, not an explicit branch-deletion operation.
 - #110 was merged after confirming the forced-updated Dependabot branch preserved #113, #111, and `@pr-federation/react`; branch deletion was automatic GitHub cleanup, not an explicit branch-deletion operation.
+- #109 was merged after Dependabot refreshed the grouped bump on top of #110; branch deletion was automatic GitHub cleanup, not an explicit branch-deletion operation.
 - #112 is invalid against the current React 18 type stack; #108 and #106 require template-aware replacements; #105 is blocked by desktop packaging missing `jsonschema`.
 - UI-first closures are reversible and do not delete branches.
 
@@ -91,6 +92,7 @@
 - #113 -> `a6f8336adb81c6131eedfb27871256069e000aa5`
 - #111 -> `2ebfe953496e9316cbfd8054e30cc26c0ff3cae8`
 - #110 -> `a5631e619926e5e71941f061c7d7688d03b747c0`
+- #109 -> `d91882cfb10bfb7d03d85eda4c4fedc55df0b2d5`
 
 ## Conflict Repairs Completed In This Pass
 
@@ -100,4 +102,4 @@
 
 - Reopen federal-records work only as a contract-first replacement vector: canonical schemas, export-manifest enum, validation fixtures, and freeze hash before Hub API/ingest/UI surfaces.
 - Review #161 unified skillpack scope before promotion; lint blocker is resolved in `2880af8`.
-- Process remaining green dependency PRs one at a time: #109 after the grouped bump is inspected against current `main`.
+- Dependency queue from this audit pass is exhausted; recreate closed invalid/template-blocked dependency updates only as focused replacement PRs.
