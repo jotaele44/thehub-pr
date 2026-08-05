@@ -14,7 +14,9 @@ EXCLUDED_PARTS = {"generated", "__pycache__"}
 
 
 def digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    data = path.read_bytes()
+    header = f"blob {len(data)}\0".encode("ascii")
+    return hashlib.sha1(header + data).hexdigest()
 
 
 def build(root: Path) -> dict[str, object]:
@@ -30,7 +32,7 @@ def build(root: Path) -> dict[str, object]:
     shared = root / "schemas/common/lineage.schema.json"
     if shared.exists():
         files[shared.relative_to(root).as_posix()] = digest(shared)
-    return {"schema_version": "1.0.0", "hash_algorithm": "sha256", "files": files}
+    return {"schema_version": "1.0.0", "hash_algorithm": "git_blob_sha1", "files": files}
 
 
 def main(argv: Sequence[str] | None = None) -> int:
