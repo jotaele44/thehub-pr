@@ -106,6 +106,7 @@
 ## Producer Dependency Closures Completed In This Pass
 
 - `spiderweb-pr` #245 | TEMPLATE_SYNC_REQUIRED_CLOSE | Closed 2026-08-05 because both drift jobs failed while the diff mutated generated `.github/workflows/codeql.yml` directly; requires a template-aware CodeQL action pin refresh. Closing removed the Dependabot head branch even though branch deletion was not requested, so `dependabot/github_actions/actions-minor-patch-ce612e0709` was restored to `a79d21bbd5d2096d423c1a3fd72cbf58cf708f67`.
+- `spiderweb-pr` #230 | LOCK_AWARE_REPLACEMENT_REQUIRED_CLOSE | Closed 2026-08-05 because the `lock` jobs failed and local `uv lock --check` reproduced stale `uv.lock`; attempted repair either left the old Ruff lock entry intact or produced broad resolver-marker churn unrelated to the Ruff bump. Branch `dependabot/pip/python-minor-patch-c784f51798` remained at `cf250111b049e72cd66801cd34b77ac87e585ab3`.
 
 ## Producer Dependency Merges Completed In This Pass
 
