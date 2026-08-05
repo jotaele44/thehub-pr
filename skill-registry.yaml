@@ -45,6 +45,7 @@ packet_config:
     - graph-report
     - analytics-v2
     - consume-sensor-fusion
+    - project-signs
     - maintenance
   activation_routes:
     - route_to_moneysweep

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/schemas/contracts/skywatcher_ai/bounded_producer_job_record.v1.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "job_spec_id",
+    "job_identity_sha256",
+    "signed_payload_sha256",
+    "signature",
+    "authorization_verified",
+    "egress_verified",
+    "job_spec",
+    "worker_execution_performed"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "bounded_producer_job_record.v1"
+    },
+    "job_spec_id": {
+      "type": "string",
+      "pattern": "^producer-job-sha256-[0-9a-f]{64}$"
+    },
+    "job_identity_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "signed_payload_sha256": {
+      "$ref": "skywatcher_ai_common.v1.schema.json#/$defs/sha256"
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verified",
+        "signer_id",
+        "scheme"
+      ],
+      "properties": {
+        "verified": {
+          "const": true
+        },
+        "signer_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scheme": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "authorization_verified": {
+      "const": true
+    },
+    "egress_verified": {
+      "type": "boolean"
+    },
+    "job_spec": {
+      "$ref": "bounded_producer_job.v2.schema.json"
+    },
+    "worker_execution_performed": {
+      "const": false
+    }
+  }
+}

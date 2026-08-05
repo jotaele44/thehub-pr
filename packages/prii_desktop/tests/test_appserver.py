@@ -16,7 +16,7 @@ pytest.importorskip("httpx")
 from fastapi import FastAPI  # noqa: E402
 from starlette.testclient import TestClient  # noqa: E402
 
-from prii_desktop import attach_spa  # noqa: E402
+from prii_desktop import DesktopConfig, attach_spa  # noqa: E402
 
 
 def _minimal_app():
@@ -88,4 +88,28 @@ def test_missing_build_shows_setup_page(tmp_path):
     with TestClient(app) as client:
         r = client.get("/", headers={"accept": "text/html"})
     assert r.status_code == 503
-    assert "desktop/setup.py" in r.text
+    assert "Setup &amp; Diagnostics" in r.text
+    assert "python desktop/setup.py" not in r.text
+
+
+def test_native_setup_control_is_injected(tmp_path):
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    (dist / "index.html").write_text(
+        "<!doctype html><body><main>app</main></body>", encoding="utf-8"
+    )
+    config = DesktopConfig(
+        app_title="Test App",
+        app_import="unused:app",
+        repo_root=tmp_path,
+        dist_dir=dist,
+        brand_accent="#ca0c02",
+        brand_accent_strong="#9f0a02",
+    )
+    app = attach_spa(_minimal_app(), dist, config=config)
+    with TestClient(app) as client:
+        r = client.get("/", headers={"accept": "text/html"})
+    assert r.status_code == 200
+    assert "prii-desktop-setup-button" in r.text
+    assert "Setup &amp; Diagnostics" in r.text
+    assert "#9f0a02" in r.text

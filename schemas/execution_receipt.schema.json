@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.example/schemas/execution_receipt.schema.json",
+  "title": "PRII execution receipt",
+  "description": "Tamper-evident record of one operation execution. Receipts are hash-chained and signed by the manager. Readiness gates consume only verified receipts; a manual annotation may accompany a gate but can never set it to passed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["receipt", "signature"],
+  "properties": {
+    "receipt": { "$ref": "#/$defs/receipt" },
+    "signature": { "$ref": "#/$defs/signature" }
+  },
+  "$defs": {
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "run_id",
+        "operation_id",
+        "app_id",
+        "policy",
+        "status",
+        "started_at",
+        "finished_at",
+        "argv_redacted",
+        "argv_sha256",
+        "parameters_redacted",
+        "environment_allowlist",
+        "inputs",
+        "outputs",
+        "validators",
+        "transaction",
+        "log",
+        "previous_receipt_sha256"
+      ],
+      "properties": {
+        "schema_version": { "const": "prii_execution_receipt_v1" },
+        "run_id": { "type": "string", "pattern": "^[0-9a-f]{32}$" },
+        "operation_id": { "type": "string", "minLength": 1 },
+        "app_id": { "type": "string", "minLength": 1 },
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["policy_id", "sequence", "payload_sha256", "key_id"],
+          "properties": {
+            "policy_id": { "type": "string", "minLength": 1 },
+            "sequence": { "type": "integer", "minimum": 1 },
+            "payload_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "key_id": { "type": "string", "minLength": 1 }
+          }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["succeeded", "failed", "cancelled", "timed_out", "rolled_back", "quarantined"]
+        },
+        "exit_code": { "type": ["integer", "null"] },
+        "started_at": { "type": "string", "format": "date-time" },
+        "finished_at": { "type": "string", "format": "date-time" },
+        "argv_redacted": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The exact argv list handed to the process, with any secret-shaped element replaced. Present as a list, never as a joined string, so a receipt can never be mistaken for a runnable command line."
+        },
+        "argv_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "parameters_redacted": { "type": "object" },
+        "environment_allowlist": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Names only of the environment variables passed to the child. Values never appear."
+        },
+        "inputs": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+        "outputs": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+        "validators": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "status"],
+            "properties": {
+              "name": { "type": "string", "minLength": 1 },
+              "status": { "type": "string", "enum": ["passed", "failed", "skipped"] },
+              "detail": { "type": "string" }
+            }
+          }
+        },
+        "transaction": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["strategy", "phase_reached", "rollback_state"],
+          "properties": {
+            "strategy": { "type": "string", "minLength": 1 },
+            "phase_reached": {
+              "type": "string",
+              "enum": ["PLAN", "PREFLIGHT", "SNAPSHOT", "EXECUTE_IN_STAGING", "VALIDATE", "COMMIT", "RECEIPT"]
+            },
+            "rollback_state": {
+              "type": "string",
+              "enum": ["not_required", "not_attempted", "succeeded", "failed"]
+            },
+            "rollback_detail": { "type": "string" },
+            "snapshot_sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" },
+            "unexpected_writes": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Paths written outside the declared write scope. A non-empty list means the run was quarantined and rolled back."
+            }
+          }
+        },
+        "log": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["sha256", "bytes", "truncated", "redactions"],
+          "properties": {
+            "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+            "bytes": { "type": "integer", "minimum": 0 },
+            "truncated": { "type": "boolean" },
+            "redactions": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "previous_receipt_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "SHA-256 of the previous receipt in this chain, or null for the genesis receipt."
+        }
+      }
+    },
+
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["logical_name", "sha256", "bytes"],
+      "properties": {
+        "logical_name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable logical identity. The operator's original filesystem path is deliberately absent."
+        },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "bytes": { "type": "integer", "minimum": 0 },
+        "media_type": { "type": "string" },
+        "managed_path": {
+          "type": "string",
+          "description": "Path relative to a managed root. Never an unrestricted absolute path."
+        }
+      }
+    },
+
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key_id", "algorithm", "value", "payload_sha256"],
+      "properties": {
+        "key_id": { "type": "string", "minLength": 1 },
+        "algorithm": { "const": "Ed25519" },
+        "value": { "type": "string" },
+        "payload_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    }
+  }
+}

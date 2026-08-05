@@ -1,0 +1,27 @@
+{
+  "attestation": {
+    "attestation_id": "static.no_deletion_capability",
+    "details": {
+      "enabled_with_deletion_category": [],
+      "operations_scanned": 68,
+      "operations_with_deletion_category": [],
+      "satisfied": true
+    },
+    "environment": {
+      "platform": "linux",
+      "python": "3.11.15",
+      "release": "6.18.5"
+    },
+    "kind": "static_analysis",
+    "produced_at": "2026-07-27T20:51:08.536616Z",
+    "produced_by": "tools/emit_gate_attestations.py::check_no_deletion_capability",
+    "result": "satisfied",
+    "schema_version": "prii_gate_attestation_v1"
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "prii-attestations-test-2026-07",
+    "payload_sha256": "0869d262a71427f953383bdbdd97bfa80d946b34e3aa2601f18b16a122a16725",
+    "value": "ffpjdRDV5JDou1Vou4BPz3RWcNgJpzYSLvW/OEgypWX0USR0InorQgX+wASMvNFWmtvt+zUD/JPf2WhzFkR+CA=="
+  }
+}

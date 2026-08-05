@@ -1,33 +1,37 @@
 # prii-desktop
 
-Shared desktop-wrapper **runtime** for PRII producer repos. It holds the code
-that every producer's `desktop/launch.py` and `desktop/app_server.py` used to
-copy verbatim:
+Shared self-contained desktop runtime for federation applications:
 
-- `make_desktop_app(config)` — wraps a producer's FastAPI app so the same local
-  port also serves the built Vite frontend (same-origin, no CORS), with SPA
-  navigation handling.
-- `launch(config)` — starts uvicorn on a free localhost port in a background
-  thread, waits for health, and opens a native `pywebview` window (falling back
-  to the browser), plus a single-instance lock and a `--smoke` CI mode.
+- `launch(config)` runs first-launch Setup & Diagnostics, applies a per-user
+  writable workspace, starts the local service, and opens the native pywebview.
+- `SetupBridge` provides a native folder picker, local diagnostics, idempotent
+  repair, and an always-available in-app setup entry point.
+- `make_desktop_app(config)` imports the producer backend and serves its built
+  frontend same-origin, including client-route fallback.
+- Per-user state and the single-instance lock live in Application Support on
+  macOS rather than inside the app or PyInstaller extraction directory.
+- `--smoke` bypasses interactive setup for frozen-build CI.
 
-Everything is parameterized by a `DesktopConfig` built from the producer's
-`desktop/config.py` (the one genuinely per-repo file). Producers consume this
-package as an **editable local path dep** from the sibling `thehub-pr` checkout
-(added to `requirements-desktop.txt`), so editing this runtime once updates every
-producer with no per-repo change.
+Release bundles contain the Python runtime, producer backend, dependencies,
+built frontend, and app artwork. The setup center never downloads tools, runs a
+shell, or mutates the installed application bundle.
 
-Only *post-install* code lives here: the pre-venv `desktop/setup.py` bootstrap
-cannot import an installed package, so it stays vendored per repo (deduped
-separately via templating).
+Each producer keeps a thin `desktop/config.py` adapter:
 
 ```python
-from prii_desktop import DesktopConfig, launch
-launch(DesktopConfig(
-    app_title="OVNIS — PRII Case Corpus",
-    app_import="server.backend.main:app",
-    repo_root=REPO_ROOT,
-    dist_dir=REPO_ROOT / "dashboard" / "dist",
-    health_path="/health",
-))
+APP_TITLE = "Skywatcher"
+APP_ID = "Skywatcher"
+APP_IMPORT = "server.backend.main:app"
+DIST_DIR = REPO_ROOT / "frontend" / "dist"
+BRAND_ACCENT = "#0573e4"
+BRAND_ACCENT_STRONG = "#075ba7"
+ICON_PATH = REPO_ROOT / "assets" / "branding" / "icon-256.png"
+DATA_ENV_VAR = "SKYWATCHER_DATA_HOME"
 ```
+
+An adapter may also declare an idempotent `SETUP_ACTION =
+"module:function"` for producer-specific workspace preparation. The shared
+runtime invokes it after the workspace and environment are ready.
+
+The package is installed as a local editable dependency while developing and
+is frozen into each release app by PyInstaller.

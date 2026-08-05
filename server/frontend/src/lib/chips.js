@@ -190,3 +190,39 @@ export const GAP_CHIP = {
   "Assignee Gap": ORANGE,
   "Sensitivity Gap": VIOLET,
 };
+
+// --- Federation Manager operations plane -------------------------------------
+// Machine-derived gate status. Note there is no "Passed by annotation" value:
+// the evaluator only ever emits these, and a human note cannot introduce one.
+export const MANAGER_GATE_STATUS = {
+  passed: GREEN,
+  failed: RED,
+  not_run: SLATE,
+  blocked_not_certified: AMBER,
+  deferred: NEUTRAL,
+};
+
+export const RUN_STATUS = {
+  succeeded: GREEN,
+  failed: RED,
+  cancelled: SLATE,
+  timed_out: AMBER,
+  rolled_back: VIOLET,
+  quarantined: RED,
+  running: BLUE,
+};
+
+// Ascending blast radius. R0 reads, R3 changes what is installed.
+export const RISK_CLASS = {
+  R0_READ_ONLY: GREEN,
+  R1_DERIVED_WRITE: BLUE,
+  R2_DATA_MUTATION: AMBER,
+  R2_NETWORK_INGEST: AMBER,
+  R3_LIFECYCLE: RED,
+};
+
+export const SECRET_PRESENCE = {
+  present: GREEN,
+  absent: AMBER,
+  unavailable: RED,
+};

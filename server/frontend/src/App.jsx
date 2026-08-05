@@ -40,9 +40,12 @@ const FederationCrossoverWorkspace = lazy(() => import('@/pages/FederationCrosso
 const AnomalyOverlap = lazy(() => import('@/pages/AnomalyOverlap'));
 const ControlLedgers = lazy(() => import('@/pages/ControlLedgers'));
 const Hub = lazy(() => import('@/pages/Hub'));
+const ProjectSigns = lazy(() => import('@/pages/ProjectSigns'));
 const RecentActivity = lazy(() => import('@/pages/RecentActivity'));
 const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
+const AppCenter = lazy(() => import('@/pages/AppCenter'));
+const Operations = lazy(() => import('@/pages/Operations'));
 
 const AppRoutes = () => {
   const { isLoadingPublicSettings, appPublicSettings } = useAuth();
@@ -95,6 +98,8 @@ const AppRoutes = () => {
             <Route path="/" element={<RecentActivity />} />
             <Route path="/activity" element={<RecentActivity />} />
             <Route path="/programs" element={<Programs />} />
+            <Route path="/apps" element={<AppCenter />} />
+            <Route path="/operations" element={<Operations />} />
             <Route path="/cases" element={<Cases />} />
             <Route path="/sources" element={<Sources />} />
             <Route path="/tasks" element={<Tasks />} />
@@ -107,6 +112,7 @@ const AppRoutes = () => {
             <Route path="/anomaly-overlap" element={<AnomalyOverlap />} />
             <Route path="/control" element={<ControlLedgers />} />
             <Route path="/hub" element={<Hub />} />
+            <Route path="/project-signs" element={<ProjectSigns />} />
             <Route path="/research" element={<ResearchAssistant />} />
             <Route path="/dictionary" element={<Dictionary />} />
             <Route path="/manifest" element={<Manifest />} />
