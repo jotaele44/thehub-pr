@@ -103,6 +103,10 @@
 - #110 -> `a5631e619926e5e71941f061c7d7688d03b747c0`
 - #109 -> `d91882cfb10bfb7d03d85eda4c4fedc55df0b2d5`
 
+## Producer Dependency Closures Completed In This Pass
+
+- `spiderweb-pr` #245 | TEMPLATE_SYNC_REQUIRED_CLOSE | Closed 2026-08-05 because both drift jobs failed while the diff mutated generated `.github/workflows/codeql.yml` directly; requires a template-aware CodeQL action pin refresh. Closing removed the Dependabot head branch even though branch deletion was not requested, so `dependabot/github_actions/actions-minor-patch-ce612e0709` was restored to `a79d21bbd5d2096d423c1a3fd72cbf58cf708f67`.
+
 ## Producer Dependency Merges Completed In This Pass
 
 - `spiderweb-pr` #244 -> `46d6bd4607611f44f7c494b04e036d7a9966922e`
