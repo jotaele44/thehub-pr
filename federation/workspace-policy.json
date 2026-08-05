@@ -1,0 +1,22 @@
+{
+  "schema_version": "prii_workspace_policy_v1",
+  "program_id": "thehub-pr",
+  "canonical_python": "3.11",
+  "local_environment": ".venv",
+  "environment_scope": "repository_private",
+  "allow_shared_federation_environment": false,
+  "allow_system_install_local": false,
+  "workspace_role": "bootstrap_and_execution_authority",
+  "topology": "exact_immediate_siblings",
+  "actions": [
+    "clone",
+    "validate",
+    "bootstrap-local",
+    "export-test",
+    "export-production",
+    "run-live"
+  ],
+  "production_gate_required": true,
+  "live_gate_required": true,
+  "feature_branch_as_permanent_clone_baseline": false
+}

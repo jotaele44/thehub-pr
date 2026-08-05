@@ -1,0 +1,73 @@
+{
+  "schema_version": "prii_preclone_macos_evidence_v1",
+  "status": "passed",
+  "certified_at": "2026-07-31T06:54:00.692389+00:00",
+  "workflow": {
+    "repository": "jotaele44/thehub-pr",
+    "pull_request": 149,
+    "run_id": 30610963537,
+    "job_id": 91093394677,
+    "workflow_name": "desktop-build",
+    "harness_head": "f45f6eb40cade81043bf1a0ad2c0d6d35da2fadc",
+    "checked_out_merge_commit": "4536a624ce3388175063f7764045c9f9e5d61708"
+  },
+  "artifact": {
+    "id": 8785440109,
+    "name": "prii-preclone-macos-certification-30610963537-1",
+    "size_in_bytes": 4459,
+    "retention_expires_at": "2026-10-29T06:52:34Z",
+    "sha256": "e30399a261f236bbf046114e0a6011ace7b530cb43563b675666bcc80556e5d2"
+  },
+  "receipt": {
+    "path": "macos_certification.json",
+    "sha256": "eb9b180d8408259659bdedca778cccf298efe2a46dd4cdca3fa92fcd65757567"
+  },
+  "harness_inputs": {
+    "scripts/certify_preclone_workspace_macos.py": "d94531fc216ea1bf8177235dbe9f2c5ee0ed90ff19a2d2a2ad47b024dbc947b3",
+    "registry/preclone-certification-heads.json": "39d4e34f74050fd72b780094544f821384674acd4a97f34f25364b966d73cd8f",
+    ".github/workflows/desktop-build.yml": "fd3deacf9d9951d38b07640b45d151b43e63d6f70ff0ec473b491a6bd7e63b38"
+  },
+  "runner": {
+    "os": "macOS 14.8.7",
+    "architecture": "ARM64",
+    "image": "macos-14-arm64",
+    "python": "3.11.9"
+  },
+  "assertions": {
+    "exact_detached_heads": true,
+    "thehub_first": true,
+    "immediate_sibling_topology": true,
+    "nested_repositories": false,
+    "shared_packages_present": 2,
+    "private_venvs": 7,
+    "shared_venv": false,
+    "system_install_local": false,
+    "workspace_validation_errors": 0,
+    "post_bootstrap_valid": true,
+    "production_export_executed": false,
+    "live_execution_executed": false
+  },
+  "targets": {
+    "thehub-pr": "caebf0aaa598a037ef527a15b3d804e7846e3d0f",
+    "moneysweep-pr": "5c7a2e6b2d308cd6aef7a09b88a6a26a66f2e62b",
+    "spiderweb-pr": "c08e47137e34aac0c2575e198645ef5fc7c28d67",
+    "skywatcher-pr": "78f779dda46d2674caf1341f0d2e3f9995dced4f",
+    "centinelas-pr": "30f278d195c5ca9daa61ba45e8b357abe97fe729",
+    "aguayluz-pr": "9ee16952a4da9e334a9f9ae5e53f15b84f30f56a",
+    "ovnis-pr": "e167cef6fd4a4a978fb0b24d702088acc0317bce"
+  },
+  "failure_history": [
+    {
+      "run_id": 30610815889,
+      "cause": "clean harness interpreter lacked PyYAML before registry import",
+      "resolution": "installed PyYAML as a CI-only harness dependency; no local operator system install added"
+    }
+  ],
+  "preservation": {
+    "draft": true,
+    "merged": false,
+    "direct_main_write": false,
+    "force_push": false,
+    "feature_branch_as_permanent_baseline": false
+  }
+}

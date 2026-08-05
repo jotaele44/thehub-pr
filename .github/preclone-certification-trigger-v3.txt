@@ -1,0 +1,5 @@
+PRII August 3 current-cohort exact-head macOS certification v3.0
+TheHub normalization head: 70677968530536dfd055ac820fcb05944dc77a3c
+Ledger: registry/preclone-certification-heads-v3.json
+Classification: August 3 current runtime/data candidate cohort, not final all-main cohort.
+Preservation: draft-only, no merge, no main write, no force push, no shared venv, no production, no live execution.
