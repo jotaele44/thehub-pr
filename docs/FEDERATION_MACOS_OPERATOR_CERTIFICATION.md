@@ -49,21 +49,111 @@ fix the underlying problem.
 
    Keep the private key on the Mac. Only its public half comes back.
 
-3. **The manager running through the native host**, with the App Center reachable
-   in a browser. The script drives the same loopback HTTP surface the UI uses,
-   because G15 and G16 are claims about what the UI can do and the UI has nothing
-   else.
+3. **A bootstrap nonce, which you choose.** Nothing prints one — no code in this
+   repository generates a nonce. `server/backend/federation_manager_api.py` reads
+   `PRII_MANAGER_BOOTSTRAP_NONCE` from the environment at **import** time and
+   hashes it; the script presents the same value to exchange it for a session. So
+   it is a shared secret between two processes, and it must be exported *before*
+   uvicorn starts, in the shell uvicorn runs in. If the manager starts without
+   it, `POST /session` answers `503 native bootstrap is not configured`.
+
+4. **The manager running**, with the App Center reachable in a browser. The script
+   drives the same loopback HTTP surface the UI uses, because G15 and G16 are
+   claims about what the UI can do and the UI has nothing else.
+
+## Why there is a host script
+
+**Use `scripts/run_manager_host.py`, not plain `uvicorn`.** Plain uvicorn mounts
+the router but cannot run a certification, and the reason is worth stating because
+it cost a whole operator session to find.
+
+`federation_manager_api.runtime` is `None` at import, and until this script
+existed **nothing in the repository ever assigned it** — the only assignment was
+`tests/test_federation_operations_api.py:110`, via `monkeypatch`. Fifteen
+endpoints call `_require_runtime()`, including `/receipts`, `/gates`,
+`/secrets/presence` and every `/operations/*`, and each returns
+`503 operations runtime is not configured; start the manager through the native
+host`.
+
+`ManagerRuntime`'s docstring says it is "assembled by the native host", and that
+host did not exist: `desktop/` never references `PRII_MANAGER_*` and never
+constructs a runtime. `run_manager_host.py` is that host, minus the packaging. It
+is a separate entry point rather than a startup hook in `main.py` on purpose —
+the operations plane holds real credentials, spawns processes and writes signed
+receipts, so wiring it into the general application would give every Hub
+deployment an execution surface whether it wanted one or not.
+
+Confirmed by a real run, not predicted. All four attestations came back with the
+same single line:
+
+```json
+{"error": "<HTTPError 503: 'Service Unavailable'>"}
+```
+
+| Gate | Result | Cause |
+|---|---|---|
+| G07 | `refuted` | `secret_presence` 503s |
+| G15 | `refuted` | `len(manager.receipts())` runs ahead of `ask()`, so it refutes *before* printing its prompt |
+| G16 | `refuted` | prompts first, then 503s reading receipts back |
+| G22 | `refuted` | cannot complete a run at all |
+
+One cause, four refutations. This is not four independent macOS problems.
+
+**A second defect is visible in those artifacts.** The step wrapper does
+`outcome = {"satisfied": False, "observations": {"error": repr(exc)}}`, which
+*replaces* every observation gathered before the exception. The operator was
+separately prompted by `security add-generic-password -w` — the Keychain adapter
+reads `/dev/tty`, not stdin, so a piped secret never arrives — but that is
+invisible in the attestation because the handler discarded it. A refuted
+attestation should carry what it learned up to the failure; right now it carries
+only the failure.
 
 ## Running it
 
-```
-export PRII_MANAGER_RECEIPT_SIGNING_KEY=~/.prii/manager.pem
-export PRII_MANAGER_BOOTSTRAP_NONCE=<the nonce the native host printed>
+Two terminals. Copy the nonce from the first into the second.
 
-python3 scripts/certify_macos_operator.py \
-    --manager-url http://127.0.0.1:8765 \
-    --origin http://127.0.0.1:5173
+**Terminal 1 — the manager host:**
+
 ```
+export PRII_MANAGER_BOOTSTRAP_NONCE="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+echo "$PRII_MANAGER_BOOTSTRAP_NONCE"          # copy this
+export PRII_MANAGER_RECEIPT_SIGNING_KEY="$HOME/.prii/manager.pem"
+python3 scripts/run_manager_host.py
+```
+
+The host refuses rather than degrading: no bootstrap nonce, an unverifiable
+policy, or an unset signing key all stop it before it serves. That last one is
+deliberate — `signer_from_environment` would otherwise fall back to an ephemeral
+key, and receipts signed with it stop verifying the moment the process exits, so
+gate evidence derived from them is worthless.
+
+State lives under `~/.prii/manager` (`--state-root` to move it). Nothing is
+written inside the repository.
+
+**The browser needs a session token, and nothing puts it there.**
+`managerClient.js` reads `prii.manager.session` from `sessionStorage` and refuses
+when it is absent; no SPA code performs the exchange — also the native host's job.
+The host prints a console snippet on startup that does the exchange for you. Open
+the App Center on an allowed origin, paste it into the console, and re-run it when
+the session expires (the TTL is five minutes).
+
+**Terminal 2 — the certification:**
+
+```
+export PRII_MANAGER_RECEIPT_SIGNING_KEY="$HOME/.prii/manager.pem"
+export PRII_MANAGER_BOOTSTRAP_NONCE='paste-the-value-from-terminal-1'
+python3 scripts/certify_macos_operator.py
+```
+
+The defaults now point at `http://127.0.0.1:8000/api/federation-manager`, so the
+flags are only needed if you serve the app somewhere else. **The router prefix is
+not optional**: the manager API is mounted on the main app at
+`/api/federation-manager`, and a bare host answers `405` on `POST /session`
+because the SPA catch-all matches that path for `GET`.
+
+Quote the nonce in Terminal 2. Keep each command on one line — a blank line
+between backslash continuations ends the command, and the remaining flags then
+run as their own commands.
 
 It works through four steps, pausing where you need to act.
 
