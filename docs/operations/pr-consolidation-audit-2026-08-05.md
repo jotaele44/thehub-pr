@@ -45,9 +45,9 @@
 | #106 | dependabot/github_actions/gitleaks/gitleaks-action-3.0.0 | DEPENDENCY_QUEUE | GitHub Actions dependency bump; tests failing. | Defer until failing checks are understood. |
 | #105 | dependabot/github_actions/softprops/action-gh-release-3.0.2 | DEPENDENCY_QUEUE | GitHub Actions dependency bump; build checks failing. | Defer until failing checks are understood. |
 | #104 | dependabot/github_actions/actions/github-script-9.0.0 | DEPENDENCY_QUEUE | Small GitHub Actions dependency bump. | Defer; likely first dependency merge candidate after readiness queue. |
-| #100 | codex/federal-records-contracts-v1 | NEEDS_INSPECTION | Backend contract/API scope but conflicting and includes frontend page. | Keep open until contract value and conflicts are reviewed. |
+| #100 | codex/federal-records-contracts-v1 | REPLACEMENT_REQUIRED_CLOSE | Unique federal-records contract intent, but branch is conflicting and mixes schemas, Hub registration, MCP/API, ingest tooling, tests, and frontend routes. | CLOSED 2026-08-05; branch retained; replace with contract-first vector before any API/UI work. |
 | #98 | audit/road-to-100-normalization-v0-2 | MERGE_CANDIDATE | Mergeable draft; governance normalization docs; checks passing. | Keep open; reconcile ordering with #160. |
-| #94 | codex/federation-manager-foundation-v0-3 | NEEDS_INSPECTION | Manager backend/API plus frontend; conflicting. | Keep open until backend-critical portions are separated or superseded. |
+| #94 | codex/federation-manager-foundation-v0-3 | SUPERSEDED_CLOSE | Main contains the manager foundation via commit `25c0fe6` and later split hardening modules. | CLOSED 2026-08-05; branch retained. |
 | #88 | codex/thehub-mobile-pwa-v0-2 | DOCTRINE_BLOCKED_CLOSE | Mobile PWA/frontend scope; visual check failing; backend readiness not clean. | CLOSED 2026-08-05 with sequencing rationale; branch retained. |
 | #32 | gpt/offline-operator-model-v1 | MERGE_CANDIDATE | Offline federation operator/schema authority; checks passing. | Keep open; inspect for readiness alignment despite age. |
 | #23 | gpt/patch-intsys-p0-gaps | DOCTRINE_BLOCKED_CLOSE | Frontend gap patch; conflicting; backend readiness not clean. | CLOSED 2026-08-05 with sequencing rationale; branch retained. |
@@ -56,6 +56,8 @@
 
 - Certification comparison command found unique commits in #149, #154, and #155 that were not cherry-picked into #158; reusable lineage was preserved in #158 commit `fc49ace` before closure.
 - File inspection showed #131 contains operator certification and backend receipt/manager-host changes, so it is not treated as UI-only.
+- #94 is superseded by mainline commit `25c0fe6` plus later manager hardening modules.
+- #100 has unique federal-records contract intent, but was closed because it combines contract, API, ingest, test, and UI work in one conflicting branch; salvage requires a fresh contract-first vector.
 - UI-first closures are reversible and do not delete branches.
 
 ## Closures Completed In This Pass
@@ -68,9 +70,11 @@
 - #149
 - #154
 - #155
+- #94
+- #100
 
 ## Deferred Actions
 
-- Review #94 and #100 for backend-critical extraction or clean replacement.
+- Reopen federal-records work only as a contract-first replacement vector: canonical schemas, export-manifest enum, validation fixtures, and freeze hash before Hub API/ingest/UI surfaces.
 - Review #161 unified skillpack scope before promotion; lint blocker is resolved in `2880af8`.
 - Process dependency PRs after readiness/governance queue is stable.
