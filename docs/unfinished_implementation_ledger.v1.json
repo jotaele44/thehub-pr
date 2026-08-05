@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0.0",
+  "repository": "jotaele44/thehub-pr",
+  "audit_date": "2026-08-04",
+  "normalized_score": 69.55,
+  "weights": {"code_completeness":20,"main_branch_availability":15,"ci_enforcement":15,"data_materialization":15,"operator_verification":15,"gui_completeness":10,"federation_readiness":10},
+  "dimensions": {"code_completeness":95,"main_branch_availability":85,"ci_enforcement":72,"data_materialization":45,"operator_verification":55,"gui_completeness":70,"federation_readiness":50},
+  "items": [
+    {"id":"HUB-001","title":"Land isolated-clone shared-package authority","state":"open_pr","owner":"thehub-pr","blocker":"review_and_final_head_ci","dependency":["PR-157"],"evidence":["pull/157"],"exit_criteria":"PR #157 or an explicit successor is merged to main with terminal required checks."},
+    {"id":"HUB-002","title":"Reconcile canonical workspace controller","state":"open_pr","owner":"thehub-pr","blocker":"authority_order","dependency":["HUB-001","PR-148"],"evidence":["pull/148"],"exit_criteria":"Workspace controller is on main and validates isolated exact-head clones."},
+    {"id":"HUB-003","title":"Retire superseded certification cohorts","state":"superseded_prs","owner":"thehub-pr","blocker":"disposition","dependency":[],"evidence":["pull/149","pull/154","pull/155"],"exit_criteria":"Superseded PRs are closed or explicitly archived and excluded from current certification evidence."},
+    {"id":"HUB-004","title":"Run final all-main federation certification","state":"operator_run","owner":"federation_operator","blocker":"producer_heads_and_live_readiness","dependency":["HUB-001","HUB-002"],"evidence":["pull/158"],"exit_criteria":"One current-main exact-head receipt validates seven repositories and a complete federation cycle."},
+    {"id":"HUB-005","title":"Close CI enforcement gaps","state":"main_gap","owner":"thehub-pr","blocker":"implementation","dependency":[],"evidence":["docs/MATURITY_AUDIT.md"],"exit_criteria":"Coverage floor, server Python lint/type coverage and frontend typecheck are required CI gates."}
+  ]
+}
