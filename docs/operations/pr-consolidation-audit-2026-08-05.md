@@ -26,7 +26,7 @@
 | #161 | chore/unified-skillpacks-v1.0.0-bf4c9d85 | MERGE_CANDIDATE | Mergeable draft; 7 files; lint repaired in `2880af8`; checks passing. | Keep open; promote only after governance review approves unified skillpack scope. |
 | #160 | docs/road-to-100-critical-path-v1 | MERGE_CANDIDATE | Mergeable draft; 1 governance freeze file; checks passing. | Keep open; mark ready only when governance review approves. |
 | #158 | agent/prii-preclone-macos-certification-v3-0 | MERGE_CANDIDATE | Latest certification line; conflict from dependency workflow merges repaired in `893f32c`; refreshed on current `main` in `64455d5`; checks passing including desktop build matrix and preclone certification. | Keep as certification keeper candidate; draft gate remains because PR body does not authorize merge. |
-| #157 | codex/remove-mandatory-sibling-coupling-v0-1 | MERGE_CANDIDATE | Mergeable draft; isolated-clone policy scope; checks passing. | Keep open; promote after readiness review. |
+| #157 | codex/remove-mandatory-sibling-coupling-v0-1 | MERGE_CANDIDATE | Isolated-clone policy scope; refreshed on current `main` in `ef2a16f`; rendered templates no longer emit mandatory `../thehub-pr` paths; checks passing. | Keep open; draft gate remains pending consumer validation required by PR body. |
 | #155 | agent/prii-preclone-macos-certification-v2-0 | SUPERSEDED_CLOSE | Unique authority-aligned heads archived in #158 commit `fc49ace`. | CLOSED 2026-08-05; branch retained. |
 | #154 | agent/prii-preclone-macos-certification-v1-0 | SUPERSEDED_CLOSE | Unique refreshed heads archived in #158 commit `fc49ace`. | CLOSED 2026-08-05; branch retained. |
 | #149 | agent/prii-preclone-macos-certification-v0-2 | SUPERSEDED_CLOSE | Original certification receipt and heads archived in #158 commit `fc49ace`. | CLOSED 2026-08-05; branch retained. |
@@ -57,6 +57,7 @@
 - Certification comparison command found unique commits in #149, #154, and #155 that were not cherry-picked into #158; reusable lineage was preserved in #158 commit `fc49ace` before closure.
 - #158 was refreshed with `origin/main` in commit `893f32c` after #104 and #107 changed pinned workflow actions; `.github/workflows/desktop-build.yml` now preserves the desktop build job and the branch-scoped preclone certification job with `actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a`.
 - #158 was refreshed again on current `main` in commit `64455d5` after #131 merged; local `diff --check`, compile, ruff, workspace/template tests passed; CI, desktop build matrix, and preclone-certification checks passed.
+- #157 was refreshed on current `main` in commit `ef2a16f`; local `diff --check`, ruff, and template-render tests passed; CI checks passed. A scoped regression test now blocks rendered templates from reintroducing mandatory `../thehub-pr` paths.
 - #148 was closed after `git merge-base --is-ancestor 70677968530536dfd055ac820fcb05944dc77a3c 893f32c90959c508ff6b7f6cff239d2e8383c0c5` confirmed its head is included in #158.
 - File inspection showed #131 contains operator certification and backend receipt/manager-host changes, so it was promoted to merge candidate rather than treated as UI-only.
 - #131 was refreshed on current `main` in `6bb3100d52c3a6a1d794e3f288263891a0430575`; refreshed CI and desktop build checks passed before merge. Branch deletion was automatic GitHub cleanup, not an explicit branch-deletion operation.
@@ -106,6 +107,7 @@
 
 - #158 -> `893f32c`
 - #158 -> `64455d5`
+- #157 -> `ef2a16f`
 
 ## Deferred Actions
 
