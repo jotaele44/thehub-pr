@@ -110,3 +110,41 @@
 - Reopen federal-records work only as a contract-first replacement vector: canonical schemas, export-manifest enum, validation fixtures, and freeze hash before Hub API/ingest/UI surfaces.
 - Review #161 unified skillpack scope before promotion; lint blocker is resolved in `2880af8`.
 - Dependency queue from this audit pass is exhausted; recreate closed invalid/template-blocked dependency updates only as focused replacement PRs.
+
+## Branch Retirement Audit
+
+Current remote branch count after fetch/prune: 31 including `main`.
+
+| Branch | PR state | Retirement category | Action |
+| --- | --- | --- | --- |
+| `agent/adr-0006-contracts-v0-5-h01-normalized` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain. |
+| `agent/adr0006-h06-bounded-producer-v016` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain. |
+| `agent/adr0006-h08-v023-repair-squash-base` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain. |
+| `agent/federation-branding-ui-setup-v0-1` | #134 closed | CLOSED_PR_RETAINED | Retain per closure comment. |
+| `agent/federation-design-system-foundation-v0-2` | #126 closed | CLOSED_PR_RETAINED | Retain per closure comment. |
+| `agent/gui-capability-parity-v0-2` | #138 closed | CLOSED_PR_RETAINED | Retain per closure comment. |
+| `agent/h08-v022-squash-base` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain. |
+| `agent/pr139-adr0006-reconciled-v0-6` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain. |
+| `agent/prii-preclone-macos-certification-base-v0-2` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain. |
+| `agent/prii-preclone-macos-certification-v0-2` | #149 closed | CLOSED_PR_RETAINED | Retain per closure comment. |
+| `agent/prii-preclone-macos-certification-v1-0` | #154 closed | CLOSED_PR_RETAINED | Retain per closure comment. |
+| `agent/prii-preclone-macos-certification-v2-0` | #155 closed | CLOSED_PR_RETAINED | Retain per closure comment. |
+| `agent/prii-preclone-macos-certification-v3-0` | #158 open | ACTIVE_PR | Retain. |
+| `agent/prii-preclone-normalization-v0-1` | #148 closed | CLOSED_PR_RETAINED | Retain pending normalization provenance review. |
+| `audit/road-to-100-normalization-v0-2` | #98 open | ACTIVE_PR | Retain. |
+| `canary/centinelas-foia-v0-4` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain. |
+| `canary/centinelas-foia-v0-5` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain. |
+| `chore/unified-skillpacks-v1.0.0-bf4c9d85` | #161 open | ACTIVE_PR | Retain. |
+| `codex/federal-records-contracts-v1` | #100 closed | CLOSED_PR_RETAINED | Retain pending contract-first replacement vector. |
+| `codex/federation-manager-foundation-v0-3` | #94 closed | CLOSED_PR_RETAINED | Retain pending supersession verification retention window. |
+| `codex/remove-mandatory-sibling-coupling-v0-1` | #157 open | ACTIVE_PR | Retain. |
+| `codex/thehub-mobile-pwa-v0-2` | #88 closed | CLOSED_PR_RETAINED | Retain per closure comment. |
+| `dependabot/github_actions/actions/checkout-7.0.1` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain until automation origin is verified. |
+| `docs/road-to-100-critical-path-v1` | #160 open | ACTIVE_PR | Retain. |
+| `feat/federation-crossover-ingest` | #41 closed | CLOSED_PR_RETAINED | Retain pending provenance review. |
+| `gpt/offline-operator-model-v1` | #32 open | ACTIVE_PR | Retain. |
+| `gpt/patch-intsys-p0-gaps` | #23 closed | CLOSED_PR_RETAINED | Retain per closure comment. |
+| `main` | default branch | PROTECTED | Retain. |
+| `prii-pr-consolidation-audit` | #162 open | ACTIVE_PR | Retain. |
+| `security/semgrep-rollout-v1` | #74 merged | SAFE_DELETE_MERGED | Delete remote branch after audit update. |
+| `semgrep-pre-rebase-8b877ffe` | no PR found | NEEDS_PROVENANCE_REVIEW | Retain as likely pre-rebase recovery branch. |
