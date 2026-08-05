@@ -25,7 +25,7 @@
 | --- | --- | --- | --- | --- |
 | #161 | chore/unified-skillpacks-v1.0.0-bf4c9d85 | MERGE_CANDIDATE | Mergeable draft; 7 files; lint repaired in `2880af8`; checks passing. | Keep open; promote only after governance review approves unified skillpack scope. |
 | #160 | docs/road-to-100-critical-path-v1 | MERGE_CANDIDATE | Mergeable draft; 1 governance freeze file; checks passing. | Keep open; mark ready only when governance review approves. |
-| #158 | agent/prii-preclone-macos-certification-v3-0 | MERGE_CANDIDATE | Latest certification line; mergeable draft; historical lineage preserved in commit `fc49ace`. | Keep as certification keeper candidate. |
+| #158 | agent/prii-preclone-macos-certification-v3-0 | MERGE_CANDIDATE | Latest certification line; conflict from dependency workflow merges repaired in `893f32c`; mergeable clean; checks passing including desktop build matrix and preclone certification. | Keep as certification keeper candidate. |
 | #157 | codex/remove-mandatory-sibling-coupling-v0-1 | MERGE_CANDIDATE | Mergeable draft; isolated-clone policy scope; checks passing. | Keep open; promote after readiness review. |
 | #155 | agent/prii-preclone-macos-certification-v2-0 | SUPERSEDED_CLOSE | Unique authority-aligned heads archived in #158 commit `fc49ace`. | CLOSED 2026-08-05; branch retained. |
 | #154 | agent/prii-preclone-macos-certification-v1-0 | SUPERSEDED_CLOSE | Unique refreshed heads archived in #158 commit `fc49ace`. | CLOSED 2026-08-05; branch retained. |
@@ -55,6 +55,7 @@
 ## Verification Notes
 
 - Certification comparison command found unique commits in #149, #154, and #155 that were not cherry-picked into #158; reusable lineage was preserved in #158 commit `fc49ace` before closure.
+- #158 was refreshed with `origin/main` in commit `893f32c` after #104 and #107 changed pinned workflow actions; `.github/workflows/desktop-build.yml` now preserves the desktop build job and the branch-scoped preclone certification job with `actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a`.
 - File inspection showed #131 contains operator certification and backend receipt/manager-host changes, so it is promoted to merge candidate rather than treated as UI-only.
 - #94 is superseded by mainline commit `25c0fe6` plus later manager hardening modules.
 - #100 has unique federal-records contract intent, but was closed because it combines contract, API, ingest, test, and UI work in one conflicting branch; salvage requires a fresh contract-first vector.
@@ -84,6 +85,10 @@
 
 - #104 -> `b39df272d5e9`
 - #107 -> `fcd9ad91f317`
+
+## Conflict Repairs Completed In This Pass
+
+- #158 -> `893f32c`
 
 ## Deferred Actions
 
