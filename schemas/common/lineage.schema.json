@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://prii.dev/schema/common/lineage.schema.json",
+  "title": "PRII Lineage Record",
+  "description": "Shared federation lineage contract for producer records and Hub-derived artifacts.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["producer_script", "producer_phase", "source_inputs"],
+  "properties": {
+    "producer_script": {"type": "string", "minLength": 1},
+    "producer_phase": {"type": "string", "minLength": 1},
+    "source_inputs": {"type": "array", "items": {"type": "string"}},
+    "extraction_method": {"type": "string"},
+    "producer_repository": {"type": "string"},
+    "producer_commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "derivation_kind": {"enum": ["producer_asserted", "hub_derived", "projection", "migration"]}
+  }
+}
