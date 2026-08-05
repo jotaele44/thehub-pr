@@ -1,0 +1,61 @@
+{
+  "schema_version": "prii_preclone_certification_heads_v4",
+  "captured_at": "2026-07-31T19:27:00Z",
+  "purpose": "Exact authority-aligned candidate commits certified on a clean GitHub-hosted macOS runner after TheHub runtime, Spiderweb authority, and Skywatcher authority landed; not the final all-main cohort.",
+  "repositories": [
+    {
+      "program_id": "thehub-pr",
+      "repository": "jotaele44/thehub-pr",
+      "pull_request": 148,
+      "certification_head": "80534737a6f314ea48108020501ce48f5d9ff6f1"
+    },
+    {
+      "program_id": "moneysweep-pr",
+      "repository": "jotaele44/moneysweep-pr",
+      "pull_request": 454,
+      "certification_head": "5c7a2e6b2d308cd6aef7a09b88a6a26a66f2e62b"
+    },
+    {
+      "program_id": "spiderweb-pr",
+      "repository": "jotaele44/spiderweb-pr",
+      "pull_request": 238,
+      "certification_head": "080a2790d6a5c1a4eb2526e04d9790a749e0e8f0"
+    },
+    {
+      "program_id": "skywatcher-pr",
+      "repository": "jotaele44/skywatcher-pr",
+      "pull_request": 163,
+      "certification_head": "65fb5bcf21f1adfe612e3eac39b4723c204c2282"
+    },
+    {
+      "program_id": "centinelas-pr",
+      "repository": "jotaele44/centinelas-pr",
+      "pull_request": 77,
+      "certification_head": "30f278d195c5ca9daa61ba45e8b357abe97fe729"
+    },
+    {
+      "program_id": "aguayluz-pr",
+      "repository": "jotaele44/aguayluz-pr",
+      "pull_request": 98,
+      "certification_head": "2226b5f073c4000ed6bf579c4d6c867b9503d65f"
+    },
+    {
+      "program_id": "ovnis-pr",
+      "repository": "jotaele44/ovnis-pr",
+      "pull_request": 68,
+      "certification_head": "e167cef6fd4a4a978fb0b24d702088acc0317bce"
+    }
+  ],
+  "classification": "authority_aligned_candidate_cohort_not_final_all_main_cohort",
+  "preserve": {
+    "draft": true,
+    "merge": false,
+    "direct_main_write": false,
+    "force_push": false,
+    "production_export": false,
+    "live_execution": false,
+    "feature_branch_as_permanent_baseline": false,
+    "sealed_local_snapshot_unchanged": true,
+    "shared_venv": false
+  }
+}

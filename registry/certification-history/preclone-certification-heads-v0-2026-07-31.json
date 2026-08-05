@@ -1,0 +1,58 @@
+{
+  "schema_version": "prii_preclone_certification_heads_v2",
+  "captured_at": "2026-07-31T02:28:00-04:00",
+  "purpose": "Exact detached commits certified on a clean GitHub-hosted macOS runner; not a permanent clone baseline.",
+  "repositories": [
+    {
+      "program_id": "thehub-pr",
+      "repository": "jotaele44/thehub-pr",
+      "pull_request": 148,
+      "certification_head": "caebf0aaa598a037ef527a15b3d804e7846e3d0f"
+    },
+    {
+      "program_id": "moneysweep-pr",
+      "repository": "jotaele44/moneysweep-pr",
+      "pull_request": 454,
+      "certification_head": "5c7a2e6b2d308cd6aef7a09b88a6a26a66f2e62b"
+    },
+    {
+      "program_id": "spiderweb-pr",
+      "repository": "jotaele44/spiderweb-pr",
+      "pull_request": 238,
+      "certification_head": "c08e47137e34aac0c2575e198645ef5fc7c28d67"
+    },
+    {
+      "program_id": "skywatcher-pr",
+      "repository": "jotaele44/skywatcher-pr",
+      "pull_request": 163,
+      "certification_head": "78f779dda46d2674caf1341f0d2e3f9995dced4f"
+    },
+    {
+      "program_id": "centinelas-pr",
+      "repository": "jotaele44/centinelas-pr",
+      "pull_request": 77,
+      "certification_head": "30f278d195c5ca9daa61ba45e8b357abe97fe729"
+    },
+    {
+      "program_id": "aguayluz-pr",
+      "repository": "jotaele44/aguayluz-pr",
+      "pull_request": 98,
+      "certification_head": "9ee16952a4da9e334a9f9ae5e53f15b84f30f56a"
+    },
+    {
+      "program_id": "ovnis-pr",
+      "repository": "jotaele44/ovnis-pr",
+      "pull_request": 68,
+      "certification_head": "e167cef6fd4a4a978fb0b24d702088acc0317bce"
+    }
+  ],
+  "preserve": {
+    "draft": true,
+    "merge": false,
+    "direct_main_write": false,
+    "force_push": false,
+    "production_export": false,
+    "live_execution": false,
+    "feature_branch_as_permanent_baseline": false
+  }
+}
