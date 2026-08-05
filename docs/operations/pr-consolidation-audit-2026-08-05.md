@@ -118,6 +118,8 @@
 - `spiderweb-pr` #216 -> `bc49875cb6b695186431b7b3eebaaca154f91786`
 - `spiderweb-pr` #122 -> `3c5dd01dbbdfce5dcf12ee95b6623f440488d820`
 
+`spiderweb-pr` dependency queue exhausted on 2026-08-05 after GitHub returned no open `dependabot/*` pull requests; remaining Spiderweb PRs are non-dependency feature or audit branches and require vector review before action.
+
 ## Candidate Merges Completed In This Pass
 
 - #131 -> `a5bad05ce5eec4cc73e2eed8569d294bc3f5cd27`
