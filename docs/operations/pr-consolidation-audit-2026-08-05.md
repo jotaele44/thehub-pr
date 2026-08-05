@@ -103,6 +103,10 @@
 - #110 -> `a5631e619926e5e71941f061c7d7688d03b747c0`
 - #109 -> `d91882cfb10bfb7d03d85eda4c4fedc55df0b2d5`
 
+## Producer Dependency Merges Completed In This Pass
+
+- `spiderweb-pr` #244 -> `46d6bd4607611f44f7c494b04e036d7a9966922e`
+
 ## Candidate Merges Completed In This Pass
 
 - #131 -> `a5bad05ce5eec4cc73e2eed8569d294bc3f5cd27`
@@ -124,7 +128,7 @@
 
 ## Federation Remote Queue Snapshot
 
-Remote inspection on 2026-08-05 found only `thehub-pr` cloned locally under `/Users/jotaele/Documents/GitHub`; producer repositories were inspected read-only through GitHub. No producer branch was deleted or mutated during this snapshot.
+Initial remote inspection on 2026-08-05 found only `thehub-pr` cloned locally under `/Users/jotaele/Documents/GitHub`; producer repositories were inspected read-only through GitHub before the first producer dependency merge. No producer branch was deleted during this snapshot.
 
 | Repository | Open PRs | Draft PRs | Non-draft PRs | Conflicting PRs | Dependabot PRs | Dependabot all-success | Dependabot with failures |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -137,13 +141,12 @@ Remote inspection on 2026-08-05 found only `thehub-pr` cloned locally under `/Us
 | `centinelas-pr` | 24 | 13 | 11 | 2 | 10 | 2 | 8 |
 | `Puerto-Rico-Airspace-Intelligence-Tool` | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
-Dependency cleanup continues one PR at a time. Treat `SKIPPED,SUCCESS` dependency check sets as requiring manual review before merge, not as all-success. Current low-risk starting candidates are green, mergeable Dependabot PRs with narrow action or package bumps; mixed `FAILURE,SUCCESS` dependency PRs require local reproduction or closure rationale before any merge.
+Dependency cleanup continues one PR at a time. Treat `SKIPPED,SUCCESS` dependency check sets as requiring manual review before merge, not as all-success. Current low-risk remaining candidates are green, mergeable Dependabot PRs with narrow action or package bumps; mixed `FAILURE,SUCCESS` dependency PRs require local reproduction or closure rationale before any merge.
 
 ### Producer Dependency Queue
 
 | Repository | PR | State | Checks | Branch | Title |
 | --- | --- | --- | --- | --- | --- |
-| `spiderweb-pr` | #244 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/server/frontend/npm-minor-patch-818eedfb1a` | deps: bump the npm-minor-patch group across 1 directory with 10 updates |
 | `spiderweb-pr` | #217 | MERGEABLE | SUCCESS | `dependabot/github_actions/softprops/action-gh-release-3.0.2` | ci: bump softprops/action-gh-release from 2.6.2 to 3.0.2 |
 | `spiderweb-pr` | #216 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/upload-artifact-7.0.1` | ci: bump actions/upload-artifact from 4.6.2 to 7.0.1 |
 | `spiderweb-pr` | #122 | MERGEABLE | SUCCESS | `dependabot/pip/praw-gte-7.8.1-and-lt-9` | Update praw requirement from <8,>=7.8.1 to >=7.8.1,<9 |
