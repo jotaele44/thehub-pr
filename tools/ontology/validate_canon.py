@@ -71,6 +71,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         except Exception as exc:
             errors.append(f"invalid YAML {path.relative_to(root)}: {exc}")
 
+    # Validate declared JSON Schemas against their metaschemas and competency fixtures.
     schema_paths = sorted((ontology / "schemas").glob("*.schema.json")) + [root / "schemas/common/lineage.schema.json"]
     schemas: dict[str, Mapping[str, Any]] = {}
     for path in schema_paths:
@@ -106,6 +107,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     for path in module_paths:
         documents.append((path, load_json(path)))
     ids: list[str] = []
+    owners: dict[str, Any] = {}
     refs: list[tuple[str, str]] = []
     for path, document in documents:
         is_module = path.parent.name == "modules"
@@ -115,6 +117,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 errors.append(f"invalid or missing identifier in {path.relative_to(root)}: {identifier!r}")
                 continue
             ids.append(identifier)
+            owners[identifier] = definition.get("owner")
             if not definition.get("owner"):
                 errors.append(f"unowned term: {identifier}")
             if is_module and identifier.startswith(("prii:", "contract:")):
@@ -194,6 +197,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             if not isinstance(item, Mapping):
                 continue
             repo_root = args.workspace / str(item["directory"])
+            if item.get("program_id") == "thehub-pr":
+                hub_contract = repo_root / "schemas/repo_federation_manifest.schema.json"
+                if not hub_contract.exists():
+                    errors.append("Hub contract schema missing: thehub-pr/schemas/repo_federation_manifest.schema.json")
+                continue
             manifest = repo_root / "federation.json"
             if not manifest.exists():
                 errors.append(f"cross-repo contract missing: {item['program_id']}/federation.json")
