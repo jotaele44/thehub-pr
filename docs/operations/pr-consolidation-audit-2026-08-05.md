@@ -107,6 +107,7 @@
 
 - `spiderweb-pr` #244 -> `46d6bd4607611f44f7c494b04e036d7a9966922e`
 - `spiderweb-pr` #217 -> `40902d1d906a74d3ce3af2016d58386e2be5a93f`
+- `spiderweb-pr` #216 -> `bc49875cb6b695186431b7b3eebaaca154f91786`
 
 ## Candidate Merges Completed In This Pass
 
@@ -148,7 +149,6 @@ Dependency cleanup continues one PR at a time. Treat `SKIPPED,SUCCESS` dependenc
 
 | Repository | PR | State | Checks | Branch | Title |
 | --- | --- | --- | --- | --- | --- |
-| `spiderweb-pr` | #216 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/upload-artifact-7.0.1` | ci: bump actions/upload-artifact from 4.6.2 to 7.0.1 |
 | `spiderweb-pr` | #122 | MERGEABLE | SUCCESS | `dependabot/pip/praw-gte-7.8.1-and-lt-9` | Update praw requirement from <8,>=7.8.1 to >=7.8.1,<9 |
 | `moneysweep-pr` | #433 | MERGEABLE | SUCCESS | `dependabot/npm_and_yarn/dashboard/npm-minor-patch-18fb5ab90d` | deps: bump the npm-minor-patch group across 1 directory with 10 updates |
 | `moneysweep-pr` | #424 | MERGEABLE | SUCCESS | `dependabot/github_actions/actions/setup-python-7.0.0` | ci: bump actions/setup-python from 5.6.0 to 7.0.0 |
