@@ -140,11 +140,15 @@ jobs:
         id: validate
         continue-on-error: true
         run: |
+          status=0
           python tools/ontology/validate_canon.py \
             --root . \
             --workspace _ontology_workspace \
             --require-generated \
-            | tee federation/ontology/generated/validation-report.json
+            > /tmp/ontology-validation-report.json || status=$?
+          cat /tmp/ontology-validation-report.json
+          cp /tmp/ontology-validation-report.json federation/ontology/generated/validation-report.json
+          exit "$status"
 
       - name: Upload exhaustive semantic inventory
         if: always()
