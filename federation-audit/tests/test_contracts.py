@@ -17,6 +17,12 @@ def test_federation_manifest_matches_contract():
     manifest = json.loads((ROOT / "manifests/federation.json").read_text())
     assert len(manifest["repositories"]) == 7
     assert len({r["commit"] for r in manifest["repositories"]}) == 7
+    assert all(len(r["commit"]) == 40 for r in manifest["repositories"])
+
+
+def test_runtime_certification_schema_is_valid():
+    schema = json.loads((ROOT / "contracts/runtime-certification.schema.json").read_text())
+    Draft202012Validator.check_schema(schema)
 
 
 def test_controlled_fixture_evidence_matches_trace_contract():
