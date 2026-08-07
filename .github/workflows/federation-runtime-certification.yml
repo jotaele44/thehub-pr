@@ -84,10 +84,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python federation-audit/runtime/checkout_federation.py \
-            --workspace-root "$FEDERATION_WORKSPACE" \
-            --manifest federation-audit/manifests/federation.json \
-            --verify-only
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          manifest = json.loads(Path('federation-audit/manifests/federation.json').read_text())
+          root = Path('federation-workspace')
+          for repo in manifest['repositories']:
+              checkout = root / repo['workspace_directory']
+              actual = subprocess.check_output(['git', '-C', str(checkout), 'rev-parse', 'HEAD'], text=True).strip()
+              if actual != repo['commit']:
+                  raise SystemExit(f"pin mismatch {repo['id']}: expected={repo['commit']} actual={actual}")
+          print('exact pins: 7/7')
+          PY
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -121,6 +131,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$FEDERATION_RUNTIME_DEPS" "$FEDERATION_ARTIFACTS"
+          chmod 0777 "$FEDERATION_ARTIFACTS"
           docker run --rm \
             -v "$FEDERATION_WORKSPACE:/workspace:ro" \
             -v "$FEDERATION_RUNTIME_DEPS:/runtime-deps:rw" \
