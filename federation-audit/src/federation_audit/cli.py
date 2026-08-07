@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+from typing import Any
 
 from jsonschema import Draft202012Validator, FormatChecker
 
@@ -19,8 +20,12 @@ def load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def validate_instance(instance: Any, schema: Path) -> None:
+    Draft202012Validator(load_json(schema), format_checker=FormatChecker()).validate(instance)
+
+
 def validate(instance: Path, schema: Path) -> None:
-    Draft202012Validator(load_json(schema), format_checker=FormatChecker()).validate(load_json(instance))
+    validate_instance(load_json(instance), schema)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -53,6 +58,11 @@ def build_parser() -> argparse.ArgumentParser:
     runtime.add_argument("--shadow-root", type=Path, required=True)
     runtime.add_argument("--output", type=Path, required=True)
     runtime.add_argument("--execute", action="store_true")
+    runtime.add_argument(
+        "--schema",
+        type=Path,
+        default=PACKAGE_ROOT / "contracts/runtime-certification.schema.json",
+    )
 
     graph = sub.add_parser("inventory-graph")
     graph.add_argument("--manifest", type=Path, required=True)
@@ -94,6 +104,7 @@ def main(argv: list[str] | None = None) -> int:
             args.shadow_root.resolve(),
             execute=args.execute,
         )
+        validate_instance(result, args.schema)
         write_json(args.output, result)
         print(json.dumps(result["summary"], sort_keys=True))
         return 0 if result["certified"] else 4
