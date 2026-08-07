@@ -1,0 +1,100 @@
+services:
+  shadow-http:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    entrypoint: ["python", "-m", "federation_audit.shadow_services", "http", "--artifacts", "/artifacts"]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    networks: [audit_internal]
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=64m
+      - /artifacts:rw,nosuid,nodev,size=64m
+
+  shadow-message:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    entrypoint: ["python", "-m", "federation_audit.shadow_services", "message", "--artifacts", "/artifacts"]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    networks: [audit_internal]
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=64m
+      - /artifacts:rw,nosuid,nodev,size=64m
+
+  shadow-smtp:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    entrypoint: ["python", "-m", "federation_audit.shadow_services", "smtp", "--artifacts", "/artifacts"]
+    user: "1000:1000"
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    networks: [audit_internal]
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=64m
+      - /artifacts:rw,nosuid,nodev,size=64m
+
+  shadow-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: audit
+      POSTGRES_PASSWORD: AUDIT_FAKE_PASSWORD
+      POSTGRES_DB: federation_audit
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    networks: [audit_internal]
+    tmpfs:
+      - /var/lib/postgresql/data:rw,nosuid,nodev,size=256m
+      - /tmp:rw,nosuid,nodev,size=64m
+
+  certifier:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command:
+      - runtime-certify
+      - --workspace-root
+      - /workspace
+      - --manifest
+      - /audit/manifests/federation.json
+      - --topology
+      - /audit/runtime/topology.json
+      - --shadow-root
+      - /shadow
+      - --output
+      - /artifacts/runtime-certification.json
+      - --execute
+    user: "1000:1000"
+    read_only: true
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    depends_on: [shadow-http, shadow-message, shadow-smtp, shadow-db]
+    networks: [audit_internal]
+    environment:
+      FEDERATION_AUDIT_NETWORK_ISOLATED: "1"
+      FEDERATION_AUDIT_PRIVATE_NETWORK: "1"
+      FEDERATION_AUDIT_CONTAINER_READ_ONLY: "1"
+      FEDERATION_AUDIT_AUTH_TOKEN: AUDIT_FAKE_TOKEN
+      DATABASE_URL: postgresql://audit:AUDIT_FAKE_PASSWORD@shadow-db:5432/federation_audit
+      SMTP_HOST: shadow-smtp
+      SMTP_PORT: "2525"
+      MESSAGE_ENDPOINT: http://shadow-message:9090
+      EXTERNAL_API_BASE_URL: http://shadow-http:9080
+    volumes:
+      - ${FEDERATION_WORKSPACE:-../../federation-workspace}:/workspace:ro
+      - ${FEDERATION_ARTIFACTS:-./artifacts}:/artifacts:rw
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=256m
+      - /shadow:rw,nosuid,nodev,size=512m
+
+networks:
+  audit_internal:
+    internal: true
