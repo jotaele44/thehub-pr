@@ -9,9 +9,10 @@ services:
     cap_drop: ["ALL"]
     security_opt: ["no-new-privileges:true"]
     networks: [audit_internal]
+    volumes:
+      - ${FEDERATION_ARTIFACTS:-./artifacts}:/artifacts:rw
     tmpfs:
       - /tmp:rw,nosuid,nodev,size=64m
-      - /artifacts:rw,nosuid,nodev,size=64m
 
   shadow-message:
     build:
@@ -23,9 +24,10 @@ services:
     cap_drop: ["ALL"]
     security_opt: ["no-new-privileges:true"]
     networks: [audit_internal]
+    volumes:
+      - ${FEDERATION_ARTIFACTS:-./artifacts}:/artifacts:rw
     tmpfs:
       - /tmp:rw,nosuid,nodev,size=64m
-      - /artifacts:rw,nosuid,nodev,size=64m
 
   shadow-smtp:
     build:
@@ -37,9 +39,10 @@ services:
     cap_drop: ["ALL"]
     security_opt: ["no-new-privileges:true"]
     networks: [audit_internal]
+    volumes:
+      - ${FEDERATION_ARTIFACTS:-./artifacts}:/artifacts:rw
     tmpfs:
       - /tmp:rw,nosuid,nodev,size=64m
-      - /artifacts:rw,nosuid,nodev,size=64m
 
   shadow-db:
     image: postgres:16-alpine
@@ -88,9 +91,11 @@ services:
       SMTP_PORT: "2525"
       MESSAGE_ENDPOINT: http://shadow-message:9090
       EXTERNAL_API_BASE_URL: http://shadow-http:9080
+      PYTHONPATH: /runtime-deps:/workspace/thehub-pr/packages/prii_desktop/src:/workspace/thehub-pr/src:/workspace/spiderweb-pr/src:/workspace/skywatcher-pr/src:/workspace/ovnis-pr/src:/workspace/aguayluz-pr/src:/workspace/centinelas-pr/src:/workspace/moneysweep-pr/src:/workspace/moneysweep-pr
     volumes:
       - ${FEDERATION_WORKSPACE:-../../federation-workspace}:/workspace:ro
       - ${FEDERATION_ARTIFACTS:-./artifacts}:/artifacts:rw
+      - ${FEDERATION_RUNTIME_DEPS:-./.runtime-deps}:/runtime-deps:ro
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,size=256m
       - /shadow:rw,nosuid,nodev,size=512m
