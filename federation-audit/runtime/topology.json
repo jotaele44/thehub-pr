@@ -7,7 +7,7 @@
       "surface_kind": "desktop",
       "entry_point": "desktop/launch.py",
       "cwd": ".",
-      "command": ["python", "desktop/launch.py"],
+      "command": ["python", "desktop/launch.py", "--no-window"],
       "mode": "boot",
       "startup_seconds": 5,
       "minimum_gate": "G3"
@@ -18,7 +18,7 @@
       "surface_kind": "desktop",
       "entry_point": "desktop/launch.py",
       "cwd": ".",
-      "command": ["python", "desktop/launch.py"],
+      "command": ["python", "desktop/launch.py", "--no-window"],
       "mode": "boot",
       "startup_seconds": 5,
       "minimum_gate": "G3"
@@ -29,7 +29,7 @@
       "surface_kind": "desktop",
       "entry_point": "desktop/launch.py",
       "cwd": ".",
-      "command": ["python", "desktop/launch.py"],
+      "command": ["python", "desktop/launch.py", "--no-window"],
       "mode": "boot",
       "startup_seconds": 5,
       "minimum_gate": "G3"
@@ -51,7 +51,7 @@
       "surface_kind": "desktop",
       "entry_point": "desktop/launch.py",
       "cwd": ".",
-      "command": ["python", "desktop/launch.py"],
+      "command": ["python", "desktop/launch.py", "--no-window"],
       "mode": "boot",
       "startup_seconds": 5,
       "minimum_gate": "G3"
@@ -62,7 +62,7 @@
       "surface_kind": "desktop",
       "entry_point": "desktop/launch.py",
       "cwd": ".",
-      "command": ["python", "desktop/launch.py"],
+      "command": ["python", "desktop/launch.py", "--no-window"],
       "mode": "boot",
       "startup_seconds": 5,
       "minimum_gate": "G3"
