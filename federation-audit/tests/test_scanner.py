@@ -25,6 +25,8 @@ def test_scanner_correlates_controls_and_routes(tmp_path: Path):
     by_label = {t["surface"]["label"]: t["classification"] for t in result["traces"]}
     assert by_label["Dead"] == "UI_NO_OP"
     assert by_label["Missing"] == "TARGET_MISSING"
-    assert by_label["Export"] == "EXECUTABLE_BY_CONTRACT"
+    # Static route correlation is evidence of wiring, not proof of target resolution.
+    # Promotion to EXECUTABLE_BY_CONTRACT requires an explicit resolver receipt.
+    assert by_label["Export"] == "PARTIALLY_WIRED"
     assert result["coverage"]["by_kind"]["gui-control"] == 3
     assert result["coverage"]["by_kind"]["route"] == 1
