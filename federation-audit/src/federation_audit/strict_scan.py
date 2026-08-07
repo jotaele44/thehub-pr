@@ -37,12 +37,8 @@ def _control_at_line(source: str, line: int) -> tuple[str | None, str | None]:
 
 
 def _strictify(trace: Trace) -> Trace:
-    # The v0.1 scanner used this flag as a shortcut.  It has no certification
-    # meaning in strict mode; only resolver/runtime receipts may promote.
-    trace.observations.pop("static_contract_resolved", None)
-    trace.observations.pop("target_resolution_evidence", None)
-    trace.observations.pop("t2_receipt", None)
-    trace.observations.pop("runtime_isolated", None)
+    for key in ("static_contract_resolved", "target_resolution_evidence", "t2_receipt", "runtime_isolated"):
+        trace.observations.pop(key, None)
     return classify_trace(trace)
 
 
@@ -81,8 +77,6 @@ def _promote_gui_trace(trace: Trace, repo_root: Path, index: ResolutionIndex) ->
                     [f"import-binding:{source_rel}:{handler_name}", f"target-symbol:{target.source}:{target.line}:{target.name}"]
                 )
     else:
-        # Inline expressions are not presumed resolved.  Only literal network
-        # intent inside the expression can be contract checked.
         body = event_expr
         evidence.append("inline-event-expression")
 
@@ -97,6 +91,8 @@ def _promote_gui_trace(trace: Trace, repo_root: Path, index: ResolutionIndex) ->
     if route is None:
         same_path = [item for item in index.routes if item.path == target_path]
         if same_path:
+            trace.observations.pop("target_missing", None)
+            trace.observations["handler_resolved"] = True
             trace.observations["contract_mismatch"] = True
             return classify_trace(trace)
         return trace
@@ -107,6 +103,10 @@ def _promote_gui_trace(trace: Trace, repo_root: Path, index: ResolutionIndex) ->
         f"{route.method} {route.path}",
         [*evidence, f"handler-source:{handler_source}", *route.evidence, f"route:{route.source}:{route.line}"],
     )
+    # Strict T1 evidence supersedes provisional legacy observations made before
+    # router-prefix/import resolution.
+    for stale in ("target_missing", "contract_mismatch", "blocked_precondition", "undeclared_precondition"):
+        trace.observations.pop(stale, None)
     trace.observations.update(
         {
             "handler_bound": True,
