@@ -1,0 +1,211 @@
+name: Federation runtime certification
+
+on:
+  pull_request:
+    paths:
+      - "federation-audit/**"
+      - ".github/workflows/federation-runtime-certification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      FEDERATION_WORKSPACE: ${{ github.workspace }}/federation-workspace
+      FEDERATION_ARTIFACTS: ${{ github.workspace }}/federation-audit/artifacts
+      FEDERATION_RUNTIME_DEPS: ${{ github.workspace }}/federation-audit/.runtime-deps
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout TheHub exact pin
+        uses: actions/checkout@v4
+        with:
+          repository: Jotaele44/thehub-pr
+          ref: a5bad05ce5eec4cc73e2eed8569d294bc3f5cd27
+          path: federation-workspace/thehub-pr
+          persist-credentials: false
+
+      - name: Checkout Spiderweb exact pin
+        uses: actions/checkout@v4
+        with:
+          repository: Jotaele44/spiderweb-pr
+          ref: 3c5dd01dbbdfce5dcf12ee95b6623f440488d820
+          path: federation-workspace/spiderweb-pr
+          persist-credentials: false
+
+      - name: Checkout Skywatcher exact pin
+        uses: actions/checkout@v4
+        with:
+          repository: Jotaele44/skywatcher-pr
+          ref: f940dc1d4afae7740eaa2a94dbf4684d11ae156b
+          path: federation-workspace/skywatcher-pr
+          persist-credentials: false
+
+      - name: Checkout Ovnis exact pin
+        uses: actions/checkout@v4
+        with:
+          repository: Jotaele44/ovnis-pr
+          ref: 400994dcc4e0e752c6ead984b0956f65adb0e153
+          path: federation-workspace/ovnis-pr
+          persist-credentials: false
+
+      - name: Checkout Aguayluz exact pin
+        uses: actions/checkout@v4
+        with:
+          repository: Jotaele44/aguayluz-pr
+          ref: 0e10312ab35ea0d745963d7b3b48b39fb8aaf7ef
+          path: federation-workspace/aguayluz-pr
+          persist-credentials: false
+
+      - name: Checkout Centinelas exact pin
+        uses: actions/checkout@v4
+        with:
+          repository: Jotaele44/centinelas-pr
+          ref: f766efb6ede23398114a85cebf52d6530fa13891
+          path: federation-workspace/centinelas-pr
+          persist-credentials: false
+
+      - name: Checkout MoneySweep exact pin
+        uses: actions/checkout@v4
+        with:
+          repository: Jotaele44/moneysweep-pr
+          ref: ab30e34e6307c6bb2782a1573e8d5ec7923af544
+          path: federation-workspace/moneysweep-pr
+          persist-credentials: false
+
+      - name: Verify exact pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          manifest = json.loads(Path('federation-audit/manifests/federation.json').read_text())
+          root = Path('federation-workspace')
+          for repo in manifest['repositories']:
+              checkout = root / repo['workspace_directory']
+              actual = subprocess.check_output(['git', '-C', str(checkout), 'rev-parse', 'HEAD'], text=True).strip()
+              if actual != repo['commit']:
+                  raise SystemExit(f"pin mismatch {repo['id']}: expected={repo['commit']} actual={actual}")
+          print('exact pins: 7/7')
+          PY
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install audit development dependencies
+        run: python -m pip install -e './federation-audit[dev]'
+
+      - name: Validate manifest and unit gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          federation-audit validate-manifest federation-audit/manifests/federation.json
+          pytest federation-audit/tests
+          ruff check federation-audit/src federation-audit/tests
+          mypy federation-audit/src
+
+      - name: Run Playwright containment fixture
+        working-directory: federation-audit/playwright
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci
+          npx playwright install --with-deps chromium
+          npm test
+
+      - name: Stage runtime dependencies in matching container ABI
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$FEDERATION_RUNTIME_DEPS" "$FEDERATION_ARTIFACTS"
+          chmod 0777 "$FEDERATION_ARTIFACTS"
+          docker run --rm \
+            -v "$FEDERATION_WORKSPACE:/workspace:ro" \
+            -v "$FEDERATION_RUNTIME_DEPS:/runtime-deps:rw" \
+            mcr.microsoft.com/playwright:v1.62.1-noble \
+            bash -lc '
+              set -euo pipefail
+              python -m pip install --no-cache-dir --target /runtime-deps \
+                fastapi uvicorn pyyaml aiosqlite sse-starlette pywebview
+              for req in /workspace/*/server/backend/requirements.txt; do
+                [ -f "$req" ] || continue
+                python -m pip install --no-cache-dir --target /runtime-deps -r "$req"
+              done
+            '
+
+      - name: Validate isolated runtime compose contract
+        working-directory: federation-audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose -f docker/docker-compose.runtime.yml config > artifacts/compose.resolved.yml
+          grep -q 'internal: true' artifacts/compose.resolved.yml
+          grep -q 'read_only: true' artifacts/compose.resolved.yml
+          grep -q 'no-new-privileges:true' artifacts/compose.resolved.yml
+
+      - name: Execute closed-network exact-pin runtime certification
+        working-directory: federation-audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose -f docker/docker-compose.runtime.yml up \
+            --build --abort-on-container-exit --exit-code-from certifier certifier
+
+      - name: Verify runtime receipt invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('federation-audit')
+          receipt = json.loads((root / 'artifacts/runtime-certification.json').read_text())
+          schema = json.loads((root / 'contracts/runtime-certification.schema.json').read_text())
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+          summary = receipt['summary']
+          calibration = summary['calibration']
+          assert receipt['certified'] is True, receipt['failures']
+          assert summary['repositories_exact'] == 7
+          assert summary['probes_passed'] == 7
+          assert summary['production_egress_events'] == 0
+          assert summary['production_credential_events'] == 0
+          assert summary['uncontained_side_effects'] == 0
+          assert calibration['precision'] == 1.0
+          assert calibration['recall'] == 1.0
+          assert len(receipt['runtime_receipts']) == 7
+          assert all(r['runtime_isolated'] and r['t2_receipt'] for r in receipt['runtime_receipts'])
+          PY
+
+      - name: Tear down isolated runtime
+        if: always()
+        working-directory: federation-audit
+        run: docker compose -f docker/docker-compose.runtime.yml down --volumes --remove-orphans
+
+      - name: Upload certification receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: federation-runtime-certification-${{ github.sha }}
+          path: |
+            federation-audit/artifacts/runtime-certification.json
+            federation-audit/artifacts/http.jsonl
+            federation-audit/artifacts/message.jsonl
+            federation-audit/artifacts/smtp.jsonl
+            federation-audit/artifacts/compose.resolved.yml
+          if-no-files-found: warn
+          retention-days: 14
