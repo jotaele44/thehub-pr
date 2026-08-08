@@ -65,6 +65,15 @@ def test_slug_substitution_renders_to_tmp(tmp_path):
     assert (tmp_path / "schemas" / "federation_export_manifest.schema.json").is_file()
 
 
+def test_rendered_templates_do_not_require_hub_sibling_paths(tmp_path):
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    rendered_text = "\n".join(path.read_text() for path in tmp_path.rglob("*") if path.is_file())
+    assert "../thehub-pr" not in rendered_text
+
+
 def test_check_detects_lost_executable_bit(tmp_path):
     # Render ovnis, then drop the exec bit on a launcher — --check must flag drift.
     subprocess.run(
