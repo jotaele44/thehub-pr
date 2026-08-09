@@ -21,11 +21,13 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
-      - name: Install TheHub from isolated checkout
-        run: python -m pip install -e ".[dev]" -e packages/prii_export_utils
+      - name: Install TheHub using canonical CI dependency recipe
+        run: |
+          python -m pip install -e ".[dev]" httpx -r server/backend/requirements.txt
+          python -m pip install -e packages/prii_export_utils
       - name: Test TheHub
         run: python -m pytest -q
-      - name: Federation fetch + producer exports
+      - name: Federation fetch + producer exports from current default branches
         run: hub fetch --root "$RUNNER_TEMP/federation-ws" --run
       - name: Aggregate
         run: hub aggregate --root "$RUNNER_TEMP/federation-ws" --out "$RUNNER_TEMP/aggregate"
@@ -38,31 +40,37 @@ jobs:
         include:
           - id: moneysweep-pr
             repo: jotaele44/moneysweep-pr
-            setup: python3 run_all.py --only-setup
+            ref: agent/runtime-readiness-setup-v0-1
+            setup: python3 -m pip install -r requirements.txt && python3 run_all.py --only-setup
             test: python3 -m pytest tests/ -q
             export: python3 scripts/federation_export.py --mode test
           - id: spiderweb-pr
             repo: jotaele44/spiderweb-pr
+            ref: main
             setup: python -m pip install uv && uv pip install --system -e '.[airspace,earthgpt,server,dev]' 'httpx>=0.27'
             test: python -m pytest tests/ -q --tb=short --ignore=tests/test_io.py --ignore=tests/test_terrain.py
             export: python3 scripts/federation_export.py --mode test
           - id: aguayluz-pr
             repo: jotaele44/aguayluz-pr
+            ref: agent/runtime-readiness-fastapi-testdep-v0-1
             setup: python -m pip install uv && uv pip install --system -e '.[dev]'
             test: python -m pytest -q
             export: python3 scripts/federation_export.py --mode test
           - id: skywatcher-pr
             repo: jotaele44/skywatcher-pr
+            ref: main
             setup: python -m pip install -r requirements-dev.txt httpx -r server/backend/requirements.txt
             test: python -m pytest -q
             export: python3 scripts/federation_export.py --mode test
           - id: centinelas-pr
             repo: jotaele44/centinelas-pr
+            ref: agent/runtime-readiness-ledger-failclosed-v0-1
             setup: python -m pip install uv && uv pip install --system -e '.[dev]'
             test: python -m pytest -q
             export: python3 scripts/federation_export.py --ledger data/signals/live_signals.jsonl --mode production
           - id: ovnis-pr
             repo: jotaele44/ovnis-pr
+            ref: main
             setup: python -m pip install -r requirements.txt
             test: python -m pytest -q
             export: python3 scripts/federation_export.py --mode production
@@ -73,10 +81,11 @@ jobs:
       - name: Clone exactly one producer
         env:
           REPO: ${{ matrix.repo }}
+          REF: ${{ matrix.ref }}
         run: |
-          git clone --depth 1 "https://github.com/${REPO}.git" producer
+          git clone --depth 1 --branch "$REF" "https://github.com/${REPO}.git" producer
           cd producer
-          printf 'repo=%s\nhead=%s\n' "$REPO" "$(git rev-parse HEAD)"
+          printf 'repo=%s\nref=%s\nhead=%s\n' "$REPO" "$REF" "$(git rev-parse HEAD)"
           test ! -e ../thehub-pr
           test ! -e ../moneysweep-pr
           test ! -e ../spiderweb-pr
