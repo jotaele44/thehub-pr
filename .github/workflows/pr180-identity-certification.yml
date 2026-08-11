@@ -1,0 +1,55 @@
+name: PR180 identity certification
+
+on:
+  pull_request:
+    paths:
+      - "src/hub/identity_registry.py"
+      - "schemas/contracts/federation_*.schema.json"
+      - "schemas/contracts/entity_resolution.v1.schema.json"
+      - "tests/test_identity_registry.py"
+      - "tests/test_identity_contracts.py"
+      - "tools/build_identity_candidate_ledger.py"
+      - ".github/workflows/pr180-identity-certification.yml"
+  workflow_dispatch:
+
+jobs:
+  identity-certification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install validation dependencies
+        run: python -m pip install -e ".[dev]"
+
+      - name: Build complete main/PR candidate ledger
+        run: |
+          python tools/build_identity_candidate_ledger.py \
+            --main-ref 73c2a19d6505fd3dcc2be9a108d1e4a560642a99 \
+            --head-ref HEAD \
+            --out build/pr180_identity_candidate_ledger.json
+
+      - name: Run identity state-machine tests
+        run: pytest -q tests/test_identity_registry.py tests/test_identity_contracts.py
+
+      - name: Run complete repository test surface
+        run: pytest -q
+
+      - name: Ruff
+        run: ruff check src/hub/identity_registry.py tests/test_identity_registry.py tests/test_identity_contracts.py tools/build_identity_candidate_ledger.py
+
+      - name: Mypy identity registry
+        run: mypy src/hub/identity_registry.py
+
+      - name: Upload denominator ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr180-identity-candidate-ledger
+          path: build/pr180_identity_candidate_ledger.json
+          if-no-files-found: error

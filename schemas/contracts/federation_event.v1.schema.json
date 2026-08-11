@@ -5,18 +5,28 @@
   "title": "Federation Identity Event",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version","event_id","event_type","source_producer","local_record_id","payload_hash","payload","created_at"],
+  "required": ["schema_version", "event_id", "event_type", "source_producer", "local_record_id", "payload_hash", "payload", "disposition", "state_mutated", "created_at"],
   "properties": {
-    "schema_version": {"const":"1.0.0"},
-    "event_id": {"type":"string","pattern":"^fev_[a-f0-9]{32}$"},
-    "event_type": {"enum":["UPSERT","MERGE","SUPERSEDE","TOMBSTONE"]},
-    "source_producer": {"type":"string","minLength":1},
-    "local_record_id": {"type":"string","minLength":1},
-    "source_revision": {"type":["string","null"]},
-    "payload_hash": {"type":"string","pattern":"^[a-f0-9]{64}$"},
-    "payload": {"type":"object"},
-    "effective_at": {"type":["string","null"],"format":"date-time"},
-    "created_at": {"type":"string","format":"date-time"}
+    "schema_version": {"const": "1.0.0"},
+    "event_id": {"type": "string", "pattern": "^fev_[a-f0-9]{32}$"},
+    "event_type": {"enum": ["UPSERT", "MERGE", "SUPERSEDE", "TOMBSTONE"]},
+    "source_producer": {"type": "string", "minLength": 1},
+    "local_record_id": {"type": "string", "minLength": 1},
+    "source_revision": {"type": ["string", "null"]},
+    "source_sequence": {"type": ["integer", "null"], "minimum": 0},
+    "payload_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "payload": {"type": "object"},
+    "effective_at": {"type": ["string", "null"], "format": "date-time"},
+    "disposition": {"enum": ["APPLIED", "IDEMPOTENT_REPLAY", "REJECTED_STALE", "REJECTED_OUT_OF_ORDER", "REJECTED_SCHEMA", "REJECTED_HASH", "REJECTED_AUTHORITY", "REJECTED_INVARIANT"]},
+    "rejection_reason": {"type": ["string", "null"]},
+    "state_mutated": {"type": "boolean"},
+    "created_at": {"type": "string", "format": "date-time"}
   },
-  "x-invariants": ["event_id is deterministic for identical event inputs","replay of an identical event is idempotent","unknown schema versions fail closed"]
+  "x-invariants": [
+    "event_id is deterministic for identical event inputs",
+    "identical replay does not mutate current state and is recorded as an IDEMPOTENT_REPLAY attempt",
+    "all rejected events are retained with zero current-state mutation",
+    "unknown schema versions fail closed",
+    "revision ordering is producer-contract-specific and never lexicographic"
+  ]
 }
