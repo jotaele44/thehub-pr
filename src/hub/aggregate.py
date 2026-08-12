@@ -1,8 +1,13 @@
 """Merge validated producer export packages into a single federation graph.
 
-Rows are deduplicated by their deterministic id (same id across producers ->
-last writer wins, but a ``_producers`` provenance list records every contributor).
-Writes ``<out>/<stream>.jsonl`` plus ``<out>/graph_summary.json``.
+Rows are deduplicated by deterministic id only when their canonical payloads are
+identical. If two producers emit the same deterministic id with different
+payloads, the aggregate fails closed for that id: no arbitrary winner is emitted
+into the canonical stream and every conflicting variant is preserved in
+``aggregation_collisions.json``.
+
+This makes aggregation order-independent and prevents a producer encountered
+later in the input mapping from silently replacing another producer's record.
 """
 from __future__ import annotations
 
@@ -15,15 +20,39 @@ from .bridge import write_manifest
 from .validate import validate_package
 
 
+def _canonical_payload(row: Mapping[str, Any]) -> dict:
+    """Return the producer payload used for equality comparison.
+
+    ``_producers`` is Hub aggregation provenance, not producer-owned canonical
+    content, so it must not make otherwise identical records compare unequal.
+    """
+    return {key: value for key, value in row.items() if key != "_producers"}
+
+
+def _variant(producer: str, row: Mapping[str, Any]) -> dict:
+    """Stable collision-ledger representation for one producer variant."""
+    return {"producer": producer, "row": _canonical_payload(row)}
+
+
 def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dict:
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
 
     streams: Dict[str, Dict[str, dict]] = {}
-    summary: Dict[str, Any] = {"producers": {}, "streams": {}, "errors": {}}
+    owners: Dict[str, Dict[str, set[str]]] = {}
+    blocked: Dict[str, set[str]] = {}
+    collisions: Dict[tuple[str, str], dict] = {}
+    summary: Dict[str, Any] = {
+        "producers": {},
+        "streams": {},
+        "errors": {},
+        "collisions": {"count": 0, "by_stream": {}},
+    }
 
-    for producer, pkg in packages.items():
-        pkg = Path(pkg)
+    # Producer iteration is sorted deliberately. Canonical outputs and collision
+    # ledgers therefore do not depend on caller mapping insertion order.
+    for producer in sorted(packages):
+        pkg = Path(packages[producer])
         errs = validate_package(pkg)
         summary["errors"][producer] = errs
         if errs and strict:
@@ -31,13 +60,18 @@ def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dic
 
         manifest = json.loads((pkg / "manifest.json").read_text())
         per_stream_counts: Dict[str, int] = {}
-        for fentry in manifest.get("files", []):
+        for fentry in sorted(
+            manifest.get("files", []),
+            key=lambda entry: (str(entry.get("stream", "")), str(entry.get("filename", ""))),
+        ):
             stream = fentry["stream"]
             fpath = pkg / fentry["filename"]
             if not fpath.exists():
                 continue
             id_field = STREAM_ID_FIELD.get(stream)
             bucket = streams.setdefault(stream, {})
+            stream_owners = owners.setdefault(stream, {})
+            stream_blocked = blocked.setdefault(stream, set())
             n = 0
             with fpath.open() as _fh:
                 for raw in _fh:
@@ -45,23 +79,81 @@ def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dic
                     if not raw:
                         continue
                     row = json.loads(raw)
-                    key = row.get(id_field) if id_field else f"{producer}:{stream}:{n}"
+                    key_value = row.get(id_field) if id_field else None
+                    key = str(key_value) if key_value is not None else f"{producer}:{stream}:{n}"
+                    canonical = _canonical_payload(row)
+
+                    if key in stream_blocked:
+                        collision = collisions[(stream, key)]
+                        variant = _variant(producer, canonical)
+                        if variant not in collision["variants"]:
+                            collision["variants"].append(variant)
+                            collision["variants"].sort(key=lambda item: item["producer"])
+                        n += 1
+                        continue
+
                     existing = bucket.get(key)
-                    provenance = (existing or {}).get("_producers", []) if existing else []
-                    row = dict(row)
-                    row["_producers"] = sorted(set(provenance) | {producer})
-                    bucket[key] = row
+                    if existing is None:
+                        stamped = dict(canonical)
+                        stamped["_producers"] = [producer]
+                        bucket[key] = stamped
+                        stream_owners[key] = {producer}
+                        n += 1
+                        continue
+
+                    if _canonical_payload(existing) == canonical:
+                        contributors = stream_owners.setdefault(
+                            key, set(existing.get("_producers") or [])
+                        )
+                        contributors.add(producer)
+                        existing["_producers"] = sorted(contributors)
+                        n += 1
+                        continue
+
+                    # Same deterministic id, different payload: remove the row
+                    # from the canonical stream and preserve every variant. No
+                    # producer wins by input order.
+                    prior_producers = sorted(
+                        stream_owners.get(key, set(existing.get("_producers") or []))
+                    )
+                    collision = {
+                        "stream": stream,
+                        "id_field": id_field,
+                        "record_id": key,
+                        "status": "UNRESOLVED",
+                        "reason": "same_deterministic_id_different_payload",
+                        "variants": [
+                            _variant(prior, existing) for prior in prior_producers
+                        ]
+                        + [_variant(producer, canonical)],
+                    }
+                    collision["variants"].sort(key=lambda item: item["producer"])
+                    collisions[(stream, key)] = collision
+                    stream_blocked.add(key)
+                    bucket.pop(key, None)
+                    stream_owners.pop(key, None)
                     n += 1
             per_stream_counts[stream] = n
         summary["producers"][producer] = per_stream_counts
 
-    for stream, rows in streams.items():
+    for stream in sorted(streams):
+        rows = streams[stream]
         with (out / f"{stream}.jsonl").open("w") as fh:
-            for row in rows.values():
-                fh.write(json.dumps(row, sort_keys=True) + "\n")
+            for key in sorted(rows):
+                fh.write(json.dumps(rows[key], sort_keys=True) + "\n")
         summary["streams"][stream] = len(rows)
 
-    (out / "graph_summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True))
+    collision_rows = [collisions[key] for key in sorted(collisions)]
+    collision_path = out / "aggregation_collisions.json"
+    collision_path.write_text(json.dumps(collision_rows, indent=2, sort_keys=True) + "\n")
+    summary["collisions"]["count"] = len(collision_rows)
+    by_stream: Dict[str, int] = {}
+    for collision in collision_rows:
+        stream = collision["stream"]
+        by_stream[stream] = by_stream.get(stream, 0) + 1
+    summary["collisions"]["by_stream"] = dict(sorted(by_stream.items()))
+
+    (out / "graph_summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
     return summary
 
 
