@@ -1,0 +1,76 @@
+{
+  "schema_version": "prii_preclone_heads_v1",
+  "captured_at": "2026-07-31T01:44:00-04:00",
+  "branch_policy": {
+    "default_branch": "main",
+    "implementation_branch": "agent/prii-preclone-normalization-v0-1",
+    "feature_branch_as_permanent_clone_baseline": false
+  },
+  "repositories": [
+    {
+      "program_id": "thehub-pr",
+      "repository": "jotaele44/thehub-pr",
+      "main_head": "53b182a8cfa97c57a2b64ba051b48716167944df"
+    },
+    {
+      "program_id": "moneysweep-pr",
+      "repository": "jotaele44/moneysweep-pr",
+      "main_head": "9e911203a05cf8f2e99c762161b7ec18de8cef73"
+    },
+    {
+      "program_id": "spiderweb-pr",
+      "repository": "jotaele44/spiderweb-pr",
+      "main_head": "5f09914e51a4178b1c81dcc88fb8886e5cbc73e8"
+    },
+    {
+      "program_id": "skywatcher-pr",
+      "repository": "jotaele44/skywatcher-pr",
+      "main_head": "3b7ef00006a85c49c88bbbd129f662392fb2f370"
+    },
+    {
+      "program_id": "centinelas-pr",
+      "repository": "jotaele44/centinelas-pr",
+      "main_head": "8d10478c9992321e89713dc3316af211d9c53b2f"
+    },
+    {
+      "program_id": "aguayluz-pr",
+      "repository": "jotaele44/aguayluz-pr",
+      "main_head": "98a3b209710636835434d7765f55313434447df4"
+    },
+    {
+      "program_id": "ovnis-pr",
+      "repository": "jotaele44/ovnis-pr",
+      "main_head": "51354dc164c0c4594e26677a2f45748af4c5727a"
+    }
+  ],
+  "coordinated_dependencies": [
+    {
+      "repository": "jotaele44/thehub-pr",
+      "pull_request": 134,
+      "role": "shared_prii_desktop_runtime_authority",
+      "required_before": [
+        "dependent producer native desktop adapters"
+      ],
+      "disposition": "adjudicate before dependent adapters; do not merge through this normalization vector"
+    },
+    {
+      "repository": "jotaele44/spiderweb-pr",
+      "pull_request": 236,
+      "role": "canonical_frontend_and_airspace_surface_retirement",
+      "required_before": [
+        "final Spiderweb operational clone certification",
+        "Skywatcher-to-Spiderweb package boundary certification"
+      ],
+      "disposition": "keep draft; reconcile against current main without force push"
+    },
+    {
+      "repository": "jotaele44/skywatcher-pr",
+      "pull_request": 153,
+      "role": "airspace_ownership_and_handoff_contract",
+      "required_after_or_with": [
+        "jotaele44/spiderweb-pr#236"
+      ],
+      "disposition": "keep draft; no direct file-copy handoff may be restored"
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "canonical_python": "3.11",
+  "clone_mode": "exact_detached_commits",
+  "ended_at": "2026-07-31T06:54:00.692389+00:00",
+  "exact_clone_receipts": [
+    {
+      "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/thehub-pr",
+      "program_id": "thehub-pr",
+      "repository": "jotaele44/thehub-pr",
+      "revision": "caebf0aaa598a037ef527a15b3d804e7846e3d0f",
+      "status": "passed"
+    },
+    {
+      "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/moneysweep-pr",
+      "program_id": "moneysweep-pr",
+      "repository": "jotaele44/moneysweep-pr",
+      "revision": "5c7a2e6b2d308cd6aef7a09b88a6a26a66f2e62b",
+      "status": "passed"
+    },
+    {
+      "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/spiderweb-pr",
+      "program_id": "spiderweb-pr",
+      "repository": "jotaele44/spiderweb-pr",
+      "revision": "c08e47137e34aac0c2575e198645ef5fc7c28d67",
+      "status": "passed"
+    },
+    {
+      "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/aguayluz-pr",
+      "program_id": "aguayluz-pr",
+      "repository": "jotaele44/aguayluz-pr",
+      "revision": "9ee16952a4da9e334a9f9ae5e53f15b84f30f56a",
+      "status": "passed"
+    },
+    {
+      "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/ovnis-pr",
+      "program_id": "ovnis-pr",
+      "repository": "jotaele44/ovnis-pr",
+      "revision": "e167cef6fd4a4a978fb0b24d702088acc0317bce",
+      "status": "passed"
+    },
+    {
+      "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/skywatcher-pr",
+      "program_id": "skywatcher-pr",
+      "repository": "jotaele44/skywatcher-pr",
+      "revision": "78f779dda46d2674caf1341f0d2e3f9995dced4f",
+      "status": "passed"
+    },
+    {
+      "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/centinelas-pr",
+      "program_id": "centinelas-pr",
+      "repository": "jotaele44/centinelas-pr",
+      "revision": "30f278d195c5ca9daa61ba45e8b357abe97fe729",
+      "status": "passed"
+    }
+  ],
+  "observed_heads": {
+    "aguayluz-pr": "9ee16952a4da9e334a9f9ae5e53f15b84f30f56a",
+    "centinelas-pr": "30f278d195c5ca9daa61ba45e8b357abe97fe729",
+    "moneysweep-pr": "5c7a2e6b2d308cd6aef7a09b88a6a26a66f2e62b",
+    "ovnis-pr": "e167cef6fd4a4a978fb0b24d702088acc0317bce",
+    "skywatcher-pr": "78f779dda46d2674caf1341f0d2e3f9995dced4f",
+    "spiderweb-pr": "c08e47137e34aac0c2575e198645ef5fc7c28d67",
+    "thehub-pr": "caebf0aaa598a037ef527a15b3d804e7846e3d0f"
+  },
+  "platform": "macOS-14.8.7-arm64-arm-64bit",
+  "python_executable": "python3.11",
+  "python_version": "3.11",
+  "root": "/Users/runner/work/_temp/prii-preclone-30610963537-1",
+  "schema_version": "prii_macos_preclone_certification_v2",
+  "started_at": "2026-07-31T06:52:43.982847+00:00",
+  "status": "passed",
+  "steps": [
+    {
+      "count": 7,
+      "name": "clone",
+      "status": "passed"
+    },
+    {
+      "name": "post_clone_validate",
+      "status": "passed"
+    },
+    {
+      "name": "head_pins",
+      "status": "passed"
+    },
+    {
+      "count": 7,
+      "name": "bootstrap_local",
+      "status": "passed"
+    },
+    {
+      "name": "post_bootstrap_validate",
+      "status": "passed"
+    }
+  ],
+  "workspace_validation": {
+    "canonical_python": "3.11",
+    "errors": [],
+    "repositories": [
+      {
+        "errors": [],
+        "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/thehub-pr",
+        "program_id": "thehub-pr",
+        "python_policy": "3.11"
+      },
+      {
+        "errors": [],
+        "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/moneysweep-pr",
+        "program_id": "moneysweep-pr",
+        "python_policy": "3.11"
+      },
+      {
+        "errors": [],
+        "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/spiderweb-pr",
+        "program_id": "spiderweb-pr",
+        "python_policy": "3.11"
+      },
+      {
+        "errors": [],
+        "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/aguayluz-pr",
+        "program_id": "aguayluz-pr",
+        "python_policy": "3.11"
+      },
+      {
+        "errors": [],
+        "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/ovnis-pr",
+        "program_id": "ovnis-pr",
+        "python_policy": "3.11"
+      },
+      {
+        "errors": [],
+        "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/skywatcher-pr",
+        "program_id": "skywatcher-pr",
+        "python_policy": "3.11"
+      },
+      {
+        "errors": [],
+        "path": "/Users/runner/work/_temp/prii-preclone-30610963537-1/centinelas-pr",
+        "program_id": "centinelas-pr",
+        "python_policy": "3.11"
+      }
+    ],
+    "root": "/Users/runner/work/_temp/prii-preclone-30610963537-1",
+    "schema_version": "prii_workspace_validation_v1",
+    "valid": true
+  }
+}

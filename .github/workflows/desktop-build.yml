@@ -21,6 +21,9 @@ on:
       - "tools/render_desktop_setup.py"
       - "tools/validate_desktop_branding.py"
       - "requirements-desktop.txt"
+      - "scripts/certify_preclone_workspace_macos.py"
+      - "registry/preclone-certification-heads-v3.json"
+      - ".github/preclone-certification-trigger-v3.txt"
       - ".github/workflows/desktop-build.yml"
 
 permissions:
@@ -149,3 +152,144 @@ jobs:
           files: |
             dist-desktop/PRII-THEHUB-*.zip
             dist-desktop/PRII-THEHUB-*.dmg
+
+  preclone-certification:
+    if: github.head_ref == 'agent/prii-preclone-macos-certification-v3-0'
+    runs-on: macos-14
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout isolated certification harness
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+
+      - name: Select canonical Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install harness registry dependency
+        run: python3.11 -m pip install PyYAML
+
+      - name: Verify exact target harness and clean runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RUNNER_OS" = "macOS"
+          git merge-base --is-ancestor \
+            70677968530536dfd055ac820fcb05944dc77a3c HEAD
+          test "$(python3.11 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')" = "3.11"
+          CERT_ROOT="$RUNNER_TEMP/prii-preclone-v3-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          RECEIPT="$GITHUB_WORKSPACE/reports/preclone_workspace/macos_certification.json"
+          test ! -e "$CERT_ROOT"
+          mkdir -p "$(dirname "$RECEIPT")"
+          echo "CERT_ROOT=$CERT_ROOT" >> "$GITHUB_ENV"
+          echo "RECEIPT=$RECEIPT" >> "$GITHUB_ENV"
+          {
+            echo "runner_os=$RUNNER_OS"
+            echo "runner_arch=$RUNNER_ARCH"
+            echo "harness_commit=$(git rev-parse HEAD)"
+            echo "python=$(command -v python3.11)"
+            echo "python_version=$(python3.11 --version)"
+            echo "cert_root=$CERT_ROOT"
+          } > reports/preclone_workspace/harness_environment.txt
+
+      - name: Execute exact-head clean-workspace certification
+        id: certification
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python3.11 scripts/certify_preclone_workspace_macos.py \
+            --root "$CERT_ROOT" \
+            --python python3.11 \
+            --depth 1 \
+            --expected-heads registry/preclone-certification-heads-v3.json \
+            --receipt "$RECEIPT" \
+            2>&1 | tee reports/preclone_workspace/certification.log
+
+      - name: Collect deterministic diagnostic evidence
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          mkdir -p reports/preclone_workspace
+          cp registry/preclone-certification-heads-v3.json \
+            reports/preclone_workspace/preclone-certification-heads.json
+          shasum -a 256 \
+            scripts/certify_preclone_workspace_macos.py \
+            registry/preclone-certification-heads-v3.json \
+            .github/workflows/desktop-build.yml \
+            .github/preclone-certification-trigger-v3.txt \
+            > reports/preclone_workspace/harness-inputs.sha256
+          if [ -f "$RECEIPT" ]; then
+            shasum -a 256 "$RECEIPT" \
+              > reports/preclone_workspace/macos_certification.json.sha256
+          fi
+          {
+            echo "repository_heads:"
+            for repo in thehub-pr moneysweep-pr spiderweb-pr skywatcher-pr centinelas-pr aguayluz-pr ovnis-pr; do
+              path="$CERT_ROOT/$repo"
+              if [ -d "$path/.git" ]; then
+                printf "%s " "$repo"
+                git -C "$path" rev-parse HEAD
+                git -C "$path" status --short --branch
+              else
+                echo "$repo MISSING"
+              fi
+            done
+            echo
+            echo "private_venvs:"
+            { find "$CERT_ROOT" -mindepth 2 -maxdepth 2 -type d -name .venv -print 2>/dev/null || true; } | sort
+          } > reports/preclone_workspace/workspace_diagnostics.txt
+          exit 0
+
+      - name: Upload certification evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: prii-preclone-macos-certification-v3-${{ github.run_id }}-${{ github.run_attempt }}
+          path: reports/preclone_workspace/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Enforce passed receipt
+        if: always()
+        shell: bash
+        run: |
+          python3.11 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          receipt_path = Path(os.environ["RECEIPT"])
+          if not receipt_path.is_file():
+              raise SystemExit("certification receipt is missing")
+          receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+          if receipt.get("status") != "passed":
+              raise SystemExit(f"certification failed: {receipt.get('error', 'unknown error')}")
+          if receipt.get("clone_mode") != "exact_detached_commits":
+              raise SystemExit("certification did not use exact detached commits")
+          observed = receipt.get("observed_heads") or {}
+          validation = receipt.get("workspace_validation") or {}
+          repositories = validation.get("repositories") or []
+          errors = validation.get("errors") or []
+          if len(observed) != 7:
+              raise SystemExit(f"expected seven observed heads, found {len(observed)}")
+          if len(repositories) != 7:
+              raise SystemExit(f"expected seven validated repositories, found {len(repositories)}")
+          if not validation.get("valid") or errors:
+              raise SystemExit(f"post-bootstrap validation failed: {errors}")
+          venvs = [Path(item["path"]) / ".venv" for item in repositories]
+          missing = [str(path) for path in venvs if not path.is_dir()]
+          if missing:
+              raise SystemExit("missing private venvs: " + ", ".join(missing))
+          if len({path.resolve() for path in venvs}) != 7:
+              raise SystemExit("private venv paths are not unique")
+          shared = Path(receipt["root"]) / ".venv"
+          if shared.exists():
+              raise SystemExit(f"shared root venv exists: {shared}")
+          print("PRII August 3 exact-head macOS pre-clone certification PASSED")
+          PY
