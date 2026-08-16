@@ -107,15 +107,19 @@ def test_stale_sha_blocks_previously_ready_vector():
     assert "stale_or_unverified_sha" in control["blockers"]
 
 
-def test_exact_snapshot_max_exhausts_only_admissible_control_vector():
+def test_exact_snapshot_max_reuses_passed_control_vector_without_reexecution():
     ledger = _ledger()
     rec = reconcile(ledger, _exact_snapshot(ledger))
     result = run_max(ledger, rec, Path("/nonexistent"), apply=False)
 
     assert result["bounded_exhausted"] is True
     assert result["ready_residue"] == []
-    assert "FEDERATION_PICKUP_SYSTEM_LEVEL_3" in result["completed"]
+    assert result["completed"] == []
+    assert result["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
+    assert result["passes"]
+    assert all(not pass_row["results"] for pass_row in result["passes"])
     assert result["final_status"]["BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT"] == "BLOCKED"
+    assert result["final_status"]["PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE"] == "BLOCKED"
     assert result["final_status"]["DISCOVER_CENTINELAS_ACTIVE_VECTOR"] == "UNRESOLVED"
     assert result["final_status"]["VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT"] == "OPEN"
 
