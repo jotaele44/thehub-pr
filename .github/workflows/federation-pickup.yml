@@ -39,6 +39,7 @@ jobs:
           receipt = json.loads(Path("federation-max.json").read_text(encoding="utf-8"))
           execution = receipt["execution"]
           certification = receipt["certification"]
+          repo_status = receipt["repository_status"]
 
           assert execution["bounded_exhausted"] is True
           assert execution["ready_residue"] == []
@@ -49,6 +50,7 @@ jobs:
           assert execution["final_status"]["DISCOVER_CENTINELAS_ACTIVE_VECTOR"] == "UNRESOLVED"
           assert certification["universal_exhaustion_claimed"] is False
           assert certification["certification"] == "PROVISIONAL"
+          assert certification["repository_status_phase"] == "post_execution"
 
           counts = {}
           for status in execution["final_status"].values():
@@ -60,5 +62,22 @@ jobs:
               "UNRESOLVED": 1,
           }
           assert sum(counts.values()) == 8
-          print("PASS: live remote MAX bounded exhaustion and vector arithmetic close")
+
+          assert repo_status["phase"] == "post_execution"
+          assert repo_status["arithmetic_ok"] is True
+          assert repo_status["counts"] == {
+              "BLOCKED": 2,
+              "FAIL": 0,
+              "OPEN": 4,
+              "PASS": 0,
+              "READY": 0,
+              "UNRESOLVED": 1,
+          }
+          assert repo_status["classified_count"] == repo_status["repository_count"] == 7
+          by_repo = {row["repo"]: row["status"] for row in repo_status["repositories"]}
+          assert by_repo["jotaele44/thehub-pr"] == "OPEN"
+          assert by_repo["jotaele44/centinelas-pr"] == "UNRESOLVED"
+          assert by_repo["jotaele44/skywatcher-pr"] == "BLOCKED"
+          assert by_repo["jotaele44/moneysweep-pr"] == "BLOCKED"
+          print("PASS: live remote MAX bounded exhaustion, vector arithmetic, and post-execution repository arithmetic close")
           PY
