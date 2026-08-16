@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-16T19:58:24Z"
+  captured_at_utc: "2026-08-16T20:19:00Z"
   scope: github_repository_api_identity_plus_main_heads_and_authoritative_vector_evidence_refresh
   bounded: true
   repositories:
@@ -77,6 +77,10 @@ vectors:
       commands: []
     blockers:
       - seven_repository_frontend_rollout_requires_repo_specific_implementation_and_visual_acceptance
+    invariants:
+      issue_checklist_open: true
+      repo_count_target: 7
+      validator_only_not_completion: true
 
   - vector_id: BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT
     repo: jotaele44/skywatcher-pr
@@ -101,6 +105,7 @@ vectors:
       fr24_baseline_tracked_payload_count: 0
       fr24_baseline_evidence: data/FR24_baseline contains only .gitkeep at frozen main
       faa_registry_runtime_inputs_operator_supplied: true
+      standalone_packaging_candidate_is_distinct_from_export_vector: true
 
   - vector_id: VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT
     repo: jotaele44/aguayluz-pr
@@ -125,6 +130,10 @@ vectors:
       commands: []
     blockers:
       - recurring_source_and_outage_snapshot_validation_not_safely_executable_from_control_plane
+      - unchecked_schema_source_registry_export_and_taxonomy_implementation_work
+    invariants:
+      issue_acceptance_still_open: true
+      validator_only_not_completion: true
 
   - vector_id: FERROCARRIL_ILAP_CANONICALIZATION
     repo: jotaele44/spiderweb-pr
@@ -141,6 +150,7 @@ vectors:
       source_rows: 609
       subtype_total: 609
       evidence_label_total: 609
+      exact_coordinates_present: 0
       snapshot_refresh_reason: spiderweb_main_advanced_twice_since_prior_federation_receipt
     execution:
       kind: evidence_adjudication_required
@@ -172,6 +182,7 @@ vectors:
       required_sources_fully_materialized: 10
       required_sources_total: 14
       probe_ran: false
+      issue_state_does_not_authorize_data_promotion: true
     execution:
       kind: operator_corpus_network_and_credentials_required
       mutation: prohibited_by_fed_max
@@ -186,21 +197,31 @@ vectors:
   - vector_id: DISCOVER_CENTINELAS_ACTIVE_VECTOR
     repo: jotaele44/centinelas-pr
     objective: Bind an active Centinelas development vector only when authoritative intent evidence is available.
-    declared_status: UNRESOLVED
-    certification: UNRESOLVED
+    declared_status: OPEN
+    certification: PROVISIONAL
     dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
     source_bindings:
-      - kind: negative_discovery_observation
-        ref: github_open_issues:none_at_refresh
-        binding_basis: discovery_only_not_identity_proof
+      - kind: github_pull_request
+        ref: jotaele44/centinelas-pr#83
+        binding_basis: authoritative_open_draft_development_intent
     execution:
-      kind: none
+      kind: identity_adjudication_required
       mutation: prohibited_by_fed_max
       commands: []
     blockers:
-      - no_authoritative_active_vector_binding_discovered
+      - authoritative_active_draft_found_but_no_explicit_canonical_vector_id
+      - candidate_branch_diverged_11_ahead_34_behind_main
+      - production_activation_requires_authentication_private_persistence_and_authorization
     invariants:
-      open_issue_absence_not_identity_proof: true
+      open_draft_pr_discovered: 83
+      candidate_branch: feat/email-ingestion-design-v0-1
+      candidate_head_sha: d21b2974c990da66bab013f40a3075c07a320c25
+      candidate_base_at_creation_sha: 0219a8c1dd0f38a1f8d09a0d027f3b82a3c74d17
+      current_main_sha: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
+      candidate_ahead_by: 11
+      candidate_behind_by: 34
+      candidate_status: diverged
+      explicit_vector_id_present: false
       recent_commit_theme_not_promoted_to_vector_identity: true
 
   - vector_id: CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE
@@ -226,3 +247,7 @@ vectors:
       commands: []
     blockers:
       - open_issue_acceptance_work_not_bound_to_a_safe_control_plane_command
+      - unchecked_case_schema_import_dedupe_contradiction_and_export_implementation_work
+    invariants:
+      hub_callable_validation_commands_present: true
+      validator_only_not_completion: true
