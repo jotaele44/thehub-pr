@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-16T19:40:00Z"
+  captured_at_utc: "2026-08-16T19:58:24Z"
   scope: github_repository_api_identity_plus_main_heads_and_authoritative_vector_evidence_refresh
   bounded: true
   repositories:
@@ -16,7 +16,7 @@ snapshot:
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
-      expected_sha: 647952106f8c3aeecc2085b4382a3df98ccb6a8b
+      expected_sha: f985471e6bf4b556e3592757117b432dca44e780
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
@@ -141,7 +141,7 @@ vectors:
       source_rows: 609
       subtype_total: 609
       evidence_label_total: 609
-      snapshot_refresh_reason: spiderweb_main_advanced_since_prior_federation_receipt
+      snapshot_refresh_reason: spiderweb_main_advanced_twice_since_prior_federation_receipt
     execution:
       kind: evidence_adjudication_required
       mutation: prohibited_by_fed_max
