@@ -244,7 +244,7 @@ vectors:
       basis: Both open issues contain the identical explicit Vector identifier; neither issue is discarded or declared superseded.
     execution:
       kind: certified_development_lineage_verification
-      mutation: verification_only
+      mutation: branch_only
       commands:
         - >-
           test "$(git rev-parse HEAD)" = "f5cf496095f00869d27312d15ea9bfe9d3eb5941" &&
@@ -272,6 +272,7 @@ vectors:
       anti_generic_location_invariant_preserved: true
       canonical_master_mutation_by_verification_command: false
       verification_command_idempotent: true
+      mutation_envelope_semantics: branch_only_schema_value_with_read_only_verification_command
       initial_failed_head_semantic_regression: 2d075a7b46545c8329bef47fb7e16076153d8453
       superseded_lint_failed_head: 48a4332ddc34e7adc298eb3a4da5ce8d82c25592
       negative_certification_history_preserved: true
