@@ -47,7 +47,7 @@ jobs:
           assert execution["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
           assert execution["final_status"]["BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT"] == "BLOCKED"
           assert execution["final_status"]["PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE"] == "BLOCKED"
-          assert execution["final_status"]["DISCOVER_CENTINELAS_ACTIVE_VECTOR"] == "UNRESOLVED"
+          assert execution["final_status"]["DISCOVER_CENTINELAS_ACTIVE_VECTOR"] == "OPEN"
           assert certification["universal_exhaustion_claimed"] is False
           assert certification["certification"] == "PROVISIONAL"
           assert certification["repository_status_phase"] == "post_execution"
@@ -67,9 +67,8 @@ jobs:
               counts[status] = counts.get(status, 0) + 1
           assert counts == {
               "PASS": 1,
-              "OPEN": 4,
+              "OPEN": 5,
               "BLOCKED": 2,
-              "UNRESOLVED": 1,
           }
           assert sum(counts.values()) == 8
 
@@ -78,16 +77,16 @@ jobs:
           assert repo_status["counts"] == {
               "BLOCKED": 2,
               "FAIL": 0,
-              "OPEN": 4,
+              "OPEN": 5,
               "PASS": 0,
               "READY": 0,
-              "UNRESOLVED": 1,
+              "UNRESOLVED": 0,
           }
           assert repo_status["classified_count"] == repo_status["repository_count"] == 7
           by_repo = {row["repo"]: row["status"] for row in repo_status["repositories"]}
           assert by_repo["jotaele44/thehub-pr"] == "OPEN"
-          assert by_repo["jotaele44/centinelas-pr"] == "UNRESOLVED"
+          assert by_repo["jotaele44/centinelas-pr"] == "OPEN"
           assert by_repo["jotaele44/skywatcher-pr"] == "BLOCKED"
           assert by_repo["jotaele44/moneysweep-pr"] == "BLOCKED"
-          print("PASS: live remote APPLY bounded exhaustion; prior PASS reused; zero unsafe domain commands executed; arithmetic closes")
+          print("PASS: live remote APPLY bounded exhaustion; Centinelas authoritative draft bound OPEN; prior PASS reused; zero unsafe domain commands executed; arithmetic closes")
           PY
