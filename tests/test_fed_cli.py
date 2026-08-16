@@ -86,7 +86,7 @@ def test_first_real_domain_ready_vector_is_exact_certified_ovnis_lineage():
     by_id = {row["vector_id"]: row for row in ledger["vectors"]}
     ovnis = by_id["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"]
     assert ovnis["declared_status"] == "READY"
-    assert ovnis["execution"]["mutation"] == "verification_only"
+    assert ovnis["execution"]["mutation"] == "branch_only"
     assert len(ovnis["execution"]["commands"]) == 1
     command = ovnis["execution"]["commands"][0]
     assert "f5cf496095f00869d27312d15ea9bfe9d3eb5941" in command
@@ -95,6 +95,10 @@ def test_first_real_domain_ready_vector_is_exact_certified_ovnis_lineage():
     assert ovnis["invariants"]["native_exact_head_certification"] == "PASS"
     assert ovnis["invariants"]["verification_command_idempotent"] is True
     assert ovnis["invariants"]["canonical_master_mutation_by_verification_command"] is False
+    assert (
+        ovnis["invariants"]["mutation_envelope_semantics"]
+        == "branch_only_schema_value_with_read_only_verification_command"
+    )
 
 
 def test_same_github_issue_cannot_bind_to_two_canonical_vectors():
