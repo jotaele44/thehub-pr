@@ -1,0 +1,64 @@
+name: Federation pickup bounded MAX
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-max:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install control plane
+        run: python -m pip install -e .
+
+      - name: Execute frozen remote MAX vector pass
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          fed max --remote | tee federation-max.json
+
+      - name: Assert bounded exhaustion contract
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          receipt = json.loads(Path("federation-max.json").read_text(encoding="utf-8"))
+          execution = receipt["execution"]
+          certification = receipt["certification"]
+
+          assert execution["bounded_exhausted"] is True
+          assert execution["ready_residue"] == []
+          assert "FEDERATION_PICKUP_SYSTEM_LEVEL_3" in execution["completed"]
+          assert execution["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
+          assert execution["final_status"]["BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT"] == "BLOCKED"
+          assert execution["final_status"]["PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE"] == "BLOCKED"
+          assert execution["final_status"]["DISCOVER_CENTINELAS_ACTIVE_VECTOR"] == "UNRESOLVED"
+          assert certification["universal_exhaustion_claimed"] is False
+          assert certification["certification"] == "PROVISIONAL"
+
+          counts = {}
+          for status in execution["final_status"].values():
+              counts[status] = counts.get(status, 0) + 1
+          assert counts == {
+              "PASS": 1,
+              "OPEN": 4,
+              "BLOCKED": 2,
+              "UNRESOLVED": 1,
+          }
+          assert sum(counts.values()) == 8
+          print("PASS: live remote MAX bounded exhaustion and vector arithmetic close")
+          PY
