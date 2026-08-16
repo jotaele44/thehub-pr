@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { FederationButton } from '../index.jsx'
 import { createDatasetMapBridge } from './bridge.js'
 
 export { createDatasetMapBridge } from './bridge.js'
+
+function GisButton({ children, className = '', ...props }) {
+  return <button type="button" className={`fd-button fd-button--secondary fd-focus ${className}`.trim()} {...props}>{children}</button>
+}
 
 export function FederationDatasetGrid({ records, columns, getRecordId, selection, onSelectRecord, compact = true }) {
   return (
@@ -27,7 +30,7 @@ export function FederationExportMenu({ exports = [], onExport }) {
   const [open, setOpen] = useState(false)
   return (
     <div className="fd-gis-export">
-      <FederationButton variant="secondary" aria-expanded={open} onClick={() => setOpen((value) => !value)}>Download Results ▾</FederationButton>
+      <GisButton aria-expanded={open} onClick={() => setOpen((value) => !value)}>Download Results ▾</GisButton>
       {open ? <div className="fd-gis-export__menu" role="menu">{exports.map((item) => (
         <button key={item.id} type="button" role="menuitem" onClick={() => { setOpen(false); onExport?.(item) }}>{item.label}</button>
       ))}</div> : null}
@@ -62,8 +65,8 @@ export function FederationMapWorkspace({ records, columns, getRecordId, bridge, 
         <div className="fd-gis-map-workspace__toolbar">
           <FederationBasemapSelector basemaps={basemaps} value={basemapId} onChange={setBasemapId} />
           <strong># Facilities {records.length}</strong>
-          <FederationButton variant="secondary" onClick={onBack}>← Back to Advanced Search</FederationButton>
-          <FederationButton variant="secondary" onClick={onExportKml}>⇩ Download KML</FederationButton>
+          <GisButton onClick={onBack}>← Back to Advanced Search</GisButton>
+          <GisButton onClick={onExportKml}>⇩ Download KML</GisButton>
         </div>
         <FederationDatasetGrid records={records} columns={columns} getRecordId={getRecordId} selection={selection} onSelectRecord={(id) => bridge.selectRecord(id, { source: 'table' })} />
       </aside>
@@ -72,7 +75,7 @@ export function FederationMapWorkspace({ records, columns, getRecordId, bridge, 
   )
 }
 
-export function FederationDatasetWorkspace({ records = [], features = [], columns = [], getRecordId, getFeatureRecordId, getGeometryId, provider, basemaps, exports = [], onExport, onExportKml }) {
+export function FederationDatasetWorkspace({ records = [], features = [], columns = [], getRecordId, getFeatureRecordId, getGeometryId, provider, basemaps, exports = [], onExport, onExportKml, onBack }) {
   const [mode, setMode] = useState('table')
   const bridge = useMemo(() => createDatasetMapBridge({ records, features, getRecordId, getFeatureRecordId, getGeometryId }), [records, features, getRecordId, getFeatureRecordId, getGeometryId])
   const [selection, setSelection] = useState(() => bridge.getSelection())
@@ -84,8 +87,8 @@ export function FederationDatasetWorkspace({ records = [], features = [], column
       <header className="fd-gis-dataset-workspace__header">
         <div><h2>Advanced Facility Search</h2><p>Displaying {records.length} of {records.length} Matches</p></div>
         <div className="fd-gis-dataset-workspace__actions">
-          <FederationButton variant="secondary">← Back to Search</FederationButton>
-          <FederationButton variant="secondary" onClick={() => setMode('map')}>Display on Map</FederationButton>
+          <GisButton onClick={onBack}>← Back to Search</GisButton>
+          <GisButton onClick={() => setMode('map')}>Display on Map</GisButton>
           <FederationExportMenu exports={exports} onExport={onExport} />
         </div>
       </header>
