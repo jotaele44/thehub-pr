@@ -1,8 +1,8 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-16T20:19:00Z"
-  scope: github_repository_api_identity_plus_main_heads_and_authoritative_vector_evidence_refresh
+  captured_at_utc: "2026-08-16T22:21:00Z"
+  scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
     - repo_id: 1261399537
@@ -12,11 +12,11 @@ snapshot:
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: 54e19a3e90f2d69410f810d6ea76775dec30bb05
+      expected_sha: 1047c9b186017b0fdb715d81af843ddf17c45735
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
-      expected_sha: f985471e6bf4b556e3592757117b432dca44e780
+      expected_sha: 79c4ca685313cc9a2b36c61997257e0f75770125
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
@@ -134,6 +134,7 @@ vectors:
     invariants:
       issue_acceptance_still_open: true
       validator_only_not_completion: true
+      snapshot_refresh_reason: scheduled_main_refresh_advanced_from_54e19a3e90f2d69410f810d6ea76775dec30bb05
 
   - vector_id: FERROCARRIL_ILAP_CANONICALIZATION
     repo: jotaele44/spiderweb-pr
@@ -151,7 +152,7 @@ vectors:
       subtype_total: 609
       evidence_label_total: 609
       exact_coordinates_present: 0
-      snapshot_refresh_reason: spiderweb_main_advanced_twice_since_prior_federation_receipt
+      snapshot_refresh_reason: unrelated_main_pr_282_advanced_from_f985471e6bf4b556e3592757117b432dca44e780
     execution:
       kind: evidence_adjudication_required
       mutation: prohibited_by_fed_max
@@ -227,7 +228,7 @@ vectors:
   - vector_id: CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE
     repo: jotaele44/ovnis-pr
     objective: Schema-governed PRUFON historical case import, contradiction handling, and Hub-compatible export.
-    declared_status: OPEN
+    declared_status: READY
     certification: PROVISIONAL
     dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
     source_bindings:
@@ -242,12 +243,35 @@ vectors:
       result: SAME_CANONICAL_VECTOR_MULTIPLE_SOURCE_MANIFESTATIONS
       basis: Both open issues contain the identical explicit Vector identifier; neither issue is discarded or declared superseded.
     execution:
-      kind: repo_implementation_required
-      mutation: prohibited_by_fed_max
-      commands: []
-    blockers:
-      - open_issue_acceptance_work_not_bound_to_a_safe_control_plane_command
-      - unchecked_case_schema_import_dedupe_contradiction_and_export_implementation_work
+      kind: certified_development_lineage_verification
+      mutation: verification_only
+      commands:
+        - >-
+          test "$(git rev-parse HEAD)" = "f5cf496095f00869d27312d15ea9bfe9d3eb5941" &&
+          test -z "$(git status --porcelain)" &&
+          test "$(git remote get-url origin)" = "https://github.com/jotaele44/ovnis-pr" &&
+          python -m pytest -q tests/test_prufon_legacy_contract.py tests/test_import_candidates.py tests/test_validate_case_ledgers.py tests/test_federation_export.py &&
+          python scripts/validate_case_ledgers.py --schema schemas/case_record.schema.json data/master/master_cases.jsonl
+    blockers: []
     invariants:
-      hub_callable_validation_commands_present: true
-      validator_only_not_completion: true
+      development_pull_request: 77
+      development_branch: gpt/prufon-case-pipeline-v0-1
+      development_head_sha: f5cf496095f00869d27312d15ea9bfe9d3eb5941
+      development_base_main_sha: f12d695ebf3858945cc0b20c38057724fbe98cc0
+      native_exact_head_certification: PASS
+      ovnis_ci_run_id: 31976022056
+      validate_run_id: 31976022092
+      codeql_run_id: 31976022086
+      semgrep_run_id: 31976022506
+      secret_scan_run_id: 31976022059
+      federation_template_drift_run_id: 31976022097
+      case_record_schema_present: true
+      source_record_schema_present: true
+      csv_markdown_xlsx_legacy_adapter_present: true
+      bounded_and_explicit_unknown_semantics_present: true
+      anti_generic_location_invariant_preserved: true
+      canonical_master_mutation_by_verification_command: false
+      verification_command_idempotent: true
+      initial_failed_head_semantic_regression: 2d075a7b46545c8329bef47fb7e16076153d8453
+      superseded_lint_failed_head: 48a4332ddc34e7adc298eb3a4da5ce8d82c25592
+      negative_certification_history_preserved: true
