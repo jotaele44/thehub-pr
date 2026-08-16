@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from hub.fed_cli import (
+from fed_control import (
     FedError,
     _command_allowed,
     load_ledger,
