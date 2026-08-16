@@ -65,6 +65,22 @@ def test_duplicate_issue_declarations_are_one_to_many_manifestations_not_two_vec
     assert ovnis["binding_adjudication"]["cardinality"] == "1:N"
 
 
+def test_cent_s_active_draft_is_bound_without_inventing_vector_identity():
+    ledger = _ledger()
+    by_id = {row["vector_id"]: row for row in ledger["vectors"]}
+    cent = by_id["DISCOVER_CENTINELAS_ACTIVE_VECTOR"]
+    assert cent["declared_status"] == "OPEN"
+    assert cent["source_bindings"] == [
+        {
+            "kind": "github_pull_request",
+            "ref": "jotaele44/centinelas-pr#83",
+            "binding_basis": "authoritative_open_draft_development_intent",
+        }
+    ]
+    assert cent["invariants"]["explicit_vector_id_present"] is False
+    assert cent["invariants"]["candidate_status"] == "diverged"
+
+
 def test_same_github_issue_cannot_bind_to_two_canonical_vectors():
     ledger = _ledger()
     bad = copy.deepcopy(ledger)
@@ -120,7 +136,7 @@ def test_exact_snapshot_max_reuses_passed_control_vector_without_reexecution():
     assert all(not pass_row["results"] for pass_row in result["passes"])
     assert result["final_status"]["BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT"] == "BLOCKED"
     assert result["final_status"]["PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE"] == "BLOCKED"
-    assert result["final_status"]["DISCOVER_CENTINELAS_ACTIVE_VECTOR"] == "UNRESOLVED"
+    assert result["final_status"]["DISCOVER_CENTINELAS_ACTIVE_VECTOR"] == "OPEN"
     assert result["final_status"]["VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT"] == "OPEN"
 
 
@@ -131,6 +147,14 @@ def test_repository_status_arithmetic_closes_at_seven():
     assert status["arithmetic_ok"] is True
     assert status["classified_count"] == status["repository_count"] == 7
     assert sum(status["counts"].values()) == 7
+    assert status["counts"] == {
+        "BLOCKED": 2,
+        "FAIL": 0,
+        "OPEN": 5,
+        "PASS": 0,
+        "READY": 0,
+        "UNRESOLVED": 0,
+    }
 
 
 @pytest.mark.parametrize(
