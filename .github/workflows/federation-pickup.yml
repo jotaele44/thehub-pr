@@ -23,14 +23,14 @@ jobs:
       - name: Install control plane
         run: python -m pip install -e .
 
-      - name: Execute frozen remote MAX vector pass
+      - name: Execute frozen remote MAX apply pass
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          fed max --remote | tee federation-max.json
+          fed max --remote --apply | tee federation-max.json
 
-      - name: Assert bounded exhaustion contract
+      - name: Assert bounded exhaustion and fail-closed apply contract
         run: |
           python - <<'PY'
           import json
@@ -41,9 +41,9 @@ jobs:
           certification = receipt["certification"]
           repo_status = receipt["repository_status"]
 
+          assert execution["apply"] is True
           assert execution["bounded_exhausted"] is True
           assert execution["ready_residue"] == []
-          assert "FEDERATION_PICKUP_SYSTEM_LEVEL_3" in execution["completed"]
           assert execution["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
           assert execution["final_status"]["BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT"] == "BLOCKED"
           assert execution["final_status"]["PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE"] == "BLOCKED"
@@ -51,6 +51,16 @@ jobs:
           assert certification["universal_exhaustion_claimed"] is False
           assert certification["certification"] == "PROVISIONAL"
           assert certification["repository_status_phase"] == "post_execution"
+
+          # Prior PASS is reused from the ledger; it is not re-executed.
+          assert "FEDERATION_PICKUP_SYSTEM_LEVEL_3" not in execution["completed"]
+          executed_rows = [
+              row
+              for pass_row in execution["passes"]
+              for row in pass_row["results"]
+              if row.get("executed")
+          ]
+          assert executed_rows == []
 
           counts = {}
           for status in execution["final_status"].values():
@@ -79,5 +89,5 @@ jobs:
           assert by_repo["jotaele44/centinelas-pr"] == "UNRESOLVED"
           assert by_repo["jotaele44/skywatcher-pr"] == "BLOCKED"
           assert by_repo["jotaele44/moneysweep-pr"] == "BLOCKED"
-          print("PASS: live remote MAX bounded exhaustion, vector arithmetic, and post-execution repository arithmetic close")
+          print("PASS: live remote APPLY bounded exhaustion; prior PASS reused; zero unsafe domain commands executed; arithmetic closes")
           PY
