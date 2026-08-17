@@ -25,7 +25,7 @@ jobs:
       matrix:
         python-version: ["3.9", "3.10", "3.11", "3.12"]
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -46,7 +46,7 @@ jobs:
   lock:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 # v5
       - name: Lock file is up to date
         run: uv lock --check
@@ -58,7 +58,7 @@ jobs:
       run:
         working-directory: server/frontend
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
@@ -79,7 +79,7 @@ jobs:
       run:
         working-directory: server/frontend
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
@@ -100,7 +100,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
@@ -138,7 +138,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: audit-claims-preflight
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
@@ -163,7 +163,7 @@ jobs:
     needs: audit-claims-preflight
     if: needs.audit-claims-preflight.outputs.has_token == 'true'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -171,17 +171,17 @@ jobs:
       # siblings land in _federation/ while this repo stays at the root.
       # verify_audit.py resolves its own name to the script's tree (SELF_REPO_NAME),
       # so --root _federation still covers all seven.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { repository: jotaele44/skywatcher-pr, path: _federation/skywatcher-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { repository: jotaele44/moneysweep-pr, path: _federation/moneysweep-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { repository: jotaele44/spiderweb-pr, path: _federation/spiderweb-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { repository: jotaele44/centinelas-pr, path: _federation/centinelas-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { repository: jotaele44/aguayluz-pr, path: _federation/aguayluz-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: { repository: jotaele44/ovnis-pr, path: _federation/ovnis-pr, token: "${{ secrets.FEDERATION_READ_TOKEN }}" }
       - name: Verify audit claims across the federation
         run: python3 scripts/verify_audit.py --root _federation --require-all
@@ -192,7 +192,7 @@ jobs:
   maintenance-package:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
@@ -211,7 +211,7 @@ jobs:
   export-utils-package:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
