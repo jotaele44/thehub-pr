@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-16T22:21:00Z"
+  captured_at_utc: "2026-08-17T00:52:00Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
@@ -28,7 +28,7 @@ snapshot:
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
-      expected_sha: f12d695ebf3858945cc0b20c38057724fbe98cc0
+      expected_sha: d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
@@ -228,8 +228,8 @@ vectors:
   - vector_id: CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE
     repo: jotaele44/ovnis-pr
     objective: Schema-governed PRUFON historical case import, contradiction handling, and Hub-compatible export.
-    declared_status: READY
-    certification: PROVISIONAL
+    declared_status: PASS
+    certification: PASS
     dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
     source_bindings:
       - kind: github_issue
@@ -243,18 +243,15 @@ vectors:
       result: SAME_CANONICAL_VECTOR_MULTIPLE_SOURCE_MANIFESTATIONS
       basis: Both open issues contain the identical explicit Vector identifier; neither issue is discarded or declared superseded.
     execution:
-      kind: certified_development_lineage_verification
+      kind: merged_mainline_certification
       mutation: branch_only
-      commands:
-        - >-
-          test "$(git rev-parse HEAD)" = "f5cf496095f00869d27312d15ea9bfe9d3eb5941" &&
-          test -z "$(git status --porcelain)" &&
-          test "$(git remote get-url origin)" = "https://github.com/jotaele44/ovnis-pr" &&
-          python -m pytest -q tests/test_prufon_legacy_contract.py tests/test_import_candidates.py tests/test_validate_case_ledgers.py tests/test_federation_export.py &&
-          python scripts/validate_case_ledgers.py --schema schemas/case_record.schema.json data/master/master_cases.jsonl
+      commands: []
     blockers: []
     invariants:
       development_pull_request: 77
+      merged_pull_request: 77
+      merged_at_utc: "2026-08-17T00:51:31Z"
+      merged_main_sha: d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1
       development_branch: gpt/prufon-case-pipeline-v0-1
       development_head_sha: f5cf496095f00869d27312d15ea9bfe9d3eb5941
       development_base_main_sha: f12d695ebf3858945cc0b20c38057724fbe98cc0
@@ -272,7 +269,9 @@ vectors:
       anti_generic_location_invariant_preserved: true
       canonical_master_mutation_by_verification_command: false
       verification_command_idempotent: true
-      mutation_envelope_semantics: branch_only_schema_value_with_read_only_verification_command
+      mutation_envelope_semantics: branch_only_schema_value_with_historical_read_only_verification_command
       initial_failed_head_semantic_regression: 2d075a7b46545c8329bef47fb7e16076153d8453
       superseded_lint_failed_head: 48a4332ddc34e7adc298eb3a4da5ce8d82c25592
       negative_certification_history_preserved: true
+      first_domain_receipt: reports/federation_pickup_first_domain_ready_wave_20260816.json
+      completed_vector_reexecution_prohibited: true
