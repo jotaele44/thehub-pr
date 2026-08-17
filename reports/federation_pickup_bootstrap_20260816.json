@@ -1,0 +1,259 @@
+{
+  "schema_version": "federation_pickup_bootstrap_receipt_v1",
+  "generated_at_utc": "2026-08-16T19:40:00Z",
+  "certification": "PROVISIONAL",
+  "scope": "frozen seven-repository snapshot and declared eight-vector development universe only",
+  "bounded_exhaustion": true,
+  "universal_exhaustion_claimed": false,
+  "control_plane": {
+    "repository": "jotaele44/thehub-pr",
+    "repository_id": 1258897469,
+    "base_branch": "main",
+    "base_sha": "cca6d40d64282a4e6c8cc66da477ba05c0f93851",
+    "implementation_branch": "gpt/federation-pickup-engine",
+    "ci_certified_implementation_head": "e9ce1f87031189bfa6facc0ec060d092eaf37796",
+    "draft_pull_request": 182,
+    "pull_request_state_at_certification": "OPEN_DRAFT_NOT_MERGED"
+  },
+  "frozen_inputs": {
+    "ledger_sha256": "9c085f5fb767ab83b3a4093e40a2ed15f4a3ae0df78be699d32a8d14bbfe1ee9",
+    "snapshot_sha256": "bf6d06497d92692e6ae9e39ba23569255a017fb9f9484ed70bd9f28e0ceb98e5",
+    "snapshot_captured_at_utc": "2026-08-16T19:38:46Z",
+    "repositories": [
+      {
+        "repository": "jotaele44/skywatcher-pr",
+        "repository_id": 1261399537,
+        "main_sha": "c32c68abce2a281fd13d9632687a7cdc10412d0b"
+      },
+      {
+        "repository": "jotaele44/aguayluz-pr",
+        "repository_id": 1257600730,
+        "main_sha": "54e19a3e90f2d69410f810d6ea76775dec30bb05"
+      },
+      {
+        "repository": "jotaele44/spiderweb-pr",
+        "repository_id": 1111911635,
+        "main_sha": "016827421410fcd909e56c93ddb9d710083c165e"
+      },
+      {
+        "repository": "jotaele44/moneysweep-pr",
+        "repository_id": 1197338153,
+        "main_sha": "35b74b9b81293c5bc68d8ba2c82f34c0c5878f5d"
+      },
+      {
+        "repository": "jotaele44/centinelas-pr",
+        "repository_id": 1284431262,
+        "main_sha": "6f1b53a5c21049641a558b56cbcbea6dabdf58ce"
+      },
+      {
+        "repository": "jotaele44/ovnis-pr",
+        "repository_id": 1252871400,
+        "main_sha": "f12d695ebf3858945cc0b20c38057724fbe98cc0"
+      },
+      {
+        "repository": "jotaele44/thehub-pr",
+        "repository_id": 1258897469,
+        "main_sha": "cca6d40d64282a4e6c8cc66da477ba05c0f93851"
+      }
+    ]
+  },
+  "live_execution": {
+    "workflow": "Federation pickup bounded MAX",
+    "workflow_run_id": 31968173568,
+    "job_id": 95216408084,
+    "outcome": "SUCCESS",
+    "executed_at_utc": "2026-08-16T19:38:46Z",
+    "transport": "gh_api",
+    "apply": false,
+    "execution_sha256": "97fbd05532480c709348f63fd1adfd41323f60715f2d17fd8da42315bf9dc387",
+    "reconciliation_sha256": "5e6873681cb75748381c2927cb3cc5d9322dcbcf6dc621627d7cad4b70a59e9e",
+    "plan_sha256": "48dd5eb190d07bc54a10482d88c9eb52f5bccef1ee8ce3cd2f519533904efd55",
+    "ready_residue": [],
+    "completed_vectors": [
+      "FEDERATION_PICKUP_SYSTEM_LEVEL_3"
+    ],
+    "domain_mutation_commands_executed": 0,
+    "domain_mutation_reason": "No domain vector was simultaneously READY, dependency-satisfied, exact-SHA verified, and bound to an explicit safe executable command. Fail-closed behavior preserved OPEN/BLOCKED/UNRESOLVED work."
+  },
+  "vector_universe": {
+    "count": 8,
+    "arithmetic": "PASS=1 + OPEN=4 + BLOCKED=2 + UNRESOLVED=1 + READY=0 + FAIL=0 = 8",
+    "statuses": {
+      "FEDERATION_PICKUP_SYSTEM_LEVEL_3": "PASS",
+      "FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT": "OPEN",
+      "BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT": "BLOCKED",
+      "VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT": "OPEN",
+      "FERROCARRIL_ILAP_CANONICALIZATION": "OPEN",
+      "PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE": "BLOCKED",
+      "DISCOVER_CENTINELAS_ACTIVE_VECTOR": "UNRESOLVED",
+      "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE": "OPEN"
+    }
+  },
+  "repository_rollup_post_execution": {
+    "count": 7,
+    "arithmetic": "OPEN=4 + BLOCKED=2 + UNRESOLVED=1 + READY=0 + PASS=0 + FAIL=0 = 7",
+    "statuses": {
+      "jotaele44/thehub-pr": "OPEN",
+      "jotaele44/skywatcher-pr": "BLOCKED",
+      "jotaele44/aguayluz-pr": "OPEN",
+      "jotaele44/spiderweb-pr": "OPEN",
+      "jotaele44/moneysweep-pr": "BLOCKED",
+      "jotaele44/centinelas-pr": "UNRESOLVED",
+      "jotaele44/ovnis-pr": "OPEN"
+    }
+  },
+  "identity_adjudications": [
+    {
+      "canonical_vector": "VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT",
+      "source_manifestations": [
+        "jotaele44/aguayluz-pr#10",
+        "jotaele44/aguayluz-pr#11"
+      ],
+      "cardinality": "1:N",
+      "result": "SAME_CANONICAL_VECTOR_MULTIPLE_SOURCE_MANIFESTATIONS",
+      "certification": "PROVISIONAL",
+      "note": "Both issue bodies carry the identical explicit Vector identifier; neither manifestation was discarded or marked superseded."
+    },
+    {
+      "canonical_vector": "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE",
+      "source_manifestations": [
+        "jotaele44/ovnis-pr#4",
+        "jotaele44/ovnis-pr#5"
+      ],
+      "cardinality": "1:N",
+      "result": "SAME_CANONICAL_VECTOR_MULTIPLE_SOURCE_MANIFESTATIONS",
+      "certification": "PROVISIONAL",
+      "note": "Both issue bodies carry the identical explicit Vector identifier; neither manifestation was discarded or marked superseded."
+    },
+    {
+      "canonical_vector": "DISCOVER_CENTINELAS_ACTIVE_VECTOR",
+      "source_manifestations": [
+        "github_open_issues:none_at_snapshot"
+      ],
+      "cardinality": "UNRESOLVED",
+      "result": "NO_AUTHORITATIVE_ACTIVE_VECTOR_BINDING_DISCOVERED",
+      "certification": "UNRESOLVED",
+      "note": "Search/issue absence is discovery evidence only and was not promoted to proof of no active vector."
+    }
+  ],
+  "contradictions_and_supersessions": [
+    {
+      "type": "TIME",
+      "classification": "SUPERSEDED",
+      "event": "Initial producer main-head snapshot drifted during implementation.",
+      "superseded_heads": {
+        "jotaele44/skywatcher-pr": "ed8931d33f7fa0c213470946454ada76fe0d61b5",
+        "jotaele44/aguayluz-pr": "276582137d46c7c7a1b9debd421fa2eb840e5f26",
+        "jotaele44/spiderweb-pr": "0d908aa8889d97a53f5d1d4bd490ffc364974fa4",
+        "jotaele44/moneysweep-pr": "86b516b5c6f6be838e02025b51fab1580b4c9536",
+        "jotaele44/centinelas-pr": "cba69a44cb47663629d4440f35b43cd1d255fa77",
+        "jotaele44/ovnis-pr": "3903eba91b8b1da9201e3b6ebd51b26d6f86eceb",
+        "jotaele44/thehub-pr": "cca6d40d64282a4e6c8cc66da477ba05c0f93851"
+      },
+      "resolution": "The stale snapshot was not certified. All seven heads were re-read and the canonical snapshot was refreshed before live MAX execution."
+    },
+    {
+      "type": "IDENTITY",
+      "classification": "SUPERSEDED",
+      "event": "An initial inventory carried incorrect values as stable GitHub repository IDs.",
+      "superseded_repository_ids": {
+        "jotaele44/skywatcher-pr": 890197690,
+        "jotaele44/aguayluz-pr": 951883594,
+        "jotaele44/spiderweb-pr": 915563628,
+        "jotaele44/moneysweep-pr": 894434355,
+        "jotaele44/centinelas-pr": 1061457836,
+        "jotaele44/ovnis-pr": 857700000,
+        "jotaele44/thehub-pr": 1172818213
+      },
+      "resolution": "All seven repositories were re-bound through the authoritative GitHub repository endpoint. Remote/apply execution now independently requires exact stable-ID equality before entering the core controller. The superseded values are invalid as identity evidence."
+    },
+    {
+      "type": "SCHEMA",
+      "classification": "RESOLVED",
+      "event": "Federation template drift detected generated Hub CodeQL and secret-scan workflow outputs differing from canonical templates only at the actions/checkout pin.",
+      "resolution": "Both generated outputs were re-rendered exactly from the existing canonical templates; the template-drift workflow subsequently passed."
+    },
+    {
+      "type": "SCHEMA",
+      "classification": "RESOLVED",
+      "event": "Hub CI correctly rejected the newly added development-vector schema because schemas/FROZEN.sha256 had not yet been deliberately updated.",
+      "resolution": "development_vector.schema.json was frozen at SHA256 51cb0694e80a10c36e1e6a3db58f6c5fc0a7e263c3dcc7ac78290e1fb1785039. Existing frozen schema hashes were preserved. The complete Hub CI matrix then passed."
+    }
+  ],
+  "ci_certification": {
+    "certified_head": "e9ce1f87031189bfa6facc0ec060d092eaf37796",
+    "all_listed_workflows_completed_success": true,
+    "workflows": [
+      {
+        "name": "Hub CI",
+        "run_id": 31968173347,
+        "conclusion": "SUCCESS",
+        "note": "Python 3.9/3.10/3.11/3.12 tests, schema validation/freeze gate, lint/mypy, frontend build/tests, visual regression, lock, export-utils, maintenance, and audit-claims passed; cross-repo audit-claims-federation was skipped by its existing token gate."
+      },
+      {
+        "name": "Federation pickup bounded MAX",
+        "run_id": 31968173568,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "CodeQL",
+        "run_id": 31968173455,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "Federation Semgrep",
+        "run_id": 31968173437,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "Secret scan",
+        "run_id": 31968173361,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "pip-audit",
+        "run_id": 31968173452,
+        "conclusion": "SUCCESS"
+      },
+      {
+        "name": "Federation template drift",
+        "run_id": 31968173363,
+        "conclusion": "SUCCESS"
+      }
+    ]
+  },
+  "prohibitions_preserved": [
+    "NO_AUTOMATIC_MERGE",
+    "NO_AUTO_MERGE",
+    "NO_FORCE_PUSH",
+    "NO_DESTRUCTIVE_BRANCH_DELETE",
+    "NO_REMOTE_BRANCH_DELETE",
+    "NO_CREDENTIAL_DISCLOSURE",
+    "NO_PRODUCTION_DATA_PROMOTION_FROM_ISSUE_STATE",
+    "NO_VECTOR_EXECUTION_SYNTHESIZED_FROM_ISSUE_PROSE"
+  ],
+  "remaining_residue": {
+    "ready": [],
+    "open": [
+      "FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT",
+      "VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT",
+      "FERROCARRIL_ILAP_CANONICALIZATION",
+      "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"
+    ],
+    "blocked": [
+      "BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT",
+      "PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE"
+    ],
+    "unresolved": [
+      "DISCOVER_CENTINELAS_ACTIVE_VECTOR"
+    ]
+  },
+  "resume_contract": {
+    "next_entrypoint": "fed pickup --remote",
+    "bounded_max_entrypoint": "fed max --remote",
+    "mutation_entrypoint": "fed max --remote --apply",
+    "mutation_condition": "Only vectors explicitly bound to safe commands and passing all identity, exact-SHA, dependency, invariant, and status gates may execute.",
+    "drift_rule": "Any changed main SHA invalidates the frozen expected SHA for execution; create a deliberate new snapshot rather than silently updating the receipt.",
+    "passed_artifact_reuse": "Reuse PASSed receipts/vector state on resume; do not intentionally repeat completed vector executions."
+  }
+}

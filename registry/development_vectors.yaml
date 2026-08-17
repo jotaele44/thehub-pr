@@ -1,0 +1,277 @@
+schema_version: federation_development_vectors_v1
+control_plane: jotaele44/thehub-pr
+snapshot:
+  captured_at_utc: "2026-08-17T19:53:28Z"
+  scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
+  bounded: true
+  repositories:
+    - repo_id: 1261399537
+      repo: jotaele44/skywatcher-pr
+      default_branch: main
+      expected_sha: c32c68abce2a281fd13d9632687a7cdc10412d0b
+    - repo_id: 1257600730
+      repo: jotaele44/aguayluz-pr
+      default_branch: main
+      expected_sha: e9a1736e7dec882ab7e5e67dbcb52de40e655262
+    - repo_id: 1111911635
+      repo: jotaele44/spiderweb-pr
+      default_branch: main
+      expected_sha: 79c4ca685313cc9a2b36c61997257e0f75770125
+    - repo_id: 1197338153
+      repo: jotaele44/moneysweep-pr
+      default_branch: main
+      expected_sha: dc234ed46ac71302e8fcc675df70bc23bbdc3e63
+    - repo_id: 1284431262
+      repo: jotaele44/centinelas-pr
+      default_branch: main
+      expected_sha: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
+    - repo_id: 1252871400
+      repo: jotaele44/ovnis-pr
+      default_branch: main
+      expected_sha: d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1
+    - repo_id: 1258897469
+      repo: jotaele44/thehub-pr
+      default_branch: main
+      expected_sha: 377c2a64eb05ae81a5614b18cb48602316b1c716
+vectors:
+  - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
+    repo: jotaele44/thehub-pr
+    objective: Deterministic restartable federation development-vector pickup, DAG execution, bounded exhaustion, and receipts.
+    declared_status: PASS
+    certification: PASS
+    dependencies: []
+    source_bindings:
+      - kind: user_authorized_vector
+        ref: conversation:LEVEL_3_EXECUTE_MAX_FEDERATION_PICKUP_SYSTEM
+        binding_basis: explicit_vector_instruction
+    execution:
+      kind: implementation_self
+      mutation: branch_only
+      commands: []
+    gates:
+      - stable_repo_ids_unique
+      - exact_main_sha_snapshot
+      - vector_ids_unique
+      - dependency_graph_acyclic
+      - source_binding_collisions_bounded
+      - status_arithmetic_closes
+      - no_automatic_merge_force_push_or_branch_delete
+    invariants:
+      passed_artifact_reuse: true
+      ci_certified_implementation_head: e9ce1f87031189bfa6facc0ec060d092eaf37796
+      bootstrap_receipt: reports/federation_pickup_bootstrap_20260816.json
+
+  - vector_id: FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT
+    repo: jotaele44/thehub-pr
+    objective: Roll out the Federation Design System v1 across all seven repositories while preserving behavior and contracts.
+    declared_status: OPEN
+    certification: OPEN
+    dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
+    source_bindings:
+      - kind: github_issue
+        ref: jotaele44/thehub-pr#56
+        binding_basis: authoritative_issue_objective
+    execution:
+      kind: manual_multi_repo
+      mutation: prohibited_by_fed_max
+      commands: []
+    blockers:
+      - seven_repository_frontend_rollout_requires_repo_specific_implementation_and_visual_acceptance
+    invariants:
+      issue_checklist_open: true
+      repo_count_target: 7
+      validator_only_not_completion: true
+
+  - vector_id: BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT
+    repo: jotaele44/skywatcher-pr
+    objective: Build reviewed non-synthetic airspace export readiness with endpoint attribution.
+    declared_status: BLOCKED
+    certification: OPEN
+    dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
+    source_bindings:
+      - kind: github_issue
+        ref: jotaele44/skywatcher-pr#7
+        binding_basis: exact_vector_id_in_issue_body
+    execution:
+      kind: operator_data_required
+      mutation: prohibited_by_fed_max
+      commands: []
+    blockers:
+      - real_flightradar24_capture_required
+      - operator_tenant_attribution_requires_review
+      - local_uncommitted_faa_registry_and_ocr_event_inputs_required_for_registry_validation
+    invariants:
+      production_validator_present: true
+      fr24_baseline_tracked_payload_count: 0
+      fr24_baseline_evidence: data/FR24_baseline contains only .gitkeep at frozen main
+      faa_registry_runtime_inputs_operator_supplied: true
+      standalone_packaging_candidate_is_distinct_from_export_vector: true
+
+  - vector_id: VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT
+    repo: jotaele44/aguayluz-pr
+    objective: Validate real-data partial export with source coverage caveats and continuity-risk semantics.
+    declared_status: OPEN
+    certification: PROVISIONAL
+    dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
+    source_bindings:
+      - kind: github_issue
+        ref: jotaele44/aguayluz-pr#10
+        binding_basis: exact_vector_id_in_issue_body
+      - kind: github_issue
+        ref: jotaele44/aguayluz-pr#11
+        binding_basis: exact_vector_id_in_issue_body
+    binding_adjudication:
+      cardinality: "1:N"
+      result: SAME_CANONICAL_VECTOR_MULTIPLE_SOURCE_MANIFESTATIONS
+      basis: Both open issues contain the identical explicit Vector identifier; neither issue is discarded or declared superseded.
+    execution:
+      kind: operator_data_and_local_validation
+      mutation: prohibited_by_fed_max
+      commands: []
+    blockers:
+      - recurring_source_and_outage_snapshot_validation_not_safely_executable_from_control_plane
+      - unchecked_schema_source_registry_export_and_taxonomy_implementation_work
+    invariants:
+      issue_acceptance_still_open: true
+      validator_only_not_completion: true
+      snapshot_refresh_reason: scheduled_main_refresh_advanced_from_54e19a3e90f2d69410f810d6ea76775dec30bb05
+
+  - vector_id: FERROCARRIL_ILAP_CANONICALIZATION
+    repo: jotaele44/spiderweb-pr
+    objective: Canonicalize the frozen 609-row Ferrocarril source universe with row-level provenance, georeferencing, and entity adjudication.
+    declared_status: OPEN
+    certification: PROVISIONAL
+    dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
+    source_bindings:
+      - kind: github_issue
+        ref: jotaele44/spiderweb-pr#269
+        binding_basis: authoritative_issue_scope_and_frozen_denominator
+    invariants:
+      source_sha256: 1241049696f4d452b3bcbd4ad7d834476dccff64daa38847b53685109922366f
+      source_rows: 609
+      subtype_total: 609
+      evidence_label_total: 609
+      exact_coordinates_present: 0
+      snapshot_refresh_reason: unrelated_main_pr_282_advanced_from_f985471e6bf4b556e3592757117b432dca44e780
+    execution:
+      kind: evidence_adjudication_required
+      mutation: prohibited_by_fed_max
+      commands: []
+    blockers:
+      - row_level_provenance_and_geometry_adjudication_required
+
+  - vector_id: PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE
+    repo: jotaele44/moneysweep-pr
+    objective: Reconciled Puerto Rico government-finance ingestion and materialization program.
+    declared_status: BLOCKED
+    certification: NONCANONICAL
+    dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
+    source_bindings:
+      - kind: github_issue
+        ref: jotaele44/moneysweep-pr#271
+        binding_basis: authoritative_epic_scope_and_priority_order
+    invariants:
+      registry_sources: 151
+      automatable_ready: 104
+      queued_excluded: 47
+      arithmetic: "104+47=151"
+      registry_digest: 7830358c254767bc9db34ae5230b41f815ffaea9aa0c3abe4dfdebfe36b2f2d0
+      manual_preflight_gate: PASS
+      manual_preflight_run_ids: "30452888839,30452890975,30452892905"
+      offline_operator_corpus_audit: PASS
+      offline_operator_corpus_evidence_sha256: 2a37bf4c49f5e4d267ca4cbdc8366c718efc1738de607cdbe3cbbbd3ec8b9f85
+      required_sources_fully_materialized: 10
+      required_sources_total: 14
+      probe_ran: false
+      issue_state_does_not_authorize_data_promotion: true
+    execution:
+      kind: operator_corpus_network_and_credentials_required
+      mutation: prohibited_by_fed_max
+      commands: []
+    blockers:
+      - required_source_bytes_missing_cor3_hud_drgr_authorized_pr_cabilderos_prasa
+      - entity_product_comparison_pending_operator_corpus_execution
+      - freshness_and_external_universe_completeness_not_certified
+      - production_export_and_downstream_federation_validation_open
+      - some_remaining_sources_require_authorized_exports_network_or_credentials
+
+  - vector_id: DISCOVER_CENTINELAS_ACTIVE_VECTOR
+    repo: jotaele44/centinelas-pr
+    objective: Bind an active Centinelas development vector only when authoritative intent evidence is available.
+    declared_status: OPEN
+    certification: PROVISIONAL
+    dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
+    source_bindings:
+      - kind: github_pull_request
+        ref: jotaele44/centinelas-pr#83
+        binding_basis: authoritative_open_draft_development_intent
+    execution:
+      kind: identity_adjudication_required
+      mutation: prohibited_by_fed_max
+      commands: []
+    blockers:
+      - authoritative_active_draft_found_but_no_explicit_canonical_vector_id
+      - candidate_branch_diverged_11_ahead_34_behind_main
+      - production_activation_requires_authentication_private_persistence_and_authorization
+    invariants:
+      open_draft_pr_discovered: 83
+      candidate_branch: feat/email-ingestion-design-v0-1
+      candidate_head_sha: d21b2974c990da66bab013f40a3075c07a320c25
+      candidate_base_at_creation_sha: 0219a8c1dd0f38a1f8d09a0d027f3b82a3c74d17
+      current_main_sha: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
+      candidate_ahead_by: 11
+      candidate_behind_by: 34
+      candidate_status: diverged
+      explicit_vector_id_present: false
+      recent_commit_theme_not_promoted_to_vector_identity: true
+
+  - vector_id: CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE
+    repo: jotaele44/ovnis-pr
+    objective: Schema-governed PRUFON historical case import, contradiction handling, and Hub-compatible export.
+    declared_status: PASS
+    certification: PASS
+    dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
+    source_bindings:
+      - kind: github_issue
+        ref: jotaele44/ovnis-pr#4
+        binding_basis: exact_vector_id_in_issue_body
+      - kind: github_issue
+        ref: jotaele44/ovnis-pr#5
+        binding_basis: exact_vector_id_in_issue_body
+    binding_adjudication:
+      cardinality: "1:N"
+      result: SAME_CANONICAL_VECTOR_MULTIPLE_SOURCE_MANIFESTATIONS
+      basis: Both open issues contain the identical explicit Vector identifier; neither issue is discarded or declared superseded.
+    execution:
+      kind: merged_mainline_certification
+      mutation: branch_only
+      commands: []
+    blockers: []
+    invariants:
+      development_pull_request: 77
+      merged_pull_request: 77
+      merged_at_utc: "2026-08-17T00:51:31Z"
+      merged_main_sha: d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1
+      development_branch: gpt/prufon-case-pipeline-v0-1
+      development_head_sha: f5cf496095f00869d27312d15ea9bfe9d3eb5941
+      development_base_main_sha: f12d695ebf3858945cc0b20c38057724fbe98cc0
+      native_exact_head_certification: PASS
+      ovnis_ci_run_id: 31976022056
+      validate_run_id: 31976022092
+      codeql_run_id: 31976022086
+      semgrep_run_id: 31976022506
+      secret_scan_run_id: 31976022059
+      federation_template_drift_run_id: 31976022097
+      case_record_schema_present: true
+      source_record_schema_present: true
+      csv_markdown_xlsx_legacy_adapter_present: true
+      bounded_and_explicit_unknown_semantics_present: true
+      anti_generic_location_invariant_preserved: true
+      canonical_master_mutation_by_verification_command: false
+      verification_command_idempotent: true
+      mutation_envelope_semantics: branch_only_schema_value_with_historical_read_only_verification_command
+      initial_failed_head_semantic_regression: 2d075a7b46545c8329bef47fb7e16076153d8453
+      superseded_lint_failed_head: 48a4332ddc34e7adc298eb3a4da5ce8d82c25592
+      negative_certification_history_preserved: true
+      first_domain_receipt: reports/federation_pickup_first_domain_ready_wave_20260816.json
+      completed_vector_reexecution_prohibited: true

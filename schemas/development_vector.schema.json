@@ -1,0 +1,207 @@
+{
+  "$id": "https://github.com/jotaele44/thehub-pr/schemas/development_vector.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "control_plane": {
+      "const": "jotaele44/thehub-pr"
+    },
+    "schema_version": {
+      "const": "federation_development_vectors_v1"
+    },
+    "snapshot": {
+      "additionalProperties": true,
+      "properties": {
+        "bounded": {
+          "const": true
+        },
+        "captured_at_utc": {
+          "type": "string"
+        },
+        "repositories": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "default_branch": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "expected_sha": {
+                "pattern": "^[0-9a-f]{40}$",
+                "type": "string"
+              },
+              "repo": {
+                "pattern": "^jotaele44/.+-pr$",
+                "type": "string"
+              },
+              "repo_id": {
+                "minimum": 1,
+                "type": "integer"
+              }
+            },
+            "required": [
+              "repo_id",
+              "repo",
+              "default_branch",
+              "expected_sha"
+            ],
+            "type": "object"
+          },
+          "maxItems": 7,
+          "minItems": 7,
+          "type": "array"
+        },
+        "scope": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "captured_at_utc",
+        "scope",
+        "bounded",
+        "repositories"
+      ],
+      "type": "object"
+    },
+    "vectors": {
+      "items": {
+        "additionalProperties": true,
+        "properties": {
+          "binding_adjudication": {
+            "type": "object"
+          },
+          "blockers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "certification": {
+            "enum": [
+              "PASS",
+              "FAIL",
+              "OPEN",
+              "BLOCKED",
+              "PROVISIONAL",
+              "AUDIT_ONLY",
+              "NONCANONICAL",
+              "CANDIDATE_NOT_IDENTITY",
+              "UNRESOLVED",
+              "SUPERSEDED"
+            ]
+          },
+          "declared_status": {
+            "enum": [
+              "READY",
+              "BLOCKED",
+              "OPEN",
+              "PASS",
+              "FAIL",
+              "UNRESOLVED"
+            ]
+          },
+          "dependencies": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "execution": {
+            "additionalProperties": true,
+            "properties": {
+              "commands": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "mutation": {
+                "enum": [
+                  "branch_only",
+                  "prohibited_by_fed_max"
+                ]
+              }
+            },
+            "required": [
+              "kind",
+              "mutation",
+              "commands"
+            ],
+            "type": "object"
+          },
+          "gates": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "invariants": {
+            "type": "object"
+          },
+          "objective": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "source_bindings": {
+            "items": {
+              "additionalProperties": true,
+              "properties": {
+                "binding_basis": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "kind": {
+                  "type": "string"
+                },
+                "ref": {
+                  "minLength": 1,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "kind",
+                "ref",
+                "binding_basis"
+              ],
+              "type": "object"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "vector_id": {
+            "pattern": "^[A-Z0-9_]+$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "vector_id",
+          "repo",
+          "objective",
+          "declared_status",
+          "certification",
+          "dependencies",
+          "source_bindings",
+          "execution"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "control_plane",
+    "snapshot",
+    "vectors"
+  ],
+  "title": "Federation Development Vector Ledger",
+  "type": "object"
+}
