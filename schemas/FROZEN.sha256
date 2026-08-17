@@ -1,6 +1,7 @@
 # SHA-256 freeze manifest for ADR 0001 and recursive schemas/contracts/ contracts.
 # Includes the Phase 1 flat namespace and ADR 0006 child namespaces.
 # Regenerate with: python tests/test_schema_freeze.py --update
+51cb0694e80a10c36e1e6a3db58f6c5fc0a7e263c3dcc7ac78290e1fb1785039  development_vector.schema.json
 5e67fd9e81f0b8d87d63491578c6013c0255ec05fc377b54c038392a3d9c2eb5  execution_receipt.schema.json
 940f5b32aaf9c380223b9968adb5dfc9ec5ddf0d7bd777cc0304d5522f934cbe  federation_alert.schema.json
 a24c371ae2b49d322f655cc7e96b13df5acb66f0d349bee7b8023b9f2bf15db8  federation_entity.schema.json
