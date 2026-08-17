@@ -81,24 +81,20 @@ def test_cent_s_active_draft_is_bound_without_inventing_vector_identity():
     assert cent["invariants"]["candidate_status"] == "diverged"
 
 
-def test_first_real_domain_ready_vector_is_exact_certified_ovnis_lineage():
+def test_first_real_domain_vector_is_frozen_as_merged_main_pass():
     ledger = _ledger()
     by_id = {row["vector_id"]: row for row in ledger["vectors"]}
     ovnis = by_id["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"]
-    assert ovnis["declared_status"] == "READY"
+    assert ovnis["declared_status"] == "PASS"
+    assert ovnis["certification"] == "PASS"
     assert ovnis["execution"]["mutation"] == "branch_only"
-    assert len(ovnis["execution"]["commands"]) == 1
-    command = ovnis["execution"]["commands"][0]
-    assert "f5cf496095f00869d27312d15ea9bfe9d3eb5941" in command
-    assert "git status --porcelain" in command
-    assert "jotaele44/ovnis-pr" in command
+    assert ovnis["execution"]["commands"] == []
     assert ovnis["invariants"]["native_exact_head_certification"] == "PASS"
-    assert ovnis["invariants"]["verification_command_idempotent"] is True
+    assert ovnis["invariants"]["merged_pull_request"] == 77
+    assert ovnis["invariants"]["merged_main_sha"] == "d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1"
+    assert ovnis["invariants"]["development_head_sha"] == "f5cf496095f00869d27312d15ea9bfe9d3eb5941"
     assert ovnis["invariants"]["canonical_master_mutation_by_verification_command"] is False
-    assert (
-        ovnis["invariants"]["mutation_envelope_semantics"]
-        == "branch_only_schema_value_with_read_only_verification_command"
-    )
+    assert ovnis["invariants"]["negative_certification_history_preserved"] is True
 
 
 def test_same_github_issue_cannot_bind_to_two_canonical_vectors():
@@ -126,7 +122,7 @@ def test_dependency_cycle_fails_closed():
         validate_ledger(bad)
 
 
-def test_stale_sha_blocks_previously_ready_vector():
+def test_stale_sha_blocks_completed_ovnis_vector():
     ledger = _ledger()
     snapshot = _exact_snapshot(ledger)
     for row in snapshot["repositories"]:
@@ -144,30 +140,25 @@ def test_stale_sha_blocks_previously_ready_vector():
     assert "stale_or_unverified_sha" in ovnis["blockers"]
 
 
-def test_exact_snapshot_dry_run_exposes_only_certified_ovnis_ready_vector():
+def test_exact_snapshot_dry_run_reuses_merged_ovnis_pass_without_reexecution():
     ledger = _ledger()
     rec = reconcile(ledger, _exact_snapshot(ledger))
     result = run_max(ledger, rec, Path("/nonexistent"), apply=False)
 
-    assert result["bounded_exhausted"] is False
-    assert result["ready_residue"] == ["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"]
+    assert result["bounded_exhausted"] is True
+    assert result["ready_residue"] == []
     assert result["completed"] == []
     assert result["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
-    assert result["final_status"]["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"] == "READY"
+    assert result["final_status"]["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"] == "PASS"
     assert result["passes"]
-    rows = [row for pass_row in result["passes"] for row in pass_row["results"]]
-    assert len(rows) == 1
-    assert rows[0]["vector_id"] == "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"
-    assert rows[0]["status"] == "READY"
-    assert rows[0]["executed"] is False
-    assert rows[0]["reason"] == "dry_run"
+    assert all(not pass_row["results"] for pass_row in result["passes"])
     assert result["final_status"]["BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT"] == "BLOCKED"
     assert result["final_status"]["PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE"] == "BLOCKED"
     assert result["final_status"]["DISCOVER_CENTINELAS_ACTIVE_VECTOR"] == "OPEN"
     assert result["final_status"]["VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT"] == "OPEN"
 
 
-def test_repository_status_arithmetic_closes_at_seven_pre_execution():
+def test_repository_status_arithmetic_closes_at_seven_with_merged_ovnis_pass():
     ledger = _ledger()
     rec = reconcile(ledger, _exact_snapshot(ledger))
     status = repository_statuses(ledger, rec)
@@ -178,8 +169,8 @@ def test_repository_status_arithmetic_closes_at_seven_pre_execution():
         "BLOCKED": 2,
         "FAIL": 0,
         "OPEN": 4,
-        "PASS": 0,
-        "READY": 1,
+        "PASS": 1,
+        "READY": 0,
         "UNRESOLVED": 0,
     }
 
