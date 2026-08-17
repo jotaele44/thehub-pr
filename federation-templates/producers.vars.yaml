@@ -32,7 +32,7 @@ producers:
     program_id: aguayluz-pr
     repo_url: https://github.com/jotaele44/aguayluz-pr
     lock_cmd: "uv lock --check"
-    desktop_extra_requirements: "\n-e ../thehub-pr/packages/prii_export_utils\njsonschema>=4.21.0\nPyYAML>=6.0"
+    desktop_extra_requirements: "\nprii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@f2b81769924689b4d959554928810b1d7b7ef3d6#subdirectory=packages/prii_export_utils\njsonschema>=4.21.0\nPyYAML>=6.0"
     program_desc: the Puerto Rico water, power and utility infrastructure intelligence producer
   centinelas-pr:
     app_slug: CENTINELAS
