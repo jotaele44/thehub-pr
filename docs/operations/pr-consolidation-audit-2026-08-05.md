@@ -165,6 +165,8 @@ Initial remote inspection on 2026-08-05 found only `thehub-pr` cloned locally un
 
 Dependency cleanup continues one PR at a time. Treat `SKIPPED,SUCCESS` dependency check sets as requiring manual review before merge, not as all-success. Current low-risk remaining candidates are green, mergeable Dependabot PRs with narrow action or package bumps; mixed `FAILURE,SUCCESS` dependency PRs require local reproduction or closure rationale before any merge.
 
+2026-08-17 bounded MAX gate repair: `registry/development_vectors.yaml` snapshot refreshed to current default-branch heads after TheHub PR #162 check run `32059782335` failed on `stale_or_unverified_sha`. FACT: REST default-branch bindings at `2026-08-17T19:25:04Z` were `aguayluz-pr` `e9a1736e7dec882ab7e5e67dbcb52de40e655262`, `moneysweep-pr` `dc234ed46ac71302e8fcc675df70bc23bbdc3e63`, and `thehub-pr` `9ab7dc4883436a990baf888bf059c844ddfd89fe`; the other four frozen repository SHAs already matched. INFERENCE: this is a snapshot freshness repair only; it does not certify any OPEN or BLOCKED downstream vector as complete.
+
 ### Producer Dependency Queue
 
 | Repository | PR | State | Checks | Branch | Title |
