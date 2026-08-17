@@ -14,11 +14,11 @@ jobs:
       - name: Checkout control plane
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Checkout exact certified OVNIS development head
+      - name: Checkout exact merged OVNIS main
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/ovnis-pr
-          ref: f5cf496095f00869d27312d15ea9bfe9d3eb5941
+          ref: d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1
           path: .fed/checkouts/ovnis-pr
           persist-credentials: false
 
@@ -28,10 +28,8 @@ jobs:
           python-version: "3.11"
           cache: pip
 
-      - name: Install control plane and bounded OVNIS verification dependencies
-        run: |
-          python -m pip install -e .
-          python -m pip install -r .fed/checkouts/ovnis-pr/requirements.txt
+      - name: Install control plane
+        run: python -m pip install -e .
 
       - name: Execute frozen remote MAX apply pass
         env:
@@ -40,7 +38,7 @@ jobs:
           set -euo pipefail
           fed --root .fed/checkouts max --remote --apply | tee federation-max.json
 
-      - name: Assert first real domain READY execution and bounded exhaustion
+      - name: Assert merged OVNIS PASS reuse and bounded exhaustion
         run: |
           python - <<'PY'
           import json
@@ -54,6 +52,7 @@ jobs:
           assert execution["apply"] is True
           assert execution["bounded_exhausted"] is True
           assert execution["ready_residue"] == []
+          assert execution["completed"] == []
           assert execution["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
           assert execution["final_status"]["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"] == "PASS"
           assert execution["final_status"]["BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT"] == "BLOCKED"
@@ -63,21 +62,15 @@ jobs:
           assert certification["certification"] == "PROVISIONAL"
           assert certification["repository_status_phase"] == "post_execution"
 
-          # The existing control-plane PASS is reused. Exactly one real domain
-          # vector must execute, and it must be the certified OVNIS development lineage.
-          assert "FEDERATION_PICKUP_SYSTEM_LEVEL_3" not in execution["completed"]
-          assert execution["completed"] == ["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"]
+          # Both completed vectors are declared PASS in the frozen ledger.
+          # No domain command may execute during post-merge recertification.
           executed_rows = [
               row
               for pass_row in execution["passes"]
               for row in pass_row["results"]
               if row.get("executed")
           ]
-          assert len(executed_rows) == 1
-          assert executed_rows[0]["vector_id"] == "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"
-          assert executed_rows[0]["status"] == "PASS"
-          assert len(executed_rows[0]["commands"]) == 1
-          assert executed_rows[0]["commands"][0]["exit_code"] == 0
+          assert executed_rows == []
 
           counts = {}
           for status in execution["final_status"].values():
@@ -106,5 +99,5 @@ jobs:
           assert by_repo["jotaele44/ovnis-pr"] == "PASS"
           assert by_repo["jotaele44/skywatcher-pr"] == "BLOCKED"
           assert by_repo["jotaele44/moneysweep-pr"] == "BLOCKED"
-          print("PASS: first real domain READY wave executed exact certified OVNIS development checkout; bounded exhaustion and arithmetic close")
+          print("PASS: merged OVNIS main reused without re-execution; bounded exhaustion and arithmetic close")
           PY
