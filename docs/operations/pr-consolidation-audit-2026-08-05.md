@@ -102,6 +102,7 @@
 - #111 -> `2ebfe953496e9316cbfd8054e30cc26c0ff3cae8`
 - #110 -> `a5631e619926e5e71941f061c7d7688d03b747c0`
 - #109 -> `d91882cfb10bfb7d03d85eda4c4fedc55df0b2d5`
+- #178 -> `0653cd7f4c99a5b4b636885d0f84c30f51f1027b`; stale Dependabot head `130122577aa9f5568c77543faf1b7a345663f53b` was refreshed with current `main` into `a6b245465b44b06e99a8764be4c40427cdc9d918`, then repaired with `3fedaab054332362608a5a006bec7b8b0606e58c` to carry the required federation snapshot freshness update. Local gates passed: clean merge, diff limited to setup-node workflow pins plus snapshot freshness repair, `git diff --check`, focused Python/template tests, `npm ci`, frontend lint, frontend tests, and frontend build. All refreshed checks passed including bounded MAX, Hub CI matrix, desktop-build matrix, federation-design-release verify-and-pack, CodeQL, Semgrep, drift, and gitleaks; the Dependabot head branch was auto-deleted after merge.
 
 ## Producer Dependency Closures Completed In This Pass
 
