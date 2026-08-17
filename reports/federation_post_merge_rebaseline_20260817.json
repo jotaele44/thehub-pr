@@ -1,0 +1,47 @@
+{
+  "schema_version": "federation_post_merge_rebaseline_receipt_v1",
+  "captured_at_utc": "2026-08-17T01:02:00Z",
+  "scope": "bounded_seven_repository_post_merge_main_snapshot",
+  "repositories": [
+    {"repo_id":1261399537,"repo":"jotaele44/skywatcher-pr","main_sha":"c32c68abce2a281fd13d9632687a7cdc10412d0b","classification":"UNCHANGED"},
+    {"repo_id":1257600730,"repo":"jotaele44/aguayluz-pr","main_sha":"1047c9b186017b0fdb715d81af843ddf17c45735","classification":"UNCHANGED"},
+    {"repo_id":1111911635,"repo":"jotaele44/spiderweb-pr","main_sha":"79c4ca685313cc9a2b36c61997257e0f75770125","classification":"UNCHANGED"},
+    {"repo_id":1197338153,"repo":"jotaele44/moneysweep-pr","main_sha":"35b74b9b81293c5bc68d8ba2c82f34c0c5878f5d","classification":"UNCHANGED"},
+    {"repo_id":1284431262,"repo":"jotaele44/centinelas-pr","main_sha":"6f1b53a5c21049641a558b56cbcbea6dabdf58ce","classification":"UNCHANGED"},
+    {"repo_id":1252871400,"repo":"jotaele44/ovnis-pr","main_sha":"d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1","classification":"AUTHORIZED_MERGE_PR_77"},
+    {"repo_id":1258897469,"repo":"jotaele44/thehub-pr","main_sha":"9ab7dc4883436a990baf888bf059c844ddfd89fe","classification":"AUTHORIZED_MERGE_PR_182"}
+  ],
+  "merge_lineage": {
+    "ovnis_pr": 77,
+    "ovnis_merge_sha": "d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1",
+    "thehub_pr": 182,
+    "thehub_merge_sha": "9ab7dc4883436a990baf888bf059c844ddfd89fe"
+  },
+  "vector_status": {
+    "PASS": 2,
+    "OPEN": 4,
+    "BLOCKED": 2,
+    "READY": 0,
+    "FAIL": 0,
+    "UNRESOLVED": 0,
+    "total": 8
+  },
+  "repository_status": {
+    "PASS": 1,
+    "OPEN": 4,
+    "BLOCKED": 2,
+    "READY": 0,
+    "FAIL": 0,
+    "UNRESOLVED": 0,
+    "total": 7
+  },
+  "invariants": {
+    "ovnis_completed_vector_reexecution_prohibited": true,
+    "all_non_authorized_main_heads_unchanged": true,
+    "no_force_push": true,
+    "no_destructive_branch_cleanup": true,
+    "no_production_data_promotion": true,
+    "universal_exhaustion_claimed": false
+  },
+  "status": "PROVISIONAL"
+}
