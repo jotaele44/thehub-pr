@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-17T00:52:00Z"
+  captured_at_utc: "2026-08-17T20:36:17Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
@@ -12,7 +12,7 @@ snapshot:
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: 1047c9b186017b0fdb715d81af843ddf17c45735
+      expected_sha: e9a1736e7dec882ab7e5e67dbcb52de40e655262
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
@@ -20,7 +20,7 @@ snapshot:
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: 35b74b9b81293c5bc68d8ba2c82f34c0c5878f5d
+      expected_sha: dc234ed46ac71302e8fcc675df70bc23bbdc3e63
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
@@ -32,7 +32,7 @@ snapshot:
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: cca6d40d64282a4e6c8cc66da477ba05c0f93851
+      expected_sha: 2c84e74ca4934bd0fb4fb430c6ec784751dad5fb
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
