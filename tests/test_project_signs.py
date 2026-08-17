@@ -159,4 +159,86 @@ def test_cli_project_signs(tmp_path, capsys):
 def test_cli_project_signs_empty_dir_returns_nonzero(tmp_path, capsys):
     rc = main(["project-signs", "--in", str(tmp_path), "--out", str(tmp_path / "signs")])
     assert rc == 1
-    assert "no funding awards" in capsys.readouterr().out
+    assert "no project entities or funding awards" in capsys.readouterr().out
+
+
+# ── project entities as signs (PPP concessions) ──────────────────────────────
+
+PPP_PROJECT = "ent_bbbbbbbbbbbbbbbbbbbbbbbbbbbb0001"
+OBS_1 = "obs_" + "1" * 32
+
+
+def _ppp_aggregate(tmp_path, *, location=None, observations=None) -> Path:
+    """An aggregate shaped like moneysweep-pr's: a project entity, no awards."""
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    project = _entity(PPP_PROJECT, "Luis Munoz Marin Airport", "project", synthetic=False)
+    if location is not None:
+        project["location"] = location
+    _write_jsonl(tmp_path / "entities.jsonl", [project])
+    if observations:
+        _write_jsonl(tmp_path / "observations.jsonl", observations)
+    return tmp_path
+
+
+def _observation(target, location, confidence):
+    return {
+        "observation_id": OBS_1, "source_id": SRC, "entity_id": target,
+        "observation_type": "ppp_asset_location", "observed_at": _TS,
+        "location": location, "attributes": {"producer_entity_id": target},
+        "confidence": confidence, "lineage": _LINEAGE, "synthetic": False,
+        "created_at": _TS, "extracted_at": _TS,
+    }
+
+
+def test_project_entity_without_awards_still_gets_a_sign(tmp_path):
+    """A PPP concession arrives as an entity, never as an award.
+
+    Before this, such a project could not produce a sign no matter how complete
+    its data was.
+    """
+    agg = _ppp_aggregate(tmp_path, location={"municipality": "Carolina"})
+    signs = build_project_signs(agg)
+    assert len(signs) == 1
+    assert signs[0]["title"] == "Luis Munoz Marin Airport"
+    assert signs[0]["location"] == "Carolina"
+    assert signs[0]["contributions"] == []
+    assert signs[0]["total_amount"] == 0.0
+
+
+def test_project_entity_with_no_location_still_gets_a_sign(tmp_path):
+    """Island-wide concessions federate no location; they are still projects."""
+    agg = _ppp_aggregate(tmp_path)
+    signs = build_project_signs(agg)
+    assert len(signs) == 1
+    assert signs[0]["location"] == ""
+
+
+def test_resolved_geometry_outranks_the_producer_municipality(tmp_path):
+    """A spatial producer's surveyed point wins over an administrative record."""
+    agg = _ppp_aggregate(
+        tmp_path,
+        location={"municipality": "San Juan"},
+        observations=[_observation(
+            PPP_PROJECT, {"lat": 18.4394, "lon": -66.0018, "municipality": "Carolina"}, 0.95
+        )],
+    )
+    signs = build_project_signs(agg)
+    assert signs[0]["location"] == "Carolina"
+
+
+def test_highest_confidence_observation_wins(tmp_path):
+    low = _observation(PPP_PROJECT, {"lat": 18.0, "lon": -66.0, "municipality": "Ponce"}, 0.4)
+    high = dict(_observation(
+        PPP_PROJECT, {"lat": 18.4394, "lon": -66.0018, "municipality": "Carolina"}, 0.95
+    ), observation_id="obs_" + "2" * 32)
+    agg = _ppp_aggregate(tmp_path, location={"municipality": "San Juan"},
+                         observations=[low, high])
+    assert build_project_signs(agg)[0]["location"] == "Carolina"
+
+
+def test_project_that_is_an_award_recipient_is_not_duplicated(tmp_path):
+    """The award group already covers it; a second sign would double it."""
+    agg = _build_aggregate(tmp_path / "agg")
+    signs = build_project_signs(agg)
+    assert len(signs) == 1
+    assert len(signs[0]["contributions"]) == 2

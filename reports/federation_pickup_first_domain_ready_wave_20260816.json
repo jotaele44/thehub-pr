@@ -1,0 +1,245 @@
+{
+  "schema_version": "federation_pickup_first_domain_ready_wave_receipt_v1",
+  "generated_at_utc": "2026-08-16T22:28:16Z",
+  "certification": "PROVISIONAL",
+  "scope": "frozen seven-repository main snapshot plus exact certified OVNIS development lineage",
+  "bounded_exhaustion": true,
+  "universal_exhaustion_claimed": false,
+  "result": "FIRST_REAL_DOMAIN_READY_VECTOR_EXECUTED_AND_PASSED",
+  "control_plane": {
+    "repository": "jotaele44/thehub-pr",
+    "repository_id": 1258897469,
+    "base_branch": "main",
+    "base_sha": "cca6d40d64282a4e6c8cc66da477ba05c0f93851",
+    "implementation_branch": "gpt/federation-pickup-engine",
+    "ci_certified_execution_head": "881d5206dc98a02dd4fd7b3d75ae2d497532de3b",
+    "draft_pull_request": 182,
+    "merge_authorized": false
+  },
+  "frozen_main_snapshot": {
+    "captured_at_utc": "2026-08-16T22:28:10Z",
+    "sha256": "2a41fcba272b4625c1b47064d143e4e65234f53daf4c8395840963d6e6d2004b",
+    "transport": "gh_api",
+    "repositories": [
+      {"repository":"jotaele44/skywatcher-pr","repository_id":1261399537,"expected_main_sha":"c32c68abce2a281fd13d9632687a7cdc10412d0b","observed_main_sha":"c32c68abce2a281fd13d9632687a7cdc10412d0b","sha_match":true},
+      {"repository":"jotaele44/aguayluz-pr","repository_id":1257600730,"expected_main_sha":"1047c9b186017b0fdb715d81af843ddf17c45735","observed_main_sha":"1047c9b186017b0fdb715d81af843ddf17c45735","sha_match":true},
+      {"repository":"jotaele44/spiderweb-pr","repository_id":1111911635,"expected_main_sha":"79c4ca685313cc9a2b36c61997257e0f75770125","observed_main_sha":"79c4ca685313cc9a2b36c61997257e0f75770125","sha_match":true},
+      {"repository":"jotaele44/moneysweep-pr","repository_id":1197338153,"expected_main_sha":"35b74b9b81293c5bc68d8ba2c82f34c0c5878f5d","observed_main_sha":"35b74b9b81293c5bc68d8ba2c82f34c0c5878f5d","sha_match":true},
+      {"repository":"jotaele44/centinelas-pr","repository_id":1284431262,"expected_main_sha":"6f1b53a5c21049641a558b56cbcbea6dabdf58ce","observed_main_sha":"6f1b53a5c21049641a558b56cbcbea6dabdf58ce","sha_match":true},
+      {"repository":"jotaele44/ovnis-pr","repository_id":1252871400,"expected_main_sha":"f12d695ebf3858945cc0b20c38057724fbe98cc0","observed_main_sha":"f12d695ebf3858945cc0b20c38057724fbe98cc0","sha_match":true},
+      {"repository":"jotaele44/thehub-pr","repository_id":1258897469,"expected_main_sha":"cca6d40d64282a4e6c8cc66da477ba05c0f93851","observed_main_sha":"cca6d40d64282a4e6c8cc66da477ba05c0f93851","sha_match":true}
+    ]
+  },
+  "snapshot_drift_history": [
+    {
+      "repository": "jotaele44/aguayluz-pr",
+      "prior_receipt_main_sha": "54e19a3e90f2d69410f810d6ea76775dec30bb05",
+      "new_main_sha": "1047c9b186017b0fdb715d81af843ddf17c45735",
+      "classification": "SUPERSEDED_PRIOR_SNAPSHOT_REQUIRES_DELiberate_REFREEZE",
+      "reason": "scheduled main refresh advanced during this wave"
+    },
+    {
+      "repository": "jotaele44/spiderweb-pr",
+      "prior_receipt_main_sha": "f985471e6bf4b556e3592757117b432dca44e780",
+      "new_main_sha": "79c4ca685313cc9a2b36c61997257e0f75770125",
+      "classification": "SUPERSEDED_PRIOR_SNAPSHOT_REQUIRES_DELiberate_REFREEZE",
+      "reason": "merged PR #282 advanced main during this wave"
+    }
+  ],
+  "domain_implementation": {
+    "repository": "jotaele44/ovnis-pr",
+    "repository_id": 1252871400,
+    "vector_id": "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE",
+    "development_pull_request": 77,
+    "development_branch": "gpt/prufon-case-pipeline-v0-1",
+    "development_head_sha": "f5cf496095f00869d27312d15ea9bfe9d3eb5941",
+    "development_base_main_sha": "f12d695ebf3858945cc0b20c38057724fbe98cc0",
+    "pull_request_state": "OPEN_DRAFT_UNMERGED",
+    "implementation": [
+      "canonical public schemas/case_record.schema.json",
+      "canonical public schemas/source_record.schema.json",
+      "deterministic staging-only CSV/Markdown/XLSX legacy adapter",
+      "exact/partial/bounded/explicit-unknown date semantics",
+      "explicit unknown-location semantics without coordinate inference",
+      "date/location/source/identity/narrative contradiction fields",
+      "source tier and original-title provenance preservation",
+      "confidence and review-state contract coverage",
+      "backward-compatibility and no-fabrication regression tests"
+    ],
+    "safety_invariants": {
+      "canonical_master_mutation_by_adapter": false,
+      "automatic_promotion": false,
+      "credential_required": false,
+      "external_network_acquisition_required": false,
+      "deterministic_generated_ids": true,
+      "anti_generic_location_invariant_preserved": true
+    }
+  },
+  "domain_negative_certification_history": [
+    {
+      "head_sha": "2d075a7b46545c8329bef47fb7e16076153d8453",
+      "classification": "SUPERSEDED_NOT_CERTIFIED",
+      "failure": "semantic regression allowed generic Puerto Rico location label where existing anti-generic gate required rejection"
+    },
+    {
+      "head_sha": "48a4332ddc34e7adc298eb3a4da5ce8d82c25592",
+      "classification": "SUPERSEDED_NOT_CERTIFIED",
+      "failure": "Ruff UP035 lint failure for Iterable import source"
+    }
+  ],
+  "domain_native_exact_head_certification": {
+    "head_sha": "f5cf496095f00869d27312d15ea9bfe9d3eb5941",
+    "all_listed_workflows_completed_success": true,
+    "workflows": [
+      {"name":"OVNIS CI","run_id":31976022056,"conclusion":"SUCCESS"},
+      {"name":"validate","run_id":31976022092,"conclusion":"SUCCESS"},
+      {"name":"CodeQL","run_id":31976022086,"conclusion":"SUCCESS"},
+      {"name":"Federation Semgrep","run_id":31976022506,"conclusion":"SUCCESS"},
+      {"name":"Secret scan","run_id":31976022059,"conclusion":"SUCCESS"},
+      {"name":"Federation template drift","run_id":31976022097,"conclusion":"SUCCESS"}
+    ]
+  },
+  "ready_promotion": {
+    "vector_id": "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE",
+    "from": "OPEN",
+    "to_pre_execution": "READY",
+    "to_post_execution": "PASS",
+    "certification": "PROVISIONAL_DEVELOPMENT_LINEAGE_ONLY",
+    "gates": {
+      "stable_repository_identity": "PASS",
+      "exact_main_sha": "PASS",
+      "dependencies": "PASS",
+      "native_exact_development_head_ci": "PASS",
+      "explicit_command_binding": "PASS",
+      "idempotency": "PASS",
+      "clean_checkout_gate": "PASS",
+      "exact_development_head_gate": "PASS",
+      "origin_identity_gate": "PASS"
+    },
+    "not_claimed": [
+      "OVNIS main contains the implementation",
+      "OVNIS PR #77 is merged",
+      "issues #4 or #5 are closed",
+      "production data is promoted",
+      "universal federation exhaustion"
+    ]
+  },
+  "live_execution": {
+    "workflow": "Federation pickup bounded MAX",
+    "workflow_run_id": 31976405990,
+    "job_id": 95236473484,
+    "outcome": "SUCCESS",
+    "executed_at_utc": "2026-08-16T22:28:16Z",
+    "apply": true,
+    "ledger_sha256": "5cb1b2c76019670ab1dc8fe511df423cb13cc0e6fedfcab4b7bffa871db8f780",
+    "snapshot_sha256": "2a41fcba272b4625c1b47064d143e4e65234f53daf4c8395840963d6e6d2004b",
+    "plan_sha256": "547230e021f378c24c0fe0d0bba2a136368437e1a4dafbfd490da9836e994e4c",
+    "reconciliation_sha256": "22f14d273ca868ab91f2f952e83ac128566955e7f02c156b121b89367173f803",
+    "execution_sha256": "6928f142efc7251e9e40e5e68ce89b4fc6ab910f8bdbf24e94cbcb962a43c624",
+    "first_pass_sha256": "a7cd6708c1b1d318cada59846d545579499cf0a98115e49a9b487cd668cf71cb",
+    "terminal_pass_sha256": "5d435d82cedcf7b9f5c511ee04fcdfd9ab79625f2fc7a651ea3d634cb89fe63b",
+    "ephemeral_receipt_path": ".fed/runs/20260816T222816Z_d15afbd636ec.json",
+    "completed_vectors_this_run": ["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"],
+    "prior_pass_reused": ["FEDERATION_PICKUP_SYSTEM_LEVEL_3"],
+    "executed_domain_vector_count": 1,
+    "ready_residue": [],
+    "command": {
+      "vector_id": "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE",
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "a3e674de8cb9eff87f77b151931486c6d8c57c3fb6bcfd64735d8f3973e61a32",
+      "checks": [
+        "exact local OVNIS HEAD equals f5cf496095f00869d27312d15ea9bfe9d3eb5941",
+        "OVNIS worktree is clean",
+        "OVNIS origin equals https://github.com/jotaele44/ovnis-pr",
+        "focused pipeline regression tests pass",
+        "canonical master ledger validates against public case schema"
+      ]
+    }
+  },
+  "vector_universe_post_execution": {
+    "count": 8,
+    "arithmetic": "PASS=2 + OPEN=4 + BLOCKED=2 + READY=0 + FAIL=0 + UNRESOLVED=0 = 8",
+    "statuses": {
+      "FEDERATION_PICKUP_SYSTEM_LEVEL_3": "PASS",
+      "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE": "PASS",
+      "FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT": "OPEN",
+      "BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT": "BLOCKED",
+      "VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT": "OPEN",
+      "FERROCARRIL_ILAP_CANONICALIZATION": "OPEN",
+      "PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE": "BLOCKED",
+      "DISCOVER_CENTINELAS_ACTIVE_VECTOR": "OPEN"
+    }
+  },
+  "repository_rollup_post_execution": {
+    "count": 7,
+    "arithmetic": "PASS=1 + OPEN=4 + BLOCKED=2 + READY=0 + FAIL=0 + UNRESOLVED=0 = 7",
+    "statuses": {
+      "jotaele44/ovnis-pr": "PASS",
+      "jotaele44/thehub-pr": "OPEN",
+      "jotaele44/aguayluz-pr": "OPEN",
+      "jotaele44/spiderweb-pr": "OPEN",
+      "jotaele44/centinelas-pr": "OPEN",
+      "jotaele44/skywatcher-pr": "BLOCKED",
+      "jotaele44/moneysweep-pr": "BLOCKED"
+    }
+  },
+  "residue": {
+    "open": {
+      "FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT": ["seven_repository_frontend_rollout_requires_repo_specific_implementation_and_visual_acceptance"],
+      "VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT": ["recurring_source_and_outage_snapshot_validation_not_safely_executable_from_control_plane","unchecked_schema_source_registry_export_and_taxonomy_implementation_work"],
+      "FERROCARRIL_ILAP_CANONICALIZATION": ["row_level_provenance_and_geometry_adjudication_required"],
+      "DISCOVER_CENTINELAS_ACTIVE_VECTOR": ["authoritative_active_draft_found_but_no_explicit_canonical_vector_id","candidate_branch_diverged_11_ahead_34_behind_main","production_activation_requires_authentication_private_persistence_and_authorization"]
+    },
+    "blocked": {
+      "BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT": ["real_flightradar24_capture_required","operator_tenant_attribution_requires_review","local_uncommitted_faa_registry_and_ocr_event_inputs_required_for_registry_validation"],
+      "PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE": ["required_source_bytes_missing_cor3_hud_drgr_authorized_pr_cabilderos_prasa","entity_product_comparison_pending_operator_corpus_execution","freshness_and_external_universe_completeness_not_certified","production_export_and_downstream_federation_validation_open","some_remaining_sources_require_authorized_exports_network_or_credentials"]
+    },
+    "ready": [],
+    "unresolved": []
+  },
+  "control_plane_negative_certification_history": [
+    {
+      "head_sha": "40e1ec64fe6170904c5330146084994c36ab53a7",
+      "classification": "DOMAIN_APPLY_SUCCESS_BUT_NOT_CI_CERTIFIED",
+      "domain_apply_run_id": 31976234672,
+      "hub_ci_run_id": 31976234667,
+      "failure": "development-vector JSON Schema rejected unrecognized mutation enum verification_only"
+    }
+  ],
+  "control_plane_exact_head_certification": {
+    "head_sha": "881d5206dc98a02dd4fd7b3d75ae2d497532de3b",
+    "all_listed_workflows_completed_success": true,
+    "workflows": [
+      {"name":"Hub CI","run_id":31976405989,"conclusion":"SUCCESS"},
+      {"name":"Federation pickup bounded MAX","run_id":31976405990,"conclusion":"SUCCESS"},
+      {"name":"CodeQL","run_id":31976405996,"conclusion":"SUCCESS"},
+      {"name":"Federation Semgrep","run_id":31976405987,"conclusion":"SUCCESS"},
+      {"name":"Secret scan","run_id":31976406006,"conclusion":"SUCCESS"},
+      {"name":"pip-audit","run_id":31976406007,"conclusion":"SUCCESS"},
+      {"name":"Federation template drift","run_id":31976406013,"conclusion":"SUCCESS"}
+    ],
+    "token_gated_subjob_note": "Existing audit-claims-federation subjob remained skipped by its established token gate and is not represented as executed."
+  },
+  "prohibitions_preserved": [
+    "NO_MERGE",
+    "NO_AUTO_MERGE",
+    "NO_FORCE_PUSH",
+    "NO_DESTRUCTIVE_BRANCH_CLEANUP",
+    "NO_REMOTE_BRANCH_DELETE",
+    "NO_CREDENTIAL_DISCLOSURE",
+    "NO_OPERATOR_DATA_GATE_BYPASS",
+    "NO_PRODUCTION_DATA_PROMOTION_FROM_ISSUE_STATE",
+    "NO_VECTOR_ID_INVENTED_FROM_BRANCH_OR_PR_TITLE",
+    "NO_VECTOR_EXECUTION_SYNTHESIZED_FROM_ISSUE_PROSE"
+  ],
+  "resume_contract": {
+    "historical_execution_anchor": "881d5206dc98a02dd4fd7b3d75ae2d497532de3b",
+    "entrypoint": "fed pickup --remote",
+    "apply_entrypoint": "fed max --remote --apply",
+    "drift_rule": "Any producer main SHA drift invalidates this execution snapshot and requires deliberate ledger refresh before another apply.",
+    "domain_pass_rule": "Treat the OVNIS development-lineage PASS in this receipt as immutable execution evidence; do not infer that main or production is updated while PR #77 remains unmerged.",
+    "operator_rule": "Skywatcher and MoneySweep remain blocked wherever real-data, private-corpus, authorized-export, credential, or operator-review prerequisites remain unsatisfied.",
+    "next_ready_rule": "Promote another vector only after stable identity, exact relevant SHA, dependencies, implementation completeness, native CI, explicit safe command binding, idempotency, and postcondition gates all pass."
+  }
+}
