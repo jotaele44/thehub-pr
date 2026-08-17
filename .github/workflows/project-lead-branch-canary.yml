@@ -8,6 +8,13 @@ on:
       - .github/workflows/project-lead-branch-canary.yml
       - src/hub/project_leads.py
       - schemas/project_banner.v1.schema.json
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/project_lead_branch_canary.py
+      - .github/workflows/project-lead-branch-canary.yml
+      - src/hub/project_leads.py
+      - schemas/project_banner.v1.schema.json
   workflow_dispatch:
 
 permissions:
