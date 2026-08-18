@@ -68,6 +68,19 @@ jobs:
           python -m pip install --no-deps -e repos/centinelas-pr
           python -m pip install pydantic pandas pyyaml requests
 
+      - name: Seed isolated SpiderWeb federation package
+        run: |
+          mkdir -p repos/spiderweb-pr/exports/federation
+          cat > repos/spiderweb-pr/exports/federation/manifest.json <<'JSON'
+          {
+            "schema_version": "branch_canary_seed/v1",
+            "producer": "spiderweb-pr",
+            "mode": "test",
+            "package_id": "pkg_branch_canary_seed",
+            "files": []
+          }
+          JSON
+
       - name: Execute branch-isolated Los Rosales and control canary
         run: |
           python repos/thehub-pr/scripts/project_lead_branch_canary.py \
