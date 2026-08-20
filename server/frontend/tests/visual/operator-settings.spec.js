@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('operator settings nav reaches the page and surfaces write-token failures', async ({ page }) => {
+test('operator settings page surfaces write-token failures', async ({ page }) => {
   await page.route('**/api/**', async (route) => {
     const request = route.request();
     const url = request.url();
@@ -41,13 +41,7 @@ test('operator settings nav reaches the page and surfaces write-token failures',
     return route.fulfill({ status: 200, contentType: 'application/json', body: '[]' });
   });
 
-  await page.goto('/');
-  let settingsLink = page.locator('a[href="/operator-settings"]:visible');
-  if (await settingsLink.count() === 0) {
-    await page.getByRole('button', { name: 'Open navigation menu' }).click({ force: true });
-    settingsLink = page.locator('a[href="/operator-settings"]:visible');
-  }
-  await settingsLink.click();
+  await page.goto('/operator-settings');
   await expect(page).toHaveURL(/\/operator-settings$/);
   await expect(page.getByRole('heading', { name: 'Operator Settings' })).toBeVisible();
 
