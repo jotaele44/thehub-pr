@@ -46,6 +46,7 @@ const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
 const AppCenter = lazy(() => import('@/pages/AppCenter'));
 const Operations = lazy(() => import('@/pages/Operations'));
+const OperatorSettings = lazy(() => import('@/pages/OperatorSettings'));
 
 const AppRoutes = () => {
   const { isLoadingPublicSettings, appPublicSettings } = useAuth();
@@ -105,6 +106,7 @@ const AppRoutes = () => {
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/gates" element={<Gates />} />
             <Route path="/integrations" element={<Integrations />} />
+            <Route path="/operator-settings" element={<OperatorSettings />} />
             <Route path="/exports" element={<ExportsPage />} />
             <Route path="/readiness" element={<ModuleReadiness />} />
             <Route path="/transition" element={<TransitionAudit />} />
