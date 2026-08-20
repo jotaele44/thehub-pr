@@ -1,0 +1,60 @@
+{
+  "schema": "federation_pickup_snapshot_refreeze/v1",
+  "scope": "FEDERATION_PICKUP_SYSTEM_LEVEL_3_snapshot_only",
+  "branch": "chore/refresh-federation-pickup-snapshot-20260817",
+  "production_semantics_changed": false,
+  "project_lead_evidence_used": false,
+  "project_lead_prs_mutated": false,
+  "superseded_manifestations_preserved": [
+    {
+      "captured_at_utc": "2026-08-17T21:23:26Z",
+      "classification": "SUPERSEDED_NOT_DELETED",
+      "thehub_expected_sha": "55ff3a2ad763ca5f550cc698617ff2e268c4b672"
+    },
+    {
+      "captured_at_utc": "2026-08-18T01:57:21Z",
+      "classification": "SUPERSEDED_NOT_DELETED",
+      "source_receipt": "reports/federation_pickup_snapshot_refresh_20260818.json",
+      "thehub_expected_sha": "94d2c0d53f2d99e8b5c248e3279921c4964a59f5"
+    }
+  ],
+  "refreeze_snapshot": {
+    "captured_at_utc": "2026-08-20T20:40:00Z",
+    "repository_count": 7,
+    "double_read_consistency": "PASS",
+    "read_1_equals_read_2_count": 7,
+    "repositories": {
+      "jotaele44/skywatcher-pr": "cbff564033831344567134be22b480c4c35c4698",
+      "jotaele44/aguayluz-pr": "4045abe148c1ab1ac245b48ac42fb27a2c28dba7",
+      "jotaele44/spiderweb-pr": "e15133faafef4a6fe0472521453379c81f1a522e",
+      "jotaele44/moneysweep-pr": "315520119c47b0f271f19531d53de8454d99f41a",
+      "jotaele44/centinelas-pr": "a474bc65e1cb7f1a5f631f18873e494938c5461f",
+      "jotaele44/ovnis-pr": "cd70d63036f5b6b9fb3976582528cb25ea5e36c3",
+      "jotaele44/thehub-pr": "4611327f5f1503fafd7ae2a03edffdb636cedc27"
+    }
+  },
+  "delta_from_2026_08_18_snapshot": {
+    "changed_repository_count": 7,
+    "unchanged_repository_count": 0,
+    "changed_repositories": [
+      "jotaele44/skywatcher-pr",
+      "jotaele44/aguayluz-pr",
+      "jotaele44/spiderweb-pr",
+      "jotaele44/moneysweep-pr",
+      "jotaele44/centinelas-pr",
+      "jotaele44/ovnis-pr",
+      "jotaele44/thehub-pr"
+    ]
+  },
+  "volatility_safe_gate_design": {
+    "status": "DESIGN_ONLY",
+    "path": "reports/federation_snapshot_volatility_safe_gate_design_v0_1.md",
+    "production_change": false,
+    "controlling_current_rule": "exact_main_sha_snapshot"
+  },
+  "required_rerun": "Federation pickup bounded MAX",
+  "required_remote_match": "7/7",
+  "merge_ready_before_rerun": false,
+  "merge": "NOT_EXECUTED",
+  "production_promotion": "NOT_EXECUTED"
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "federation_pickup_snapshot_refresh/v1",
+  "scope": "FEDERATION_PICKUP_SYSTEM_LEVEL_3_snapshot_only",
+  "branch": "chore/refresh-federation-pickup-snapshot-20260817",
+  "project_lead_evidence_used": false,
+  "project_lead_prs_mutated": false,
+  "excluded_project_lead_prs": [
+    "jotaele44/centinelas-pr#91",
+    "jotaele44/moneysweep-pr#487",
+    "jotaele44/spiderweb-pr#283",
+    "jotaele44/thehub-pr#186"
+  ],
+  "historical_snapshot": {
+    "classification": "SUPERSEDED_NOT_DELETED",
+    "captured_at_utc": "2026-08-17T21:23:26Z",
+    "source_registry_manifestation_commit": "94d2c0d53f2d99e8b5c248e3279921c4964a59f5",
+    "repositories": {
+      "jotaele44/skywatcher-pr": "c32c68abce2a281fd13d9632687a7cdc10412d0b",
+      "jotaele44/aguayluz-pr": "762e0d50fa6f6416dbbc7cf68f8f556d6fe9497b",
+      "jotaele44/spiderweb-pr": "79c4ca685313cc9a2b36c61997257e0f75770125",
+      "jotaele44/moneysweep-pr": "dc234ed46ac71302e8fcc675df70bc23bbdc3e63",
+      "jotaele44/centinelas-pr": "6f1b53a5c21049641a558b56cbcbea6dabdf58ce",
+      "jotaele44/ovnis-pr": "d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1",
+      "jotaele44/thehub-pr": "55ff3a2ad763ca5f550cc698617ff2e268c4b672"
+    },
+    "supersession_reason": "TheHub main advanced after the frozen snapshot to 94d2c0d53f2d99e8b5c248e3279921c4964a59f5; the exact_main_sha_snapshot gate correctly failed closed."
+  },
+  "refresh_snapshot": {
+    "captured_at_utc": "2026-08-18T01:57:21Z",
+    "repository_count": 7,
+    "double_read_consistency": "PASS",
+    "read_1_equals_read_2_count": 7,
+    "repositories": {
+      "jotaele44/skywatcher-pr": "c32c68abce2a281fd13d9632687a7cdc10412d0b",
+      "jotaele44/aguayluz-pr": "762e0d50fa6f6416dbbc7cf68f8f556d6fe9497b",
+      "jotaele44/spiderweb-pr": "79c4ca685313cc9a2b36c61997257e0f75770125",
+      "jotaele44/moneysweep-pr": "dc234ed46ac71302e8fcc675df70bc23bbdc3e63",
+      "jotaele44/centinelas-pr": "6f1b53a5c21049641a558b56cbcbea6dabdf58ce",
+      "jotaele44/ovnis-pr": "d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1",
+      "jotaele44/thehub-pr": "94d2c0d53f2d99e8b5c248e3279921c4964a59f5"
+    }
+  },
+  "delta": {
+    "changed_repository_count": 1,
+    "changed_repositories": ["jotaele44/thehub-pr"],
+    "unchanged_repository_count": 6,
+    "thehub_old": "55ff3a2ad763ca5f550cc698617ff2e268c4b672",
+    "thehub_new": "94d2c0d53f2d99e8b5c248e3279921c4964a59f5"
+  },
+  "certification_before_rerun": "CANDIDATE",
+  "required_rerun": "Federation pickup bounded MAX",
+  "identity_rule": "project-lead or banner evidence is prohibited from satisfying FEDERATION_PICKUP_SYSTEM_LEVEL_3 gates"
+}
