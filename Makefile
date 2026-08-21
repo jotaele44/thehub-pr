@@ -1,4 +1,4 @@
-.PHONY: setup test list validate-cs aggregate ingest clean lock smoke-fetch federation-status
+.PHONY: setup test list validate-cs aggregate ingest clean lock smoke-fetch federation-status gui-parity-status
 
 PY ?= python3
 
@@ -41,6 +41,14 @@ fixture:
 # exactly why the measurement is committed rather than taken at startup.
 federation-status:
 	$(PY) scripts/build_federation_status.py --root .. --out data
+
+# Regenerate the committed GUI-capability-parity rollup: for each producer
+# checkout in the parent workspace, run its own scripts/check_gui_parity.py
+# (where one exists on its main) and record the real pass/fail numbers. A
+# deployed hub has none of the checkouts and cannot recompute this, same as
+# `federation-status`.
+gui-parity-status:
+	$(PY) scripts/build_gui_parity_status.py --root .. --out data
 
 clean:
 	rm -rf data/aggregate/*.jsonl data/aggregate/graph_summary.json
