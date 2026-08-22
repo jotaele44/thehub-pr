@@ -14,7 +14,7 @@
 | `aguayluz-pr` | PASS | PASS | NOT_DECLARED | PASS (150) | PASS | BLOCKED_ENV | browser backend requirements omitted by first audit runner; harness corrected without changing frozen SHA |
 | `ovnis-pr` | PASS | PASS | PASS | PASS | PASS | NOT_DECLARED | P1 browser-harness gap remains OPEN |
 | `skywatcher-pr` | PASS | PASS | FAIL | NOT_RUN_AFTER_FAIL | NOT_RUN_AFTER_FAIL | NOT_DECLARED | P1 substantive typecheck debt plus browser-harness gap |
-| `centinelas-pr` | PASS | PASS | PASS | PASS | PASS | RUNNING_AT_CAPTURE | no terminal classification until job completes |
+| `centinelas-pr` | PASS | PASS | PASS | PASS | PASS | BLOCKED_ENV | browser backend optional extra omitted by first audit runner; harness corrected without changing frozen SHA |
 
 ## F-001 — Hub declared typecheck contract fails
 
@@ -50,7 +50,15 @@ Agua y Luz passed lint, 150 unit/component tests, included accessibility asserti
 
 The producer's `server/backend/requirements.txt` explicitly declares FastAPI, Uvicorn and jsonschema. The audit runner has been corrected to install that exact file conditionally before browser parity.
 
-## F-005 — browser harness denominator is incomplete
+## F-005 — Centinelas browser parity first-run blocker is audit-environment, not product failure
+
+**Classification:** `BLOCKED / superseded runner defect pending rerun`
+
+Centinelas passed lint, typecheck, unit/component tests and production build. Playwright then failed before exercising the UI because its configured backend command requires `python -m uvicorn` and the first central runner installed only frontend dependencies.
+
+The producer's `pyproject.toml` declares the backend runtime as the `server` optional dependency group, including `uvicorn[standard]`. The audit runner has been corrected to install that exact producer-declared extra before Centinelas browser parity.
+
+## F-006 — browser harness denominator is incomplete
 
 **Classification:** `P1 / OPEN`
 
@@ -58,7 +66,7 @@ Frozen browser/parity harnesses are declared in 4 of 7 GUI repositories: Hub, Mo
 
 Absence of a harness is not proof the GUI is defective. It is proof that federation-wide runtime/browser certification cannot yet close.
 
-## F-006 — package convergence is incomplete
+## F-007 — package convergence is incomplete
 
 **Classification:** `P2 / OPEN`
 

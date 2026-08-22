@@ -96,43 +96,50 @@ jobs:
             ref: 4611327f5f1503fafd7ae2a03edffdb636cedc27
             root: server/frontend
             browser_script: test:visual
-            backend_requirements: ""
+            backend_install: ""
+            backend_cache_dependency: ""
           - repo: jotaele44/moneysweep-pr
             name: moneysweep-pr
             ref: 315520119c47b0f271f19531d53de8454d99f41a
             root: dashboard
             browser_script: test:gui-parity
-            backend_requirements: server/backend/requirements.txt
+            backend_install: python -m pip install -r server/backend/requirements.txt
+            backend_cache_dependency: server/backend/requirements.txt
           - repo: jotaele44/spiderweb-pr
             name: spiderweb-pr
             ref: e15133faafef4a6fe0472521453379c81f1a522e
             root: server/frontend
             browser_script: ""
-            backend_requirements: ""
+            backend_install: ""
+            backend_cache_dependency: ""
           - repo: jotaele44/aguayluz-pr
             name: aguayluz-pr
             ref: e917d1ff1df543930e7bcf25e5b511bdb9191a16
             root: dashboard
             browser_script: test:gui-parity
-            backend_requirements: server/backend/requirements.txt
+            backend_install: python -m pip install -r server/backend/requirements.txt
+            backend_cache_dependency: server/backend/requirements.txt
           - repo: jotaele44/ovnis-pr
             name: ovnis-pr
             ref: f4b47afa44e001df42c14b676793168cde2a38b1
             root: dashboard
             browser_script: ""
-            backend_requirements: ""
+            backend_install: ""
+            backend_cache_dependency: ""
           - repo: jotaele44/skywatcher-pr
             name: skywatcher-pr
             ref: cbff564033831344567134be22b480c4c35c4698
             root: frontend
             browser_script: ""
-            backend_requirements: ""
+            backend_install: ""
+            backend_cache_dependency: ""
           - repo: jotaele44/centinelas-pr
             name: centinelas-pr
             ref: a474bc65e1cb7f1a5f631f18873e494938c5461f
             root: frontend
             browser_script: test:gui-parity
-            backend_requirements: ""
+            backend_install: python -m pip install -e ".[server]"
+            backend_cache_dependency: pyproject.toml
     steps:
       - name: Checkout frozen frontend
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -157,16 +164,16 @@ jobs:
         working-directory: target/${{ matrix.root }}
         run: npm ci --no-audit --no-fund
       - name: Setup Python for browser backend
-        if: matrix.backend_requirements != ''
+        if: matrix.backend_install != ''
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: target/${{ matrix.backend_requirements }}
+          cache-dependency-path: target/${{ matrix.backend_cache_dependency }}
       - name: Install declared browser backend dependencies
-        if: matrix.backend_requirements != ''
+        if: matrix.backend_install != ''
         working-directory: target
-        run: python -m pip install -r "${{ matrix.backend_requirements }}"
+        run: ${{ matrix.backend_install }}
       - name: Lint when declared
         working-directory: target/${{ matrix.root }}
         shell: bash
