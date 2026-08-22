@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.dev/schemas/canon-term-record.schema.json",
+  "title": "PRII Canon Term Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "preferred_label", "definition", "scope", "layer", "owner", "status", "evidence", "examples", "non_examples", "competency_questions"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z][a-z0-9_-]*:[A-Za-z][A-Za-z0-9_-]*$"},
+    "preferred_label": {"type": "string", "minLength": 1},
+    "definition": {"type": "string", "minLength": 20},
+    "scope": {"enum": ["federation", "contract", "repo_local"]},
+    "layer": {"enum": ["governance", "protocol", "evidence", "canonical_record", "domain", "projection"]},
+    "owner": {"type": "string", "minLength": 1},
+    "status": {"enum": ["observed", "candidate", "proposed", "canonical", "deprecated", "retired"]},
+    "parent_ids": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "properties": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "aliases": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "non_equivalent_terms": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "identity_rule": {"type": "string"},
+    "cardinality_constraints": {"type": "array", "items": {"type": "string"}},
+    "unit_or_scale": {"type": ["string", "null"]},
+    "evidence": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["repository", "commit", "path", "tier"],
+        "properties": {
+          "repository": {"type": "string"},
+          "commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+          "path": {"type": "string"},
+          "symbol_or_pointer": {"type": ["string", "null"]},
+          "tier": {"enum": ["T1", "T2", "T3", "T4"]}
+        }
+      }
+    },
+    "examples": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "non_examples": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "competency_questions": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "introduced_in": {"type": ["string", "null"]},
+    "deprecated_in": {"type": ["string", "null"]},
+    "replaced_by": {"type": ["string", "null"]},
+    "compatibility_notes": {"type": "string"}
+  }
+}
