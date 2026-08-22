@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-22T22:28:21Z"
+  captured_at_utc: "2026-08-22T22:34:30Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
@@ -12,7 +12,7 @@ snapshot:
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: 2e632849c3d986df4c02081a2dbefb61f7e7a709
+      expected_sha: a49595fa13f35dcd089404f3b87643a0a27d656c
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
@@ -136,7 +136,12 @@ vectors:
       duplicate_historical_issue: 10
       issue_acceptance_still_open: true
       validator_only_not_completion: true
-      snapshot_refresh_reason: audited_main_refresh_after_pr_186_and_scheduled_refresh
+      current_snapshot_main_sha: a49595fa13f35dcd089404f3b87643a0a27d656c
+      current_main_lineage: "#177 -> #185"
+      pr_177_exact_head_hosted_gate: PASS_7_OF_7
+      pr_185_visible_exact_head_hosted_gate: PROVISIONAL_2_FAMILIES_OBSERVED
+      pr_185_mainline_presence_is_not_full_ci_certification: true
+      snapshot_refresh_reason: adjudicated_external_merge_lineage_pr_177_then_pr_185
 
   - vector_id: FERROCARRIL_ILAP_CANONICALIZATION
     repo: jotaele44/spiderweb-pr
