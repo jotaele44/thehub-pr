@@ -1,0 +1,19 @@
+{
+  "@context": {
+    "prii": "https://prii.dev/ontology/core#",
+    "contract": "https://prii.dev/ontology/contract#",
+    "hub": "https://prii.dev/ontology/repo/thehub-pr#",
+    "id": "@id",
+    "type": "@type",
+    "label": "http://www.w3.org/2000/01/rdf-schema#label",
+    "ownedBy": {"@id": "prii:ownedBy", "@type": "@id"},
+    "assertedBy": {"@id": "prii:assertedBy", "@type": "@id"},
+    "derivedBy": {"@id": "prii:derivedBy", "@type": "@id"},
+    "hasSource": {"@id": "prii:hasSource", "@type": "@id"},
+    "hasEvidence": {"@id": "prii:hasEvidence", "@type": "@id"},
+    "hasLineage": {"@id": "prii:hasLineage", "@type": "@id"},
+    "hasConfidenceAssessment": {"@id": "prii:hasConfidenceAssessment", "@type": "@id"},
+    "createdAt": {"@id": "prii:createdAt", "@type": "http://www.w3.org/2001/XMLSchema#dateTime"},
+    "observedAt": {"@id": "prii:observedAt", "@type": "http://www.w3.org/2001/XMLSchema#dateTime"}
+  }
+}
