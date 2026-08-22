@@ -65,6 +65,15 @@ def test_slug_substitution_renders_to_tmp(tmp_path):
     assert (tmp_path / "schemas" / "federation_export_manifest.schema.json").is_file()
 
 
+def test_rendered_templates_do_not_require_hub_sibling_paths(tmp_path):
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    rendered_text = "\n".join(path.read_text() for path in tmp_path.rglob("*") if path.is_file())
+    assert "../thehub-pr" not in rendered_text
+
+
 def test_check_detects_lost_executable_bit(tmp_path):
     # Render ovnis, then drop the exec bit on a launcher — --check must flag drift.
     subprocess.run(
@@ -103,6 +112,32 @@ def test_per_repo_vars_substitute_beyond_the_slug(tmp_path):
     dependabot = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
     npm = [u for u in dependabot["updates"] if u["package-ecosystem"] == "npm"]
     assert [u["directory"] for u in npm] == ["/server/frontend"]
+
+
+def test_every_producer_declares_an_app_title():
+    # app_title cannot be derived from app_slug: OVNIS stays upper-case while the
+    # rest are title-case, and AguaYLuz/MoneySweep/TheHub carry internal capitals,
+    # so any casing rule would corrupt four of seven repos' user-visible branding.
+    for repo, v in _vars().items():
+        assert v.get("app_title"), f"{repo} has no app_title"
+        assert v["app_title"] != v["app_slug"].title(), (
+            f"{repo}: app_title looks derived from the slug; it must be the real name"
+        )
+
+
+def test_app_bundle_launcher_is_shared_and_guards_translocation(tmp_path):
+    # The whole point of templating this file: the App Translocation fix landed in
+    # one repo and left the others broken, because every repo carried its own copy.
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    launcher = tmp_path / "PRII-OVNIS.app/Contents/MacOS/PRII-OVNIS"
+    assert launcher.stat().st_mode & 0o100, "bundle executable must be owner-executable"
+    text = launcher.read_text(encoding="utf-8")
+    assert "AppTranslocation" in text, "translocation guard missing from the shared launcher"
+    assert 'with title \\"OVNIS — PRII\\"' in text
+    assert "{{" not in text, "unsubstituted placeholder survived"
 
 
 def test_mode_falls_back_to_the_extension_contract():

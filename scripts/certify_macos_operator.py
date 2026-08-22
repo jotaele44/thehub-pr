@@ -22,11 +22,24 @@ person really ran it on real hardware, and an artifact anyone could mint proves
 nothing about that. ``PRII_MANAGER_RECEIPT_SIGNING_KEY`` is required and the
 fixture seed is explicitly refused.
 
-Usage on the Mac::
+Usage on the Mac. The bootstrap nonce is a shared secret you choose, not
+something the manager prints -- it is read from the environment by
+``federation_manager_api`` at import time, so it must be exported before uvicorn
+starts, and the same value given here::
 
-    export PRII_MANAGER_RECEIPT_SIGNING_KEY=~/.prii/manager.pem
-    python3 scripts/certify_macos_operator.py --manager-url http://127.0.0.1:8765 \\
-        --origin http://127.0.0.1:5173 --nonce "$PRII_MANAGER_BOOTSTRAP_NONCE"
+    # terminal 1 -- the manager
+    export PRII_MANAGER_BOOTSTRAP_NONCE="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
+    export PRII_MANAGER_RECEIPT_SIGNING_KEY="$HOME/.prii/manager.pem"
+    python3 -m uvicorn server.backend.main:app --port 8000
+
+    # terminal 2 -- this script, with the same nonce
+    export PRII_MANAGER_RECEIPT_SIGNING_KEY="$HOME/.prii/manager.pem"
+    export PRII_MANAGER_BOOTSTRAP_NONCE='the-value-from-terminal-1'
+    python3 scripts/certify_macos_operator.py
+
+``--manager-url`` must include the router prefix. The manager API is mounted at
+``/api/federation-manager`` on the main app, so a bare host answers ``405`` on
+``POST /session`` -- the SPA catch-all matches the path for ``GET`` only.
 
 Then send back ``reports/federation/attestations/operator.*.attestation.json``
 and the public half of the key.
@@ -383,7 +396,11 @@ STEPS = [
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--manager-url", default="http://127.0.0.1:8765")
+    # The manager API is a router on the main app, not a standalone service, so
+    # the default carries the mount prefix. Without it every call 405s: the SPA
+    # catch-all matches the bare path for GET, so POST /session is "method not
+    # allowed" rather than the 404 that would have pointed at the real problem.
+    parser.add_argument("--manager-url", default="http://127.0.0.1:8000/api/federation-manager")
     parser.add_argument("--origin", default="http://127.0.0.1:5173")
     parser.add_argument("--nonce", default=os.environ.get("PRII_MANAGER_BOOTSTRAP_NONCE", ""))
     parser.add_argument("--app-id", default="thehub")
