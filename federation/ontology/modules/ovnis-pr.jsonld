@@ -1,0 +1,16 @@
+{
+  "@context": "../contexts/all.context.jsonld",
+  "@id": "https://prii.dev/ontology/repo/ovnis-pr",
+  "@type": "prii:OntologyModule",
+  "version": "0.1.0", "status": "proposed", "owner": "ovnis-pr",
+  "imports": ["https://prii.dev/ontology/core"],
+  "classes": [
+    {"id": "ovnis:HistoricalCase", "label": "Historical Case", "owner": "ovnis-pr"},
+    {"id": "ovnis:CaseChronology", "label": "Case Chronology", "owner": "ovnis-pr"},
+    {"id": "ovnis:WitnessSourceTier", "label": "Witness Source Tier", "owner": "ovnis-pr"},
+    {"id": "ovnis:CaseLocationReference", "label": "Case Location Reference", "owner": "ovnis-pr"},
+    {"id": "ovnis:CaseReviewState", "label": "Case Review State", "owner": "ovnis-pr"},
+    {"id": "ovnis:CasePromotionDecision", "label": "Case Promotion Decision", "owner": "ovnis-pr"}
+  ],
+  "semanticConstraints": ["Historical cases are structured records, not conclusions."]
+}

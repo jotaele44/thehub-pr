@@ -1,0 +1,52 @@
+schema_version: 1.0.0
+status: proposed
+families:
+  source:
+    severity: high
+    owner: thehub-pr
+    disposition: split
+    canonical_terms: [prii:SourceRecord, prii:MonitoredSource, prii:SourceReference]
+    rule: A provenance row, monitored-source configuration, and stable reference are never aliases without an explicit mapping.
+  observation:
+    severity: high
+    owner: thehub-pr
+    consulted: [centinelas-pr, skywatcher-pr, ovnis-pr]
+    disposition: split
+    canonical_terms: [prii:RawObservation, prii:CanonicalObservation]
+  relationship:
+    severity: high
+    owner: thehub-pr
+    disposition: split
+    canonical_terms: [prii:AssertedRelationship, prii:DerivedRelationship, prii:Correlation]
+    rule: Hub-derived correlations must not be represented as producer assertions.
+  evidence:
+    severity: high
+    owner: thehub-pr
+    disposition: split
+    canonical_terms: [prii:EvidenceItem, prii:ValidationEvidence, prii:Attestation]
+  alert:
+    severity: high
+    owner: thehub-pr
+    consulted: [aguayluz-pr, centinelas-pr]
+    disposition: scoped_split
+    canonical_terms: [prii:AlertEvent, prii:CanonicalAlertRecord, hub:AlertProjection]
+  confidence:
+    severity: high
+    owner: thehub-pr
+    disposition: replace_bare_number
+    canonical_terms: [prii:ConfidenceAssessment]
+    required_properties: [prii:value, prii:scale, prii:assessmentTarget, prii:method, prii:assessor]
+    known_scales: [zero_to_one, zero_to_one_hundred]
+  status:
+    severity: high
+    owner: thehub-pr
+    disposition: prohibit_universal_enum
+    canonical_terms: [prii:LifecycleState]
+    rule: Every status/state/stage vocabulary must identify its state machine and owner.
+  public_matter:
+    severity: high
+    owner: centinelas-pr
+    co_owners: [moneysweep-pr]
+    hub_authority: cross_repository_identity_resolution
+    disposition: shared_lifecycle_object
+    canonical_terms: [prii:PublicMatter]

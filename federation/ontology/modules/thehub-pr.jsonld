@@ -1,0 +1,17 @@
+{
+  "@context": "../contexts/all.context.jsonld",
+  "@id": "https://prii.dev/ontology/repo/thehub-pr",
+  "@type": "prii:OntologyModule",
+  "version": "0.1.0", "status": "proposed", "owner": "thehub-pr",
+  "imports": ["https://prii.dev/ontology/core"],
+  "classes": [
+    {"id": "hub:RepositoryManifest", "label": "Repository Manifest", "owner": "thehub-pr"},
+    {"id": "hub:PackageAdmission", "label": "Package Admission", "owner": "thehub-pr"},
+    {"id": "hub:AggregateDataset", "label": "Aggregate Dataset", "owner": "thehub-pr"},
+    {"id": "hub:HubDerivedRelationship", "label": "Hub Derived Relationship", "owner": "thehub-pr"},
+    {"id": "hub:CrossProducerCorrelation", "label": "Cross-Producer Correlation", "owner": "thehub-pr"},
+    {"id": "hub:ReadinessRollup", "label": "Readiness Rollup", "owner": "thehub-pr"},
+    {"id": "hub:ExecutionReceiptProjection", "label": "Execution Receipt Projection", "owner": "thehub-pr"},
+    {"id": "hub:AlertProjection", "label": "Alert Projection", "owner": "thehub-pr"}
+  ]
+}
