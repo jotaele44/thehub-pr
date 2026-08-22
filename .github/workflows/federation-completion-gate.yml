@@ -1,0 +1,36 @@
+name: Federation completion gate
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 9 * * *"
+
+permissions:
+  contents: read
+  checks: read
+  pull-requests: read
+
+jobs:
+  remote-completion-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Audit exact remote PR denominator
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          python scripts/federation_completion_gate.py
+          --config federation/completion-gate.json
+          --out artifacts/federation-completion-ledger.json
+          --fail-on-actionable
+      - name: Upload evidence ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: federation-completion-ledger
+          path: artifacts/federation-completion-ledger.json
+          if-no-files-found: error
