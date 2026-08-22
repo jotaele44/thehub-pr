@@ -1,18 +1,18 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-22T19:29:26Z"
+  captured_at_utc: "2026-08-22T21:30:00Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: cbff564033831344567134be22b480c4c35c4698
+      expected_sha: 49abeb2654bc39b99f8d17ca8872ddb5a014cb90
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: 742edde5f6e839571d2d2743c7f3c16d28fbfa20
+      expected_sha: a49595fa13f35dcd089404f3b87643a0a27d656c
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
@@ -20,11 +20,11 @@ snapshot:
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: 315520119c47b0f271f19531d53de8454d99f41a
+      expected_sha: dfd42307252225d9c4a7235fd2fb266319072263
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
-      expected_sha: a474bc65e1cb7f1a5f631f18873e494938c5461f
+      expected_sha: 0132116a6225e49eadd870371b87d38d4999d8fd
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
@@ -32,7 +32,7 @@ snapshot:
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: f06799fbdb478531622a85db248ec26e83fb5f03
+      expected_sha: e4d4fcf9792a640f61dd408771967234e6473abc
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
