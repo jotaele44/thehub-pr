@@ -56,7 +56,7 @@ The producer's `server/backend/requirements.txt` explicitly declares FastAPI, Uv
 
 Centinelas passed lint, typecheck, unit/component tests and production build. Playwright then failed before exercising the UI because its configured backend command requires `python -m uvicorn` and the first central runner installed only frontend dependencies.
 
-The producer's `pyproject.toml` declares the backend runtime as the `server` optional dependency group, including `uvicorn[standard]`. The audit runner has been corrected to install that exact producer-declared extra before Centinelas browser parity.
+The producer's `server/backend/requirements.txt` explicitly declares FastAPI, Uvicorn, feedparser and PyYAML. The audit runner has been corrected to install that exact file conditionally before Centinelas browser parity.
 
 ## F-006 — browser harness denominator is incomplete
 
