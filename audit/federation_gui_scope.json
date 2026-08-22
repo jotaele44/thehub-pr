@@ -7,7 +7,7 @@
       "repository": "jotaele44/thehub-pr",
       "role": "CANONICAL_PRODUCT",
       "sha": "4611327f5f1503fafd7ae2a03edffdb636cedc27",
-      "checkout_path": ".",
+      "checkout_path": "repos/thehub-pr",
       "frontend_root": "server/frontend"
     },
     {
