@@ -1,0 +1,172 @@
+name: Federation Ontology CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["ontology/federation-canon-v0-1"]
+    paths:
+      - "federation/ontology/**"
+      - "tools/ontology/**"
+      - "schemas/common/lineage.schema.json"
+      - "tests/test_ontology_*.py"
+      - ".github/CODEOWNERS"
+      - "federation-templates/baseline/CODEOWNERS"
+      - ".github/workflows/ontology-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "federation/ontology/**"
+      - "tools/ontology/**"
+      - "schemas/common/lineage.schema.json"
+      - "tests/test_ontology_*.py"
+      - ".github/CODEOWNERS"
+      - "federation-templates/baseline/CODEOWNERS"
+      - ".github/workflows/ontology-ci.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exhaustive-concordance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ontology implementation
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install ontology dependencies
+        run: python -m pip install --disable-pip-version-check PyYAML jsonschema pytest
+
+      - name: Verify static ontology and generated-manifest integrity
+        run: |
+          python tools/ontology/generate_canon.py --root . --check
+          python tools/ontology/validate_canon.py --root .
+          pytest -q tests/test_ontology_extractor.py tests/test_ontology_validator.py
+
+      - name: Checkout pinned thehub-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/thehub-pr
+          ref: bf4c9d85a595d22f57f46d3fd7e192ccb5b77798
+          path: _ontology_workspace/thehub-pr
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout pinned spiderweb-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/spiderweb-pr
+          ref: ed12141c3cb6480846c859e5780242a62ae71283
+          path: _ontology_workspace/spiderweb-pr
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout pinned centinelas-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/centinelas-pr
+          ref: f766efb6ede23398114a85cebf52d6530fa13891
+          path: _ontology_workspace/centinelas-pr
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout pinned aguayluz-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/aguayluz-pr
+          ref: 4a1c400c3f6288c97a7226c4fa4adaffabcc4388
+          path: _ontology_workspace/aguayluz-pr
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout pinned ovnis-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/ovnis-pr
+          ref: 400994dcc4e0e752c6ead984b0956f65adb0e153
+          path: _ontology_workspace/ovnis-pr
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout pinned skywatcher-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/skywatcher-pr
+          ref: f940dc1d4afae7740eaa2a94dbf4684d11ae156b
+          path: _ontology_workspace/skywatcher-pr
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Checkout pinned moneysweep-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/moneysweep-pr
+          ref: e14b9b8f4eb05b446a2da2072b0e247486b58e1e
+          path: _ontology_workspace/moneysweep-pr
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Extract raw semantic ledger
+        id: extract
+        continue-on-error: true
+        run: |
+          rm -rf federation/ontology/generated
+          mkdir -p federation/ontology/generated
+          python tools/ontology/extract_terms.py \
+            --workspace _ontology_workspace \
+            --pins federation/ontology/repository-pins.json \
+            --out federation/ontology/generated
+
+      - name: Generate non-merging concordance and conflict reports
+        id: analyze
+        continue-on-error: true
+        run: |
+          python tools/ontology/analyze_terms.py \
+            --ledger federation/ontology/generated/raw-term-ledger.jsonl \
+            --coverage federation/ontology/generated/coverage.json \
+            --resolutions federation/ontology/resolutions/priority-term-families.yaml \
+            --out federation/ontology/generated
+
+      - name: Validate exhaustive output and cross-repository contracts
+        id: validate
+        continue-on-error: true
+        run: |
+          status=0
+          python tools/ontology/validate_canon.py \
+            --root . \
+            --workspace _ontology_workspace \
+            --require-generated \
+            > /tmp/ontology-validation-report.json || status=$?
+          cat /tmp/ontology-validation-report.json
+          cp /tmp/ontology-validation-report.json federation/ontology/generated/validation-report.json
+          exit "$status"
+
+      - name: Upload exhaustive semantic inventory
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: prii-federation-ontology-${{ github.sha }}
+          path: federation/ontology/generated
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Enforce ontology gates
+        if: always()
+        env:
+          EXTRACT_OUTCOME: ${{ steps.extract.outcome }}
+          ANALYZE_OUTCOME: ${{ steps.analyze.outcome }}
+          VALIDATE_OUTCOME: ${{ steps.validate.outcome }}
+        run: |
+          echo "extract=$EXTRACT_OUTCOME analyze=$ANALYZE_OUTCOME validate=$VALIDATE_OUTCOME"
+          test "$EXTRACT_OUTCOME" = success
+          test "$ANALYZE_OUTCOME" = success
+          test "$VALIDATE_OUTCOME" = success
