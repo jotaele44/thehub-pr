@@ -1,14 +1,14 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-22T22:19:14Z"
+  captured_at_utc: "2026-08-22T22:28:21Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: cbff564033831344567134be22b480c4c35c4698
+      expected_sha: 49abeb2654bc39b99f8d17ca8872ddb5a014cb90
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
