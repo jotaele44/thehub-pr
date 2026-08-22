@@ -144,8 +144,8 @@ A frozen seven-repository validation workflow now runs each frontend's own insta
 |---|---|
 | canonical semantic positive cases | PASS in v0.5 candidate |
 | canonical semantic invalid/unknown negative cases | PASS in v0.5 candidate |
-| frozen producer unit/component suites | RUNNING / OPEN until matrix completes |
-| frozen existing browser/parity suites | RUNNING / OPEN until matrix completes |
+| frozen producer unit/component suites | PARTIAL_PASS / OPEN: five repositories pass; Hub frozen typecheck and SkyWatcher typecheck remain open |
+| frozen existing browser/parity suites | PARTIAL_PASS / OPEN: MoneySweep, Agua y Luz and Centinelas pass after runner dependency repair; Hub blocked before visual run; missing browser harnesses remain open |
 | cross-federation null/duplicate/ambiguous-identity/M:N/state fault injection | OPEN |
 | route/module × state × viewport screenshots | OPEN |
 
@@ -193,7 +193,7 @@ FEDERATION_GUI_CERTIFICATION = OPEN
 
 ## Required next gates
 
-1. Complete the frozen seven-repository validation matrix and classify every failure.
+1. Repair or explicitly adjudicate the residual Hub frozen typecheck and SkyWatcher typecheck failures.
 2. Adjudicate every discovered visual file and navigation surface.
 3. Build the canonical route/module × state × viewport fixture matrix.
 4. Promote the forensic semantic candidate only after review; then create a new snapshot before producer convergence.

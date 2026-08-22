@@ -9,12 +9,12 @@
 | Repository | Install | Lint | Typecheck | Unit/component | Build | Browser/parity | Classification |
 |---|---|---|---|---|---|---|---|
 | `thehub-pr` | PASS | PASS | FAIL | NOT_RUN_AFTER_FAIL | NOT_RUN_AFTER_FAIL | NOT_RUN_AFTER_FAIL | P1 declared-contract failure; isolated remediation PR #194 |
-| `moneysweep-pr` | PASS | PASS | NOT_DECLARED | PASS (70) | PASS | BLOCKED_ENV | browser backend requirements omitted by first audit runner; harness corrected without changing frozen SHA |
+| `moneysweep-pr` | PASS | PASS | NOT_DECLARED | PASS (70) | PASS | PASS_AFTER_RERUN | first-run backend environment blocker superseded by corrected harness |
 | `spiderweb-pr` | PASS | PASS | PASS | PASS | PASS | NOT_DECLARED | P1 browser-harness gap remains OPEN |
-| `aguayluz-pr` | PASS | PASS | NOT_DECLARED | PASS (150) | PASS | BLOCKED_ENV | browser backend requirements omitted by first audit runner; harness corrected without changing frozen SHA |
+| `aguayluz-pr` | PASS | PASS | NOT_DECLARED | PASS (150) | PASS | PASS_AFTER_RERUN | first-run backend environment blocker superseded by corrected harness |
 | `ovnis-pr` | PASS | PASS | PASS | PASS | PASS | NOT_DECLARED | P1 browser-harness gap remains OPEN |
 | `skywatcher-pr` | PASS | PASS | FAIL | NOT_RUN_AFTER_FAIL | NOT_RUN_AFTER_FAIL | NOT_DECLARED | P1 substantive typecheck debt plus browser-harness gap |
-| `centinelas-pr` | PASS | PASS | PASS | PASS | PASS | BLOCKED_ENV | browser backend optional extra omitted by first audit runner; harness corrected without changing frozen SHA |
+| `centinelas-pr` | PASS | PASS | PASS | PASS | PASS | PASS_AFTER_RERUN | first-run backend environment blocker superseded by corrected harness |
 
 ## F-001 — Hub declared typecheck contract fails
 
@@ -34,29 +34,29 @@ This is not reduced to the same root cause as the Hub. The frozen typecheck repo
 
 **Safeguard:** do not close this by disabling `checkJs`, excluding affected source families, or weakening the script. The existing contract must be repaired or intentionally redefined with equivalent/stronger coverage.
 
-## F-003 — MoneySweep browser parity first-run blocker is audit-environment, not product failure
+## F-003 — MoneySweep browser parity first-run blocker was audit-environment, not product failure
 
-**Classification:** `BLOCKED / superseded runner defect pending rerun`
+**Classification:** `SUPERSEDED / PASS_AFTER_RERUN`
 
 MoneySweep passed lint, 70 unit/component tests and production build. Playwright then failed before exercising the UI because its configured backend command requires `python -m uvicorn` and the first central runner installed only frontend dependencies.
 
-The producer's own `server/backend/requirements.txt` explicitly declares FastAPI, Uvicorn and pandas. The audit runner has been corrected to install that exact file conditionally before MoneySweep browser parity.
+The producer's own `server/backend/requirements.txt` explicitly declares FastAPI, Uvicorn and pandas. The audit runner was corrected to install that exact file conditionally before MoneySweep browser parity. Current-head reruns `32595327578` and `32595329941` both pass MoneySweep browser parity.
 
-## F-004 — Agua y Luz browser parity first-run blocker is audit-environment, not product failure
+## F-004 — Agua y Luz browser parity first-run blocker was audit-environment, not product failure
 
-**Classification:** `BLOCKED / superseded runner defect pending rerun`
+**Classification:** `SUPERSEDED / PASS_AFTER_RERUN`
 
 Agua y Luz passed lint, 150 unit/component tests, included accessibility assertions, and production build. Playwright then failed before browser execution because its configured backend command requires Uvicorn and the first central runner had not installed the declared backend requirements.
 
-The producer's `server/backend/requirements.txt` explicitly declares FastAPI, Uvicorn and jsonschema. The audit runner has been corrected to install that exact file conditionally before browser parity.
+The producer's `server/backend/requirements.txt` explicitly declares FastAPI, Uvicorn and jsonschema. The audit runner was corrected to install that exact file conditionally before browser parity. Current-head reruns `32595327578` and `32595329941` both pass Agua y Luz browser parity.
 
-## F-005 — Centinelas browser parity first-run blocker is audit-environment, not product failure
+## F-005 — Centinelas browser parity first-run blocker was audit-environment, not product failure
 
-**Classification:** `BLOCKED / superseded runner defect pending rerun`
+**Classification:** `SUPERSEDED / PASS_AFTER_RERUN`
 
 Centinelas passed lint, typecheck, unit/component tests and production build. Playwright then failed before exercising the UI because its configured backend command requires `python -m uvicorn` and the first central runner installed only frontend dependencies.
 
-The producer's `server/backend/requirements.txt` explicitly declares FastAPI, Uvicorn, feedparser and PyYAML. The audit runner has been corrected to install that exact file conditionally before Centinelas browser parity.
+The producer's `server/backend/requirements.txt` explicitly declares FastAPI, Uvicorn, feedparser and PyYAML. The audit runner was corrected to install that exact file conditionally before Centinelas browser parity. Current-head reruns `32595327578` and `32595329941` both pass Centinelas browser parity.
 
 ## F-006 — browser harness denominator is incomplete
 
