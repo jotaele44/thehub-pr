@@ -1,0 +1,13 @@
+{
+  "id": "CQ-002",
+  "question": "What is the scale, target, method, and assessor for this confidence value?",
+  "decision_supported": "Compare confidence assessments without silently mixing zero-to-one and zero-to-one-hundred scales.",
+  "required_concepts": ["prii:ConfidenceAssessment"],
+  "required_properties": ["prii:value", "prii:scale", "prii:assessmentTarget", "prii:method", "prii:assessor"],
+  "expected_answer_shape": "numeric value plus declared scale and assessment metadata",
+  "positive_fixture": {"value": 0.85, "scale": "zero_to_one", "assessmentTarget": "record:ent_1", "method": "producer_rule", "assessor": "aguayluz-pr"},
+  "negative_fixture": {"value": 85},
+  "owners": ["thehub-pr"],
+  "affected_repositories": ["thehub-pr", "centinelas-pr", "aguayluz-pr", "ovnis-pr", "skywatcher-pr", "moneysweep-pr", "spiderweb-pr"],
+  "status": "proposed"
+}

@@ -1,0 +1,15 @@
+{
+  "@context": "../contexts/all.context.jsonld",
+  "@id": "https://prii.dev/ontology/repo/spiderweb-pr",
+  "@type": "prii:OntologyModule",
+  "version": "0.1.0", "status": "proposed", "owner": "spiderweb-pr",
+  "imports": ["https://prii.dev/ontology/core"],
+  "classes": [
+    {"id": "spiderweb:SpatialBridgeRecord", "label": "Spatial Bridge Record", "owner": "spiderweb-pr"},
+    {"id": "spiderweb:GISFeature", "label": "GIS Feature", "owner": "spiderweb-pr"},
+    {"id": "spiderweb:OperationalContext", "label": "Operational Context", "owner": "spiderweb-pr"},
+    {"id": "spiderweb:BridgeCandidate", "label": "Bridge Candidate", "owner": "spiderweb-pr"},
+    {"id": "spiderweb:SpatialReviewQueue", "label": "Spatial Review Queue", "owner": "spiderweb-pr"}
+  ],
+  "prohibitedRedefinitions": ["skywatcher:AirspaceObservation", "hub:CrossProducerCorrelation"]
+}

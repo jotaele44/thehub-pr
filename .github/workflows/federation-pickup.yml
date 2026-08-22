@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/ovnis-pr
-          ref: d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1
+          ref: 6ca1f0f7cec7de376eae3b6ceb6a349e7800298f
           path: .fed/checkouts/ovnis-pr
           persist-credentials: false
 
@@ -38,7 +38,7 @@ jobs:
           set -euo pipefail
           fed --root .fed/checkouts max --remote --apply | tee federation-max.json
 
-      - name: Assert merged OVNIS PASS reuse and bounded exhaustion
+      - name: Assert current remote SHAs preserve bounded exhaustion
         run: |
           python - <<'PY'
           import json
@@ -62,7 +62,8 @@ jobs:
           assert certification["certification"] == "PROVISIONAL"
           assert certification["repository_status_phase"] == "post_execution"
 
-          # Both completed vectors are declared PASS in the frozen ledger.
+          # Declared PASS vectors may be reused only when live remote heads
+          # still match the bounded registry snapshot.
           # No domain command may execute during post-merge recertification.
           executed_rows = [
               row
@@ -99,5 +100,5 @@ jobs:
           assert by_repo["jotaele44/ovnis-pr"] == "PASS"
           assert by_repo["jotaele44/skywatcher-pr"] == "BLOCKED"
           assert by_repo["jotaele44/moneysweep-pr"] == "BLOCKED"
-          print("PASS: merged OVNIS main reused without re-execution; bounded exhaustion and arithmetic close")
+          print("PASS: current remote SHAs reused without re-execution; bounded exhaustion and arithmetic close")
           PY

@@ -1,0 +1,13 @@
+{
+  "id": "CQ-003",
+  "question": "Which pre-officialization signals and official records belong to the same public matter?",
+  "decision_supported": "Maintain a traceable Centinelas-to-MoneySweep lifecycle without duplicating ownership.",
+  "required_concepts": ["prii:PublicMatter", "centinelas:Signal", "moneysweep:OfficializationEvent"],
+  "required_properties": ["prii:hasLifecycleState", "prii:hasEvidence", "prii:hasLineage"],
+  "expected_answer_shape": "public matter id, ordered lifecycle states, linked signals, linked official records",
+  "positive_fixture": {"type": "prii:PublicMatter", "preOfficializationOwner": "centinelas-pr", "officializationOwner": "moneysweep-pr"},
+  "negative_fixture": {"type": "centinelas:Signal", "officialized": true, "officialRecord": null},
+  "owners": ["centinelas-pr", "moneysweep-pr"],
+  "affected_repositories": ["centinelas-pr", "moneysweep-pr", "thehub-pr"],
+  "status": "proposed"
+}
