@@ -2,7 +2,7 @@
 """Generate a bounded, machine-readable GUI census for the frozen PRII federation snapshot.
 
 This is discovery and arithmetic closure tooling, not a quality-certification shortcut.
-Static regex findings remain CANDIDATE_NOT_IDENTITY-style discovery evidence until reviewed.
+Static regex findings remain discovery evidence until reviewed.
 """
 from __future__ import annotations
 
@@ -41,6 +41,9 @@ STATE_PATTERNS = {
     "unresolved": re.compile(r"\bunresolved\b", re.I),
     "superseded": re.compile(r"\bsuperseded\b", re.I),
     "contradiction": re.compile(r"\bcontradict(?:ion|ory)\b", re.I),
+}
+EXPECTED_SPECIAL_SURFACES = {
+    "spiderweb-pr": {"command", "finance", "spatial", "anomaly", "graph", "query"},
 }
 
 
@@ -119,25 +122,25 @@ def parse_package(frontend_root: Path) -> dict:
 
 
 def spiderweb_modules(texts: list[tuple[str, str]]) -> list[str]:
-    # SpiderWeb intentionally uses one workbench rather than a router. Capture the
-    # top-level lazy module ids as its navigation-surface denominator.
+    """Return the six declared workbench tabs; route parity is intentionally irrelevant here."""
     app = next((t for p, t in texts if p.endswith("src/App.tsx")), "")
-    if "const MODULES" not in app:
+    match = re.search(r"const\s+tabs\s*:[^=]+?=\s*\[(.*?)\];", app, re.S)
+    if not match:
         return []
-    return sorted(set(re.findall(r"\bid\s*:\s*['\"]([^'\"]+)['\"]", app)))
+    return sorted(set(re.findall(r"\bid\s*:\s*['\"]([^'\"]+)['\"]", match.group(1))))
 
 
 def main() -> int:
     scope = json.loads(SCOPE_PATH.read_text(encoding="utf-8"))
     file_rows = []
-    route_rows = []
+    surface_rows = []
     state_rows = []
     repo_rows = []
     fatal = []
 
     for item in scope["repositories"]:
         repo_name = item["repository"].split("/", 1)[1]
-        checkout = ROOT if item["checkout_path"] == "." else ROOT / item["checkout_path"]
+        checkout = ROOT / item["checkout_path"]
         frontend = checkout / item["frontend_root"]
         observed_head = git_head(checkout) if (checkout / ".git").exists() else None
         if observed_head != item["sha"]:
@@ -161,8 +164,7 @@ def main() -> int:
             texts.append((rel.as_posix(), text))
             if path.suffix in VISUAL_EXTS:
                 interaction_occurrences += len(EVENT_RE.findall(text))
-            for route in ROUTE_RE.findall(text):
-                route_candidates.add(route)
+            route_candidates.update(ROUTE_RE.findall(text))
             for state, pattern in STATE_PATTERNS.items():
                 if pattern.search(text):
                     state_files[state].append(rel.as_posix())
@@ -176,7 +178,7 @@ def main() -> int:
             })
 
         for route in sorted(route_candidates):
-            route_rows.append({
+            surface_rows.append({
                 "repository": repo_name,
                 "surface_kind": "ROUTE",
                 "surface_id": route,
@@ -185,8 +187,13 @@ def main() -> int:
             })
 
         modules = spiderweb_modules(texts) if repo_name == "spiderweb-pr" else []
+        expected_modules = EXPECTED_SPECIAL_SURFACES.get(repo_name)
+        if expected_modules is not None and set(modules) != expected_modules:
+            fatal.append(
+                f"{repo_name}: workbench module mismatch expected={sorted(expected_modules)} observed={modules}"
+            )
         for module in modules:
-            route_rows.append({
+            surface_rows.append({
                 "repository": repo_name,
                 "surface_kind": "WORKBENCH_MODULE",
                 "surface_id": module,
@@ -239,11 +246,11 @@ def main() -> int:
 
     write_csv("repositories.csv", repo_rows)
     write_csv("files.csv", file_rows)
-    write_csv("surfaces.csv", route_rows)
+    write_csv("surfaces.csv", surface_rows)
     write_csv("states.csv", state_rows)
 
     summary = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "snapshot_label": scope["snapshot_label"],
         "canonical_product": scope["canonical_product"],
@@ -256,6 +263,7 @@ def main() -> int:
             "test_files": sum(r["tests"] for r in repo_rows),
             "routes": sum(r["routes"] for r in repo_rows),
             "workbench_modules": sum(r["workbench_modules"] for r in repo_rows),
+            "navigation_surfaces": sum(r["routes"] + r["workbench_modules"] for r in repo_rows),
             "static_interaction_handler_occurrences": sum(r["static_interaction_handler_occurrences"] for r in repo_rows),
         },
         "coverage": {
