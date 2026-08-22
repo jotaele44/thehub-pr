@@ -192,4 +192,5 @@ jobs:
 
       - name: Record browser harness gap
         if: matrix.browser_script == ''
-        run: echo "${{ matrix.name }}: BROWSER_HARNESS_OPEN"
+        run: |
+          echo "${{ matrix.name }}: BROWSER_HARNESS_OPEN"
