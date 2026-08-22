@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "snapshot_label": "federation-gui-20260822",
+  "canonical_product": "thehub-pr",
+  "repositories": [
+    {
+      "repository": "jotaele44/thehub-pr",
+      "role": "CANONICAL_PRODUCT",
+      "sha": "4611327f5f1503fafd7ae2a03edffdb636cedc27",
+      "checkout_path": "repos/thehub-pr",
+      "frontend_root": "server/frontend"
+    },
+    {
+      "repository": "jotaele44/moneysweep-pr",
+      "role": "PRODUCER_DIAGNOSTIC_UI",
+      "sha": "315520119c47b0f271f19531d53de8454d99f41a",
+      "checkout_path": "repos/moneysweep-pr",
+      "frontend_root": "dashboard"
+    },
+    {
+      "repository": "jotaele44/spiderweb-pr",
+      "role": "PRODUCER_DIAGNOSTIC_UI",
+      "sha": "e15133faafef4a6fe0472521453379c81f1a522e",
+      "checkout_path": "repos/spiderweb-pr",
+      "frontend_root": "server/frontend"
+    },
+    {
+      "repository": "jotaele44/aguayluz-pr",
+      "role": "PRODUCER_DIAGNOSTIC_UI",
+      "sha": "e917d1ff1df543930e7bcf25e5b511bdb9191a16",
+      "checkout_path": "repos/aguayluz-pr",
+      "frontend_root": "dashboard"
+    },
+    {
+      "repository": "jotaele44/ovnis-pr",
+      "role": "PRODUCER_DIAGNOSTIC_UI",
+      "sha": "f4b47afa44e001df42c14b676793168cde2a38b1",
+      "checkout_path": "repos/ovnis-pr",
+      "frontend_root": "dashboard"
+    },
+    {
+      "repository": "jotaele44/skywatcher-pr",
+      "role": "PRODUCER_DIAGNOSTIC_UI",
+      "sha": "cbff564033831344567134be22b480c4c35c4698",
+      "checkout_path": "repos/skywatcher-pr",
+      "frontend_root": "frontend"
+    },
+    {
+      "repository": "jotaele44/centinelas-pr",
+      "role": "PRODUCER_DIAGNOSTIC_UI",
+      "sha": "a474bc65e1cb7f1a5f631f18873e494938c5461f",
+      "checkout_path": "repos/centinelas-pr",
+      "frontend_root": "frontend"
+    }
+  ]
+}
