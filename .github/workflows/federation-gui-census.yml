@@ -1,0 +1,89 @@
+name: Federation GUI Census
+
+on:
+  push:
+    branches:
+      - audit/federation-gui-certification-20260822
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout audit controller
+        uses: actions/checkout@v4
+        with:
+          ref: audit/federation-gui-certification-20260822
+          fetch-depth: 1
+
+      - name: Checkout MoneySweep snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/moneysweep-pr
+          ref: 315520119c47b0f271f19531d53de8454d99f41a
+          path: repos/moneysweep-pr
+          fetch-depth: 1
+
+      - name: Checkout SpiderWeb snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/spiderweb-pr
+          ref: e15133faafef4a6fe0472521453379c81f1a522e
+          path: repos/spiderweb-pr
+          fetch-depth: 1
+
+      - name: Checkout Agua y Luz snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/aguayluz-pr
+          ref: e917d1ff1df543930e7bcf25e5b511bdb9191a16
+          path: repos/aguayluz-pr
+          fetch-depth: 1
+
+      - name: Checkout OVNIS snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/ovnis-pr
+          ref: f4b47afa44e001df42c14b676793168cde2a38b1
+          path: repos/ovnis-pr
+          fetch-depth: 1
+
+      - name: Checkout SkyWatcher snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/skywatcher-pr
+          ref: cbff564033831344567134be22b480c4c35c4698
+          path: repos/skywatcher-pr
+          fetch-depth: 1
+
+      - name: Checkout Centinelas snapshot
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/centinelas-pr
+          ref: a474bc65e1cb7f1a5f631f18873e494938c5461f
+          path: repos/centinelas-pr
+          fetch-depth: 1
+
+      - name: Verify controller snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=4611327f5f1503fafd7ae2a03edffdb636cedc27
+          base=$(git merge-base HEAD "$expected")
+          test "$base" = "$expected"
+
+      - name: Generate fail-closed census
+        run: python3 tools/federation_gui_census.py
+
+      - name: Upload census evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: federation-gui-census-20260822
+          path: audit/generated/federation_gui_census/
+          if-no-files-found: error
+          retention-days: 90
