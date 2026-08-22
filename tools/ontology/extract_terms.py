@@ -7,7 +7,7 @@ import json
 import sys
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Sequence
 
 try:
     from common import sha256_text

@@ -14,9 +14,9 @@ from typing import Any, Iterable, Mapping, Sequence
 import yaml
 
 try:
-    from common import normalize_label, sha256_text, unique_preserve
+    from common import normalize_label, sha256_text
 except ImportError:  # pragma: no cover
-    from tools.ontology.common import normalize_label, sha256_text, unique_preserve
+    from tools.ontology.common import normalize_label, sha256_text
 
 ANALYZER_VERSION = "1.0.0"
 PRIORITY_ALIASES = {

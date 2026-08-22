@@ -35,10 +35,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout ontology implementation
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.11"
           cache: pip
@@ -53,7 +53,7 @@ jobs:
           pytest -q tests/test_ontology_extractor.py tests/test_ontology_validator.py
 
       - name: Checkout pinned thehub-pr
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/thehub-pr
           ref: bf4c9d85a595d22f57f46d3fd7e192ccb5b77798
@@ -62,7 +62,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout pinned spiderweb-pr
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/spiderweb-pr
           ref: ed12141c3cb6480846c859e5780242a62ae71283
@@ -71,7 +71,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout pinned centinelas-pr
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/centinelas-pr
           ref: f766efb6ede23398114a85cebf52d6530fa13891
@@ -80,7 +80,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout pinned aguayluz-pr
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/aguayluz-pr
           ref: 4a1c400c3f6288c97a7226c4fa4adaffabcc4388
@@ -89,7 +89,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout pinned ovnis-pr
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/ovnis-pr
           ref: 400994dcc4e0e752c6ead984b0956f65adb0e153
@@ -98,7 +98,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout pinned skywatcher-pr
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/skywatcher-pr
           ref: f940dc1d4afae7740eaa2a94dbf4684d11ae156b
@@ -107,7 +107,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout pinned moneysweep-pr
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/moneysweep-pr
           ref: e14b9b8f4eb05b446a2da2072b0e247486b58e1e
@@ -152,7 +152,7 @@ jobs:
 
       - name: Upload exhaustive semantic inventory
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: prii-federation-ontology-${{ github.sha }}
           path: federation/ontology/generated

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
-from typing import Any
+from typing import Any, Sequence
 
 try:
     from common import context_line, looks_like_lifecycle, unique_preserve
