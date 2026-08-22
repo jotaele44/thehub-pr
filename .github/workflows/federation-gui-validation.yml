@@ -1,0 +1,117 @@
+name: Federation GUI Validation
+
+on:
+  push:
+    branches:
+      - audit/federation-gui-certification-20260822
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  frontend-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - repo: jotaele44/thehub-pr
+            name: thehub-pr
+            ref: 4611327f5f1503fafd7ae2a03edffdb636cedc27
+            root: server/frontend
+            browser_script: test:visual
+          - repo: jotaele44/moneysweep-pr
+            name: moneysweep-pr
+            ref: 315520119c47b0f271f19531d53de8454d99f41a
+            root: dashboard
+            browser_script: test:gui-parity
+          - repo: jotaele44/spiderweb-pr
+            name: spiderweb-pr
+            ref: e15133faafef4a6fe0472521453379c81f1a522e
+            root: server/frontend
+            browser_script: ""
+          - repo: jotaele44/aguayluz-pr
+            name: aguayluz-pr
+            ref: e917d1ff1df543930e7bcf25e5b511bdb9191a16
+            root: dashboard
+            browser_script: test:gui-parity
+          - repo: jotaele44/ovnis-pr
+            name: ovnis-pr
+            ref: f4b47afa44e001df42c14b676793168cde2a38b1
+            root: dashboard
+            browser_script: ""
+          - repo: jotaele44/skywatcher-pr
+            name: skywatcher-pr
+            ref: cbff564033831344567134be22b480c4c35c4698
+            root: frontend
+            browser_script: ""
+          - repo: jotaele44/centinelas-pr
+            name: centinelas-pr
+            ref: a474bc65e1cb7f1a5f631f18873e494938c5461f
+            root: frontend
+            browser_script: test:gui-parity
+    steps:
+      - name: Checkout frozen frontend
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ matrix.repo }}
+          ref: ${{ matrix.ref }}
+          path: target
+          fetch-depth: 1
+
+      - name: Verify frozen SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          observed=$(git -C target rev-parse HEAD)
+          test "$observed" = "${{ matrix.ref }}"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: target/${{ matrix.root }}/package-lock.json
+
+      - name: Install
+        working-directory: target/${{ matrix.root }}
+        run: npm ci --no-audit --no-fund
+
+      - name: Lint when declared
+        working-directory: target/${{ matrix.root }}
+        shell: bash
+        run: |
+          if node -e 'const p=require("./package.json"); process.exit(p.scripts?.lint ? 0 : 1)'; then npm run lint; else echo 'lint: NOT_DECLARED'; fi
+
+      - name: Typecheck when declared
+        working-directory: target/${{ matrix.root }}
+        shell: bash
+        run: |
+          if node -e 'const p=require("./package.json"); process.exit(p.scripts?.typecheck ? 0 : 1)'; then npm run typecheck; else echo 'typecheck: NOT_DECLARED'; fi
+
+      - name: Unit / component tests
+        working-directory: target/${{ matrix.root }}
+        run: npm test -- --run
+
+      - name: Production build
+        working-directory: target/${{ matrix.root }}
+        run: npm run build
+
+      - name: Install Chromium for existing browser contract
+        if: matrix.browser_script != ''
+        working-directory: target/${{ matrix.root }}
+        run: npx playwright install --with-deps chromium
+
+      - name: Existing browser / parity contract
+        if: matrix.browser_script != ''
+        working-directory: target/${{ matrix.root }}
+        run: npm run ${{ matrix.browser_script }}
+
+      - name: Record browser harness gap
+        if: matrix.browser_script == ''
+        run: echo "${{ matrix.name }}: BROWSER_HARNESS_OPEN"
