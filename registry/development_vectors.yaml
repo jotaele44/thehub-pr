@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-22T17:34:59Z"
+  captured_at_utc: "2026-08-22T17:40:00Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
@@ -28,7 +28,7 @@ snapshot:
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
-      expected_sha: c03f0b46ea748fff15a3cc4a90226dc9341e92cf
+      expected_sha: 6ca1f0f7cec7de376eae3b6ceb6a349e7800298f
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main

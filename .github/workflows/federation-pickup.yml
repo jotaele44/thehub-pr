@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/ovnis-pr
-          ref: d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1
+          ref: 6ca1f0f7cec7de376eae3b6ceb6a349e7800298f
           path: .fed/checkouts/ovnis-pr
           persist-credentials: false
 
