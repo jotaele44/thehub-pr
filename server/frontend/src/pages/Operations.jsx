@@ -77,7 +77,9 @@ export default function Operations({ api = managerApi, subscribe = subscribeToRu
 
   useEffect(() => {
     let active = true;
-    Promise.all([api.listOperations(), api.repositories(), api.accounting(), api.gates()])
+    const repositoryRequest =
+      typeof api.repositories === "function" ? api.repositories() : Promise.resolve([]);
+    Promise.all([api.listOperations(), repositoryRequest, api.accounting(), api.gates()])
       .then(([ops, repos, counts, evidence]) => {
         if (!active) return;
         setOperations(ops);
@@ -157,7 +159,9 @@ export default function Operations({ api = managerApi, subscribe = subscribeToRu
         setLines((current) => (current.length ? current : snapshot.lines));
       }
       api.gates().then(setGates).catch(() => {});
-      api.repositories().then(setRepositories).catch(() => {});
+      if (typeof api.repositories === "function") {
+        api.repositories().then(setRepositories).catch(() => {});
+      }
     } catch (cause) {
       setRun({ status: "failed" });
       setError(cause?.detail || cause?.message || "The operation could not be started.");
