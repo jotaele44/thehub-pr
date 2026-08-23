@@ -42,6 +42,7 @@ from server.backend.federation_manager_receipts import (  # noqa: E402
     ReceiptStore,
     signer_from_environment,
 )
+from server.backend.federation_manager_repository_api import install_repository_routes  # noqa: E402
 from server.backend.federation_manager_repository_registry import (  # noqa: E402
     RepositoryBindingError,
     WorkspaceRepositoryRegistry,
@@ -243,6 +244,7 @@ def main(argv=None) -> int:
         return 2
 
     api.runtime = runtime
+    install_repository_routes(api)
 
     enabled = sum(1 for op in policy.operations.values() if getattr(op, "enabled", False))
     print(f"manager host on http://{args.host}:{args.port}")
