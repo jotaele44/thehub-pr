@@ -1,15 +1,19 @@
 """Validated artifact registration and atomic activation for manager runs.
 
-Execution success and dataset activation are separate states.  A producer may
+Execution success and dataset activation are separate states. A producer may
 exit zero and still fail validation; such a run must never replace the last
-known-good application dataset.  This store therefore accepts only artifacts
-whose validators all passed, copies them into an immutable run-addressed store,
-hashes the copied bytes, and changes the active pointer only through an explicit
-activation call.
+known-good application dataset.
 
-The store is deliberately agnostic about producer semantics.  The runner or a
-producer-specific validator decides *what* is valid; this module guarantees the
-promotion mechanics and provenance identity once that decision is supplied.
+Identity is deliberately split:
+
+* ``objects/`` stores immutable payload identity (file bytes or canonicalized
+  directory member PATH + UNCOMPRESSED_SIZE + SHA256 tuples);
+* ``registrations/`` stores each validated run manifestation, even when two runs
+  produce byte-identical payloads;
+* ``active/`` is an atomic application pointer to one registered object.
+
+This prevents BYTE identity from being mistaken for SOURCE_MANIFESTATION/run
+identity. Registration never activates an artifact implicitly.
 """
 from __future__ import annotations
 
@@ -19,7 +23,7 @@ import os
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, Mapping, Optional, Sequence
+from typing import Any, Dict, Mapping, Optional, Sequence
 
 from server.backend.federation_manager_transactions import write_atomic
 
@@ -38,6 +42,7 @@ class ArtifactManifest:
     bytes: int
     payload_path: Path
     manifest_path: Path
+    registration_path: Path
 
     def as_receipt_output(self) -> Dict[str, Any]:
         return {
@@ -49,6 +54,7 @@ class ArtifactManifest:
             "bytes": self.bytes,
             "path": str(self.payload_path),
             "manifest": str(self.manifest_path),
+            "registration": str(self.registration_path),
         }
 
 
@@ -94,13 +100,15 @@ def _all_validators_passed(validators: Sequence[Mapping[str, Any]]) -> bool:
 
 
 class ArtifactStore:
-    """Immutable artifact manifests plus an atomic per-application active pointer."""
+    """Immutable byte objects, per-run manifestations, and atomic ACTIVE pointers."""
 
     def __init__(self, root: Path) -> None:
         self.root = Path(root).expanduser().resolve()
         self.objects = self.root / "objects"
+        self.registrations = self.root / "registrations"
         self.active = self.root / "active"
         self.objects.mkdir(parents=True, exist_ok=True)
+        self.registrations.mkdir(parents=True, exist_ok=True)
         self.active.mkdir(parents=True, exist_ok=True)
 
     @staticmethod
@@ -124,7 +132,7 @@ class ArtifactStore:
         allowed_root: Path,
         validators: Sequence[Mapping[str, Any]],
     ) -> ArtifactManifest:
-        """Freeze one validated file/tree. Registration never changes active state."""
+        """Freeze one validated file/tree and one run manifestation; never activate."""
         if not _all_validators_passed(validators):
             raise ArtifactRegistrationError(
                 "artifact registration requires a non-empty all-passed validator set"
@@ -146,62 +154,110 @@ class ArtifactStore:
         artifact_id = f"art_{digest[:32]}"
         destination = self.objects / app_id / artifact_id
         manifest_path = destination / "manifest.json"
-        payload_path = destination / ("payload" if kind == "directory" else source.name)
+        payload_name = "payload" if kind == "directory" else source.name
+        payload_path = destination / payload_name
 
         if destination.exists():
-            existing = self._read_manifest(manifest_path)
-            if existing.get("sha256") != digest or existing.get("kind") != kind:
+            object_document = self._read_manifest(manifest_path)
+            if (
+                object_document.get("sha256") != digest
+                or object_document.get("kind") != kind
+                or int(object_document.get("bytes", -1)) != size
+            ):
                 raise ArtifactRegistrationError(
-                    f"artifact id collision at {destination}: existing manifestation differs"
+                    f"artifact id collision at {destination}: existing byte object differs"
                 )
-            return self._manifest_from_document(existing, manifest_path)
+        else:
+            staging = destination.with_name(f".{destination.name}.{run_id}.tmp")
+            if staging.exists():
+                shutil.rmtree(staging)
+            staging.mkdir(parents=True, exist_ok=False)
+            try:
+                staged_payload = staging / payload_name
+                if kind == "file":
+                    shutil.copy2(source, staged_payload)
+                    staged_hash, staged_size = _sha256_file(staged_payload)
+                else:
+                    shutil.copytree(source, staged_payload)
+                    staged_hash, staged_size, staged_members = _sha256_tree(staged_payload)
+                    if staged_members != members:
+                        raise ArtifactRegistrationError("directory changed while being registered")
+                if staged_hash != digest or staged_size != size:
+                    raise ArtifactRegistrationError("artifact changed while being registered")
 
-        staging = destination.with_name(f".{destination.name}.{run_id}.tmp")
-        if staging.exists():
-            shutil.rmtree(staging)
-        staging.mkdir(parents=True, exist_ok=False)
-        try:
-            staged_payload = staging / payload_path.name
-            if kind == "file":
-                shutil.copy2(source, staged_payload)
-                staged_hash, staged_size = _sha256_file(staged_payload)
-            else:
-                shutil.copytree(source, staged_payload)
-                staged_hash, staged_size, staged_members = _sha256_tree(staged_payload)
-                if staged_members != members:
-                    raise ArtifactRegistrationError("directory changed while being registered")
-            if staged_hash != digest or staged_size != size:
-                raise ArtifactRegistrationError("artifact changed while being registered")
+                object_document: Dict[str, Any] = {
+                    "schema_version": "prii.artifact-object/v1",
+                    "app_id": app_id,
+                    "artifact_id": artifact_id,
+                    "kind": kind,
+                    "sha256": digest,
+                    "bytes": size,
+                    "payload_name": payload_name,
+                    "members": [
+                        {"path": path, "uncompressed_size": member_size, "sha256": member_hash}
+                        for path, member_size, member_hash in members
+                    ],
+                }
+                write_atomic(
+                    staging / "manifest.json",
+                    json.dumps(object_document, sort_keys=True) + "\n",
+                )
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                os.replace(staging, destination)
+            except BaseException:
+                shutil.rmtree(staging, ignore_errors=True)
+                raise
 
-            document: Dict[str, Any] = {
-                "schema_version": "prii.artifact-manifest/v1",
-                "app_id": app_id,
-                "artifact_id": artifact_id,
-                "run_id": run_id,
-                "kind": kind,
-                "sha256": digest,
-                "bytes": size,
-                "payload_name": staged_payload.name,
-                "members": [
-                    {"path": path, "uncompressed_size": member_size, "sha256": member_hash}
-                    for path, member_size, member_hash in members
-                ],
-            }
-            write_atomic(staging / "manifest.json", json.dumps(document, sort_keys=True) + "\n")
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            os.replace(staging, destination)
-        except BaseException:
-            shutil.rmtree(staging, ignore_errors=True)
-            raise
+        # A run registration is a distinct SOURCE_MANIFESTATION even when the
+        # byte object already existed from another run.
+        registration_path = self.registrations / app_id / run_id / f"{artifact_id}.json"
+        registration_document: Dict[str, Any] = {
+            "schema_version": "prii.artifact-registration/v1",
+            "app_id": app_id,
+            "artifact_id": artifact_id,
+            "run_id": run_id,
+            "sha256": digest,
+            "kind": kind,
+            "bytes": size,
+            "object_manifest": str(manifest_path),
+            "validators": [dict(record) for record in validators],
+        }
+        if registration_path.exists():
+            existing_registration = self._read_manifest(registration_path)
+            if existing_registration != registration_document:
+                raise ArtifactRegistrationError(
+                    f"run registration collision at {registration_path}: manifestation differs"
+                )
+        else:
+            write_atomic(
+                registration_path,
+                json.dumps(registration_document, sort_keys=True) + "\n",
+            )
 
-        return self._manifest_from_document(document, manifest_path)
+        return ArtifactManifest(
+            app_id=app_id,
+            artifact_id=artifact_id,
+            run_id=run_id,
+            kind=kind,
+            sha256=digest,
+            bytes=size,
+            payload_path=payload_path,
+            manifest_path=manifest_path,
+            registration_path=registration_path,
+        )
 
     def activate(self, app_id: str, artifact_id: str) -> Dict[str, Optional[str]]:
-        """Atomically point an app at a registered immutable manifestation."""
+        """Atomically point an app at a registered immutable byte object."""
         manifest_path = self.objects / app_id / artifact_id / "manifest.json"
         document = self._read_manifest(manifest_path)
         if document.get("app_id") != app_id or document.get("artifact_id") != artifact_id:
             raise ArtifactRegistrationError("artifact manifest identity does not match activation request")
+
+        registrations = list((self.registrations / app_id).glob(f"*/{artifact_id}.json"))
+        if not registrations:
+            raise ArtifactRegistrationError(
+                f"artifact has no validated run registration and cannot activate: {artifact_id}"
+            )
 
         pointer = self.active / f"{app_id}.json"
         previous = self.current(app_id)
@@ -247,17 +303,3 @@ class ArtifactStore:
         except (OSError, json.JSONDecodeError) as exc:
             raise ArtifactRegistrationError(f"artifact manifest is unreadable: {path}: {exc}") from exc
         return document
-
-    @staticmethod
-    def _manifest_from_document(document: Mapping[str, Any], manifest_path: Path) -> ArtifactManifest:
-        payload_path = manifest_path.parent / str(document["payload_name"])
-        return ArtifactManifest(
-            app_id=str(document["app_id"]),
-            artifact_id=str(document["artifact_id"]),
-            run_id=str(document["run_id"]),
-            kind=str(document["kind"]),
-            sha256=str(document["sha256"]),
-            bytes=int(document["bytes"]),
-            payload_path=payload_path,
-            manifest_path=manifest_path,
-        )
