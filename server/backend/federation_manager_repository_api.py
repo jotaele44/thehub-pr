@@ -10,6 +10,8 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any, Dict, Optional
 
+from fastapi import Header, Request
+
 from server.backend.federation_manager_artifacts import ArtifactRegistrationError
 from server.backend.federation_manager_repository_registry import RepositoryBindingError
 
@@ -63,7 +65,10 @@ def install_repository_routes(api_module) -> None:
     _INSTALLED = True
 
     @api_module.router.get("/repositories")
-    def repository_health(request, authorization=api_module.Header(None)):
+    def repository_health(
+        request: Request,
+        authorization: Optional[str] = Header(None),
+    ):
         api_module._authorize(request, authorization)
         active = api_module._require_runtime()
 
