@@ -2,7 +2,7 @@
 
 The signed operations policy names a repository (for example ``spiderweb-pr``),
 but a repository name is not sufficient evidence that an arbitrary directory is
-that producer.  This module resolves the name through the Hub's authoritative
+that producer. This module resolves the name through the Hub's authoritative
 producer registry and then verifies the producer's own manifest before returning
 a filesystem root.
 
@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, Optional
 
-from src.hub.registry import Producer, Registry, load_registry
+from src.hub.registry import Producer, load_registry
 
 
 class RepositoryBindingError(RuntimeError):
@@ -39,7 +39,7 @@ class RepositoryBinding:
     manifest_path: Optional[Path]
     source: str
 
-    def as_dict(self) -> dict[str, str | None]:
+    def as_dict(self) -> Dict[str, Optional[str]]:
         return {
             "repoKey": self.repo_key,
             "appId": self.app_id,
@@ -72,8 +72,8 @@ class WorkspaceRepositoryRegistry:
     @staticmethod
     def _index(producers: Iterable[Producer]) -> Dict[str, Producer]:
         by_repo_key: Dict[str, Producer] = {}
-        seen_program_ids: set[str] = set()
-        seen_full_names: set[str] = set()
+        seen_program_ids = set()
+        seen_full_names = set()
         for producer in producers:
             repo_key = producer.repo_name
             if repo_key in by_repo_key:
@@ -145,7 +145,7 @@ class WorkspaceRepositoryRegistry:
 
         observed_full_name = manifest.get("repository_full_name")
         observed_program_id = manifest.get("program_id")
-        conflicts: list[str] = []
+        conflicts = []
         if observed_full_name != producer.repo:
             conflicts.append(
                 f"repository_full_name expected {producer.repo!r}, observed {observed_full_name!r}"
@@ -161,7 +161,11 @@ class WorkspaceRepositoryRegistry:
 
         return RepositoryBinding(
             repo_key=repo_key,
-            app_id=producer.program_id.removesuffix("-pr"),
+            app_id=(
+                producer.program_id[:-3]
+                if producer.program_id.endswith("-pr")
+                else producer.program_id
+            ),
             repository_full_name=producer.repo,
             root=root,
             manifest_path=manifest_path,
