@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import GateStatusPanel from "@/components/manager/GateStatusPanel";
 import OperationForm from "@/components/manager/OperationForm";
 import PrerequisitePanel from "@/components/manager/PrerequisitePanel";
+import RepositoryDataHealthPanel from "@/components/manager/RepositoryDataHealthPanel";
 import RunConsole from "@/components/manager/RunConsole";
 import SecretPresencePanel from "@/components/manager/SecretPresencePanel";
 import {
@@ -21,14 +22,6 @@ import {
   tokenFields,
 } from "@/components/manager/managerClient";
 import { RISK_CLASS } from "@/lib/chips";
-
-// The operations plane.
-//
-// Disabled operations are listed rather than hidden, with the policy's reason
-// shown. A short list of the twelve things that work would read as "this is
-// everything"; showing all 68 with 56 explained is the honest inventory, and it
-// is also the only way an operator can tell "not built yet" from "deliberately
-// off".
 
 function OperationRow({ operation, selected, onSelect }) {
   const disabled = !operation.enabled;
@@ -67,6 +60,7 @@ function OperationRow({ operation, selected, onSelect }) {
 export default function Operations({ api = managerApi, subscribe = subscribeToRunLogs }) {
   const [state, setState] = useState("loading");
   const [operations, setOperations] = useState([]);
+  const [repositories, setRepositories] = useState([]);
   const [accounting, setAccounting] = useState(null);
   const [gates, setGates] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -83,10 +77,11 @@ export default function Operations({ api = managerApi, subscribe = subscribeToRu
 
   useEffect(() => {
     let active = true;
-    Promise.all([api.listOperations(), api.accounting(), api.gates()])
-      .then(([ops, counts, evidence]) => {
+    Promise.all([api.listOperations(), api.repositories(), api.accounting(), api.gates()])
+      .then(([ops, repos, counts, evidence]) => {
         if (!active) return;
         setOperations(ops);
+        setRepositories(repos);
         setAccounting(counts);
         setGates(evidence);
         setState("connected");
@@ -153,20 +148,16 @@ export default function Operations({ api = managerApi, subscribe = subscribeToRu
       const document = await api.run(selected.operationId, {
         parameters: cleanValues(fields, values),
         fileTokens: tokens,
-        // The policy decides whether an operation needs acknowledgement; the
-        // page confirms only after the operator has seen the plan.
         acknowledged: Boolean(plan),
       });
       setReceipt(document);
       setRun({ status: document.receipt.status, runId: document.receipt.run_id });
-      // The snapshot is a fallback for clients that could not stream. Apply it
-      // only when nothing has streamed in yet, otherwise a late-resolving
-      // snapshot overwrites lines the stream already delivered.
       const snapshot = await api.logSnapshot(document.receipt.run_id).catch(() => null);
       if (snapshot?.lines?.length) {
         setLines((current) => (current.length ? current : snapshot.lines));
       }
       api.gates().then(setGates).catch(() => {});
+      api.repositories().then(setRepositories).catch(() => {});
     } catch (cause) {
       setRun({ status: "failed" });
       setError(cause?.detail || cause?.message || "The operation could not be started.");
@@ -177,8 +168,6 @@ export default function Operations({ api = managerApi, subscribe = subscribeToRu
     if (run?.runId) api.cancel(run.runId).catch(() => {});
   }, [api, run]);
 
-  // Streaming is wired for a run that is still in flight. `subscribe` is
-  // injectable so tests drive it without a live EventSource.
   useEffect(() => {
     if (!run?.runId || run.status !== "running") return undefined;
     unsubscribe.current = subscribe(run.runId, {
@@ -232,6 +221,19 @@ export default function Operations({ api = managerApi, subscribe = subscribeToRu
           {error}
         </p>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Repository data health</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <RepositoryDataHealthPanel
+            repositories={repositories}
+            operations={operations}
+            onSelect={select}
+          />
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <Card className="xl:col-span-1">
