@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -41,6 +42,40 @@ def test_failed_validation_cannot_register_or_move_active(tmp_path: Path) -> Non
         )
 
     assert store.current("aguayluz")["artifact_id"] == good.artifact_id
+
+
+def test_identical_bytes_preserve_distinct_run_manifestations(tmp_path: Path) -> None:
+    allowed = tmp_path / "repo"
+    allowed.mkdir()
+    payload = allowed / "same.json"
+    payload.write_text('{"same":true}\n', encoding="utf-8")
+    store = ArtifactStore(tmp_path / "artifacts")
+
+    first = store.register_validated(
+        app_id="ovnis",
+        run_id="run-a",
+        source=payload,
+        allowed_root=allowed,
+        validators=PASSED,
+    )
+    second = store.register_validated(
+        app_id="ovnis",
+        run_id="run-b",
+        source=payload,
+        allowed_root=allowed,
+        validators=PASSED,
+    )
+
+    assert first.artifact_id == second.artifact_id
+    assert first.sha256 == second.sha256
+    assert first.manifest_path == second.manifest_path
+    assert first.registration_path != second.registration_path
+    assert first.registration_path.is_file()
+    assert second.registration_path.is_file()
+    first_registration = json.loads(first.registration_path.read_text(encoding="utf-8"))
+    second_registration = json.loads(second.registration_path.read_text(encoding="utf-8"))
+    assert first_registration["run_id"] == "run-a"
+    assert second_registration["run_id"] == "run-b"
 
 
 def test_activation_and_rollback_only_target_registered_objects(tmp_path: Path) -> None:
