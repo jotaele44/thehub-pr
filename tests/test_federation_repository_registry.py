@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Optional
 
 import pytest
 
@@ -11,7 +12,7 @@ from server.backend.federation_manager_repository_registry import (
 )
 
 
-def _write_registry(path: Path, *, local_path: str | None = None) -> None:
+def _write_registry(path: Path, *, local_path: Optional[str] = None) -> None:
     local = f"\n    local_path: {local_path}" if local_path is not None else ""
     path.write_text(
         "\n".join(
@@ -41,7 +42,7 @@ def _write_manifest(root: Path, **overrides) -> None:
     (root / "federation.json").write_text(json.dumps(doc), encoding="utf-8")
 
 
-def _registry(tmp_path: Path, *, local_path: str | None = None) -> WorkspaceRepositoryRegistry:
+def _registry(tmp_path: Path, *, local_path: Optional[str] = None) -> WorkspaceRepositoryRegistry:
     workspace = tmp_path / "workspace"
     hub = workspace / "thehub-pr"
     hub.mkdir(parents=True)
