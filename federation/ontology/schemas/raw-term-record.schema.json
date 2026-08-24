@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.dev/schema/raw-term-record.schema.json",
+  "title": "PRII Raw Term Observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["observation_id", "repository", "program_id", "commit", "path", "line", "symbol", "term", "term_kind", "artifact_kind", "evidence_tier", "owner", "context", "context_hash", "extractor_rule"],
+  "properties": {
+    "observation_id": {"type": "string", "pattern": "^term_[a-f0-9]{32}$"},
+    "repository": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
+    "program_id": {"type": "string"},
+    "commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "path": {"type": "string"},
+    "line": {"type": "integer", "minimum": 1},
+    "symbol": {"type": "string"},
+    "term": {"type": "string", "minLength": 1},
+    "normalized_label": {"type": "string"},
+    "term_kind": {"type": "string"},
+    "artifact_kind": {"type": "string"},
+    "evidence_tier": {"enum": ["T1", "T2", "T3", "T4"]},
+    "owner": {"type": "string"},
+    "data_type": {"type": ["string", "null"]},
+    "cardinality": {"type": ["string", "null"]},
+    "required": {"type": ["boolean", "null"]},
+    "unit": {"type": ["string", "null"]},
+    "scale": {"type": ["string", "null"]},
+    "lifecycle_values": {"type": "array", "items": {"type": "string"}},
+    "authority_surface": {"type": ["string", "null"]},
+    "context": {"type": "string"},
+    "context_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "extractor_rule": {"type": "string"}
+  }
+}

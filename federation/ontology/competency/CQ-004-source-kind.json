@@ -1,0 +1,13 @@
+{
+  "id": "CQ-004",
+  "question": "Is this object a provenance source record, a monitored source configuration, or a stable source reference?",
+  "decision_supported": "Prevent incompatible Source meanings from being merged during aggregation or schema generation.",
+  "required_concepts": ["prii:SourceRecord", "prii:MonitoredSource", "prii:SourceReference"],
+  "required_properties": ["prii:ownedBy", "prii:hasLineage"],
+  "expected_answer_shape": "one source class with owner and mapping to related source objects",
+  "positive_fixture": {"type": "prii:MonitoredSource", "owner": "centinelas-pr", "registryKey": "source-001"},
+  "negative_fixture": {"type": "prii:SourceRecord", "pollInterval": "5m", "source_id": "src_1"},
+  "owners": ["thehub-pr"],
+  "affected_repositories": ["thehub-pr", "spiderweb-pr", "centinelas-pr", "aguayluz-pr", "ovnis-pr", "skywatcher-pr", "moneysweep-pr"],
+  "status": "proposed"
+}

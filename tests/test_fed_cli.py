@@ -78,7 +78,7 @@ def test_cent_s_active_draft_is_bound_without_inventing_vector_identity():
         }
     ]
     assert cent["invariants"]["explicit_vector_id_present"] is False
-    assert cent["invariants"]["candidate_status"] == "diverged"
+    assert cent["invariants"]["candidate_status"] == "diverged_requires_readjudication"
 
 
 def test_first_real_domain_vector_is_frozen_as_merged_main_pass():

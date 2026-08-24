@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/ovnis-pr
-          ref: d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1
+          ref: 6ca1f0f7cec7de376eae3b6ceb6a349e7800298f
           path: .fed/checkouts/ovnis-pr
           persist-credentials: false
 
@@ -31,6 +31,83 @@ jobs:
       - name: Install control plane
         run: python -m pip install -e .
 
+      - name: Bind non-self-referential control-plane snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          import yaml
+
+          ledger_path = Path("registry/development_vectors.yaml")
+          policy_path = Path("federation/control-plane-snapshot-policy.json")
+          evidence_path = Path("control-plane-runtime-binding.json")
+
+          ledger = yaml.safe_load(ledger_path.read_text(encoding="utf-8"))
+          policy = json.loads(policy_path.read_text(encoding="utf-8"))
+          control = ledger["control_plane"]
+
+          assert policy["control_plane"] == control
+          assert policy["mode"] == "RUNTIME_BIND_CONTROL_PLANE_MAIN_ONLY"
+          assert policy["producer_mode"] == "EXACT_FROZEN_SHA"
+          assert policy["invariants"]["runtime_rebind_count"] == 1
+          assert policy["invariants"]["producer_exact_sha_count"] == 6
+          assert policy["invariants"]["allow_producer_runtime_rebind"] is False
+
+          rows = ledger["snapshot"]["repositories"]
+          assert len(rows) == 7
+          by_repo = {row["repo"]: row for row in rows}
+          assert len(by_repo) == 7
+          assert control in by_repo
+
+          frozen = {repo: row["expected_sha"] for repo, row in by_repo.items()}
+          producer_frozen = {repo: sha for repo, sha in frozen.items() if repo != control}
+          assert len(producer_frozen) == 6
+
+          proc = subprocess.run(
+              ["gh", "api", f"repos/{control}/commits/main", "--jq", ".sha"],
+              text=True,
+              capture_output=True,
+              check=False,
+              env=os.environ.copy(),
+          )
+          if proc.returncode:
+              raise SystemExit(f"BLOCKED: control-plane main lookup failed: {proc.stderr.strip()}")
+          live = proc.stdout.strip()
+          if len(live) != 40 or any(ch not in "0123456789abcdef" for ch in live.lower()):
+              raise SystemExit(f"BLOCKED: invalid control-plane main SHA: {live!r}")
+
+          by_repo[control]["expected_sha"] = live
+
+          # Producer rows are not allowed to move as a side effect of solving the
+          # controller's self-reference. Their six frozen SHAs remain exact.
+          producer_after = {
+              repo: row["expected_sha"]
+              for repo, row in by_repo.items()
+              if repo != control
+          }
+          assert producer_after == producer_frozen
+
+          ledger_path.write_text(yaml.safe_dump(ledger, sort_keys=False), encoding="utf-8")
+          evidence = {
+              "schema_version": 1,
+              "mode": policy["mode"],
+              "control_plane": control,
+              "frozen_control_plane_sha": frozen[control],
+              "runtime_control_plane_sha": live,
+              "runtime_rebind_count": 1,
+              "producer_exact_sha_count": len(producer_frozen),
+              "producer_expected_shas": producer_frozen,
+          }
+          evidence_path.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          print(json.dumps(evidence, sort_keys=True))
+          PY
+
       - name: Execute frozen remote MAX apply pass
         env:
           GH_TOKEN: ${{ github.token }}
@@ -38,16 +115,23 @@ jobs:
           set -euo pipefail
           fed --root .fed/checkouts max --remote --apply | tee federation-max.json
 
-      - name: Assert merged OVNIS PASS reuse and bounded exhaustion
+      - name: Assert current remote SHAs preserve bounded exhaustion
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
           receipt = json.loads(Path("federation-max.json").read_text(encoding="utf-8"))
+          binding = json.loads(Path("control-plane-runtime-binding.json").read_text(encoding="utf-8"))
           execution = receipt["execution"]
           certification = receipt["certification"]
           repo_status = receipt["repository_status"]
+
+          assert binding["mode"] == "RUNTIME_BIND_CONTROL_PLANE_MAIN_ONLY"
+          assert binding["runtime_rebind_count"] == 1
+          assert binding["producer_exact_sha_count"] == 6
+          assert len(binding["producer_expected_shas"]) == 6
+          assert "jotaele44/thehub-pr" not in binding["producer_expected_shas"]
 
           assert execution["apply"] is True
           assert execution["bounded_exhausted"] is True
@@ -62,8 +146,9 @@ jobs:
           assert certification["certification"] == "PROVISIONAL"
           assert certification["repository_status_phase"] == "post_execution"
 
-          # Both completed vectors are declared PASS in the frozen ledger.
-          # No domain command may execute during post-merge recertification.
+          # Declared PASS vectors may be reused only when live producer heads
+          # still match the bounded registry snapshot. TheHub alone is runtime
+          # bound because a committed file cannot know its own future merge SHA.
           executed_rows = [
               row
               for pass_row in execution["passes"]
@@ -99,5 +184,5 @@ jobs:
           assert by_repo["jotaele44/ovnis-pr"] == "PASS"
           assert by_repo["jotaele44/skywatcher-pr"] == "BLOCKED"
           assert by_repo["jotaele44/moneysweep-pr"] == "BLOCKED"
-          print("PASS: merged OVNIS main reused without re-execution; bounded exhaustion and arithmetic close")
+          print("PASS: six producer SHAs frozen exactly; control-plane self-reference runtime-bound; bounded exhaustion closes")
           PY

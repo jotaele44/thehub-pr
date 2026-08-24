@@ -1,38 +1,38 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-17T21:23:26Z"
+  captured_at_utc: "2026-08-22T22:34:30Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: c32c68abce2a281fd13d9632687a7cdc10412d0b
+      expected_sha: 49abeb2654bc39b99f8d17ca8872ddb5a014cb90
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: 762e0d50fa6f6416dbbc7cf68f8f556d6fe9497b
+      expected_sha: a49595fa13f35dcd089404f3b87643a0a27d656c
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
-      expected_sha: 79c4ca685313cc9a2b36c61997257e0f75770125
+      expected_sha: e15133faafef4a6fe0472521453379c81f1a522e
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: dc234ed46ac71302e8fcc675df70bc23bbdc3e63
+      expected_sha: dfd42307252225d9c4a7235fd2fb266319072263
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
-      expected_sha: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
+      expected_sha: 0132116a6225e49eadd870371b87d38d4999d8fd
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
-      expected_sha: d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1
+      expected_sha: aa86cbd04bc0ce47593277bc95d5f34ca37e4acd
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: 55ff3a2ad763ca5f550cc698617ff2e268c4b672
+      expected_sha: e4d4fcf9792a640f61dd408771967234e6473abc
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
@@ -123,7 +123,7 @@ vectors:
     binding_adjudication:
       cardinality: "1:N"
       result: SAME_CANONICAL_VECTOR_MULTIPLE_SOURCE_MANIFESTATIONS
-      basis: Both open issues contain the identical explicit Vector identifier; neither issue is discarded or declared superseded.
+      basis: Both issues contain the identical explicit Vector identifier; #10 is preserved as a historical source manifestation after duplicate closure in favor of #11.
     execution:
       kind: operator_data_and_local_validation
       mutation: prohibited_by_fed_max
@@ -132,9 +132,16 @@ vectors:
       - recurring_source_and_outage_snapshot_validation_not_safely_executable_from_control_plane
       - unchecked_schema_source_registry_export_and_taxonomy_implementation_work
     invariants:
+      canonical_issue: 11
+      duplicate_historical_issue: 10
       issue_acceptance_still_open: true
       validator_only_not_completion: true
-      snapshot_refresh_reason: scheduled_main_refresh_advanced_from_54e19a3e90f2d69410f810d6ea76775dec30bb05
+      current_snapshot_main_sha: a49595fa13f35dcd089404f3b87643a0a27d656c
+      current_main_lineage: "#177 -> #185"
+      pr_177_exact_head_hosted_gate: PASS_7_OF_7
+      pr_185_visible_exact_head_hosted_gate: PROVISIONAL_2_FAMILIES_OBSERVED
+      pr_185_mainline_presence_is_not_full_ci_certification: true
+      snapshot_refresh_reason: adjudicated_external_merge_lineage_pr_177_then_pr_185
 
   - vector_id: FERROCARRIL_ILAP_CANONICALIZATION
     repo: jotaele44/spiderweb-pr
@@ -218,10 +225,11 @@ vectors:
       candidate_branch: feat/email-ingestion-design-v0-1
       candidate_head_sha: d21b2974c990da66bab013f40a3075c07a320c25
       candidate_base_at_creation_sha: 0219a8c1dd0f38a1f8d09a0d027f3b82a3c74d17
-      current_main_sha: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
-      candidate_ahead_by: 11
-      candidate_behind_by: 34
-      candidate_status: diverged
+      current_main_sha_at_last_vector_adjudication: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
+      current_snapshot_main_sha: 0132116a6225e49eadd870371b87d38d4999d8fd
+      candidate_ahead_by_at_last_vector_adjudication: 11
+      candidate_behind_by_at_last_vector_adjudication: 34
+      candidate_status: diverged_requires_readjudication
       explicit_vector_id_present: false
       recent_commit_theme_not_promoted_to_vector_identity: true
 
@@ -241,7 +249,7 @@ vectors:
     binding_adjudication:
       cardinality: "1:N"
       result: SAME_CANONICAL_VECTOR_MULTIPLE_SOURCE_MANIFESTATIONS
-      basis: Both open issues contain the identical explicit Vector identifier; neither issue is discarded or declared superseded.
+      basis: Both issues contain the identical explicit Vector identifier; #4 is preserved as a historical duplicate manifestation and #5 as the completed canonical tracker.
     execution:
       kind: merged_mainline_certification
       mutation: branch_only
