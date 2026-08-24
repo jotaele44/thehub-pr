@@ -1,0 +1,199 @@
+{
+  "schema_version": "federation_pickup_next_bounded_receipt_v1",
+  "generated_at_utc": "2026-08-16T20:01:58Z",
+  "certification": "PROVISIONAL",
+  "scope": "frozen seven-repository snapshot and declared eight-vector development universe only",
+  "bounded_exhaustion": true,
+  "universal_exhaustion_claimed": false,
+  "control_plane": {
+    "repository": "jotaele44/thehub-pr",
+    "repository_id": 1258897469,
+    "base_branch": "main",
+    "base_sha": "cca6d40d64282a4e6c8cc66da477ba05c0f93851",
+    "implementation_branch": "gpt/federation-pickup-engine",
+    "ci_certified_execution_head": "3746062620b1bb35b8cb4456fe1ef809fb8d3989",
+    "draft_pull_request": 182,
+    "pull_request_state": "OPEN_DRAFT_NOT_MERGED"
+  },
+  "frozen_inputs": {
+    "ledger_sha256": "bbfbd8b116889272bdeaef03f69597302908789d21f515a0f8f9d0118b041032",
+    "snapshot_sha256": "27a6c2797df9eea260f325e62b7a7716376bbc6d6f5a80253b0fdb8f16393c2b",
+    "snapshot_captured_at_utc": "2026-08-16T20:01:58Z",
+    "repositories": [
+      {"repository":"jotaele44/skywatcher-pr","repository_id":1261399537,"main_sha":"c32c68abce2a281fd13d9632687a7cdc10412d0b"},
+      {"repository":"jotaele44/aguayluz-pr","repository_id":1257600730,"main_sha":"54e19a3e90f2d69410f810d6ea76775dec30bb05"},
+      {"repository":"jotaele44/spiderweb-pr","repository_id":1111911635,"main_sha":"f985471e6bf4b556e3592757117b432dca44e780"},
+      {"repository":"jotaele44/moneysweep-pr","repository_id":1197338153,"main_sha":"35b74b9b81293c5bc68d8ba2c82f34c0c5878f5d"},
+      {"repository":"jotaele44/centinelas-pr","repository_id":1284431262,"main_sha":"6f1b53a5c21049641a558b56cbcbea6dabdf58ce"},
+      {"repository":"jotaele44/ovnis-pr","repository_id":1252871400,"main_sha":"f12d695ebf3858945cc0b20c38057724fbe98cc0"},
+      {"repository":"jotaele44/thehub-pr","repository_id":1258897469,"main_sha":"cca6d40d64282a4e6c8cc66da477ba05c0f93851"}
+    ]
+  },
+  "live_execution": {
+    "workflow": "Federation pickup bounded MAX",
+    "workflow_run_id": 31969327472,
+    "job_id": 95219153357,
+    "outcome": "SUCCESS",
+    "executed_at_utc": "2026-08-16T20:01:58Z",
+    "transport": "gh_api",
+    "apply": true,
+    "plan_sha256": "ee2f8371232789902a915411f127ac6c0dd74824eb97b49c99d016fc8c8d460f",
+    "reconciliation_sha256": "807f43469efd8613deb8beadeceb5bf3f571b169bc3081aadc1852a5f28c6c13",
+    "execution_sha256": "6efe17e4f2757f88cac5be0be2ea4a7c98b477f7193c6393b82dcfda784cdc65",
+    "pass_sha256": "e6ad433b01d864fff45786fef29737909744b0e8d834ca9a52449b03b157811b",
+    "ephemeral_receipt_path": ".fed/runs/20260816T200158Z_67b61a5d8521.json",
+    "ready_residue": [],
+    "completed_vectors_this_run": [],
+    "prior_pass_reused": ["FEDERATION_PICKUP_SYSTEM_LEVEL_3"],
+    "domain_mutation_commands_executed": 0,
+    "domain_mutation_reason": "No remaining vector was simultaneously READY, dependency-satisfied, stable-ID verified, exact-SHA verified, invariant-safe, and explicitly bound to an allowed command. APPLY mode therefore executed zero domain commands."
+  },
+  "vector_universe": {
+    "count": 8,
+    "arithmetic": "PASS=1 + OPEN=4 + BLOCKED=2 + UNRESOLVED=1 + READY=0 + FAIL=0 = 8",
+    "statuses": {
+      "FEDERATION_PICKUP_SYSTEM_LEVEL_3": "PASS",
+      "FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT": "OPEN",
+      "BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT": "BLOCKED",
+      "VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT": "OPEN",
+      "FERROCARRIL_ILAP_CANONICALIZATION": "OPEN",
+      "PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE": "BLOCKED",
+      "DISCOVER_CENTINELAS_ACTIVE_VECTOR": "UNRESOLVED",
+      "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE": "OPEN"
+    }
+  },
+  "repository_rollup_post_execution": {
+    "count": 7,
+    "arithmetic": "OPEN=4 + BLOCKED=2 + UNRESOLVED=1 + READY=0 + PASS=0 + FAIL=0 = 7",
+    "statuses": {
+      "jotaele44/thehub-pr": "OPEN",
+      "jotaele44/skywatcher-pr": "BLOCKED",
+      "jotaele44/aguayluz-pr": "OPEN",
+      "jotaele44/spiderweb-pr": "OPEN",
+      "jotaele44/moneysweep-pr": "BLOCKED",
+      "jotaele44/centinelas-pr": "UNRESOLVED",
+      "jotaele44/ovnis-pr": "OPEN"
+    }
+  },
+  "blocker_adjudication": {
+    "skywatcher": {
+      "vector": "BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT",
+      "resolved": ["production_validator_present"],
+      "blocked": [
+        "real_flightradar24_capture_required",
+        "operator_tenant_attribution_requires_review",
+        "local_uncommitted_faa_registry_and_ocr_event_inputs_required_for_registry_validation"
+      ],
+      "evidence": {
+        "tracked_fr24_baseline_payload_count": 0,
+        "tracked_fr24_baseline_state": "only .gitkeep at frozen main",
+        "faa_registry_inputs": "operator supplied local/uncommitted runtime inputs"
+      },
+      "result": "BLOCKED_NO_BYPASS"
+    },
+    "moneysweep": {
+      "vector": "PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE",
+      "resolved": [
+        "manual_preflight_gate",
+        "offline_151_source_operator_corpus_audit"
+      ],
+      "evidence": {
+        "manual_preflight_run_ids": [30452888839,30452890975,30452892905],
+        "offline_operator_corpus_evidence_sha256": "2a37bf4c49f5e4d267ca4cbdc8366c718efc1738de607cdbe3cbbbd3ec8b9f85",
+        "registry_sources": 151,
+        "automatable_ready": 104,
+        "queued_excluded": 47,
+        "required_sources_fully_materialized": 10,
+        "required_sources_total": 14,
+        "probe_ran": false
+      },
+      "blocked": [
+        "required_source_bytes_missing_cor3_hud_drgr_authorized_pr_cabilderos_prasa",
+        "entity_product_comparison_pending_operator_corpus_execution",
+        "freshness_and_external_universe_completeness_not_certified",
+        "production_export_and_downstream_federation_validation_open",
+        "some_remaining_sources_require_authorized_exports_network_or_credentials"
+      ],
+      "result": "BLOCKED_NARROWED_NO_BYPASS"
+    },
+    "centinelas": {
+      "vector": "DISCOVER_CENTINELAS_ACTIVE_VECTOR",
+      "open_issue_observation": "none_at_refresh",
+      "result": "UNRESOLVED",
+      "reason": "No authoritative active vector binding was discovered; open-issue absence and recent commit themes were not promoted to identity proof."
+    }
+  },
+  "contradictions_and_supersessions": [
+    {
+      "type": "TIME",
+      "classification": "SUPERSEDED",
+      "event": "Spiderweb main advanced after the prior bootstrap receipt.",
+      "superseded_sha": "016827421410fcd909e56c93ddb9d710083c165e",
+      "first_refresh_sha": "647952106f8c3aeecc2085b4382a3df98ccb6a8b"
+    },
+    {
+      "type": "TIME",
+      "classification": "SUPERSEDED",
+      "event": "Spiderweb main advanced again between the first refreshed snapshot and the first live APPLY attempt.",
+      "superseded_sha": "647952106f8c3aeecc2085b4382a3df98ccb6a8b",
+      "canonical_successful_snapshot_sha": "f985471e6bf4b556e3592757117b432dca44e780",
+      "failed_closed_workflow_run_id": 31969143179,
+      "failed_closed_job_id": 95218710676,
+      "mutation_commands_executed": 0,
+      "resolution": "The stale snapshot was rejected; expected SHA was deliberately refreshed and APPLY was rerun only after re-freezing the new head."
+    },
+    {
+      "type": "TEST_EXPECTATION",
+      "classification": "RESOLVED",
+      "event": "Hub CI retained a pre-resume test expectation that the certified Level-3 self-vector would execute again.",
+      "resolution": "The regression test now requires PASS artifact reuse, completed_vectors_this_run=[], zero ready residue, and no self-vector re-execution. Controller behavior was unchanged."
+    }
+  ],
+  "ci_certification": {
+    "certified_head": "3746062620b1bb35b8cb4456fe1ef809fb8d3989",
+    "all_listed_workflows_completed_success": true,
+    "workflows": [
+      {"name":"Hub CI","run_id":31969327490,"conclusion":"SUCCESS"},
+      {"name":"Federation pickup bounded MAX","run_id":31969327472,"conclusion":"SUCCESS"},
+      {"name":"CodeQL","run_id":31969327481,"conclusion":"SUCCESS"},
+      {"name":"Federation Semgrep","run_id":31969327464,"conclusion":"SUCCESS"},
+      {"name":"Secret scan","run_id":31969327479,"conclusion":"SUCCESS"},
+      {"name":"pip-audit","run_id":31969327485,"conclusion":"SUCCESS"},
+      {"name":"Federation template drift","run_id":31969327502,"conclusion":"SUCCESS"}
+    ],
+    "note": "Existing token-gated audit-claims-federation subjob remained skipped by its established gate and is not represented as executed."
+  },
+  "prohibitions_preserved": [
+    "NO_MERGE",
+    "NO_AUTO_MERGE",
+    "NO_FORCE_PUSH",
+    "NO_DESTRUCTIVE_BRANCH_DELETE",
+    "NO_REMOTE_BRANCH_DELETE",
+    "NO_CREDENTIAL_DISCLOSURE",
+    "NO_OPERATOR_DATA_GATE_BYPASS",
+    "NO_PRODUCTION_DATA_PROMOTION_FROM_ISSUE_STATE",
+    "NO_VECTOR_EXECUTION_SYNTHESIZED_FROM_ISSUE_PROSE"
+  ],
+  "remaining_residue": {
+    "ready": [],
+    "open": [
+      "FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT",
+      "VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT",
+      "FERROCARRIL_ILAP_CANONICALIZATION",
+      "CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"
+    ],
+    "blocked": [
+      "BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT",
+      "PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE"
+    ],
+    "unresolved": ["DISCOVER_CENTINELAS_ACTIVE_VECTOR"]
+  },
+  "resume_contract": {
+    "next_entrypoint": "fed pickup --remote",
+    "bounded_apply_entrypoint": "fed max --remote --apply",
+    "mutation_condition": "Only vectors explicitly bound to allowed commands and passing stable-ID, exact-SHA, dependency, invariant, status, and idempotency gates may execute.",
+    "drift_rule": "Any changed main SHA invalidates the frozen expected SHA for execution. Create a deliberate new snapshot; never silently normalize drift.",
+    "passed_artifact_reuse": "Reuse PASSed Level-3 artifacts and receipts; do not intentionally re-execute the completed self-vector.",
+    "operator_gate_rule": "Skywatcher and MoneySweep remain blocked until their operator-supplied, authorized-export, credential, or evidence prerequisites are actually satisfied."
+  }
+}

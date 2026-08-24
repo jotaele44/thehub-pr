@@ -1,0 +1,59 @@
+{
+  "protocol_version": "0.1.0",
+  "purpose": "Reproducible, non-normalizing semantic inventory of the seven PRII repositories.",
+  "snapshot": {
+    "date": "2026-08-05",
+    "branch_policy": "Record default branch, then pin exact commit SHA. Never inventory a moving branch reference.",
+    "repositories": [
+      {"program_id": "thehub-pr", "repository": "jotaele44/thehub-pr", "commit": "bf4c9d85a595d22f57f46d3fd7e192ccb5b77798", "declared_role": "Federation control-plane, schema authority, package validation, aggregation, cross-producer correlation"},
+      {"program_id": "spiderweb-pr", "repository": "jotaele44/spiderweb-pr", "commit": "ed12141c3cb6480846c859e5780242a62ae71283", "declared_role": "Spatial/operational evidence and GIS bridge exports"},
+      {"program_id": "centinelas-pr", "repository": "jotaele44/centinelas-pr", "commit": "f766efb6ede23398114a85cebf52d6530fa13891", "declared_role": "Pre-officialization public-interest signals and domain routing"},
+      {"program_id": "aguayluz-pr", "repository": "jotaele44/aguayluz-pr", "commit": "4a1c400c3f6288c97a7226c4fa4adaffabcc4388", "declared_role": "Water, wastewater, power, utility assets, outages, and service events"},
+      {"program_id": "ovnis-pr", "repository": "jotaele44/ovnis-pr", "commit": "400994dcc4e0e752c6ead984b0956f65adb0e153", "declared_role": "Puerto Rico historical anomalous-event case corpus and review pipeline"},
+      {"program_id": "skywatcher-pr", "repository": "jotaele44/skywatcher-pr", "commit": "f940dc1d4afae7740eaa2a94dbf4684d11ae156b", "declared_role": "Airspace/aircraft intelligence, FR24 ingestion, and airspace observations"},
+      {"program_id": "moneysweep-pr", "repository": "jotaele44/moneysweep-pr", "commit": "e14b9b8f4eb05b446a2da2072b0e247486b58e1e", "declared_role": "Public-money, procurement, grants, recovery, influence, fiscal-control, and contractor-reference records"}
+    ]
+  },
+  "evidence_tiers": {
+    "T1_technical": ["JSON Schema", "Pydantic/dataclass/model declaration", "database schema", "manifest contract", "machine validation", "test assertion"],
+    "T2_operational": ["runbook", "architecture document", "CLI behavior", "workflow", "readiness gate", "export package", "source registry"],
+    "T3_eyewitness": ["interview", "tip", "witness statement", "operator annotation"],
+    "T4_secondary": ["README narrative", "commentary", "derived documentation", "external summary"]
+  },
+  "collection_order": [
+    "repository identity and exact commit",
+    "root manifest and schema",
+    "canonical export schemas",
+    "domain models and enums",
+    "configuration and source registries",
+    "CLI and workflow states",
+    "events, artifacts, errors, and tests",
+    "README and architecture narrative"
+  ],
+  "raw_term_record_required_fields": [
+    "observation_id", "repository", "commit", "path", "line_or_symbol", "verbatim_term", "context_excerpt", "artifact_kind", "evidence_tier", "declared_owner", "data_type", "cardinality", "unit_or_scale", "lifecycle_values", "cross_repo_surface", "collector_notes"
+  ],
+  "non_normalization_rules": [
+    "Do not merge terms during collection.",
+    "Preserve original capitalization, pluralization, namespace, and field name.",
+    "Treat same label with different owner, scale, target, cardinality, or lifecycle as a homonym candidate.",
+    "Treat different labels as synonyms only after definition, extension, and authority comparison.",
+    "Do not infer real-world equivalence from shared IDs or names.",
+    "Keep transport rows, semantic concepts, and UI projections distinct."
+  ],
+  "deduplication_key": ["repository", "commit", "path", "line_or_symbol", "verbatim_term", "context_hash"],
+  "comparison_dimensions": [
+    "definition", "referent/extension", "owner", "layer", "identity rule", "cardinality", "direction", "lifecycle", "unit", "scale", "temporal semantics", "provenance requirement", "synthetic/test handling", "consumer expectations"
+  ],
+  "classifications": ["FEDERATION_CORE", "CROSS_REPO_CONTRACT", "REPO_LOCAL", "IMPLEMENTATION_ONLY", "ALIAS_CANDIDATE", "CONFLICT", "DEPRECATED", "UNRESOLVED"],
+  "core_admission_tests": [
+    "crosses_repository_boundary",
+    "shared_semantics_in_two_or_more_repositories",
+    "hub_validates_aggregates_correlates_or_projects",
+    "semantic_change_can_break_compatibility",
+    "required_for_provenance_reproducibility_governance_or_readiness"
+  ],
+  "quality_gates": [
+    "100_percent_repository_pin_coverage", "100_percent_root_manifest_coverage", "cross_source_corroboration_for_core_candidates", "synonym_and_homonym_review", "identity_cardinality_unit_scale_review", "ownership_review", "contradiction_log", "blind_spot_log", "no_unmapped_breaking_change"
+  ]
+}

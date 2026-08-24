@@ -1,0 +1,19 @@
+{
+  "@context": "../contexts/all.context.jsonld",
+  "@id": "https://prii.dev/ontology/repo/centinelas-pr",
+  "@type": "prii:OntologyModule",
+  "version": "0.1.0", "status": "proposed", "owner": "centinelas-pr",
+  "imports": ["https://prii.dev/ontology/core"],
+  "classes": [
+    {"id": "centinelas:Signal", "label": "Signal", "owner": "centinelas-pr"},
+    {"id": "centinelas:SignalStage", "label": "Signal Stage", "owner": "centinelas-pr"},
+    {"id": "centinelas:MatterPreOfficializationState", "label": "Matter Pre-Officialization State", "owner": "centinelas-pr"},
+    {"id": "centinelas:EntityMention", "label": "Entity Mention", "owner": "centinelas-pr"},
+    {"id": "centinelas:Beat", "label": "Beat", "owner": "centinelas-pr"},
+    {"id": "centinelas:Watchlist", "label": "Watchlist", "owner": "centinelas-pr"},
+    {"id": "centinelas:HandoffCandidate", "label": "Handoff Candidate", "owner": "centinelas-pr"},
+    {"id": "centinelas:CoverageGap", "label": "Coverage Gap", "owner": "centinelas-pr"},
+    {"id": "centinelas:DomainRoutingDecision", "label": "Domain Routing Decision", "owner": "centinelas-pr"}
+  ],
+  "sharedClasses": ["prii:PublicMatter"]
+}

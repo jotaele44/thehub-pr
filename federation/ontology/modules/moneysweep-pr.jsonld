@@ -1,0 +1,20 @@
+{
+  "@context": "../contexts/all.context.jsonld",
+  "@id": "https://prii.dev/ontology/repo/moneysweep-pr",
+  "@type": "prii:OntologyModule",
+  "version": "0.1.0", "status": "proposed", "owner": "moneysweep-pr",
+  "imports": ["https://prii.dev/ontology/core"],
+  "classes": [
+    {"id": "moneysweep:ProcurementRecord", "label": "Procurement Record", "owner": "moneysweep-pr"},
+    {"id": "moneysweep:ContractRecord", "label": "Contract Record", "owner": "moneysweep-pr"},
+    {"id": "moneysweep:FundingAward", "label": "Funding Award", "owner": "moneysweep-pr"},
+    {"id": "moneysweep:Transaction", "label": "Transaction", "owner": "moneysweep-pr"},
+    {"id": "moneysweep:RecoveryAssistanceRecord", "label": "Recovery Assistance Record", "owner": "moneysweep-pr"},
+    {"id": "moneysweep:InfluenceRecord", "label": "Influence Record", "owner": "moneysweep-pr"},
+    {"id": "moneysweep:FiscalControlRecord", "label": "Fiscal Control Record", "owner": "moneysweep-pr"},
+    {"id": "moneysweep:ContractorReference", "label": "Contractor Reference", "owner": "moneysweep-pr"},
+    {"id": "moneysweep:OfficializationEvent", "label": "Officialization Event", "owner": "moneysweep-pr"},
+    {"id": "moneysweep:SourceReadinessState", "label": "Source Readiness State", "owner": "moneysweep-pr"}
+  ],
+  "sharedClasses": ["prii:PublicMatter"]
+}

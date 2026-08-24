@@ -64,6 +64,14 @@ targets:
   - template: PRII-APP.sh
     output: PRII-{{APP_SLUG}}.sh
     repos: *all
+  # The executable inside the .app bundle. mode is required: it has no suffix,
+  # so the renderer's .sh/.command extension rule cannot see it, and a first
+  # render into a fresh checkout would leave it 0644 — a bundle that will not
+  # launch while its content still compares equal.
+  - template: PRII-APP.app/Contents/MacOS/PRII-APP
+    output: PRII-{{APP_SLUG}}.app/Contents/MacOS/PRII-{{APP_SLUG}}
+    repos: *all
+    mode: 0755
   - template: requirements-desktop.txt
     output: requirements-desktop.txt
     repos: *desktop
