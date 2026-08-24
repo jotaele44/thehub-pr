@@ -1,14 +1,14 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-24T21:14:53Z"
+  captured_at_utc: "2026-08-24T21:23:58Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: 3e11e185681832c883873785a8ec4b66bdf711ef
+      expected_sha: 7812682d800fa280b5e3c980d7d7027faf6fcc4c
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
@@ -32,7 +32,7 @@ snapshot:
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: 5b1828618a5f1d72e9254fb459774c92ce607a68
+      expected_sha: 103e06553270fd690c9c2d9aa5fd7604f3a34617
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
@@ -108,6 +108,10 @@ vectors:
       fr24_baseline_evidence: data/FR24_baseline contains only .gitkeep at frozen main
       faa_registry_runtime_inputs_operator_supplied: true
       standalone_packaging_candidate_is_distinct_from_export_vector: true
+      current_snapshot_main_sha: 7812682d800fa280b5e3c980d7d7027faf6fcc4c
+      current_main_exact_head_gate: PASS_15_OF_15_REPOSITORY_CI
+      non_gating_dependabot_maintenance_checks_at_capture: 3_IN_PROGRESS
+      current_dependency_lineage: "3e11e18 -> 98a486d -> 7812682"
 
   - vector_id: VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT
     repo: jotaele44/aguayluz-pr
