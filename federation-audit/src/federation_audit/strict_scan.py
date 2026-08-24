@@ -69,12 +69,15 @@ def _promote_gui_trace(trace: Trace, repo_root: Path, index: ResolutionIndex) ->
         else:
             target = index.resolve_symbol(source_rel, handler_name)
             if target:
-                target_path = repo_root / target.source
-                target_source = target_path.read_text(encoding="utf-8", errors="replace")
+                target_source_path = repo_root / target.source
+                target_source = target_source_path.read_text(encoding="utf-8", errors="replace")
                 body = _handler_bodies(target_source).get(target.name)
                 handler_source = target.source
                 evidence.extend(
-                    [f"import-binding:{source_rel}:{handler_name}", f"target-symbol:{target.source}:{target.line}:{target.name}"]
+                    [
+                        f"import-binding:{source_rel}:{handler_name}",
+                        f"target-symbol:{target.source}:{target.line}:{target.name}",
+                    ]
                 )
     else:
         body = event_expr
@@ -101,7 +104,12 @@ def _promote_gui_trace(trace: Trace, repo_root: Path, index: ResolutionIndex) ->
         "gui-to-api",
         f"{source_rel}:{line}",
         f"{route.method} {route.path}",
-        [*evidence, f"handler-source:{handler_source}", *route.evidence, f"route:{route.source}:{route.line}"],
+        [
+            *evidence,
+            f"handler-source:{handler_source}",
+            *route.evidence,
+            f"route:{route.source}:{route.line}",
+        ],
     )
     # Strict T1 evidence supersedes provisional legacy observations made before
     # router-prefix/import resolution.
@@ -156,10 +164,16 @@ def strict_scan_federation(workspace_root: Path, manifest: dict) -> dict:
         "coverage": {
             "surfaces_discovered": len(encoded),
             "surfaces_classified": sum(item["classification"] != "INDETERMINATE" for item in encoded),
-            "t1_or_t2_supported": sum(any(e["tier"] in {"T1", "T2"} for e in item["evidence"]) for item in encoded),
-            "target_resolved": sum(bool(item["observations"].get("target_resolution_evidence")) for item in encoded),
+            "t1_or_t2_supported": sum(
+                any(e["tier"] in {"T1", "T2"} for e in item["evidence"]) for item in encoded
+            ),
+            "target_resolved": sum(
+                bool(item["observations"].get("target_resolution_evidence")) for item in encoded
+            ),
             "by_kind": {kind: sum(item["surface"]["kind"] == kind for item in encoded) for kind in kinds},
-            "classification_counts": {status: sum(item["classification"] == status for item in encoded) for status in statuses},
+            "classification_counts": {
+                status: sum(item["classification"] == status for item in encoded) for status in statuses
+            },
             "repositories_present": len(manifest["repositories"]) - len(missing),
             "repositories_missing": len(missing),
         },

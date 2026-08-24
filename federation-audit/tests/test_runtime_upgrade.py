@@ -1,8 +1,12 @@
+import json
+import os
+import subprocess
 from pathlib import Path
 
 from federation_audit.calibration import run_calibration
 from federation_audit.classifier import classify_observations
-from federation_audit.runtime_cert import Probe, validate_topology
+from federation_audit.resolver import build_resolution_index
+from federation_audit.runtime_cert import Probe, _install_block_wrappers, validate_topology
 
 
 def test_static_declaration_cannot_self_promote():
@@ -53,6 +57,33 @@ def test_adversarial_calibration_has_no_known_fp_or_fn():
     assert result["false_negative"] == 0
     assert result["precision"] == 1.0
     assert result["recall"] == 1.0
+
+
+def test_frontend_resolution_accepts_symlinked_root(tmp_path: Path):
+    real_root = tmp_path / "real"
+    web = real_root / "web"
+    web.mkdir(parents=True)
+    (web / "handlers.js").write_text("export const run = () => true;\n", encoding="utf-8")
+    (web / "App.jsx").write_text(
+        'import { run } from "./handlers";\nexport const App = () => run();\n',
+        encoding="utf-8",
+    )
+    linked_root = tmp_path / "linked"
+    linked_root.symlink_to(real_root, target_is_directory=True)
+
+    index = build_resolution_index(linked_root)
+
+    assert index.imports["web/App.jsx"]["run"] == ("web/handlers.js", "run")
+
+
+def test_block_wrappers_emit_valid_jsonl(tmp_path: Path):
+    bin_dir, log_path = _install_block_wrappers(tmp_path)
+    env = os.environ | {"FEDERATION_AUDIT_BLOCK_LOG": str(log_path)}
+
+    result = subprocess.run([str(bin_dir / "curl"), "https://example.invalid"], env=env, check=False)
+
+    assert result.returncode == 126
+    assert json.loads(log_path.read_text(encoding="utf-8")) == {"command": "curl", "argc": 1}
 
 
 def test_topology_must_bind_to_declared_command():

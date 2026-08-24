@@ -17,27 +17,36 @@ def build_inventory_graph(manifest: dict[str, Any], manifest_locator: str) -> di
 
     def add_node(repo: str, kind: str, label: str, attributes: dict[str, Any]) -> str:
         node_id = _id(repo, kind, label, str(len(nodes)))
-        nodes.append({"node_id": node_id, "kind": kind, "repository": repo, "label": label, "attributes": attributes})
+        nodes.append(
+            {"node_id": node_id, "kind": kind, "repository": repo, "label": label, "attributes": attributes}
+        )
         counts[kind] += 1
         return node_id
 
     def add_edge(source: str, target: str, relation: str, confidence: float) -> None:
-        edges.append({
-            "edge_id": _id(source, target, relation),
-            "source": source,
-            "target": target,
-            "relation": relation,
-            "confidence": confidence,
-        })
+        edges.append(
+            {
+                "edge_id": _id(source, target, relation),
+                "source": source,
+                "target": target,
+                "relation": relation,
+                "confidence": confidence,
+            }
+        )
 
     for repo in manifest["repositories"]:
         name = repo["repository"]
-        repo_node = add_node(name, "repository", name, {
-            "commit": repo["commit"],
-            "workspace_directory": repo["workspace_directory"],
-            "application_types": repo["application_types"],
-            "confidence": repo["confidence"],
-        })
+        repo_node = add_node(
+            name,
+            "repository",
+            name,
+            {
+                "commit": repo["commit"],
+                "workspace_directory": repo["workspace_directory"],
+                "application_types": repo["application_types"],
+                "confidence": repo["confidence"],
+            },
+        )
         for entry in repo["entry_points"]:
             target = add_node(name, "entry-point", f"{entry['kind']}:{entry['path']}", entry)
             add_edge(repo_node, target, "HAS_ENTRY_POINT", entry["confidence"])

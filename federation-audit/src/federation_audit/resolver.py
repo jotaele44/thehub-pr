@@ -4,9 +4,9 @@ import ast
 import hashlib
 import json
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable
 
 SOURCE_SUFFIXES = {".py", ".js", ".jsx", ".ts", ".tsx", ".vue"}
 IGNORED_DIRS = {".git", "node_modules", "dist", "build", ".venv", "venv", "__pycache__", ".pytest_cache"}
@@ -102,7 +102,11 @@ class ResolutionIndex:
 
 def iter_sources(root: Path) -> Iterable[Path]:
     for path in root.rglob("*"):
-        if path.is_file() and path.suffix.lower() in SOURCE_SUFFIXES and not any(part in IGNORED_DIRS for part in path.parts):
+        if (
+            path.is_file()
+            and path.suffix.lower() in SOURCE_SUFFIXES
+            and not any(part in IGNORED_DIRS for part in path.parts)
+        ):
             yield path
 
 
@@ -131,7 +135,7 @@ def _router_prefixes(tree: ast.AST) -> dict[str, str]:
         for kw in value.keywords:
             if kw.arg == "prefix":
                 prefix = _literal_string(kw.value) or ""
-        targets: list[ast.AST] = node.targets if isinstance(node, ast.Assign) else [node.target]
+        targets: tuple[ast.AST, ...] = tuple(node.targets) if isinstance(node, ast.Assign) else (node.target,)
         for target in targets:
             if isinstance(target, ast.Name):
                 prefixes[target.id] = prefix
@@ -142,7 +146,11 @@ def _include_prefixes(tree: ast.AST) -> dict[str, list[str]]:
     """Return include_router target symbol -> literal include prefixes in this module."""
     result: dict[str, list[str]] = {}
     for node in ast.walk(tree):
-        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Attribute) or node.func.attr != "include_router":
+        if (
+            not isinstance(node, ast.Call)
+            or not isinstance(node.func, ast.Attribute)
+            or node.func.attr != "include_router"
+        ):
             continue
         if not node.args:
             continue
@@ -194,7 +202,17 @@ def _python_routes(root: Path) -> tuple[list[ResolvedRoute], list[str]]:
                     gaps.append(f"dynamic-route:{rel}:{getattr(decorator, 'lineno', node.lineno)}")
                     continue
                 router = decorator.func.value.id if isinstance(decorator.func.value, ast.Name) else "router"
-                raw.append((method, route_path, rel, decorator.lineno, node.name, router, local_prefix.get(router, "")))
+                raw.append(
+                    (
+                        method,
+                        route_path,
+                        rel,
+                        decorator.lineno,
+                        node.name,
+                        router,
+                        local_prefix.get(router, ""),
+                    )
+                )
 
     resolved: list[ResolvedRoute] = []
     for method, route_path, rel, line, handler, router, router_prefix in raw:
@@ -210,7 +228,11 @@ def _python_routes(root: Path) -> tuple[list[ResolvedRoute], list[str]]:
                     line,
                     handler,
                     router,
-                    (f"decorator:{route_path}", f"router-prefix:{router_prefix}", f"include-prefix:{include_prefix}"),
+                    (
+                        f"decorator:{route_path}",
+                        f"router-prefix:{router_prefix}",
+                        f"include-prefix:{include_prefix}",
+                    ),
                 )
             )
     return resolved, gaps
@@ -239,11 +261,13 @@ def _resolve_module(source_rel: str, module: str, root: Path) -> str | None:
     ]
     for item in possibilities:
         if item.is_file():
-            return item.relative_to(root).as_posix()
+            return item.relative_to(root_resolved).as_posix()
     return None
 
 
-def _frontend_index(root: Path) -> tuple[dict[str, list[SymbolLocation]], dict[str, dict[str, tuple[str, str]]], list[str]]:
+def _frontend_index(
+    root: Path,
+) -> tuple[dict[str, list[SymbolLocation]], dict[str, dict[str, tuple[str, str]]], list[str]]:
     symbols: dict[str, list[SymbolLocation]] = {}
     imports: dict[str, dict[str, tuple[str, str]]] = {}
     gaps: list[str] = []
@@ -258,7 +282,9 @@ def _frontend_index(root: Path) -> tuple[dict[str, list[SymbolLocation]], dict[s
         for regex in (JS_FUNCTION, JS_ARROW):
             for match in regex.finditer(source):
                 name = match.group(1)
-                exported = bool(re.match(r"\s*export\b", source[max(0, match.start() - 12):match.start() + 7]))
+                exported = bool(
+                    re.match(r"\s*export\b", source[max(0, match.start() - 12) : match.start() + 7])
+                )
                 symbols.setdefault(name, []).append(
                     SymbolLocation(name, rel, source[: match.start()].count("\n") + 1, exported)
                 )
@@ -317,7 +343,7 @@ def network_intents(body: str) -> list[tuple[str, str]]:
         fetch_token, axios_method, target = match.groups()
         method = (axios_method or "GET").upper()
         if fetch_token:
-            after = body[match.end():match.end() + 500]
+            after = body[match.end() : match.end() + 500]
             method_match = METHOD_OPTION.search(after)
             if method_match:
                 method = method_match.group(1).upper()

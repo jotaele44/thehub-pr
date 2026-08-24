@@ -34,4 +34,7 @@ def test_repository_static_evidence_matches_trace_contract():
 
 
 def test_initial_inventory_graph_matches_contract():
-    _validate("contracts/federation-executability-graph.schema.json", "evidence/federation-initial-static-graph.json")
+    _validate(
+        "contracts/federation-executability-graph.schema.json",
+        "evidence/federation-initial-static-graph.json",
+    )

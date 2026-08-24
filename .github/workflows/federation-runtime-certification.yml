@@ -20,12 +20,12 @@ jobs:
       FEDERATION_RUNTIME_DEPS: ${{ github.workspace }}/federation-audit/.runtime-deps
     steps:
       - name: Checkout PR head
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           persist-credentials: false
 
       - name: Checkout TheHub exact pin
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/thehub-pr
           ref: a5bad05ce5eec4cc73e2eed8569d294bc3f5cd27
@@ -33,7 +33,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout Spiderweb exact pin
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/spiderweb-pr
           ref: 3c5dd01dbbdfce5dcf12ee95b6623f440488d820
@@ -41,7 +41,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout Skywatcher exact pin
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/skywatcher-pr
           ref: f940dc1d4afae7740eaa2a94dbf4684d11ae156b
@@ -49,7 +49,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout Ovnis exact pin
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/ovnis-pr
           ref: 400994dcc4e0e752c6ead984b0956f65adb0e153
@@ -57,7 +57,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout Aguayluz exact pin
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/aguayluz-pr
           ref: 0e10312ab35ea0d745963d7b3b48b39fb8aaf7ef
@@ -65,7 +65,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout Centinelas exact pin
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/centinelas-pr
           ref: f766efb6ede23398114a85cebf52d6530fa13891
@@ -73,7 +73,7 @@ jobs:
           persist-credentials: false
 
       - name: Checkout MoneySweep exact pin
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/moneysweep-pr
           ref: ab30e34e6307c6bb2782a1573e8d5ec7923af544
@@ -100,7 +100,7 @@ jobs:
           PY
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v5
         with:
           python-version: "3.11"
           cache: pip
@@ -135,7 +135,7 @@ jobs:
           docker run --rm \
             -v "$FEDERATION_WORKSPACE:/workspace:ro" \
             -v "$FEDERATION_RUNTIME_DEPS:/runtime-deps:rw" \
-            mcr.microsoft.com/playwright:v1.62.1-noble \
+            mcr.microsoft.com/playwright:v1.62.1-noble@sha256:dcc5531e97840b9b5e794f2814476b21571c5124a3fca2267d73041f56e7580e \
             bash -lc '
               set -euo pipefail
               python -m pip install --no-cache-dir --target /runtime-deps \
@@ -198,7 +198,7 @@ jobs:
 
       - name: Upload certification receipts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: federation-runtime-certification-${{ github.sha }}
           path: |

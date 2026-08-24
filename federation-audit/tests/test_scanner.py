@@ -8,7 +8,10 @@ def test_scanner_correlates_controls_and_routes(tmp_path: Path):
     (repo / "api").mkdir(parents=True)
     (repo / "web").mkdir()
     (repo / "api/app.py").write_text(
-        "from fastapi import FastAPI\napp = FastAPI()\n@app.post('/api/export')\ndef export(): return {'accepted': True}\n"
+        "from fastapi import FastAPI\n"
+        "app = FastAPI()\n"
+        "@app.post('/api/export')\n"
+        "def export(): return {'accepted': True}\n"
     )
     (repo / "web/App.jsx").write_text(
         "export function App() {\n"
@@ -20,7 +23,11 @@ def test_scanner_correlates_controls_and_routes(tmp_path: Path):
         " </div>;\n"
         "}\n"
     )
-    manifest = {"repositories": [{"repository": "Jotaele44/sample", "commit": "a" * 40, "workspace_directory": "sample"}]}
+    manifest = {
+        "repositories": [
+            {"repository": "Jotaele44/sample", "commit": "a" * 40, "workspace_directory": "sample"}
+        ]
+    }
     result = scan_federation(tmp_path, manifest)
     by_label = {t["surface"]["label"]: t["classification"] for t in result["traces"]}
     assert by_label["Dead"] == "UI_NO_OP"

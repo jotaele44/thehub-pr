@@ -45,7 +45,9 @@ class ShadowHTTPHandler(BaseHTTPRequestHandler):
             "authorization_present": "authorization" in {key.lower() for key in self.headers.keys()},
         }
         self.store.append(record)
-        payload = json.dumps({"accepted": True, "shadow": True, "request_sha256": record["body_sha256"]}).encode()
+        payload = json.dumps(
+            {"accepted": True, "shadow": True, "request_sha256": record["body_sha256"]}
+        ).encode()
         self.send_response(202)
         self.send_header("content-type", "application/json")
         self.send_header("content-length", str(len(payload)))

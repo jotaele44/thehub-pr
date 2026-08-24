@@ -4,9 +4,9 @@ import ast
 import hashlib
 import json
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 from .classifier import classify_trace
 from .models import Evidence, Trace
@@ -16,9 +16,13 @@ SOURCE_SUFFIXES = {".py", ".js", ".jsx", ".ts", ".tsx", ".vue"}
 ROUTE_DECORATOR = re.compile(r"(?:app|router)\.(get|post|put|patch|delete|options|head)\(\s*[\"']([^\"']+)")
 JSX_CONTROL = re.compile(r"<(button|Button|a|Link)\b([^>]*)>(.*?)</\1>", re.I | re.S)
 ON_EVENT = re.compile(r"on(?:Click|Submit|Change|Select)\s*=\s*\{([^}]+)\}")
-FUNC_ARROW = re.compile(r"(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>\s*\{(.*?)\};", re.S)
+FUNC_ARROW = re.compile(
+    r"(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>\s*\{(.*?)\};", re.S
+)
 FUNC_DECL = re.compile(r"(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{(.*?)\n\}", re.S)
-NETWORK_CALL = re.compile(r"(?:(fetch)\s*\(\s*|axios\.(get|post|put|patch|delete)\s*\(\s*)[\"'`]([^\"'`]+)", re.I)
+NETWORK_CALL = re.compile(
+    r"(?:(fetch)\s*\(\s*|axios\.(get|post|put|patch|delete)\s*\(\s*)[\"'`]([^\"'`]+)", re.I
+)
 METHOD_OPTION = re.compile(r"method\s*:\s*[\"'](GET|POST|PUT|PATCH|DELETE)[\"']", re.I)
 CALL = re.compile(r"\b([A-Za-z_$][\w$]*)\s*\(")
 PLACEHOLDER = re.compile(r"\b(TODO|FIXME|NotImplemented|placeholder|mock[-_ ]only|coming soon)\b", re.I)
@@ -41,7 +45,11 @@ def stable_id(*parts: str) -> str:
 
 def iter_sources(root: Path) -> Iterable[Path]:
     for path in root.rglob("*"):
-        if path.is_file() and path.suffix.lower() in SOURCE_SUFFIXES and not any(p in IGNORED_DIRS for p in path.parts):
+        if (
+            path.is_file()
+            and path.suffix.lower() in SOURCE_SUFFIXES
+            and not any(p in IGNORED_DIRS for p in path.parts)
+        ):
             yield path
 
 
@@ -57,15 +65,33 @@ def _python_routes(source: str, rel: str) -> list[ApiRoute]:
         for decorator in node.decorator_list:
             if not isinstance(decorator, ast.Call) or not isinstance(decorator.func, ast.Attribute):
                 continue
-            if decorator.func.attr.lower() not in {"get", "post", "put", "patch", "delete", "options", "head"}:
+            if decorator.func.attr.lower() not in {
+                "get",
+                "post",
+                "put",
+                "patch",
+                "delete",
+                "options",
+                "head",
+            }:
                 continue
-            if decorator.args and isinstance(decorator.args[0], ast.Constant) and isinstance(decorator.args[0].value, str):
-                routes.append(ApiRoute(decorator.func.attr.upper(), decorator.args[0].value, rel, decorator.lineno))
+            if (
+                decorator.args
+                and isinstance(decorator.args[0], ast.Constant)
+                and isinstance(decorator.args[0].value, str)
+            ):
+                routes.append(
+                    ApiRoute(decorator.func.attr.upper(), decorator.args[0].value, rel, decorator.lineno)
+                )
     return routes
 
 
 def _fallback_routes(source: str, rel: str) -> list[ApiRoute]:
-    return [ApiRoute(m.upper(), p, rel, source[:match.start()].count("\n") + 1) for match in ROUTE_DECORATOR.finditer(source) for m, p in [match.groups()]]
+    return [
+        ApiRoute(m.upper(), p, rel, source[: match.start()].count("\n") + 1)
+        for match in ROUTE_DECORATOR.finditer(source)
+        for m, p in [match.groups()]
+    ]
 
 
 def _handlers(source: str) -> dict[str, str]:
@@ -88,7 +114,7 @@ def _network_intents(body: str) -> list[tuple[str, str]]:
         fetch_token, axios_method, path = match.groups()
         method = (axios_method or "GET").upper()
         if fetch_token:
-            after = body[match.end(): match.end() + 350]
+            after = body[match.end() : match.end() + 350]
             method_match = METHOD_OPTION.search(after)
             if method_match:
                 method = method_match.group(1).upper()
@@ -96,7 +122,9 @@ def _network_intents(body: str) -> list[tuple[str, str]]:
     return intents
 
 
-def _generic_trace(repo: dict, kind: str, rel: str, line: int, label: str, observations: dict, path_nodes: list[dict]) -> Trace:
+def _generic_trace(
+    repo: dict, kind: str, rel: str, line: int, label: str, observations: dict, path_nodes: list[dict]
+) -> Trace:
     tid = stable_id(repo["repository"], repo["commit"], kind, rel, str(line), label)
     trace = Trace(
         trace_id=tid,
@@ -110,7 +138,9 @@ def _generic_trace(repo: dict, kind: str, rel: str, line: int, label: str, obser
     return classify_trace(trace)
 
 
-def _repo_trace(repo: dict, rel: str, line: int, label: str, observations: dict, path_nodes: list[dict]) -> Trace:
+def _repo_trace(
+    repo: dict, rel: str, line: int, label: str, observations: dict, path_nodes: list[dict]
+) -> Trace:
     return _generic_trace(repo, "gui-control", rel, line, label, observations, path_nodes)
 
 
@@ -129,7 +159,12 @@ def _python_cli_commands(source: str, rel: str) -> list[tuple[str, int]]:
                 target = call.func if call else decorator
                 if isinstance(target, ast.Attribute) and target.attr in {"command", "callback"}:
                     name = node.name
-                    if call and call.args and isinstance(call.args[0], ast.Constant) and isinstance(call.args[0].value, str):
+                    if (
+                        call
+                        and call.args
+                        and isinstance(call.args[0], ast.Constant)
+                        and isinstance(call.args[0].value, str)
+                    ):
                         name = call.args[0].value
                     commands.append((name, node.lineno))
     for match in re.finditer(r"\.add_parser\(\s*[\"']([^\"']+)", source):
@@ -159,7 +194,12 @@ def _scan_package_scripts(root: Path, repo: dict) -> list[Trace]:
             }
             if PLACEHOLDER.search(command):
                 observations["placeholder"] = True
-            node = {"node_id": stable_id(rel, name, command), "kind": "package-script", "status": "resolved" if command.strip() else "missing", "source": rel}
+            node = {
+                "node_id": stable_id(rel, name, command),
+                "kind": "package-script",
+                "status": "resolved" if command.strip() else "missing",
+                "source": rel,
+            }
             traces.append(_generic_trace(repo, "command", rel, 1, name, observations, [node]))
     return traces
 
@@ -194,7 +234,7 @@ def _scan_workflows(root: Path, repo: dict) -> list[Trace]:
                 continue
             if current and re.match(r"^\s+(?:run|uses):", line):
                 current[2].append(line.strip())
-        for job_id, line, steps in jobs:
+        for job_id, job_line, steps in jobs:
             observations: dict[str, object] = {
                 "handler_bound": True,
                 "handler_resolved": True,
@@ -206,9 +246,24 @@ def _scan_workflows(root: Path, repo: dict) -> list[Trace]:
             joined = "\n".join(steps)
             if PLACEHOLDER.search(joined):
                 observations["placeholder"] = True
-            nodes = [{"node_id": stable_id(rel, job_id), "kind": "workflow-job", "status": "resolved" if steps else "declared", "source": rel}]
-            nodes.extend({"node_id": stable_id(rel, job_id, step), "kind": "workflow-step", "status": "declared", "source": rel} for step in steps[:20])
-            traces.append(_generic_trace(repo, "workflow-stage", rel, line, job_id, observations, nodes))
+            nodes = [
+                {
+                    "node_id": stable_id(rel, job_id),
+                    "kind": "workflow-job",
+                    "status": "resolved" if steps else "declared",
+                    "source": rel,
+                }
+            ]
+            nodes.extend(
+                {
+                    "node_id": stable_id(rel, job_id, step),
+                    "kind": "workflow-step",
+                    "status": "declared",
+                    "source": rel,
+                }
+                for step in steps[:20]
+            )
+            traces.append(_generic_trace(repo, "workflow-stage", rel, job_line, job_id, observations, nodes))
     return traces
 
 
@@ -228,7 +283,11 @@ def scan_repository(root: Path, repo: dict) -> list[Trace]:
             routes.extend(found or _fallback_routes(source, rel))
             try:
                 tree = ast.parse(source)
-                symbols.update(n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)))
+                symbols.update(
+                    n.name
+                    for n in ast.walk(tree)
+                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
+                )
             except SyntaxError:
                 pass
         else:
@@ -236,14 +295,46 @@ def scan_repository(root: Path, repo: dict) -> list[Trace]:
 
     traces: list[Trace] = []
     for route in routes:
-        observations = {"handler_bound": True, "handler_resolved": True, "intent_observed": True, "boundary_reached": True, "contract_matched": True, "static_contract_resolved": True}
-        nodes = [{"node_id": stable_id(route.method, route.path, route.source), "kind": "api-route", "status": "resolved", "source": route.source}]
-        traces.append(_generic_trace(repo, "route", route.source, route.line, f"{route.method} {route.path}", observations, nodes))
+        observations = {
+            "handler_bound": True,
+            "handler_resolved": True,
+            "intent_observed": True,
+            "boundary_reached": True,
+            "contract_matched": True,
+            "static_contract_resolved": True,
+        }
+        nodes: list[dict[str, object]] = [
+            {
+                "node_id": stable_id(route.method, route.path, route.source),
+                "kind": "api-route",
+                "status": "resolved",
+                "source": route.source,
+            }
+        ]
+        traces.append(
+            _generic_trace(
+                repo, "route", route.source, route.line, f"{route.method} {route.path}", observations, nodes
+            )
+        )
     for rel, source in sources.items():
         if Path(rel).suffix == ".py":
             for command, line in _python_cli_commands(source, rel):
-                observations = {"handler_bound": True, "handler_resolved": True, "intent_observed": True, "boundary_reached": True, "contract_matched": True, "static_contract_resolved": True}
-                nodes = [{"node_id": stable_id(rel, command), "kind": "cli-command", "status": "resolved", "source": rel}]
+                observations = {
+                    "handler_bound": True,
+                    "handler_resolved": True,
+                    "intent_observed": True,
+                    "boundary_reached": True,
+                    "contract_matched": True,
+                    "static_contract_resolved": True,
+                }
+                nodes = [
+                    {
+                        "node_id": stable_id(rel, command),
+                        "kind": "cli-command",
+                        "status": "resolved",
+                        "source": rel,
+                    }
+                ]
                 traces.append(_generic_trace(repo, "command", rel, line, command, observations, nodes))
     route_keys = {(r.method, r.path) for r in routes}
     all_source = "\n".join(sources.values())
@@ -258,26 +349,65 @@ def scan_repository(root: Path, repo: dict) -> list[Trace]:
             label = _label(body, attrs)
             line = source[: control.start()].count("\n") + 1
             obs: dict[str, object] = {"handler_bound": bool(event), "side_effect_intercepted": False}
-            nodes = [{"node_id": stable_id(rel, str(line), "control"), "kind": "gui-control", "status": "observed", "source": rel}]
+            nodes = [
+                {
+                    "node_id": stable_id(rel, str(line), "control"),
+                    "kind": "gui-control",
+                    "status": "observed",
+                    "source": rel,
+                }
+            ]
             if not event:
-                navigation = re.search(r"(?:href|to)\s*=\s*(?:[\"']([^\"']+)[\"']|\{[\"']([^\"']+)[\"']\})", attrs)
+                navigation = re.search(
+                    r"(?:href|to)\s*=\s*(?:[\"']([^\"']+)[\"']|\{[\"']([^\"']+)[\"']\})", attrs
+                )
                 is_submit = bool(re.search(r"type\s*=\s*[\"']submit[\"']", attrs, re.I))
                 if tag in {"a", "link"} and navigation:
                     target = navigation.group(1) or navigation.group(2)
-                    obs.update({"handler_bound": True, "handler_resolved": True, "intent_observed": True, "boundary_reached": True, "contract_matched": True, "static_contract_resolved": True})
-                    nodes.append({"node_id": stable_id(rel, target, "navigation"), "kind": "navigation-target", "status": "declared", "source": rel})
+                    obs.update(
+                        {
+                            "handler_bound": True,
+                            "handler_resolved": True,
+                            "intent_observed": True,
+                            "boundary_reached": True,
+                            "contract_matched": True,
+                            "static_contract_resolved": True,
+                        }
+                    )
+                    nodes.append(
+                        {
+                            "node_id": stable_id(rel, target, "navigation"),
+                            "kind": "navigation-target",
+                            "status": "declared",
+                            "source": rel,
+                        }
+                    )
                 elif is_submit:
                     obs.update({"handler_bound": True, "handler_resolved": True, "intent_observed": True})
-                    nodes.append({"node_id": stable_id(rel, str(line), "form-submit"), "kind": "form-submit", "status": "declared", "source": rel})
+                    nodes.append(
+                        {
+                            "node_id": stable_id(rel, str(line), "form-submit"),
+                            "kind": "form-submit",
+                            "status": "declared",
+                            "source": rel,
+                        }
+                    )
                 traces.append(_repo_trace(repo, rel, line, label, obs, nodes))
                 continue
             expr = event.group(1).strip()
             handler_name_match = re.match(r"([A-Za-z_$][\w$]*)$", expr)
             handler_name = handler_name_match.group(1) if handler_name_match else None
-            body_text = handlers.get(handler_name, expr)
+            body_text = expr if handler_name is None else handlers.get(handler_name, expr)
             resolved = handler_name is None or handler_name in handlers
             obs["handler_resolved"] = resolved
-            nodes.append({"node_id": stable_id(rel, handler_name or expr, "handler"), "kind": "event-handler", "status": "resolved" if resolved else "missing", "source": rel})
+            nodes.append(
+                {
+                    "node_id": stable_id(rel, handler_name or expr, "handler"),
+                    "kind": "event-handler",
+                    "status": "resolved" if resolved else "missing",
+                    "source": rel,
+                }
+            )
             if not resolved:
                 obs["target_missing"] = True
                 traces.append(_repo_trace(repo, rel, line, label, obs, nodes))
@@ -288,25 +418,59 @@ def scan_repository(root: Path, repo: dict) -> list[Trace]:
             if intents:
                 obs["intent_observed"] = True
                 method, target = intents[0]
-                nodes.append({"node_id": stable_id(method, target), "kind": "network-intent", "status": "declared", "source": rel})
+                nodes.append(
+                    {
+                        "node_id": stable_id(method, target),
+                        "kind": "network-intent",
+                        "status": "declared",
+                        "source": rel,
+                    }
+                )
                 exact = (method, target) in route_keys
                 path_exists = any(route_path == target for _, route_path in route_keys)
                 if exact:
-                    obs.update({"boundary_reached": True, "contract_matched": True, "static_contract_resolved": True})
+                    obs.update(
+                        {"boundary_reached": True, "contract_matched": True, "static_contract_resolved": True}
+                    )
                     route = next(r for r in routes if (r.method, r.path) == (method, target))
-                    nodes.append({"node_id": stable_id(route.method, route.path, route.source), "kind": "api-route", "status": "resolved", "source": route.source})
+                    nodes.append(
+                        {
+                            "node_id": stable_id(route.method, route.path, route.source),
+                            "kind": "api-route",
+                            "status": "resolved",
+                            "source": route.source,
+                        }
+                    )
                 elif path_exists:
                     obs["contract_mismatch"] = True
                 else:
                     obs["target_missing"] = True
             else:
-                calls = [c for c in CALL.findall(body_text) if c not in {"if", "for", "while", "switch", "catch", "setState", "console"}]
-                local_targets = [c for c in calls if c in symbols or re.search(rf"\b(?:function|const|let|class)\s+{re.escape(c)}\b", all_source)]
+                calls = [
+                    c
+                    for c in CALL.findall(body_text)
+                    if c not in {"if", "for", "while", "switch", "catch", "setState", "console"}
+                ]
+                local_targets = [
+                    c
+                    for c in calls
+                    if c in symbols
+                    or re.search(rf"\b(?:function|const|let|class)\s+{re.escape(c)}\b", all_source)
+                ]
                 obs["intent_observed"] = bool(calls)
                 if local_targets:
-                    obs.update({"boundary_reached": True, "contract_matched": True, "static_contract_resolved": True})
+                    obs.update(
+                        {"boundary_reached": True, "contract_matched": True, "static_contract_resolved": True}
+                    )
                     for target in local_targets[:3]:
-                        nodes.append({"node_id": stable_id(target, "symbol"), "kind": "local-target", "status": "resolved", "source": None})
+                        nodes.append(
+                            {
+                                "node_id": stable_id(target, "symbol"),
+                                "kind": "local-target",
+                                "status": "resolved",
+                                "source": None,
+                            }
+                        )
             traces.append(_repo_trace(repo, rel, line, label, obs, nodes))
     traces.extend(_scan_package_scripts(root, repo))
     traces.extend(_scan_workflows(root, repo))
@@ -331,8 +495,14 @@ def scan_federation(workspace_root: Path, manifest: dict) -> dict:
             "surfaces_discovered": len(encoded),
             "surfaces_classified": sum(t["classification"] != "INDETERMINATE" for t in encoded),
             "t1_or_t2_supported": sum(any(e["tier"] in {"T1", "T2"} for e in t["evidence"]) for t in encoded),
-            "by_kind": {kind: sum(t["surface"]["kind"] == kind for t in encoded) for kind in sorted({t["surface"]["kind"] for t in encoded})},
-            "classification_counts": {status: sum(t["classification"] == status for t in encoded) for status in sorted({t["classification"] for t in encoded})},
+            "by_kind": {
+                kind: sum(t["surface"]["kind"] == kind for t in encoded)
+                for kind in sorted({t["surface"]["kind"] for t in encoded})
+            },
+            "classification_counts": {
+                status: sum(t["classification"] == status for t in encoded)
+                for status in sorted({t["classification"] for t in encoded})
+            },
             "repositories_present": len(manifest["repositories"]) - len(missing),
             "repositories_missing": len(missing),
         },

@@ -6,14 +6,35 @@ from datetime import datetime, timezone
 
 from .classifier import classify_observations
 
-
-CASES = [
+CASES: list[tuple[str, dict[str, object], str]] = [
     ("ui-no-op", {"handler_bound": False}, "UI_NO_OP"),
-    ("partially-wired", {"handler_bound": True, "handler_resolved": True, "intent_observed": True}, "PARTIALLY_WIRED"),
+    (
+        "partially-wired",
+        {"handler_bound": True, "handler_resolved": True, "intent_observed": True},
+        "PARTIALLY_WIRED",
+    ),
     ("target-missing", {"handler_bound": True, "handler_resolved": False}, "TARGET_MISSING"),
-    ("contract-mismatch", {"handler_bound": True, "handler_resolved": True, "contract_mismatch": True}, "CONTRACT_MISMATCH"),
-    ("wired-but-blocked", {"handler_bound": True, "handler_resolved": True, "blocked_precondition": True}, "WIRED_BUT_BLOCKED"),
-    ("executable-by-contract", {"handler_bound": True, "handler_resolved": True, "boundary_reached": True, "contract_matched": True, "side_effect_intercepted": True}, "EXECUTABLE_BY_CONTRACT"),
+    (
+        "contract-mismatch",
+        {"handler_bound": True, "handler_resolved": True, "contract_mismatch": True},
+        "CONTRACT_MISMATCH",
+    ),
+    (
+        "wired-but-blocked",
+        {"handler_bound": True, "handler_resolved": True, "blocked_precondition": True},
+        "WIRED_BUT_BLOCKED",
+    ),
+    (
+        "executable-by-contract",
+        {
+            "handler_bound": True,
+            "handler_resolved": True,
+            "boundary_reached": True,
+            "contract_matched": True,
+            "side_effect_intercepted": True,
+        },
+        "EXECUTABLE_BY_CONTRACT",
+    ),
 ]
 
 FIXTURE_REPOSITORY = "fixture/federation-audit"
@@ -52,35 +73,39 @@ def run_fixture_audit() -> dict:
         classification, confidence, fault_boundary, recommended_fix = classify_observations(observations)
         passed = classification.value == expected
         trace_id = hashlib.sha256(f"fixture:{case_id}".encode()).hexdigest()[:24]
-        traces.append({
-            "trace_id": trace_id,
-            "repository": FIXTURE_REPOSITORY,
-            "commit": FIXTURE_COMMIT,
-            "surface": {
-                "kind": "gui-control",
-                "id": case_id,
-                "label": case_id.replace("-", " ").title(),
-                "source": "playwright/fixtures/index.html",
-                "line": None,
-            },
-            "path": _path(case_id, observations),
-            "observations": {
-                **observations,
-                "expected_classification": expected,
-                "fixture_case_passed": passed,
-                "production_side_effects": False,
-            },
-            "classification": classification.value,
-            "fault_boundary": fault_boundary,
-            "confidence": confidence,
-            "evidence": [{
-                "tier": "T2",
-                "kind": "deterministic-controlled-fixture",
-                "locator": f"fixture:{case_id}",
-                "digest": None,
-            }],
-            "recommended_fix": recommended_fix,
-        })
+        traces.append(
+            {
+                "trace_id": trace_id,
+                "repository": FIXTURE_REPOSITORY,
+                "commit": FIXTURE_COMMIT,
+                "surface": {
+                    "kind": "gui-control",
+                    "id": case_id,
+                    "label": case_id.replace("-", " ").title(),
+                    "source": "playwright/fixtures/index.html",
+                    "line": None,
+                },
+                "path": _path(case_id, observations),
+                "observations": {
+                    **observations,
+                    "expected_classification": expected,
+                    "fixture_case_passed": passed,
+                    "production_side_effects": False,
+                },
+                "classification": classification.value,
+                "fault_boundary": fault_boundary,
+                "confidence": confidence,
+                "evidence": [
+                    {
+                        "tier": "T2",
+                        "kind": "deterministic-controlled-fixture",
+                        "locator": f"fixture:{case_id}",
+                        "digest": None,
+                    }
+                ],
+                "recommended_fix": recommended_fix,
+            }
+        )
 
     counts = Counter(trace["classification"] for trace in traces)
     return {
@@ -102,6 +127,5 @@ def run_fixture_audit() -> dict:
 
 def fixture_passed(ledger: dict) -> bool:
     return bool(ledger["traces"]) and all(
-        trace["observations"].get("fixture_case_passed") is True
-        for trace in ledger["traces"]
+        trace["observations"].get("fixture_case_passed") is True for trace in ledger["traces"]
     )
