@@ -1,0 +1,52 @@
+{
+  "schema_version": "1.0",
+  "snapshot_label": "federation-gui-20260824-successor",
+  "rules": {
+    "RENDERED_SURFACE": "Distinct user-facing page/module; requires browser×viewport baseline.",
+    "CONDITIONAL_AUTH_SURFACE": "Distinct auth page rendered only when requires_auth=true; requires auth-mode fixture.",
+    "DYNAMIC_SURFACE": "Distinct parameterized page; requires canonical positive sample plus missing-record negative sample.",
+    "NOT_FOUND_SURFACE": "Catch-all renders a distinct PageNotFound surface; remains in denominator.",
+    "REDIRECT_BEHAVIOR": "Compatibility/guard redirect; requires routing assertion but no duplicate screenshot denominator.",
+    "WORKBENCH_MODULE": "Single-workbench navigation module; requires tab-selection browser×viewport baseline."
+  },
+  "repositories": {
+    "thehub-pr": {
+      "rendered": ["/","/activity","/programs","/apps","/operations","/cases","/sources","/tasks","/gates","/integrations","/exports","/readiness","/transition","/crossover","/anomaly-overlap","/control","/hub","/project-signs","/research","/dictionary","/manifest","/spiderweb","/ovnis","/aguayluz","/moneysweep","/skywatcher","/centinelas"],
+      "conditional_auth": ["/login","/register","/forgot-password","/reset-password"],
+      "not_found": ["*"],
+      "dynamic": [],
+      "redirect_behavior": []
+    },
+    "moneysweep-pr": {"rendered":["/"],"conditional_auth":[],"not_found":["*"],"dynamic":[],"redirect_behavior":[]},
+    "spiderweb-pr": {"workbench_modules":["command","finance","spatial","anomaly","graph","query"]},
+    "aguayluz-pr": {
+      "rendered": ["/","/map","/assets","/alerts","/outages","/monitoring","/cave-karst","/regulatory","/regulatory/review","/environmental-exposure","/review","/analytics","/logs","/system","/water-disruption"],
+      "conditional_auth": [],
+      "not_found": ["*"],
+      "dynamic": ["/alerts/:id","/sector/:sector","/events/:id","/municipios/:name"],
+      "redirect_behavior": []
+    },
+    "ovnis-pr": {"rendered":["/"],"conditional_auth":[],"not_found":["*"],"dynamic":[],"redirect_behavior":[]},
+    "skywatcher-pr": {
+      "rendered": ["/","/observations","/aircraft","/fr24","/routes","/infrastructure","/airports","/review","/export","/readiness","/calibration","/analysis","/spatial-truth"],
+      "conditional_auth": ["/login","/register","/forgot-password","/reset-password"],
+      "not_found": ["*"],
+      "dynamic": [],
+      "redirect_behavior": []
+    },
+    "centinelas-pr": {
+      "rendered": ["/","/monitor","/signals","/matters","/sources","/handoff","/pipeline","/water-disruption","/tabla","/entidades"],
+      "conditional_auth": [],
+      "not_found": ["*"],
+      "dynamic": ["/matters/:id","/pipeline/:itemId","/entidad/:slug"],
+      "redirect_behavior": ["/autores -> /entidades"]
+    }
+  },
+  "closure_requirements": {
+    "dynamic_positive_samples": "OPEN",
+    "dynamic_missing_record_negative_samples": "OPEN",
+    "auth_required_mode": "OPEN",
+    "redirect_behavior_assertions": "OPEN",
+    "rendered_surface_browser_viewport_matrix": "OPEN"
+  }
+}
