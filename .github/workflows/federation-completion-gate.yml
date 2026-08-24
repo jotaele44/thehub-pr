@@ -30,6 +30,7 @@ jobs:
           # Scheduled/manual runs are the fail-closed completion assertion.
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             args+=(--allow-rate-limit-partial)
+            args+=(--max-prs 25)
           else
             args+=(--fail-on-actionable)
           fi

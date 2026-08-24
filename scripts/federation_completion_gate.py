@@ -250,6 +250,12 @@ def main() -> int:
         help="Exit 0 when the only audit errors are GitHub rate-limit errors. "
         "The ledger still records those errors and remains non-certifying.",
     )
+    ap.add_argument(
+        "--max-prs",
+        type=int,
+        default=0,
+        help="Stop after classifying this many open PRs. Used only for non-certifying PR exercise runs.",
+    )
     args = ap.parse_args()
 
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
@@ -295,6 +301,9 @@ def main() -> int:
                     if args.allow_rate_limit_partial and is_rate_limit_error(error):
                         truncated_reason = error
                         break
+                if args.max_prs and len(rows) >= args.max_prs:
+                    truncated_reason = f"PR_AUDIT_ROW_LIMIT:{args.max_prs}"
+                    break
             if truncated_reason:
                 break
         except Exception as exc:
@@ -313,6 +322,8 @@ def main() -> int:
     certification = "PASS"
     if errors:
         certification = "PROVISIONAL_RATE_LIMIT_PARTIAL" if only_rate_limit_errors else "FAIL"
+    elif truncated_reason:
+        certification = "PROVISIONAL_TRUNCATED_PARTIAL"
     elif args.fail_on_actionable and actionable:
         certification = "FAIL_ACTIONABLE_RESIDUE"
     result = {
@@ -323,6 +334,7 @@ def main() -> int:
         "repositories": cfg["repositories"],
         "observed_main_shas": observed_main,
         "open_pr_denominator": len(rows),
+        "open_pr_denominator_complete": truncated_reason is None,
         "audit_truncated": truncated_reason is not None,
         "truncation_reason": truncated_reason,
         "counts": dict(sorted(counts.items())),
@@ -350,6 +362,8 @@ def main() -> int:
         if args.allow_rate_limit_partial and only_rate_limit_errors:
             return 0
         return 2
+    if truncated_reason and args.max_prs:
+        return 0
     if args.fail_on_actionable and actionable:
         # A completion claim fails while any current integration/reconciliation
         # residue remains. Explained evidence/local/source blockers may remain open.
