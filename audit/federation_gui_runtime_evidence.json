@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "snapshot_label": "federation-gui-20260822",
+  "source_run": 32595534208,
+  "repositories": {
+    "thehub-pr": {"frozen_typecheck":"FAIL","browser_contract":"NOT_REACHED_AFTER_TYPECHECK_FAIL","browser_harness":"DECLARED","remediation":{"pr":194,"state":"MERGED","ci":"PASS","coverage_note":"declared contract redefined with checkJs=false; strict JS semantic debt not proven closed"}},
+    "moneysweep-pr": {"frozen_typecheck":"NOT_DECLARED","browser_contract":"PASS","browser_harness":"DECLARED"},
+    "spiderweb-pr": {"frozen_typecheck":"PASS","browser_contract":"NOT_DECLARED","browser_harness":"OPEN"},
+    "aguayluz-pr": {"frozen_typecheck":"NOT_DECLARED","browser_contract":"PASS","browser_harness":"DECLARED"},
+    "ovnis-pr": {"frozen_typecheck":"PASS","browser_contract":"NOT_DECLARED","browser_harness":"OPEN"},
+    "skywatcher-pr": {"frozen_typecheck":"FAIL","browser_contract":"NOT_DECLARED","browser_harness":"OPEN"},
+    "centinelas-pr": {"frozen_typecheck":"PASS","browser_contract":"PASS","browser_harness":"DECLARED"}
+  },
+  "regression": {
+    "contract_declared": true,
+    "all_positive_fixtures_runtime_executed": false,
+    "all_negative_fixtures_runtime_executed": false,
+    "canonical_semantic_candidate_tests": "PASS",
+    "canonical_semantic_candidate_pr": 193
+  },
+  "browser_matrix": {
+    "required_engines": ["chromium","firefox","webkit"],
+    "required_viewports": [320,375,768,1280,1440,1920],
+    "full_surface_matrix_executed": false,
+    "evidenced_screenshot_cells": 0
+  },
+  "accessibility": {
+    "required_modes": ["keyboard-only","200%-zoom","reduced-motion"],
+    "full_surface_matrix_executed": false,
+    "evidenced_cells": 0
+  },
+  "findings": {
+    "p0_open": 0,
+    "p1_unadjudicated": 4,
+    "open_ids": ["F-001-strict-js-semantic-coverage", "F-002-skywatcher-typecheck", "F-006-browser-harness-denominator", "runtime-state-workflow-screenshot-closure"]
+  },
+  "certification": "OPEN"
+}
