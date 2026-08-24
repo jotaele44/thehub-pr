@@ -39,6 +39,11 @@ BLOCK_MARKERS = {
 }
 
 
+def is_rate_limit_error(message: str) -> bool:
+    lowered = message.lower()
+    return "api rate limit exceeded" in lowered or "rate limit exceeded" in lowered
+
+
 @dataclass
 class Disposition:
     repository: str
@@ -239,6 +244,12 @@ def main() -> int:
     ap.add_argument("--config", default="federation/completion-gate.json")
     ap.add_argument("--out", default="artifacts/federation-completion-ledger.json")
     ap.add_argument("--fail-on-actionable", action="store_true")
+    ap.add_argument(
+        "--allow-rate-limit-partial",
+        action="store_true",
+        help="Exit 0 when the only audit errors are GitHub rate-limit errors. "
+        "The ledger still records those errors and remains non-certifying.",
+    )
     args = ap.parse_args()
 
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
@@ -286,9 +297,17 @@ def main() -> int:
     for row in rows:
         counts[row.state] = counts.get(row.state, 0) + 1
     actionable = {state: counts[state] for state in sorted(ACTIONABLE_STATES) if counts.get(state)}
+    rate_limit_errors = [err for err in errors if is_rate_limit_error(err)]
+    only_rate_limit_errors = bool(errors) and len(rate_limit_errors) == len(errors)
+    certification = "PASS"
+    if errors:
+        certification = "PROVISIONAL_RATE_LIMIT_PARTIAL" if only_rate_limit_errors else "FAIL"
+    elif args.fail_on_actionable and actionable:
+        certification = "FAIL_ACTIONABLE_RESIDUE"
     result = {
         "schema_version": 2,
         "scope": "REMOTE_GITHUB_ONLY",
+        "certification": certification,
         "local_worktree_state": "BLOCKED_NOT_OBSERVED",
         "repositories": cfg["repositories"],
         "observed_main_shas": observed_main,
@@ -296,14 +315,27 @@ def main() -> int:
         "counts": dict(sorted(counts.items())),
         "actionable_counts": actionable,
         "errors": errors,
+        "rate_limit_error_count": len(rate_limit_errors),
         "rows": [asdict(r) for r in rows],
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
-    print(json.dumps({k: result[k] for k in ("open_pr_denominator", "counts", "actionable_counts", "errors")}, indent=2))
+    print(json.dumps(
+        {k: result[k] for k in (
+            "open_pr_denominator",
+            "counts",
+            "actionable_counts",
+            "certification",
+            "rate_limit_error_count",
+            "errors",
+        )},
+        indent=2,
+    ))
 
     if errors:
+        if args.allow_rate_limit_partial and only_rate_limit_errors:
+            return 0
         return 2
     if args.fail_on_actionable and actionable:
         # A completion claim fails while any current integration/reconciliation

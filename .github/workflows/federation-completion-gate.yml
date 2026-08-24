@@ -28,7 +28,9 @@ jobs:
           args=()
           # PRs exercise the auditor without claiming federation completion.
           # Scheduled/manual runs are the fail-closed completion assertion.
-          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            args+=(--allow-rate-limit-partial)
+          else
             args+=(--fail-on-actionable)
           fi
           python scripts/federation_completion_gate.py \
