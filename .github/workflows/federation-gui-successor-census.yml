@@ -1,0 +1,43 @@
+name: Federation GUI Successor Census
+
+on:
+  push:
+    branches:
+      - audit/federation-gui-certification-20260822
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout audit controller
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { ref: audit/federation-gui-certification-20260822 }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { repository: jotaele44/thehub-pr, ref: 103e06553270fd690c9c2d9aa5fd7604f3a34617, path: successor-repos/thehub-pr, fetch-depth: 1 }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { repository: jotaele44/moneysweep-pr, ref: 80028013ee6cab525428675bc7deb7ca38121bc9, path: successor-repos/moneysweep-pr, fetch-depth: 1 }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { repository: jotaele44/spiderweb-pr, ref: d11b74ac5e42812755282356f1d14fffc996809c, path: successor-repos/spiderweb-pr, fetch-depth: 1 }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { repository: jotaele44/aguayluz-pr, ref: c4a975dc7e79e59066ae1e25ac8af0a973eb5d88, path: successor-repos/aguayluz-pr, fetch-depth: 1 }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { repository: jotaele44/ovnis-pr, ref: 588bc121991c529fee136c90063d0d5423f23698, path: successor-repos/ovnis-pr, fetch-depth: 1 }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { repository: jotaele44/skywatcher-pr, ref: bff35b9ec1cec6a92d5f9d8970dca7c4840d8c46, path: successor-repos/skywatcher-pr, fetch-depth: 1 }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { repository: jotaele44/centinelas-pr, ref: ac241db7148e811f78960779c042fe4eff3e3038, path: successor-repos/centinelas-pr, fetch-depth: 1 }
+      - name: Generate successor census
+        run: python3 tools/federation_gui_successor_census.py
+      - name: Upload successor census
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: federation-gui-successor-census-20260824
+          path: audit/generated/federation_gui_census_20260824/
+          if-no-files-found: error
+          retention-days: 90
