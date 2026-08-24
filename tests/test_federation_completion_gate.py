@@ -38,6 +38,14 @@ def _one_open_pr() -> list[dict[str, object]]:
     }]
 
 
+def _two_open_prs() -> list[dict[str, object]]:
+    first, second = _one_open_pr()[0], dict(_one_open_pr()[0])
+    second["number"] = 8
+    second["head"] = {"sha": "d" * 40}
+    second["merge_commit_sha"] = "e" * 40
+    return [first, second]
+
+
 def test_pull_request_mode_can_record_rate_limit_partial(monkeypatch, tmp_path):
     config = _write_config(tmp_path)
     out = tmp_path / "ledger.json"
@@ -65,6 +73,7 @@ def test_pull_request_mode_can_record_rate_limit_partial(monkeypatch, tmp_path):
     assert gate.main() == 0
     ledger = json.loads(out.read_text())
     assert ledger["certification"] == "PROVISIONAL_RATE_LIMIT_PARTIAL"
+    assert ledger["audit_truncated"] is True
     assert ledger["rate_limit_error_count"] == 1
     assert ledger["rows"][0]["state"] == "UNRESOLVED"
     assert ledger["rows"][0]["reasons"] == ["AUDIT_EXCEPTION"]
@@ -97,4 +106,40 @@ def test_completion_assertion_still_fails_closed_on_rate_limit(monkeypatch, tmp_
     assert gate.main() == 2
     ledger = json.loads(out.read_text())
     assert ledger["certification"] == "PROVISIONAL_RATE_LIMIT_PARTIAL"
+    assert ledger["audit_truncated"] is False
     assert ledger["rate_limit_error_count"] == 1
+
+
+def test_rate_limit_partial_stops_crawl_after_first_rate_limit(monkeypatch, tmp_path):
+    config = _write_config(tmp_path)
+    out = tmp_path / "ledger.json"
+    check_run_calls = 0
+
+    def request_json(url, token, *, method="GET", body=None):
+        nonlocal check_run_calls
+        if url.endswith("/commits/main"):
+            return {"sha": SHA}
+        if "/pulls?state=open" in url:
+            return _two_open_prs()
+        if "/check-runs" in url:
+            check_run_calls += 1
+            raise RuntimeError("GitHub API 403 for check-runs: API rate limit exceeded")
+        raise AssertionError(url)
+
+    monkeypatch.setenv("GITHUB_TOKEN", "token")
+    monkeypatch.setattr(gate, "request_json", request_json)
+    monkeypatch.setattr(sys, "argv", [
+        "federation_completion_gate.py",
+        "--config",
+        str(config),
+        "--out",
+        str(out),
+        "--allow-rate-limit-partial",
+    ])
+
+    assert gate.main() == 0
+    ledger = json.loads(out.read_text())
+    assert check_run_calls == 1
+    assert ledger["audit_truncated"] is True
+    assert ledger["open_pr_denominator"] == 1
+    assert [row["number"] for row in ledger["rows"]] == [7]

@@ -260,6 +260,7 @@ def main() -> int:
     cfg = json.loads(Path(args.config).read_text())
     rows: list[Disposition] = []
     errors: list[str] = []
+    truncated_reason: str | None = None
     observed_main: dict[str, str] = {}
     for repo_full in cfg["repositories"]:
         owner, repo = repo_full.split("/", 1)
@@ -274,7 +275,8 @@ def main() -> int:
                 try:
                     rows.append(classify(repo_full, pr, main_sha, token))
                 except Exception as exc:  # fail closed per PR; preserve denominator
-                    errors.append(f"{repo_full}#{pr.get('number')}: {exc}")
+                    error = f"{repo_full}#{pr.get('number')}: {exc}"
+                    errors.append(error)
                     rows.append(
                         Disposition(
                             repo_full,
@@ -290,8 +292,17 @@ def main() -> int:
                             ["AUDIT_EXCEPTION"],
                         )
                     )
+                    if args.allow_rate_limit_partial and is_rate_limit_error(error):
+                        truncated_reason = error
+                        break
+            if truncated_reason:
+                break
         except Exception as exc:
-            errors.append(f"{repo_full}: {exc}")
+            error = f"{repo_full}: {exc}"
+            errors.append(error)
+            if args.allow_rate_limit_partial and is_rate_limit_error(error):
+                truncated_reason = error
+                break
 
     counts: dict[str, int] = {}
     for row in rows:
@@ -312,6 +323,8 @@ def main() -> int:
         "repositories": cfg["repositories"],
         "observed_main_shas": observed_main,
         "open_pr_denominator": len(rows),
+        "audit_truncated": truncated_reason is not None,
+        "truncation_reason": truncated_reason,
         "counts": dict(sorted(counts.items())),
         "actionable_counts": actionable,
         "errors": errors,
