@@ -7,7 +7,9 @@ import {
   FederationSourceBadge,
   resolveFederationSemantic,
 } from '@pr-federation/react'
-import '@pr-federation/react/styles.css'
+import '../../styles/foundation.css'
+import '../../styles/primitives.css'
+import '../../styles/states.css'
 import './styles.css'
 
 const FIXTURES = Object.freeze({
