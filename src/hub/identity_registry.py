@@ -379,10 +379,13 @@ class IdentityRegistry:
                 raise ValueError("supersede endpoints invalid")
             if current["status"] == "SUPERSEDED":
                 if current["superseded_by"] == superseded_by:
-                    db.commit(); return
-                db.rollback(); raise ValueError("incompatible supersession")
+                    db.commit()
+                    return
+                db.rollback()
+                raise ValueError("incompatible supersession")
             if current["status"] != "ACTIVE":
-                db.rollback(); raise ValueError("only active entity can be superseded")
+                db.rollback()
+                raise ValueError("only active entity can be superseded")
             now = _utcnow()
             db.execute("UPDATE federation_entities SET status='SUPERSEDED',superseded_by=?,valid_to=?,updated_at=? WHERE federation_entity_id=?", (superseded_by, now, now, federation_entity_id))
             db.commit()
@@ -392,11 +395,14 @@ class IdentityRegistry:
             db.execute("BEGIN IMMEDIATE")
             row = db.execute("SELECT status FROM federation_entities WHERE federation_entity_id=?", (federation_entity_id,)).fetchone()
             if not row:
-                db.rollback(); raise ValueError("entity does not exist")
+                db.rollback()
+                raise ValueError("entity does not exist")
             if row["status"] == "TOMBSTONED":
-                db.commit(); return
+                db.commit()
+                return
             if row["status"] != "ACTIVE":
-                db.rollback(); raise ValueError("only active entity can be tombstoned")
+                db.rollback()
+                raise ValueError("only active entity can be tombstoned")
             now = _utcnow()
             db.execute("UPDATE federation_entities SET status='TOMBSTONED',valid_to=?,updated_at=? WHERE federation_entity_id=?", (now, now, federation_entity_id))
             db.execute("UPDATE federation_entity_members SET status='TOMBSTONED',valid_to=? WHERE federation_entity_id=? AND status='ACTIVE'", (now, federation_entity_id))

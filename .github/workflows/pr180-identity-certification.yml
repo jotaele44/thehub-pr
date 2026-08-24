@@ -16,11 +16,11 @@ jobs:
   identity-certification:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.11"
 
@@ -29,9 +29,17 @@ jobs:
 
       - name: Build complete main/PR candidate ledger
         run: |
+          main_ref='${{ github.event.pull_request.base.sha }}'
+          head_ref='${{ github.event.pull_request.head.sha }}'
+          if [[ -z "$main_ref" ]]; then
+            main_ref=origin/main
+          fi
+          if [[ -z "$head_ref" ]]; then
+            head_ref=HEAD
+          fi
           python tools/build_identity_candidate_ledger.py \
-            --main-ref 73c2a19d6505fd3dcc2be9a108d1e4a560642a99 \
-            --head-ref origin/federation/persistent-identity-v0-2 \
+            --main-ref "$main_ref" \
+            --head-ref "$head_ref" \
             --out build/pr180_identity_candidate_ledger.json
 
       - name: Run identity state-machine tests
@@ -48,7 +56,7 @@ jobs:
 
       - name: Upload denominator ledger
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: pr180-identity-candidate-ledger
           path: build/pr180_identity_candidate_ledger.json
