@@ -2,12 +2,19 @@ import json
 import os
 import subprocess
 from pathlib import Path
+from types import SimpleNamespace
 
 import federation_audit.runtime_cert as runtime_cert
 from federation_audit.calibration import run_calibration
 from federation_audit.classifier import classify_observations
 from federation_audit.resolver import build_resolution_index
-from federation_audit.runtime_cert import Probe, _install_block_wrappers, validate_topology, verify_workspace
+from federation_audit.runtime_cert import (
+    Probe,
+    _install_block_wrappers,
+    git_head,
+    validate_topology,
+    verify_workspace,
+)
 
 
 def test_static_declaration_cannot_self_promote():
@@ -94,6 +101,20 @@ def test_workspace_preflight_names_missing_git(tmp_path: Path, monkeypatch):
 
     assert receipts == []
     assert failures == ["runtime-tool-missing:git"]
+
+
+def test_git_head_scopes_safe_directory_to_repository(tmp_path: Path, monkeypatch):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+
+    def fake_run(command, **kwargs):
+        assert command == ["git", "-c", f"safe.directory={repo.resolve()}", "rev-parse", "HEAD"]
+        assert kwargs["cwd"] == repo
+        return SimpleNamespace(returncode=0, stdout="a" * 40 + "\n", stderr="")
+
+    monkeypatch.setattr(runtime_cert.subprocess, "run", fake_run)
+
+    assert git_head(repo) == ("a" * 40, None)
 
 
 def test_topology_must_bind_to_declared_command():

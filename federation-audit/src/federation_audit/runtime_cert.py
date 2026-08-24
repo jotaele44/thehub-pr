@@ -124,19 +124,27 @@ class Probe:
         )
 
 
-def git_head(repo_root: Path) -> str | None:
+def git_head(repo_root: Path) -> tuple[str | None, str | None]:
+    safe_directory = repo_root.resolve()
     try:
         proc = subprocess.run(
-            ["git", "rev-parse", "HEAD"],
+            ["git", "-c", f"safe.directory={safe_directory}", "rev-parse", "HEAD"],
             cwd=repo_root,
             check=False,
             capture_output=True,
             text=True,
             timeout=10,
         )
-    except (OSError, subprocess.TimeoutExpired):
-        return None
-    return proc.stdout.strip() if proc.returncode == 0 else None
+    except subprocess.TimeoutExpired:
+        return None, "git-timeout"
+    except OSError as exc:
+        return None, f"{type(exc).__name__}: {exc}"
+    if proc.returncode != 0:
+        return None, (proc.stderr.strip() or f"git-exit-{proc.returncode}")[:500]
+    head = proc.stdout.strip()
+    if re.fullmatch(r"[0-9a-f]{40}", head) is None:
+        return None, f"git-invalid-head:{head[:80]}"
+    return head, None
 
 
 def verify_workspace(workspace_root: Path, manifest: dict) -> tuple[list[dict[str, Any]], list[str]]:
@@ -146,7 +154,7 @@ def verify_workspace(workspace_root: Path, manifest: dict) -> tuple[list[dict[st
         failures.append("runtime-tool-missing:git")
     for repo in manifest["repositories"]:
         root = workspace_root / repo["workspace_directory"]
-        actual = git_head(root) if root.is_dir() else None
+        actual, identity_error = git_head(root) if root.is_dir() else (None, "workspace-missing")
         exact = actual == repo["commit"]
         entry_points = []
         for entry in repo.get("entry_points", []):
@@ -167,6 +175,7 @@ def verify_workspace(workspace_root: Path, manifest: dict) -> tuple[list[dict[st
                 "workspace_directory": repo["workspace_directory"],
                 "expected_commit": repo["commit"],
                 "actual_commit": actual,
+                "identity_error": identity_error,
                 "present": root.is_dir(),
                 "exact_commit": exact,
                 "entry_points": entry_points,
