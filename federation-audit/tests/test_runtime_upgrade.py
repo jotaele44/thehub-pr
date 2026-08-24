@@ -2,8 +2,11 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
+
+import pytest
 
 import federation_audit.runtime_cert as runtime_cert
 from federation_audit.calibration import run_calibration
@@ -13,6 +16,7 @@ from federation_audit.runtime_cert import (
     Probe,
     _failure_reason,
     _install_block_wrappers,
+    execute_probe,
     git_head,
     validate_topology,
     verify_runtime_dependencies,
@@ -150,6 +154,52 @@ def test_runtime_dependency_manifest_binds_lock_and_snapshot(tmp_path: Path):
     manifest.write_text(json.dumps(payload), encoding="utf-8")
     _, failures = verify_runtime_dependencies(lock, manifest)
     assert failures == ["runtime-dependencies-manifest-mismatch"]
+
+
+def test_probe_routes_declared_data_path_to_shadow(tmp_path: Path, monkeypatch):
+    workspace = tmp_path / "workspace"
+    (workspace / "repo").mkdir(parents=True)
+    for name in runtime_cert.ATTESTATIONS:
+        monkeypatch.setenv(name, "1")
+    probe = Probe(
+        probe_id="shadow-path",
+        repository="repo",
+        surface_kind="api",
+        entry_point="app.py",
+        cwd=".",
+        command=(
+            sys.executable,
+            "-c",
+            "import os, pathlib; pathlib.Path(os.environ['APP_DATA_DIR'], 'written').write_text('ok')",
+        ),
+        mode="command",
+        timeout_seconds=10,
+        startup_seconds=1,
+        expected_exit=(0,),
+        shadow_paths=(("APP_DATA_DIR", "app"),),
+        minimum_gate="G4",
+    )
+
+    receipt = execute_probe(workspace, tmp_path / "shadow", probe)
+
+    assert receipt["passed"] is True
+    assert receipt["shadow_environment_variable_names"] == ["APP_DATA_DIR"]
+    assert (tmp_path / "shadow/shadow-path/fs/app/written").read_text() == "ok"
+
+
+def test_probe_rejects_shadow_path_escape():
+    with pytest.raises(ValueError, match="must stay relative"):
+        Probe.from_dict(
+            {
+                "probe_id": "escape",
+                "repository": "repo",
+                "surface_kind": "api",
+                "entry_point": "app.py",
+                "command": ["python", "app.py"],
+                "mode": "boot",
+                "shadow_paths": {"APP_DATA_DIR": "../outside"},
+            }
+        )
 
 
 def test_workspace_preflight_names_missing_git(tmp_path: Path, monkeypatch):

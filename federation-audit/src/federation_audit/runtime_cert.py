@@ -11,7 +11,7 @@ import subprocess
 import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 from .calibration import run_calibration
@@ -39,6 +39,13 @@ ATTESTATIONS = (
     "FEDERATION_AUDIT_PRIVATE_NETWORK",
     "FEDERATION_AUDIT_CONTAINER_READ_ONLY",
 )
+PROTECTED_SHADOW_ENVIRONMENT = {
+    "HOME",
+    "PATH",
+    "PYTHONHOME",
+    "PYTHONPATH",
+    "TMPDIR",
+}
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -92,6 +99,7 @@ class Probe:
     timeout_seconds: int
     startup_seconds: int
     expected_exit: tuple[int, ...]
+    shadow_paths: tuple[tuple[str, str], ...] = ()
     expected_stdout: str | None = None
     expected_artifact: str | None = None
     minimum_gate: str = "G3"
@@ -107,6 +115,24 @@ class Probe:
         mode = str(data.get("mode", "command"))
         if mode not in {"command", "boot"}:
             raise ValueError(f"invalid probe mode: {mode}")
+        raw_shadow_paths = data.get("shadow_paths", {})
+        if not isinstance(raw_shadow_paths, dict):
+            raise ValueError("shadow_paths must be an object")
+        shadow_paths: list[tuple[str, str]] = []
+        for name, raw_path in raw_shadow_paths.items():
+            if (
+                not isinstance(name, str)
+                or re.fullmatch(r"[A-Z][A-Z0-9_]*", name) is None
+                or name in PROTECTED_SHADOW_ENVIRONMENT
+                or SECRET_NAME.search(name)
+            ):
+                raise ValueError(f"invalid shadow path environment variable: {name}")
+            if not isinstance(raw_path, str) or "\\" in raw_path:
+                raise ValueError(f"invalid shadow path for {name}")
+            relative = PurePosixPath(raw_path)
+            if relative.is_absolute() or not relative.parts or any(part == ".." for part in relative.parts):
+                raise ValueError(f"shadow path must stay relative for {name}")
+            shadow_paths.append((name, relative.as_posix()))
         return cls(
             probe_id=data["probe_id"],
             repository=data["repository"],
@@ -118,6 +144,7 @@ class Probe:
             timeout_seconds=int(data.get("timeout_seconds", 60)),
             startup_seconds=int(data.get("startup_seconds", 5)),
             expected_exit=tuple(int(x) for x in data.get("expected_exit", [0])),
+            shadow_paths=tuple(sorted(shadow_paths)),
             expected_stdout=data.get("expected_stdout"),
             expected_artifact=data.get("expected_artifact"),
             minimum_gate=minimum_gate,
@@ -318,6 +345,11 @@ def execute_probe(workspace_root: Path, shadow_root: Path, probe: Probe) -> dict
     )
     for path in (home, tmp, fs_sink):
         path.mkdir(parents=True, exist_ok=True)
+    shadow_path_environment: dict[str, str] = {}
+    for name, relative in probe.shadow_paths:
+        target = fs_sink / relative
+        target.mkdir(parents=True, exist_ok=True)
+        shadow_path_environment[name] = str(target)
     blocked_bin, blocked_log = _install_block_wrappers(probe_shadow)
     attestation, isolation_ok = _attestation(), all(_attestation().values())
     env, stripped = sanitized_environment(
@@ -333,6 +365,7 @@ def execute_probe(workspace_root: Path, shadow_root: Path, probe: Probe) -> dict
             "SMTP_PORT": "2525",
             "MESSAGE_ENDPOINT": "http://shadow-message:9090",
             "EXTERNAL_API_BASE_URL": "http://shadow-http:9080",
+            **shadow_path_environment,
         }
     )
     before, started_at, started = _snapshot_tree(probe_shadow), utcnow(), time.monotonic()
@@ -410,6 +443,7 @@ def execute_probe(workspace_root: Path, shadow_root: Path, probe: Probe) -> dict
         "artifact": artifact,
         "shadow_tree_before": before,
         "shadow_tree_after": after,
+        "shadow_environment_variable_names": sorted(shadow_path_environment),
         "stripped_secret_variable_names": stripped,
         "isolation_attestation": attestation,
         "runtime_isolated": isolation_ok,
