@@ -5,6 +5,7 @@ import json
 import os
 import re
 import shlex
+import shutil
 import stat
 import subprocess
 import time
@@ -141,6 +142,8 @@ def git_head(repo_root: Path) -> str | None:
 def verify_workspace(workspace_root: Path, manifest: dict) -> tuple[list[dict[str, Any]], list[str]]:
     receipts: list[dict[str, Any]] = []
     failures: list[str] = []
+    if shutil.which("git") is None:
+        failures.append("runtime-tool-missing:git")
     for repo in manifest["repositories"]:
         root = workspace_root / repo["workspace_directory"]
         actual = git_head(root) if root.is_dir() else None

@@ -3,10 +3,11 @@ import os
 import subprocess
 from pathlib import Path
 
+import federation_audit.runtime_cert as runtime_cert
 from federation_audit.calibration import run_calibration
 from federation_audit.classifier import classify_observations
 from federation_audit.resolver import build_resolution_index
-from federation_audit.runtime_cert import Probe, _install_block_wrappers, validate_topology
+from federation_audit.runtime_cert import Probe, _install_block_wrappers, validate_topology, verify_workspace
 
 
 def test_static_declaration_cannot_self_promote():
@@ -84,6 +85,15 @@ def test_block_wrappers_emit_valid_jsonl(tmp_path: Path):
 
     assert result.returncode == 126
     assert json.loads(log_path.read_text(encoding="utf-8")) == {"command": "curl", "argc": 1}
+
+
+def test_workspace_preflight_names_missing_git(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr(runtime_cert.shutil, "which", lambda _: None)
+
+    receipts, failures = verify_workspace(tmp_path, {"repositories": []})
+
+    assert receipts == []
+    assert failures == ["runtime-tool-missing:git"]
 
 
 def test_topology_must_bind_to_declared_command():
