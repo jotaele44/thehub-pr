@@ -1,38 +1,38 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-22T22:34:30Z"
+  captured_at_utc: "2026-08-24T19:52:30Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: 49abeb2654bc39b99f8d17ca8872ddb5a014cb90
+      expected_sha: 3e11e185681832c883873785a8ec4b66bdf711ef
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: a49595fa13f35dcd089404f3b87643a0a27d656c
+      expected_sha: 264f6a77ae0413b0f90812c4e6f494076e1b6946
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
-      expected_sha: e15133faafef4a6fe0472521453379c81f1a522e
+      expected_sha: d11b74ac5e42812755282356f1d14fffc996809c
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: dfd42307252225d9c4a7235fd2fb266319072263
+      expected_sha: 80028013ee6cab525428675bc7deb7ca38121bc9
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
-      expected_sha: 0132116a6225e49eadd870371b87d38d4999d8fd
+      expected_sha: 8053ec02d5450fafb613823e38ba8cdadc042a54
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
-      expected_sha: aa86cbd04bc0ce47593277bc95d5f34ca37e4acd
+      expected_sha: a626c50f20fbac57c65cfb0529d442320ae54ecc
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: e4d4fcf9792a640f61dd408771967234e6473abc
+      expected_sha: bfd913f4f129e0db037f092d1f25fca9c3240c2f
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
@@ -136,12 +136,12 @@ vectors:
       duplicate_historical_issue: 10
       issue_acceptance_still_open: true
       validator_only_not_completion: true
-      current_snapshot_main_sha: a49595fa13f35dcd089404f3b87643a0a27d656c
-      current_main_lineage: "#177 -> #185"
+      current_snapshot_main_sha: 264f6a77ae0413b0f90812c4e6f494076e1b6946
+      current_main_lineage: "a49595f -> 264f6a7 (47 linear commits: scheduled data refreshes plus security, GUI, and dependency merges)"
       pr_177_exact_head_hosted_gate: PASS_7_OF_7
       pr_185_visible_exact_head_hosted_gate: PROVISIONAL_2_FAMILIES_OBSERVED
       pr_185_mainline_presence_is_not_full_ci_certification: true
-      snapshot_refresh_reason: adjudicated_external_merge_lineage_pr_177_then_pr_185
+      snapshot_refresh_reason: bounded_remote_refresh_after_47_linear_commits_issue_11_acceptance_still_open
 
   - vector_id: FERROCARRIL_ILAP_CANONICALIZATION
     repo: jotaele44/spiderweb-pr
@@ -191,6 +191,7 @@ vectors:
       required_sources_total: 14
       probe_ran: false
       issue_state_does_not_authorize_data_promotion: true
+      current_main_weekly_cadence_check: FAIL_RUN_32719231373_DIRECTORY_OUTPUT_HASHING
     execution:
       kind: operator_corpus_network_and_credentials_required
       mutation: prohibited_by_fed_max
@@ -218,20 +219,21 @@ vectors:
       commands: []
     blockers:
       - authoritative_active_draft_found_but_no_explicit_canonical_vector_id
-      - candidate_branch_diverged_11_ahead_34_behind_main
+      - candidate_branch_diverged_11_ahead_61_behind_main
       - production_activation_requires_authentication_private_persistence_and_authorization
     invariants:
       open_draft_pr_discovered: 83
       candidate_branch: feat/email-ingestion-design-v0-1
       candidate_head_sha: d21b2974c990da66bab013f40a3075c07a320c25
       candidate_base_at_creation_sha: 0219a8c1dd0f38a1f8d09a0d027f3b82a3c74d17
-      current_main_sha_at_last_vector_adjudication: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
-      current_snapshot_main_sha: 0132116a6225e49eadd870371b87d38d4999d8fd
+      current_main_sha_at_last_vector_adjudication: 8053ec02d5450fafb613823e38ba8cdadc042a54
+      current_snapshot_main_sha: 8053ec02d5450fafb613823e38ba8cdadc042a54
       candidate_ahead_by_at_last_vector_adjudication: 11
-      candidate_behind_by_at_last_vector_adjudication: 34
+      candidate_behind_by_at_last_vector_adjudication: 61
       candidate_status: diverged_requires_readjudication
       explicit_vector_id_present: false
       recent_commit_theme_not_promoted_to_vector_identity: true
+      current_main_monitor_check: FAIL_RUN_32769300908_MISSING_PRII_EXPORT_UTILS
 
   - vector_id: CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE
     repo: jotaele44/ovnis-pr
