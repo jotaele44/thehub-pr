@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,14 @@ from .scanner import scan_federation, write_json
 from .strict_scan import strict_scan_federation
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[2]
+
+
+def contract_path(name: str) -> Path:
+    candidates = (
+        PACKAGE_ROOT / "contracts" / name,
+        Path(sys.prefix) / "share" / "federation-audit" / "contracts" / name,
+    )
+    return next((candidate for candidate in candidates if candidate.is_file()), candidates[0])
 
 
 def load_json(path: Path) -> dict:
@@ -37,7 +46,7 @@ def build_parser() -> argparse.ArgumentParser:
     validate_parser.add_argument(
         "--schema",
         type=Path,
-        default=PACKAGE_ROOT / "contracts/repository-audit-manifest.schema.json",
+        default=contract_path("repository-audit-manifest.schema.json"),
     )
 
     scan = sub.add_parser("scan", help="legacy v0.1 inventory-oriented scanner")
@@ -61,7 +70,7 @@ def build_parser() -> argparse.ArgumentParser:
     runtime.add_argument(
         "--schema",
         type=Path,
-        default=PACKAGE_ROOT / "contracts/runtime-certification.schema.json",
+        default=contract_path("runtime-certification.schema.json"),
     )
 
     graph = sub.add_parser("inventory-graph")
