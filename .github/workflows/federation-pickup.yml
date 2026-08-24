@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/ovnis-pr
-          ref: a626c50f20fbac57c65cfb0529d442320ae54ecc
+          ref: 588bc121991c529fee136c90063d0d5423f23698
           path: .fed/checkouts/ovnis-pr
           persist-credentials: false
 
@@ -34,6 +34,9 @@ jobs:
       - name: Bind non-self-referential control-plane snapshot
         env:
           GH_TOKEN: ${{ github.token }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PULL_REQUEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -69,16 +72,24 @@ jobs:
           producer_frozen = {repo: sha for repo, sha in frozen.items() if repo != control}
           assert len(producer_frozen) == 6
 
-          proc = subprocess.run(
-              ["gh", "api", f"repos/{control}/commits/main", "--jq", ".sha"],
-              text=True,
-              capture_output=True,
-              check=False,
-              env=os.environ.copy(),
-          )
-          if proc.returncode:
-              raise SystemExit(f"BLOCKED: control-plane main lookup failed: {proc.stderr.strip()}")
-          live = proc.stdout.strip()
+          if os.environ.get("GITHUB_EVENT_NAME") == "pull_request":
+              if os.environ.get("GITHUB_REPOSITORY") != control:
+                  raise SystemExit(
+                      "BLOCKED: pull_request control-plane binding requires "
+                      f"GITHUB_REPOSITORY={control}"
+                  )
+              live = os.environ.get("PULL_REQUEST_BASE_SHA", "").strip()
+          else:
+              proc = subprocess.run(
+                  ["gh", "api", f"repos/{control}/commits/main", "--jq", ".sha"],
+                  text=True,
+                  capture_output=True,
+                  check=False,
+                  env=os.environ.copy(),
+              )
+              if proc.returncode:
+                  raise SystemExit(f"BLOCKED: control-plane main lookup failed: {proc.stderr.strip()}")
+              live = proc.stdout.strip()
           if len(live) != 40 or any(ch not in "0123456789abcdef" for ch in live.lower()):
               raise SystemExit(f"BLOCKED: invalid control-plane main SHA: {live!r}")
 
