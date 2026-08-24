@@ -130,21 +130,25 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          rm -rf "$FEDERATION_RUNTIME_DEPS"
           mkdir -p "$FEDERATION_RUNTIME_DEPS" "$FEDERATION_ARTIFACTS"
           chmod 0777 "$FEDERATION_ARTIFACTS"
           docker run --rm \
-            -v "$FEDERATION_WORKSPACE:/workspace:ro" \
-            -v "$FEDERATION_RUNTIME_DEPS:/runtime-deps:rw" \
+            -v "$FEDERATION_RUNTIME_DEPS:/runtime-env:rw" \
+            -v "$GITHUB_WORKSPACE/federation-audit:/audit-source:ro" \
+            -v "$FEDERATION_ARTIFACTS:/artifacts:rw" \
             python:3.11-bookworm@sha256:c17b9ca6def1a936e55c77f086aaaf5f6a6c5f4d2fb4b7ac8c0113ba94e8b6ab \
             sh -ec '
               set -eu
               git --version
-              python -m pip install --no-cache-dir --target /runtime-deps \
-                fastapi uvicorn pyyaml aiosqlite sse-starlette pywebview
-              for req in /workspace/*/server/backend/requirements.txt; do
-                [ -f "$req" ] || continue
-                python -m pip install --no-cache-dir --target /runtime-deps -r "$req"
-              done
+              python -m venv /runtime-env
+              /runtime-env/bin/python -m pip install --disable-pip-version-check \
+                --no-cache-dir -r /audit-source/runtime/requirements.lock
+              /runtime-env/bin/python -m pip check
+              /runtime-env/bin/python /audit-source/scripts/verify_runtime_environment.py \
+                --lock /audit-source/runtime/requirements.lock \
+                --snapshot /artifacts/runtime-dependencies.txt \
+                --manifest /artifacts/runtime-dependencies.json
             '
 
       - name: Validate isolated runtime compose contract
@@ -188,6 +192,7 @@ jobs:
           assert summary['uncontained_side_effects'] == 0
           assert calibration['precision'] == 1.0
           assert calibration['recall'] == 1.0
+          assert summary['runtime_dependencies']['verified'] is True
           assert len(receipt['runtime_receipts']) == 7
           assert all(r['runtime_isolated'] and r['t2_receipt'] for r in receipt['runtime_receipts'])
           PY
@@ -208,5 +213,7 @@ jobs:
             federation-audit/artifacts/message.jsonl
             federation-audit/artifacts/smtp.jsonl
             federation-audit/artifacts/compose.resolved.yml
+            federation-audit/artifacts/runtime-dependencies.json
+            federation-audit/artifacts/runtime-dependencies.txt
           if-no-files-found: warn
           retention-days: 14

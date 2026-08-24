@@ -72,6 +72,8 @@ services:
       - /audit/runtime/topology.json
       - --shadow-root
       - /shadow
+      - --dependencies-manifest
+      - /artifacts/runtime-dependencies.json
       - --output
       - /artifacts/runtime-certification.json
       - --execute
@@ -91,11 +93,12 @@ services:
       SMTP_PORT: "2525"
       MESSAGE_ENDPOINT: http://shadow-message:9090
       EXTERNAL_API_BASE_URL: http://shadow-http:9080
-      PYTHONPATH: /runtime-deps:/workspace/thehub-pr/packages/prii_desktop/src:/workspace/thehub-pr/src:/workspace/spiderweb-pr/src:/workspace/skywatcher-pr/src:/workspace/ovnis-pr/src:/workspace/aguayluz-pr/src:/workspace/centinelas-pr/src:/workspace/moneysweep-pr/src:/workspace/moneysweep-pr
+      PATH: /runtime-env/bin:/usr/local/bin:/usr/local/sbin:/usr/sbin:/usr/bin:/sbin:/bin
+      PYTHONPATH: /workspace/thehub-pr/packages/prii_desktop/src:/workspace/thehub-pr/src:/workspace/spiderweb-pr/src:/workspace/skywatcher-pr/src:/workspace/ovnis-pr/src:/workspace/aguayluz-pr/src:/workspace/centinelas-pr/src:/workspace/moneysweep-pr/src:/workspace/moneysweep-pr
     volumes:
       - ${FEDERATION_WORKSPACE:-../../federation-workspace}:/workspace:ro
       - ${FEDERATION_ARTIFACTS:-./artifacts}:/artifacts:rw
-      - ${FEDERATION_RUNTIME_DEPS:-./.runtime-deps}:/runtime-deps:ro
+      - ${FEDERATION_RUNTIME_DEPS:-./.runtime-env}:/runtime-env:ro
     tmpfs:
       - /tmp:rw,noexec,nosuid,nodev,size=256m
       - /shadow:rw,nosuid,nodev,size=512m

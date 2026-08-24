@@ -283,6 +283,26 @@ def _run_boot(
     return proc.returncode, stdout, stderr, False
 
 
+def _failure_reason(
+    returncode: int | None,
+    stderr: str,
+    *,
+    timed_out: bool,
+    alive_after_startup: bool,
+) -> str | None:
+    if timed_out:
+        return "timeout"
+    if alive_after_startup:
+        return None
+    exception_names = re.findall(
+        r"(?m)^(?:[\w.]+\.)?([A-Za-z_][A-Za-z0-9_]*(?:Error|Exception))(?=:\s|$)",
+        stderr,
+    )
+    category = exception_names[-1] if exception_names else "unclassified"
+    prefix = "spawn-error" if returncode is None else f"process-exited:{returncode}"
+    return f"{prefix}:{category}"
+
+
 def execute_probe(workspace_root: Path, shadow_root: Path, probe: Probe) -> dict[str, Any]:
     repo_root = workspace_root / probe.repository
     cwd = (repo_root / probe.cwd).resolve()
@@ -374,6 +394,18 @@ def execute_probe(workspace_root: Path, shadow_root: Path, probe: Probe) -> dict
         "alive_after_startup": alive_after_startup,
         "stdout_sha256": sha256_bytes(stdout.encode(errors="replace")),
         "stderr_sha256": sha256_bytes(stderr.encode(errors="replace")),
+        "stdout_bytes": len(stdout.encode(errors="replace")),
+        "stderr_bytes": len(stderr.encode(errors="replace")),
+        "stdout_lines": len(stdout.splitlines()),
+        "stderr_lines": len(stderr.splitlines()),
+        "failure_reason": _failure_reason(
+            returncode,
+            stderr,
+            timed_out=timed_out,
+            alive_after_startup=alive_after_startup,
+        )
+        if not execution_ok
+        else None,
         "stdout_expectation_met": stdout_ok,
         "artifact": artifact,
         "shadow_tree_before": before,
@@ -401,10 +433,71 @@ def load_topology(path: Path) -> list[Probe]:
     return [Probe.from_dict(item) for item in json.loads(path.read_text(encoding="utf-8"))["probes"]]
 
 
+def _exact_requirement_packages(path: Path) -> list[dict[str, str]]:
+    packages: dict[str, str] = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        requirement = line.strip()
+        if not requirement or requirement.startswith("#"):
+            continue
+        name, separator, version = requirement.partition("==")
+        normalized = re.sub(r"[-_.]+", "-", name).lower()
+        if not separator or not normalized or not version or normalized in packages:
+            raise ValueError("dependency snapshot must contain unique exact requirements")
+        packages[normalized] = version
+    return [{"name": name, "version": packages[name]} for name in sorted(packages)]
+
+
+def verify_runtime_dependencies(
+    lock_path: Path, manifest_path: Path | None
+) -> tuple[dict[str, Any], list[str]]:
+    receipt: dict[str, Any] = {"verified": False}
+    if manifest_path is None:
+        return receipt, ["runtime-dependencies-manifest-required"]
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        snapshot_name = manifest["snapshot"]["file"]
+        if Path(snapshot_name).name != snapshot_name:
+            raise ValueError("snapshot path must be a file name")
+        snapshot_path = manifest_path.parent / snapshot_name
+        packages = manifest["packages"]
+        locked_packages = _exact_requirement_packages(lock_path)
+        snapshot_packages = _exact_requirement_packages(snapshot_path)
+        verified = (
+            manifest["schema_version"] == "1.0.0"
+            and manifest["verified"] is True
+            and manifest["lock"]["sha256"] == sha256_file(lock_path)
+            and manifest["snapshot"]["sha256"] == sha256_file(snapshot_path)
+            and manifest["package_count"] == len(packages)
+            and manifest["package_count"] > 0
+            and packages == locked_packages == snapshot_packages
+        )
+    except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError):
+        return receipt, ["runtime-dependencies-manifest-invalid"]
+    receipt = {
+        "verified": verified,
+        "manifest_sha256": sha256_file(manifest_path),
+        "lock_sha256": manifest["lock"]["sha256"],
+        "snapshot_sha256": manifest["snapshot"]["sha256"],
+        "package_count": manifest["package_count"],
+    }
+    return receipt, [] if verified else ["runtime-dependencies-manifest-mismatch"]
+
+
 def runtime_certify(
-    workspace_root: Path, manifest: dict, topology_path: Path, shadow_root: Path, execute: bool = True
+    workspace_root: Path,
+    manifest: dict,
+    topology_path: Path,
+    shadow_root: Path,
+    dependencies_manifest: Path | None = None,
+    execute: bool = True,
 ) -> dict[str, Any]:
     workspace_receipts, failures = verify_workspace(workspace_root, manifest)
+    dependency_receipt: dict[str, Any] = {"verified": False}
+    if execute:
+        dependency_receipt, dependency_failures = verify_runtime_dependencies(
+            topology_path.parent / "requirements.lock", dependencies_manifest
+        )
+        failures.extend(dependency_failures)
     strict, calibration, probes = (
         strict_scan_federation(workspace_root, manifest),
         run_calibration(),
@@ -449,6 +542,7 @@ def runtime_certify(
         ),
         "strict_static": strict["coverage"],
         "calibration": calibration,
+        "runtime_dependencies": dependency_receipt,
     }
     certified = (
         execute
@@ -457,6 +551,7 @@ def runtime_certify(
         and summary["entry_points_present"] == summary["entry_points_expected"]
         and summary["probes_passed"] == summary["probes_expected"]
         and len(probed_repos) == 7
+        and dependency_receipt["verified"] is True
         and calibration["precision"] == 1.0
         and calibration["recall"] == 1.0
     )

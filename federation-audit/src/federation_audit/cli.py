@@ -65,6 +65,7 @@ def build_parser() -> argparse.ArgumentParser:
     runtime.add_argument("--manifest", type=Path, required=True)
     runtime.add_argument("--topology", type=Path, required=True)
     runtime.add_argument("--shadow-root", type=Path, required=True)
+    runtime.add_argument("--dependencies-manifest", type=Path)
     runtime.add_argument("--output", type=Path, required=True)
     runtime.add_argument("--execute", action="store_true")
     runtime.add_argument(
@@ -111,6 +112,9 @@ def main(argv: list[str] | None = None) -> int:
             manifest,
             args.topology.resolve(),
             args.shadow_root.resolve(),
+            dependencies_manifest=(
+                args.dependencies_manifest.resolve() if args.dependencies_manifest else None
+            ),
             execute=args.execute,
         )
         validate_instance(result, args.schema)
