@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.dev/schema/competency-question.schema.json",
+  "title": "PRII Ontology Competency Question",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "question", "decision_supported", "required_concepts", "required_properties", "expected_answer_shape", "positive_fixture", "negative_fixture", "owners", "affected_repositories", "status"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^CQ-[0-9]{3}$"},
+    "question": {"type": "string", "minLength": 10},
+    "decision_supported": {"type": "string", "minLength": 10},
+    "required_concepts": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "required_properties": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "expected_answer_shape": {"type": "string"},
+    "positive_fixture": {"type": "object"},
+    "negative_fixture": {"type": "object"},
+    "owners": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "affected_repositories": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "status": {"enum": ["proposed", "canonical", "deprecated", "retired"]}
+  }
+}

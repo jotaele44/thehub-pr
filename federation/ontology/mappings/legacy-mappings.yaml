@@ -1,0 +1,29 @@
+schema_version: 1.0.0
+status: proposed
+mappings:
+  - legacy: federation_source.schema.json#FederationSource
+    target: prii:SourceRecord
+    relation: projectionOf
+  - legacy: source_registry_entry
+    target: prii:MonitoredSource
+    relation: mapsTo
+  - legacy: federation_observation.schema.json#FederationObservation
+    target: prii:CanonicalObservation
+    relation: projectionOf
+  - legacy: centinelas.raw_observation
+    target: prii:RawObservation
+    relation: mapsTo
+  - legacy: federation_relationship.schema.json#FederationRelationship
+    target: prii:AssertedRelationship
+    relation: conditionalMapping
+    condition: producer_emitted
+  - legacy: hub.correlation_edge
+    target: prii:Correlation
+    relation: mapsTo
+  - legacy: confidence
+    target: prii:ConfidenceAssessment
+    relation: requiresAdapter
+    adapter_requirements: [scale, assessment_target, method]
+  - legacy: GovernanceAlerts
+    target: hub:AlertProjection
+    relation: projectionOf
