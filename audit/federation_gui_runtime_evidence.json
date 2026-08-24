@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "snapshot_label": "federation-gui-20260822",
   "source_run": 32595534208,
   "repositories": {
@@ -33,6 +33,59 @@
     "p0_open": 0,
     "p1_unadjudicated": 4,
     "open_ids": ["F-001-strict-js-semantic-coverage", "F-002-skywatcher-typecheck", "F-006-browser-harness-denominator", "runtime-state-workflow-screenshot-closure"]
+  },
+  "successor_20260824": {
+    "snapshot_label": "federation-gui-20260824-successor",
+    "static_census": {
+      "source_files": 636,
+      "visual_files": 450,
+      "test_files": 50,
+      "routes": 89,
+      "workbench_modules": 6,
+      "top_level_navigation_surfaces": 95,
+      "static_interaction_handler_occurrences": 387,
+      "snapshot_mismatches": 0
+    },
+    "delta_from_frozen": {
+      "source_files": -7,
+      "visual_files": -8,
+      "test_files": 1,
+      "routes": -8,
+      "workbench_modules": 0,
+      "top_level_navigation_surfaces": -8,
+      "static_interaction_handler_occurrences": -16
+    },
+    "spiderweb-pr": {
+      "remediation_branch": "audit/gui-runtime-matrix-20260824",
+      "head_sha": "1c3ed9170f9e8794a66c76d3397892961280e518",
+      "run_id": 32785863766,
+      "artifact_id": 9541512891,
+      "artifact_digest": "sha256:75ac486cc4d30b200bfb01597ed89bd3fbf95a7e3507a75689b240bb2d166869",
+      "initial_finding": "compact rail/inspector overlays intercepted module-tab pointer targets at 320px and 375px in all three engines",
+      "remediation": "collapse side tracks below 768px and preserve horizontally scrollable tab strip",
+      "expected_surface_cells": 108,
+      "observed_surface_cells": 108,
+      "failures": 0,
+      "keyboard_only": "PASS",
+      "reduced_motion": "PASS",
+      "native_200_percent_zoom": "OPEN",
+      "state": "PASS_ON_ISOLATED_SUCCESSOR_REMEDIATION_BRANCH_NOT_YET_MAIN"
+    },
+    "ovnis-pr": {
+      "browser_harness": "PRESENT_ON_SUCCESSOR_MAIN",
+      "note": "frozen lack of harness remains historical; successor main contains GUI parity workflow/config/spec"
+    },
+    "skywatcher-pr": {
+      "browser_harness": "REMEDIATION_BRANCH_RUNNING",
+      "typecheck": "P1_OPEN"
+    },
+    "canonical_fixture_matrix": {
+      "fixtures": 32,
+      "expected_baseline_cells": 576,
+      "expected_reduced_motion_cells": 96,
+      "state": "RERUNNING_AFTER_HARNESS_BUILD_FIX",
+      "native_200_percent_zoom": "OPEN"
+    }
   },
   "certification": "OPEN"
 }
