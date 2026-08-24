@@ -20,11 +20,16 @@
         "additionalProperties": false,
         "required": ["record_id", "kind", "content_sha256", "freshness", "evidence_tier"],
         "properties": {
-          "record_id": {"type": "string", "pattern": "^AYL_DROUGHT_"},
-          "kind": {"type": ["string", "null"]},
-          "content_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+          "record_id": {"type": "string", "pattern": "^AYL_DROUGHT_[A-Z_]+_[0-9a-f]{20}$"},
+          "kind": {
+            "enum": [
+              "classification_observation", "hydrologic_indicator", "impact_event",
+              "water_restriction", "outlook", "source_document"
+            ]
+          },
+          "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
           "freshness": {"type": ["string", "null"]},
-          "evidence_tier": {"type": ["string", "null"]}
+          "evidence_tier": {"enum": ["T1", "T2", "T3", "T4"]}
         }
       }
     },
@@ -35,10 +40,16 @@
         "additionalProperties": false,
         "required": ["event_id", "impact_type", "content_sha256", "evidence_tier"],
         "properties": {
-          "event_id": {"type": "string", "pattern": "^CEN_DROUGHT_"},
-          "impact_type": {"type": ["string", "null"]},
-          "content_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
-          "evidence_tier": {"type": ["string", "null"]}
+          "event_id": {"type": "string", "pattern": "^CEN_DROUGHT_[0-9a-f]{20}$"},
+          "impact_type": {
+            "enum": [
+              "wildfire_activity", "agricultural_water_shortage", "crop_stress",
+              "infrastructure_fire_damage", "stream_dry_report", "water_hauling",
+              "forage_shortage", "municipal_rationing"
+            ]
+          },
+          "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "evidence_tier": {"enum": ["T1", "T2", "T3", "T4"]}
         }
       }
     },
