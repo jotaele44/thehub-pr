@@ -31,8 +31,10 @@ jobs:
         with: { repository: jotaele44/skywatcher-pr, ref: bff35b9ec1cec6a92d5f9d8970dca7c4840d8c46, path: successor-repos/skywatcher-pr, fetch-depth: 1 }
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with: { repository: jotaele44/centinelas-pr, ref: ac241db7148e811f78960779c042fe4eff3e3038, path: successor-repos/centinelas-pr, fetch-depth: 1 }
-      - name: Generate successor census
-        run: python3 tools/federation_gui_successor_census.py
+      - name: Generate successor census and applicability arithmetic
+        run: |
+          python3 tools/federation_gui_successor_census.py
+          python3 tools/federation_gui_successor_arithmetic.py
       - name: Upload successor census
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
