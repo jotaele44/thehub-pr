@@ -1,38 +1,38 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-22T22:34:30Z"
+  captured_at_utc: "2026-08-24T20:26:42Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: 49abeb2654bc39b99f8d17ca8872ddb5a014cb90
+      expected_sha: 3e11e185681832c883873785a8ec4b66bdf711ef
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: a49595fa13f35dcd089404f3b87643a0a27d656c
+      expected_sha: 0e3987f274a34990efc29d762573cae051e1bf15
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
-      expected_sha: e15133faafef4a6fe0472521453379c81f1a522e
+      expected_sha: d11b74ac5e42812755282356f1d14fffc996809c
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: dfd42307252225d9c4a7235fd2fb266319072263
+      expected_sha: 80028013ee6cab525428675bc7deb7ca38121bc9
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
-      expected_sha: 0132116a6225e49eadd870371b87d38d4999d8fd
+      expected_sha: ac241db7148e811f78960779c042fe4eff3e3038
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
-      expected_sha: aa86cbd04bc0ce47593277bc95d5f34ca37e4acd
+      expected_sha: 588bc121991c529fee136c90063d0d5423f23698
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: e4d4fcf9792a640f61dd408771967234e6473abc
+      expected_sha: fe155d2494f1f3eef007bf66f6367d45995ef3d1
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
@@ -60,6 +60,8 @@ vectors:
       passed_artifact_reuse: true
       ci_certified_implementation_head: e9ce1f87031189bfa6facc0ec060d092eaf37796
       bootstrap_receipt: reports/federation_pickup_bootstrap_20260816.json
+      current_snapshot_main_ingest_check: FAIL_RUN_32773630083_CAPTURED_PRODUCER_EXPORT_NONZERO
+      current_main_ingest_failure_producer: UNKNOWN_CAPTURED_SUBPROCESS_STDERR_NOT_SURFACED
 
   - vector_id: FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT
     repo: jotaele44/thehub-pr
@@ -136,12 +138,14 @@ vectors:
       duplicate_historical_issue: 10
       issue_acceptance_still_open: true
       validator_only_not_completion: true
-      current_snapshot_main_sha: a49595fa13f35dcd089404f3b87643a0a27d656c
-      current_main_lineage: "#177 -> #185"
+      current_snapshot_main_sha: 0e3987f274a34990efc29d762573cae051e1bf15
+      current_main_lineage: "264f6a7 -> 1a04155 (6 workflow-only commits) -> 0e3987f (scheduled data refresh)"
       pr_177_exact_head_hosted_gate: PASS_7_OF_7
       pr_185_visible_exact_head_hosted_gate: PROVISIONAL_2_FAMILIES_OBSERVED
       pr_185_mainline_presence_is_not_full_ci_certification: true
-      snapshot_refresh_reason: adjudicated_external_merge_lineage_pr_177_then_pr_185
+      current_main_pre_refresh_gate: PASS_14_SUCCESS_1_SKIPPED_AT_1A04155
+      current_main_exact_head_gate: NO_CHECK_RUNS_OBSERVED_SCHEDULED_REFRESH_SKIP_CI
+      snapshot_refresh_reason: workflow_maintenance_then_scheduled_data_refresh_issue_11_acceptance_still_open
 
   - vector_id: FERROCARRIL_ILAP_CANONICALIZATION
     repo: jotaele44/spiderweb-pr
@@ -159,7 +163,8 @@ vectors:
       subtype_total: 609
       evidence_label_total: 609
       exact_coordinates_present: 0
-      snapshot_refresh_reason: unrelated_main_pr_282_advanced_from_f985471e6bf4b556e3592757117b432dca44e780
+      current_snapshot_main_sha: d11b74ac5e42812755282356f1d14fffc996809c
+      snapshot_refresh_reason: unrelated_main_pr_282_and_later_mainline_advances_preserved_as_open_vector
     execution:
       kind: evidence_adjudication_required
       mutation: prohibited_by_fed_max
@@ -191,6 +196,7 @@ vectors:
       required_sources_total: 14
       probe_ran: false
       issue_state_does_not_authorize_data_promotion: true
+      current_main_weekly_cadence_check: FAIL_RUN_32719231373_DIRECTORY_OUTPUT_HASHING
     execution:
       kind: operator_corpus_network_and_credentials_required
       mutation: prohibited_by_fed_max
@@ -218,20 +224,22 @@ vectors:
       commands: []
     blockers:
       - authoritative_active_draft_found_but_no_explicit_canonical_vector_id
-      - candidate_branch_diverged_11_ahead_34_behind_main
+      - candidate_branch_diverged_11_ahead_67_behind_main
       - production_activation_requires_authentication_private_persistence_and_authorization
     invariants:
       open_draft_pr_discovered: 83
       candidate_branch: feat/email-ingestion-design-v0-1
       candidate_head_sha: d21b2974c990da66bab013f40a3075c07a320c25
       candidate_base_at_creation_sha: 0219a8c1dd0f38a1f8d09a0d027f3b82a3c74d17
-      current_main_sha_at_last_vector_adjudication: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
-      current_snapshot_main_sha: 0132116a6225e49eadd870371b87d38d4999d8fd
+      current_main_sha_at_last_vector_adjudication: ac241db7148e811f78960779c042fe4eff3e3038
+      current_snapshot_main_sha: ac241db7148e811f78960779c042fe4eff3e3038
       candidate_ahead_by_at_last_vector_adjudication: 11
-      candidate_behind_by_at_last_vector_adjudication: 34
+      candidate_behind_by_at_last_vector_adjudication: 67
       candidate_status: diverged_requires_readjudication
       explicit_vector_id_present: false
       recent_commit_theme_not_promoted_to_vector_identity: true
+      prior_main_monitor_failure: SUPERSEDED_FAIL_RUN_32769300908_MISSING_PRII_EXPORT_UTILS
+      current_main_exact_head_gate: PASS_14_OF_14
 
   - vector_id: CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE
     repo: jotaele44/ovnis-pr
@@ -278,8 +286,13 @@ vectors:
       canonical_master_mutation_by_verification_command: false
       verification_command_idempotent: true
       mutation_envelope_semantics: branch_only_schema_value_with_historical_read_only_verification_command
+      current_snapshot_main_sha: 588bc121991c529fee136c90063d0d5423f23698
+      current_main_exact_head_gate: PASS_14_OF_14
+      snapshot_refresh_reason: workflow_only_dependency_update_without_prufon_reexecution
       initial_failed_head_semantic_regression: 2d075a7b46545c8329bef47fb7e16076153d8453
       superseded_lint_failed_head: 48a4332ddc34e7adc298eb3a4da5ce8d82c25592
       negative_certification_history_preserved: true
       first_domain_receipt: reports/federation_pickup_first_domain_ready_wave_20260816.json
       completed_vector_reexecution_prohibited: true
+      current_snapshot_main_sha: a626c50f20fbac57c65cfb0529d442320ae54ecc
+      snapshot_refresh_reason: dependency_queue_integrated_without_reexecuting_completed_prufon_vector

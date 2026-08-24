@@ -25,15 +25,25 @@ def test_identity_contracts_are_valid_draft_2020_12_schemas():
 
 
 def test_member_contract_reuses_entity_resolution_decision_id():
-    schema = json.loads(Path("schemas/contracts/federation_entity_member.v1.schema.json").read_text())
+    schema = json.loads(
+        Path("schemas/contracts/federation_entity_member.v1.schema.json").read_text()
+    )
     assert "decision_id" in schema["required"]
     assert "reason_code" not in schema["required"]
     assert "evidence_ids" not in schema["required"]
 
 
 def test_event_contract_contains_all_fail_closed_dispositions():
-    schema = json.loads(Path("schemas/contracts/federation_event.v1.schema.json").read_text())
+    schema = json.loads(
+        Path("schemas/contracts/federation_event.v1.schema.json").read_text()
+    )
     assert set(schema["properties"]["disposition"]["enum"]) == {
-        "APPLIED", "IDEMPOTENT_REPLAY", "REJECTED_STALE", "REJECTED_OUT_OF_ORDER",
-        "REJECTED_SCHEMA", "REJECTED_HASH", "REJECTED_AUTHORITY", "REJECTED_INVARIANT",
+        "APPLIED",
+        "IDEMPOTENT_REPLAY",
+        "REJECTED_STALE",
+        "REJECTED_OUT_OF_ORDER",
+        "REJECTED_SCHEMA",
+        "REJECTED_HASH",
+        "REJECTED_AUTHORITY",
+        "REJECTED_INVARIANT",
     }

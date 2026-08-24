@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Build the PR180 identity control-plane candidate ledger from complete Git trees."""
+
 from __future__ import annotations
 
 import argparse
@@ -10,11 +11,34 @@ from pathlib import Path
 from typing import Any
 
 TERMS = (
-    "federation", "producer", "entity", "identity", "alias", "identifier",
-    "member", "match", "resolve", "resolution", "correlate", "correlation",
-    "merge", "supersede", "canonical", "catalog", "query", "registry", "graph",
-    "provenance", "confidence", "sync", "export", "ingest", "sqlite", "migration",
-    "relationship", "event",
+    "federation",
+    "producer",
+    "entity",
+    "identity",
+    "alias",
+    "identifier",
+    "member",
+    "match",
+    "resolve",
+    "resolution",
+    "correlate",
+    "correlation",
+    "merge",
+    "supersede",
+    "canonical",
+    "catalog",
+    "query",
+    "registry",
+    "graph",
+    "provenance",
+    "confidence",
+    "sync",
+    "export",
+    "ingest",
+    "sqlite",
+    "migration",
+    "relationship",
+    "event",
 )
 
 
@@ -88,17 +112,19 @@ def build(main_ref: str, head_ref: str) -> dict[str, Any]:
             matched = sorted({term for term in TERMS if term in haystack})
             if not matched:
                 continue
-            candidates.append({
-                "tree_role": tree_role,
-                "tree_ref": ref,
-                "path": path,
-                "blob_sha": sha,
-                "extension": Path(path).suffix.lower(),
-                "matched_control_plane_terms": matched,
-                "classification": _classify(path),
-                "inspection_state": "INSPECTED",
-                "relevant_symbols": _symbols(path, text),
-            })
+            candidates.append(
+                {
+                    "tree_role": tree_role,
+                    "tree_ref": ref,
+                    "path": path,
+                    "blob_sha": sha,
+                    "extension": Path(path).suffix.lower(),
+                    "matched_control_plane_terms": matched,
+                    "classification": _classify(path),
+                    "inspection_state": "INSPECTED",
+                    "relevant_symbols": _symbols(path, text),
+                }
+            )
     unclassified = [row for row in candidates if not row["classification"]]
     uninspected = [row for row in candidates if row["inspection_state"] != "INSPECTED"]
     return {
@@ -110,7 +136,9 @@ def build(main_ref: str, head_ref: str) -> dict[str, Any]:
         "inspected_count": len(candidates) - len(uninspected),
         "unclassified_count": len(unclassified),
         "uninspected_count": len(uninspected),
-        "candidates": sorted(candidates, key=lambda row: (row["tree_role"], row["path"])),
+        "candidates": sorted(
+            candidates, key=lambda row: (row["tree_role"], row["path"])
+        ),
     }
 
 
@@ -123,12 +151,19 @@ def main() -> int:
     ledger = build(args.main_ref, args.head_ref)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(ledger, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    out.write_text(
+        json.dumps(ledger, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     if ledger["candidate_count"] != ledger["inspected_count"]:
         return 2
     if ledger["unclassified_count"] or ledger["uninspected_count"]:
         return 3
-    print("PASS identity candidate denominator:", f"candidates={ledger['candidate_count']}", f"inspected={ledger['inspected_count']}", "unclassified=0 uninspected=0")
+    print(
+        "PASS identity candidate denominator:",
+        f"candidates={ledger['candidate_count']}",
+        f"inspected={ledger['inspected_count']}",
+        "unclassified=0 uninspected=0",
+    )
     return 0
 
 
