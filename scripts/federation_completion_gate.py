@@ -39,6 +39,11 @@ BLOCK_MARKERS = {
 }
 
 
+def is_rate_limit_error(message: str) -> bool:
+    lowered = message.lower()
+    return "api rate limit exceeded" in lowered or "rate limit exceeded" in lowered
+
+
 @dataclass
 class Disposition:
     repository: str
@@ -239,6 +244,18 @@ def main() -> int:
     ap.add_argument("--config", default="federation/completion-gate.json")
     ap.add_argument("--out", default="artifacts/federation-completion-ledger.json")
     ap.add_argument("--fail-on-actionable", action="store_true")
+    ap.add_argument(
+        "--allow-rate-limit-partial",
+        action="store_true",
+        help="Exit 0 when the only audit errors are GitHub rate-limit errors. "
+        "The ledger still records those errors and remains non-certifying.",
+    )
+    ap.add_argument(
+        "--max-prs",
+        type=int,
+        default=0,
+        help="Stop after classifying this many open PRs. Used only for non-certifying PR exercise runs.",
+    )
     args = ap.parse_args()
 
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
@@ -249,6 +266,7 @@ def main() -> int:
     cfg = json.loads(Path(args.config).read_text())
     rows: list[Disposition] = []
     errors: list[str] = []
+    truncated_reason: str | None = None
     observed_main: dict[str, str] = {}
     for repo_full in cfg["repositories"]:
         owner, repo = repo_full.split("/", 1)
@@ -263,7 +281,8 @@ def main() -> int:
                 try:
                     rows.append(classify(repo_full, pr, main_sha, token))
                 except Exception as exc:  # fail closed per PR; preserve denominator
-                    errors.append(f"{repo_full}#{pr.get('number')}: {exc}")
+                    error = f"{repo_full}#{pr.get('number')}: {exc}"
+                    errors.append(error)
                     rows.append(
                         Disposition(
                             repo_full,
@@ -279,32 +298,72 @@ def main() -> int:
                             ["AUDIT_EXCEPTION"],
                         )
                     )
+                    if args.allow_rate_limit_partial and is_rate_limit_error(error):
+                        truncated_reason = error
+                        break
+                if args.max_prs and len(rows) >= args.max_prs:
+                    truncated_reason = f"PR_AUDIT_ROW_LIMIT:{args.max_prs}"
+                    break
+            if truncated_reason:
+                break
         except Exception as exc:
-            errors.append(f"{repo_full}: {exc}")
+            error = f"{repo_full}: {exc}"
+            errors.append(error)
+            if args.allow_rate_limit_partial and is_rate_limit_error(error):
+                truncated_reason = error
+                break
 
     counts: dict[str, int] = {}
     for row in rows:
         counts[row.state] = counts.get(row.state, 0) + 1
     actionable = {state: counts[state] for state in sorted(ACTIONABLE_STATES) if counts.get(state)}
+    rate_limit_errors = [err for err in errors if is_rate_limit_error(err)]
+    only_rate_limit_errors = bool(errors) and len(rate_limit_errors) == len(errors)
+    certification = "PASS"
+    if errors:
+        certification = "PROVISIONAL_RATE_LIMIT_PARTIAL" if only_rate_limit_errors else "FAIL"
+    elif truncated_reason:
+        certification = "PROVISIONAL_TRUNCATED_PARTIAL"
+    elif args.fail_on_actionable and actionable:
+        certification = "FAIL_ACTIONABLE_RESIDUE"
     result = {
         "schema_version": 2,
         "scope": "REMOTE_GITHUB_ONLY",
+        "certification": certification,
         "local_worktree_state": "BLOCKED_NOT_OBSERVED",
         "repositories": cfg["repositories"],
         "observed_main_shas": observed_main,
         "open_pr_denominator": len(rows),
+        "open_pr_denominator_complete": truncated_reason is None,
+        "audit_truncated": truncated_reason is not None,
+        "truncation_reason": truncated_reason,
         "counts": dict(sorted(counts.items())),
         "actionable_counts": actionable,
         "errors": errors,
+        "rate_limit_error_count": len(rate_limit_errors),
         "rows": [asdict(r) for r in rows],
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
-    print(json.dumps({k: result[k] for k in ("open_pr_denominator", "counts", "actionable_counts", "errors")}, indent=2))
+    print(json.dumps(
+        {k: result[k] for k in (
+            "open_pr_denominator",
+            "counts",
+            "actionable_counts",
+            "certification",
+            "rate_limit_error_count",
+            "errors",
+        )},
+        indent=2,
+    ))
 
     if errors:
+        if args.allow_rate_limit_partial and only_rate_limit_errors:
+            return 0
         return 2
+    if truncated_reason and args.max_prs:
+        return 0
     if args.fail_on_actionable and actionable:
         # A completion claim fails while any current integration/reconciliation
         # residue remains. Explained evidence/local/source blockers may remain open.
