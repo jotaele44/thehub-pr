@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-24T20:26:42Z"
+  captured_at_utc: "2026-08-24T21:10:29Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   repositories:
@@ -32,7 +32,7 @@ snapshot:
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: fe155d2494f1f3eef007bf66f6367d45995ef3d1
+      expected_sha: 032983702ee98a6eb9331c9f8e3847900fb877c0
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
@@ -140,6 +140,7 @@ vectors:
       validator_only_not_completion: true
       current_snapshot_main_sha: 0e3987f274a34990efc29d762573cae051e1bf15
       current_main_lineage: "264f6a7 -> 1a04155 (6 workflow-only commits) -> 0e3987f (scheduled data refresh)"
+      current_main_pr_lineage: "#177 -> #185 -> #100 -> #72 -> #73 -> #74 -> #67 -> #69 -> #70 -> #66 -> #68"
       pr_177_exact_head_hosted_gate: PASS_7_OF_7
       pr_185_visible_exact_head_hosted_gate: PROVISIONAL_2_FAMILIES_OBSERVED
       pr_185_mainline_presence_is_not_full_ci_certification: true
@@ -232,6 +233,7 @@ vectors:
       candidate_head_sha: d21b2974c990da66bab013f40a3075c07a320c25
       candidate_base_at_creation_sha: 0219a8c1dd0f38a1f8d09a0d027f3b82a3c74d17
       current_main_sha_at_last_vector_adjudication: ac241db7148e811f78960779c042fe4eff3e3038
+      prior_main_sha_at_vector_adjudication: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
       current_snapshot_main_sha: ac241db7148e811f78960779c042fe4eff3e3038
       candidate_ahead_by_at_last_vector_adjudication: 11
       candidate_behind_by_at_last_vector_adjudication: 67
@@ -294,5 +296,5 @@ vectors:
       negative_certification_history_preserved: true
       first_domain_receipt: reports/federation_pickup_first_domain_ready_wave_20260816.json
       completed_vector_reexecution_prohibited: true
-      current_snapshot_main_sha: a626c50f20fbac57c65cfb0529d442320ae54ecc
+      current_snapshot_main_sha: 588bc121991c529fee136c90063d0d5423f23698
       snapshot_refresh_reason: dependency_queue_integrated_without_reexecuting_completed_prufon_vector

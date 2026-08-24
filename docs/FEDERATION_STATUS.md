@@ -1,7 +1,7 @@
 # PRII Federation — Gap-Closure Status
 
 _Authoritative status of the Puerto Rico Integrated Intelligence (PRII) federation._
-_Last updated: 2026-07-09 (reconciled centinelas live-exec back up to live to match its producer manifest — real RSS intake bridged, production export hub-validated; spiderweb remains live)._ 
+_Last updated: 2026-08-24 (reconciled centinelas live-exec down to discovery-ready to match its current producer manifest; committed live ledger is stale pending fresh acquisition/export and downstream Hub validation receipts)._
 
 The federation is **artifact-based**: producers emit a discovery manifest
 (`federation.json`) plus a canonical export package (`sources/entities/
@@ -19,7 +19,7 @@ from GitHub, so aggregation no longer assumes local checkouts.
 | `aguayluz-pr` | water/grid | ✅ | ✅ | ✅ 273/273 assets | power + PREPS + water/wastewater live; outage granularity remains caveated |
 | `ovnis-pr` (OVNIS) | historical case corpus | ✅ | ✅ | n/a | 470 real master cases (0 synthetic); production canonical export live |
 | `skywatcher-pr` | airspace | ✅ | ⛔ | ✅ observations | synthetic package only — needs real FR24 capture/export |
-| `centinelas-pr` | pre-officialization signal monitor | ✅ | ✅ | n/a | Live per the producer manifest (`ready_for_hub_live_execution=true`, `PRODUCTION`): 274 real RSS signals bridged into `data/signals/live_signals.jsonl` (2026-07-03); `federation_export --mode production` passed and `hub validate-package` returned VALID (operator-approved sweep) |
+| `centinelas-pr` | pre-officialization signal monitor | ✅ | ⛔ | n/a | Producer manifest currently declares `ready_for_hub_live_execution=false`: committed live ledger is stale; refresh through successful acquisition/export and downstream Hub validation receipts before live execution |
 
 ## What is closed
 
