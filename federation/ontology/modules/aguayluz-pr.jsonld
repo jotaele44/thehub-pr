@@ -1,0 +1,17 @@
+{
+  "@context": "../contexts/all.context.jsonld",
+  "@id": "https://prii.dev/ontology/repo/aguayluz-pr",
+  "@type": "prii:OntologyModule",
+  "version": "0.1.0", "status": "proposed", "owner": "aguayluz-pr",
+  "imports": ["https://prii.dev/ontology/core"],
+  "classes": [
+    {"id": "aguayluz:UtilityAsset", "label": "Utility Asset", "owner": "aguayluz-pr"},
+    {"id": "aguayluz:WaterAsset", "label": "Water Asset", "owner": "aguayluz-pr"},
+    {"id": "aguayluz:WastewaterAsset", "label": "Wastewater Asset", "owner": "aguayluz-pr"},
+    {"id": "aguayluz:PowerAsset", "label": "Power Asset", "owner": "aguayluz-pr"},
+    {"id": "aguayluz:ServiceEvent", "label": "Service Event", "owner": "aguayluz-pr"},
+    {"id": "aguayluz:OutageEvent", "label": "Outage Event", "owner": "aguayluz-pr"},
+    {"id": "aguayluz:UtilityAlert", "label": "Utility Alert", "owner": "aguayluz-pr"},
+    {"id": "aguayluz:UtilityGeoSummary", "label": "Utility Geospatial Summary", "owner": "aguayluz-pr"}
+  ]
+}

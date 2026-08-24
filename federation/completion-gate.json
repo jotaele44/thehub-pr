@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "repositories": [
+    "jotaele44/thehub-pr",
+    "jotaele44/moneysweep-pr",
+    "jotaele44/spiderweb-pr",
+    "jotaele44/skywatcher-pr",
+    "jotaele44/centinelas-pr",
+    "jotaele44/aguayluz-pr",
+    "jotaele44/ovnis-pr"
+  ],
+  "certification_boundary": {
+    "remote_github_only": true,
+    "local_worktrees": "BLOCKED_UNTIL_OBSERVED",
+    "private_fixtures": "NOT_INFERRED_FROM_REMOTE_ABSENCE",
+    "public_source_exhaustion": "SEPARATE_REQUIRED_GATE",
+    "foia_mdr": "PROHIBITED_UNTIL_PUBLIC_SOURCE_EXHAUSTION_PASS"
+  },
+  "identity_rules": {
+    "forbidden_as_sole_proof": [
+      "NAME_ONLY",
+      "NORMALIZED_NAME_ONLY",
+      "AGE_ONLY",
+      "COUNT_EQUALITY",
+      "MERGEABLE_ONLY",
+      "PROXIMITY_ONLY"
+    ],
+    "supersession_requires": [
+      "ANCESTRY_OR_CONTENT_PROOF",
+      "PRESERVED_HISTORY",
+      "CANONICAL_SUCCESSOR_IDENTIFIED"
+    ]
+  }
+}
