@@ -1,0 +1,70 @@
+name: Federation GUI Dynamic Runtime
+on:
+  push:
+    branches: [audit/federation-gui-certification-20260822]
+    paths:
+      - 'audit/runtime-harness/run-dynamic-matrix.mjs'
+      - '.github/workflows/federation-gui-dynamic-runtime.yml'
+  workflow_dispatch:
+permissions: { contents: read }
+jobs:
+  dynamic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: aguayluz-pr
+            repo: jotaele44/aguayluz-pr
+            ref: c4a975dc7e79e59066ae1e25ac8af0a973eb5d88
+            frontend: dashboard
+          - app: centinelas-pr
+            repo: jotaele44/centinelas-pr
+            ref: ac241db7148e811f78960779c042fe4eff3e3038
+            frontend: frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { ref: audit/federation-gui-certification-20260822, path: controller }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { repository: '${{ matrix.repo }}', ref: '${{ matrix.ref }}', path: app, fetch-depth: 1 }
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with: { node-version: 22 }
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with: { python-version: '3.12' }
+      - name: Install harness
+        working-directory: controller/audit/runtime-harness
+        run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium firefox webkit
+      - name: Install application
+        shell: bash
+        run: |
+          set -euxo pipefail
+          cd app
+          if [ -f server/backend/requirements.txt ]; then python -m pip install -r server/backend/requirements.txt; fi
+          python -m pip install uvicorn fastapi
+          cd '${{ matrix.frontend }}'
+          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
+      - name: Start backend
+        working-directory: app
+        run: |
+          python -m uvicorn server.backend.main:app --host 127.0.0.1 --port 8000 >/tmp/dynamic-backend.log 2>&1 &
+          sleep 4
+      - name: Start frontend
+        working-directory: app/${{ matrix.frontend }}
+        env:
+          VITE_API_BASE: http://127.0.0.1:8000
+        run: |
+          npm run dev -- --host 127.0.0.1 --port 5173 >/tmp/dynamic-frontend.log 2>&1 &
+          for i in {1..60}; do curl -fsS http://127.0.0.1:5173/ >/dev/null 2>&1 && exit 0; sleep 1; done
+          cat /tmp/dynamic-frontend.log; exit 1
+      - name: Execute dynamic matrix
+        working-directory: controller/audit/runtime-harness
+        env:
+          GUI_APP: '${{ matrix.app }}'
+          GUI_BASE_URL: http://127.0.0.1:5173
+          GUI_API_BASE_URL: http://127.0.0.1:8000
+          GUI_ARTIFACT_DIR: 'artifacts/dynamic-${{ matrix.app }}'
+        run: node run-dynamic-matrix.mjs
+      - if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with: { name: 'dynamic-runtime-${{ matrix.app }}', path: 'controller/audit/runtime-harness/artifacts/dynamic-${{ matrix.app }}/', if-no-files-found: error, retention-days: 90 }
