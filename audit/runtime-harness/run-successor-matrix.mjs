@@ -14,14 +14,12 @@ const routesByApp = {
   'ovnis-pr': ['/', '/__gui_not_found__'],
   'centinelas-pr': ['/', '/monitor', '/signals', '/matters', '/sources', '/handoff', '/pipeline', '/water-disruption', '/tabla', '/entidades', '/__gui_not_found__'],
 }
-
 if (!routesByApp[APP]) throw new Error(`Unsupported GUI_APP: ${APP}`)
 
 const engines = { chromium, firefox, webkit }
 const widths = [320, 375, 768, 1280, 1440, 1920]
 const results = []
 let failed = false
-
 const slug = (route) => route === '/' ? 'root' : route.replace(/^\//, '').replace(/[^a-zA-Z0-9_-]+/g, '-')
 const record = (row) => { results.push(row); if (row.status === 'FAIL') failed = true }
 
@@ -30,7 +28,6 @@ async function waitForSettled(page) {
   await page.waitForTimeout(700)
   await page.locator('body').waitFor({ state: 'visible', timeout: 30000 })
 }
-
 async function keyboardProbe(page) {
   await page.keyboard.press('Home').catch(() => {})
   const traversed = []
@@ -39,12 +36,7 @@ async function keyboardProbe(page) {
     const f = await page.evaluate(() => {
       const el = document.activeElement
       if (!el || el === document.body || el === document.documentElement) return null
-      return {
-        tag: el.tagName,
-        text: (el.textContent || '').trim().slice(0, 80),
-        ariaLabel: el.getAttribute?.('aria-label') || null,
-        href: el instanceof HTMLAnchorElement ? el.getAttribute('href') : null,
-      }
+      return { tag: el.tagName, text: (el.textContent || '').trim().slice(0, 80), ariaLabel: el.getAttribute?.('aria-label') || null, href: el instanceof HTMLAnchorElement ? el.getAttribute('href') : null }
     })
     if (f) traversed.push(f)
   }
@@ -56,34 +48,36 @@ for (const [engineName, engine] of Object.entries(engines)) {
   try {
     for (const width of widths) {
       const context = await browser.newContext({ viewport: { width, height: width < 768 ? 844 : 900 }, reducedMotion: 'no-preference' })
-      const page = await context.newPage()
-      const pageErrors = []
-      page.on('pageerror', (e) => pageErrors.push(String(e)))
       try {
+        // Each rendered surface owns a fresh Page and error ledger. This prevents
+        // asynchronous work (maps, blobs, streams) from one surface from
+        // contaminating the next surface after navigation.
         for (const route of routesByApp[APP]) {
-          pageErrors.length = 0
-          await page.goto(`${BASE_URL}${route}`, { waitUntil: 'domcontentloaded', timeout: 45000 })
-          await waitForSettled(page)
-          const body = await page.locator('body').innerText()
-          const screenshot = `${engineName}-${width}-${slug(route)}.png`
-          await page.screenshot({ path: path.join(OUT, screenshot), fullPage: true })
-          record({
-            app: APP, engine: engineName, viewport: width, route,
-            status: body.trim().length > 0 && pageErrors.length === 0 ? 'PASS' : 'FAIL',
-            body_nonempty: body.trim().length > 0,
-            page_errors: [...pageErrors], screenshot,
-          })
+          const page = await context.newPage()
+          const pageErrors = []
+          page.on('pageerror', (e) => pageErrors.push(String(e)))
+          try {
+            await page.goto(`${BASE_URL}${route}`, { waitUntil: 'domcontentloaded', timeout: 45000 })
+            await waitForSettled(page)
+            const body = await page.locator('body').innerText()
+            const screenshot = `${engineName}-${width}-${slug(route)}.png`
+            await page.screenshot({ path: path.join(OUT, screenshot), fullPage: true })
+            record({ app: APP, engine: engineName, viewport: width, route, status: body.trim().length > 0 && pageErrors.length === 0 ? 'PASS' : 'FAIL', body_nonempty: body.trim().length > 0, page_errors: [...pageErrors], screenshot })
+          } catch (error) {
+            record({ app: APP, engine: engineName, viewport: width, route, status: 'FAIL', error: String(error), page_errors: [...pageErrors] })
+          } finally { await page.close() }
         }
 
-        await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 45000 })
-        await waitForSettled(page)
-        const traversed = await keyboardProbe(page)
-        record({ app: APP, engine: engineName, viewport: width, mode: 'keyboard-only', status: traversed.length > 0 ? 'PASS' : 'FAIL', traversed })
-      } catch (error) {
-        record({ app: APP, engine: engineName, viewport: width, status: 'FAIL', error: String(error), page_errors: [...pageErrors] })
-      } finally {
-        await context.close()
-      }
+        const kp = await context.newPage()
+        try {
+          await kp.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 45000 })
+          await waitForSettled(kp)
+          const traversed = await keyboardProbe(kp)
+          record({ app: APP, engine: engineName, viewport: width, mode: 'keyboard-only', status: traversed.length > 0 ? 'PASS' : 'FAIL', traversed })
+        } catch (error) {
+          record({ app: APP, engine: engineName, viewport: width, mode: 'keyboard-only', status: 'FAIL', error: String(error) })
+        } finally { await kp.close() }
+      } finally { await context.close() }
     }
 
     const reduced = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' })
@@ -93,25 +87,14 @@ for (const [engineName, engine] of Object.entries(engines)) {
       await waitForSettled(rp)
       const matches = await rp.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)
       record({ app: APP, engine: engineName, viewport: 1280, mode: 'reduced-motion', status: matches ? 'PASS' : 'FAIL' })
-    } catch (error) {
-      record({ app: APP, engine: engineName, viewport: 1280, mode: 'reduced-motion', status: 'FAIL', error: String(error) })
-    } finally { await reduced.close() }
+    } catch (error) { record({ app: APP, engine: engineName, viewport: 1280, mode: 'reduced-motion', status: 'FAIL', error: String(error) }) }
+    finally { await reduced.close() }
   } finally { await browser.close() }
 }
 
 const expectedSurfaceCells = routesByApp[APP].length * Object.keys(engines).length * widths.length
 const observedSurfaceCells = results.filter(r => r.route).length
-const summary = {
-  schema_version: '1.0', app: APP,
-  routes: routesByApp[APP], engines: Object.keys(engines), viewports: widths,
-  expected_surface_cells: expectedSurfaceCells,
-  observed_surface_cells: observedSurfaceCells,
-  keyboard_cells: results.filter(r => r.mode === 'keyboard-only').length,
-  reduced_motion_cells: results.filter(r => r.mode === 'reduced-motion').length,
-  failures: results.filter(r => r.status === 'FAIL').length,
-  native_200_percent_zoom_certified: false,
-  results,
-}
+const summary = { schema_version: '1.0', app: APP, routes: routesByApp[APP], engines: Object.keys(engines), viewports: widths, expected_surface_cells: expectedSurfaceCells, observed_surface_cells: observedSurfaceCells, keyboard_cells: results.filter(r => r.mode === 'keyboard-only').length, reduced_motion_cells: results.filter(r => r.mode === 'reduced-motion').length, failures: results.filter(r => r.status === 'FAIL').length, native_200_percent_zoom_certified: false, results }
 fs.writeFileSync(path.join(OUT, 'summary.json'), JSON.stringify(summary, null, 2) + '\n')
 console.log(JSON.stringify({ app: APP, expected_surface_cells: expectedSurfaceCells, observed_surface_cells: observedSurfaceCells, failures: summary.failures }, null, 2))
 process.exit(failed || observedSurfaceCells !== expectedSurfaceCells ? 1 : 0)
