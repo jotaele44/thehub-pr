@@ -126,7 +126,7 @@ jobs:
           set -euo pipefail
           fed --root .fed/checkouts max --remote --apply | tee federation-max.json
 
-      - name: Assert current remote SHAs preserve bounded exhaustion
+      - name: Assert frozen snapshot semantics and fail-closed drift handling
         run: |
           python - <<'PY'
           import json
@@ -137,6 +137,8 @@ jobs:
           execution = receipt["execution"]
           certification = receipt["certification"]
           repo_status = receipt["repository_status"]
+          reconciliation = receipt["reconciliation"]
+          snapshot = receipt["snapshot"]
 
           assert binding["mode"] == "RUNTIME_BIND_CONTROL_PLANE_MAIN_ONLY"
           assert binding["runtime_rebind_count"] == 1
@@ -148,18 +150,13 @@ jobs:
           assert execution["bounded_exhausted"] is True
           assert execution["ready_residue"] == []
           assert execution["completed"] == []
-          assert execution["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
-          assert execution["final_status"]["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"] == "PASS"
-          assert execution["final_status"]["BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT"] == "BLOCKED"
-          assert execution["final_status"]["PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE"] == "BLOCKED"
-          assert execution["final_status"]["DISCOVER_CENTINELAS_ACTIVE_VECTOR"] == "OPEN"
           assert certification["universal_exhaustion_claimed"] is False
           assert certification["certification"] == "PROVISIONAL"
           assert certification["repository_status_phase"] == "post_execution"
 
-          # Declared PASS vectors may be reused only when live producer heads
-          # still match the bounded registry snapshot. TheHub alone is runtime
-          # bound because a committed file cannot know its own future merge SHA.
+          # No declared PASS vector may be re-executed just because a mutable
+          # producer advanced. Passed artifacts are reused and stale producer
+          # heads are classified, not rewritten or silently rebound.
           executed_rows = [
               row
               for pass_row in execution["passes"]
@@ -168,32 +165,75 @@ jobs:
           ]
           assert executed_rows == []
 
+          allowed = {"PASS", "OPEN", "BLOCKED", "READY", "FAIL", "UNRESOLVED"}
           counts = {}
           for status in execution["final_status"].values():
+              assert status in allowed
               counts[status] = counts.get(status, 0) + 1
-          assert counts == {
-              "PASS": 2,
-              "OPEN": 4,
-              "BLOCKED": 2,
-          }
-          assert sum(counts.values()) == 8
+          assert sum(counts.values()) == certification["vector_count"] == 8
+          assert execution["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
+          assert execution["final_status"]["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"] == "PASS"
+          assert counts.get("READY", 0) == 0
+          assert counts.get("FAIL", 0) == 0
+          assert counts.get("UNRESOLVED", 0) == 0
 
           assert repo_status["phase"] == "post_execution"
           assert repo_status["arithmetic_ok"] is True
-          assert repo_status["counts"] == {
-              "BLOCKED": 2,
-              "FAIL": 0,
-              "OPEN": 4,
-              "PASS": 1,
-              "READY": 0,
-              "UNRESOLVED": 0,
-          }
           assert repo_status["classified_count"] == repo_status["repository_count"] == 7
+          assert sum(repo_status["counts"].values()) == 7
+
+          rows = snapshot["repositories"]
+          assert len(rows) == 7
+          by_snapshot_repo = {row["repo"]: row for row in rows}
+          assert len(by_snapshot_repo) == 7
+          assert by_snapshot_repo["jotaele44/thehub-pr"]["sha_match"] is True
+
+          # The six producer expected SHAs must still be the frozen values from
+          # the committed ledger. Drift is evidence about mutable main heads,
+          # never authorization to mutate the snapshot in-place.
+          for repo, expected_sha in binding["producer_expected_shas"].items():
+              row = by_snapshot_repo[repo]
+              assert row["expected_sha"] == expected_sha
+
+          vectors = reconciliation["vectors"]
+          by_repo_vectors = {}
+          for row in vectors:
+              by_repo_vectors.setdefault(row["repo"], []).append(row)
+
+          drifted = {
+              repo
+              for repo, row in by_snapshot_repo.items()
+              if repo != "jotaele44/thehub-pr" and row["sha_match"] is False
+          }
+          matched = set(binding["producer_expected_shas"]) - drifted
+          assert drifted | matched == set(binding["producer_expected_shas"])
+          assert not (drifted & matched)
+
+          # Every producer drift must fail closed: all vectors owned by that
+          # producer become BLOCKED and carry the explicit stale-SHA blocker.
+          for repo in drifted:
+              assert by_repo_vectors[repo]
+              for row in by_repo_vectors[repo]:
+                  assert row["effective_status"] == "BLOCKED"
+                  assert "stale_or_unverified_sha" in row["blockers"]
+
+          # Conversely, a matched producer must not acquire the stale-SHA
+          # blocker from the snapshot machinery.
+          for repo in matched:
+              for row in by_repo_vectors[repo]:
+                  assert "stale_or_unverified_sha" not in row["blockers"]
+
           by_repo = {row["repo"]: row["status"] for row in repo_status["repositories"]}
           assert by_repo["jotaele44/thehub-pr"] == "OPEN"
-          assert by_repo["jotaele44/centinelas-pr"] == "OPEN"
           assert by_repo["jotaele44/ovnis-pr"] == "PASS"
-          assert by_repo["jotaele44/skywatcher-pr"] == "BLOCKED"
           assert by_repo["jotaele44/moneysweep-pr"] == "BLOCKED"
-          print("PASS: six producer SHAs frozen exactly; control-plane self-reference runtime-bound; bounded exhaustion closes")
+
+          print(json.dumps({
+              "status": "PASS",
+              "frozen_producer_count": len(binding["producer_expected_shas"]),
+              "matched_producers": sorted(matched),
+              "drifted_producers": sorted(drifted),
+              "vector_status_counts": counts,
+              "repository_status_counts": repo_status["counts"],
+          }, sort_keys=True))
           PY
