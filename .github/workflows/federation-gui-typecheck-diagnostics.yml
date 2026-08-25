@@ -1,0 +1,52 @@
+name: Federation GUI Typecheck Diagnostics
+on:
+  push:
+    branches: [audit/federation-gui-certification-20260822]
+    paths:
+      - '.github/workflows/federation-gui-typecheck-diagnostics.yml'
+  workflow_dispatch:
+permissions: { contents: read }
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - app: thehub-pr
+            repo: jotaele44/thehub-pr
+            ref: 103e06553270fd690c9c2d9aa5fd7604f3a34617
+            frontend: server/frontend
+            restore_checkjs: 'true'
+          - app: skywatcher-pr
+            repo: jotaele44/skywatcher-pr
+            ref: bff35b9ec1cec6a92d5f9d8970dca7c4840d8c46
+            frontend: frontend
+            restore_checkjs: 'false'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with: { repository: '${{ matrix.repo }}', ref: '${{ matrix.ref }}', path: app, fetch-depth: 1 }
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with: { node-version: 22 }
+      - name: Restore equivalent Hub JS checking in runner only
+        if: matrix.restore_checkjs == 'true'
+        working-directory: app/${{ matrix.frontend }}
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'); const p='jsconfig.json'; const j=JSON.parse(fs.readFileSync(p,'utf8')); j.compilerOptions.checkJs=true; delete j.compilerOptions.baseUrl; fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n')
+          NODE
+          cat jsconfig.json
+      - name: Install frontend
+        working-directory: app/${{ matrix.frontend }}
+        run: if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
+      - name: Run declared/equivalent typecheck
+        id: typecheck
+        working-directory: app/${{ matrix.frontend }}
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run typecheck 2>&1 | tee typecheck-diagnostics.log
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with: { name: 'typecheck-diagnostics-${{ matrix.app }}', path: 'app/${{ matrix.frontend }}/typecheck-diagnostics.log', if-no-files-found: error, retention-days: 90 }
