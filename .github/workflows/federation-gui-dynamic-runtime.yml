@@ -42,6 +42,7 @@ jobs:
           cd app
           if [ -f server/backend/requirements.txt ]; then python -m pip install -r server/backend/requirements.txt; fi
           python -m pip install uvicorn fastapi
+          if [ '${{ matrix.app }}' = 'centinelas-pr' ]; then python -m pip install -e '.[server]'; fi
           cd '${{ matrix.frontend }}'
           if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
       - name: Start backend
