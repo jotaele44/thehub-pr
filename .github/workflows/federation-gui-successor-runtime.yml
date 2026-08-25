@@ -45,52 +45,36 @@ jobs:
     steps:
       - name: Checkout audit controller
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          ref: audit/federation-gui-certification-20260822
-          path: controller
-
+        with: { ref: audit/federation-gui-certification-20260822, path: controller }
       - name: Checkout pinned application
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          repository: ${{ matrix.repo }}
-          ref: ${{ matrix.ref }}
-          path: app
-          fetch-depth: 1
-
+        with: { repository: '${{ matrix.repo }}', ref: '${{ matrix.ref }}', path: app, fetch-depth: 1 }
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
-        with:
-          node-version: 22
-
+        with: { node-version: 22 }
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
-        with:
-          python-version: '3.12'
-
+        with: { python-version: '3.12' }
       - name: Install browser harness
         working-directory: controller/audit/runtime-harness
         run: npm install --no-audit --no-fund
-
       - name: Install browser engines
         working-directory: controller/audit/runtime-harness
         run: npx playwright install --with-deps chromium firefox webkit
-
-      - name: Install backend dependencies
+      - name: Install backend dependencies and in-repo package
         working-directory: app
         shell: bash
         run: |
           set -euxo pipefail
-          if [ -f server/backend/requirements.txt ]; then
-            python -m pip install -r server/backend/requirements.txt
-          elif [ -f requirements.txt ]; then
-            python -m pip install -r requirements.txt
-          fi
+          if [ -f server/backend/requirements.txt ]; then python -m pip install -r server/backend/requirements.txt; elif [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
           python -m pip install uvicorn fastapi
-
+          if [ '${{ matrix.app }}' = 'centinelas-pr' ]; then
+            python -m pip install -e '.[server]'
+          elif [ -f pyproject.toml ] || [ -f setup.py ] || [ -f setup.cfg ]; then
+            python -m pip install -e .
+          fi
       - name: Install frontend dependencies
         working-directory: app/${{ matrix.frontend }}
         shell: bash
-        run: |
-          if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
-
+        run: if [ -f package-lock.json ]; then npm ci --no-audit --no-fund; else npm install --no-audit --no-fund; fi
       - name: Start pinned backend
         working-directory: app
         run: |
@@ -101,7 +85,6 @@ jobs:
           done
           cat /tmp/${{ matrix.app }}-backend.log
           exit 1
-
       - name: Start pinned frontend
         working-directory: app/${{ matrix.frontend }}
         env:
@@ -110,34 +93,19 @@ jobs:
           VITE_FEDERATION_REQUIRE_AUTH: 'false'
         run: |
           npm run dev -- --host 127.0.0.1 --port 5173 > /tmp/${{ matrix.app }}-frontend.log 2>&1 &
-          for i in {1..60}; do
-            if curl -fsS http://127.0.0.1:5173/ >/dev/null 2>&1; then exit 0; fi
-            sleep 1
-          done
+          for i in {1..60}; do curl -fsS http://127.0.0.1:5173/ >/dev/null 2>&1 && exit 0; sleep 1; done
           cat /tmp/${{ matrix.app }}-frontend.log
           exit 1
-
       - name: Execute rendered-surface baseline matrix
         working-directory: controller/audit/runtime-harness
-        env:
-          GUI_APP: ${{ matrix.app }}
-          GUI_BASE_URL: http://127.0.0.1:5173
-          GUI_ARTIFACT_DIR: artifacts/${{ matrix.app }}
+        env: { GUI_APP: '${{ matrix.app }}', GUI_BASE_URL: 'http://127.0.0.1:5173', GUI_ARTIFACT_DIR: 'artifacts/${{ matrix.app }}' }
         run: node run-successor-matrix.mjs
-
       - name: Upload runtime evidence
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
-        with:
-          name: successor-runtime-${{ matrix.app }}
-          path: controller/audit/runtime-harness/artifacts/${{ matrix.app }}/
-          if-no-files-found: error
-          retention-days: 90
-
+        with: { name: 'successor-runtime-${{ matrix.app }}', path: 'controller/audit/runtime-harness/artifacts/${{ matrix.app }}/', if-no-files-found: error, retention-days: 90 }
       - name: Dump service logs on failure
         if: failure()
         run: |
-          echo '--- backend ---'
-          cat /tmp/${{ matrix.app }}-backend.log || true
-          echo '--- frontend ---'
-          cat /tmp/${{ matrix.app }}-frontend.log || true
+          echo '--- backend ---'; cat /tmp/${{ matrix.app }}-backend.log || true
+          echo '--- frontend ---'; cat /tmp/${{ matrix.app }}-frontend.log || true
