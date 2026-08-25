@@ -11,6 +11,7 @@ import argparse
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -37,6 +38,9 @@ BLOCK_MARKERS = {
     "STACK_REWRITE_REQUIRED": "STACK_REWRITE_REQUIRED",
     "REBASE_AND_RETEST": "REBASE_REQUIRED",
 }
+REQUEST_TIMEOUT_SECONDS = 15
+REQUEST_RETRIES = 2
+RETRYABLE_HTTP_CODES = {429, 500, 502, 503, 504}
 
 
 def is_rate_limit_error(message: str) -> bool:
@@ -67,18 +71,46 @@ class Disposition:
 
 def request_json(url: str, token: str, *, method: str = "GET", body: dict[str, Any] | None = None) -> Any:
     data = None if body is None else json.dumps(body).encode()
-    req = urllib.request.Request(url, data=data, method=method)
-    req.add_header("Accept", "application/vnd.github+json")
-    req.add_header("Authorization", f"Bearer {token}")
-    req.add_header("X-GitHub-Api-Version", "2022-11-28")
-    if body is not None:
-        req.add_header("Content-Type", "application/json")
-    try:
-        with urllib.request.urlopen(req, timeout=45) as r:
-            return json.load(r)
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"GitHub API {exc.code} for {url}: {detail}") from exc
+    last_error: Exception | None = None
+    for attempt in range(REQUEST_RETRIES + 1):
+        req = urllib.request.Request(url, data=data, method=method)
+        req.add_header("Accept", "application/vnd.github+json")
+        req.add_header("Authorization", f"Bearer {token}")
+        req.add_header("User-Agent", "thehub-federation-completion-gate")
+        req.add_header("X-GitHub-Api-Version", "2022-11-28")
+        if body is not None:
+            req.add_header("Content-Type", "application/json")
+        try:
+            with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS) as r:
+                return json.load(r)
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")
+            if exc.code not in RETRYABLE_HTTP_CODES or attempt >= REQUEST_RETRIES:
+                raise RuntimeError(f"GitHub API {exc.code} for {url}: {detail}") from exc
+            last_error = RuntimeError(f"GitHub API {exc.code} for {url}: {detail}")
+            retry_after = exc.headers.get("Retry-After")
+            delay = int(retry_after) if retry_after and retry_after.isdigit() else 2**attempt
+        except (TimeoutError, urllib.error.URLError, OSError) as exc:
+            if attempt >= REQUEST_RETRIES:
+                raise RuntimeError(f"GitHub API transport error for {url}: {exc}") from exc
+            last_error = exc
+            delay = 2**attempt
+        print(
+            json.dumps(
+                {
+                    "event": "github_api_retry",
+                    "attempt": attempt + 1,
+                    "max_attempts": REQUEST_RETRIES + 1,
+                    "delay_seconds": delay,
+                    "url": url,
+                    "error": str(last_error),
+                },
+                sort_keys=True,
+            ),
+            flush=True,
+        )
+        time.sleep(delay)
+    raise RuntimeError(f"GitHub API request exhausted retries for {url}: {last_error}")
 
 
 def paged(url: str, token: str) -> list[Any]:
@@ -270,6 +302,7 @@ def main() -> int:
     observed_main: dict[str, str] = {}
     for repo_full in cfg["repositories"]:
         owner, repo = repo_full.split("/", 1)
+        print(json.dumps({"event": "audit_repo_start", "repository": repo_full}, sort_keys=True), flush=True)
         try:
             main_doc = request_json(f"{API}/repos/{owner}/{repo}/commits/main", token)
             main_sha = str(main_doc.get("sha", ""))
@@ -278,6 +311,17 @@ def main() -> int:
             observed_main[repo_full] = main_sha
             prs = paged(f"{API}/repos/{owner}/{repo}/pulls?state=open", token)
             for pr in prs:
+                print(
+                    json.dumps(
+                        {
+                            "event": "audit_pr_start",
+                            "repository": repo_full,
+                            "number": pr.get("number"),
+                        },
+                        sort_keys=True,
+                    ),
+                    flush=True,
+                )
                 try:
                     rows.append(classify(repo_full, pr, main_sha, token))
                 except Exception as exc:  # fail closed per PR; preserve denominator
