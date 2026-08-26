@@ -34,7 +34,7 @@ snapshot:
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: 5cc9ab9f59e0d0eacdaacd819aae2e429b155e8d
+      expected_sha: 1d4eda36db8a083567d394aac99136a7f50797ea
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
