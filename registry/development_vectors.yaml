@@ -1,38 +1,40 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-24T20:30:00Z"
+  captured_at_utc: "2026-08-26T01:24:00Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
+  certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/certification_receipts/20260826T0124Z
+  certification_report: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/all_main_recertification_20260826T0124Z.md
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: 3e11e185681832c883873785a8ec4b66bdf711ef
+      expected_sha: 39c7e714ba3d6c7ac23603920cc6c94d5c057368
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: 0e3987f274a34990efc29d762573cae051e1bf15
+      expected_sha: 7bd15cc4a0bcf1fb76d48fd3aa42c353db0c6dd0
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
-      expected_sha: d11b74ac5e42812755282356f1d14fffc996809c
+      expected_sha: bb917932cb8707071483b06e1a9ebd5f0f0a9015
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: 80028013ee6cab525428675bc7deb7ca38121bc9
+      expected_sha: 6ccd83fbb0ef7ad33d692cc36b27a94433500fcd
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
-      expected_sha: ac241db7148e811f78960779c042fe4eff3e3038
+      expected_sha: 77d10f1ede124ff3fc6928b9d494c2ccbd95caa5
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
-      expected_sha: 588bc121991c529fee136c90063d0d5423f23698
+      expected_sha: d0c411f7974cb3567dabf583f9cc46df99310b21
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: fe155d2494f1f3eef007bf66f6367d45995ef3d1
+      expected_sha: 5cc9ab9f59e0d0eacdaacd819aae2e429b155e8d
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
@@ -60,6 +62,8 @@ vectors:
       passed_artifact_reuse: true
       ci_certified_implementation_head: e9ce1f87031189bfa6facc0ec060d092eaf37796
       bootstrap_receipt: reports/federation_pickup_bootstrap_20260816.json
+      all_main_recertification_receipt_20260826T0124Z: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/certification_receipts/20260826T0124Z/fed-pickup-remote.receipt.json
+      strict_aggregate_gate_20260826T0124Z: PASS
 
   - vector_id: FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT
     repo: jotaele44/thehub-pr
