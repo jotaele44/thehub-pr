@@ -9,21 +9,20 @@
   },
   "producers": {
     "aguayluz-pr": {
-      "alerts": 4347,
-      "entities": 34633,
-      "relationships": 42287,
-      "sources": 27482
+      "alerts": 4344,
+      "entities": 46407,
+      "relationships": 65389,
+      "sources": 39161
     },
     "centinelas-pr": {
-      "entities": 287,
-      "observations": 268,
-      "relationships": 24,
-      "sources": 15
+      "entities": 100,
+      "observations": 100,
+      "sources": 6
     },
     "moneysweep-pr": {
-      "entities": 200,
-      "relationships": 64,
-      "sources": 4480
+      "entities": 207,
+      "relationships": 66,
+      "sources": 4508
     },
     "ovnis-pr": {
       "entities": 758,
@@ -39,16 +38,17 @@
       "sources": 2
     },
     "spiderweb-pr": {
-      "entities": 12,
+      "entities": 13,
+      "observations": 1,
       "relationships": 16,
-      "sources": 2
+      "sources": 3
     }
   },
   "streams": {
-    "alerts": 4349,
-    "entities": 35888,
-    "observations": 740,
-    "relationships": 42958,
-    "sources": 32259
+    "alerts": 4346,
+    "entities": 47488,
+    "observations": 573,
+    "relationships": 66038,
+    "sources": 43958
   }
 }
