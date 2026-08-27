@@ -102,7 +102,7 @@ vectors:
       mutation: prohibited_by_fed_max
       commands: []
     blockers:
-      - completed_visible_icon_capture_geometry_review_required
+      - full_corpus_visible_icon_capture_geometry_review_required
       - aircraft_observation_filename_to_media_sha_reconciliation_required
       - operator_tenant_attribution_requires_review
       - local_uncommitted_faa_registry_and_ocr_event_inputs_required_for_registry_validation
