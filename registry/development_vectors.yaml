@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-27T21:00:00Z"
+  captured_at_utc: "2026-08-27T22:55:00Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260827T195430Z
@@ -10,7 +10,7 @@ snapshot:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: ab543241a40607c77adc046709b17b665fdb2633
+      expected_sha: e1ec2fdd0c6c81f3ef0b4d80300695c3578a633a
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
@@ -109,6 +109,10 @@ vectors:
     invariants:
       production_validator_present: true
       capture_bbox_icon_gate_present: true
+      first_bounded_bbox_icon_package_certified: true
+      first_bounded_bbox_icon_package_observations: 1
+      first_bounded_bbox_icon_package_geometry_status: approximate
+      first_bounded_bbox_icon_package_position_precision: APPROXIMATE
       exact_aircraft_coordinates_remain_source_only: true
       screenshot_icon_points_are_approximate_uncertainty_bounded: true
       fr24_capture_review_worklist_rows: 9963
@@ -116,6 +120,9 @@ vectors:
       fr24_capture_review_media_filename_unresolved: 9963
       fr24_source_drop_exportable_rows: 0
       fr24_source_drop_icon_derived_approx_rows: 0
+      fr24_media_identity_exact_filename_intersection: 0
+      fr24_media_identity_candidate_not_identity_rows: 10
+      fr24_media_identity_symmetric_difference_filenames: 12651
       fr24_baseline_tracked_payload_count: 0
       fr24_baseline_evidence: data/FR24_baseline contains only .gitkeep at frozen main
       faa_registry_runtime_inputs_operator_supplied: true
