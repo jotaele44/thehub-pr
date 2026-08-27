@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-27T22:57:00Z"
+  captured_at_utc: "2026-08-27T23:00:00Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260827T195430Z
@@ -18,7 +18,7 @@ snapshot:
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
-      expected_sha: 161acf1ca28b229e1c61e82719e6e0a4d977449c
+      expected_sha: 733035df481e231a0df7f306b5a1106b19f27644
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
