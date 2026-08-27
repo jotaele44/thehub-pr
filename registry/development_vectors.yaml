@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-27T20:08:00Z"
+  captured_at_utc: "2026-08-27T20:12:00Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260827T195430Z
@@ -26,7 +26,7 @@ snapshot:
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
-      expected_sha: 77d10f1ede124ff3fc6928b9d494c2ccbd95caa5
+      expected_sha: 77c593a925d751f3611e6d4a80574e245279703b
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
@@ -34,7 +34,7 @@ snapshot:
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: d1b7de488bd25241787d43d1f46f31da53f98cd0
+      expected_sha: f16f569dbbafb0edad707b794459c586f24ee7dc
       self_snapshot_finalizer_parent: true
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
