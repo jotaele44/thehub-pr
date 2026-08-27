@@ -35,6 +35,7 @@ snapshot:
       repo: jotaele44/thehub-pr
       default_branch: main
       expected_sha: 1d4eda36db8a083567d394aac99136a7f50797ea
+      self_snapshot_finalizer_parent: true
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
