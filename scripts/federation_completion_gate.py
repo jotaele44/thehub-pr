@@ -11,6 +11,7 @@ import argparse
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -37,6 +38,14 @@ BLOCK_MARKERS = {
     "STACK_REWRITE_REQUIRED": "STACK_REWRITE_REQUIRED",
     "REBASE_AND_RETEST": "REBASE_REQUIRED",
 }
+REQUEST_TIMEOUT_SECONDS = 15
+REQUEST_RETRIES = 2
+RETRYABLE_HTTP_CODES = {429, 500, 502, 503, 504}
+
+
+def is_rate_limit_error(message: str) -> bool:
+    lowered = message.lower()
+    return "api rate limit exceeded" in lowered or "rate limit exceeded" in lowered
 
 
 @dataclass
@@ -62,18 +71,46 @@ class Disposition:
 
 def request_json(url: str, token: str, *, method: str = "GET", body: dict[str, Any] | None = None) -> Any:
     data = None if body is None else json.dumps(body).encode()
-    req = urllib.request.Request(url, data=data, method=method)
-    req.add_header("Accept", "application/vnd.github+json")
-    req.add_header("Authorization", f"Bearer {token}")
-    req.add_header("X-GitHub-Api-Version", "2022-11-28")
-    if body is not None:
-        req.add_header("Content-Type", "application/json")
-    try:
-        with urllib.request.urlopen(req, timeout=45) as r:
-            return json.load(r)
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace")
-        raise RuntimeError(f"GitHub API {exc.code} for {url}: {detail}") from exc
+    last_error: Exception | None = None
+    for attempt in range(REQUEST_RETRIES + 1):
+        req = urllib.request.Request(url, data=data, method=method)
+        req.add_header("Accept", "application/vnd.github+json")
+        req.add_header("Authorization", f"Bearer {token}")
+        req.add_header("User-Agent", "thehub-federation-completion-gate")
+        req.add_header("X-GitHub-Api-Version", "2022-11-28")
+        if body is not None:
+            req.add_header("Content-Type", "application/json")
+        try:
+            with urllib.request.urlopen(req, timeout=REQUEST_TIMEOUT_SECONDS) as r:
+                return json.load(r)
+        except urllib.error.HTTPError as exc:
+            detail = exc.read().decode("utf-8", errors="replace")
+            if exc.code not in RETRYABLE_HTTP_CODES or attempt >= REQUEST_RETRIES:
+                raise RuntimeError(f"GitHub API {exc.code} for {url}: {detail}") from exc
+            last_error = RuntimeError(f"GitHub API {exc.code} for {url}: {detail}")
+            retry_after = exc.headers.get("Retry-After")
+            delay = int(retry_after) if retry_after and retry_after.isdigit() else 2**attempt
+        except (TimeoutError, urllib.error.URLError, OSError) as exc:
+            if attempt >= REQUEST_RETRIES:
+                raise RuntimeError(f"GitHub API transport error for {url}: {exc}") from exc
+            last_error = exc
+            delay = 2**attempt
+        print(
+            json.dumps(
+                {
+                    "event": "github_api_retry",
+                    "attempt": attempt + 1,
+                    "max_attempts": REQUEST_RETRIES + 1,
+                    "delay_seconds": delay,
+                    "url": url,
+                    "error": str(last_error),
+                },
+                sort_keys=True,
+            ),
+            flush=True,
+        )
+        time.sleep(delay)
+    raise RuntimeError(f"GitHub API request exhausted retries for {url}: {last_error}")
 
 
 def paged(url: str, token: str) -> list[Any]:
@@ -239,6 +276,18 @@ def main() -> int:
     ap.add_argument("--config", default="federation/completion-gate.json")
     ap.add_argument("--out", default="artifacts/federation-completion-ledger.json")
     ap.add_argument("--fail-on-actionable", action="store_true")
+    ap.add_argument(
+        "--allow-rate-limit-partial",
+        action="store_true",
+        help="Exit 0 when the only audit errors are GitHub rate-limit errors. "
+        "The ledger still records those errors and remains non-certifying.",
+    )
+    ap.add_argument(
+        "--max-prs",
+        type=int,
+        default=0,
+        help="Stop after classifying this many open PRs. Used only for non-certifying PR exercise runs.",
+    )
     args = ap.parse_args()
 
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
@@ -249,9 +298,11 @@ def main() -> int:
     cfg = json.loads(Path(args.config).read_text())
     rows: list[Disposition] = []
     errors: list[str] = []
+    truncated_reason: str | None = None
     observed_main: dict[str, str] = {}
     for repo_full in cfg["repositories"]:
         owner, repo = repo_full.split("/", 1)
+        print(json.dumps({"event": "audit_repo_start", "repository": repo_full}, sort_keys=True), flush=True)
         try:
             main_doc = request_json(f"{API}/repos/{owner}/{repo}/commits/main", token)
             main_sha = str(main_doc.get("sha", ""))
@@ -260,10 +311,22 @@ def main() -> int:
             observed_main[repo_full] = main_sha
             prs = paged(f"{API}/repos/{owner}/{repo}/pulls?state=open", token)
             for pr in prs:
+                print(
+                    json.dumps(
+                        {
+                            "event": "audit_pr_start",
+                            "repository": repo_full,
+                            "number": pr.get("number"),
+                        },
+                        sort_keys=True,
+                    ),
+                    flush=True,
+                )
                 try:
                     rows.append(classify(repo_full, pr, main_sha, token))
                 except Exception as exc:  # fail closed per PR; preserve denominator
-                    errors.append(f"{repo_full}#{pr.get('number')}: {exc}")
+                    error = f"{repo_full}#{pr.get('number')}: {exc}"
+                    errors.append(error)
                     rows.append(
                         Disposition(
                             repo_full,
@@ -279,32 +342,72 @@ def main() -> int:
                             ["AUDIT_EXCEPTION"],
                         )
                     )
+                    if args.allow_rate_limit_partial and is_rate_limit_error(error):
+                        truncated_reason = error
+                        break
+                if args.max_prs and len(rows) >= args.max_prs:
+                    truncated_reason = f"PR_AUDIT_ROW_LIMIT:{args.max_prs}"
+                    break
+            if truncated_reason:
+                break
         except Exception as exc:
-            errors.append(f"{repo_full}: {exc}")
+            error = f"{repo_full}: {exc}"
+            errors.append(error)
+            if args.allow_rate_limit_partial and is_rate_limit_error(error):
+                truncated_reason = error
+                break
 
     counts: dict[str, int] = {}
     for row in rows:
         counts[row.state] = counts.get(row.state, 0) + 1
     actionable = {state: counts[state] for state in sorted(ACTIONABLE_STATES) if counts.get(state)}
+    rate_limit_errors = [err for err in errors if is_rate_limit_error(err)]
+    only_rate_limit_errors = bool(errors) and len(rate_limit_errors) == len(errors)
+    certification = "PASS"
+    if errors:
+        certification = "PROVISIONAL_RATE_LIMIT_PARTIAL" if only_rate_limit_errors else "FAIL"
+    elif truncated_reason:
+        certification = "PROVISIONAL_TRUNCATED_PARTIAL"
+    elif args.fail_on_actionable and actionable:
+        certification = "FAIL_ACTIONABLE_RESIDUE"
     result = {
         "schema_version": 2,
         "scope": "REMOTE_GITHUB_ONLY",
+        "certification": certification,
         "local_worktree_state": "BLOCKED_NOT_OBSERVED",
         "repositories": cfg["repositories"],
         "observed_main_shas": observed_main,
         "open_pr_denominator": len(rows),
+        "open_pr_denominator_complete": truncated_reason is None,
+        "audit_truncated": truncated_reason is not None,
+        "truncation_reason": truncated_reason,
         "counts": dict(sorted(counts.items())),
         "actionable_counts": actionable,
         "errors": errors,
+        "rate_limit_error_count": len(rate_limit_errors),
         "rows": [asdict(r) for r in rows],
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n")
-    print(json.dumps({k: result[k] for k in ("open_pr_denominator", "counts", "actionable_counts", "errors")}, indent=2))
+    print(json.dumps(
+        {k: result[k] for k in (
+            "open_pr_denominator",
+            "counts",
+            "actionable_counts",
+            "certification",
+            "rate_limit_error_count",
+            "errors",
+        )},
+        indent=2,
+    ))
 
     if errors:
+        if args.allow_rate_limit_partial and only_rate_limit_errors:
+            return 0
         return 2
+    if truncated_reason and args.max_prs:
+        return 0
     if args.fail_on_actionable and actionable:
         # A completion claim fails while any current integration/reconciliation
         # residue remains. Explained evidence/local/source blockers may remain open.

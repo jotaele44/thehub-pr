@@ -1,0 +1,86 @@
+{
+  "repo": "thehub-pr",
+  "generatedAt": "2026-08-24",
+  "federationPackage": {
+    "spec": "file:../../federation-design/packages/react",
+    "note": "thehub-pr owns federation-design/, so this is not a version pin — the app always builds against whatever is currently checked in at federation-design/packages/react, resolved via npm's file: symlink (confirmed: node_modules/@pr-federation/react -> ../../federation-design/packages/react).",
+    "resolvedVersion": "0.4.1",
+    "sourceOfTruthPackageJsonVersion": "0.4.1",
+    "shipsTestHarnessContract": true,
+    "testHarnessContractShippedSinceVersion": "0.4.0-rc.1",
+    "importedSymbols": {
+      "FederationEmptyState": 1
+    },
+    "importSites": [
+      "server/frontend/src/components/shared/EmptyState.jsx"
+    ],
+    "otherConsumption": [
+      "server/frontend/src/main.jsx imports '@federation-design/styles/federation.css' directly (design tokens consumed via CSS custom properties / Tailwind, not via JS component imports).",
+      "server/frontend/src/lib/theme.jsx is a hand-vendored reimplementation of the package's ThemeProvider/useTheme (its own header comment says so: 'Mirrors the canonical federation ThemeProvider (@pr-federation/react) but is vendored locally so this app builds standalone and offline'). It is NOT FederationThemeProvider/useFederationTheme — no import of either symbol exists anywhere in server/frontend/src."
+    ]
+  },
+  "shadcn": {
+    "componentsJsonPresent": true,
+    "style": "new-york",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "iconLibrary": "lucide",
+    "localUiPrimitives": [
+      "accordion.jsx",
+      "button.jsx",
+      "card.jsx",
+      "dialog.jsx",
+      "input-otp.jsx",
+      "input.jsx",
+      "label.jsx",
+      "select.jsx",
+      "sheet.jsx",
+      "skeleton.jsx",
+      "switch.jsx",
+      "table.jsx",
+      "tabs.jsx",
+      "textarea.jsx",
+      "toast.jsx",
+      "toaster.jsx",
+      "toaster.test.jsx",
+      "use-toast.jsx"
+    ]
+  },
+  "controlSourceMap": {
+    "button": "local shadcn/ui primitive (src/components/ui/button.jsx) — Radix Slot + class-variance-authority. NOT FederationButton (0 usages found anywhere in src/). Height: default 36px (h-9), sm 32px (h-8), lg 40px (h-10), icon 36px (h-9 w-9) — none of the four size variants reach the 44px CSS-px touch-target minimum the test-harness contract requires.",
+    "dialog": "local shadcn/ui primitive (src/components/ui/dialog.jsx) built on @radix-ui/react-dialog. NOT a Federation* component (the package exports no dialog/modal primitive at all).",
+    "sheet": "local shadcn/ui primitive (src/components/ui/sheet.jsx), also built on @radix-ui/react-dialog (Radix Dialog styled as a slide-in panel). Used for the record-create/edit flows (e.g. Cases 'New Case').",
+    "toggleSwitch": "local shadcn/ui primitive (src/components/ui/switch.jsx) built on @radix-ui/react-switch. NOT a Federation* component. Thumb track is 20x36px (h-5 w-9), well under the 44px touch-target minimum.",
+    "statusBadge": "bespoke JSX, not FederationStatusBadge/FederationSemanticBadge despite both being exported by the package. The general-purpose one is src/components/shared/StatusChip.jsx (renders a value through a per-page color map from src/lib/chips.js) and is reused across ~35 pages/components (Cases, Gates, Sources, Programs, Dashboard, Manifest, Dictionary, Spiderweb, Skywatcher, Centinelas, MoneySweep, AguaYLuz, Ovnis, Operations, RecentActivity, Integrations, and task/crossover/audit/manager/feed subcomponents). A second bespoke variant, src/components/tasks/LinkageBadge.jsx, exists specifically for task linkage state (Linked/Unlinked) but did not render in this pass because the diagnostic-mode seed data had zero Federation Tasks.",
+    "emptyState": "@pr-federation/react FederationEmptyState — the ONLY Federation* component actually consumed in this repo's UI, wrapped by src/components/shared/EmptyState.jsx. That wrapper's own comment states thehub-pr's EmptyState was the reference implementation FederationEmptyState was modeled on, i.e. this repo is both the design system's source-of-truth repo and (for this one control) a genuine consumer of its own published component.",
+    "loadingState": "bespoke JSX — src/components/shared/RouteFallback.jsx (full-screen spinner div, role=\"status\") for route-level loading, plus ad hoc src/components/ui/skeleton.jsx usage (only 1 call site: src/pages/Operations.jsx). NOT FederationLoadingState/FederationAsyncState.",
+    "errorState": "bespoke JSX — src/components/ErrorBoundary.jsx (render-time React error boundary, role=\"alert\"). No dedicated component for data-fetch/API error states was found; pages appear to handle fetch failures ad hoc or fall through to StatusChip/EmptyState. NOT FederationErrorState."
+  },
+  "themeSupport": {
+    "light": true,
+    "dark": true,
+    "defaultTheme": "dark",
+    "toggleFound": true,
+    "toggleComponent": "src/components/shared/ThemeToggle.jsx, rendered in src/components/layout/Sidebar.jsx and src/components/layout/MobileNav.jsx — reachable on every route in both desktop and mobile layouts.",
+    "implementation": "src/lib/theme.jsx — a local, hand-vendored ThemeProvider/useTheme, explicitly NOT an import of FederationThemeProvider/useFederationTheme from @pr-federation/react (see federationPackage.otherConsumption above). It writes both the Tailwind '.dark' class and the federation.css 'data-theme' attribute so the vendored provider and the canonical CSS tokens stay in agreement despite the JS provider itself not being the canonical one."
+  },
+  "screenshots": [
+    "docs/a11y-evidence/button-light-mobile.png",
+    "docs/a11y-evidence/button-light-desktop.png",
+    "docs/a11y-evidence/button-dark-mobile.png",
+    "docs/a11y-evidence/button-dark-desktop.png",
+    "docs/a11y-evidence/badge-light-mobile.png",
+    "docs/a11y-evidence/badge-light-desktop.png",
+    "docs/a11y-evidence/badge-dark-mobile.png",
+    "docs/a11y-evidence/badge-dark-desktop.png",
+    "docs/a11y-evidence/dialog-light-mobile.png",
+    "docs/a11y-evidence/dialog-light-desktop.png",
+    "docs/a11y-evidence/dialog-dark-mobile.png",
+    "docs/a11y-evidence/dialog-dark-desktop.png"
+  ],
+  "screenshotNotes": {
+    "button": "/cases page, 'New Case' primary button (src/components/ui/button.jsx default variant).",
+    "badge": "/gates page, Validation Gates table Status column (StatusChip rendering 'Passed'/'Blocked').",
+    "dialog": "/cases page, the record-create Sheet (src/components/ui/sheet.jsx) opened via 'New Case'. On the mobile viewport the close (X) control shows a clearly visible blue focus-visible ring."
+  }
+}

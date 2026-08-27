@@ -1,38 +1,41 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-24T19:28:00Z"
+  captured_at_utc: "2026-08-27T19:04:12Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
+  certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/certification_receipts/20260826T0124Z
+  certification_report: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/all_main_recertification_20260826T0124Z.md
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: 3e11e185681832c883873785a8ec4b66bdf711ef
+      expected_sha: 39c7e714ba3d6c7ac23603920cc6c94d5c057368
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: 264f6a77ae0413b0f90812c4e6f494076e1b6946
+      expected_sha: c488b8f9505442f71d488901b41fe5f2d3753a23
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
-      expected_sha: d11b74ac5e42812755282356f1d14fffc996809c
+      expected_sha: 161acf1ca28b229e1c61e82719e6e0a4d977449c
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: 80028013ee6cab525428675bc7deb7ca38121bc9
+      expected_sha: 6ccd83fbb0ef7ad33d692cc36b27a94433500fcd
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
-      expected_sha: 8053ec02d5450fafb613823e38ba8cdadc042a54
+      expected_sha: 77d10f1ede124ff3fc6928b9d494c2ccbd95caa5
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
-      expected_sha: a626c50f20fbac57c65cfb0529d442320ae54ecc
+      expected_sha: 3c24e765e44b82a90122e690987a5062648ef8d4
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: bfd913f4f129e0db037f092d1f25fca9c3240c2f
+      expected_sha: b721849bec0c02ea5ef6967ab8d8d544b7df76d3
+      self_snapshot_finalizer_parent: true
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
@@ -60,6 +63,8 @@ vectors:
       passed_artifact_reuse: true
       ci_certified_implementation_head: e9ce1f87031189bfa6facc0ec060d092eaf37796
       bootstrap_receipt: reports/federation_pickup_bootstrap_20260816.json
+      all_main_recertification_receipt_20260826T0124Z: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/certification_receipts/20260826T0124Z/fed-pickup-remote.receipt.json
+      strict_aggregate_gate_20260826T0124Z: PASS
 
   - vector_id: FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT
     repo: jotaele44/thehub-pr
@@ -136,8 +141,8 @@ vectors:
       duplicate_historical_issue: 10
       issue_acceptance_still_open: true
       validator_only_not_completion: true
-      current_snapshot_main_sha: 264f6a77ae0413b0f90812c4e6f494076e1b6946
-      current_main_lineage: "#177 -> #185 -> #100 -> #72 -> #73 -> #74 -> #67 -> #69 -> #70 -> #66"
+      current_snapshot_main_sha: 0e3987f274a34990efc29d762573cae051e1bf15
+      current_main_lineage: "#177 -> #185 -> #100 -> #72 -> #73 -> #74 -> #67 -> #69 -> #70 -> #66 -> #68"
       pr_177_exact_head_hosted_gate: PASS_7_OF_7
       pr_185_visible_exact_head_hosted_gate: PROVISIONAL_2_FAMILIES_OBSERVED
       pr_185_mainline_presence_is_not_full_ci_certification: true
@@ -227,7 +232,7 @@ vectors:
       candidate_head_sha: d21b2974c990da66bab013f40a3075c07a320c25
       candidate_base_at_creation_sha: 0219a8c1dd0f38a1f8d09a0d027f3b82a3c74d17
       current_main_sha_at_last_vector_adjudication: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
-      current_snapshot_main_sha: 8053ec02d5450fafb613823e38ba8cdadc042a54
+      current_snapshot_main_sha: ac241db7148e811f78960779c042fe4eff3e3038
       candidate_ahead_by_at_last_vector_adjudication: 11
       candidate_behind_by_at_last_vector_adjudication: 34
       candidate_status: diverged_requires_readjudication
@@ -284,5 +289,5 @@ vectors:
       negative_certification_history_preserved: true
       first_domain_receipt: reports/federation_pickup_first_domain_ready_wave_20260816.json
       completed_vector_reexecution_prohibited: true
-      current_snapshot_main_sha: a626c50f20fbac57c65cfb0529d442320ae54ecc
+      current_snapshot_main_sha: 588bc121991c529fee136c90063d0d5423f23698
       snapshot_refresh_reason: dependency_queue_integrated_without_reexecuting_completed_prufon_vector
