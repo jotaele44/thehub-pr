@@ -1,16 +1,16 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-27T19:04:12Z"
+  captured_at_utc: "2026-08-27T20:08:00Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
-  certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/certification_receipts/20260826T0124Z
-  certification_report: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/all_main_recertification_20260826T0124Z.md
+  certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260827T195430Z
+  certification_report: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260827T195430Z/closure_summary.json
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: 39c7e714ba3d6c7ac23603920cc6c94d5c057368
+      expected_sha: b2d0f65e23efd6b1121a223483c2db4e5819e031
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
@@ -22,7 +22,7 @@ snapshot:
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: 6ccd83fbb0ef7ad33d692cc36b27a94433500fcd
+      expected_sha: 437d02f96699a402a328def1d266980f5ee29788
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
@@ -34,7 +34,7 @@ snapshot:
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: b721849bec0c02ea5ef6967ab8d8d544b7df76d3
+      expected_sha: d1b7de488bd25241787d43d1f46f31da53f98cd0
       self_snapshot_finalizer_parent: true
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
