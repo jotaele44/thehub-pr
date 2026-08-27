@@ -114,6 +114,17 @@ def test_per_repo_vars_substitute_beyond_the_slug(tmp_path):
     assert [u["directory"] for u in npm] == ["/server/frontend"]
 
 
+def test_centinelas_desktop_requirements_support_plain_pip_install(tmp_path):
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "centinelas-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    requirements = (tmp_path / "requirements-desktop.txt").read_text(encoding="utf-8")
+    assert "prii-desktop @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
+    assert "prii-maintenance @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
+    assert "prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
+
+
 def test_every_producer_declares_an_app_title():
     # app_title cannot be derived from app_slug: OVNIS stays upper-case while the
     # rest are title-case, and AguaYLuz/MoneySweep/TheHub carry internal capitals,
