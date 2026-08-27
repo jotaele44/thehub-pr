@@ -14,7 +14,7 @@ snapshot:
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: a85b681e3ac443ddbd6ad052f557c8b0ec13946b
+      expected_sha: c488b8f950919d86e93620a13790e980be4c1991
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
@@ -34,7 +34,7 @@ snapshot:
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: 95c1cdf91abff54e061e806aadda9c0799e95627
+      expected_sha: 752f2f8a2eb58f6588247df11d537fc0fa037502
       self_snapshot_finalizer_parent: true
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
