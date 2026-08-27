@@ -1,7 +1,7 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-27T20:17:00Z"
+  captured_at_utc: "2026-08-27T20:58:00Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
   certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260827T195430Z
@@ -10,7 +10,7 @@ snapshot:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: b2d0f65e23efd6b1121a223483c2db4e5819e031
+      expected_sha: ab543241a40607c77adc046709b17b665fdb2633
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
@@ -89,7 +89,7 @@ vectors:
 
   - vector_id: BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT
     repo: jotaele44/skywatcher-pr
-    objective: Build reviewed non-synthetic airspace export readiness with endpoint attribution.
+    objective: Build reviewed non-synthetic airspace export readiness with certified capture-area geometry, visible-icon approximate aircraft positions, and endpoint attribution.
     declared_status: BLOCKED
     certification: OPEN
     dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
@@ -102,11 +102,20 @@ vectors:
       mutation: prohibited_by_fed_max
       commands: []
     blockers:
-      - real_flightradar24_capture_required
+      - completed_visible_icon_capture_geometry_review_required
+      - aircraft_observation_filename_to_media_sha_reconciliation_required
       - operator_tenant_attribution_requires_review
       - local_uncommitted_faa_registry_and_ocr_event_inputs_required_for_registry_validation
     invariants:
       production_validator_present: true
+      capture_bbox_icon_gate_present: true
+      exact_aircraft_coordinates_remain_source_only: true
+      screenshot_icon_points_are_approximate_uncertainty_bounded: true
+      fr24_capture_review_worklist_rows: 9963
+      fr24_capture_review_media_filename_matches: 0
+      fr24_capture_review_media_filename_unresolved: 9963
+      fr24_source_drop_exportable_rows: 0
+      fr24_source_drop_icon_derived_approx_rows: 0
       fr24_baseline_tracked_payload_count: 0
       fr24_baseline_evidence: data/FR24_baseline contains only .gitkeep at frozen main
       faa_registry_runtime_inputs_operator_supplied: true
