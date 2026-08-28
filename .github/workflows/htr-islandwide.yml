@@ -1,0 +1,52 @@
+name: HTR island-wide bounded census
+
+on:
+  pull_request:
+    paths:
+      - "src/hub/htr.py"
+      - "tests/test_htr.py"
+      - "scripts/run_htr_islandwide.py"
+      - "data/htr/**"
+      - ".github/workflows/htr-islandwide.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  census:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - name: Install test dependency
+        run: python -m pip install -q pytest
+
+      - name: HTR focused regressions
+        run: PYTHONPATH=src python -m pytest tests/test_htr.py -q
+
+      - name: Execute bounded island-wide census
+        run: PYTHONPATH=src python scripts/run_htr_islandwide.py --out artifacts/htr_islandwide
+
+      - name: Display census summary
+        if: always()
+        run: |
+          if [ -f artifacts/htr_islandwide/summary.json ]; then
+            cat artifacts/htr_islandwide/summary.json
+          fi
+
+      - name: Upload frozen census artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: htr-islandwide-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/htr_islandwide
+          if-no-files-found: error
+          retention-days: 30
