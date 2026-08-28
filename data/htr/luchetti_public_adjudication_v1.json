@@ -1,0 +1,90 @@
+{
+  "schema_version": "htr-public-adjudication-1.0",
+  "adjudication_id": "htr:luchetti-lucchetti:public:v1",
+  "as_of": "2026-08-28",
+  "subject_pair": {
+    "source_entity": {
+      "entity_id": "toponym:calle_luchetti_villalba",
+      "raw_manifestations": [
+        "CALLE LUCHETTI",
+        "Calle Luchetti",
+        "Antonio Luchetti Street",
+        "Calle Antonio Lucchetti"
+      ],
+      "feature_type": "ROAD",
+      "municipality": "Villalba"
+    },
+    "hydro_name_family": {
+      "entity_id": "hydro-name-family:antonio_lucchetti",
+      "raw_manifestations": [
+        "Lucchetti",
+        "Antonio Lucchetti",
+        "Lago Lucchetti",
+        "Lucchetti Reservoir",
+        "Lucchetti Dam"
+      ]
+    }
+  },
+  "public_evidence": [
+    {
+      "source_id": "epa:villalba-noi:2021-06-25",
+      "url": "https://www.epa.gov/system/files/documents/2021-07/villalba-noi-06-25-2021.pdf",
+      "observation": "Calle Luchetti is manifested as a Villalba address/toponym.",
+      "evidence_class": "AUTHORITATIVE_ADDRESS_MANIFESTATION",
+      "binds_candidate_pair": false
+    },
+    {
+      "source_id": "federal-register:1965-04-28",
+      "url": "https://www.govinfo.gov/content/pkg/FR-1965-04-28/pdf/FR-1965-04-28.pdf",
+      "observation": "Antonio Luchetti Street appears as a historical Villalba street-name manifestation.",
+      "evidence_class": "HISTORICAL_AUTHORITATIVE_TOPONYM_MANIFESTATION",
+      "binds_candidate_pair": false
+    },
+    {
+      "source_id": "prepa-preb:toro-negro-i-address",
+      "url": "https://energia.pr.gov/wp-content/uploads/sites/7/2022/12/20221222-MI20200001-Mocion-en-Cumplimiento-de-Orden-del-20-de-diciembre_public.pdf",
+      "observation": "PREPA/PREB material places Toro Negro I hydroelectric infrastructure on Calle Luchetti and separately manifests the street as Calle Antonio Lucchetti.",
+      "evidence_class": "AUTHORITATIVE_HYDRO_CONTEXT",
+      "contextual": true,
+      "binds_candidate_pair": false,
+      "related_entity_id": "hydroplant:toro_negro_1",
+      "relation_type": "ADDRESS_OF"
+    },
+    {
+      "source_id": "jp:yauco-plan:lucchetti-eponym",
+      "url": "https://jp.pr.gov/wp-content/uploads/2021/12/Plan-Territorial-Firmado-Final.pdf",
+      "observation": "Puerto Rico planning material states that the Antonio Lucchetti dam/lake name honors engineer Antonio Lucchetti; the source family contains Lucchetti/Luchetti spelling variation.",
+      "evidence_class": "AUTHORITATIVE_EPONYM_BINDING_FOR_HYDRO_ASSET",
+      "binds_candidate_pair": false
+    }
+  ],
+  "adjudication": {
+    "street_exists": "PASS",
+    "historical_antonio_luchetti_street_manifestation": "PASS",
+    "street_has_authoritative_hydroelectric_context": "PASS",
+    "hydro_asset_antonio_lucchetti_eponym": "PASS",
+    "street_formal_naming_instrument_recovered": "OPEN",
+    "street_named_after_antonio_lucchetti": "PROVISIONAL_INFERENCE",
+    "street_same_as_lucchetti_hydro_asset": "REJECTED",
+    "street_proves_hydraulic_connectivity_to_lucchetti_system": "REJECTED_AS_UNSUPPORTED",
+    "street_proves_electrical_connectivity_to_lucchetti_system": "REJECTED_AS_UNSUPPORTED",
+    "canonical_pair_identity": "CANDIDATE_NOT_IDENTITY"
+  },
+  "contradictions_and_variants": [
+    {
+      "class": "NAME",
+      "forms": ["Luchetti", "Lucchetti"],
+      "disposition": "PRESERVE_BOTH; spelling variation cannot establish identity or error direction by itself"
+    }
+  ],
+  "public_search_residue": [
+    "Villalba municipal ordinance or dedication record explicitly naming the street for Antonio Lucchetti",
+    "contemporaneous street-register entry with naming authority and effective date",
+    "equivalent authoritative documentary binding between the street and engineer Antonio Lucchetti"
+  ],
+  "certification": {
+    "state": "PROVISIONAL",
+    "bounded_claim": "Publicly located evidence supports a real Villalba Calle/Antonio Luchetti-Lucchetti street manifestation and independent hydroelectric context, but does not yet directly bind the street's naming origin to Antonio Lucchetti.",
+    "zero_unresolved_residue": false
+  }
+}
