@@ -23,11 +23,16 @@ function toHex(bytes) {
   return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
+export async function sha256Bytes(bytes) {
+  if (!globalThis.crypto?.subtle) return null;
+  const view = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  const digest = await globalThis.crypto.subtle.digest('SHA-256', view);
+  return toHex(digest);
+}
+
 export async function sha256Text(text) {
   if (typeof text !== 'string') throw new Error('SHA-256 input must be a string');
-  if (!globalThis.crypto?.subtle) return null;
-  const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return toHex(digest);
+  return sha256Bytes(new TextEncoder().encode(text));
 }
 
 export async function sha256StableJson(value) {
