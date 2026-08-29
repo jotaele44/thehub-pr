@@ -1,4 +1,5 @@
 import { createLayerManifest } from './contracts';
+import { sha256Text } from './integrity';
 
 function geometryTypeSet(geojson) {
   const types = new Set();
@@ -33,16 +34,6 @@ function validateFeatureCollection(value) {
   return value;
 }
 
-function toHex(bytes) {
-  return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
-}
-
-async function sha256(text) {
-  if (!globalThis.crypto?.subtle) return null;
-  const digest = await globalThis.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return toHex(digest);
-}
-
 export async function ingestGeoJSONText(rawText, options = {}) {
   if (typeof rawText !== 'string') throw new Error('raw GeoJSON must be a string');
   let parsed;
@@ -56,12 +47,13 @@ export async function ingestGeoJSONText(rawText, options = {}) {
   for (const feature of geojson.features) {
     if (feature.geometry?.coordinates) coordinateDimensions(feature.geometry.coordinates, dimensions);
   }
-  const byteSha256 = await sha256(rawText);
+  const byteSha256 = await sha256Text(rawText);
   if (!byteSha256 && (!options.sourceId || !options.layerId)) {
     throw new Error('Web Crypto SHA-256 unavailable; explicit stable sourceId and layerId are required');
   }
   const sourceId = options.sourceId || `upload:${byteSha256}`;
   const layerId = options.layerId || `layer:${byteSha256}`;
+  const ingestionUtc = options.ingestionUtc || new Date().toISOString();
 
   const manifest = createLayerManifest({
     layerId,
@@ -69,20 +61,21 @@ export async function ingestGeoJSONText(rawText, options = {}) {
     titleRaw: options.fileName || 'Uploaded GeoJSON',
     kind: 'vector',
     rawFormat: 'GeoJSON',
-    nativeCrs: 'RFC7946/WGS84',
-    displayCrs: 'EPSG:4326',
+    nativeCrs: options.nativeCrs || 'RFC7946/WGS84',
+    displayCrs: options.displayCrs || 'EPSG:4326',
     geometryTypes: geometryTypeSet(geojson),
     preservesZ: dimensions.z,
     preservesM: dimensions.m,
     byteSha256,
     featureCount: geojson.features.length,
-    transformHistory: [],
+    transformHistory: options.transformHistory || [],
     provenance: {
-      sourceManifestation: 'local-upload',
+      sourceManifestation: options.sourceManifestation || 'local-upload',
       fileNameRaw: options.fileName || null,
-      ingestionUtc: new Date().toISOString(),
+      ingestionUtc,
+      ...(options.provenance || {}),
     },
-    validationStatus: byteSha256 ? 'PASS' : 'PROVISIONAL',
+    validationStatus: options.validationStatus || (byteSha256 ? 'PASS' : 'PROVISIONAL'),
   });
 
   return Object.freeze({ rawText, geojson, manifest });
