@@ -1,4 +1,4 @@
-import { describe, expect, it } from './testHarnessCompat';
+import { describe, expect, it } from 'vitest';
 import { acquireOnlineSource, acquireRasterAsset } from './acquisitionFacade';
 import { classifyRasterAsset } from './remoteAcquisition';
 import { getOnlineSourceDefinition } from './sourceRegistry';
