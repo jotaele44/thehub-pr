@@ -5,7 +5,11 @@ on:
     paths:
       - 'server/frontend/src/gis/**'
       - 'server/frontend/src/pages/GISWorkspace.jsx'
+      - 'server/backend/gis_proxy.py'
+      - 'server/backend/main.py'
+      - 'server/backend/main_core.py'
       - 'scripts/gis_live_source_certification.py'
+      - 'scripts/gis_proxy_live_certification.py'
       - 'scripts/gis_browser_cors_cert.mjs'
       - '.github/workflows/gis-live-source-certification.yml'
   workflow_dispatch:
@@ -30,6 +34,50 @@ jobs:
         with:
           name: gis-live-source-receipt
           path: gis-live-source-receipt.json
+
+  same-origin-proxy-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Install Hub server dependencies
+        run: pip install -e '.[server]'
+      - name: Start Hub backend
+        run: |
+          uvicorn server.backend.main:app --host 127.0.0.1 --port 8000 > gis-proxy-uvicorn.log 2>&1 &
+          echo $! > gis-proxy-uvicorn.pid
+          for i in {1..30}; do
+            if python - <<'PY'
+import urllib.request
+try:
+    urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=1)
+except Exception:
+    raise SystemExit(1)
+PY
+            then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat gis-proxy-uvicorn.log
+          exit 1
+      - name: Certify live WFS through same-origin allowlisted proxy
+        run: python scripts/gis_proxy_live_certification.py | tee gis-proxy-live-receipt.json
+      - name: Upload proxy live receipt
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: gis-proxy-live-receipt
+          path: |
+            gis-proxy-live-receipt.json
+            gis-proxy-uvicorn.log
+      - name: Stop Hub backend
+        if: always()
+        run: |
+          if [ -f gis-proxy-uvicorn.pid ]; then kill "$(cat gis-proxy-uvicorn.pid)" 2>/dev/null || true; fi
 
   browser-cors:
     runs-on: ubuntu-latest
