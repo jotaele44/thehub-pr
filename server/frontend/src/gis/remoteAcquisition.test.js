@@ -24,13 +24,15 @@ function arcgisFetch({ count = 35, fetchedCount = count, duplicate = false, idFi
   };
 }
 
-function wfsFetch({ count = 2, duplicate = false } = {}) {
+function wfsFetch({ count = 78, duplicate = false } = {}) {
   return async (url) => {
     if (url.includes('resultType=hits')) return textResponse(`<wfs:FeatureCollection numberMatched="${count}"/>`);
-    return textResponse(JSON.stringify({ type: 'FeatureCollection', features: [
-      { type: 'Feature', properties: { gid: duplicate ? 2 : 1 }, geometry: { type: 'Polygon', coordinates: [[[-66.8, 18.1], [-66.7, 18.1], [-66.7, 18.2], [-66.8, 18.1]]] } },
-      { type: 'Feature', properties: { gid: 2 }, geometry: { type: 'Polygon', coordinates: [[[-66.6, 18.2], [-66.5, 18.2], [-66.5, 18.3], [-66.6, 18.2]]] } },
-    ] }));
+    const features = Array.from({ length: count }, (_, index) => ({
+      type: 'Feature',
+      properties: { gid: duplicate && index === 1 ? 1 : index + 1 },
+      geometry: { type: 'Polygon', coordinates: [[[-66.8 + index * 0.001, 18.1], [-66.79 + index * 0.001, 18.1], [-66.79 + index * 0.001, 18.11], [-66.8 + index * 0.001, 18.1]]] },
+    }));
+    return textResponse(JSON.stringify({ type: 'FeatureCollection', features }));
   };
 }
 
@@ -67,7 +69,7 @@ describe('remote vector acquisition', () => {
 
   it('implements WFS hits denominator + GeoJSON page path on the live-certified municipios layer', async () => {
     const result = await acquireOnlineSource('pr-geodata-municipios-2015', { fetchImpl: wfsFetch() });
-    expect(result.manifest.featureCount).toBe(2);
+    expect(result.manifest.featureCount).toBe(78);
     expect(result.certification.gates.count).toBe('PASS');
     expect(result.queryReceipt.typeName).toBe('pr_geodata:g03_legales_municipios_2015');
   });
