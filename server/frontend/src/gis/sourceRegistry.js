@@ -73,6 +73,14 @@ export const GEOSPATIAL_PROVIDERS = Object.freeze([
     catalogUrl: 'https://coast.noaa.gov/digitalcoast/data/',
     status: 'REGISTRY_ONLY',
   }),
+  Object.freeze({
+    providerId: 'census-tigerweb',
+    label: 'U.S. Census TIGERweb',
+    authority: 'U.S. Census Bureau',
+    classes: Object.freeze(['ARCGIS_REST']),
+    catalogUrl: 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb',
+    status: 'REGISTRY_ONLY',
+  }),
 ]);
 
 const PR_SIGE_INFRASTRUCTURE = 'https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer';
@@ -197,6 +205,16 @@ export const ONLINE_SOURCE_CATALOG = Object.freeze([
     protocol: 'arcgis-image-service',
     endpoint: 'https://coast.noaa.gov/digitalcoast/data/',
     runtimeStatus: 'OPEN',
+    certification: 'OPEN',
+  }),
+  Object.freeze({
+    sourceId: 'census-tigerweb-state-county',
+    providerId: 'census-tigerweb',
+    label: 'TIGERweb states / counties (current vintage)',
+    category: 'boundaries',
+    protocol: 'arcgis-feature-layer-geojson',
+    endpoint: 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer',
+    runtimeStatus: 'OPEN_REQUIRES_LAYER_AND_PR_FILTER',
     certification: 'OPEN',
   }),
 ]);

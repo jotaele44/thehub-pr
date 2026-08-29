@@ -23,7 +23,7 @@ Both paths converge on the same downstream model:
 
 - Provider and dataset are selected through the registry, not hard-coded UI branches.
 - Only entries whose protocol adapter is `IMPLEMENTED` are executable.
-- Registry-only WFS, STAC and imagery providers remain visible but disabled.
+- Registry-only WFS, STAC, imagery, national hydrography and Census sources remain visible but disabled.
 - Online acquisition preserves the exact count response and every exact page response separately from the normalized merged GeoJSON layer.
 
 ## Puerto Rico-first registry
@@ -42,7 +42,8 @@ The registry also records, without falsely claiming runtime completion:
 - USGS Landsat STAC;
 - NASA Earthdata CMR-STAC;
 - Copernicus Data Space STAC;
-- NOAA Digital Coast imagery/elevation catalog.
+- NOAA Digital Coast imagery/elevation catalog;
+- U.S. Census TIGERweb, with the State/County service held OPEN until an exact layer and Puerto Rico filter are frozen.
 
 ## ArcGIS FeatureLayer adapter
 
@@ -121,7 +122,8 @@ Negative:
 - Device GeoJSON acquisition contract: **IMPLEMENTED**, subject to exact-head CI/browser closure.
 - Generic ArcGIS FeatureLayer GeoJSON adapter logic: **IMPLEMENTED**, subject to exact-head CI/browser closure.
 - Puerto Rico SIGE provider runtime paths: **PROVISIONAL_PROVIDER_RUNTIME** until actual browser fetch/CORS/provider responses close at exact head.
-- WFS adapter: **OPEN**.
+- Puerto Rico WFS adapter: **OPEN**.
 - STAC search/asset selection adapter: **OPEN**.
 - NOAA/ArcGIS image service raster rendering: **OPEN**.
+- Census TIGERweb Puerto Rico selection/filter binding: **OPEN**.
 - Universal format/source denominator: **OPEN**.
