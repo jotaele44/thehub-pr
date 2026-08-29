@@ -1,16 +1,16 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-27T23:08:00Z"
+  captured_at_utc: "2026-08-29T15:41:10Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
-  certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260827T195430Z
-  certification_report: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260827T195430Z/closure_summary.json
+  certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260829T154110Z
+  certification_report: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260829T154110Z/thehub_ios_start_scope/ios_start_scope.json
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: 3eb114afc39259087a4aa2d061528b8203513fe8
+      expected_sha: 609cec586bcb178b819ddfe4f4dc64b2765cacc9
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
@@ -34,7 +34,7 @@ snapshot:
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: 122894c981d01f1109b6808b196d7f3db22b5d78
+      expected_sha: 6d4ef6b41827f11fe51deb1c6f0c93fe564c9af6
       self_snapshot_finalizer_parent: true
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
@@ -111,6 +111,11 @@ vectors:
       capture_bbox_icon_gate_present: true
       first_bounded_bbox_icon_package_certified: true
       first_bounded_bbox_icon_package_observations: 1
+      scaled_bounded_bbox_icon_package_certified: true
+      scaled_bounded_bbox_icon_package_observations: 3
+      scaled_bounded_bbox_icon_package_arithmetic: "3=3+0+0"
+      scaled_bounded_bbox_icon_package_sha: 609cec586bcb178b819ddfe4f4dc64b2765cacc9
+      scaled_bounded_bbox_icon_package_path: exports/fr24_bbox_icon_scaled_package
       first_bounded_bbox_icon_package_geometry_status: approximate
       first_bounded_bbox_icon_package_position_precision: APPROXIMATE
       exact_aircraft_coordinates_remain_source_only: true
@@ -120,6 +125,9 @@ vectors:
       fr24_capture_review_media_filename_unresolved: 9963
       fr24_source_drop_exportable_rows: 0
       fr24_source_drop_icon_derived_approx_rows: 0
+      fr24_scaled_source_drop_exportable_rows: 3
+      fr24_scaled_source_drop_icon_derived_approx_rows: 3
+      fr24_scaled_source_drop_missing_geometry_rows: 0
       fr24_media_identity_exact_filename_intersection: 0
       fr24_media_identity_candidate_not_identity_rows: 10
       fr24_media_identity_symmetric_difference_filenames: 12651
