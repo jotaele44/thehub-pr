@@ -14,7 +14,7 @@ snapshot:
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: c488b8f9505442f71d488901b41fe5f2d3753a23
+      expected_sha: e70e8b75db2f145acdc1c309a9f14b658c78fe16
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
@@ -22,11 +22,11 @@ snapshot:
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: 437d02f96699a402a328def1d266980f5ee29788
+      expected_sha: ba0c0d11a011669a5d487dc116274491449d4b72
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
-      expected_sha: 77c593a925d751f3611e6d4a80574e245279703b
+      expected_sha: 457d4a6c312ecb0a30a521a42d165fba5bfea6e6
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
@@ -34,7 +34,7 @@ snapshot:
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: 6d4ef6b41827f11fe51deb1c6f0c93fe564c9af6
+      expected_sha: fb43d542fbacd2a2f1168a33335d0fc75ce67adf
       self_snapshot_finalizer_parent: true
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
