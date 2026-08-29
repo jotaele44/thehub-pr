@@ -43,7 +43,7 @@ def test_allowlist_rejects_lookalike_host_and_path_escape():
 
 def test_proxy_required_wfs_is_exact_source_bound():
     target = "http://geoserver2.pr.gov/geoserver/pr_geodata/wfs?service=WFS&request=GetFeature"
-    assert gis_proxy._target_allowed("pr-geodata-barrios-2015-simpl", target)
+    assert gis_proxy._target_allowed("pr-geodata-barrios-2015", target)
     assert not gis_proxy._target_allowed("pr-sige-represas", target)
 
 
@@ -69,3 +69,11 @@ def test_proxy_returns_allowed_upstream_bytes(monkeypatch):
     response = gis_proxy.gis_proxy("pr-sige-represas", requested, None)
     assert response.body == b'{"count":2}'
     assert response.headers["x-gis-source-id"] == "pr-sige-represas"
+
+
+def test_main_entrypoint_is_core_module_and_mounts_proxy():
+    from server.backend import main, main_core
+
+    assert main is main_core
+    assert any(getattr(route, "path", None) == "/api/gis/proxy" for route in main.app.routes)
+    assert hasattr(main, "_init_db")
