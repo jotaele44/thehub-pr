@@ -3,263 +3,56 @@ export const GIS_RUNTIME_RESPONSIBILITIES = Object.freeze({
   maplibre: Object.freeze({ role: 'CANONICAL_2D_2_5D_RENDERER', status: 'TARGET' }),
   deckgl: Object.freeze({ role: 'GPU_ANALYTIC_OVERLAY', status: 'TARGET', separateUserMode: false }),
   cesium: Object.freeze({ role: 'ADVANCED_3D_GLOBE_3D_TILES_RENDERER', status: 'TARGET' }),
-  stac: Object.freeze({ role: 'IMAGERY_DISCOVERY_PROTOCOL', status: 'TARGET' }),
-  cog: Object.freeze({ role: 'PREFERRED_CLOUD_RASTER_MANIFESTATION', status: 'TARGET' }),
+  stac: Object.freeze({ role: 'IMAGERY_DISCOVERY_PROTOCOL', status: 'IMPLEMENTED_DISCOVERY' }),
+  cog: Object.freeze({ role: 'PREFERRED_CLOUD_RASTER_MANIFESTATION', status: 'IMPLEMENTED_METADATA_RANGE_ACQUISITION' }),
   pmtiles: Object.freeze({ role: 'STATIC_TILE_ARCHIVE_MANIFESTATION', status: 'TARGET' }),
 });
 
 export const SOURCE_PROTOCOL_ADAPTERS = Object.freeze({
   'local-geojson': Object.freeze({ role: 'DEVICE_GEOJSON_ACQUISITION', runtimeStatus: 'IMPLEMENTED', certification: 'BOUNDED' }),
   'arcgis-feature-layer-geojson': Object.freeze({ role: 'REMOTE_VECTOR_ACQUISITION', runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
-  wfs: Object.freeze({ role: 'REMOTE_VECTOR_ACQUISITION', runtimeStatus: 'OPEN', certification: 'OPEN' }),
-  stac: Object.freeze({ role: 'EO_DISCOVERY', runtimeStatus: 'OPEN', certification: 'OPEN' }),
+  wfs: Object.freeze({ role: 'REMOTE_VECTOR_ACQUISITION', runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  stac: Object.freeze({ role: 'EO_DISCOVERY', runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  'static-stac-item-collection': Object.freeze({ role: 'EO_DISCOVERY', runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  'raster-asset-range': Object.freeze({ role: 'REMOTE_RASTER_ASSET_ACQUISITION', runtimeStatus: 'IMPLEMENTED', certification: 'PARTIAL_RANGE_ONLY' }),
   'arcgis-image-service': Object.freeze({ role: 'REMOTE_RASTER_DISCOVERY_OR_RENDER', runtimeStatus: 'OPEN', certification: 'OPEN' }),
 });
 
 export const GEOSPATIAL_PROVIDERS = Object.freeze([
-  Object.freeze({
-    providerId: 'pr-sige',
-    label: 'Puerto Rico SIGE',
-    authority: 'Gobierno de Puerto Rico',
-    classes: Object.freeze(['ARCGIS_REST', 'WFS']),
-    catalogUrl: 'https://sige.pr.gov/server/rest/services',
-    status: 'ACTIVE',
-  }),
-  Object.freeze({
-    providerId: 'pr-geodata-wfs',
-    label: 'Puerto Rico Geodata WFS',
-    authority: 'Gobierno de Puerto Rico',
-    classes: Object.freeze(['WFS']),
-    catalogUrl: 'http://geoserver2.pr.gov/geoserver/pr_geodata/wfs',
-    status: 'REGISTRY_ONLY',
-  }),
-  Object.freeze({
-    providerId: 'usgs-3dhp',
-    label: 'USGS 3D Hydrography Program',
-    authority: 'U.S. Geological Survey',
-    classes: Object.freeze(['ARCGIS_REST']),
-    catalogUrl: 'https://3dhp.nationalmap.gov/arcgis/rest/services/usgs_3dhp_all/FeatureServer',
-    status: 'REGISTRY_ONLY',
-  }),
-  Object.freeze({
-    providerId: 'usgs-landsat',
-    label: 'USGS Landsat STAC',
-    authority: 'U.S. Geological Survey',
-    classes: Object.freeze(['STAC']),
-    catalogUrl: 'https://landsatlook.usgs.gov/stac-server',
-    status: 'REGISTRY_ONLY',
-  }),
-  Object.freeze({
-    providerId: 'nasa-earthdata',
-    label: 'NASA Earthdata CMR-STAC',
-    authority: 'NASA',
-    classes: Object.freeze(['STAC']),
-    catalogUrl: 'https://cmr.earthdata.nasa.gov/stac',
-    status: 'REGISTRY_ONLY',
-  }),
-  Object.freeze({
-    providerId: 'copernicus-cdse',
-    label: 'Copernicus Data Space',
-    authority: 'European Commission / Copernicus',
-    classes: Object.freeze(['STAC']),
-    catalogUrl: 'https://stac.dataspace.copernicus.eu/v1/',
-    status: 'REGISTRY_ONLY',
-  }),
-  Object.freeze({
-    providerId: 'noaa-digital-coast',
-    label: 'NOAA Digital Coast',
-    authority: 'NOAA',
-    classes: Object.freeze(['CATALOG', 'ARCGIS_IMAGE_SERVICE']),
-    catalogUrl: 'https://coast.noaa.gov/digitalcoast/data/',
-    status: 'REGISTRY_ONLY',
-  }),
-  Object.freeze({
-    providerId: 'census-tigerweb',
-    label: 'U.S. Census TIGERweb',
-    authority: 'U.S. Census Bureau',
-    classes: Object.freeze(['ARCGIS_REST']),
-    catalogUrl: 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb',
-    status: 'REGISTRY_ONLY',
-  }),
+  Object.freeze({ providerId: 'pr-sige', label: 'Puerto Rico SIGE', authority: 'Gobierno de Puerto Rico', classes: Object.freeze(['ARCGIS_REST', 'WFS']), catalogUrl: 'https://sige.pr.gov/server/rest/services', status: 'ACTIVE' }),
+  Object.freeze({ providerId: 'pr-geodata-wfs', label: 'Puerto Rico Geodata WFS', authority: 'Gobierno de Puerto Rico', classes: Object.freeze(['WFS']), catalogUrl: 'http://geoserver2.pr.gov/geoserver/pr_geodata/wfs', status: 'ACTIVE_PROXY_REQUIRED' }),
+  Object.freeze({ providerId: 'usgs-3dhp', label: 'USGS 3D Hydrography Program', authority: 'U.S. Geological Survey', classes: Object.freeze(['ARCGIS_REST']), catalogUrl: 'https://3dhp.nationalmap.gov/arcgis/rest/services/usgs_3dhp_all/FeatureServer', status: 'REGISTRY_ONLY' }),
+  Object.freeze({ providerId: 'usgs-landsat', label: 'USGS Landsat STAC', authority: 'U.S. Geological Survey', classes: Object.freeze(['STAC', 'COG']), catalogUrl: 'https://landsatlook.usgs.gov/stac-server', status: 'ACTIVE' }),
+  Object.freeze({ providerId: 'nasa-earthdata', label: 'NASA Earthdata CMR-STAC', authority: 'NASA', classes: Object.freeze(['STAC']), catalogUrl: 'https://cmr.earthdata.nasa.gov/stac', status: 'REGISTRY_ONLY_REQUIRES_COLLECTION' }),
+  Object.freeze({ providerId: 'copernicus-cdse', label: 'Copernicus Data Space', authority: 'European Commission / Copernicus', classes: Object.freeze(['STAC']), catalogUrl: 'https://stac.dataspace.copernicus.eu/v1/', status: 'ACTIVE' }),
+  Object.freeze({ providerId: 'noaa-digital-coast', label: 'NOAA Digital Coast', authority: 'NOAA', classes: Object.freeze(['STATIC_STAC', 'GEOTIFF']), catalogUrl: 'https://coast.noaa.gov/digitalcoast/data/', status: 'ACTIVE' }),
+  Object.freeze({ providerId: 'census-tigerweb', label: 'U.S. Census TIGERweb', authority: 'U.S. Census Bureau', classes: Object.freeze(['ARCGIS_REST']), catalogUrl: 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb', status: 'ACTIVE' }),
 ]);
 
 const PR_SIGE_INFRASTRUCTURE = 'https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer';
+const TIGERWEB_STATE_COUNTY_2025 = 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer';
+const NOAA_PR_NAIP_2021_2023_STAC = 'https://coast.noaa.gov/htdata/raster7/imagery/PR_NAIP_2021_9825/stac/noaa_imagery_item_collection_m9825.json';
 
 export const ONLINE_SOURCE_CATALOG = Object.freeze([
-  Object.freeze({
-    sourceId: 'pr-sige-municipios',
-    providerId: 'pr-sige',
-    label: 'Municipios',
-    category: 'boundaries',
-    protocol: 'arcgis-feature-layer-geojson',
-    endpoint: 'https://sige.pr.gov/server/rest/services/MIPR/LimitesAdministrativos_v10/FeatureServer/0',
-    sourceNativeCrs: 'EPSG:32161',
-    outputCrs: 'EPSG:4326',
-    stableIdField: 'OBJECTID',
-    expectedGeometryTypes: Object.freeze(['Polygon', 'MultiPolygon']),
-    expectedFeatureCount: 78,
-    pageSize: 1000,
-    runtimeStatus: 'IMPLEMENTED',
-    certification: 'PROVISIONAL_PROVIDER_RUNTIME',
-  }),
-  Object.freeze({
-    sourceId: 'pr-sige-represas',
-    providerId: 'pr-sige',
-    label: 'Represas',
-    category: 'hydro-infrastructure',
-    protocol: 'arcgis-feature-layer-geojson',
-    endpoint: `${PR_SIGE_INFRASTRUCTURE}/1`,
-    sourceNativeCrs: 'EPSG:32161',
-    outputCrs: 'EPSG:4326',
-    stableIdField: 'OBJECTID_1',
-    expectedGeometryTypes: Object.freeze(['Point']),
-    pageSize: 1000,
-    runtimeStatus: 'IMPLEMENTED',
-    certification: 'PROVISIONAL_PROVIDER_RUNTIME',
-  }),
-  Object.freeze({
-    sourceId: 'pr-sige-aeropuertos',
-    providerId: 'pr-sige',
-    label: 'Aeropuertos',
-    category: 'transport',
-    protocol: 'arcgis-feature-layer-geojson',
-    endpoint: `${PR_SIGE_INFRASTRUCTURE}/17`,
-    sourceNativeCrs: 'EPSG:32161',
-    outputCrs: 'EPSG:4326',
-    stableIdField: 'OBJECTID_1',
-    expectedGeometryTypes: Object.freeze(['Point']),
-    pageSize: 1000,
-    runtimeStatus: 'IMPLEMENTED',
-    certification: 'PROVISIONAL_PROVIDER_RUNTIME',
-  }),
-  Object.freeze({
-    sourceId: 'pr-sige-helipuertos',
-    providerId: 'pr-sige',
-    label: 'Helipuertos',
-    category: 'transport',
-    protocol: 'arcgis-feature-layer-geojson',
-    endpoint: `${PR_SIGE_INFRASTRUCTURE}/18`,
-    sourceNativeCrs: 'EPSG:32161',
-    outputCrs: 'EPSG:4326',
-    stableIdField: 'OBJECTID_1',
-    expectedGeometryTypes: Object.freeze(['Point']),
-    pageSize: 1000,
-    runtimeStatus: 'IMPLEMENTED',
-    certification: 'PROVISIONAL_PROVIDER_RUNTIME',
-  }),
-  Object.freeze({
-    sourceId: 'pr-geodata-wfs-catalog',
-    providerId: 'pr-geodata-wfs',
-    label: 'Puerto Rico WFS catalog (~400 geodatasets)',
-    category: 'catalog',
-    protocol: 'wfs',
-    endpoint: 'http://geoserver2.pr.gov/geoserver/pr_geodata/wfs',
-    runtimeStatus: 'OPEN',
-    certification: 'OPEN',
-  }),
-  Object.freeze({
-    sourceId: 'usgs-3dhp-catalog',
-    providerId: 'usgs-3dhp',
-    label: '3D Hydrography Program',
-    category: 'hydrography',
-    protocol: 'arcgis-feature-layer-geojson',
-    endpoint: 'https://3dhp.nationalmap.gov/arcgis/rest/services/usgs_3dhp_all/FeatureServer',
-    runtimeStatus: 'OPEN_REQUIRES_LAYER_AND_AOI',
-    certification: 'OPEN',
-  }),
-  Object.freeze({
-    sourceId: 'usgs-landsat-stac',
-    providerId: 'usgs-landsat',
-    label: 'Landsat STAC',
-    category: 'imagery',
-    protocol: 'stac',
-    endpoint: 'https://landsatlook.usgs.gov/stac-server',
-    runtimeStatus: 'OPEN',
-    certification: 'OPEN',
-  }),
-  Object.freeze({
-    sourceId: 'nasa-earthdata-stac',
-    providerId: 'nasa-earthdata',
-    label: 'Earthdata CMR-STAC',
-    category: 'imagery',
-    protocol: 'stac',
-    endpoint: 'https://cmr.earthdata.nasa.gov/stac',
-    runtimeStatus: 'OPEN',
-    certification: 'OPEN',
-  }),
-  Object.freeze({
-    sourceId: 'copernicus-cdse-stac',
-    providerId: 'copernicus-cdse',
-    label: 'Sentinel / Copernicus STAC',
-    category: 'imagery',
-    protocol: 'stac',
-    endpoint: 'https://stac.dataspace.copernicus.eu/v1/',
-    runtimeStatus: 'OPEN',
-    certification: 'OPEN',
-  }),
-  Object.freeze({
-    sourceId: 'noaa-digital-coast-catalog',
-    providerId: 'noaa-digital-coast',
-    label: 'Digital Coast imagery / elevation catalog',
-    category: 'imagery-elevation',
-    protocol: 'arcgis-image-service',
-    endpoint: 'https://coast.noaa.gov/digitalcoast/data/',
-    runtimeStatus: 'OPEN',
-    certification: 'OPEN',
-  }),
-  Object.freeze({
-    sourceId: 'census-tigerweb-state-county',
-    providerId: 'census-tigerweb',
-    label: 'TIGERweb states / counties (current vintage)',
-    category: 'boundaries',
-    protocol: 'arcgis-feature-layer-geojson',
-    endpoint: 'https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer',
-    runtimeStatus: 'OPEN_REQUIRES_LAYER_AND_PR_FILTER',
-    certification: 'OPEN',
-  }),
+  Object.freeze({ sourceId: 'pr-sige-municipios', providerId: 'pr-sige', label: 'Municipios', category: 'boundaries', protocol: 'arcgis-feature-layer-geojson', endpoint: 'https://sige.pr.gov/server/rest/services/MIPR/LimitesAdministrativos_v10/FeatureServer/0', transport: 'direct-or-proxy', sourceNativeCrs: 'EPSG:32161', outputCrs: 'EPSG:4326', stableIdField: 'OBJECTID', expectedGeometryTypes: Object.freeze(['Polygon', 'MultiPolygon']), expectedFeatureCount: 78, pageSize: 1000, runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  Object.freeze({ sourceId: 'pr-sige-represas', providerId: 'pr-sige', label: 'Represas', category: 'hydro-infrastructure', protocol: 'arcgis-feature-layer-geojson', endpoint: `${PR_SIGE_INFRASTRUCTURE}/1`, transport: 'direct-or-proxy', sourceNativeCrs: 'EPSG:32161', outputCrs: 'EPSG:4326', stableIdField: 'OBJECTID_1', expectedGeometryTypes: Object.freeze(['Point']), pageSize: 1000, runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  Object.freeze({ sourceId: 'pr-sige-aeropuertos', providerId: 'pr-sige', label: 'Aeropuertos', category: 'transport', protocol: 'arcgis-feature-layer-geojson', endpoint: `${PR_SIGE_INFRASTRUCTURE}/17`, transport: 'direct-or-proxy', sourceNativeCrs: 'EPSG:32161', outputCrs: 'EPSG:4326', stableIdField: 'OBJECTID_1', expectedGeometryTypes: Object.freeze(['Point']), pageSize: 1000, runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  Object.freeze({ sourceId: 'pr-sige-helipuertos', providerId: 'pr-sige', label: 'Helipuertos', category: 'transport', protocol: 'arcgis-feature-layer-geojson', endpoint: `${PR_SIGE_INFRASTRUCTURE}/18`, transport: 'direct-or-proxy', sourceNativeCrs: 'EPSG:32161', outputCrs: 'EPSG:4326', stableIdField: 'OBJECTID_1', expectedGeometryTypes: Object.freeze(['Point']), pageSize: 1000, runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  Object.freeze({ sourceId: 'pr-geodata-barrios-2015-simpl', providerId: 'pr-geodata-wfs', label: 'Barrios 2015 simplificados', category: 'boundaries', protocol: 'wfs', endpoint: 'http://geoserver2.pr.gov/geoserver/pr_geodata/wfs', transport: 'proxy-required', typeName: 'pr_geodata:g03_legales_barrios_2015_simpl_5m', stableIdField: 'gid', expectedGeometryTypes: Object.freeze(['Polygon', 'MultiPolygon']), outputCrs: 'EPSG:4326', pageSize: 1000, runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  Object.freeze({ sourceId: 'census-tigerweb-pr-state-2025', providerId: 'census-tigerweb', label: 'Puerto Rico state-equivalent boundary · 2025', category: 'boundaries', protocol: 'arcgis-feature-layer-geojson', endpoint: `${TIGERWEB_STATE_COUNTY_2025}/0`, transport: 'direct-or-proxy', where: "STATE='72'", sourceNativeCrs: 'EPSG:3857', outputCrs: 'EPSG:4326', stableIdField: 'OBJECTID', expectedGeometryTypes: Object.freeze(['Polygon', 'MultiPolygon']), expectedFeatureCount: 1, pageSize: 1000, runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  Object.freeze({ sourceId: 'census-tigerweb-pr-municipios-2025', providerId: 'census-tigerweb', label: 'Puerto Rico municipios / county equivalents · 2025', category: 'boundaries', protocol: 'arcgis-feature-layer-geojson', endpoint: `${TIGERWEB_STATE_COUNTY_2025}/1`, transport: 'direct-or-proxy', where: "STATE='72'", sourceNativeCrs: 'EPSG:3857', outputCrs: 'EPSG:4326', stableIdField: 'OBJECTID', expectedGeometryTypes: Object.freeze(['Polygon', 'MultiPolygon']), expectedFeatureCount: 78, pageSize: 1000, runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  Object.freeze({ sourceId: 'usgs-3dhp-catalog', providerId: 'usgs-3dhp', label: '3D Hydrography Program', category: 'hydrography', protocol: 'arcgis-feature-layer-geojson', endpoint: 'https://3dhp.nationalmap.gov/arcgis/rest/services/usgs_3dhp_all/FeatureServer', transport: 'direct-or-proxy', runtimeStatus: 'OPEN_REQUIRES_LAYER_AND_AOI', certification: 'OPEN' }),
+  Object.freeze({ sourceId: 'usgs-landsat-stac-sr', providerId: 'usgs-landsat', label: 'Landsat Collection 2 Level-2 Surface Reflectance', category: 'imagery', protocol: 'stac', endpoint: 'https://landsatlook.usgs.gov/stac-server', transport: 'direct-or-proxy', collectionId: 'landsat-c2l2-sr', assetFormatBinding: 'COG_BY_AUTHORITATIVE_COLLECTION', runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  Object.freeze({ sourceId: 'copernicus-cdse-sentinel-2-l2a', providerId: 'copernicus-cdse', label: 'Sentinel-2 Level-2A', category: 'imagery', protocol: 'stac', endpoint: 'https://stac.dataspace.copernicus.eu/v1', transport: 'direct-or-proxy', collectionId: 'sentinel-2-l2a', runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME' }),
+  Object.freeze({ sourceId: 'nasa-earthdata-stac', providerId: 'nasa-earthdata', label: 'Earthdata CMR-STAC · collection not yet bound', category: 'imagery', protocol: 'stac', endpoint: 'https://cmr.earthdata.nasa.gov/stac', transport: 'direct-or-proxy', runtimeStatus: 'OPEN_REQUIRES_COLLECTION', certification: 'OPEN' }),
+  Object.freeze({ sourceId: 'noaa-pr-naip-2021-2023-stac', providerId: 'noaa-digital-coast', label: '2021–2023 Puerto Rico + USVI NAIP 4-band', category: 'imagery', protocol: 'static-stac-item-collection', endpoint: NOAA_PR_NAIP_2021_2023_STAC, transport: 'direct-or-proxy', collectionId: 'noaa_imagery_collection_m9825', runtimeStatus: 'IMPLEMENTED', certification: 'PROVISIONAL_PROVIDER_RUNTIME', assetFormatBinding: 'GEOTIFF_UNVERIFIED_COG' }),
 ]);
 
-export function getProvider(providerId) {
-  const provider = GEOSPATIAL_PROVIDERS.find((item) => item.providerId === providerId);
-  if (!provider) throw new Error(`unknown providerId: ${providerId}`);
-  return provider;
-}
-
-export function getOnlineSourceDefinition(sourceId) {
-  const source = ONLINE_SOURCE_CATALOG.find((item) => item.sourceId === sourceId);
-  if (!source) throw new Error(`unknown online sourceId: ${sourceId}`);
-  return source;
-}
-
-export function listOnlineSourceDefinitions(providerId = null) {
-  return ONLINE_SOURCE_CATALOG.filter((item) => !providerId || item.providerId === providerId);
-}
+export function getProvider(providerId) { const provider = GEOSPATIAL_PROVIDERS.find((item) => item.providerId === providerId); if (!provider) throw new Error(`unknown providerId: ${providerId}`); return provider; }
+export function getOnlineSourceDefinition(sourceId) { const source = ONLINE_SOURCE_CATALOG.find((item) => item.sourceId === sourceId); if (!source) throw new Error(`unknown online sourceId: ${sourceId}`); return source; }
+export function listOnlineSourceDefinitions(providerId = null) { return ONLINE_SOURCE_CATALOG.filter((item) => !providerId || item.providerId === providerId); }
 
 export function createSourceManifest(input = {}) {
   if (!input.providerId || !input.sourceId) throw new Error('source manifest requires providerId and sourceId');
-  return Object.freeze({
-    sourceId: String(input.sourceId),
-    providerId: String(input.providerId),
-    sourceClass: String(input.sourceClass || 'unknown'),
-    canonicalIdentityStatus: input.canonicalIdentityStatus || 'CANDIDATE_NOT_IDENTITY',
-    catalogId: input.catalogId ?? null,
-    collectionId: input.collectionId ?? null,
-    itemId: input.itemId ?? null,
-    assetKey: input.assetKey ?? null,
-    hrefManifestation: input.hrefManifestation ?? null,
-    acquisitionDatetime: input.acquisitionDatetime ?? null,
-    geometry: input.geometry ?? null,
-    bbox: input.bbox ?? null,
-    crs: input.crs ?? null,
-    sourceNativeCrs: input.sourceNativeCrs ?? null,
-    bands: Object.freeze([...(input.bands || [])]),
-    groundSampleDistanceM: input.groundSampleDistanceM ?? null,
-    cloudCoverPercent: input.cloudCoverPercent ?? null,
-    license: input.license ?? null,
-    attribution: input.attribution ?? null,
-    retrievalUtc: input.retrievalUtc ?? null,
-    metadataSha256: input.metadataSha256 ?? null,
-    queryReceiptSha256: input.queryReceiptSha256 ?? null,
-    snapshotSha256: input.snapshotSha256 ?? null,
-  });
+  return Object.freeze({ sourceId: String(input.sourceId), providerId: String(input.providerId), sourceClass: String(input.sourceClass || 'unknown'), canonicalIdentityStatus: input.canonicalIdentityStatus || 'CANDIDATE_NOT_IDENTITY', catalogId: input.catalogId ?? null, collectionId: input.collectionId ?? null, itemId: input.itemId ?? null, assetKey: input.assetKey ?? null, hrefManifestation: input.hrefManifestation ?? null, acquisitionDatetime: input.acquisitionDatetime ?? null, geometry: input.geometry ?? null, bbox: input.bbox ?? null, crs: input.crs ?? null, sourceNativeCrs: input.sourceNativeCrs ?? null, bands: Object.freeze([...(input.bands || [])]), groundSampleDistanceM: input.groundSampleDistanceM ?? null, cloudCoverPercent: input.cloudCoverPercent ?? null, license: input.license ?? null, attribution: input.attribution ?? null, retrievalUtc: input.retrievalUtc ?? null, metadataSha256: input.metadataSha256 ?? null, queryReceiptSha256: input.queryReceiptSha256 ?? null, snapshotSha256: input.snapshotSha256 ?? null, normalizedSha256: input.normalizedSha256 ?? null, byteIdentityStatus: input.byteIdentityStatus ?? null });
 }
