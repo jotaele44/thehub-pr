@@ -6,7 +6,16 @@ const live = runLive ? describe : describe.skip;
 const direct = { fetchImpl: globalThis.fetch, retrievalUtc: '2026-08-29T22:00:00Z' };
 
 live('live authoritative GIS providers', () => {
-  for (const sourceId of ['pr-sige-municipios', 'pr-sige-represas', 'pr-sige-aeropuertos', 'pr-sige-helipuertos']) {
+  for (const sourceId of [
+    'pr-sige-municipios',
+    'pr-sige-represas',
+    'pr-sige-aeropuertos',
+    'pr-sige-helipuertos',
+    'pr-sige-cuencas',
+    'pr-sige-acuiferos',
+    'pr-sige-sumideros',
+    'pr-sige-aaa-pozos',
+  ]) {
     it(`${sourceId} closes provider denominator and validation gates`, async () => {
       const result = await acquireOnlineSource(sourceId, direct);
       expect(result.certification.status).toBe('PASS');
