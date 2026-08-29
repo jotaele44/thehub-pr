@@ -1,8 +1,5 @@
 // Single source of truth for the app's primary navigation. Consumed by both
 // layout/Sidebar.jsx (desktop) and layout/MobileNav.jsx so the two never drift.
-// Grouping gives every routed page a home — previously only Recent Activity, Hub,
-// and the producer modules were reachable from the chrome; the federation/records/
-// tools surfaces were URL-only.
 import {
   Activity, Hexagon, GitCompareArrows, Layers, Share2, Github, Boxes,
   FolderKanban, FileStack, BookOpen, ListChecks, ShieldCheck, Download,
@@ -19,8 +16,6 @@ const MODULE_ICONS = {
   "Centinelas-PR": Radar,
 };
 
-// Producer modules render an accent dot (domain color) instead of an icon, matching
-// the prior sidebar treatment; icon is kept as a fallback for consumers that want it.
 const producerItems = MODULES.map((m) => ({
   label: m.name,
   path: m.path,
@@ -66,14 +61,13 @@ export const NAV_GROUPS = [
   {
     label: "Tools",
     items: [
+      { label: "GIS Workspace", path: "/gis", icon: Layers },
       { label: "Research", path: "/research", icon: Sparkles },
       { label: "Integrations", path: "/integrations", icon: Plug },
     ],
   },
 ];
 
-// Active-route test. "/" is the Recent Activity landing (also served at /activity);
-// every other entry matches its exact path or a nested child of it.
 export function isNavActive(pathname, path) {
   if (path === "/") return pathname === "/" || pathname.startsWith("/activity");
   return pathname === path || pathname.startsWith(path + "/");
