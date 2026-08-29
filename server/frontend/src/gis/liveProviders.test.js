@@ -36,9 +36,10 @@ live('live authoritative GIS providers', () => {
   }, 120000);
 
   for (const sourceId of ['usgs-landsat-stac-sr', 'copernicus-cdse-sentinel-2-l2a']) {
-    it(`${sourceId} returns a bounded Puerto Rico imagery candidate set`, async () => {
-      const result = await acquireOnlineSource(sourceId, { ...direct, bbox: [-67.4, 17.8, -65.2, 18.6], start: '2025-01-01', end: '2025-12-31', maxItems: 100 });
+    it(`${sourceId} exhausts a bounded January 2025 Puerto Rico candidate window`, async () => {
+      const result = await acquireOnlineSource(sourceId, { ...direct, bbox: [-67.4, 17.8, -65.2, 18.6], start: '2025-01-01', end: '2025-01-31', maxItems: 1000 });
       expect(result.certification.status).toBe('PASS');
+      expect(result.certification.residue).toBeNull();
       expect(result.candidates.length).toBeGreaterThan(0);
       console.log('GIS_LIVE_DISCOVERY', JSON.stringify({ sourceId, candidates: result.candidates.length, snapshotSha256: result.snapshotSha256, queryReceiptSha256: result.queryReceiptSha256 }));
       if (sourceId === 'usgs-landsat-stac-sr') {
