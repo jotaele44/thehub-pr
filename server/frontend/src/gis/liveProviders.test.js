@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { acquireOnlineSource } from './remoteAcquisition';
+import { acquireOnlineSource, acquireRasterAsset } from './acquisitionFacade';
 
 const runLive = process.env.GIS_LIVE_PROVIDER_TESTS === '1';
 const live = runLive ? describe : describe.skip;
-const direct = { fetchImpl: globalThis.fetch, retrievalUtc: '2026-08-29T21:00:00Z' };
+const direct = { fetchImpl: globalThis.fetch, retrievalUtc: '2026-08-29T22:00:00Z' };
 
 live('live authoritative GIS providers', () => {
   for (const sourceId of ['pr-sige-municipios', 'pr-sige-represas', 'pr-sige-aeropuertos', 'pr-sige-helipuertos']) {
@@ -28,11 +28,11 @@ live('live authoritative GIS providers', () => {
     expect(result.certification.status).toBe('PASS');
   }, 120000);
 
-  it('Puerto Rico WFS barrios closes its hits denominator', async () => {
-    const result = await acquireOnlineSource('pr-geodata-barrios-2015-simpl', direct);
+  it('Puerto Rico WFS barrios closes its hits denominator on the adjudicated feature type', async () => {
+    const result = await acquireOnlineSource('pr-geodata-barrios-2015', direct);
     expect(result.manifest.featureCount).toBeGreaterThan(0);
     expect(result.certification.status).toBe('PASS');
-    console.log('GIS_LIVE_RECEIPT', JSON.stringify({ sourceId: result.sourceDefinition.sourceId, count: result.manifest.featureCount, snapshotSha256: result.snapshotSha256 }));
+    console.log('GIS_LIVE_RECEIPT', JSON.stringify({ sourceId: result.sourceDefinition.sourceId, count: result.manifest.featureCount, snapshotSha256: result.snapshotSha256, queryReceiptSha256: result.queryReceiptSha256 }));
   }, 120000);
 
   for (const sourceId of ['usgs-landsat-stac-sr', 'copernicus-cdse-sentinel-2-l2a']) {
@@ -40,7 +40,24 @@ live('live authoritative GIS providers', () => {
       const result = await acquireOnlineSource(sourceId, { ...direct, bbox: [-67.4, 17.8, -65.2, 18.6], start: '2025-01-01', end: '2025-12-31', maxItems: 100 });
       expect(result.certification.status).toBe('PASS');
       expect(result.candidates.length).toBeGreaterThan(0);
-      console.log('GIS_LIVE_DISCOVERY', JSON.stringify({ sourceId, candidates: result.candidates.length, snapshotSha256: result.snapshotSha256 }));
+      console.log('GIS_LIVE_DISCOVERY', JSON.stringify({ sourceId, candidates: result.candidates.length, snapshotSha256: result.snapshotSha256, queryReceiptSha256: result.queryReceiptSha256 }));
+      if (sourceId === 'usgs-landsat-stac-sr') {
+        const candidate = result.candidates.find((item) => Object.values(item.assets || {}).some((asset) => asset?.href && /tiff?/i.test(asset.type || '')));
+        if (candidate) {
+          const assetEntry = Object.entries(candidate.assets).find(([, asset]) => asset?.href && /tiff?/i.test(asset.type || ''));
+          const raster = await acquireRasterAsset(sourceId, candidate, assetEntry[0], { fetchImpl: globalThis.fetch, range: 'bytes=0-65535' });
+          expect(raster.certification.gates.rangeRetrieval).toBe('PASS');
+          expect(raster.certification.gates.fullAssetByteIdentity).toBe('OPEN');
+          console.log('GIS_LIVE_RASTER_RANGE', JSON.stringify({ sourceId, itemId: candidate.itemId, assetKey: assetEntry[0], classification: raster.assetClassification, rangeSha256: raster.snapshotSha256 }));
+        }
+      }
     }, 120000);
   }
+
+  it('NOAA Puerto Rico NAIP static STAC returns bounded Puerto Rico candidates without assuming TIFF=COG', async () => {
+    const result = await acquireOnlineSource('noaa-pr-naip-2021-2023-stac', { ...direct, bbox: [-67.4, 17.8, -65.2, 18.6], start: '2021-01-01', end: '2023-12-31' });
+    expect(result.certification.status).toBe('PASS');
+    expect(result.candidates.length).toBeGreaterThan(0);
+    console.log('GIS_LIVE_DISCOVERY', JSON.stringify({ sourceId: 'noaa-pr-naip-2021-2023-stac', candidates: result.candidates.length, snapshotSha256: result.snapshotSha256 }));
+  }, 120000);
 });

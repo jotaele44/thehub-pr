@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { acquireOnlineSource, acquireRasterAsset, classifyRasterAsset } from './remoteAcquisition';
+import { acquireOnlineSource, acquireRasterAsset } from './acquisitionFacade';
+import { classifyRasterAsset } from './remoteAcquisition';
 import { getOnlineSourceDefinition } from './sourceRegistry';
+import { toStacInterval } from './stacTime';
 
 function textResponse(raw, status = 200, headers = {}) {
   return { ok: status >= 200 && status < 300, status, statusText: status === 200 ? 'OK' : 'ERROR', text: async () => raw, headers: { get: (name) => headers[name.toLowerCase()] || null } };
@@ -32,10 +34,13 @@ function wfsFetch({ count = 2, duplicate = false } = {}) {
   };
 }
 
-function stacFetch() {
-  return async () => textResponse(JSON.stringify({ type: 'FeatureCollection', features: [
-    { type: 'Feature', id: 'item-a', collection: 'landsat-c2l2alb-sr', bbox: [-67, 18, -66, 18.5], geometry: null, properties: { datetime: '2026-01-15T00:00:00Z', 'proj:epsg': 32620 }, assets: { blue: { href: 'https://landsatlook.usgs.gov/data/item-a-blue.tif', type: 'image/tiff; application=geotiff; profile=cloud-optimized' } } },
-  ], links: [] }));
+function stacFetch(capture = []) {
+  return async (url) => {
+    capture.push(url);
+    return textResponse(JSON.stringify({ type: 'FeatureCollection', features: [
+      { type: 'Feature', id: 'item-a', collection: 'landsat-c2l2-sr', bbox: [-67, 18, -66, 18.5], geometry: null, properties: { datetime: '2026-01-15T00:00:00Z', 'proj:epsg': 32620 }, assets: { blue: { href: 'https://landsatlook.usgs.gov/data/item-a-blue.tif', type: 'image/tiff; application=geotiff; profile=cloud-optimized' } } },
+    ], links: [] }));
+  };
 }
 
 describe('remote vector acquisition', () => {
@@ -59,25 +64,35 @@ describe('remote vector acquisition', () => {
     await expect(acquireOnlineSource('pr-sige-represas', { fetchImpl: arcgisFetch({ duplicate: true }) })).rejects.toThrow(/identity gate failed/);
   });
 
-  it('implements WFS hits denominator + GeoJSON page path', async () => {
-    const result = await acquireOnlineSource('pr-geodata-barrios-2015-simpl', { fetchImpl: wfsFetch() });
+  it('implements WFS hits denominator + GeoJSON page path on the adjudicated layer', async () => {
+    const result = await acquireOnlineSource('pr-geodata-barrios-2015', { fetchImpl: wfsFetch() });
     expect(result.manifest.featureCount).toBe(2);
     expect(result.certification.gates.count).toBe('PASS');
-    expect(result.queryReceipt.typeName).toBe('pr_geodata:g03_legales_barrios_2015_simpl_5m');
+    expect(result.queryReceipt.typeName).toBe('pr_geodata:g03_legales_barrios_2015');
   });
 
   it('fails WFS duplicate identity instead of deduplicating', async () => {
-    await expect(acquireOnlineSource('pr-geodata-barrios-2015-simpl', { fetchImpl: wfsFetch({ duplicate: true }) })).rejects.toThrow(/identity gate failed/);
+    await expect(acquireOnlineSource('pr-geodata-barrios-2015', { fetchImpl: wfsFetch({ duplicate: true }) })).rejects.toThrow(/identity gate failed/);
+  });
+
+  it('does not execute the displaced WFS candidate', async () => {
+    await expect(acquireOnlineSource('pr-geodata-barrios-2015-simpl', { fetchImpl: wfsFetch() })).rejects.toThrow(/registry-only/);
   });
 });
 
 describe('STAC discovery and raster manifestation identity', () => {
-  it('discovers a bounded STAC item set with deterministic provenance', async () => {
-    const result = await acquireOnlineSource('usgs-landsat-stac-sr', { fetchImpl: stacFetch(), bbox: [-67.4, 17.8, -65.2, 18.6], start: '2026-01-01', end: '2026-12-31' });
+  it('normalizes date-only UI boundaries into RFC3339 before hashing/querying', async () => {
+    const urls = [];
+    const result = await acquireOnlineSource('usgs-landsat-stac-sr', { fetchImpl: stacFetch(urls), bbox: [-67.4, 17.8, -65.2, 18.6], start: '2026-01-01', end: '2026-12-31' });
     expect(result.certification.status).toBe('PASS');
     expect(result.candidates).toHaveLength(1);
-    expect(result.candidates[0].itemId).toBe('item-a');
-    expect(result.sourceManifest.canonicalIdentityStatus).toBe('CANDIDATE_NOT_IDENTITY');
+    expect(decodeURIComponent(urls[0])).toContain('datetime=2026-01-01T00:00:00Z/2026-12-31T23:59:59Z');
+    expect(result.queryReceipt.start).toBe('2026-01-01T00:00:00Z');
+    expect(result.queryReceipt.end).toBe('2026-12-31T23:59:59Z');
+  });
+
+  it('normalizes deterministic STAC intervals independently', () => {
+    expect(toStacInterval('2025-01-01', '2025-01-31')).toMatchObject({ start: '2025-01-01T00:00:00Z', end: '2025-01-31T23:59:59Z' });
   });
 
   it('does not promote a NOAA TIFF to COG from extension/name alone', () => {
@@ -91,7 +106,7 @@ describe('STAC discovery and raster manifestation identity', () => {
   });
 
   it('keeps range evidence distinct from full-asset byte identity', async () => {
-    const candidate = { itemId: 'item-a', collectionId: 'landsat-c2l2alb-sr', bbox: [-67, 18, -66, 18.5], properties: { 'proj:epsg': 32620 }, assets: { blue: { href: 'https://landsatlook.usgs.gov/data/item-a-blue.tif', type: 'image/tiff' } } };
+    const candidate = { itemId: 'item-a', collectionId: 'landsat-c2l2-sr', bbox: [-67, 18, -66, 18.5], properties: { 'proj:epsg': 32620 }, assets: { blue: { href: 'https://landsatlook.usgs.gov/data/item-a-blue.tif', type: 'image/tiff' } } };
     const fetchImpl = async () => binaryResponse([73, 73, 42, 0, 8, 0, 0, 0], { 'content-range': 'bytes 0-7/1000000', 'content-type': 'image/tiff' });
     const result = await acquireRasterAsset('usgs-landsat-stac-sr', candidate, 'blue', { fetchImpl, range: 'bytes=0-7' });
     expect(result.assetClassification).toBe('COG_AUTHORITATIVE_BINDING');

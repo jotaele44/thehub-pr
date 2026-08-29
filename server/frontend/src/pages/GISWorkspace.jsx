@@ -3,7 +3,7 @@ import { GeoJSON, MapContainer, TileLayer } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Database, HardDrive, Image as ImageIcon, Layers, RefreshCw, ShieldCheck, Upload } from 'lucide-react';
 import { ingestGeoJSONFile } from '@/gis/ingestGeoJSON';
-import { acquireOnlineSource, acquireRasterAsset } from '@/gis/remoteAcquisition';
+import { acquireOnlineSource, acquireRasterAsset } from '@/gis/acquisitionFacade';
 import { createCanonicalMapState } from '@/gis/contracts';
 import { GEOSPATIAL_PROVIDERS, GIS_RUNTIME_RESPONSIBILITIES, ONLINE_SOURCE_CATALOG, listOnlineSourceDefinitions } from '@/gis/sourceRegistry';
 
@@ -17,6 +17,7 @@ const DEFAULT_SOURCE_ID = 'pr-sige-municipios';
 
 function statusLabel(source) {
   if (source.runtimeStatus === 'IMPLEMENTED') return `Implemented · ${source.certification}`;
+  if (source.runtimeStatus.startsWith('SUPERSEDED')) return `Superseded · ${source.runtimeStatus}`;
   return `Registry only · ${source.runtimeStatus}`;
 }
 

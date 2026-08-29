@@ -1,8 +1,8 @@
 """Allowlisted same-origin transport for GIS providers.
 
-This is deliberately not a generic URL proxy.  A request is accepted only when
+This is deliberately not a generic URL proxy. A request is accepted only when
 `source_id` is registered below and `target` stays inside one of that source's
-frozen URL prefixes.  The frontend preserves the target URL in its query receipt;
+frozen URL prefixes. The frontend preserves the target URL in its query receipt;
 this route exists only to cross browser CORS / HTTPS→HTTP mixed-content barriers.
 """
 from __future__ import annotations
@@ -17,7 +17,6 @@ from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
 
 router = APIRouter(prefix="/api/gis", tags=["gis"])
-
 _MAX_TEXT_BYTES = 32 * 1024 * 1024
 _MAX_RANGE_BYTES = 1024 * 1024
 _RANGE_RE = re.compile(r"^bytes=(\d+)-(\d*)$")
@@ -34,12 +33,10 @@ _ALLOWED: dict[str, AllowedSource] = {
     "pr-sige-aeropuertos": AllowedSource(("https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/17",)),
     "pr-sige-helipuertos": AllowedSource(("https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/18",)),
     "pr-geodata-barrios-2015-simpl": AllowedSource(("http://geoserver2.pr.gov/geoserver/pr_geodata/wfs",)),
+    "pr-geodata-barrios-2015": AllowedSource(("http://geoserver2.pr.gov/geoserver/pr_geodata/wfs",)),
     "census-tigerweb-pr-state-2025": AllowedSource(("https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0",)),
     "census-tigerweb-pr-municipios-2025": AllowedSource(("https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/1",)),
-    "usgs-landsat-stac-sr": AllowedSource((
-        "https://landsatlook.usgs.gov/stac-server",
-        "https://landsatlook.usgs.gov/data/",
-    )),
+    "usgs-landsat-stac-sr": AllowedSource(("https://landsatlook.usgs.gov/stac-server", "https://landsatlook.usgs.gov/data/")),
     "copernicus-cdse-sentinel-2-l2a": AllowedSource(("https://stac.dataspace.copernicus.eu/v1",)),
     "noaa-pr-naip-2021-2023-stac": AllowedSource((
         "https://coast.noaa.gov/htdata/raster7/imagery/PR_NAIP_2021_9825/",
@@ -113,14 +110,13 @@ def gis_proxy(
         raise HTTPException(status_code=404, detail="unregistered GIS source_id")
     if not _target_allowed(source_id, target):
         raise HTTPException(status_code=403, detail="target is outside the registered GIS source boundary")
-
     normalized_range = _validated_range(byte_range)
     headers = {"User-Agent": "thehub-pr-gis/2", "Accept": "*/*"}
     if normalized_range:
         headers["Range"] = normalized_range
     request = urllib.request.Request(target, headers=headers, method="GET")
     try:
-        with urllib.request.urlopen(request, timeout=45) as upstream:  # noqa: S310 - URL is strict allowlist-bound above
+        with urllib.request.urlopen(request, timeout=45) as upstream:  # noqa: S310 - strict allowlist-bound URL
             final_url = upstream.geturl()
             if not _target_allowed(source_id, final_url):
                 raise HTTPException(status_code=502, detail="upstream redirected outside registered GIS source boundary")
@@ -138,12 +134,7 @@ def gis_proxy(
                     response_headers[response_name] = value
             response_headers["X-GIS-Source-Id"] = source_id
             response_headers["X-GIS-Transport"] = "allowlisted-proxy"
-            return Response(
-                content=body,
-                status_code=getattr(upstream, "status", 200),
-                media_type=upstream.headers.get_content_type() if upstream.headers else "application/octet-stream",
-                headers=response_headers,
-            )
+            return Response(content=body, status_code=getattr(upstream, "status", 200), media_type=upstream.headers.get_content_type() if upstream.headers else "application/octet-stream", headers=response_headers)
     except HTTPException:
         raise
     except urllib.error.HTTPError as exc:
