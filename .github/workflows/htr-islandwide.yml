@@ -6,6 +6,7 @@ on:
       - "src/hub/htr.py"
       - "tests/test_htr.py"
       - "scripts/run_htr_islandwide.py"
+      - "scripts/adjudicate_htr_census.py"
       - "data/htr/**"
       - ".github/workflows/htr-islandwide.yml"
   workflow_dispatch:
@@ -35,11 +36,17 @@ jobs:
       - name: Execute bounded island-wide census
         run: PYTHONPATH=src python scripts/run_htr_islandwide.py --out artifacts/htr_islandwide
 
-      - name: Display census summary
+      - name: Adjudicate discovery-noise negatives
+        run: python scripts/adjudicate_htr_census.py artifacts/htr_islandwide
+
+      - name: Display census summaries
         if: always()
         run: |
           if [ -f artifacts/htr_islandwide/summary.json ]; then
             cat artifacts/htr_islandwide/summary.json
+          fi
+          if [ -f artifacts/htr_islandwide/candidate_adjudication_summary.json ]; then
+            cat artifacts/htr_islandwide/candidate_adjudication_summary.json
           fi
 
       - name: Upload frozen census artifact
