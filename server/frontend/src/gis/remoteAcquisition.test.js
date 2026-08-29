@@ -64,15 +64,15 @@ describe('remote vector acquisition', () => {
     await expect(acquireOnlineSource('pr-sige-represas', { fetchImpl: arcgisFetch({ duplicate: true }) })).rejects.toThrow(/identity gate failed/);
   });
 
-  it('implements WFS hits denominator + GeoJSON page path on the adjudicated layer', async () => {
-    const result = await acquireOnlineSource('pr-geodata-barrios-2015', { fetchImpl: wfsFetch() });
+  it('implements WFS hits denominator + GeoJSON page path on the live-certified municipios layer', async () => {
+    const result = await acquireOnlineSource('pr-geodata-municipios-2015', { fetchImpl: wfsFetch() });
     expect(result.manifest.featureCount).toBe(2);
     expect(result.certification.gates.count).toBe('PASS');
-    expect(result.queryReceipt.typeName).toBe('pr_geodata:g03_legales_barrios_2015');
+    expect(result.queryReceipt.typeName).toBe('pr_geodata:g03_legales_municipios_2015');
   });
 
   it('fails WFS duplicate identity instead of deduplicating', async () => {
-    await expect(acquireOnlineSource('pr-geodata-barrios-2015', { fetchImpl: wfsFetch({ duplicate: true }) })).rejects.toThrow(/identity gate failed/);
+    await expect(acquireOnlineSource('pr-geodata-municipios-2015', { fetchImpl: wfsFetch({ duplicate: true }) })).rejects.toThrow(/identity gate failed/);
   });
 
   it('does not execute the displaced WFS candidate', async () => {

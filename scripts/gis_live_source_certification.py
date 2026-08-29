@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Live, mutable-source GIS acquisition certification.
 
-This is deliberately separate from deterministic unit tests. It records current
-provider observations and fails closed when a bounded provider contract does not
-close. It does not promote provider feature identity across sources.
+Separate from deterministic tests. Every required-source failure is preserved in
+the receipt and makes the process exit non-zero. Provider IDs remain source-local
+identity only; no cross-source canonical identity is promoted here.
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 TIMEOUT = 45
-UA = "TheHub-PR-GIS-Certification/1.0"
+UA = "TheHub-PR-GIS-Certification/1.1"
 
 
 def fetch(url: str, *, headers: dict[str, str] | None = None) -> bytes:
@@ -71,15 +71,11 @@ def certify_arcgis(name: str, endpoint: str, stable_id: str, geometry_types: set
         raise AssertionError(f"{name}: unexpected geometry types {sorted(unexpected)}")
 
     return {
-        "status": "PASS",
-        "count": count,
-        "geometry_types": sorted(observed_types),
-        "stable_id": stable_id,
-        "where": where,
+        "status": "PASS", "count": count, "geometry_types": sorted(observed_types),
+        "stable_id": stable_id, "where": where,
         "count_sha256": hashlib.sha256(count_raw).hexdigest(),
         "snapshot_sha256": hashlib.sha256(raw).hexdigest(),
-        "count_url": count_url,
-        "data_url": data_url,
+        "count_url": count_url, "data_url": data_url,
     }
 
 
@@ -87,8 +83,8 @@ def certify_wfs() -> dict:
     endpoint = "http://geoserver2.pr.gov/geoserver/pr_geodata/ows"
     params = {
         "service": "WFS", "version": "2.0.0", "request": "GetFeature",
-        "typeNames": "pr_geodata:g03_legales_municipios_2015", "outputFormat": "application/json",
-        "srsName": "EPSG:4326",
+        "typeNames": "pr_geodata:g03_legales_municipios_2015",
+        "outputFormat": "application/json", "srsName": "EPSG:4326",
     }
     url = endpoint + "?" + urllib.parse.urlencode(params)
     raw = fetch(url)
@@ -100,7 +96,7 @@ def certify_wfs() -> dict:
     return {"status": "PASS", "count": 78, "snapshot_sha256": hashlib.sha256(raw).hexdigest(), "url": url}
 
 
-def certify_json(name: str, url: str, predicate) -> dict:
+def certify_json(url: str, predicate) -> dict:
     raw = fetch(url)
     obj = json.loads(raw)
     predicate(obj)
@@ -112,17 +108,16 @@ def main() -> int:
     sources: dict[str, object] = {}
     checks = [
         ("pr-sige-municipios", "https://sige.pr.gov/server/rest/services/MIPR/LimitesAdministrativos_v10/FeatureServer/0", "OBJECTID", {"Polygon", "MultiPolygon"}, "1=1", 78),
-        ("pr-sige-represas", f"{infra}/1", "OBJECTID_1", {"Point"}, "1=1", None),
-        ("pr-sige-aeropuertos", f"{infra}/17", "OBJECTID_1", {"Point"}, "1=1", None),
-        ("pr-sige-helipuertos", f"{infra}/18", "OBJECTID_1", {"Point"}, "1=1", None),
-        ("census-pr-state-2025", "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0", "OBJECTID", {"Polygon", "MultiPolygon"}, "GEOID='72'", 1),
+        ("pr-sige-represas", f"{infra}/1", "OBJECTID_1", {"Point"}, "1=1", 35),
+        ("pr-sige-aeropuertos", f"{infra}/17", "OBJECTID_1", {"Point"}, "1=1", 14),
+        ("pr-sige-helipuertos", f"{infra}/18", "OBJECTID_1", {"Point"}, "1=1", 6),
+        ("census-pr-state-2025", "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0", "OBJECTID", {"Polygon", "MultiPolygon"}, "STATE='72'", 1),
         ("census-pr-municipios-2025", "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/1", "OBJECTID", {"Polygon", "MultiPolygon"}, "STATE='72'", 78),
     ]
     failed = False
-    for args in checks:
-        name = args[0]
+    for name, endpoint, stable_id, geometry_types, where, expected_count in checks:
         try:
-            sources[name] = certify_arcgis(*args)
+            sources[name] = certify_arcgis(name, endpoint, stable_id, geometry_types, where=where, expected_count=expected_count)
         except Exception as exc:  # live mutable-source receipt must preserve every failure
             failed = True
             sources[name] = {"status": "FAIL", "error": f"{type(exc).__name__}: {exc}"}
@@ -153,13 +148,13 @@ def main() -> int:
     }
     for name, (url, predicate) in json_checks.items():
         try:
-            sources[name] = certify_json(name, url, predicate)
+            sources[name] = certify_json(url, predicate)
         except Exception as exc:
             failed = True
             sources[name] = {"status": "FAIL", "error": f"{type(exc).__name__}: {exc}"}
 
     receipt = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "retrieval_utc": datetime.now(timezone.utc).isoformat(),
         "identity_policy": "CANDIDATE_NOT_IDENTITY",
         "sources": sources,
