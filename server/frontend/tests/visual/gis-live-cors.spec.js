@@ -6,6 +6,10 @@ const sources = [
   ['pr-sige-represas', 'https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/1/query?f=json&returnCountOnly=true&where=1%3D1'],
   ['pr-sige-aeropuertos', 'https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/17/query?f=json&returnCountOnly=true&where=1%3D1'],
   ['pr-sige-helipuertos', 'https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/18/query?f=json&returnCountOnly=true&where=1%3D1'],
+  ['pr-sige-cuencas', 'https://sige.pr.gov/server/rest/services/MIPR/Geologia_v10_N/FeatureServer/0/query?f=json&returnCountOnly=true&where=1%3D1'],
+  ['pr-sige-acuiferos', 'https://sige.pr.gov/server/rest/services/MIPR/Geologia_v10_N/FeatureServer/2/query?f=json&returnCountOnly=true&where=1%3D1'],
+  ['pr-sige-sumideros', 'https://sige.pr.gov/server/rest/services/MIPR/Geologia_v10_N/FeatureServer/4/query?f=json&returnCountOnly=true&where=1%3D1'],
+  ['pr-sige-aaa-pozos', 'https://sige.pr.gov/server/rest/services/MIPR/AAA_v10_N/MapServer/2/query?f=json&returnCountOnly=true&where=1%3D1'],
 ];
 
 for (const [sourceId, url] of sources) {
