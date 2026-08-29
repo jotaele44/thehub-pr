@@ -1,5 +1,5 @@
 {
-  "schema_version": "htr-public-adjudication-1.0",
+  "schema_version": "htr-public-adjudication-1.1",
   "adjudication_id": "htr:luchetti-lucchetti:public:v1",
   "as_of": "2026-08-28",
   "subject_pair": {
@@ -9,7 +9,8 @@
         "CALLE LUCHETTI",
         "Calle Luchetti",
         "Antonio Luchetti Street",
-        "Calle Antonio Lucchetti"
+        "Calle Antonio Lucchetti",
+        "Calle Lucchetti"
       ],
       "feature_type": "ROAD",
       "municipality": "Villalba"
@@ -41,6 +42,23 @@
       "binds_candidate_pair": false
     },
     {
+      "source_id": "dtop:hpms-log:2023",
+      "url": "https://act.dtop.pr.gov/media/HPMS-LOG-UpToDate-Dec-31-2023.pdf",
+      "observation": "DTOP's 2023 HPMS log uses CALLE LUCHETTI as a Villalba roadway reference at PR-5149, independently confirming the Luchetti spelling in the state road inventory context.",
+      "evidence_class": "AUTHORITATIVE_TRANSPORTATION_TOPONYM_MANIFESTATION",
+      "binds_candidate_pair": false
+    },
+    {
+      "source_id": "jp:villalba-hmp:2021",
+      "url": "https://jp.pr.gov/wp-content/uploads/2024/11/Plan-Mitigacion-Villalba-Aprobado-17-dic-2021.pdf",
+      "observation": "Villalba's approved hazard mitigation plan lists the AEE hydroelectric plant at Calle Lucchetti, Bda. Cooperativa, preserving the double-c spelling as an official planning manifestation and independently tying the street to hydroelectric context.",
+      "evidence_class": "AUTHORITATIVE_HYDRO_CONTEXT_AND_NAME_VARIANT",
+      "contextual": true,
+      "binds_candidate_pair": false,
+      "related_entity_id": "hydroplant:toro_negro_1",
+      "relation_type": "ADDRESS_OF"
+    },
+    {
       "source_id": "prepa-preb:toro-negro-i-address",
       "url": "https://energia.pr.gov/wp-content/uploads/sites/7/2022/12/20221222-MI20200001-Mocion-en-Cumplimiento-de-Orden-del-20-de-diciembre_public.pdf",
       "observation": "PREPA/PREB material places Toro Negro I hydroelectric infrastructure on Calle Luchetti and separately manifests the street as Calle Antonio Lucchetti.",
@@ -56,13 +74,22 @@
       "observation": "Puerto Rico planning material states that the Antonio Lucchetti dam/lake name honors engineer Antonio Lucchetti; the source family contains Lucchetti/Luchetti spelling variation.",
       "evidence_class": "AUTHORITATIVE_EPONYM_BINDING_FOR_HYDRO_ASSET",
       "binds_candidate_pair": false
+    },
+    {
+      "source_id": "revista-obras-publicas:1933-34:antonio-luchetti",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9b/Revista_de_Obras_P%C3%BAblicas_de_Puerto_Rico_%28IA_acd4789.0010.001.umich.edu%29.pdf",
+      "observation": "A contemporary Puerto Rico public-works journal identifies Antonio Luchetti as chief engineer of the South Coast Irrigation Service in reporting on irrigation and Fuentes Fluviales, strengthening the historical infrastructure-eponym context without directly naming the Villalba street.",
+      "evidence_class": "CONTEMPORARY_HISTORICAL_PERSON_INFRASTRUCTURE_CONTEXT",
+      "binds_candidate_pair": false
     }
   ],
   "adjudication": {
     "street_exists": "PASS",
-    "historical_antonio_luchetti_street_manifestation": "PASS",
+    "historical_antonio_luchetti_street_manifestation_by_1965": "PASS",
     "street_has_authoritative_hydroelectric_context": "PASS",
+    "street_spelling_variants_luchetti_lucchetti": "PASS",
     "hydro_asset_antonio_lucchetti_eponym": "PASS",
+    "antonio_lucchetti_historical_hydro_infrastructure_role": "PASS",
     "street_formal_naming_instrument_recovered": "OPEN",
     "street_named_after_antonio_lucchetti": "PROVISIONAL_INFERENCE",
     "street_same_as_lucchetti_hydro_asset": "REJECTED",
@@ -74,7 +101,7 @@
     {
       "class": "NAME",
       "forms": ["Luchetti", "Lucchetti"],
-      "disposition": "PRESERVE_BOTH; spelling variation cannot establish identity or error direction by itself"
+      "disposition": "PRESERVE_BOTH; both forms occur in authoritative/public-source manifestations; spelling variation cannot establish identity, naming origin, or error direction by itself"
     }
   ],
   "public_search_residue": [
@@ -82,9 +109,14 @@
     "contemporaneous street-register entry with naming authority and effective date",
     "equivalent authoritative documentary binding between the street and engineer Antonio Lucchetti"
   ],
+  "search_disposition": {
+    "state": "BOUNDED_PUBLIC_SEARCH_EXHAUSTED_FOR_EXECUTED_QUERIES",
+    "universal_web_exhaustion_claim": false,
+    "result": "Additional authoritative street and hydro-context manifestations were recovered, but no direct street-naming instrument was located. The direct eponym proposition therefore remains provisional rather than promoted."
+  },
   "certification": {
     "state": "PROVISIONAL",
-    "bounded_claim": "Publicly located evidence supports a real Villalba Calle/Antonio Luchetti-Lucchetti street manifestation and independent hydroelectric context, but does not yet directly bind the street's naming origin to Antonio Lucchetti.",
+    "bounded_claim": "Publicly located evidence supports a real Villalba Calle/Antonio Luchetti-Lucchetti street manifestation by at least 1965, multiple modern authoritative spelling manifestations, and independent hydroelectric context, but does not directly bind the street's naming origin to Antonio Lucchetti.",
     "zero_unresolved_residue": false
   }
 }
