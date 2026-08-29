@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it } from './testHarnessCompat';
 import { acquireOnlineSource, acquireRasterAsset } from './acquisitionFacade';
 import { classifyRasterAsset } from './remoteAcquisition';
 import { getOnlineSourceDefinition } from './sourceRegistry';
@@ -12,15 +12,15 @@ function binaryResponse(bytes, headers = {}) {
   return { ok: true, status: 206, statusText: 'Partial Content', arrayBuffer: async () => Uint8Array.from(bytes).buffer, headers: { get: (name) => headers[name.toLowerCase()] || null } };
 }
 
-function arcgisFetch({ count = 2, duplicate = false, shortPage = false, idField = 'OBJECTID_1' } = {}) {
+function arcgisFetch({ count = 35, fetchedCount = count, duplicate = false, idField = 'OBJECTID_1' } = {}) {
   return async (url) => {
     if (url.includes('returnCountOnly=true')) return textResponse(JSON.stringify({ count }));
-    const firstId = duplicate ? 2 : 1;
-    const features = [
-      { type: 'Feature', properties: { [idField]: firstId }, geometry: { type: 'Point', coordinates: [-66.8, 18.1] } },
-      { type: 'Feature', properties: { [idField]: 2 }, geometry: { type: 'Point', coordinates: [-66.6, 18.2] } },
-    ];
-    return textResponse(JSON.stringify({ type: 'FeatureCollection', features: shortPage ? features.slice(0, 1) : features }));
+    const features = Array.from({ length: fetchedCount }, (_, index) => ({
+      type: 'Feature',
+      properties: { [idField]: duplicate && index === 1 ? 1 : index + 1 },
+      geometry: { type: 'Point', coordinates: [-66.8 + index * 0.001, 18.1 + index * 0.001] },
+    }));
+    return textResponse(JSON.stringify({ type: 'FeatureCollection', features }));
   };
 }
 
@@ -49,6 +49,7 @@ describe('remote vector acquisition', () => {
     const first = await acquireOnlineSource('pr-sige-represas', { fetchImpl, retrievalUtc: '2026-08-29T20:00:00Z' });
     const second = await acquireOnlineSource('pr-sige-represas', { fetchImpl, retrievalUtc: '2026-08-30T20:00:00Z' });
     expect(first.rawResponses).toHaveLength(2);
+    expect(first.manifest.featureCount).toBe(35);
     expect(first.queryReceiptSha256).toBe(second.queryReceiptSha256);
     expect(first.snapshotSha256).toBe(second.snapshotSha256);
     expect(first.sourceManifest.retrievalUtc).not.toBe(second.sourceManifest.retrievalUtc);
@@ -57,7 +58,7 @@ describe('remote vector acquisition', () => {
   });
 
   it('fails closed when provider count does not close', async () => {
-    await expect(acquireOnlineSource('pr-sige-represas', { fetchImpl: arcgisFetch({ count: 3, shortPage: true }) })).rejects.toThrow(/count gate failed/);
+    await expect(acquireOnlineSource('pr-sige-represas', { fetchImpl: arcgisFetch({ fetchedCount: 34 }) })).rejects.toThrow(/count gate failed/);
   });
 
   it('fails closed on duplicate provider stable IDs', async () => {
