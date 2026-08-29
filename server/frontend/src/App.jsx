@@ -46,12 +46,11 @@ const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
 const AppCenter = lazy(() => import('@/pages/AppCenter'));
 const Operations = lazy(() => import('@/pages/Operations'));
+const GISWorkspace = lazy(() => import('@/pages/GISWorkspace'));
 
 const AppRoutes = () => {
   const { isLoadingPublicSettings, appPublicSettings } = useAuth();
 
-  // Wait for public settings before routing — we need to know whether auth is
-  // required before deciding whether to guard the app routes or render anonymously.
   if (isLoadingPublicSettings) {
     return <RouteFallback />;
   }
@@ -60,9 +59,6 @@ const AppRoutes = () => {
     appPublicSettings?.public_settings?.requires_auth || appParams.requireAuth
   );
 
-  // When auth is required, wrap the app shell in ProtectedRoute (redirects
-  // unauthenticated users to /login). In public/diagnostic mode the layout route
-  // is a pass-through so the app renders anonymously.
   const guard = authRequired
     ? <ProtectedRoute fallback={<RouteFallback />} unauthenticatedElement={<Navigate to="/login" replace />} />
     : <Outlet />;
@@ -70,12 +66,6 @@ const AppRoutes = () => {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        {/* Public auth routes — rendered without the app shell, and only when auth
-            is actually required. In diagnostic mode the backend implements no
-            /auth/login, /auth/register, /auth/verify-otp or /auth/password/*
-            endpoint (they 404), so rendering these forms would offer a sign-in
-            that cannot succeed. Gate them on the same signal that decides whether
-            the app shell is guarded, so the two can never disagree. */}
         {authRequired ? (
           <>
             <Route path="/login" element={<Login />} />
@@ -92,7 +82,6 @@ const AppRoutes = () => {
           </>
         )}
 
-        {/* Protected application. */}
         <Route element={guard}>
           <Route element={<AppLayout />}>
             <Route path="/" element={<RecentActivity />} />
@@ -116,6 +105,7 @@ const AppRoutes = () => {
             <Route path="/research" element={<ResearchAssistant />} />
             <Route path="/dictionary" element={<Dictionary />} />
             <Route path="/manifest" element={<Manifest />} />
+            <Route path="/gis" element={<GISWorkspace />} />
             <Route path="/spiderweb" element={<Spiderweb />} />
             <Route path="/ovnis" element={<Ovnis />} />
             <Route path="/aguayluz" element={<AguaYLuz />} />
@@ -131,17 +121,13 @@ const AppRoutes = () => {
   );
 };
 
-
 function App() {
-
   return (
     <ThemeProvider>
       <AuthProvider>
         <QueryClientProvider client={queryClientInstance}>
           <Router>
             <ScrollToTop />
-            {/* Inside the router so a throw keeps the shell and the URL, and the
-                operator can navigate away instead of facing a blank document. */}
             <ErrorBoundary>
               <AppRoutes />
             </ErrorBoundary>
