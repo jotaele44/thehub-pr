@@ -57,8 +57,11 @@ export async function ingestGeoJSONText(rawText, options = {}) {
     if (feature.geometry?.coordinates) coordinateDimensions(feature.geometry.coordinates, dimensions);
   }
   const byteSha256 = await sha256(rawText);
-  const sourceId = options.sourceId || `upload:${byteSha256 || 'unhashed'}`;
-  const layerId = options.layerId || `layer:${byteSha256 || Date.now()}`;
+  if (!byteSha256 && (!options.sourceId || !options.layerId)) {
+    throw new Error('Web Crypto SHA-256 unavailable; explicit stable sourceId and layerId are required');
+  }
+  const sourceId = options.sourceId || `upload:${byteSha256}`;
+  const layerId = options.layerId || `layer:${byteSha256}`;
 
   const manifest = createLayerManifest({
     layerId,
