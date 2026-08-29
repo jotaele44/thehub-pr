@@ -42,9 +42,11 @@ def test_allowlist_rejects_lookalike_host_and_path_escape():
 
 
 def test_proxy_required_wfs_is_exact_source_bound():
-    target = "http://geoserver2.pr.gov/geoserver/pr_geodata/wfs?service=WFS&request=GetFeature"
+    target = "http://geoserver2.pr.gov/geoserver/pr_geodata/ows?service=WFS&request=GetFeature"
+    assert gis_proxy._target_allowed("pr-geodata-municipios-2015", target)
     assert gis_proxy._target_allowed("pr-geodata-barrios-2015", target)
     assert not gis_proxy._target_allowed("pr-sige-represas", target)
+    assert not gis_proxy._target_allowed("pr-geodata-barrios-2015-simpl", target)
 
 
 def test_range_is_bounded_to_one_mib():
