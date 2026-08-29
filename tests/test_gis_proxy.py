@@ -78,16 +78,14 @@ def test_proxy_returns_allowed_upstream_bytes(monkeypatch):
 def test_main_entrypoint_preserves_core_namespace_and_fresh_runtime_mounts_proxy():
     from server.backend import main, main_core
 
-    # The compatibility entrypoint aliases the byte-preserved core so monkeypatches
-    # used by the existing backend suite continue to target one module namespace.
     assert main is main_core
     assert hasattr(main, "_init_db")
 
-    # A long-lived pytest process may reload main_core after the wrapper initially
-    # mounted extensions. Production starts server.backend.main:app in a fresh
-    # interpreter, so certify that actual startup contract independently.
+    # Uvicorn resolves `server.backend.main:app` through importlib. Use that exact
+    # importer rather than dotted-import package-attribute binding semantics.
     probe = (
-        "import server.backend.main as m; "
+        "import importlib; "
+        "m=importlib.import_module('server.backend.main'); "
         "assert any(getattr(r, 'path', None) == '/api/gis/proxy' for r in m.app.routes)"
     )
     completed = subprocess.run([sys.executable, "-c", probe], check=False, capture_output=True, text=True)
