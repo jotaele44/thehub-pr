@@ -33,7 +33,8 @@ _ALLOWED: dict[str, AllowedSource] = {
     "pr-sige-aeropuertos": AllowedSource(("https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/17",)),
     "pr-sige-helipuertos": AllowedSource(("https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/18",)),
     "pr-geodata-barrios-2015-simpl": AllowedSource(("http://geoserver2.pr.gov/geoserver/pr_geodata/wfs",)),
-    "pr-geodata-barrios-2015": AllowedSource(("http://geoserver2.pr.gov/geoserver/pr_geodata/wfs",)),
+    "pr-geodata-barrios-2015": AllowedSource(("http://geoserver2.pr.gov/geoserver/pr_geodata/ows",)),
+    "pr-geodata-municipios-2015": AllowedSource(("http://geoserver2.pr.gov/geoserver/pr_geodata/ows",)),
     "census-tigerweb-pr-state-2025": AllowedSource(("https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/0",)),
     "census-tigerweb-pr-municipios-2025": AllowedSource(("https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/1",)),
     "usgs-landsat-stac-sr": AllowedSource(("https://landsatlook.usgs.gov/stac-server", "https://landsatlook.usgs.gov/data/")),
@@ -123,12 +124,7 @@ def gis_proxy(
             limit = _MAX_RANGE_BYTES if normalized_range else _MAX_TEXT_BYTES
             body = _read_bounded(upstream, limit)
             response_headers = {}
-            for source_name, response_name in (
-                ("Content-Range", "Content-Range"),
-                ("Content-Length", "X-GIS-Upstream-Content-Length"),
-                ("ETag", "X-GIS-Upstream-ETag"),
-                ("Last-Modified", "X-GIS-Upstream-Last-Modified"),
-            ):
+            for source_name, response_name in (("Content-Range", "Content-Range"), ("Content-Length", "X-GIS-Upstream-Content-Length"), ("ETag", "X-GIS-Upstream-ETag"), ("Last-Modified", "X-GIS-Upstream-Last-Modified")):
                 value = upstream.headers.get(source_name)
                 if value:
                     response_headers[response_name] = value

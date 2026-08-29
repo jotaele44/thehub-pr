@@ -28,9 +28,9 @@ live('live authoritative GIS providers', () => {
     expect(result.certification.status).toBe('PASS');
   }, 120000);
 
-  it('Puerto Rico WFS barrios closes its hits denominator on the adjudicated feature type', async () => {
-    const result = await acquireOnlineSource('pr-geodata-barrios-2015', direct);
-    expect(result.manifest.featureCount).toBeGreaterThan(0);
+  it('Puerto Rico WFS municipios closes its 78-feature denominator', async () => {
+    const result = await acquireOnlineSource('pr-geodata-municipios-2015', direct);
+    expect(result.manifest.featureCount).toBe(78);
     expect(result.certification.status).toBe('PASS');
     console.log('GIS_LIVE_RECEIPT', JSON.stringify({ sourceId: result.sourceDefinition.sourceId, count: result.manifest.featureCount, snapshotSha256: result.snapshotSha256, queryReceiptSha256: result.queryReceiptSha256 }));
   }, 120000);
