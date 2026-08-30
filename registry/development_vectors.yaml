@@ -1,38 +1,41 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-24T20:30:00Z"
+  captured_at_utc: "2026-08-29T15:41:10Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
+  certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260829T154110Z
+  certification_report: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260829T154110Z/thehub_ios_start_scope/ios_start_scope.json
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: 3e11e185681832c883873785a8ec4b66bdf711ef
+      expected_sha: 609cec586bcb178b819ddfe4f4dc64b2765cacc9
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: 0e3987f274a34990efc29d762573cae051e1bf15
+      expected_sha: e70e8b75db2f145acdc1c309a9f14b658c78fe16
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
-      expected_sha: d11b74ac5e42812755282356f1d14fffc996809c
+      expected_sha: 733035df481e231a0df7f306b5a1106b19f27644
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: 80028013ee6cab525428675bc7deb7ca38121bc9
+      expected_sha: ba0c0d11a011669a5d487dc116274491449d4b72
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
-      expected_sha: ac241db7148e811f78960779c042fe4eff3e3038
+      expected_sha: 457d4a6c312ecb0a30a521a42d165fba5bfea6e6
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
-      expected_sha: 588bc121991c529fee136c90063d0d5423f23698
+      expected_sha: 3c24e765e44b82a90122e690987a5062648ef8d4
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: fe155d2494f1f3eef007bf66f6367d45995ef3d1
+      expected_sha: fb43d542fbacd2a2f1168a33335d0fc75ce67adf
+      self_snapshot_finalizer_parent: true
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
@@ -60,6 +63,8 @@ vectors:
       passed_artifact_reuse: true
       ci_certified_implementation_head: e9ce1f87031189bfa6facc0ec060d092eaf37796
       bootstrap_receipt: reports/federation_pickup_bootstrap_20260816.json
+      all_main_recertification_receipt_20260826T0124Z: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/certification_receipts/20260826T0124Z/fed-pickup-remote.receipt.json
+      strict_aggregate_gate_20260826T0124Z: PASS
 
   - vector_id: FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT
     repo: jotaele44/thehub-pr
@@ -84,7 +89,7 @@ vectors:
 
   - vector_id: BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT
     repo: jotaele44/skywatcher-pr
-    objective: Build reviewed non-synthetic airspace export readiness with endpoint attribution.
+    objective: Build reviewed non-synthetic airspace export readiness with certified capture-area geometry, visible-icon approximate aircraft positions, and endpoint attribution.
     declared_status: BLOCKED
     certification: OPEN
     dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
@@ -97,11 +102,35 @@ vectors:
       mutation: prohibited_by_fed_max
       commands: []
     blockers:
-      - real_flightradar24_capture_required
+      - full_corpus_visible_icon_capture_geometry_review_required
+      - aircraft_observation_filename_to_media_sha_reconciliation_required
       - operator_tenant_attribution_requires_review
       - local_uncommitted_faa_registry_and_ocr_event_inputs_required_for_registry_validation
     invariants:
       production_validator_present: true
+      capture_bbox_icon_gate_present: true
+      first_bounded_bbox_icon_package_certified: true
+      first_bounded_bbox_icon_package_observations: 1
+      scaled_bounded_bbox_icon_package_certified: true
+      scaled_bounded_bbox_icon_package_observations: 3
+      scaled_bounded_bbox_icon_package_arithmetic: "3=3+0+0"
+      scaled_bounded_bbox_icon_package_sha: 609cec586bcb178b819ddfe4f4dc64b2765cacc9
+      scaled_bounded_bbox_icon_package_path: exports/fr24_bbox_icon_scaled_package
+      first_bounded_bbox_icon_package_geometry_status: approximate
+      first_bounded_bbox_icon_package_position_precision: APPROXIMATE
+      exact_aircraft_coordinates_remain_source_only: true
+      screenshot_icon_points_are_approximate_uncertainty_bounded: true
+      fr24_capture_review_worklist_rows: 9963
+      fr24_capture_review_media_filename_matches: 0
+      fr24_capture_review_media_filename_unresolved: 9963
+      fr24_source_drop_exportable_rows: 0
+      fr24_source_drop_icon_derived_approx_rows: 0
+      fr24_scaled_source_drop_exportable_rows: 3
+      fr24_scaled_source_drop_icon_derived_approx_rows: 3
+      fr24_scaled_source_drop_missing_geometry_rows: 0
+      fr24_media_identity_exact_filename_intersection: 0
+      fr24_media_identity_candidate_not_identity_rows: 10
+      fr24_media_identity_symmetric_difference_filenames: 12651
       fr24_baseline_tracked_payload_count: 0
       fr24_baseline_evidence: data/FR24_baseline contains only .gitkeep at frozen main
       faa_registry_runtime_inputs_operator_supplied: true
@@ -268,7 +297,6 @@ vectors:
       ovnis_ci_run_id: 31976022056
       validate_run_id: 31976022092
       codeql_run_id: 31976022086
-      semgrep_run_id: 31976022506
       secret_scan_run_id: 31976022059
       federation_template_drift_run_id: 31976022097
       case_record_schema_present: true

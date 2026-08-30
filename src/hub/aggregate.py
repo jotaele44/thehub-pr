@@ -24,7 +24,13 @@ def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dic
 
     for producer, pkg in packages.items():
         pkg = Path(pkg)
-        errs = validate_package(pkg)
+        # Aggregate is often run immediately after `validate-federation`, which
+        # already performs full row-schema validation. Rechecking every large
+        # producer stream here made strict aggregation non-terminal on large
+        # MoneySweep/AguaYLuz packages. Keep strict manifest/hash/count/JSON
+        # integrity checks here and leave full row-schema validation to
+        # `hub validate-package` / `hub validate-federation`.
+        errs = validate_package(pkg, validate_rows=False)
         summary["errors"][producer] = errs
         if errs and strict:
             continue
