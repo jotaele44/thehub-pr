@@ -297,7 +297,6 @@ vectors:
       ovnis_ci_run_id: 31976022056
       validate_run_id: 31976022092
       codeql_run_id: 31976022086
-      semgrep_run_id: 31976022506
       secret_scan_run_id: 31976022059
       federation_template_drift_run_id: 31976022097
       case_record_schema_present: true
