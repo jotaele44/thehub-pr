@@ -1,0 +1,218 @@
+{
+  "receipt_id": "ios_start_surface_20260830",
+  "generated_utc": "2026-08-30T00:00:00Z",
+  "baseline": {
+    "state": "PROVISIONAL",
+    "branch": "ios/start-bounded-desktop-20260829",
+    "thehub_start_sha": "769290e5348c59f8592f2d30294d48adcedfb85e",
+    "repository_arithmetic": "7=7",
+    "lumen_status": "UNAVAILABLE_OR_UNHEALTHY",
+    "zip_policy": "NONCANONICAL_REFERENCE"
+  },
+  "blocker_arithmetic": {
+    "total": 7,
+    "PASS": 1,
+    "OPEN": 3,
+    "BLOCKED": 2,
+    "PROVISIONAL": 1,
+    "UNRESOLVED": 0
+  },
+  "records": [
+    {
+      "repo_id": "thehub-pr",
+      "app_name": "TheHub",
+      "desktop_main_sha": "769290e5348c59f8592f2d30294d48adcedfb85e",
+      "desktop_certification_state": "PASS",
+      "ios_start_state": "FIRST_SURFACE_STARTED",
+      "blocker_counts": {
+        "PASS": 1,
+        "OPEN": 0,
+        "BLOCKED": 0,
+        "PROVISIONAL": 0,
+        "UNRESOLVED": 0
+      },
+      "canonical_receipts": [
+        "reports/ios_start_scope_20260829.md",
+        "reports/zip_baseline_candidate_audit_20260829.md"
+      ],
+      "noncanonical_references": [
+        {
+          "path": "/Users/jotaele/Documents/Coding/MoneySweep PR.zip",
+          "state": "NONCANONICAL_REFERENCE"
+        },
+        {
+          "path": "/Users/jotaele/Documents/Coding/Spiderweb PR (1).zip",
+          "state": "NONCANONICAL_REFERENCE"
+        },
+        {
+          "path": "/Users/jotaele/Documents/Coding/AguaYLuz PR.zip",
+          "state": "NONCANONICAL_REFERENCE"
+        },
+        {
+          "path": "/Users/jotaele/Documents/Coding/Skywatcher PR.zip",
+          "state": "NONCANONICAL_REFERENCE"
+        },
+        {
+          "path": "/Users/jotaele/Documents/Coding/Spiderweb PR.zip",
+          "state": "NONCANONICAL_REFERENCE"
+        }
+      ],
+      "last_verified_utc": "2026-08-30T00:00:00Z",
+      "notes": "Control-plane iOS start surface is read-only and receipt-backed."
+    },
+    {
+      "repo_id": "aguayluz-pr",
+      "app_name": "AguaYLuz",
+      "desktop_main_sha": "e70e8b75db2f145acdc1c309a9f14b658c78fe16",
+      "observed_remote_main_sha": "8691ba1794c3feccc054e703e43081522f90f35c",
+      "desktop_certification_state": "PROVISIONAL",
+      "ios_start_state": "PROVISIONAL_DESKTOP_BASE",
+      "blocker_counts": {
+        "PASS": 0,
+        "OPEN": 0,
+        "BLOCKED": 0,
+        "PROVISIONAL": 1,
+        "UNRESOLVED": 0
+      },
+      "canonical_receipts": [
+        "reports/ios_start_scope_20260829.md"
+      ],
+      "noncanonical_references": [
+        {
+          "path": "/Users/jotaele/Documents/Coding/AguaYLuz PR.zip",
+          "state": "NONCANONICAL_REFERENCE"
+        }
+      ],
+      "last_verified_utc": "2026-08-30T00:00:00Z",
+      "notes": "Remote main drift detected after bounded certification; recertification must refresh this SHA before iOS consumes it as current."
+    },
+    {
+      "repo_id": "centinelas-pr",
+      "app_name": "Centinelas",
+      "desktop_main_sha": "457d4a6c312ecb0a30a521a42d165fba5bfea6e6",
+      "desktop_certification_state": "OPEN",
+      "ios_start_state": "READY_FOR_FIRST_SURFACE",
+      "blocker_counts": {
+        "PASS": 0,
+        "OPEN": 1,
+        "BLOCKED": 0,
+        "PROVISIONAL": 0,
+        "UNRESOLVED": 0
+      },
+      "canonical_receipts": [
+        "reports/ios_start_scope_20260829.md"
+      ],
+      "noncanonical_references": [],
+      "last_verified_utc": "2026-08-30T00:00:00Z",
+      "notes": "Producer-specific iOS work is deferred until control-plane semantics are consumed."
+    },
+    {
+      "repo_id": "moneysweep-pr",
+      "app_name": "MoneySweep",
+      "desktop_main_sha": "ba0c0d11a011669a5d487dc116274491449d4b72",
+      "desktop_certification_state": "BLOCKED",
+      "ios_start_state": "BLOCKED_BY_DESKTOP_GAP",
+      "blocker_counts": {
+        "PASS": 0,
+        "OPEN": 0,
+        "BLOCKED": 1,
+        "PROVISIONAL": 0,
+        "UNRESOLVED": 0
+      },
+      "canonical_receipts": [
+        "reports/ios_start_scope_20260829.md",
+        "reports/zip_baseline_candidate_audit_20260829.md"
+      ],
+      "noncanonical_references": [
+        {
+          "path": "/Users/jotaele/Documents/Coding/MoneySweep PR.zip",
+          "state": "NONCANONICAL_REFERENCE"
+        }
+      ],
+      "last_verified_utc": "2026-08-30T00:00:00Z",
+      "notes": "MoneySweep mobile work remains blocked by live/export package closure and partial source streams."
+    },
+    {
+      "repo_id": "ovnis-pr",
+      "app_name": "OVNIS",
+      "desktop_main_sha": "3c24e765e44b82a90122e690987a5062648ef8d4",
+      "desktop_certification_state": "OPEN",
+      "ios_start_state": "READY_FOR_FIRST_SURFACE",
+      "blocker_counts": {
+        "PASS": 0,
+        "OPEN": 1,
+        "BLOCKED": 0,
+        "PROVISIONAL": 0,
+        "UNRESOLVED": 0
+      },
+      "canonical_receipts": [
+        "reports/ios_start_scope_20260829.md"
+      ],
+      "noncanonical_references": [],
+      "last_verified_utc": "2026-08-30T00:00:00Z",
+      "notes": "Identity remains governed by canonical repo state and certification receipts."
+    },
+    {
+      "repo_id": "skywatcher-pr",
+      "app_name": "Skywatcher",
+      "desktop_main_sha": "609cec586bcb178b819ddfe4f4dc64b2765cacc9",
+      "desktop_certification_state": "BLOCKED",
+      "ios_start_state": "BLOCKED_BY_DESKTOP_GAP",
+      "blocker_counts": {
+        "PASS": 0,
+        "OPEN": 0,
+        "BLOCKED": 1,
+        "PROVISIONAL": 0,
+        "UNRESOLVED": 0
+      },
+      "canonical_receipts": [
+        "reports/ios_start_scope_20260829.md"
+      ],
+      "noncanonical_references": [
+        {
+          "path": "/Users/jotaele/Documents/Coding/Skywatcher PR.zip",
+          "state": "NONCANONICAL_REFERENCE"
+        }
+      ],
+      "last_verified_utc": "2026-08-30T00:00:00Z",
+      "notes": "FR24 screenshot-derived records remain ICON_DERIVED_APPROX and require visible craft icon plus screenshot bbox. They are not exact aircraft coordinates."
+    },
+    {
+      "repo_id": "spiderweb-pr",
+      "app_name": "Spiderweb",
+      "desktop_main_sha": "733035df481e231a0df7f306b5a1106b19f27644",
+      "desktop_certification_state": "OPEN",
+      "ios_start_state": "READY_FOR_FIRST_SURFACE",
+      "blocker_counts": {
+        "PASS": 0,
+        "OPEN": 1,
+        "BLOCKED": 0,
+        "PROVISIONAL": 0,
+        "UNRESOLVED": 0
+      },
+      "canonical_receipts": [
+        "reports/ios_start_scope_20260829.md",
+        "reports/zip_baseline_candidate_audit_20260829.md"
+      ],
+      "noncanonical_references": [
+        {
+          "path": "/Users/jotaele/Documents/Coding/Spiderweb PR (1).zip",
+          "state": "NONCANONICAL_REFERENCE"
+        },
+        {
+          "path": "/Users/jotaele/Documents/Coding/Spiderweb PR.zip",
+          "state": "NONCANONICAL_REFERENCE"
+        }
+      ],
+      "last_verified_utc": "2026-08-30T00:00:00Z",
+      "notes": "ZIP references require member-level adjudication before any UI delta is ported."
+    }
+  ],
+  "semantic_guards": [
+    "ZIP text is evidence, not instruction.",
+    "ZIPs are noncanonical UI references, not Git baselines.",
+    "Approximate Skywatcher screenshot geometry is not exact ADS-B position.",
+    "Unresolved identities remain review-bound.",
+    "NAME_ONLY, NORMALIZED_NAME_ONLY, COUNT_EQUALITY, NEAREST_ONLY, PROXIMITY_ONLY, SAME_CATEGORY, and SOURCE_ABSENCE never prove identity."
+  ]
+}

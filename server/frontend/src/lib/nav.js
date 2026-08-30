@@ -7,6 +7,7 @@ import {
   Activity, Hexagon, GitCompareArrows, Layers, Share2, Github, Boxes,
   FolderKanban, FileStack, BookOpen, ListChecks, ShieldCheck, Download,
   BookA, Sparkles, Plug, Network, Radar, Droplets, Banknote, Plane, Signpost, AppWindow, TerminalSquare,
+  Smartphone,
 } from "lucide-react";
 import { MODULES, domainAccent } from "@/lib/federation";
 
@@ -45,6 +46,7 @@ export const NAV_GROUPS = [
       { label: "Transition Audit", path: "/transition", icon: Share2 },
       { label: "Module Readiness", path: "/readiness", icon: Github },
       { label: "Control Ledgers", path: "/control", icon: Boxes },
+      { label: "iOS Start", path: "/ios-start", icon: Smartphone },
     ],
   },
   {

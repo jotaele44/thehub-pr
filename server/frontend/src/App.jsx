@@ -46,6 +46,7 @@ const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
 const AppCenter = lazy(() => import('@/pages/AppCenter'));
 const Operations = lazy(() => import('@/pages/Operations'));
+const IosStart = lazy(() => import('@/pages/IosStart'));
 
 const AppRoutes = () => {
   const { isLoadingPublicSettings, appPublicSettings } = useAuth();
@@ -100,6 +101,7 @@ const AppRoutes = () => {
             <Route path="/programs" element={<Programs />} />
             <Route path="/apps" element={<AppCenter />} />
             <Route path="/operations" element={<Operations />} />
+            <Route path="/ios-start" element={<IosStart />} />
             <Route path="/cases" element={<Cases />} />
             <Route path="/sources" element={<Sources />} />
             <Route path="/tasks" element={<Tasks />} />

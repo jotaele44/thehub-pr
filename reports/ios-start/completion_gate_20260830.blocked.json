@@ -1,0 +1,14 @@
+{
+  "receipt_id": "completion_gate_20260830_blocked",
+  "state": "BLOCKED",
+  "command": "PYTHONPATH=src python3 scripts/federation_completion_gate.py --out reports/ios-start/completion_gate_20260830.json --allow-rate-limit-partial",
+  "blocked_reason": "GITHUB_TOKEN/GH_TOKEN is required",
+  "classification": "BLOCKED",
+  "certification_effect": "NO_REMOTE_ALL_MAIN_RECERTIFICATION",
+  "notes": [
+    "The completion gate was invoked after the bounded iOS start surface commit.",
+    "No authenticated GitHub token was available to perform hosted remote pickup.",
+    "The prior certified desktop state remains bounded and provisional.",
+    "Aguayluz remote main drift was observed before this gate and remains unresolved in this branch receipt."
+  ]
+}
