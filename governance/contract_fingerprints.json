@@ -1,11 +1,12 @@
 {
   "schema_version": "prii_contract_fingerprints_v1",
-  "status": "PROVISIONAL",
-  "note": "Hashes are populated/verified by governance CI from canonical contract files. This manifest names the governed contracts and prevents silent omission.",
+  "status": "FROZEN",
+  "source_manifest": "schemas/FROZEN.sha256",
   "contracts": [
-    {"id":"repo_federation_manifest","path":"schemas/repo_federation_manifest.schema.json","version":"1.0.0","sha256":"CI_COMPUTED"},
-    {"id":"federation_export_manifest","path":"schemas/federation_export_manifest.schema.json","version":"1.0.0","sha256":"CI_COMPUTED"},
-    {"id":"centinelas_financial_signal","path":"schemas/centinelas_financial_signal.schema.json","version":"1.0.0","sha256":"CI_COMPUTED"},
-    {"id":"contract_finance_bundle","path":"schemas/contract_finance_bundle.schema.json","version":"1.0.0","sha256":"CI_COMPUTED"}
-  ]
+    {"id":"repo_federation_manifest","path":"schemas/repo_federation_manifest.schema.json","version":"1.0.0","sha256":"203ffc9996d8af827b24d3f968989e27e49f014520929bbae67e713273892666"},
+    {"id":"federation_export_manifest","path":"schemas/federation_export_manifest.schema.json","version":"1.0.0","sha256":"367a8d1f9123920d661d7c2b2314770dfaf1466c3a480d5e2d63c17ac819d7ba"},
+    {"id":"federation_entity","path":"schemas/federation_entity.schema.json","version":"1.0.0","sha256":"a24c371ae2b49d322f655cc7e96b13df5acb66f0d349bee7b8023b9f2bf15db8"},
+    {"id":"federation_relationship","path":"schemas/federation_relationship.schema.json","version":"1.0.0","sha256":"71ca9998728aa6bf231134c5b5cf9c8c2eb0b5177d74099ddba0ec3c2e89f5db"}
+  ],
+  "rule": "The sha256 values must equal the corresponding entries in schemas/FROZEN.sha256 and the current bytes of each contract. Any byte change requires explicit fingerprint and version adjudication."
 }
