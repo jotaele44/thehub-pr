@@ -1,0 +1,84 @@
+{
+  "schema_version": "major-hydro-asset-2.0",
+  "scope": "Source-specific authoritative hydro-name manifestations appended to the frozen HTR v1 registry without cross-source identity collapse.",
+  "supersedes_for_future_discovery": "major-hydro-asset-1.x local extension concept only; frozen v1 source artifacts remain immutable",
+  "base_registry": {
+    "artifact": "htr-islandwide-236933e.zip",
+    "artifact_sha256": "880f34a55690748d955e78bdece19716959609d9628e7e40db52c91f84494fac",
+    "frozen_manifestation_count": 69,
+    "identity": "PRESERVED_UNCHANGED"
+  },
+  "authoritative_source_sets": [
+    {
+      "source_id": "drna:planagua:embalses:table-4.0-2",
+      "title": "Características y Condición de los Embalses Principales en Puerto Rico / Plan de Aguas",
+      "source_url": "https://www.drna.pr.gov/wp-content/uploads/2015/07/INFORME_EMBALSES_2MAR04.pdf",
+      "source_statement": "19 active important reservoirs (15 major, 4 intermediate), 7 sedimented, 2 under construction, 6 planning",
+      "manifestation_count": 34,
+      "cross_source_identity": "UNRESOLVED"
+    },
+    {
+      "source_id": "usgs:wdr-pr-03-1",
+      "title": "Water Resources Data Puerto Rico and the U.S. Virgin Islands Water Year 2003",
+      "source_url": "https://pubs.usgs.gov/wdr/wdr-pr-03-1/wdr-pr-03-1.pdf",
+      "manifestation_count": 4,
+      "cross_source_identity": "UNRESOLVED"
+    }
+  ],
+  "canonicalization_policy": {
+    "raw_preserved": true,
+    "normalized_separate": true,
+    "name_only_binding_forbidden": true,
+    "canonical_id_required_for_identity": true,
+    "new_extension_canonical_ids": "NULL_UNLESS_INDEPENDENTLY_BOUND"
+  },
+  "extension_manifestation_count": 38,
+  "combined_discovery_manifestation_count": 107,
+  "drna_status_counts": {
+    "ACTIVE_MAJOR": 15,
+    "ACTIVE_INTERMEDIATE": 4,
+    "SEDIMENTED": 7,
+    "UNDER_CONSTRUCTION_2004": 2,
+    "PLANNING_2004": 6
+  },
+  "manifestations": [
+    {"hydro_entity_id":"drna-planagua-2004:01","raw_name":"Caonillas","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:02","raw_name":"Carite","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:03","raw_name":"Cerrillos","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:04","raw_name":"Dos Bocas","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:05","raw_name":"Garzas","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:06","raw_name":"Guajataca","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:07","raw_name":"Guayabal","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:08","raw_name":"Guayo","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:09","raw_name":"Guineo","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:10","raw_name":"La Plata","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:11","raw_name":"Loíza","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:12","raw_name":"Lucchetti","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:13","raw_name":"Matrullas","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:14","raw_name":"Patillas","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:15","raw_name":"Toa Vaca","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_MAJOR","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:16","raw_name":"Cidra","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_INTERMEDIATE","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:17","raw_name":"Loco","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_INTERMEDIATE","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:18","raw_name":"Prieto","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_INTERMEDIATE","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:19","raw_name":"Yahuecas","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"ACTIVE_INTERMEDIATE","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:20","raw_name":"Adjuntas","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"SEDIMENTED","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:21","raw_name":"Comerío I","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"SEDIMENTED","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:22","raw_name":"Comerío II","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"SEDIMENTED","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:23","raw_name":"Coamo","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"SEDIMENTED","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:24","raw_name":"Las Curias","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"SEDIMENTED","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:25","raw_name":"Pellejas","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"SEDIMENTED","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:26","raw_name":"Viví","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"SEDIMENTED","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:27","raw_name":"Fajardo","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"UNDER_CONSTRUCTION_2004","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:28","raw_name":"Río Blanco","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"UNDER_CONSTRUCTION_2004","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:29","raw_name":"Portugués","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"PLANNING_2004","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:30","raw_name":"Beatriz","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"PLANNING_2004","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:31","raw_name":"Jiménez","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"PLANNING_2004","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:32","raw_name":"Valenciano","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"PLANNING_2004","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:33","raw_name":"Canóvanas","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"PLANNING_2004","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"drna-planagua-2004:34","raw_name":"Casei","feature_type":"RESERVOIR_NAME_MANIFESTATION","source_id":"drna:planagua:embalses:table-4.0-2","source_status":"PLANNING_2004","canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"usgs-wdr-pr-03-1:conveyance:01","raw_name":"Canal Principal de Diversiones","feature_type":"CONVEYANCE_NAME_MANIFESTATION","source_id":"usgs:wdr-pr-03-1","source_status":null,"canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"usgs-wdr-pr-03-1:conveyance:02","raw_name":"Lago Caonillas Tunnel","feature_type":"CONVEYANCE_NAME_MANIFESTATION","source_id":"usgs:wdr-pr-03-1","source_status":null,"canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"usgs-wdr-pr-03-1:conveyance:03","raw_name":"Canal del Aceituna","feature_type":"CONVEYANCE_NAME_MANIFESTATION","source_id":"usgs:wdr-pr-03-1","source_status":null,"canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"},
+    {"hydro_entity_id":"usgs-wdr-pr-03-1:conveyance:04","raw_name":"Canal Diversion at Lago Guajataca","feature_type":"CONVEYANCE_NAME_MANIFESTATION","source_id":"usgs:wdr-pr-03-1","source_status":null,"canonical_entity_id":null,"cross_source_identity_state":"UNRESOLVED"}
+  ]
+}
