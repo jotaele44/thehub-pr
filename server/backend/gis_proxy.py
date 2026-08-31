@@ -12,6 +12,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
+from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import Response
@@ -80,7 +81,7 @@ def _target_allowed(source_id: str, target: str) -> bool:
     return False
 
 
-def _validated_range(value: str | None) -> str | None:
+def _validated_range(value: Optional[str]) -> Optional[str]:
     if value is None:
         return None
     match = _RANGE_RE.fullmatch(value)
@@ -105,7 +106,7 @@ def _read_bounded(response, limit: int) -> bytes:
 def gis_proxy(
     source_id: str = Query(..., min_length=1, max_length=128),
     target: str = Query(..., min_length=1, max_length=8192),
-    byte_range: str | None = Query(None, max_length=64),
+    byte_range: Optional[str] = Query(None, max_length=64),
 ):
     if source_id not in _ALLOWED:
         raise HTTPException(status_code=404, detail="unregistered GIS source_id")
