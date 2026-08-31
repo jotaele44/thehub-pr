@@ -44,9 +44,9 @@ export function cesiumHeightFromGroundResolution(
   const resolution = finite(groundResolutionM, 'groundResolutionM');
   const heightPx = finite(viewportHeightPx, 'viewportHeightPx');
   const fov = finite(verticalFovRad, 'verticalFovRad');
-  if (resolution <= 0 || heightPx <= 0 || fov <= 0 || fov >= Math.PI) {
-    throw new Error('invalid Cesium resolution/viewport/FOV inputs');
-  }
+  if (resolution <= 0) throw new Error('groundResolutionM must be > 0');
+  if (heightPx <= 0) throw new Error('viewportHeightPx must be > 0');
+  if (fov <= 0 || fov >= Math.PI) throw new Error('verticalFovRad must be between 0 and PI');
   return resolution * heightPx / (2 * Math.tan(fov / 2));
 }
 
@@ -58,9 +58,9 @@ export function groundResolutionFromCesiumHeight(
   const height = finite(cameraHeightM, 'cameraHeightM');
   const heightPx = finite(viewportHeightPx, 'viewportHeightPx');
   const fov = finite(verticalFovRad, 'verticalFovRad');
-  if (height < 0 || heightPx <= 0 || fov <= 0 || fov >= Math.PI) {
-    throw new Error('invalid Cesium height/viewport/FOV inputs');
-  }
+  if (height < 0) throw new Error('cameraHeightM must be >= 0');
+  if (heightPx <= 0) throw new Error('viewportHeightPx must be > 0');
+  if (fov <= 0 || fov >= Math.PI) throw new Error('verticalFovRad must be between 0 and PI');
   return 2 * height * Math.tan(fov / 2) / heightPx;
 }
 
