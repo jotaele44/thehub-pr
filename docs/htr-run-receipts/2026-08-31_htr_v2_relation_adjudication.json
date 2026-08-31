@@ -1,0 +1,45 @@
+{
+  "schema_version": "htr-v2-relation-adjudication-1.0",
+  "source_artifact": "htr-v2-bounded-rederivation-2026-08-31.zip",
+  "source_artifact_sha256": "8f760b6a79a662cc55444ec18bb37f4b62110dc34e96b59cfedfd7a414318951",
+  "scope": "Independent row-level adjudication of all 1,738 canonical HTR v2 supported recurrence candidates. No external pair-binding evidence was asserted in this stage.",
+  "candidate_rows": 1738,
+  "pair_groups": 460,
+  "row_arithmetic": {
+    "EXACT_NAME_RECURRENCE_UNBOUND": 997,
+    "ORTHOGRAPHIC_RECURRENCE_UNBOUND": 617,
+    "ORTHOGRAPHIC_VARIANT_UNBOUND": 124,
+    "total": 1738
+  },
+  "pair_group_arithmetic": {
+    "EXACT_NAME_RECURRENCE_UNBOUND": 274,
+    "ORTHOGRAPHIC_RECURRENCE_UNBOUND": 178,
+    "ORTHOGRAPHIC_VARIANT_UNBOUND": 8
+  },
+  "states": {
+    "UNRESOLVED": 1738,
+    "UNSUPPORTED": 0,
+    "CONTRADICTION": 0,
+    "identity_promotions": 0,
+    "connectivity_promotions": 0,
+    "pair_binding_promotions": 0,
+    "transitive_context_inheritance": 0,
+    "unexplained_residue": 0
+  },
+  "derived_artifact": {
+    "zip_name": "htr-v2-relation-adjudication-2026-08-31.zip",
+    "zip_sha256": "075a42577fd622df0825c59e401cfce49edc599cffd6d2131ae4a7a13d59b9dd",
+    "row_ledger_sha256": "6dac4cfd67a5250dd780a07508dd23fbbe4c5d6b06a74eefabc7ca1a69e85ccb",
+    "pair_group_ledger_sha256": "71a0aa677c6e3e53fe45272fee26db1db19efe95d9a3c26f8cfe23b26bd9fa02",
+    "summary_sha256": "c44de7d92271fa0726990bc9ae5c1de008da914bf59c6173c41c618dcfc0617c"
+  },
+  "certification": {
+    "row_classification_arithmetic": "PASS",
+    "row_level_adjudication_complete": "PASS",
+    "pair_relation_resolution": "OPEN",
+    "zero_unexplained_residue": "PASS",
+    "zero_unresolved_relation_residue": "FAIL",
+    "universal_identity_claimed": false,
+    "universal_connectivity_claimed": false
+  }
+}
