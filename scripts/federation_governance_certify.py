@@ -4,6 +4,7 @@ import hashlib, json, re
 from pathlib import Path
 
 EXPECTED={'thehub-pr','moneysweep-pr','spiderweb-pr','aguayluz-pr','ovnis-pr','skywatcher-pr','centinelas-pr'}
+PRODUCERS=EXPECTED-{'thehub-pr'}
 
 def load(p): return json.loads(Path(p).read_text())
 def sha(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()
@@ -23,6 +24,11 @@ def main():
     for repo,v in base.get('repos',{}).items():
         if not re.fullmatch(r'[0-9a-f]{40}',v.get('sha','')): errors.append(f'{repo}: invalid frozen SHA')
 
+    refs=load('governance/producer_receipt_refs.json')
+    if set(refs.get('producers',{})) != PRODUCERS: errors.append('producer receipt refs != 6 canonical producers')
+    for repo,v in refs.get('producers',{}).items():
+        if not re.fullmatch(r'[0-9a-f]{40}',v.get('sha','')): errors.append(f'{repo}: invalid pinned receipt SHA')
+
     frozen=frozen_manifest(); fp=load('governance/contract_fingerprints.json'); observed={}
     for c in fp.get('contracts',[]):
         p=Path(c['path']); rel=str(p.relative_to('schemas')) if str(p).startswith('schemas/') else str(p)
@@ -33,10 +39,10 @@ def main():
         if not re.fullmatch(r'\d+\.\d+\.\d+',c.get('version','')): errors.append(f'{c.get("id")}: invalid SemVer')
 
     arch=Path('ARCHITECTURE.md').read_text()
-    for repo in EXPECTED-{'thehub-pr'}:
+    for repo in PRODUCERS:
         if repo not in arch: errors.append(f'ARCHITECTURE.md missing {repo}')
 
-    for p in ['governance/federation_dependencies.yaml','governance/compatibility_matrix.json','governance/contract_versions.json','scripts/federation_contract_guard.py','governance/merge_blocking_status.json']:
+    for p in ['governance/federation_dependencies.yaml','governance/compatibility_matrix.json','governance/contract_versions.json','scripts/federation_contract_guard.py','governance/merge_blocking_status.json','governance/producer_receipt_refs.json']:
         if not Path(p).exists(): errors.append(f'missing governance artifact: {p}')
 
     result={'status':'PASS' if not errors else 'FAIL','errors':errors,'fingerprints':observed}
