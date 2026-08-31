@@ -1,0 +1,28 @@
+name: Federation Governance
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  governance:
+    name: federation-governance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run fail-closed governance gate
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            python scripts/federation_governance.py \
+              --base "${{ github.event.pull_request.base.sha }}" \
+              --head "${{ github.event.pull_request.head.sha }}"
+          else
+            python scripts/federation_governance.py --all
+          fi
