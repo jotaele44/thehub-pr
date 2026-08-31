@@ -1,0 +1,81 @@
+{
+  "schema_version": "htr-v2-four-repo-terminal-ci-1.0",
+  "captured_date": "2026-08-31",
+  "scope": "Exact-head terminal CI adjudication for HTR v2 integration across TheHub, Skywatcher, AguaYLuz, and Spiderweb. This receipt does not mutate any frozen HTR data inputs and does not claim universal hydro or toponym exhaustion.",
+  "htr_invariants": {
+    "legacy_1513_status": "SUPERSEDED_NONREPRODUCIBLE",
+    "canonical_v2_candidate_arithmetic": "5569=3831+1738",
+    "candidate_rows": 5569,
+    "unsupported_rows": 3831,
+    "candidate_not_identity_unresolved_rows": 1738,
+    "identity_promotions": 0,
+    "connectivity_promotions": 0,
+    "pair_binding_promotions": 0,
+    "transitive_context_inheritance": 0
+  },
+  "repositories": [
+    {
+      "repo": "jotaele44/thehub-pr",
+      "pr": 212,
+      "head_sha": "2f454d111729e4cfa86d9f955b619cc2c2e997e6",
+      "htr_attributable_failures": 0,
+      "runs": [
+        {"id": 33442388254, "name": "CodeQL", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442388224, "name": "HTR island-wide bounded census", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442388300, "name": "Hub CI", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442388219, "name": "Federation pickup bounded MAX", "conclusion": "failure", "classification": "BASELINE_GOVERNANCE_DRIFT", "reason": "federation snapshot expected SHAs no longer match mutable repository main heads; post-run assertion fails closed"},
+        {"id": 33442388221, "name": "Secret scan", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442388272, "name": "Federation template drift", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442388282, "name": "HTR v2 frozen contract", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442388280, "name": "HTR river-name denominator", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442388307, "name": "Federation completion gate", "conclusion": "success", "classification": "PASS"}
+      ]
+    },
+    {
+      "repo": "jotaele44/skywatcher-pr",
+      "pr": 215,
+      "head_sha": "a924c5ef57d4f82272e44c13b9d0a88abf1cf8e6",
+      "htr_attributable_failures": 0,
+      "runs": [
+        {"id": 33442407504, "name": "SATIM Runtime Smoke Tests", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442407420, "name": "Federation template drift", "conclusion": "failure", "classification": "BASELINE_TEMPLATE_DRIFT", "reason": "PRII-SKYWATCHER.command and PRII-SKYWATCHER.sh differ from pinned canonical templates; neither file is changed by HTR PR #215"},
+        {"id": 33442407422, "name": "CodeQL", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442407411, "name": "Skywatcher CI", "conclusion": "failure", "classification": "BASELINE_LINT", "reason": "ruff failures are scripts/build_producer_package.py SIM118 and tests/test_fr24_source_drop_loader.py I001/F401; neither file is changed by HTR PR #215; HTR test job itself passed"},
+        {"id": 33442407500, "name": "Secret scan", "conclusion": "success", "classification": "PASS"}
+      ]
+    },
+    {
+      "repo": "jotaele44/aguayluz-pr",
+      "pr": 195,
+      "head_sha": "bb6480e99e45caa09de6f2f63b0b78b710c24e65",
+      "htr_attributable_failures": 0,
+      "runs": [
+        {"id": 33442423144, "name": "Secret scan", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442423160, "name": "Federation template drift", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442423113, "name": "CodeQL", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442423157, "name": "validate", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442423158, "name": "GUI capability parity", "conclusion": "success", "classification": "PASS"}
+      ]
+    },
+    {
+      "repo": "jotaele44/spiderweb-pr",
+      "pr": 308,
+      "head_sha": "c8ff0ae91d2b67f1389c031e6b0f6d29063f8eba",
+      "htr_attributable_failures": 0,
+      "runs": [
+        {"id": 33442440834, "name": "Federation template drift", "conclusion": "failure", "classification": "BASELINE_TEMPLATE_DRIFT", "reason": "PRII-SPIDERWEB.command and PRII-SPIDERWEB.sh differ from pinned canonical templates; neither file is changed by HTR PR #308"},
+        {"id": 33442440859, "name": "PRII Smoke Gate", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442440780, "name": "Secret scan", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442440849, "name": "CodeQL", "conclusion": "success", "classification": "PASS"},
+        {"id": 33442440909, "name": "CI", "conclusion": "success", "classification": "PASS"}
+      ]
+    }
+  ],
+  "certification": {
+    "htr_attributable_failure_count": 0,
+    "all_htr_specific_and_general_tests_required_to_exercise_htr_changes_terminal": true,
+    "baseline_failures_isolated": true,
+    "merge_authorized": false,
+    "reason_merge_not_authorized": "User-directed policy requires intended merge gates to be explicitly satisfied; baseline federation/template/lint failures remain open outside HTR scope."
+  }
+}
