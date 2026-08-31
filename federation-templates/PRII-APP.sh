@@ -10,7 +10,7 @@ if ! command -v python3 >/dev/null 2>&1; then
   exit 1
 fi
 
-LOG="${TMPDIR:-/tmp}/prii-{{PROGRAM_ID}}-setup.log"
+LOG="$(mktemp "${TMPDIR:-/tmp}/prii-{{PROGRAM_ID}}-setup.XXXXXX")"
 if ! python3 desktop/setup.py --ensure >"$LOG" 2>&1; then
   cat "$LOG"
   echo
