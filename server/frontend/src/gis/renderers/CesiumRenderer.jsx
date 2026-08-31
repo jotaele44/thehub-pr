@@ -3,6 +3,8 @@ import {
   Cartesian3,
   GeoJsonDataSource,
   Math as CesiumMath,
+  Rectangle,
+  SingleTileImageryProvider,
   UrlTemplateImageryProvider,
   Viewer,
   buildModuleUrl,
@@ -54,11 +56,34 @@ function replaceBasemap(viewer, basemap) {
   viewer.imageryLayers.addImageryProvider(provider);
 }
 
-export default function CesiumRenderer({ canonicalState, layer, basemap, onCanonicalViewChange }) {
+async function replaceRasterPreview(viewer, preview, layerRef, tokenRef) {
+  const token = ++tokenRef.current;
+  if (layerRef.current && !viewer.isDestroyed()) {
+    viewer.imageryLayers.remove(layerRef.current, true);
+    layerRef.current = null;
+  }
+  if (!preview?.imageUrl || !Array.isArray(preview.coordinates)) return;
+  const [northWest, northEast, southEast] = preview.coordinates;
+  const west = Number(northWest?.[0]);
+  const north = Number(northWest?.[1]);
+  const east = Number(northEast?.[0]);
+  const south = Number(southEast?.[1]);
+  if (![west, south, east, north].every(Number.isFinite)) throw new Error('invalid raster preview coordinates');
+  const provider = await SingleTileImageryProvider.fromUrl(preview.imageUrl, {
+    rectangle: Rectangle.fromDegrees(west, south, east, north),
+  });
+  if (token !== tokenRef.current || viewer.isDestroyed()) return;
+  layerRef.current = viewer.imageryLayers.addImageryProvider(provider);
+  layerRef.current.alpha = 0.72;
+}
+
+export default function CesiumRenderer({ canonicalState, layer, basemap, rasterPreview = null, onCanonicalViewChange }) {
   const containerRef = useRef(null);
   const viewerRef = useRef(null);
   const applyingCanonicalRef = useRef(false);
   const dataTokenRef = useRef(0);
+  const rasterTokenRef = useRef(0);
+  const rasterLayerRef = useRef(null);
 
   useEffect(() => {
     if (!containerRef.current || viewerRef.current) return undefined;
@@ -85,11 +110,14 @@ export default function CesiumRenderer({ canonicalState, layer, basemap, onCanon
     viewer.camera.moveEnd.addEventListener(publishView);
     viewerRef.current = viewer;
     replaceGeoJson(viewer, layer?.geojson || null, dataTokenRef).catch(() => {});
+    replaceRasterPreview(viewer, rasterPreview, rasterLayerRef, rasterTokenRef).catch(() => {});
     return () => {
       dataTokenRef.current += 1;
+      rasterTokenRef.current += 1;
       viewer.camera.moveEnd.removeEventListener(publishView);
       viewer.destroy();
       viewerRef.current = null;
+      rasterLayerRef.current = null;
     };
   }, []);
 
@@ -115,7 +143,14 @@ export default function CesiumRenderer({ canonicalState, layer, basemap, onCanon
     const viewer = viewerRef.current;
     if (!viewer || viewer.isDestroyed()) return;
     replaceBasemap(viewer, basemap);
+    replaceRasterPreview(viewer, rasterPreview, rasterLayerRef, rasterTokenRef).catch(() => {});
   }, [basemap.url]);
+
+  useEffect(() => {
+    const viewer = viewerRef.current;
+    if (!viewer || viewer.isDestroyed()) return;
+    replaceRasterPreview(viewer, rasterPreview, rasterLayerRef, rasterTokenRef).catch(() => {});
+  }, [rasterPreview]);
 
   return <div ref={containerRef} data-testid="cesium-renderer" className="h-full w-full" />;
 }
