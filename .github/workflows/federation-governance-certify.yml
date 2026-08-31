@@ -15,3 +15,4 @@ jobs:
       - run: python scripts/federation_governance_certify.py
       - run: python -m pytest -q tests/test_federation_contract_guard.py
       - run: python scripts/federation_contract_guard.py closure governance/federation_dependencies.yaml centinelas-pr
+      - run: python scripts/federation_reconcile_remote_receipts.py
