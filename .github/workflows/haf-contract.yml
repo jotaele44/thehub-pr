@@ -1,0 +1,33 @@
+name: HAF Contract Gate
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  haf-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate HAF federation contract
+        shell: python
+        run: |
+          import json, os, pathlib, sys
+          p = pathlib.Path('.federation/haf_contract.json')
+          if not p.exists(): raise SystemExit('missing .federation/haf_contract.json')
+          d = json.loads(p.read_text())
+          req = ['schema_version','haf_contract_version','program_id','repository_full_name','federation_role','certification_required','raw_snapshot_policy','identity_policy','unresolved_policy','adapter_state']
+          missing=[k for k in req if k not in d]
+          if missing: raise SystemExit(f'missing keys: {missing}')
+          if d['schema_version'] != 'haf_repo_contract_v2': raise SystemExit('unsupported HAF contract schema')
+          if d['certification_required'] is not True: raise SystemExit('certification_required must be true')
+          if d['raw_snapshot_policy'] != 'PRESERVE_OR_IMMUTABLE_REFERENCE': raise SystemExit('raw snapshot policy drift')
+          if d['identity_policy'] != 'EVIDENCE_PRIORITY_FAIL_CLOSED' or d['unresolved_policy'] != 'FAIL_CLOSED': raise SystemExit('fail-closed policy drift')
+          expected=os.environ['GITHUB_REPOSITORY']
+          if d['repository_full_name'] != expected: raise SystemExit(f'repository mismatch: {d["repository_full_name"]} != {expected}')
+          f=pathlib.Path('federation.json')
+          if f.exists():
+              fd=json.loads(f.read_text())
+              if fd.get('program_id') != d['program_id']: raise SystemExit('program_id drift between federation.json and HAF contract')
+          print('HAF CONTRACT PASS', d['program_id'], d['haf_contract_version'])
