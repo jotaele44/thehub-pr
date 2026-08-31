@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { canonicalViewToMapLibre, mapLibreViewToCanonical } from '../rendererView';
 
@@ -101,7 +101,7 @@ export default function MapLibreRenderer({
       map.remove();
       mapRef.current = null;
     };
-  }, []); // renderer lifetime is intentionally independent from canonical state updates
+  }, []);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -122,8 +122,7 @@ export default function MapLibreRenderer({
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    const style = baseStyle(basemap);
-    map.setStyle(style);
+    map.setStyle(baseStyle(basemap));
     map.once('style.load', () => addGeoJsonLayer(map, layer?.geojson || null));
   }, [basemap.url]);
 
