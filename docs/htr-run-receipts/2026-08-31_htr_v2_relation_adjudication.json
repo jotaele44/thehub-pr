@@ -1,7 +1,7 @@
 {
   "schema_version": "htr-v2-relation-adjudication-1.0",
   "source_artifact": "htr-v2-bounded-rederivation-2026-08-31.zip",
-  "source_artifact_sha256": "8f760b6a79a662cc55444ec18bb37f4b62110dc34e96b59cfedfd7a414318951",
+  "source_artifact_sha256": "da8fd2aef1f9d4bbe1cbeaad4f86909de7de2a58d3925e4f3c30c7c221cc419f",
   "scope": "Independent row-level adjudication of all 1,738 canonical HTR v2 supported recurrence candidates. No external pair-binding evidence was asserted in this stage.",
   "candidate_rows": 1738,
   "pair_groups": 460,
