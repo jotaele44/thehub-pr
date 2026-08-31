@@ -1,0 +1,15 @@
+name: federation-governance-certify
+on:
+  pull_request:
+  push:
+    branches: [main, federation-governance-v1]
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/federation_governance_certify.py
+      - run: python -m pytest -q tests/test_federation_contract_guard.py
