@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import {
   Cartesian3,
-  CesiumMath,
   GeoJsonDataSource,
+  Math as CesiumMath,
   UrlTemplateImageryProvider,
   Viewer,
   buildModuleUrl,
@@ -39,9 +39,7 @@ async function replaceGeoJson(viewer, geojson, tokenRef) {
   const token = ++tokenRef.current;
   viewer.dataSources.removeAll(true);
   if (!geojson) return;
-  const source = await GeoJsonDataSource.load(geojson, {
-    clampToGround: false,
-  });
+  const source = await GeoJsonDataSource.load(geojson, { clampToGround: false });
   if (token !== tokenRef.current || viewer.isDestroyed()) return;
   await viewer.dataSources.add(source);
 }
@@ -93,7 +91,7 @@ export default function CesiumRenderer({ canonicalState, layer, basemap, onCanon
       viewer.destroy();
       viewerRef.current = null;
     };
-  }, []); // renderer lifetime intentionally independent from canonical-state updates
+  }, []);
 
   useEffect(() => {
     const viewer = viewerRef.current;
