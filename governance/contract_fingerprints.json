@@ -1,0 +1,11 @@
+{
+  "schema_version": "prii_contract_fingerprints_v1",
+  "status": "PROVISIONAL",
+  "note": "Hashes are populated/verified by governance CI from canonical contract files. This manifest names the governed contracts and prevents silent omission.",
+  "contracts": [
+    {"id":"repo_federation_manifest","path":"schemas/repo_federation_manifest.schema.json","version":"1.0.0","sha256":"CI_COMPUTED"},
+    {"id":"federation_export_manifest","path":"schemas/federation_export_manifest.schema.json","version":"1.0.0","sha256":"CI_COMPUTED"},
+    {"id":"centinelas_financial_signal","path":"schemas/centinelas_financial_signal.schema.json","version":"1.0.0","sha256":"CI_COMPUTED"},
+    {"id":"contract_finance_bundle","path":"schemas/contract_finance_bundle.schema.json","version":"1.0.0","sha256":"CI_COMPUTED"}
+  ]
+}
