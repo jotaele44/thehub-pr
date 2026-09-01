@@ -28,7 +28,10 @@ jobs:
           args=()
           # PRs exercise the auditor without claiming federation completion.
           # Scheduled/manual runs are the fail-closed completion assertion.
-          if [[ "${{ github.event_name }}" != "pull_request" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            args+=(--allow-rate-limit-partial)
+            args+=(--max-prs 25)
+          else
             args+=(--fail-on-actionable)
           fi
           python scripts/federation_completion_gate.py \
@@ -37,7 +40,7 @@ jobs:
             "${args[@]}"
       - name: Upload evidence ledger
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: federation-completion-ledger
           path: artifacts/federation-completion-ledger.json
