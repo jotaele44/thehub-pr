@@ -27,17 +27,15 @@ def _write_config(tmp_path: Path) -> Path:
 
 
 def _one_open_pr() -> list[dict[str, object]]:
-    return [
-        {
-            "number": 7,
-            "title": "Dependency refresh",
-            "body": "",
-            "draft": False,
-            "base": {"ref": "main", "sha": SHA},
-            "head": {"sha": "b" * 40},
-            "merge_commit_sha": "c" * 40,
-        }
-    ]
+    return [{
+        "number": 7,
+        "title": "Dependency refresh",
+        "body": "",
+        "draft": False,
+        "base": {"ref": "main", "sha": SHA},
+        "head": {"sha": "b" * 40},
+        "merge_commit_sha": "c" * 40,
+    }]
 
 
 def _two_open_prs() -> list[dict[str, object]]:
@@ -63,18 +61,14 @@ def test_pull_request_mode_can_record_rate_limit_partial(monkeypatch, tmp_path):
 
     monkeypatch.setenv("GITHUB_TOKEN", "token")
     monkeypatch.setattr(gate, "request_json", request_json)
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "federation_completion_gate.py",
-            "--config",
-            str(config),
-            "--out",
-            str(out),
-            "--allow-rate-limit-partial",
-        ],
-    )
+    monkeypatch.setattr(sys, "argv", [
+        "federation_completion_gate.py",
+        "--config",
+        str(config),
+        "--out",
+        str(out),
+        "--allow-rate-limit-partial",
+    ])
 
     assert gate.main() == 0
     ledger = json.loads(out.read_text())
@@ -101,18 +95,14 @@ def test_completion_assertion_still_fails_closed_on_rate_limit(monkeypatch, tmp_
 
     monkeypatch.setenv("GITHUB_TOKEN", "token")
     monkeypatch.setattr(gate, "request_json", request_json)
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "federation_completion_gate.py",
-            "--config",
-            str(config),
-            "--out",
-            str(out),
-            "--fail-on-actionable",
-        ],
-    )
+    monkeypatch.setattr(sys, "argv", [
+        "federation_completion_gate.py",
+        "--config",
+        str(config),
+        "--out",
+        str(out),
+        "--fail-on-actionable",
+    ])
 
     assert gate.main() == 2
     ledger = json.loads(out.read_text())
@@ -140,18 +130,14 @@ def test_rate_limit_partial_stops_crawl_after_first_rate_limit(monkeypatch, tmp_
 
     monkeypatch.setenv("GITHUB_TOKEN", "token")
     monkeypatch.setattr(gate, "request_json", request_json)
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "federation_completion_gate.py",
-            "--config",
-            str(config),
-            "--out",
-            str(out),
-            "--allow-rate-limit-partial",
-        ],
-    )
+    monkeypatch.setattr(sys, "argv", [
+        "federation_completion_gate.py",
+        "--config",
+        str(config),
+        "--out",
+        str(out),
+        "--allow-rate-limit-partial",
+    ])
 
     assert gate.main() == 0
     ledger = json.loads(out.read_text())
@@ -185,19 +171,15 @@ def test_max_prs_marks_non_certifying_truncated_partial(monkeypatch, tmp_path):
     monkeypatch.setenv("GITHUB_TOKEN", "token")
     monkeypatch.setattr(gate, "request_json", request_json)
     monkeypatch.setattr(gate, "unresolved_threads", unresolved_threads)
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "federation_completion_gate.py",
-            "--config",
-            str(config),
-            "--out",
-            str(out),
-            "--max-prs",
-            "1",
-        ],
-    )
+    monkeypatch.setattr(sys, "argv", [
+        "federation_completion_gate.py",
+        "--config",
+        str(config),
+        "--out",
+        str(out),
+        "--max-prs",
+        "1",
+    ])
 
     assert gate.main() == 0
     ledger = json.loads(out.read_text())

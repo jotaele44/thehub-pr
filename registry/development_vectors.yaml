@@ -1,38 +1,41 @@
 schema_version: federation_development_vectors_v1
 control_plane: jotaele44/thehub-pr
 snapshot:
-  captured_at_utc: "2026-08-24T21:35:07Z"
+  captured_at_utc: "2026-08-29T15:41:10Z"
   scope: github_repository_api_identity_plus_main_heads_plus_certified_development_checkout
   bounded: true
+  certification_receipt: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260829T154110Z
+  certification_report: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/source_drop_closure_receipts/20260829T154110Z/thehub_ios_start_scope/ios_start_scope.json
   repositories:
     - repo_id: 1261399537
       repo: jotaele44/skywatcher-pr
       default_branch: main
-      expected_sha: abc9994df5ed2738faf2f8588143e138a6c467a0
+      expected_sha: 609cec586bcb178b819ddfe4f4dc64b2765cacc9
     - repo_id: 1257600730
       repo: jotaele44/aguayluz-pr
       default_branch: main
-      expected_sha: 0e3987f274a34990efc29d762573cae051e1bf15
+      expected_sha: e70e8b75db2f145acdc1c309a9f14b658c78fe16
     - repo_id: 1111911635
       repo: jotaele44/spiderweb-pr
       default_branch: main
-      expected_sha: d11b74ac5e42812755282356f1d14fffc996809c
+      expected_sha: 733035df481e231a0df7f306b5a1106b19f27644
     - repo_id: 1197338153
       repo: jotaele44/moneysweep-pr
       default_branch: main
-      expected_sha: 80028013ee6cab525428675bc7deb7ca38121bc9
+      expected_sha: ba0c0d11a011669a5d487dc116274491449d4b72
     - repo_id: 1284431262
       repo: jotaele44/centinelas-pr
       default_branch: main
-      expected_sha: ac241db7148e811f78960779c042fe4eff3e3038
+      expected_sha: 457d4a6c312ecb0a30a521a42d165fba5bfea6e6
     - repo_id: 1252871400
       repo: jotaele44/ovnis-pr
       default_branch: main
-      expected_sha: 588bc121991c529fee136c90063d0d5423f23698
+      expected_sha: 3c24e765e44b82a90122e690987a5062648ef8d4
     - repo_id: 1258897469
       repo: jotaele44/thehub-pr
       default_branch: main
-      expected_sha: 103e06553270fd690c9c2d9aa5fd7604f3a34617
+      expected_sha: fb43d542fbacd2a2f1168a33335d0fc75ce67adf
+      self_snapshot_finalizer_parent: true
 vectors:
   - vector_id: FEDERATION_PICKUP_SYSTEM_LEVEL_3
     repo: jotaele44/thehub-pr
@@ -60,8 +63,8 @@ vectors:
       passed_artifact_reuse: true
       ci_certified_implementation_head: e9ce1f87031189bfa6facc0ec060d092eaf37796
       bootstrap_receipt: reports/federation_pickup_bootstrap_20260816.json
-      current_snapshot_main_ingest_check: FAIL_RUN_32773630083_CAPTURED_PRODUCER_EXPORT_NONZERO
-      current_main_ingest_failure_producer: UNKNOWN_CAPTURED_SUBPROCESS_STDERR_NOT_SURFACED
+      all_main_recertification_receipt_20260826T0124Z: /Users/jotaele/Documents/Codex/2026-08-24/audit-the-federation-repos-in-order/certification_receipts/20260826T0124Z/fed-pickup-remote.receipt.json
+      strict_aggregate_gate_20260826T0124Z: PASS
 
   - vector_id: FEDERATION_DESIGN_SYSTEM_V1_ROLLOUT
     repo: jotaele44/thehub-pr
@@ -86,7 +89,7 @@ vectors:
 
   - vector_id: BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT
     repo: jotaele44/skywatcher-pr
-    objective: Build reviewed non-synthetic airspace export readiness with endpoint attribution.
+    objective: Build reviewed non-synthetic airspace export readiness with certified capture-area geometry, visible-icon approximate aircraft positions, and endpoint attribution.
     declared_status: BLOCKED
     certification: OPEN
     dependencies: [FEDERATION_PICKUP_SYSTEM_LEVEL_3]
@@ -99,19 +102,39 @@ vectors:
       mutation: prohibited_by_fed_max
       commands: []
     blockers:
-      - real_flightradar24_capture_required
+      - full_corpus_visible_icon_capture_geometry_review_required
+      - aircraft_observation_filename_to_media_sha_reconciliation_required
       - operator_tenant_attribution_requires_review
       - local_uncommitted_faa_registry_and_ocr_event_inputs_required_for_registry_validation
     invariants:
       production_validator_present: true
+      capture_bbox_icon_gate_present: true
+      first_bounded_bbox_icon_package_certified: true
+      first_bounded_bbox_icon_package_observations: 1
+      scaled_bounded_bbox_icon_package_certified: true
+      scaled_bounded_bbox_icon_package_observations: 3
+      scaled_bounded_bbox_icon_package_arithmetic: "3=3+0+0"
+      scaled_bounded_bbox_icon_package_sha: 609cec586bcb178b819ddfe4f4dc64b2765cacc9
+      scaled_bounded_bbox_icon_package_path: exports/fr24_bbox_icon_scaled_package
+      first_bounded_bbox_icon_package_geometry_status: approximate
+      first_bounded_bbox_icon_package_position_precision: APPROXIMATE
+      exact_aircraft_coordinates_remain_source_only: true
+      screenshot_icon_points_are_approximate_uncertainty_bounded: true
+      fr24_capture_review_worklist_rows: 9963
+      fr24_capture_review_media_filename_matches: 0
+      fr24_capture_review_media_filename_unresolved: 9963
+      fr24_source_drop_exportable_rows: 0
+      fr24_source_drop_icon_derived_approx_rows: 0
+      fr24_scaled_source_drop_exportable_rows: 3
+      fr24_scaled_source_drop_icon_derived_approx_rows: 3
+      fr24_scaled_source_drop_missing_geometry_rows: 0
+      fr24_media_identity_exact_filename_intersection: 0
+      fr24_media_identity_candidate_not_identity_rows: 10
+      fr24_media_identity_symmetric_difference_filenames: 12651
       fr24_baseline_tracked_payload_count: 0
       fr24_baseline_evidence: data/FR24_baseline contains only .gitkeep at frozen main
       faa_registry_runtime_inputs_operator_supplied: true
       standalone_packaging_candidate_is_distinct_from_export_vector: true
-      current_snapshot_main_sha: abc9994df5ed2738faf2f8588143e138a6c467a0
-      current_main_exact_head_gate: PASS_15_OF_15_REPOSITORY_CI
-      non_gating_dependabot_maintenance_checks_at_capture: 0_IN_PROGRESS
-      current_dependency_lineage: "3e11e18 -> 98a486d -> 7812682 -> c56a0c0 -> abc9994"
 
   - vector_id: VALIDATE_AGUAYLUZ_REAL_DATA_PARTIAL_EXPORT
     repo: jotaele44/aguayluz-pr
@@ -143,14 +166,11 @@ vectors:
       issue_acceptance_still_open: true
       validator_only_not_completion: true
       current_snapshot_main_sha: 0e3987f274a34990efc29d762573cae051e1bf15
-      current_main_lineage: "264f6a7 -> 1a04155 (6 workflow-only commits) -> 0e3987f (scheduled data refresh)"
-      current_main_pr_lineage: "#177 -> #185 -> #100 -> #72 -> #73 -> #74 -> #67 -> #69 -> #70 -> #66 -> #68"
+      current_main_lineage: "#177 -> #185 -> #100 -> #72 -> #73 -> #74 -> #67 -> #69 -> #70 -> #66 -> #68"
       pr_177_exact_head_hosted_gate: PASS_7_OF_7
       pr_185_visible_exact_head_hosted_gate: PROVISIONAL_2_FAMILIES_OBSERVED
       pr_185_mainline_presence_is_not_full_ci_certification: true
-      current_main_pre_refresh_gate: PASS_14_SUCCESS_1_SKIPPED_AT_1A04155
-      current_main_exact_head_gate: NO_CHECK_RUNS_OBSERVED_SCHEDULED_REFRESH_SKIP_CI
-      snapshot_refresh_reason: workflow_maintenance_then_scheduled_data_refresh_issue_11_acceptance_still_open
+      snapshot_refresh_reason: dependency_queue_integrated_with_current_head_template_blockers_preserved
 
   - vector_id: FERROCARRIL_ILAP_CANONICALIZATION
     repo: jotaele44/spiderweb-pr
@@ -201,7 +221,6 @@ vectors:
       required_sources_total: 14
       probe_ran: false
       issue_state_does_not_authorize_data_promotion: true
-      current_main_weekly_cadence_check: FAIL_RUN_32719231373_DIRECTORY_OUTPUT_HASHING
     execution:
       kind: operator_corpus_network_and_credentials_required
       mutation: prohibited_by_fed_max
@@ -229,23 +248,20 @@ vectors:
       commands: []
     blockers:
       - authoritative_active_draft_found_but_no_explicit_canonical_vector_id
-      - candidate_branch_diverged_11_ahead_67_behind_main
+      - candidate_branch_diverged_11_ahead_34_behind_main
       - production_activation_requires_authentication_private_persistence_and_authorization
     invariants:
       open_draft_pr_discovered: 83
       candidate_branch: feat/email-ingestion-design-v0-1
       candidate_head_sha: d21b2974c990da66bab013f40a3075c07a320c25
       candidate_base_at_creation_sha: 0219a8c1dd0f38a1f8d09a0d027f3b82a3c74d17
-      current_main_sha_at_last_vector_adjudication: ac241db7148e811f78960779c042fe4eff3e3038
-      prior_main_sha_at_vector_adjudication: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
+      current_main_sha_at_last_vector_adjudication: 6f1b53a5c21049641a558b56cbcbea6dabdf58ce
       current_snapshot_main_sha: ac241db7148e811f78960779c042fe4eff3e3038
       candidate_ahead_by_at_last_vector_adjudication: 11
-      candidate_behind_by_at_last_vector_adjudication: 67
+      candidate_behind_by_at_last_vector_adjudication: 34
       candidate_status: diverged_requires_readjudication
       explicit_vector_id_present: false
       recent_commit_theme_not_promoted_to_vector_identity: true
-      prior_main_monitor_failure: SUPERSEDED_FAIL_RUN_32769300908_MISSING_PRII_EXPORT_UTILS
-      current_main_exact_head_gate: PASS_14_OF_14
 
   - vector_id: CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE
     repo: jotaele44/ovnis-pr
@@ -281,7 +297,6 @@ vectors:
       ovnis_ci_run_id: 31976022056
       validate_run_id: 31976022092
       codeql_run_id: 31976022086
-      semgrep_run_id: 31976022506
       secret_scan_run_id: 31976022059
       federation_template_drift_run_id: 31976022097
       case_record_schema_present: true
@@ -292,9 +307,6 @@ vectors:
       canonical_master_mutation_by_verification_command: false
       verification_command_idempotent: true
       mutation_envelope_semantics: branch_only_schema_value_with_historical_read_only_verification_command
-      current_snapshot_main_sha: 588bc121991c529fee136c90063d0d5423f23698
-      current_main_exact_head_gate: PASS_14_OF_14
-      snapshot_refresh_reason: workflow_only_dependency_update_without_prufon_reexecution
       initial_failed_head_semantic_regression: 2d075a7b46545c8329bef47fb7e16076153d8453
       superseded_lint_failed_head: 48a4332ddc34e7adc298eb3a4da5ce8d82c25592
       negative_certification_history_preserved: true
