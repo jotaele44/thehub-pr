@@ -1,0 +1,65 @@
+{
+  "schema_version": "major-hydro-asset-v3-1.0",
+  "scope": "Versioned source-manifestation expansion beyond MAJOR_HYDRO_ASSET_v2. v1/v2 remain immutable; v3 does not claim universal Puerto Rico hydro exhaustion.",
+  "base_version": "MAJOR_HYDRO_ASSET_v2",
+  "base_combined_discovery_manifestation_count": 107,
+  "extension_manifestation_count": 2,
+  "combined_discovery_manifestation_count_if_appended": 109,
+  "manifestations": [
+    {
+      "source_manifestation_id": "usace-portugues-bucana:cerrillos-dam",
+      "source_id": "usace:portugues-bucana:current",
+      "source_authority": "U.S. Army Corps of Engineers Jacksonville District",
+      "source_url": "https://www.saj.usace.army.mil/About/Congressional-Fact-Sheets-2025/Portugues-and-Bucana-Rivers-PR-C/",
+      "raw_name": "Cerrillos Dam",
+      "normalized_name": "cerrillos dam",
+      "canonical_entity_id": null,
+      "cross_source_identity_state": "UNRESOLVED",
+      "asset_class": "DAM",
+      "operational_status": "TRANSFERRED_TO_LOCAL_SPONSOR",
+      "temporal_context": {
+        "turned_over_to_sponsor": "1997-08",
+        "fact_sheet_context": "current project status source"
+      },
+      "discovery_key_status": "SUPPORTED",
+      "identity_claim": false,
+      "connectivity_claim": false
+    },
+    {
+      "source_manifestation_id": "usace-portugues-bucana:portugues-dam",
+      "source_id": "usace:portugues-bucana:current",
+      "source_authority": "U.S. Army Corps of Engineers Jacksonville District",
+      "source_url": "https://www.saj.usace.army.mil/About/Congressional-Fact-Sheets-2025/Portugues-and-Bucana-Rivers-PR-C/",
+      "raw_name": "Portugués Dam",
+      "normalized_name": "portugues dam",
+      "canonical_entity_id": null,
+      "cross_source_identity_state": "UNRESOLVED",
+      "asset_class": "DAM",
+      "operational_status": "OPERATING_NORMAL_CONDITIONS",
+      "temporal_context": {
+        "construction_completed": "2013-12",
+        "final_transfer_to_local_sponsor": "2016-04",
+        "fact_sheet_context": "current project status source"
+      },
+      "discovery_key_status": "SUPPORTED",
+      "identity_claim": false,
+      "connectivity_claim": false
+    }
+  ],
+  "invariants": {
+    "raw_normalized_canonical_separate": true,
+    "name_only_identity_prohibited": true,
+    "fuzzy_identity_prohibited": true,
+    "proximity_identity_prohibited": true,
+    "cluster_identity_prohibited": true,
+    "connectivity_from_name_or_proximity_prohibited": true,
+    "transitive_context_inheritance": false
+  },
+  "certification": {
+    "extension_row_arithmetic": "2=2",
+    "extension_source_binding": "PASS",
+    "cross_source_identity": "UNRESOLVED",
+    "v3_denominator_complete": false,
+    "universal_hydro_denominator_claimed": false
+  }
+}
