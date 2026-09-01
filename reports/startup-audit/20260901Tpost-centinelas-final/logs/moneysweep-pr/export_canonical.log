@@ -1,0 +1,15 @@
+{
+  "ok": true,
+  "package_id": "pkg_bb3c28fa3b327c1da2f541e82abe0465",
+  "mode": "test",
+  "out": "/private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002849Z-wrn0tly0/moneysweep-pr/data/exports/canonical_v1_federation",
+  "stream_counts": {
+    "sources": 4508,
+    "entities": 207,
+    "relationships": 66
+  }
+}
+$ python3 scripts/federation_export.py --mode test
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002849Z-wrn0tly0/moneysweep-pr
+# started_utc: 2026-09-01T00:33:24Z
+

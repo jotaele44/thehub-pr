@@ -1,0 +1,14 @@
+{
+  "schema_version": "federation-baseline-226-state-1.0",
+  "issue": 226,
+  "scope": "Independent baseline-governance repair; HTR v1/v2 frozen artifacts and HTR branch heads are unchanged.",
+  "repairs": {
+    "skywatcher_lint": "RESOLVED_ON_CURRENT_MAIN_OUTSIDE_HTR",
+    "skywatcher_template_drift": "RESOLVED_ON_CURRENT_MAIN_OUTSIDE_HTR",
+    "spiderweb_template_drift": "RECLASSIFIED_INTENTIONAL_REPO_SPECIFIC_LAUNCHER_BEHAVIOR_AND_REMOVED_FROM_BYTE_EQUALITY_TARGET",
+    "thehub_control_plane_runtime_binding": "REPAIR_COMMITTED_BIND_LIVE_MAIN_ONLY_PRODUCERS_REMAIN_FROZEN"
+  },
+  "htr_branch_mutations": 0,
+  "merge_authorized": false,
+  "certification": "PENDING_HOSTED_PR_GATES"
+}

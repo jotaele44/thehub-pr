@@ -1,0 +1,5 @@
+wrote /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002849Z-wrn0tly0/skywatcher-pr/exports/federation/manifest.json — {'sources': 2, 'entities': 6, 'relationships': 4, 'observations': 2, 'alerts': 2}
+$ python3 scripts/federation_export.py --mode test
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002849Z-wrn0tly0/skywatcher-pr
+# started_utc: 2026-09-01T00:34:32Z
+
