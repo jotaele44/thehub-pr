@@ -8,6 +8,7 @@ using current-base merge-result evidence and emits a machine-readable ledger.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -271,6 +272,60 @@ def classify(repo_full: str, pr: dict[str, Any], observed_main_sha: str, token: 
     )
 
 
+def resume_audit(
+    path: str, cfg: dict[str, Any], token: str
+) -> tuple[list[Disposition], list[str], dict[str, str], list[str]]:
+    prior = json.loads(Path(path).read_text())
+    if prior.get("schema_version") != 2:
+        raise RuntimeError("resume ledger must use schema_version 2")
+    if prior.get("repositories") != cfg["repositories"]:
+        raise RuntimeError("resume ledger repository scope does not match config")
+    if not prior.get("open_pr_denominator_complete") or prior.get("audit_truncated"):
+        raise RuntimeError("resume ledger must contain a complete, non-truncated denominator")
+
+    observed_main = dict(prior.get("observed_main_shas", {}))
+    if set(observed_main) != set(cfg["repositories"]):
+        raise RuntimeError("resume ledger does not contain every observed main SHA")
+    rows = [Disposition(**row) for row in prior.get("rows", [])]
+    if len(rows) != prior.get("open_pr_denominator"):
+        raise RuntimeError("resume ledger row count does not match its denominator")
+
+    retry_indexes = [i for i, row in enumerate(rows) if "AUDIT_EXCEPTION" in row.reasons]
+    retried_keys = {(rows[i].repository, rows[i].number) for i in retry_indexes}
+    errors = [
+        error for error in prior.get("errors", [])
+        if not any(error.startswith(f"{repo}#{number}:") for repo, number in retried_keys)
+    ]
+    resumed_rows: list[str] = []
+    for index in retry_indexes:
+        row = rows[index]
+        repo_full = row.repository
+        owner, repo = repo_full.split("/", 1)
+        key = f"{repo_full}#{row.number}"
+        print(json.dumps({"event": "audit_pr_resume", "repository": repo_full, "number": row.number}, sort_keys=True), flush=True)
+        try:
+            pr = request_json(f"{API}/repos/{owner}/{repo}/pulls/{row.number}", token)
+            observed = {
+                "head_sha": str(pr.get("head", {}).get("sha", "")),
+                "base_ref": str(pr.get("base", {}).get("ref", "")),
+                "base_sha": str(pr.get("base", {}).get("sha", "")),
+                "merge_sha": str(pr.get("merge_commit_sha") or ""),
+            }
+            expected = {
+                "head_sha": row.head_sha,
+                "base_ref": row.base_ref,
+                "base_sha": row.base_sha,
+                "merge_sha": row.merge_sha or "",
+            }
+            if observed != expected:
+                raise RuntimeError(f"RESUME_INPUT_DRIFT expected={expected} observed={observed}")
+            rows[index] = classify(repo_full, pr, observed_main[repo_full], token)
+            resumed_rows.append(key)
+        except Exception as exc:
+            errors.append(f"{key}: {exc}")
+    return rows, errors, observed_main, resumed_rows
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="federation/completion-gate.json")
@@ -288,6 +343,10 @@ def main() -> int:
         default=0,
         help="Stop after classifying this many open PRs. Used only for non-certifying PR exercise runs.",
     )
+    ap.add_argument(
+        "--resume-from",
+        help="Reuse a complete prior ledger and retry only rows marked AUDIT_EXCEPTION.",
+    )
     args = ap.parse_args()
 
     token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
@@ -300,7 +359,14 @@ def main() -> int:
     errors: list[str] = []
     truncated_reason: str | None = None
     observed_main: dict[str, str] = {}
-    for repo_full in cfg["repositories"]:
+    resumed_rows: list[str] = []
+    resume_source_sha256: str | None = None
+    repositories_to_scan = cfg["repositories"]
+    if args.resume_from:
+        resume_source_sha256 = hashlib.sha256(Path(args.resume_from).read_bytes()).hexdigest()
+        rows, errors, observed_main, resumed_rows = resume_audit(args.resume_from, cfg, token)
+        repositories_to_scan = []
+    for repo_full in repositories_to_scan:
         owner, repo = repo_full.split("/", 1)
         print(json.dumps({"event": "audit_repo_start", "repository": repo_full}, sort_keys=True), flush=True)
         try:
@@ -386,6 +452,9 @@ def main() -> int:
         "errors": errors,
         "rate_limit_error_count": len(rate_limit_errors),
         "rows": [asdict(r) for r in rows],
+        "resumed_from": Path(args.resume_from).name if args.resume_from else None,
+        "resume_source_sha256": resume_source_sha256,
+        "resumed_rows": resumed_rows,
     }
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

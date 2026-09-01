@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -188,3 +189,50 @@ def test_max_prs_marks_non_certifying_truncated_partial(monkeypatch, tmp_path):
     assert ledger["audit_truncated"] is True
     assert ledger["truncation_reason"] == "PR_AUDIT_ROW_LIMIT:1"
     assert ledger["open_pr_denominator"] == 1
+
+
+def test_resume_retries_only_audit_exception_with_frozen_inputs(monkeypatch, tmp_path):
+    config = _write_config(tmp_path)
+    out = tmp_path / "resumed.json"
+    prior_path = tmp_path / "prior.json"
+    failed = gate.Disposition(
+        "owner/repo", 7, "Dependency refresh", "b" * 40, "main", SHA,
+        SHA, "c" * 40, False, "UNRESOLVED", ["AUDIT_EXCEPTION"],
+    )
+    prior_path.write_text(json.dumps({
+        "schema_version": 2,
+        "repositories": ["owner/repo"],
+        "observed_main_shas": {"owner/repo": SHA},
+        "open_pr_denominator": 1,
+        "open_pr_denominator_complete": True,
+        "audit_truncated": False,
+        "errors": ["owner/repo#7: transient"],
+        "rows": [gate.asdict(failed)],
+    }))
+
+    def request_json(url, token, *, method="GET", body=None):
+        if url.endswith("/pulls/7"):
+            return _one_open_pr()[0]
+        if "/check-runs" in url:
+            return {"check_runs": [{"name": "test", "status": "completed", "conclusion": "success"}]}
+        if "/compare/" in url:
+            return {"merge_base_commit": {"sha": SHA}, "files": []}
+        if "/pulls/7/files" in url:
+            return []
+        raise AssertionError(url)
+
+    monkeypatch.setenv("GITHUB_TOKEN", "token")
+    monkeypatch.setattr(gate, "request_json", request_json)
+    monkeypatch.setattr(gate, "unresolved_threads", lambda *args: 0)
+    monkeypatch.setattr(sys, "argv", [
+        "federation_completion_gate.py", "--config", str(config), "--out", str(out),
+        "--resume-from", str(prior_path), "--fail-on-actionable",
+    ])
+
+    assert gate.main() == 3
+    ledger = json.loads(out.read_text())
+    assert ledger["errors"] == []
+    assert ledger["resumed_from"] == "prior.json"
+    assert ledger["resume_source_sha256"] == hashlib.sha256(prior_path.read_bytes()).hexdigest()
+    assert ledger["resumed_rows"] == ["owner/repo#7"]
+    assert ledger["rows"][0]["state"] == "MERGE_READY"
