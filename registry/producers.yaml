@@ -79,4 +79,4 @@ producers:
       icon: assets/branding/icon.png
       accent_color: "#df630d"
     federation_manifest: federation.json
-    status: ready_for_discovery        # producer manifest currently declares ready_for_hub_live_execution=false; committed live ledger is stale and requires a fresh acquisition/export plus downstream Hub validation receipts before live execution.
+    status: ready_for_live             # 2026-08-25 refresh produced 100 real signals; production export and Hub package validation passed. Classification used keyword fallback because ANTHROPIC_API_KEY was unavailable.
