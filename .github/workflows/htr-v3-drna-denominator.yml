@@ -1,10 +1,9 @@
-name: HTR v3 DRNA reservoir denominator
+name: HTR v3 DRNA source acquisition
 
+# Manual acquisition: the 2004 and 2016 PDFs are already frozen by artifact
+# digest. Subsequent extraction/adjudication reuses those bytes rather than
+# redownloading the mutable public URLs.
 on:
-  pull_request:
-    paths:
-      - "scripts/freeze_htr_v3_drna_denominator.py"
-      - ".github/workflows/htr-v3-drna-denominator.yml"
   workflow_dispatch:
 
 permissions:
@@ -33,7 +32,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: htr-v3-drna-${{ github.event.pull_request.head.sha || github.sha }}
+          name: htr-v3-drna-${{ github.sha }}
           path: artifacts/htr_v3_drna
           if-no-files-found: error
           retention-days: 30
