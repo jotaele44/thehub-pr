@@ -23,7 +23,9 @@ class UnifiedSkillpackConformanceTests(unittest.TestCase):
         manifest = json.loads((ROOT / ".claude/skillpacks/MANIFEST.json").read_text())
         for capability in manifest["capabilities"]:
             self.assertTrue(capability.get("status"), capability["id"])
-            self.assertTrue(capability.get("preserved_responsibility"), capability["id"])
+            self.assertTrue(
+                capability.get("preserved_responsibility"), capability["id"]
+            )
             self.assertTrue(capability.get("anchor"), capability["id"])
 
     def test_compatibility_targets_resolve(self) -> None:
