@@ -83,6 +83,17 @@ def _require_unique(rows: Sequence[Mapping[str, Any]], id_field: str, kind: str)
         seen.add(rid)
 
 
+def _is_authoritative_context(evidence: Mapping[str, Any]) -> bool:
+    source_id = evidence.get("source_id")
+    return (
+        evidence.get("contextual") is True
+        and evidence.get("authoritative") is True
+        and isinstance(source_id, str)
+        and bool(source_id)
+        and evidence.get("relation_type") in PAIR_RELATIONS
+    )
+
+
 def discover_candidates(
     hydro_registry: Sequence[Mapping[str, Any]],
     observations: Sequence[Mapping[str, Any]],
@@ -170,7 +181,7 @@ def adjudicate_candidate(
         relation = ev.get("relation_type")
         source_id = ev.get("source_id")
         stable_source = isinstance(source_id, str) and bool(source_id)
-        if ev.get("contextual") and stable_source:
+        if _is_authoritative_context(ev):
             contextual = True
         if not ev.get("binds_candidate_pair"):
             continue
@@ -232,7 +243,7 @@ def make_graph(candidates: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
             })
         for ev in row.get("evidence") or []:
             rid, relation = ev.get("related_entity_id"), ev.get("relation_type")
-            if not (ev.get("contextual") and isinstance(rid, str) and rid and relation in PAIR_RELATIONS):
+            if not (_is_authoritative_context(ev) and isinstance(rid, str) and rid):
                 continue
             raw = str(ev.get("related_entity_raw_name") or rid)
             nodes.setdefault(rid, {"node_id": rid, "node_type": str(ev.get("related_entity_type") or "INFRASTRUCTURE").upper(), **normalize_name(raw)})

@@ -77,6 +77,23 @@ def test_toro_negro_address_supports_context_without_binding_lucchetti_pair():
     assert row["relation_type"] == "ORTHOGRAPHIC_VARIANT"
 
 
+@pytest.mark.parametrize(
+    "override",
+    [
+        {"authoritative": False},
+        {"relation_type": "UNSUPPORTED_CONTEXT_RELATION"},
+        {"source_id": ""},
+    ],
+)
+def test_context_requires_authority_supported_relation_and_stable_source(override):
+    evidence = {**toro_negro_context(), **override}
+    row = adjudicate_candidate(seed(), [evidence])
+    assert row["state"] == "CANDIDATE_NOT_IDENTITY"
+    assert row["identity_state"] == "UNRESOLVED"
+    assert row["pair_binding_state"] == "UNBOUND"
+    assert make_graph([row])["invariants"]["edge_count"] == 1
+
+
 def test_authoritative_pair_naming_can_bind_relation_but_not_identity():
     row = adjudicate_candidate(seed(), [{
         "evidence_type": "AUTHORITATIVE_NAMING",

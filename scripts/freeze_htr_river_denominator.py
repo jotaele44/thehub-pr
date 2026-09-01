@@ -57,6 +57,7 @@ def post_json(url: str, params: dict[str, Any], path: Path, manifest: list[dict[
         headers={"User-Agent": USER_AGENT, "Content-Type": "application/x-www-form-urlencoded"},
     )
     last: Exception | None = None
+    payload: bytes | None = None
     for attempt in range(4):
         try:
             with urllib.request.urlopen(req, timeout=90) as response:
@@ -67,6 +68,8 @@ def post_json(url: str, params: dict[str, Any], path: Path, manifest: list[dict[
             if attempt == 3:
                 raise RuntimeError(f"request failed: {url}: {last}") from exc
             time.sleep(2**attempt)
+    if payload is None:
+        raise RuntimeError(f"request failed without a response: {url}: {last}")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(payload)
     parsed = json.loads(payload)
