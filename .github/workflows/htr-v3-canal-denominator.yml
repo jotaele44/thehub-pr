@@ -1,10 +1,8 @@
-name: HTR v3 SIGE canal denominator
+name: HTR v3 SIGE canal source acquisition
 
+# Manual acquisition prevents unrelated PR commits from redownloading a mutable
+# source whose successful snapshot is already frozen by artifact digest.
 on:
-  pull_request:
-    paths:
-      - "scripts/freeze_htr_v3_canal_denominator.py"
-      - ".github/workflows/htr-v3-canal-denominator.yml"
   workflow_dispatch:
 
 permissions:
@@ -33,7 +31,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: htr-v3-canal-${{ github.event.pull_request.head.sha || github.sha }}
+          name: htr-v3-canal-${{ github.sha }}
           path: artifacts/htr_v3_canal
           if-no-files-found: error
           retention-days: 30
