@@ -15,9 +15,6 @@ from fastapi import Header, Request
 from server.backend.federation_manager_artifacts import ArtifactRegistrationError
 from server.backend.federation_manager_repository_registry import RepositoryBindingError
 
-_INSTALLED = False
-
-
 def _last_receipt(active, app_id: str) -> Optional[Dict[str, Any]]:
     matches = []
     for document in active.runner.receipts.all_documents():
@@ -58,11 +55,7 @@ def _quick_actions(operations) -> Dict[str, Optional[str]]:
 
 
 def install_repository_routes(api_module) -> None:
-    """Install once on the existing authenticated manager router."""
-    global _INSTALLED
-    if _INSTALLED:
-        return
-    _INSTALLED = True
+    """Install repository routes on the existing authenticated manager router."""
 
     @api_module.router.get("/repositories")
     def repository_health(
