@@ -1,11 +1,9 @@
-name: HTR v3 authoritative denominator
+name: HTR v3 authoritative source acquisition
 
+# Acquisition is manual by design. Successful mutable-source snapshots are
+# retained by artifact digest and reused; later PR commits must not silently
+# redownload NID/AAA merely because the acquisition files remain in the PR diff.
 on:
-  pull_request:
-    paths:
-      - "data/htr/major_hydro_asset_v3*.json"
-      - "scripts/freeze_htr_v3_denominator.py"
-      - ".github/workflows/htr-v3-denominator.yml"
   workflow_dispatch:
 
 permissions:
@@ -41,7 +39,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: htr-v3-denominator-${{ github.event.pull_request.head.sha || github.sha }}
+          name: htr-v3-denominator-${{ github.sha }}
           path: artifacts/htr_v3_denominator
           if-no-files-found: error
           retention-days: 30
