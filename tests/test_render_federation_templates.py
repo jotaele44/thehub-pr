@@ -51,6 +51,14 @@ def test_every_repo_in_targets_has_vars():
             assert repo in known, f"{repo} in targets.yaml but missing from vars"
 
 
+def test_spiderweb_keeps_enriched_shell_launchers_repo_owned():
+    managed = {t["template"] for t in _targets() if "spiderweb-pr" in t["repos"]}
+    assert "PRII-APP.command" not in managed
+    assert "PRII-APP.sh" not in managed
+    assert "PRII-APP.app/Contents/MacOS/PRII-APP" not in managed
+    assert "PRII-APP.bat" in managed
+
+
 def test_slug_substitution_renders_to_tmp(tmp_path):
     # Render ovnis into a temp root and confirm the .sh got the slug + the .command
     # is verbatim (slug only in the filename).
