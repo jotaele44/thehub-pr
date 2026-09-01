@@ -35,7 +35,14 @@ for (const [engineName, engine] of Object.entries(engines)) {
 
           await page.locator('body').click({ position: { x: 2, y: 2 } })
           await page.keyboard.press('Tab')
-          const keyboardTarget = await page.evaluate(() => document.activeElement?.id === 'keyboard-target')
+          let keyboardNavigationKey = 'Tab'
+          let keyboardTarget = await page.evaluate(() => document.activeElement?.id === 'keyboard-target')
+          if (!keyboardTarget && engineName === 'webkit') {
+            await page.locator('body').click({ position: { x: 2, y: 2 } })
+            await page.keyboard.press('Alt+Tab')
+            keyboardNavigationKey = 'Alt+Tab'
+            keyboardTarget = await page.evaluate(() => document.activeElement?.id === 'keyboard-target')
+          }
 
           await page.evaluate(() => { document.documentElement.style.zoom = '2' })
           const zoomStress = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth }))
@@ -48,6 +55,7 @@ for (const [engineName, engine] of Object.entries(engines)) {
             status: pageErrors.length === 0 && keyboardTarget ? 'PASS' : 'FAIL',
             page_errors: pageErrors,
             keyboard_only: keyboardTarget ? 'PASS' : 'FAIL',
+            keyboard_navigation_key: keyboardNavigationKey,
             css_200_percent_zoom_stress: zoomStress.scrollWidth > 0 ? 'PASS' : 'FAIL',
             native_200_percent_zoom_certified: false,
             screenshot,
