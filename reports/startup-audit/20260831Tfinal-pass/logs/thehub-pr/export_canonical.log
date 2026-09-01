@@ -1,0 +1,12 @@
+aggregated 6 producer(s) -> /Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/tmp/thehub-pr/thehub-aggregate
+{
+  "alerts": 4338,
+  "entities": 47484,
+  "observations": 574,
+  "relationships": 66037,
+  "sources": 43953
+}
+$ PYTHONPATH=src python3 -m hub aggregate --root .. --out /Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/tmp/thehub-pr/thehub-aggregate
+# cwd: /Users/jotaele/fed-repos/thehub-pr
+# started_utc: 2026-09-01T00:18:22Z
+
