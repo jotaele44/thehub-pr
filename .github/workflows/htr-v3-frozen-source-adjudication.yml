@@ -1,0 +1,72 @@
+name: HTR v3 frozen-source adjudication
+
+on:
+  pull_request:
+    paths:
+      - "scripts/adjudicate_htr_v3_frozen_sources.py"
+      - ".github/workflows/htr-v3-frozen-source-adjudication.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  adjudicate-frozen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Install frozen-source readers
+        run: python -m pip install --disable-pip-version-check pypdf pyogrio geopandas
+
+      - name: Reuse frozen NID + AAA artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: htr-v3-denominator-621d08e3b4876c90d4f626a368b0a137484f07ad
+          path: frozen/nid_aaa
+          github-token: ${{ github.token }}
+          repository: jotaele44/thehub-pr
+          run-id: 33571026672
+
+      - name: Reuse frozen SIGE canal artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: htr-v3-canal-7ff00f9a769bd77ef5221c580074e95137e8cafa
+          path: frozen/canal
+          github-token: ${{ github.token }}
+          repository: jotaele44/thehub-pr
+          run-id: 33571990439
+
+      - name: Reuse frozen DRNA PDF artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: htr-v3-drna-438c49a08b64e881d144bb82e5141f1f5ba99f62
+          path: frozen/drna
+          github-token: ${{ github.token }}
+          repository: jotaele44/thehub-pr
+          run-id: 33572337068
+
+      - name: Adjudicate source manifestations without network
+        run: |
+          python scripts/adjudicate_htr_v3_frozen_sources.py \
+            --nid-aaa-root frozen/nid_aaa \
+            --canal-root frozen/canal \
+            --drna-root frozen/drna \
+            --out artifacts/htr_v3_adjudicated
+
+      - name: Display summary
+        run: cat artifacts/htr_v3_adjudicated/summary.json
+
+      - name: Upload adjudicated v3 denominator
+        uses: actions/upload-artifact@v4
+        with:
+          name: htr-v3-adjudicated-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/htr_v3_adjudicated
+          if-no-files-found: error
+          retention-days: 30
