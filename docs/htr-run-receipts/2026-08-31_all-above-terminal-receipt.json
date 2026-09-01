@@ -1,0 +1,80 @@
+{
+  "schema_version": "htr-all-above-terminal-receipt-1.0",
+  "scope": "Terminal receipts for independent baseline issue #226 repair, HTR v2 1,738-row relation adjudication, and initial MAJOR_HYDRO_ASSET_v3 execution. No HTR feature branch was mutated and no PR was merged.",
+  "htr_v2": {
+    "legacy_1513_status": "SUPERSEDED_NONREPRODUCIBLE",
+    "candidate_arithmetic": "5569=3831+1738",
+    "unsupported_rows": 3831,
+    "relation_rows_adjudicated": 1738,
+    "relation_pair_groups": 460,
+    "relation_dispositions": {
+      "EXACT_NAME_RECURRENCE_UNBOUND": 997,
+      "ORTHOGRAPHIC_RECURRENCE_UNBOUND": 617,
+      "ORTHOGRAPHIC_VARIANT_UNBOUND": 124
+    },
+    "unresolved_relations": 1738,
+    "unexplained_residue": 0,
+    "identity_promotions": 0,
+    "connectivity_promotions": 0,
+    "pair_binding_promotions": 0,
+    "transitive_context_inheritance": 0,
+    "relation_receipt_commit": "5670cd5f97a6af1f10f3d1c822b598925eea94dd"
+  },
+  "baseline_issue_226": {
+    "state": "CLOSED_COMPLETED",
+    "thehub_pr": 228,
+    "thehub_head": "3ba93e009eff07ebe25a030b000cfdc11d09ec37",
+    "thehub_runs": {
+      "HAF Contract Gate": [33453408143, "PASS"],
+      "Federation pickup bounded MAX": [33453408101, "PASS"],
+      "Federation template drift": [33453408141, "PASS"],
+      "Secret scan": [33453408278, "PASS"],
+      "Federation completion gate": [33453408121, "PASS"],
+      "Hub CI": [33453408145, "PASS"],
+      "CodeQL": [33453408129, "PASS"]
+    },
+    "spiderweb_pr": 323,
+    "spiderweb_head": "25c321284d4d89b175e2e0b9472f3f80b0e6b9bc",
+    "spiderweb_runs": {
+      "Federation template drift": [33453424838, "PASS"],
+      "PRII Smoke Gate": [33453424802, "PASS"],
+      "Secret scan": [33453424851, "PASS"],
+      "CodeQL": [33453424843, "PASS"],
+      "CI": [33453424764, "PASS"]
+    },
+    "skywatcher_current_main": "6b5c13c06ba10b742b6af30b71301757e7b96072",
+    "htr_branch_mutations": 0,
+    "silent_producer_sha_rebinds": 0,
+    "merges": 0
+  },
+  "major_hydro_asset_v3": {
+    "pr": 229,
+    "head": "f009b94dcd59c14e6838768f8dd217a5249f6320",
+    "base_v2_manifestations": 107,
+    "v3_extension_manifestations": 2,
+    "conceptual_combined_manifestations": 109,
+    "extension_names": ["Cerrillos Dam", "Portugués Dam"],
+    "cross_source_identity_state": "UNRESOLVED",
+    "denominator_complete": false,
+    "universal_hydro_exhaustion_claimed": false,
+    "runs": {
+      "Secret scan": [33453202056, "PASS"],
+      "HAF Contract Gate": [33453202042, "PASS"],
+      "Federation template drift": [33453202045, "PASS"],
+      "Federation pickup bounded MAX": [33453202088, "PASS"],
+      "CodeQL": [33453202078, "PASS"],
+      "Federation completion gate": [33453202073, "PASS"],
+      "Hub CI": [33453202053, "PASS"]
+    }
+  },
+  "global_invariants": {
+    "raw_normalized_canonical_separate": true,
+    "name_identity_prohibited": true,
+    "fuzzy_identity_prohibited": true,
+    "proximity_identity_prohibited": true,
+    "cluster_identity_prohibited": true,
+    "connectivity_from_discovery_prohibited": true,
+    "transitive_context_inheritance": false,
+    "merges_performed": 0
+  }
+}
