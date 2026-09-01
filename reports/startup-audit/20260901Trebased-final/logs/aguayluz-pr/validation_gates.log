@@ -1,0 +1,17 @@
+
+GATE                 STATUS  DETAILS
+-------------------  ----  -------
+G01_SCHEMA           SKIP  outputs/ empty — no entities to validate
+G02_SOURCE_MANIFEST  SKIP  no entity outputs yet
+G03_CONFIDENCE       SKIP  
+G04_REVIEW_QUEUE     SKIP  no review_queue.json and nothing needs review
+G05_COVERAGE_LEDGER  SKIP  integration_report.json missing
+G06_HUB_EXPORT       SKIP  hub_export.json missing
+G07_NO_SECRETS       PASS  
+G08_TESTS            PASS  test files present (run `pytest -q` to actually execute)
+
+OK — no blocking gate failures.
+$ python scripts/validate_repo.py
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/aguayluz-pr
+# started_utc: 2026-09-01T00:20:15Z
+
