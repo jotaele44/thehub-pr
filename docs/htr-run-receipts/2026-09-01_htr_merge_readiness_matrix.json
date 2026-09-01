@@ -1,0 +1,106 @@
+{
+  "schema_version": "htr-merge-readiness-matrix-1.0",
+  "captured_date": "2026-09-01",
+  "scope": "Explicit merge-readiness matrix for HTR producer/consumer pull requests and stacked MAJOR_HYDRO_ASSET_v3. GREEN_CODE is not MERGE_AUTHORIZED. No merge is authorized by this receipt.",
+  "historical_certified_heads": {
+    "jotaele44/thehub-pr#212": "2f454d111729e4cfa86d9f955b619cc2c2e997e6",
+    "jotaele44/skywatcher-pr#215": "a924c5ef57d4f82272e44c13b9d0a88abf1cf8e6",
+    "jotaele44/aguayluz-pr#195": "bb6480e99e45caa09de6f2f63b0b78b710c24e65",
+    "jotaele44/spiderweb-pr#308": "c8ff0ae91d2b67f1389c031e6b0f6d29063f8eba"
+  },
+  "current": [
+    {
+      "repo": "jotaele44/thehub-pr",
+      "pr": 212,
+      "head_sha": "911c3433c272af66b2ef4c30267837ec22377c67",
+      "base_sha": "60c69aa18bf93d839d59996daf8e730bff1eec7f",
+      "ahead_by": 27,
+      "behind_by": 0,
+      "github_mergeable": false,
+      "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
+      "review_thread_state": "ALL_RESOLVED",
+      "code_state": "GREEN_CODE",
+      "merge_state": "NOT_AUTHORIZED",
+      "merge_blocker": "GITHUB_MERGEABLE_FALSE_AND_SEPARATE_USER_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "repo": "jotaele44/skywatcher-pr",
+      "pr": 215,
+      "head_sha": "3395e9bb66971edeb6660fd64c9edcc66ade6f22",
+      "base_sha": "6d7831c1cc665ad3080c9cab92a673cc5eb8e2e9",
+      "ahead_by": 6,
+      "behind_by": 0,
+      "github_mergeable": true,
+      "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
+      "review_thread_state": "ALL_RESOLVED",
+      "code_state": "GREEN_CODE",
+      "merge_state": "NOT_AUTHORIZED",
+      "merge_blocker": "SEPARATE_USER_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "repo": "jotaele44/aguayluz-pr",
+      "pr": 195,
+      "head_sha": "d083ef1dff401c292055707cad5e3a64ee067a61",
+      "base_sha": "d46758886a40a290c15a3b138e131910163b0d1e",
+      "ahead_by": 11,
+      "behind_by": 0,
+      "github_mergeable": false,
+      "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
+      "review_thread_state": "ALL_RESOLVED",
+      "code_state": "GREEN_CODE",
+      "merge_state": "NOT_AUTHORIZED",
+      "merge_blocker": "GITHUB_MERGEABLE_FALSE_AND_SEPARATE_USER_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "repo": "jotaele44/spiderweb-pr",
+      "pr": 308,
+      "head_sha": "e666cab0fd30239ce45392f59f690717ab3a4fa5",
+      "base_sha": "ee48d4bb1003c705bf66c5324afa0d76a7e29d91",
+      "ahead_by": 5,
+      "behind_by": 0,
+      "github_mergeable": true,
+      "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
+      "review_thread_state": "ALL_RESOLVED",
+      "code_state": "GREEN_CODE",
+      "merge_state": "NOT_AUTHORIZED",
+      "merge_blocker": "SEPARATE_USER_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "repo": "jotaele44/thehub-pr",
+      "pr": 229,
+      "head_sha": "621d08e3b4876c90d4f626a368b0a137484f07ad",
+      "base_branch": "feature/htr-toponym-graph-v1",
+      "base_sha": "911c3433c272af66b2ef4c30267837ec22377c67",
+      "github_mergeable": true,
+      "hosted_gate_state": "V3_AUTHORITATIVE_FREEZE_PENDING_AT_CAPTURE; OTHER_OBSERVED_GATES_PASS",
+      "review_thread_state": "PREVIOUS_THREADS_RESOLVED_BEFORE_NEW_FREEZER_COMMITS",
+      "stack_dependency": "PR_212_MUST_BE_IN_TARGET_ANCESTRY_BEFORE_V3_INTEGRATION",
+      "code_state": "PROVISIONAL_PENDING_V3_FREEZE",
+      "merge_state": "NOT_AUTHORIZED",
+      "merge_blocker": "STACK_DEPENDENCY_PLUS_PENDING_V3_FREEZE_PLUS_SEPARATE_USER_AUTHORIZATION_REQUIRED"
+    }
+  ],
+  "external_baseline_state_changes": [
+    {
+      "repo": "jotaele44/thehub-pr",
+      "pr": 228,
+      "merged": true,
+      "merge_commit_sha": "4a2668b37c2f38fc77c9f2a3d71bdf2d92c91602",
+      "attribution": "EXTERNAL_STATE_CHANGE_NOT_PERFORMED_BY_THIS_HYDRO_VECTOR"
+    },
+    {
+      "repo": "jotaele44/spiderweb-pr",
+      "pr": 323,
+      "merged": true,
+      "merge_commit_sha": "02169e73bf7ae110eeccb8cfaf47a4f7dfa2989f",
+      "attribution": "EXTERNAL_STATE_CHANGE_NOT_PERFORMED_BY_THIS_HYDRO_VECTOR"
+    }
+  ],
+  "invariants": {
+    "green_code_equals_merge_authorized": false,
+    "merges_performed_by_this_execution": 0,
+    "htr_identity_promotion_from_name_fuzzy_proximity_cluster": 0,
+    "htr_connectivity_promotion_from_discovery": 0,
+    "transitive_context_inheritance": 0
+  }
+}
