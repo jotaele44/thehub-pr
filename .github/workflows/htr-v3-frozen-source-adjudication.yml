@@ -1,10 +1,9 @@
 name: HTR v3 frozen-source adjudication
 
+# One-shot/manual re-adjudication of already frozen source artifacts. The
+# canonical successful receipt is run 33572711586; ordinary PR commits must not
+# repeatedly download and regenerate it.
 on:
-  pull_request:
-    paths:
-      - "scripts/adjudicate_htr_v3_frozen_sources.py"
-      - ".github/workflows/htr-v3-frozen-source-adjudication.yml"
   workflow_dispatch:
 
 permissions:
@@ -66,7 +65,7 @@ jobs:
       - name: Upload adjudicated v3 denominator
         uses: actions/upload-artifact@v4
         with:
-          name: htr-v3-adjudicated-${{ github.event.pull_request.head.sha || github.sha }}
+          name: htr-v3-adjudicated-${{ github.sha }}
           path: artifacts/htr_v3_adjudicated
           if-no-files-found: error
           retention-days: 30
