@@ -1,0 +1,114 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 15%]
+........................................................................ [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 31%]
+............................s........................................... [ 36%]
+........................................................................ [ 42%]
+........................................................................ [ 47%]
+........................................................................ [ 52%]
+...............sssssssssssss............................................ [ 57%]
+........................................................................ [ 63%]
+........................................................................ [ 68%]
+........................................................................ [ 73%]
+........................................................................ [ 78%]
+........................................................................ [ 84%]
+........................................................................ [ 89%]
+........................................................................ [ 94%]
+........................................................................ [ 99%]
+..                                                                       [100%]
+=============================== warnings summary ===============================
+tests/test_aircraft_intelligence.py: 72 warnings
+tests/test_fr24_bridge.py: 81 warnings
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/tests/conftest.py:242: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    datetime.utcnow().isoformat(),
+
+tests/test_core_readiness_engine_equivalence.py: 2 warnings
+tests/test_prii_readiness_engine.py: 23 warnings
+tests/test_prii_readiness_engine_satim.py: 2 warnings
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/src/skywatcher/core/readiness_engine.py:154: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "generated_at":    datetime.utcnow().isoformat() + "Z",
+
+tests/test_corrim_ilap_bridge_equivalence.py::test_shim_functional_equivalence
+tests/test_corrim_ilap_bridge_equivalence.py::test_shim_functional_equivalence
+tests/test_ilap_bridge.py::test_ilap_bridge_corridor_candidate_output_shape
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/src/skywatcher/corrim/ilap_airspace_bridge.py:139: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "generated_at": datetime.utcnow().isoformat() + "Z",
+
+tests/test_fr24_bridge.py: 15 warnings
+tests/test_manual_review_queue.py: 34 warnings
+tests/test_satim_empirical.py: 1 warning
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/fr24/manual_review_queue.py:87: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    datetime.utcnow().isoformat() + "Z"),
+
+tests/test_fr24_bridge.py::test_manual_review_mark_reviewed
+tests/test_fr24_bridge.py::test_manual_review_stats
+tests/test_manual_review_queue.py::test_mark_reviewed_transitions_to_reviewed
+tests/test_manual_review_queue.py::test_mark_reviewed_nonexistent_returns_false
+tests/test_manual_review_queue.py::test_get_stats_mixed_statuses
+tests/test_manual_review_queue.py::test_get_all_returns_items_across_statuses
+tests/test_manual_review_queue.py::test_get_pending_count_decrements_after_review
+tests/test_satim_empirical.py::TestHarvest::test_harvest_end_to_end_with_real_queue
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/fr24/manual_review_queue.py:139: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    datetime.utcnow().isoformat() + "Z", item_id),
+
+tests/test_fr24_bridge.py::test_export_inventory_inserts_records
+tests/test_fr24_bridge.py::test_export_inventory_skips_corrupt
+tests/test_fr24_bridge.py::test_export_inventory_idempotent
+tests/test_fr24_bridge.py::test_export_inventory_idempotent
+tests/test_fr24_bridge.py::test_export_batch_empty_dir
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/fr24/event_export.py:65: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow().isoformat() + "Z"
+
+tests/test_fr24_bridge.py::test_export_batch_empty_dir
+tests/test_fr24_bridge.py::test_get_export_report_has_expected_keys
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/fr24/event_export.py:207: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "generated_at": datetime.utcnow().isoformat() + "Z",
+
+tests/test_fr24_inventory.py: 40 warnings
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/fr24/screenshot_inventory.py:65: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow().isoformat() + "Z"
+
+tests/test_fr24_inventory.py::test_build_report_creates_csv
+tests/test_fr24_inventory.py::test_scan_directory_convenience
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/fr24/screenshot_inventory.py:137: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "generated_at": datetime.utcnow().isoformat() + "Z",
+
+tests/test_fr24_inventory.py::test_sync_to_db
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/fr24/screenshot_inventory.py:180: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow().isoformat()
+
+tests/test_manual_review_queue.py::test_bulk_approve_updates_all
+tests/test_manual_review_queue.py::test_bulk_approve_skips_unknown_ids
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/fr24/manual_review_queue.py:195: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow().isoformat() + "Z"
+
+tests/test_manual_review_queue.py::test_export_to_json_creates_file
+tests/test_manual_review_queue.py::test_export_to_json_custom_path
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/fr24/manual_review_queue.py:221: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    {"exported_at": datetime.utcnow().isoformat() + "Z", "items": items},
+
+tests/test_rlsm_source_availability.py::test_inventory_sets_present_and_exports_availability
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/scripts/rlsm_inventory.py:61: DeprecationWarning: Image.Image.getdata is deprecated and will be removed in Pillow 14 (2027-10-15). Use get_flattened_data instead.
+    pixels = list(gray.getdata())
+
+tests/test_satim_calibration_models.py::test_merge_layer_reports_populates_blocking_gaps
+tests/test_satim_engine_protocol.py::test_minimal_input_writes_layer_reports_and_marks_l3_missing
+tests/test_satim_engine_protocol.py::test_full_manifest_reaches_report_merge
+tests/test_satim_engine_protocol.py::test_missing_advisory_layers_are_partial_not_blocking
+tests/test_satim_engine_protocol.py::test_calibration_set_validator_writes_packet_result
+tests/test_satim_engine_protocol.py::test_l2_malformed_image_degrades_instead_of_crashing
+tests/test_satim_engine_protocol.py::test_l5_disabled_by_operator_does_not_block_batch_ready
+tests/test_satim_pipeline_chain.py::test_engine_auto_derives_assessment_and_ledger
+tests/test_satim_pipeline_chain.py::test_engine_no_candidates_is_non_interfering
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr/fr24/calibration/models.py:37: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    generated_at: str = field(default_factory=lambda: datetime.utcnow().isoformat() + "Z")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1356 passed, 15 skipped, 1 deselected, 305 warnings in 51.95s
+<sys>:0: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+$ python -m pytest -q
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/skywatcher-pr
+# started_utc: 2026-09-01T00:25:41Z
+

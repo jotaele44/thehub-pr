@@ -16,7 +16,9 @@ default target root is ``<thehub-parent>/<program_id>``.
 
 Usage:
   render_federation_templates.py --repo <program_id> [--check] [--repo-root PATH]
+                                  [--template-ref SHA]
   render_federation_templates.py --all               [--check]
+                                  [--template-ref SHA]
     (no --check) writes the rendered files into the target repo(s)
     --check       renders in memory and diffs vs the committed files; exit 1 on drift
 
@@ -34,6 +36,13 @@ import yaml
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]           # thehub-pr/
 _TEMPLATES = _REPO_ROOT / "federation-templates"
+_TEMPLATE_REF_PATH = Path(".github/workflows/template-drift.yml")
+_FULL_SHA = re.compile(r"[0-9a-f]{40}")
+_TEMPLATE_REF_LINE = re.compile(
+    rb"^(?P<prefix>[ \t]*PRII_TEMPLATE_REF:[ \t]*)"
+    rb"(?P<sha>[0-9a-f]{40})(?P<suffix>[ \t]*)$",
+    re.MULTILINE,
+)
 
 
 def _load(name: str) -> dict:
@@ -106,8 +115,56 @@ def _targets_for(program_id: str, targets: list[dict]) -> list[tuple[str, str, i
     return out
 
 
+def _manage_template_ref(repo_root: Path, template_ref: str, check: bool) -> bool:
+    """Write or check the producer verifier's frozen canonical-template SHA.
+
+    The workflow is intentionally not rendered wholesale because producer action
+    pins can differ while their dependency PRs are in flight. Parse the YAML to
+    verify the semantic field, then replace exactly one scalar in the original
+    bytes so every unrelated byte and file mode stays intact.
+    """
+    if not _FULL_SHA.fullmatch(template_ref):
+        raise SystemExit(
+            "error: --template-ref must be a lowercase 40-character Git SHA"
+        )
+
+    path = repo_root / _TEMPLATE_REF_PATH
+    try:
+        raw = path.read_bytes()
+        # BaseLoader keeps an all-numeric SHA as text instead of coercing it to
+        # an integer, so validation does not depend on the commit's characters.
+        doc = yaml.load(raw, Loader=yaml.BaseLoader) or {}
+        current = doc["jobs"]["drift"]["env"]["PRII_TEMPLATE_REF"]
+    except (OSError, TypeError, KeyError, yaml.YAMLError) as exc:
+        raise SystemExit(
+            f"error: {_TEMPLATE_REF_PATH}: cannot read "
+            "jobs.drift.env.PRII_TEMPLATE_REF"
+        ) from exc
+
+    matches = list(_TEMPLATE_REF_LINE.finditer(raw))
+    if (
+        not isinstance(current, str)
+        or not _FULL_SHA.fullmatch(current)
+        or len(matches) != 1
+        or matches[0].group("sha").decode() != current
+    ):
+        raise SystemExit(
+            f"error: {_TEMPLATE_REF_PATH}: expected exactly one lowercase "
+            "40-character PRII_TEMPLATE_REF scalar"
+        )
+
+    match = matches[0]
+    expected = raw[:match.start("sha")] + template_ref.encode() + raw[match.end("sha"):]
+    if raw == expected:
+        return False
+    if not check:
+        path.write_bytes(expected)
+    return True
+
+
 def render_repo(program_id: str, vars_for_repo: dict, repo_root: Path,
-                targets: list[dict], check: bool) -> list[str]:
+                targets: list[dict], check: bool,
+                template_ref: str | None = None) -> list[str]:
     """Write (or --check) every target for one repo. Returns list of drifted paths."""
     subs = _placeholders(vars_for_repo)
     drift = []
@@ -163,6 +220,8 @@ def render_repo(program_id: str, vars_for_repo: dict, repo_root: Path,
             # 0644 and would otherwise ship non-executable.
             if mode is not None:
                 dest.chmod(mode)
+    if template_ref is not None and _manage_template_ref(repo_root, template_ref, check):
+        drift.append(str(_TEMPLATE_REF_PATH))
     return drift
 
 
@@ -176,6 +235,10 @@ def main(argv: list[str] | None = None) -> int:
                     help="diff rendered output vs committed files; exit 1 on drift")
     ap.add_argument("--repo-root", type=Path, default=None,
                     help="target repo root (default: <thehub-parent>/<program_id>)")
+    ap.add_argument(
+        "--template-ref",
+        help="also bind the producer drift workflow to this exact thehub commit",
+    )
     args = ap.parse_args(argv)
 
     vars_ = _load("producers.vars.yaml").get("producers", {})
@@ -188,7 +251,14 @@ def main(argv: list[str] | None = None) -> int:
             print(f"error: {program_id} not in producers.vars.yaml", file=sys.stderr)
             return 2
         root = args.repo_root or (_REPO_ROOT.parent / program_id)
-        drift = render_repo(program_id, vars_[program_id], root, targets, args.check)
+        drift = render_repo(
+            program_id,
+            vars_[program_id],
+            root,
+            targets,
+            args.check,
+            args.template_ref,
+        )
         if args.check:
             if drift:
                 any_drift = True
