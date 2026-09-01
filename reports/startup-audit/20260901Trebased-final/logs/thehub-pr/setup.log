@@ -1,0 +1,4 @@
+$ python3 -m py_compile scripts/startup_completion_audit.py desktop/launch.py desktop/app_server.py server/backend/main.py
+# cwd: /Users/jotaele/fed-repos/thehub-pr
+# started_utc: 2026-09-01T00:27:41Z
+

@@ -1,0 +1,507 @@
+{
+  "arithmetic": {
+    "classified": 7,
+    "closed": true,
+    "counts": {
+      "STARTUP_SETUP_COMPLETE": 7
+    },
+    "total": 7
+  },
+  "audit_workspace": "/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk",
+  "certification": "PASS",
+  "generated_utc": "2026-09-01T00:18:54Z",
+  "product_arithmetic": {
+    "classified": 7,
+    "closed": true,
+    "counts": {
+      "BLOCKED_FOR_PRODUCT_COMPLETION": 2,
+      "PRODUCT_COMPLETE": 5
+    },
+    "total": 7
+  },
+  "product_completion_certification": "PROVISIONAL",
+  "receipt_paths": {
+    "json": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/startup_completion_audit.json",
+    "markdown": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/STARTUP_COMPLETION_AUDIT.md"
+  },
+  "repositories": [
+    {
+      "blockers": [],
+      "branch": "HEAD",
+      "command_results": [
+        {
+          "command": "python -m pip install uv && uv pip install --system -e .[dev]",
+          "elapsed_seconds": 4.063,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/aguayluz-pr/setup.log",
+          "name": "setup",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python scripts/validate_repo.py",
+          "elapsed_seconds": 1.348,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/aguayluz-pr/validation_gates.log",
+          "name": "validation_gates",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python -m pytest -q",
+          "elapsed_seconds": 78.712,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/aguayluz-pr/test_suite.log",
+          "name": "test_suite",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python3 scripts/federation_export.py --mode test --out exports/federation --no-outputs",
+          "elapsed_seconds": 7.997,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/aguayluz-pr/export_canonical.log",
+          "name": "export_canonical",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "bash -n /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/aguayluz-pr/PRII-AGUAYLUZ.command",
+          "elapsed_seconds": 0.026,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/aguayluz-pr/startup_smoke.log",
+          "name": "startup_smoke",
+          "reason": null,
+          "state": "PASS"
+        }
+      ],
+      "completion_state": "STARTUP_SETUP_COMPLETE",
+      "dirty_status": [],
+      "head_sha": "e504624bf0dbdc48d401aa1587837c1aadaa76ed",
+      "manifest_present": true,
+      "path": "/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/aguayluz-pr",
+      "product_completion_blockers": [],
+      "product_completion_state": "PRODUCT_COMPLETE",
+      "production_status": "PRODUCTION_REAL_DATA_PARTIAL",
+      "ready_for_hub_discovery": true,
+      "ready_for_hub_live_execution": true,
+      "remote_main_sha": "e504624bf0dbdc48d401aa1587837c1aadaa76ed",
+      "repo_id": "aguayluz-pr",
+      "required_env": {
+        "EPA_WATERS_API_KEY": false,
+        "NEON_API_TOKEN": false
+      },
+      "startup_setup_blockers": [],
+      "startup_setup_state": "STARTUP_SETUP_COMPLETE",
+      "worktree_clean": true
+    },
+    {
+      "blockers": [],
+      "branch": "HEAD",
+      "command_results": [
+        {
+          "command": "python -m pip install uv && uv pip install --system -e .[dev]",
+          "elapsed_seconds": 3.444,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/centinelas-pr/setup.log",
+          "name": "setup",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python3 scripts/validate_pr_grid.py --require-sha",
+          "elapsed_seconds": 0.822,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/centinelas-pr/validate_grid.log",
+          "name": "validate_grid",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python -m pytest -q",
+          "elapsed_seconds": 10.611,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/centinelas-pr/test_suite.log",
+          "name": "test_suite",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python3 scripts/federation_export.py --ledger data/signals/live_signals.jsonl --mode production",
+          "elapsed_seconds": 0.202,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/centinelas-pr/export_canonical.log",
+          "name": "export_canonical",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "bash -n /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/centinelas-pr/PRII-CENTINELAS.command",
+          "elapsed_seconds": 0.026,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/centinelas-pr/startup_smoke.log",
+          "name": "startup_smoke",
+          "reason": null,
+          "state": "PASS"
+        }
+      ],
+      "completion_state": "STARTUP_SETUP_COMPLETE",
+      "dirty_status": [],
+      "head_sha": "3d96af211bbf164e18a2c47615e818b06f15265f",
+      "manifest_present": true,
+      "path": "/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/centinelas-pr",
+      "product_completion_blockers": [],
+      "product_completion_state": "PRODUCT_COMPLETE",
+      "production_status": "PRODUCTION",
+      "ready_for_hub_discovery": true,
+      "ready_for_hub_live_execution": true,
+      "remote_main_sha": "3d96af211bbf164e18a2c47615e818b06f15265f",
+      "repo_id": "centinelas-pr",
+      "required_env": {},
+      "startup_setup_blockers": [],
+      "startup_setup_state": "STARTUP_SETUP_COMPLETE",
+      "worktree_clean": true
+    },
+    {
+      "blockers": [],
+      "branch": "HEAD",
+      "command_results": [
+        {
+          "command": "python3 -m pip install -r requirements.txt && python3 run_all.py --only-setup",
+          "elapsed_seconds": 4.23,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/moneysweep-pr/setup.log",
+          "name": "setup",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python3 -m pytest tests/ -q",
+          "elapsed_seconds": 188.959,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/moneysweep-pr/test_suite.log",
+          "name": "test_suite",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python3 scripts/federation_export.py --mode test",
+          "elapsed_seconds": 0.531,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/moneysweep-pr/export_canonical.log",
+          "name": "export_canonical",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "bash -n /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/moneysweep-pr/PRII-MONEYSWEEP.command",
+          "elapsed_seconds": 0.047,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/moneysweep-pr/startup_smoke.log",
+          "name": "startup_smoke",
+          "reason": null,
+          "state": "PASS"
+        }
+      ],
+      "completion_state": "STARTUP_SETUP_COMPLETE",
+      "dirty_status": [],
+      "head_sha": "3176beeb0d9a23e17df81f3a780170a7eb7fe3cc",
+      "manifest_present": true,
+      "path": "/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/moneysweep-pr",
+      "product_completion_blockers": [
+        "manual-source Tranche B not materialized (hud_drgr_authorized, prasa, oficina_contralor, pr_cabilderos await operator file drops)",
+        "cor3 live endpoints return no data (portal likely requires JavaScript rendering); manual CSV export fallback documented",
+        "PR-gov scraper-needed queue: 13 of 15 sources promoted to api_producer; 2 true stubs remain (hacienda_sut_ivu, pr_act_154_excise)",
+        "PROPUBLICA_API_KEY not supplied (nonprofits adapter)",
+        "source-count wording must stay reconciled to reports/materialization_readiness.json truth",
+        "MANIFEST_READY_FOR_HUB_LIVE_EXECUTION_FALSE"
+      ],
+      "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+      "production_status": "NON_PRODUCTION_DIAGNOSTIC",
+      "ready_for_hub_discovery": true,
+      "ready_for_hub_live_execution": false,
+      "remote_main_sha": "3176beeb0d9a23e17df81f3a780170a7eb7fe3cc",
+      "repo_id": "moneysweep-pr",
+      "required_env": {},
+      "startup_setup_blockers": [],
+      "startup_setup_state": "STARTUP_SETUP_COMPLETE",
+      "worktree_clean": true
+    },
+    {
+      "blockers": [],
+      "branch": "HEAD",
+      "command_results": [
+        {
+          "command": "python -m pip install -r requirements.txt",
+          "elapsed_seconds": 2.906,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/ovnis-pr/setup.log",
+          "name": "setup",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python3 scripts/validate_case_ledgers.py",
+          "elapsed_seconds": 0.645,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/ovnis-pr/validate_ledgers.log",
+          "name": "validate_ledgers",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python -m pytest -q",
+          "elapsed_seconds": 17.16,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/ovnis-pr/test_suite.log",
+          "name": "test_suite",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python3 scripts/federation_export.py --mode production",
+          "elapsed_seconds": 0.258,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/ovnis-pr/export_canonical.log",
+          "name": "export_canonical",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "bash -n /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/ovnis-pr/PRII-OVNIS.command",
+          "elapsed_seconds": 0.045,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/ovnis-pr/startup_smoke.log",
+          "name": "startup_smoke",
+          "reason": null,
+          "state": "PASS"
+        }
+      ],
+      "completion_state": "STARTUP_SETUP_COMPLETE",
+      "dirty_status": [],
+      "head_sha": "b02ac5094852e3e86901d0225f6be0b8af334876",
+      "manifest_present": true,
+      "path": "/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/ovnis-pr",
+      "product_completion_blockers": [],
+      "product_completion_state": "PRODUCT_COMPLETE",
+      "production_status": "PRODUCTION",
+      "ready_for_hub_discovery": true,
+      "ready_for_hub_live_execution": true,
+      "remote_main_sha": "b02ac5094852e3e86901d0225f6be0b8af334876",
+      "repo_id": "ovnis-pr",
+      "required_env": {},
+      "startup_setup_blockers": [],
+      "startup_setup_state": "STARTUP_SETUP_COMPLETE",
+      "worktree_clean": true
+    },
+    {
+      "blockers": [],
+      "branch": "HEAD",
+      "command_results": [
+        {
+          "command": "python3 -m pip install Pillow PyMuPDF httpx jsonschema openpyxl pytest -r server/backend/requirements.txt 'prii-maintenance @ git+https://github.com/jotaele44/thehub-pr.git@f2b81769924689b4d959554928810b1d7b7ef3d6#subdirectory=packages/prii_maintenance' 'prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@f2b81769924689b4d959554928810b1d7b7ef3d6#subdirectory=packages/prii_export_utils' && python3 scripts/federation_setup_smoke.py",
+          "elapsed_seconds": 3.179,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/skywatcher-pr/setup.log",
+          "name": "setup",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python scripts/validate_airspace_export.py exports/examples/synthetic_airspace_package --mode test",
+          "elapsed_seconds": 0.196,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/skywatcher-pr/validate_export.log",
+          "name": "validate_export",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python -m pytest -q",
+          "elapsed_seconds": 57.231,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/skywatcher-pr/test_suite.log",
+          "name": "test_suite",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python3 scripts/federation_export.py --mode test",
+          "elapsed_seconds": 0.201,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/skywatcher-pr/export_canonical.log",
+          "name": "export_canonical",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "bash -n /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/skywatcher-pr/PRII-SKYWATCHER.command",
+          "elapsed_seconds": 0.027,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/skywatcher-pr/startup_smoke.log",
+          "name": "startup_smoke",
+          "reason": null,
+          "state": "PASS"
+        }
+      ],
+      "completion_state": "STARTUP_SETUP_COMPLETE",
+      "dirty_status": [],
+      "head_sha": "e0041094d02c6c24020990f2b1952e3072470748",
+      "manifest_present": true,
+      "path": "/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/skywatcher-pr",
+      "product_completion_blockers": [
+        "scaled bounded non-synthetic bbox/icon proof package exists (3 reviewed visible-icon screenshots with approximate capture geometry), but full live observation export remains blocked pending media identity reconciliation and completed capture-geometry review",
+        "canonical export adapter (scripts/federation_export.py) projects observations->entities/sources/relationships; production live readiness remains blocked until the reviewed non-synthetic corpus is materially complete and unresolved media identities are adjudicated",
+        "external imagery acquisition and production model execution are pending migration to TheHub under ADR 0006; the existing local imagery MCP and direct-provider vision path are deprecated but retained until parity, dual-run, rollback, GUI and retirement gates pass",
+        "FR24 ingest pipeline is now in-tree (fr24/); ILAP intake still requires FlightRadar24 screenshot/track inputs supplied locally (external data gap)",
+        "MANIFEST_READY_FOR_HUB_LIVE_EXECUTION_FALSE"
+      ],
+      "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+      "production_status": "NON_PRODUCTION_DIAGNOSTIC",
+      "ready_for_hub_discovery": true,
+      "ready_for_hub_live_execution": false,
+      "remote_main_sha": "e0041094d02c6c24020990f2b1952e3072470748",
+      "repo_id": "skywatcher-pr",
+      "required_env": {},
+      "startup_setup_blockers": [],
+      "startup_setup_state": "STARTUP_SETUP_COMPLETE",
+      "worktree_clean": true
+    },
+    {
+      "blockers": [],
+      "branch": "HEAD",
+      "command_results": [
+        {
+          "command": "python -m pip install uv && uv pip install --system -e .[airspace,earthgpt,server,dev]",
+          "elapsed_seconds": 5.109,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/spiderweb-pr/setup.log",
+          "name": "setup",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "make validate-schemas",
+          "elapsed_seconds": 0.829,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/spiderweb-pr/validate_schemas.log",
+          "name": "validate_schemas",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python -m pytest tests/ -q --tb=short",
+          "elapsed_seconds": 69.736,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/spiderweb-pr/test_suite.log",
+          "name": "test_suite",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python3 scripts/federation_export.py --mode test",
+          "elapsed_seconds": 0.265,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/spiderweb-pr/export_canonical.log",
+          "name": "export_canonical",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "bash -n /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/spiderweb-pr/PRII-SPIDERWEB.command",
+          "elapsed_seconds": 0.027,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/spiderweb-pr/startup_smoke.log",
+          "name": "startup_smoke",
+          "reason": null,
+          "state": "PASS"
+        }
+      ],
+      "completion_state": "STARTUP_SETUP_COMPLETE",
+      "dirty_status": [],
+      "head_sha": "533fdde554e11b486a4ddb7a3fbe8127ed3fa2b2",
+      "manifest_present": true,
+      "path": "/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/spiderweb-pr",
+      "product_completion_blockers": [],
+      "product_completion_state": "PRODUCT_COMPLETE",
+      "production_status": "PRODUCTION",
+      "ready_for_hub_discovery": true,
+      "ready_for_hub_live_execution": true,
+      "remote_main_sha": "533fdde554e11b486a4ddb7a3fbe8127ed3fa2b2",
+      "repo_id": "spiderweb-pr",
+      "required_env": {},
+      "startup_setup_blockers": [],
+      "startup_setup_state": "STARTUP_SETUP_COMPLETE",
+      "worktree_clean": true
+    },
+    {
+      "blockers": [],
+      "branch": "audit/startup-completion-20260831",
+      "command_results": [
+        {
+          "command": "python3 -m py_compile scripts/startup_completion_audit.py desktop/launch.py desktop/app_server.py server/backend/main.py",
+          "elapsed_seconds": 0.203,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/thehub-pr/setup.log",
+          "name": "setup",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "PYTHONPATH=src python3 -m pytest -q tests/test_startup_completion_audit.py tests/test_federation_status.py tests/test_build_hub_fixture.py",
+          "elapsed_seconds": 1.385,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/thehub-pr/test_suite.log",
+          "name": "test_suite",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "PYTHONPATH=src python3 -m hub aggregate --root .. --out /Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/tmp/thehub-pr/thehub-aggregate",
+          "elapsed_seconds": 11.625,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/thehub-pr/export_canonical.log",
+          "name": "export_canonical",
+          "reason": null,
+          "state": "PASS"
+        },
+        {
+          "command": "python3 -m py_compile desktop/launch.py desktop/app_server.py server/backend/main.py && (cd server/frontend && npm run build)",
+          "elapsed_seconds": 20.394,
+          "exit_code": 0,
+          "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/startup-audit/20260831Tfinal-pass/logs/thehub-pr/startup_smoke.log",
+          "name": "startup_smoke",
+          "reason": null,
+          "state": "PASS"
+        }
+      ],
+      "completion_state": "STARTUP_SETUP_COMPLETE",
+      "dirty_status": [
+        "?? reports/startup-audit/"
+      ],
+      "head_sha": "bfc8f488c7203b57e9e577b96db5dd8a7c2ec4b0",
+      "manifest_present": false,
+      "path": "/Users/jotaele/fed-repos/thehub-pr",
+      "product_completion_blockers": [],
+      "product_completion_state": "PRODUCT_COMPLETE",
+      "production_status": null,
+      "ready_for_hub_discovery": null,
+      "ready_for_hub_live_execution": null,
+      "remote_main_sha": "58f06c38a143fcdf4277a501bc39929a0eb68f98",
+      "repo_id": "thehub-pr",
+      "required_env": {},
+      "startup_setup_blockers": [],
+      "startup_setup_state": "STARTUP_SETUP_COMPLETE",
+      "worktree_clean": false
+    }
+  ],
+  "run_id": "20260901T001032Z",
+  "schema_version": "startup_completion_audit.v2",
+  "source_root": "/Users/jotaele/fed-repos",
+  "startup_setup_certification": "PASS",
+  "tooling": {
+    "lumen_status": "LUMEN_UNAVAILABLE_OR_UNHEALTHY",
+    "search_exhaustion": "BOUNDED_LOCAL_INSPECTION_ONLY",
+    "skill_selector": "UNAVAILABLE"
+  }
+}

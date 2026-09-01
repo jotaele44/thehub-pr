@@ -31,13 +31,13 @@ report = run_maintenance(
 ## Installing (git URL, no package index required)
 
 ```
-pip install "prii-maintenance @ git+https://github.com/jotaele44/thehub-pr.git@3c9e51e3de406f8455605a06fabd4823452d9b63#subdirectory=packages/prii_maintenance"
+pip install "prii-maintenance @ git+https://github.com/jotaele44/thehub-pr.git@f2b81769924689b4d959554928810b1d7b7ef3d6#subdirectory=packages/prii_maintenance"
 ```
 
 ## Pinning policy
 
-Producers pin to the exact commit SHA (`3c9e51e…` is the v1 extraction
-commit, the current release), or to a release tag (`prii-maintenance-vN`)
+Producers pin to the exact commit SHA (`f2b81769…` is the current pin, per
+ADR 0007), or to a release tag (`prii-maintenance-vN`)
 once a maintainer cuts one at that SHA — never to `@main`. **Never force-move
 an existing tag** — cut `vN+1` on a new commit and let each producer bump
 deliberately: edit one dependency line, open one PR, re-run that producer's
