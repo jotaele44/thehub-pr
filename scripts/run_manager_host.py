@@ -180,12 +180,10 @@ def build_runtime(
         files=files,
         secrets_broker=secrets,
         gate_rules=gate_rules,
+        repositories=repositories,
+        artifacts=ArtifactStore(state_root / "artifacts"),
+        repository_binding_failures=binding_failures,
     )
-    # Runtime attachments are intentionally explicit but additive so existing
-    # API consumers that only know runner/files/secrets keep working unchanged.
-    runtime.repositories = repositories
-    runtime.artifacts = ArtifactStore(state_root / "artifacts")
-    runtime.repository_binding_failures = binding_failures
     return runtime, policy
 
 

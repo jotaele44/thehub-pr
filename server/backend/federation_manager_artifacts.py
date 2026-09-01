@@ -158,11 +158,11 @@ class ArtifactStore:
         payload_path = destination / payload_name
 
         if destination.exists():
-            object_document = self._read_manifest(manifest_path)
+            existing_object = self._read_manifest(manifest_path)
             if (
-                object_document.get("sha256") != digest
-                or object_document.get("kind") != kind
-                or int(object_document.get("bytes", -1)) != size
+                existing_object.get("sha256") != digest
+                or existing_object.get("kind") != kind
+                or int(existing_object.get("bytes", -1)) != size
             ):
                 raise ArtifactRegistrationError(
                     f"artifact id collision at {destination}: existing byte object differs"
@@ -185,7 +185,7 @@ class ArtifactStore:
                 if staged_hash != digest or staged_size != size:
                     raise ArtifactRegistrationError("artifact changed while being registered")
 
-                object_document: Dict[str, Any] = {
+                new_object: Dict[str, Any] = {
                     "schema_version": "prii.artifact-object/v1",
                     "app_id": app_id,
                     "artifact_id": artifact_id,
@@ -200,7 +200,7 @@ class ArtifactStore:
                 }
                 write_atomic(
                     staging / "manifest.json",
-                    json.dumps(object_document, sort_keys=True) + "\n",
+                    json.dumps(new_object, sort_keys=True) + "\n",
                 )
                 destination.parent.mkdir(parents=True, exist_ok=True)
                 os.replace(staging, destination)

@@ -258,20 +258,47 @@ def _gh_head(repo: str, branch: str) -> Tuple[Optional[str], Optional[str]]:
     return sha, None
 
 
+def _gh_parent_shas(repo: str, sha: str) -> Tuple[List[str], Optional[str]]:
+    proc = subprocess.run(
+        ["gh", "api", "repos/%s/commits/%s" % (repo, sha), "--jq", "[.parents[].sha] | @tsv"],
+        text=True, capture_output=True, check=False,
+    )
+    if proc.returncode:
+        return [], "gh_api_failed:%s" % proc.stderr.strip()
+    parents = [part for part in proc.stdout.strip().split("\t") if part]
+    return parents, None
+
+
 def snapshot_remote(ledger: Mapping[str, Any]) -> Dict[str, Any]:
     repos = repository_index(ledger)
+    control_plane = str(ledger.get("control_plane", ""))
     observed = []
     for repo in sorted(repos):
         expected = repos[repo]
         branch = str(expected.get("default_branch", "main"))
         head, error = _gh_head(repo, branch)
+        sha_match = head == expected["expected_sha"] if head else False
+        parent_shas: List[str] = []
+        if (
+            not sha_match
+            and head
+            and repo == control_plane
+            and expected.get("self_snapshot_finalizer_parent") is True
+        ):
+            parent_shas, parent_error = _gh_parent_shas(repo, head)
+            if parent_error:
+                error = parent_error
+            else:
+                sha_match = expected["expected_sha"] in parent_shas
         observed.append({
             "repo": repo,
             "repo_id": expected["repo_id"],
             "default_branch": branch,
             "expected_sha": expected["expected_sha"],
             "observed_sha": head,
-            "sha_match": head == expected["expected_sha"] if head else False,
+            "sha_match": sha_match,
+            "self_snapshot_finalizer_parent": bool(expected.get("self_snapshot_finalizer_parent")),
+            "observed_parent_shas": parent_shas,
             "error": error,
         })
     return {
@@ -467,7 +494,6 @@ def run_ready(
         if vector_id in completed_set:
             dynamic_status[vector_id] = "PASS"
             continue
-        row = rec[vector_id]
         status = dynamic_status[vector_id]
         vector = vectors[vector_id]
         if status != "READY":

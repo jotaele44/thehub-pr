@@ -79,4 +79,4 @@ producers:
       icon: assets/branding/icon.png
       accent_color: "#df630d"
     federation_manifest: federation.json
-    status: ready_for_live             # manifest federation_readiness_gate.ready_for_hub_live_execution=true (production_status=PRODUCTION). 274 real RSS signals bridged into data/signals/live_signals.jsonl; production export passed hub validate-package (operator-approved sweep). Reconciled 2026-07-09 to match the producer manifest.
+    status: ready_for_live             # Centinelas main declares ready_for_hub_live_execution=true after a 100-signal non-synthetic RSS refresh, production export, and downstream Hub package validation; the classifier's keyword-fallback limitation remains explicit in the producer manifest.
