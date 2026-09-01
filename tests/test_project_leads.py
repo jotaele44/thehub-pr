@@ -10,9 +10,9 @@ def _lead():
     }
 
 
-def _fiscal(evidence=None, contradictions=None):
+def _fiscal(evidence=None, contradictions=None, assertion_id="prjfis_fixture"):
     return {
-        "assertion_id": "prjfis_fixture",
+        "assertion_id": assertion_id,
         "lead_id": _lead()["lead_id"],
         "producer": "moneysweep-pr",
         "candidates": [
@@ -28,9 +28,9 @@ def _fiscal(evidence=None, contradictions=None):
     }
 
 
-def _physical(evidence=None, contradictions=None):
+def _physical(evidence=None, contradictions=None, assertion_id="prjphy_fixture"):
     return {
-        "assertion_id": "prjphy_fixture",
+        "assertion_id": assertion_id,
         "lead_id": _lead()["lead_id"],
         "producer": "spiderweb-pr",
         "candidates": [
@@ -103,3 +103,31 @@ def test_partial_states_are_explicit():
     assert adjudicate_project(_lead(), [], [])["state"] == "LEAD_ONLY"
     assert adjudicate_project(_lead(), [_fiscal()], [])["state"] == "FISCAL_ONLY"
     assert adjudicate_project(_lead(), [], [_physical()])["state"] == "PHYSICAL_ONLY"
+
+
+def test_join_cardinality_and_full_candidate_pairs_are_preserved():
+    physicals = [
+        _physical([_binding()], assertion_id="prjphy_a"),
+        _physical([_binding()], assertion_id="prjphy_b"),
+    ]
+    result = adjudicate_project(_lead(), [_fiscal([_binding()])], physicals)
+    assert result["join_cardinality"] == "1:N"
+    assert result["state"] == "BANNER_ELIGIBLE"
+    assert len(result["binding_candidates"]) == 2
+
+
+def test_duplicate_or_missing_assertion_ids_fail_closed():
+    duplicate = [_fiscal(assertion_id="dup"), _fiscal(assertion_id="dup")]
+    try:
+        adjudicate_project(_lead(), duplicate, [_physical()])
+    except ValueError as exc:
+        assert "duplicate fiscal assertion_id" in str(exc)
+    else:
+        raise AssertionError("duplicate assertion IDs must fail closed")
+
+    try:
+        adjudicate_project(_lead(), [_fiscal(assertion_id="")], [_physical()])
+    except ValueError as exc:
+        assert "fiscal assertion_id required" in str(exc)
+    else:
+        raise AssertionError("missing assertion IDs must fail closed")

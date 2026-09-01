@@ -70,6 +70,26 @@ def _first_by_lead(rows: Iterable[dict[str, Any]], lead_id: str) -> list[dict[st
     return [row for row in rows if str(row.get("lead_id") or "") == lead_id]
 
 
+def _require_unique_assertion_ids(rows: list[dict[str, Any]], producer: str) -> None:
+    seen: set[str] = set()
+    for row in rows:
+        assertion_id = str(row.get("assertion_id") or "").strip()
+        if not assertion_id:
+            raise ValueError(f"{producer} assertion_id required")
+        if assertion_id in seen:
+            raise ValueError(f"duplicate {producer} assertion_id: {assertion_id}")
+        seen.add(assertion_id)
+
+
+def _join_cardinality(fiscal_count: int, physical_count: int) -> str:
+    def label(count: int) -> str:
+        if count == 0:
+            return "0"
+        return "1" if count == 1 else "N"
+
+    return f"{label(fiscal_count)}:{label(physical_count)}"
+
+
 def adjudicate_project(
     lead: dict[str, Any] | None,
     fiscal_assertions: Iterable[dict[str, Any]],
@@ -86,12 +106,15 @@ def adjudicate_project(
 
     fiscals = _first_by_lead(fiscal_assertions, resolved_lead_id)
     physicals = _first_by_lead(physical_assertions, resolved_lead_id)
+    _require_unique_assertion_ids(fiscals, "fiscal")
+    _require_unique_assertion_ids(physicals, "physical")
     result: dict[str, Any] = {
         "lead_id": resolved_lead_id,
         "identity_effect": "NONE",
         "state": "LEAD_ONLY",
         "fiscal_assertion_count": len(fiscals),
         "physical_assertion_count": len(physicals),
+        "join_cardinality": _join_cardinality(len(fiscals), len(physicals)),
         "binding_candidates": [],
         "contradictions": [],
         "banner": None,
