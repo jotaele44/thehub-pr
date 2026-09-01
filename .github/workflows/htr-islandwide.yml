@@ -1,14 +1,10 @@
 name: HTR island-wide bounded census
 
+# This workflow hits mutable authoritative services. Run it only when a new
+# source snapshot is intentionally requested. Ordinary HTR/v3 commits must
+# reuse the previously frozen census artifacts instead of silently redownloading
+# SIGE roads/dams.
 on:
-  pull_request:
-    paths:
-      - "src/hub/htr.py"
-      - "tests/test_htr.py"
-      - "scripts/run_htr_islandwide.py"
-      - "scripts/adjudicate_htr_census.py"
-      - "data/htr/**"
-      - ".github/workflows/htr-islandwide.yml"
   workflow_dispatch:
 
 permissions:
@@ -53,7 +49,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: htr-islandwide-${{ github.event.pull_request.head.sha || github.sha }}
+          name: htr-islandwide-${{ github.sha }}
           path: artifacts/htr_islandwide
           if-no-files-found: error
           retention-days: 30
