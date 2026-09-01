@@ -1,6 +1,6 @@
 # ADR 0007: Isolated-clone shared package pins
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-08-01
 - Supersedes: ADR 0002 for application installation and build dependencies
 

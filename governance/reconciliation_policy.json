@@ -1,0 +1,15 @@
+{
+  "schema_version":"prii_reconciliation_policy_v1",
+  "central_source":"governance/compatibility_matrix.json",
+  "local_receipt_path":"governance/federation_compatibility.json",
+  "allowed_dispositions":["UNAFFECTED","COMPATIBLE","UPDATED"],
+  "blocked_dispositions":["BLOCKED"],
+  "rules":[
+    "central and local repo identifiers must match exactly",
+    "central and local dispositions must match exactly",
+    "missing receipt is failure for impacted repositories",
+    "unknown disposition is failure",
+    "BLOCKED is failure",
+    "receipt baseline must identify the central governance baseline"
+  ]
+}

@@ -53,7 +53,9 @@ def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dic
     # ledgers therefore do not depend on caller mapping insertion order.
     for producer in sorted(packages):
         pkg = Path(packages[producer])
-        errs = validate_package(pkg)
+        # Full row-schema validation belongs to validate-package/federation.
+        # Aggregation still checks manifest, hashes, counts, and JSON integrity.
+        errs = validate_package(pkg, validate_rows=False)
         summary["errors"][producer] = errs
         if errs and strict:
             continue
