@@ -1,0 +1,51 @@
+{
+  "schema_version": "htr-v2-460-pair-independent-adjudication-1.0",
+  "source_artifact": "htr-v2-relation-adjudication-2026-08-31.zip",
+  "source_artifact_sha256": "075a42577fd622df0825c59e401cfce49edc599cffd6d2131ae4a7a13d59b9dd",
+  "scope": "Independent evidence disposition for all 460 HTR v2 pair groups while conserving all 1,738 source-row candidate relations. Name, fuzzy similarity, proximity and clustering are not pair-binding evidence.",
+  "pair_groups": 460,
+  "candidate_rows": 1738,
+  "pair_group_arithmetic": {
+    "EXACT_NAME_RECURRENCE_UNBOUND": 274,
+    "ORTHOGRAPHIC_RECURRENCE_UNBOUND": 178,
+    "ORTHOGRAPHIC_VARIANT_UNBOUND": 8
+  },
+  "candidate_row_arithmetic": {
+    "EXACT_NAME_RECURRENCE_UNBOUND": 997,
+    "ORTHOGRAPHIC_RECURRENCE_UNBOUND": 617,
+    "ORTHOGRAPHIC_VARIANT_UNBOUND": 124
+  },
+  "disposition": {
+    "UNRESOLVED": 1738,
+    "UNSUPPORTED": 0,
+    "CONTRADICTION": 0
+  },
+  "direct_pair_binding_evidence_found_groups": 0,
+  "luchetti_pair_groups": {
+    "count": 8,
+    "public_context_ref": "data/htr/luchetti_public_adjudication_v1.json",
+    "disposition": "PUBLIC_CONTEXT_EXISTS_BUT_NO_DIRECT_STREET_NAMING_INSTRUMENT",
+    "state": "UNRESOLVED",
+    "pair_binding_state": "UNBOUND"
+  },
+  "identity_promotions": 0,
+  "connectivity_promotions": 0,
+  "pair_binding_promotions": 0,
+  "transitive_context_inheritance": 0,
+  "unexplained_residue": 0,
+  "derived_artifact": {
+    "zip_name": "htr-v2-460-pair-evidence-2026-09-01.zip",
+    "zip_sha256": "4e18deb59f82bff58d36e34b84be78117f781f028b06ad60ba1b8ec5ffadde98",
+    "pair_group_ledger_sha256": "8c7ec01662cbbe61b82bbf78fc80578de18671f12de685bd7dc65f80d9f1a66b",
+    "relation_conservation_ledger_sha256": "55143ac0f9f4549d5d0746304289c72f7522ef6265ab5d248ec404c3709a2891",
+    "summary_sha256": "3ed8fc4eed060dc575ef85b39df32508e36bcfcdcb453ad81b200a855f64379b"
+  },
+  "certification": {
+    "pair_group_classification_arithmetic": "PASS",
+    "candidate_row_conservation": "PASS",
+    "candidate_id_uniqueness": "PASS",
+    "zero_unexplained_residue": "PASS",
+    "zero_unresolved_relation_residue": "FAIL",
+    "relation_resolution": "OPEN"
+  }
+}
