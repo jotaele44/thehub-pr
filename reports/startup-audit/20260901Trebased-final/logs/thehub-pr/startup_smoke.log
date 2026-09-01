@@ -1,0 +1,8 @@
+
+> thehub-pr-ui@0.0.0 build
+> vite build
+
+$ python3 -m py_compile desktop/launch.py desktop/app_server.py server/backend/main.py && (cd server/frontend && npm run build)
+# cwd: /Users/jotaele/fed-repos/thehub-pr
+# started_utc: 2026-09-01T00:27:51Z
+
