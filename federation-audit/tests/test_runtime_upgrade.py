@@ -12,16 +12,16 @@ import federation_audit.runtime_cert as runtime_cert
 from federation_audit.calibration import run_calibration
 from federation_audit.classifier import classify_observations
 from federation_audit.resolver import build_resolution_index
-from federation_audit.runtime_cert import (
-    Probe,
-    _failure_reason,
-    _install_block_wrappers,
-    execute_probe,
-    git_head,
-    validate_topology,
-    verify_runtime_dependencies,
-    verify_workspace,
-)
+
+
+Probe = runtime_cert.Probe
+_failure_reason = runtime_cert._failure_reason
+_install_block_wrappers = runtime_cert._install_block_wrappers
+execute_probe = runtime_cert.execute_probe
+git_head = runtime_cert.git_head
+validate_topology = runtime_cert.validate_topology
+verify_runtime_dependencies = runtime_cert.verify_runtime_dependencies
+verify_workspace = runtime_cert.verify_workspace
 
 
 def test_static_declaration_cannot_self_promote():

@@ -289,7 +289,9 @@ def scan_repository(root: Path, repo: dict) -> list[Trace]:
                     if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
                 )
             except SyntaxError:
-                pass
+                # Keep the source inventory entry; syntax-invalid candidates cannot
+                # contribute AST symbols but may still have fallback route evidence.
+                continue
         else:
             symbols.update(_handlers(source))
 
