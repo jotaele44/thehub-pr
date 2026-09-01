@@ -1,0 +1,17 @@
+{
+  "@context": "../contexts/all.context.jsonld",
+  "@id": "https://prii.dev/ontology/repo/skywatcher-pr",
+  "@type": "prii:OntologyModule",
+  "version": "0.1.0", "status": "proposed", "owner": "skywatcher-pr",
+  "imports": ["https://prii.dev/ontology/core"],
+  "classes": [
+    {"id": "skywatcher:AirspaceObservation", "label": "Airspace Observation", "owner": "skywatcher-pr"},
+    {"id": "skywatcher:AircraftProfile", "label": "Aircraft Profile", "owner": "skywatcher-pr"},
+    {"id": "skywatcher:FlightTrack", "label": "Flight Track", "owner": "skywatcher-pr"},
+    {"id": "skywatcher:FR24Capture", "label": "FR24 Capture", "owner": "skywatcher-pr"},
+    {"id": "skywatcher:MissionInference", "label": "Mission Inference", "owner": "skywatcher-pr"},
+    {"id": "skywatcher:AirspaceInfrastructureRelationship", "label": "Airspace Infrastructure Relationship", "owner": "skywatcher-pr"},
+    {"id": "skywatcher:SATIMRunBundle", "label": "SATIM Run Bundle", "owner": "skywatcher-pr"}
+  ],
+  "semanticConstraints": ["Observed flight data and mission inference must remain distinct."]
+}

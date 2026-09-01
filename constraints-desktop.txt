@@ -1,0 +1,50 @@
+# Derived from uv.lock for reproducible desktop installs (see desktop/setup.py).
+# Direct-reference (git/path) entries are intentionally excluded -- pip
+# constraints files reject those; they are already pinned exactly by their
+# own @ref in the requirements file that references them. Where uv.lock has
+# multiple resolutions across Python versions, the entry compatible with this
+# repo's 3.10+ floor was kept.
+annotated-doc==0.0.4
+annotated-types==0.7.0
+anyio==4.14.0
+ast-serialize==0.5.0
+attrs==26.1.0
+cffi==2.1.0
+click==8.4.1
+colorama==0.4.6
+coverage==7.15.2
+cryptography==49.0.0
+exceptiongroup==1.3.1
+fastapi==0.138.0
+h11==0.16.0
+httptools==0.8.0
+idna==3.18
+iniconfig==2.3.0
+jsonschema==4.26.0
+jsonschema-specifications==2025.9.1
+librt==0.11.0
+mypy==2.1.0
+mypy-extensions==1.1.0
+packaging==26.2
+pathspec==1.1.1
+pluggy==1.6.0
+pycparser==3.0
+pydantic==2.13.4
+pydantic-core==2.46.4
+pygments==2.20.0
+pytest==9.1.1
+pytest-cov==7.1.0
+python-dotenv==1.2.2
+pyyaml==6.0.3
+referencing==0.37.0
+rpds-py==2026.5.1
+ruff==0.15.18
+starlette==1.3.1
+tomli==2.4.1
+types-pyyaml==6.0.12.20260518
+typing-extensions==4.15.0
+typing-inspection==0.4.2
+uvicorn==0.49.0
+uvloop==0.22.1
+watchfiles==1.2.0
+websockets==16.0

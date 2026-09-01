@@ -12,6 +12,7 @@ from fed_control import (
     reconcile,
     repository_statuses,
     run_max,
+    snapshot_remote,
     validate_ledger,
 )
 
@@ -78,7 +79,7 @@ def test_cent_s_active_draft_is_bound_without_inventing_vector_identity():
         }
     ]
     assert cent["invariants"]["explicit_vector_id_present"] is False
-    assert cent["invariants"]["candidate_status"] == "diverged"
+    assert cent["invariants"]["candidate_status"] == "diverged_requires_readjudication"
 
 
 def test_first_real_domain_vector_is_frozen_as_merged_main_pass():
@@ -138,6 +139,61 @@ def test_stale_sha_blocks_completed_ovnis_vector():
     )
     assert ovnis["effective_status"] == "BLOCKED"
     assert "stale_or_unverified_sha" in ovnis["blockers"]
+
+
+def test_control_plane_self_snapshot_finalizer_accepts_parent_sha(monkeypatch):
+    ledger = copy.deepcopy(_ledger())
+    repos = {row["repo"]: row for row in ledger["snapshot"]["repositories"]}
+    repos["jotaele44/thehub-pr"]["expected_sha"] = "1" * 40
+    repos["jotaele44/thehub-pr"]["self_snapshot_finalizer_parent"] = True
+
+    class Proc:
+        def __init__(self, stdout="", returncode=0, stderr=""):
+            self.stdout = stdout
+            self.returncode = returncode
+            self.stderr = stderr
+
+    def fake_run(cmd, text, capture_output, check):
+        repo = cmd[2].split("/commits/")[0].removeprefix("repos/")
+        if repo == "jotaele44/thehub-pr" and cmd[4] == ".sha":
+            return Proc(stdout=("2" * 40) + "\n")
+        if repo == "jotaele44/thehub-pr":
+            return Proc(stdout=("1" * 40) + "\n")
+        return Proc(stdout=repos[repo]["expected_sha"] + "\n")
+
+    monkeypatch.setattr("fed_control.subprocess.run", fake_run)
+    snapshot = snapshot_remote(ledger)
+    thehub = next(row for row in snapshot["repositories"] if row["repo"] == "jotaele44/thehub-pr")
+    assert thehub["observed_sha"] == "2" * 40
+    assert thehub["observed_parent_shas"] == ["1" * 40]
+    assert thehub["sha_match"] is True
+
+
+def test_control_plane_self_snapshot_finalizer_rejects_unrelated_head(monkeypatch):
+    ledger = copy.deepcopy(_ledger())
+    repos = {row["repo"]: row for row in ledger["snapshot"]["repositories"]}
+    repos["jotaele44/thehub-pr"]["expected_sha"] = "1" * 40
+    repos["jotaele44/thehub-pr"]["self_snapshot_finalizer_parent"] = True
+
+    class Proc:
+        def __init__(self, stdout="", returncode=0, stderr=""):
+            self.stdout = stdout
+            self.returncode = returncode
+            self.stderr = stderr
+
+    def fake_run(cmd, text, capture_output, check):
+        repo = cmd[2].split("/commits/")[0].removeprefix("repos/")
+        if repo == "jotaele44/thehub-pr" and cmd[4] == ".sha":
+            return Proc(stdout=("2" * 40) + "\n")
+        if repo == "jotaele44/thehub-pr":
+            return Proc(stdout=("3" * 40) + "\n")
+        return Proc(stdout=repos[repo]["expected_sha"] + "\n")
+
+    monkeypatch.setattr("fed_control.subprocess.run", fake_run)
+    snapshot = snapshot_remote(ledger)
+    thehub = next(row for row in snapshot["repositories"] if row["repo"] == "jotaele44/thehub-pr")
+    assert thehub["observed_parent_shas"] == ["3" * 40]
+    assert thehub["sha_match"] is False
 
 
 def test_exact_snapshot_dry_run_reuses_merged_ovnis_pass_without_reexecution():

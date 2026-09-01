@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/ovnis-pr
-          ref: d6a7fe9e5096b6bd33058b860e4e6f4cdb64f7d1
+          ref: 588bc121991c529fee136c90063d0d5423f23698
           path: .fed/checkouts/ovnis-pr
           persist-credentials: false
 
@@ -31,6 +31,94 @@ jobs:
       - name: Install control plane
         run: python -m pip install -e .
 
+      - name: Bind non-self-referential control-plane snapshot
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          PULL_REQUEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          import yaml
+
+          ledger_path = Path("registry/development_vectors.yaml")
+          policy_path = Path("federation/control-plane-snapshot-policy.json")
+          evidence_path = Path("control-plane-runtime-binding.json")
+
+          ledger = yaml.safe_load(ledger_path.read_text(encoding="utf-8"))
+          policy = json.loads(policy_path.read_text(encoding="utf-8"))
+          control = ledger["control_plane"]
+
+          assert policy["control_plane"] == control
+          assert policy["mode"] == "RUNTIME_BIND_CONTROL_PLANE_MAIN_ONLY"
+          assert policy["producer_mode"] == "EXACT_FROZEN_SHA"
+          assert policy["invariants"]["runtime_rebind_count"] == 1
+          assert policy["invariants"]["producer_exact_sha_count"] == 6
+          assert policy["invariants"]["allow_producer_runtime_rebind"] is False
+
+          rows = ledger["snapshot"]["repositories"]
+          assert len(rows) == 7
+          by_repo = {row["repo"]: row for row in rows}
+          assert len(by_repo) == 7
+          assert control in by_repo
+
+          frozen = {repo: row["expected_sha"] for repo, row in by_repo.items()}
+          producer_frozen = {repo: sha for repo, sha in frozen.items() if repo != control}
+          assert len(producer_frozen) == 6
+
+          if os.environ.get("GITHUB_EVENT_NAME") == "pull_request":
+              if os.environ.get("GITHUB_REPOSITORY") != control:
+                  raise SystemExit(
+                      "BLOCKED: pull_request control-plane binding requires "
+                      f"GITHUB_REPOSITORY={control}"
+                  )
+              live = os.environ.get("PULL_REQUEST_BASE_SHA", "").strip()
+          else:
+              proc = subprocess.run(
+                  ["gh", "api", f"repos/{control}/commits/main", "--jq", ".sha"],
+                  text=True,
+                  capture_output=True,
+                  check=False,
+                  env=os.environ.copy(),
+              )
+              if proc.returncode:
+                  raise SystemExit(f"BLOCKED: control-plane main lookup failed: {proc.stderr.strip()}")
+              live = proc.stdout.strip()
+          if len(live) != 40 or any(ch not in "0123456789abcdef" for ch in live.lower()):
+              raise SystemExit(f"BLOCKED: invalid control-plane main SHA: {live!r}")
+
+          by_repo[control]["expected_sha"] = live
+
+          # Producer rows are not allowed to move as a side effect of solving the
+          # controller's self-reference. Their six frozen SHAs remain exact.
+          producer_after = {
+              repo: row["expected_sha"]
+              for repo, row in by_repo.items()
+              if repo != control
+          }
+          assert producer_after == producer_frozen
+
+          ledger_path.write_text(yaml.safe_dump(ledger, sort_keys=False), encoding="utf-8")
+          evidence = {
+              "schema_version": 1,
+              "mode": policy["mode"],
+              "control_plane": control,
+              "frozen_control_plane_sha": frozen[control],
+              "runtime_control_plane_sha": live,
+              "runtime_rebind_count": 1,
+              "producer_exact_sha_count": len(producer_frozen),
+              "producer_expected_shas": producer_frozen,
+          }
+          evidence_path.write_text(json.dumps(evidence, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          print(json.dumps(evidence, sort_keys=True))
+          PY
+
       - name: Execute frozen remote MAX apply pass
         env:
           GH_TOKEN: ${{ github.token }}
@@ -38,33 +126,37 @@ jobs:
           set -euo pipefail
           fed --root .fed/checkouts max --remote --apply | tee federation-max.json
 
-      - name: Assert stale remote SHAs fail closed with bounded exhaustion
+      - name: Assert frozen snapshot semantics and fail-closed drift handling
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
           receipt = json.loads(Path("federation-max.json").read_text(encoding="utf-8"))
+          binding = json.loads(Path("control-plane-runtime-binding.json").read_text(encoding="utf-8"))
           execution = receipt["execution"]
           certification = receipt["certification"]
           repo_status = receipt["repository_status"]
+          reconciliation = receipt["reconciliation"]
+          snapshot = receipt["snapshot"]
+
+          assert binding["mode"] == "RUNTIME_BIND_CONTROL_PLANE_MAIN_ONLY"
+          assert binding["runtime_rebind_count"] == 1
+          assert binding["producer_exact_sha_count"] == 6
+          assert len(binding["producer_expected_shas"]) == 6
+          assert "jotaele44/thehub-pr" not in binding["producer_expected_shas"]
 
           assert execution["apply"] is True
           assert execution["bounded_exhausted"] is True
           assert execution["ready_residue"] == []
           assert execution["completed"] == []
-          assert execution["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "BLOCKED"
-          assert execution["final_status"]["CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE"] == "BLOCKED"
-          assert execution["final_status"]["BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT"] == "BLOCKED"
-          assert execution["final_status"]["PR_GOVERNMENT_FINANCE_100_PERCENT_COVERAGE"] == "BLOCKED"
-          assert execution["final_status"]["DISCOVER_CENTINELAS_ACTIVE_VECTOR"] == "BLOCKED"
           assert certification["universal_exhaustion_claimed"] is False
           assert certification["certification"] == "PROVISIONAL"
           assert certification["repository_status_phase"] == "post_execution"
 
-          # Declared PASS vectors must still fail closed when their frozen SHAs
-          # no longer match live remote heads.
-          # No domain command may execute during post-merge recertification.
+          # No declared PASS vector may be re-executed just because a mutable
+          # producer advanced. Passed artifacts are reused and stale producer
+          # heads are classified, not rewritten or silently rebound.
           executed_rows = [
               row
               for pass_row in execution["passes"]
@@ -73,26 +165,95 @@ jobs:
           ]
           assert executed_rows == []
 
+          allowed = {"PASS", "OPEN", "BLOCKED", "READY", "FAIL", "UNRESOLVED"}
           counts = {}
           for status in execution["final_status"].values():
+              assert status in allowed
               counts[status] = counts.get(status, 0) + 1
-          assert counts == {
-              "BLOCKED": 8,
-          }
-          assert sum(counts.values()) == 8
+          assert sum(counts.values()) == certification["vector_count"] == 8
+          # FEDERATION_PICKUP_SYSTEM_LEVEL_3 is owned by the control plane
+          # (jotaele44/thehub-pr) itself, which always self-matches (asserted
+          # below), so it is the one vector safe to pin to PASS unconditionally.
+          # CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE is producer-owned
+          # (jotaele44/ovnis-pr) and is intentionally NOT pinned here: its
+          # terminal status depends on that producer's live drift state, which
+          # is asserted dynamically below via the drifted/matched invariant
+          # rather than hardcoded, so it doesn't go stale as ovnis-pr's main
+          # advances independently of this PR.
+          assert execution["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
+          assert counts.get("READY", 0) == 0
+          assert counts.get("FAIL", 0) == 0
+          assert counts.get("UNRESOLVED", 0) == 0
 
           assert repo_status["phase"] == "post_execution"
           assert repo_status["arithmetic_ok"] is True
-          assert repo_status["counts"] == {
-              "BLOCKED": 7,
-              "FAIL": 0,
-              "OPEN": 0,
-              "PASS": 0,
-              "READY": 0,
-              "UNRESOLVED": 0,
-          }
           assert repo_status["classified_count"] == repo_status["repository_count"] == 7
+          assert sum(repo_status["counts"].values()) == 7
+
+          rows = snapshot["repositories"]
+          assert len(rows) == 7
+          by_snapshot_repo = {row["repo"]: row for row in rows}
+          assert len(by_snapshot_repo) == 7
+          assert by_snapshot_repo["jotaele44/thehub-pr"]["sha_match"] is True
+
+          # The six producer expected SHAs must still be the frozen values from
+          # the committed ledger. Drift is evidence about mutable main heads,
+          # never authorization to mutate the snapshot in-place.
+          for repo, expected_sha in binding["producer_expected_shas"].items():
+              row = by_snapshot_repo[repo]
+              assert row["expected_sha"] == expected_sha
+
+          vectors = reconciliation["vectors"]
+          by_repo_vectors = {}
+          for row in vectors:
+              by_repo_vectors.setdefault(row["repo"], []).append(row)
+
+          drifted = {
+              repo
+              for repo, row in by_snapshot_repo.items()
+              if repo != "jotaele44/thehub-pr" and row["sha_match"] is False
+          }
+          matched = set(binding["producer_expected_shas"]) - drifted
+          assert drifted | matched == set(binding["producer_expected_shas"])
+          assert not (drifted & matched)
+
+          # Every producer drift must fail closed: all vectors owned by that
+          # producer become BLOCKED and carry the explicit stale-SHA blocker.
+          for repo in drifted:
+              assert by_repo_vectors[repo]
+              for row in by_repo_vectors[repo]:
+                  assert row["effective_status"] == "BLOCKED"
+                  assert "stale_or_unverified_sha" in row["blockers"]
+
+          # Conversely, a matched producer must not acquire the stale-SHA
+          # blocker from the snapshot machinery.
+          for repo in matched:
+              for row in by_repo_vectors[repo]:
+                  assert "stale_or_unverified_sha" not in row["blockers"]
+
           by_repo = {row["repo"]: row["status"] for row in repo_status["repositories"]}
-          assert set(by_repo.values()) == {"BLOCKED"}
-          print("PASS: stale remote SHAs fail closed; bounded exhaustion and arithmetic close")
+          assert by_repo["jotaele44/thehub-pr"] == "OPEN"
+
+          # Producer repo-level status must track live drift without erasing
+          # independent vector blockers. A drifted producer fails closed to
+          # BLOCKED. A matched producer may also be BLOCKED, but only when one
+          # of its own vectors is independently BLOCKED; the vector assertions
+          # above prove that stale_or_unverified_sha is not the cause.
+          for repo in drifted:
+              assert by_repo[repo] == "BLOCKED"
+          for repo in matched:
+              if by_repo[repo] == "BLOCKED":
+                  assert any(
+                      row["effective_status"] == "BLOCKED"
+                      for row in by_repo_vectors[repo]
+                  )
+
+          print(json.dumps({
+              "status": "PASS",
+              "frozen_producer_count": len(binding["producer_expected_shas"]),
+              "matched_producers": sorted(matched),
+              "drifted_producers": sorted(drifted),
+              "vector_status_counts": counts,
+              "repository_status_counts": repo_status["counts"],
+          }, sort_keys=True))
           PY

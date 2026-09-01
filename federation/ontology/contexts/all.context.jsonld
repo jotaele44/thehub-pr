@@ -1,0 +1,13 @@
+{
+  "@context": {
+    "prii": "https://prii.dev/ontology/core#",
+    "contract": "https://prii.dev/ontology/contract#",
+    "hub": "https://prii.dev/ontology/repo/thehub-pr#",
+    "spiderweb": "https://prii.dev/ontology/repo/spiderweb-pr#",
+    "centinelas": "https://prii.dev/ontology/repo/centinelas-pr#",
+    "aguayluz": "https://prii.dev/ontology/repo/aguayluz-pr#",
+    "ovnis": "https://prii.dev/ontology/repo/ovnis-pr#",
+    "skywatcher": "https://prii.dev/ontology/repo/skywatcher-pr#",
+    "moneysweep": "https://prii.dev/ontology/repo/moneysweep-pr#"
+  }
+}
