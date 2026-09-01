@@ -60,6 +60,7 @@ jobs:
         run: >
           python thehub-pr/tools/render_federation_templates.py
           --repo ${{ matrix.repo }} --repo-root ${{ matrix.repo }}
+          --template-ref ${{ github.sha }}
 
       - name: Open a sync PR if the producer drifted
         env:
@@ -86,11 +87,12 @@ jobs:
           git commit -m "chore: sync shared federation boilerplate from thehub-pr
 
           Re-rendered launchers / requirements-desktop.txt / federation_export_manifest
-          schema from thehub-pr/federation-templates via render_federation_templates.py.
+          schema and rebound the producer drift gate to this exact thehub commit
+          via render_federation_templates.py.
           Automated by thehub-pr federation-template-sync."
           git push -u origin "$branch"
           gh pr create \
             --repo "jotaele44/${{ matrix.repo }}" \
             --base main --head "$branch" \
             --title "Sync shared federation boilerplate from thehub-pr" \
-            --body "Automated re-render of the shared launcher/desktop/schema boilerplate from \`thehub-pr/federation-templates\`. The canonical template changed; this brings ${{ matrix.repo }}'s copies back in sync so its template-drift check passes."
+            --body "Automated re-render of the shared launcher/desktop/schema boilerplate from \`thehub-pr/federation-templates\`, including the producer drift gate's exact TheHub commit binding. The canonical template changed; this brings ${{ matrix.repo }}'s copies back in sync so its template-drift check passes."
