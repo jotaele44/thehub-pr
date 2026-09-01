@@ -13,7 +13,6 @@ from federation_audit.calibration import run_calibration
 from federation_audit.classifier import classify_observations
 from federation_audit.resolver import build_resolution_index
 
-
 Probe = runtime_cert.Probe
 _failure_reason = runtime_cert._failure_reason
 _install_block_wrappers = runtime_cert._install_block_wrappers
