@@ -1,11 +1,24 @@
 {
-  "schema_version": "major-hydro-asset-v3-1.0",
-  "scope": "Versioned source-manifestation expansion beyond MAJOR_HYDRO_ASSET_v2. v1/v2 remain immutable; v3 does not claim universal Puerto Rico hydro exhaustion.",
+  "schema_version": "major-hydro-asset-v3-1.1",
+  "scope": "Artifact-backed, versioned authoritative source-manifestation expansion beyond MAJOR_HYDRO_ASSET_v2. v1/v2 remain immutable. This file indexes the bounded v3 execution; it does not inline every source row and does not claim universal Puerto Rico hydro exhaustion.",
   "base_version": "MAJOR_HYDRO_ASSET_v2",
-  "base_combined_discovery_manifestation_count": 107,
-  "extension_manifestation_count": 2,
-  "combined_discovery_manifestation_count_if_appended": 109,
-  "manifestations": [
+  "base_supported_discovery_manifestation_count": 107,
+  "canonical_v3_adjudication": {
+    "workflow_run_id": 33572711586,
+    "execution_head_sha": "b9e690e412ff732af80d2150f7de60ec4c61ea8c",
+    "artifact_id": 9825534660,
+    "artifact_name": "htr-v3-adjudicated-b9e690e412ff732af80d2150f7de60ec4c61ea8c",
+    "artifact_digest": "sha256:ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd",
+    "certification": "PASS_BOUNDED_SOURCE_MANIFESTATION_CLASSIFICATION"
+  },
+  "v3_source_manifestation_arithmetic": "3506=70+3254+182",
+  "v3_source_manifestation_count": 3506,
+  "v3_supported_for_major_discovery": 70,
+  "v3_unsupported_discovery_key": 3254,
+  "v3_major_hydro_asset_eligibility_unresolved": 182,
+  "total_source_manifestations_with_v2": 3613,
+  "bounded_supported_discovery_manifestations_with_v2": 177,
+  "inline_preexisting_usace_manifestations": [
     {
       "source_manifestation_id": "usace-portugues-bucana:cerrillos-dam",
       "source_id": "usace:portugues-bucana:current",
@@ -46,19 +59,59 @@
       "connectivity_claim": false
     }
   ],
+  "source_scope_outcomes": {
+    "nid_pr": {
+      "source_rows": 36,
+      "stable_nid_ids": 36,
+      "primary_supported_discovery_manifestations": 36,
+      "raw_alias_field_manifestations_unsupported": 67
+    },
+    "aaa_2015_w_intake": {
+      "source_rows": 182,
+      "stable_facility_ids": 182,
+      "distinct_raw_names": 180,
+      "major_hydro_asset_eligibility": "UNRESOLVED"
+    },
+    "sige_canal_de_riego": {
+      "source_rows": 3187,
+      "raw_name_family_count": 1,
+      "raw_name": "Canal de Riego",
+      "discovery_key_status": "UNSUPPORTED",
+      "unsupported_reason": "GENERIC_FEATURE_CLASS_ONLY"
+    },
+    "drna_2004_lesser": {
+      "source_rows": 10,
+      "discovery_key_status": "SUPPORTED"
+    },
+    "drna_pira_2016_table_3_5": {
+      "source_rows": 22,
+      "mayor_rows": 18,
+      "intermedio_rows": 4,
+      "discovery_key_status": "SUPPORTED",
+      "prose_total_reservoirs": 39,
+      "prose_major_works": 15,
+      "table_vs_prose_contradiction_state": "UNRESOLVED_SEMANTIC_SCOPE_DIFFERENCE_OR_SOURCE_CONTRADICTION"
+    }
+  },
   "invariants": {
     "raw_normalized_canonical_separate": true,
+    "unsupported_not_rejected": true,
     "name_only_identity_prohibited": true,
     "fuzzy_identity_prohibited": true,
     "proximity_identity_prohibited": true,
     "cluster_identity_prohibited": true,
     "connectivity_from_name_or_proximity_prohibited": true,
-    "transitive_context_inheritance": false
+    "transitive_context_inheritance": false,
+    "successful_mutable_source_snapshots_reused": true
   },
   "certification": {
-    "extension_row_arithmetic": "2=2",
-    "extension_source_binding": "PASS",
+    "source_manifestation_classification_arithmetic": "PASS",
+    "zero_unexplained_manifestation_residue": true,
     "cross_source_identity": "UNRESOLVED",
+    "aaa_major_eligibility_residue": 182,
+    "historical_prwra_exhaustion": "OPEN",
+    "usgs_conveyance_expansion_beyond_v2": "OPEN",
+    "v3_bounded_source_manifestation_classification": "PASS",
     "v3_denominator_complete": false,
     "universal_hydro_denominator_claimed": false
   }
