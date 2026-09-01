@@ -20,7 +20,9 @@ const PR_CENTER = [18.22, -66.4];
 
 // Renders many geolocated records as pins.
 // points: [{ id, lat, lon, title, subtitle }]
-export default function MultiMarkerMap({ points = [], height = 480 }) {
+// onPointSelect is optional and lets higher-level workspaces bind map selection
+// back to a feed/inspector without changing record identity semantics.
+export default function MultiMarkerMap({ points = [], height = 480, onPointSelect }) {
   const valid = points.filter(
     (p) => typeof p.lat === "number" && typeof p.lon === "number" && !Number.isNaN(p.lat) && !Number.isNaN(p.lon)
   );
@@ -36,7 +38,12 @@ export default function MultiMarkerMap({ points = [], height = 480 }) {
         />
         <MunicipiosLayer />
         {valid.map((p) => (
-          <Marker key={p.id} position={[p.lat, p.lon]} icon={icon}>
+          <Marker
+            key={p.id}
+            position={[p.lat, p.lon]}
+            icon={icon}
+            eventHandlers={onPointSelect ? { click: () => onPointSelect(p) } : undefined}
+          >
             <Popup>
               <div className="text-sm font-medium">{p.title}</div>
               {p.subtitle && <div className="text-xs text-muted-foreground mt-0.5">{p.subtitle}</div>}

@@ -1,0 +1,165 @@
+{
+  "aggregate_dir": "reports/moneysweep-live-readiness/20260901T005414Z_moneysweep_live_readiness/aggregate",
+  "aggregate_errors": {
+    "aguayluz-pr": [],
+    "centinelas-pr": [],
+    "moneysweep-pr": [],
+    "ovnis-pr": [],
+    "skywatcher-pr": [],
+    "spiderweb-pr": []
+  },
+  "aggregate_producers": {
+    "aguayluz-pr": {
+      "alerts": 4338,
+      "entities": 46401,
+      "relationships": 65389,
+      "sources": 39155
+    },
+    "centinelas-pr": {
+      "entities": 100,
+      "observations": 100,
+      "sources": 6
+    },
+    "moneysweep-pr": {
+      "entities": 207,
+      "relationships": 66,
+      "sources": 4508
+    },
+    "ovnis-pr": {
+      "entities": 758,
+      "observations": 470,
+      "relationships": 563,
+      "sources": 278
+    },
+    "skywatcher-pr": {
+      "entities": 6,
+      "observations": 3,
+      "relationships": 3,
+      "sources": 3
+    },
+    "spiderweb-pr": {
+      "entities": 13,
+      "observations": 1,
+      "relationships": 16,
+      "sources": 3
+    }
+  },
+  "aggregate_streams": {
+    "alerts": 4338,
+    "entities": 47484,
+    "observations": 574,
+    "relationships": 66037,
+    "sources": 43953
+  },
+  "branch": "audit/startup-completion-20260831",
+  "command_receipts": [
+    {
+      "command": "validate_moneysweep_package",
+      "exit_code": null,
+      "raw": [
+        "validate_moneysweep_package",
+        ""
+      ],
+      "state": "UNPARSEABLE_EXIT_CODE_ROW"
+    },
+    {
+      "command": "aggregate",
+      "exit_code": null,
+      "raw": [
+        "aggregate",
+        ""
+      ],
+      "state": "UNPARSEABLE_EXIT_CODE_ROW"
+    },
+    {
+      "command": "graph_report",
+      "exit_code": null,
+      "raw": [
+        "graph_report",
+        ""
+      ],
+      "state": "UNPARSEABLE_EXIT_CODE_ROW"
+    },
+    {
+      "command": "validate_federation",
+      "exit_code": null,
+      "raw": [
+        "validate_federation",
+        ""
+      ],
+      "state": "UNPARSEABLE_EXIT_CODE_ROW"
+    },
+    {
+      "command": "build_federation_status",
+      "exit_code": null,
+      "raw": [
+        "build_federation_status",
+        ""
+      ],
+      "state": "UNPARSEABLE_EXIT_CODE_ROW"
+    },
+    {
+      "command": "focused_hub_tests_no_cov",
+      "exit_code": null,
+      "raw": [
+        "focused_hub_tests_no_cov",
+        ""
+      ],
+      "state": "UNPARSEABLE_EXIT_CODE_ROW"
+    }
+  ],
+  "command_receipts_note": "command_exit_codes.csv preserves malformed zsh PIPESTATUS capture rows; normalized_command_exit_codes.csv records adjudicated exit states from logs and CLI semantics.",
+  "completion_claim": "MoneySweep package was valid and aggregated; all-federation live readiness remains bounded because MoneySweep and Skywatcher are still declared_not_live.",
+  "federation_status": {
+    "by_blocker": {
+      "declared_not_live": 2,
+      "ready": 4
+    },
+    "moneysweep_blocker_class": "declared_not_live",
+    "producer_count": 6,
+    "ready_count": 4,
+    "skywatcher_blocker_class": "declared_not_live"
+  },
+  "generated_at_utc": "2026-09-01T01:12:59Z",
+  "head_sha": "27fa79600ec6a991198c272d96204b3495ca5d33",
+  "lumen_status": "LUMEN_UNAVAILABLE_OR_UNHEALTHY; bounded local inspection used",
+  "moneysweep_package_id": "pkg_9208fb0b7dc71cd0b24a44ac5a126e46",
+  "moneysweep_receipt": "../moneysweep-pr/reports/live-readiness/20260901T005414Z_moneysweep_live_readiness/moneysweep_live_readiness_closure_receipt.json",
+  "normalized_command_receipts": [
+    {
+      "command": "validate_moneysweep_package",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    {
+      "command": "aggregate",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    {
+      "command": "graph_report",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    {
+      "command": "validate_federation",
+      "exit_code": 1,
+      "state": "EXPECTED_PROVISIONAL_DECLARED_NOT_LIVE_2"
+    },
+    {
+      "command": "build_federation_status",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    {
+      "command": "focused_hub_tests_no_cov",
+      "exit_code": 0,
+      "state": "PASS"
+    }
+  ],
+  "origin_main_sha": "27fa79600ec6a991198c272d96204b3495ca5d33",
+  "repo_id": "thehub-pr",
+  "result_state": "HUB_AGGREGATE_PASS_FEDERATION_LIVE_READINESS_PROVISIONAL",
+  "run_id": "20260901T005414Z_moneysweep_live_readiness",
+  "schema_version": "thehub_moneysweep_live_readiness_pickup_v1"
+}

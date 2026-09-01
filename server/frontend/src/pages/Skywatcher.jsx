@@ -3,10 +3,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
 import ModuleMapTab from "@/components/shared/ModuleMapTab";
+import IntelligenceWorkspace from "@/components/intelligence/IntelligenceWorkspace";
 import StatusChip from "@/components/shared/StatusChip";
 import IdCode from "@/components/shared/IdCode";
 import { Plane } from "lucide-react";
 import { MODULES, REGIONS } from "@/lib/federation";
+import { INTELLIGENCE_ADAPTERS } from "@/lib/intelligenceAdapters";
 import { GENERIC_STATUS, CONFIDENCE, REVIEW_STATUS } from "@/lib/chips";
 
 const MODULE = MODULES.find((m) => m.name === "Skywatcher-PR");
@@ -60,12 +62,16 @@ export default function Skywatcher() {
   return (
     <div>
       <ModulePageHeader module={MODULE} icon={Plane} />
-      <Tabs defaultValue="events">
-        <TabsList className="mb-4">
+      <Tabs defaultValue="workspace">
+        <TabsList className="mb-4 flex h-auto flex-wrap">
+          <TabsTrigger value="workspace">Workspace</TabsTrigger>
           <TabsTrigger value="events">Airspace Events</TabsTrigger>
           <TabsTrigger value="map">Map View</TabsTrigger>
           <TabsTrigger value="corr">Correlation Reviews</TabsTrigger>
         </TabsList>
+        <TabsContent value="workspace">
+          <IntelligenceWorkspace adapter={INTELLIGENCE_ADAPTERS.skywatcher} />
+        </TabsContent>
         <TabsContent value="events">
           <EntityLedger entityName="AirspaceEvents" fields={eventFields} columns={eventColumns}
             searchKeys={["title", "event_id", "municipality"]}

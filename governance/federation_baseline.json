@@ -1,0 +1,13 @@
+{
+  "schema_version": "prii_federation_baseline_v1",
+  "frozen_at_utc": "2026-08-31T15:51:36Z",
+  "repos": {
+    "thehub-pr": {"repo": "jotaele44/thehub-pr", "sha": "0d2ac017d05f8bf4ce7550f1bba8e702eef55c5b"},
+    "moneysweep-pr": {"repo": "jotaele44/moneysweep-pr", "sha": "ffdc781bc2196fc5e35903573f3948137e18bb1b"},
+    "spiderweb-pr": {"repo": "jotaele44/spiderweb-pr", "sha": "533fdde554e11b486a4ddb7a3fbe8127ed3fa2b2"},
+    "aguayluz-pr": {"repo": "jotaele44/aguayluz-pr", "sha": "361e2c24b7fcc0c4e94afa10de6fc70c974419b9"},
+    "ovnis-pr": {"repo": "jotaele44/ovnis-pr", "sha": "774801ab0653bca20b7fab65e546f38d9e7b497d"},
+    "skywatcher-pr": {"repo": "jotaele44/skywatcher-pr", "sha": "b7b153fc64988ad62873841a3a61b75eab7721dd"},
+    "centinelas-pr": {"repo": "jotaele44/centinelas-pr", "sha": "a609aa077e3b137f6f1b9f11f0a83cef6005375f"}
+  }
+}

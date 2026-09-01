@@ -1,0 +1,71 @@
+schema_version: prii_federation_dependency_graph_v1
+federation_id: prii
+nodes:
+  - id: thehub-pr
+    repo: jotaele44/thehub-pr
+    role: synthesis_control_plane
+  - id: moneysweep-pr
+    repo: jotaele44/moneysweep-pr
+    role: public_money_intelligence_node
+  - id: spiderweb-pr
+    repo: jotaele44/spiderweb-pr
+    role: spatial_operational_producer
+  - id: aguayluz-pr
+    repo: jotaele44/aguayluz-pr
+    role: water_grid_monitoring_node
+  - id: ovnis-pr
+    repo: jotaele44/ovnis-pr
+    role: anomaly_intelligence_node
+  - id: skywatcher-pr
+    repo: jotaele44/skywatcher-pr
+    role: airspace_intelligence_node
+  - id: centinelas-pr
+    repo: jotaele44/centinelas-pr
+    role: pre_officialization_signal_producer
+edges:
+  - from: moneysweep-pr
+    to: thehub-pr
+    kind: artifact_export
+    contract: federation_export_manifest
+    required: true
+  - from: spiderweb-pr
+    to: thehub-pr
+    kind: artifact_export
+    contract: federation_export_manifest
+    required: true
+  - from: aguayluz-pr
+    to: thehub-pr
+    kind: artifact_export
+    contract: federation_export_manifest
+    required: true
+  - from: ovnis-pr
+    to: thehub-pr
+    kind: artifact_export
+    contract: federation_export_manifest
+    required: true
+  - from: skywatcher-pr
+    to: thehub-pr
+    kind: artifact_export
+    contract: federation_export_manifest
+    required: true
+  - from: centinelas-pr
+    to: thehub-pr
+    kind: artifact_export
+    contract: federation_export_manifest
+    required: true
+  - from: centinelas-pr
+    to: moneysweep-pr
+    kind: signal_intake
+    contract: centinelas_financial_signal
+    required: false
+  - from: moneysweep-pr
+    to: spiderweb-pr
+    kind: derived_artifact
+    contract: contract_finance_bundle
+    required: false
+policy:
+  source_of_truth: this_file
+  unknown_edges: fail
+  undeclared_cross_repo_dependency: fail
+  runtime_rpc_between_producers: forbidden
+  shared_database_between_producers: forbidden

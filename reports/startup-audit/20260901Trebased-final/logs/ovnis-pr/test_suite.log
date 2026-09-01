@@ -1,0 +1,7 @@
+........................................................................ [ 63%]
+.........................................                                [100%]
+113 passed in 12.73s
+$ python -m pytest -q
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/ovnis-pr
+# started_utc: 2026-09-01T00:25:20Z
+

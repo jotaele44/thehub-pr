@@ -1,0 +1,5 @@
+wrote /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/centinelas-pr/exports/federation/manifest.json — {'sources': 6, 'entities': 100, 'relationships': 0, 'observations': 100}
+$ python3 scripts/federation_export.py --ledger data/signals/live_signals.jsonl --mode production
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/centinelas-pr
+# started_utc: 2026-09-01T00:22:00Z
+

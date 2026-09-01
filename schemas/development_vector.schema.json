@@ -37,6 +37,9 @@
               "repo_id": {
                 "minimum": 1,
                 "type": "integer"
+              },
+              "self_snapshot_finalizer_parent": {
+                "type": "boolean"
               }
             },
             "required": [

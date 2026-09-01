@@ -47,7 +47,7 @@ producers:
     program_id: centinelas-pr
     repo_url: https://github.com/jotaele44/centinelas-pr
     lock_cmd: "uv lock --check"
-    desktop_extra_requirements: ""
+    desktop_extra_requirements: "\nprii-maintenance @ git+https://github.com/jotaele44/thehub-pr.git@f2b81769924689b4d959554928810b1d7b7ef3d6#subdirectory=packages/prii_maintenance\nprii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@f2b81769924689b4d959554928810b1d7b7ef3d6#subdirectory=packages/prii_export_utils"
     program_desc: the universal online intelligence monitor and routing engine
   moneysweep-pr:
     app_slug: MONEYSWEEP
@@ -76,7 +76,7 @@ producers:
     npm_dir: /frontend
     program_id: skywatcher-pr
     repo_url: https://github.com/jotaele44/skywatcher-pr
-    lock_cmd: "uv pip compile requirements.txt --universal --python-version 3.12 -o requirements.lock"
+    lock_cmd: "uv lock --check"
     desktop_extra_requirements: ""
     program_desc: the airspace and aircraft-intelligence producer
   spiderweb-pr:

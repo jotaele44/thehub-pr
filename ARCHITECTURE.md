@@ -5,7 +5,7 @@
 | Role | Repos | Responsibility |
 |------|-------|----------------|
 | **Hub** | `thehub-pr` (this repo) | Owns canonical schemas; discovers producers; validates + aggregates their exports; correlates entities across producers into derived relationship edges. |
-| **Producer** | `moneysweep-pr` (moneysweep-pr), `spiderweb-pr`, `aguayluz-pr`, `OVNIS` (ovnis-pr), `skywatcher-pr` | Domain node. Emits `federation.json` + an export package of JSONL streams. |
+| **Producer** | `moneysweep-pr`, `spiderweb-pr`, `aguayluz-pr`, `ovnis-pr`, `skywatcher-pr`, `centinelas-pr` | Domain node. Emits `federation.json` + an export package of JSONL streams. |
 | **Consumer** | `Puerto-Rico-Integrated-Intelligence-System` (PRIIS) | Downstream analytics. Reads Hub aggregate outputs to rank leads. **Not** the hub. |
 
 The **producer boundary** is artifact-based, not a live network service: producers publish export
@@ -76,6 +76,13 @@ already-published exports. `ready_for_hub_live_execution` (running the producer'
 `hub_callable_commands` against live sources) is a stricter gate, typically blocked until manual
 sources are materialized and runtime keys are supplied.
 
+## Governance
+
+Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,
+and documentation-drift gates are defined under `governance/` and enforced by
+`.github/workflows/federation-governance.yml`. Undeclared dependencies and unresolved impacted-repo
+compatibility fail closed.
+
 ## Decision records
 
 Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
@@ -83,3 +90,6 @@ Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
 - [ADR 0001 — Federated engines, one hub app](docs/adr/0001-federated-engines-single-hub.md):
   keep the six producers independent as engines and consolidate the final product into the
   single `thehub-pr` app, rather than merging the repositories into a monorepo.
+- [ADR 0004 — Federation governance layer](docs/adr/0004-federation-governance-layer.md):
+  make cross-repo dependencies, contract compatibility, impact disposition, and documentation
+  synchronization machine-enforced merge gates.

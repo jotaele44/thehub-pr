@@ -1,0 +1,17 @@
+{
+  "schema_version":"prii_governance_adversarial_cases_v1",
+  "cases":[
+    {"id":"positive_optional_addition","expected":"MINOR"},
+    {"id":"positive_metadata_only","expected":"PATCH"},
+    {"id":"negative_required_field_addition","expected":"MAJOR"},
+    {"id":"negative_property_removal","expected":"MAJOR"},
+    {"id":"negative_type_change","expected":"MAJOR"},
+    {"id":"negative_enum_narrowing","expected":"MAJOR"},
+    {"id":"negative_semver_underbump","expected":"FAIL"},
+    {"id":"negative_blocked_receipt","expected":"FAIL"},
+    {"id":"negative_missing_receipt","expected":"FAIL"},
+    {"id":"negative_central_local_mismatch","expected":"FAIL"},
+    {"id":"negative_documentation_membership_drift","expected":"FAIL"},
+    {"id":"positive_transitive_closure","expected":["centinelas-pr","moneysweep-pr","spiderweb-pr","thehub-pr"]}
+  ]
+}

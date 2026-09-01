@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "control_plane": "jotaele44/thehub-pr",
+  "mode": "RUNTIME_BIND_CONTROL_PLANE_MAIN_ONLY",
+  "producer_mode": "EXACT_FROZEN_SHA",
+  "rationale": "A committed snapshot cannot contain its own future merge commit SHA. Runtime rebinding is permitted only for the control-plane repository executing the gate; all six producer expected SHAs remain frozen and exact.",
+  "invariants": {
+    "repository_universe": 7,
+    "runtime_rebind_count": 1,
+    "producer_exact_sha_count": 6,
+    "allow_producer_runtime_rebind": false,
+    "allow_missing_control_plane_head": false,
+    "record_original_and_runtime_sha": true
+  },
+  "local_worktree_certification": "BLOCKED_UNTIL_OBSERVED"
+}

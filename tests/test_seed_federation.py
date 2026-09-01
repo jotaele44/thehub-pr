@@ -110,8 +110,12 @@ def test_seeds_all_three_collections(conn, tmp_path):
 
     # One manifest per producer plus the hub's own ParentControlPlane row.
     assert written["FederationManifest"] == 3
-    assert written["IntegrationStatus"] == 2
-    assert written["ValidationGates"] == 6      # 2 producers x 3 evidenced gates
+    # 2 producers x "Federation" row, plus the hub's own "GitHub" rollup row.
+    assert written["IntegrationStatus"] == 3
+    # 2 producers x 3 evidenced gates, plus the hub's GitHubSyncApproval rollup.
+    assert written["ValidationGates"] == 7
+    # The hub's own Programs row.
+    assert written["Programs"] == 1
 
 
 def test_rows_stay_inside_the_ui_vocabularies(conn, tmp_path):
@@ -216,6 +220,119 @@ def test_absent_checkout_is_not_started_rather_than_failed(conn, tmp_path):
     assert {r["status"] for r in _rows(conn, "ValidationGates")} == {"NotStarted"}
 
 
+# ── Hub-level GitHubSyncApproval rollup ──────────────────────────────────────
+
+def _hub_gate(conn):
+    return next(
+        r for r in _rows(conn, "ValidationGates")
+        if r["gate_name"] == "GitHubSyncApproval"
+    )
+
+
+def _hub_integration(conn):
+    return next(
+        r for r in _rows(conn, "IntegrationStatus")
+        if r["integration_name"] == "GitHub"
+    )
+
+
+def _hub_program(conn):
+    return next(r for r in _rows(conn, "Programs") if r["program_id"] == "prog-control")
+
+
+def test_sync_approval_passes_when_every_producer_passes(conn, tmp_path):
+    _seed(conn, tmp_path, _snapshot(_producer("a-pr"), _producer("b-pr")))
+
+    gate = _hub_gate(conn)
+    assert gate["program_id"] == "prog-control"
+    assert gate["status"] == "Passed"
+    assert gate["blocking"] is True
+
+    integration = _hub_integration(conn)
+    assert integration["program_id"] == "prog-control"
+    assert integration["status"] == "Connected"
+    assert integration["blocking_reason"] == ""
+
+    program = _hub_program(conn)
+    assert program["parity_status"] == "Ready"
+    assert program["transition_status"] == "Complete"
+    assert program["github_sync_status"] == "Connected"
+    assert program["source_repo"] == "thehub-pr"
+
+
+def test_sync_approval_blocks_on_any_producer_gap(conn, tmp_path):
+    _seed(conn, tmp_path, _snapshot(
+        _producer("a-pr"),
+        _producer("b-pr", package_present=False, package_valid=False,
+                   blocker_class="missing_export_package"),
+    ))
+
+    gate = _hub_gate(conn)
+    assert gate["status"] == "Blocked"
+    assert "b-pr" in gate["review_notes"]
+    assert "a-pr" not in gate["review_notes"]
+
+    integration = _hub_integration(conn)
+    assert integration["status"] == "Blocked"
+    assert integration["blocking_reason"] == gate["review_notes"]
+
+    program = _hub_program(conn)
+    assert program["parity_status"] == "Blocked"
+    assert program["transition_status"] == "InProgress"
+
+
+def test_sync_approval_fails_on_any_producer_failure(conn, tmp_path):
+    """A measured failure (invalid manifest) outranks a mere block."""
+    _seed(conn, tmp_path, _snapshot(
+        _producer("a-pr", package_present=False, package_valid=False,
+                   blocker_class="missing_export_package"),
+        _producer("b-pr", manifest_valid=False, blocker_class="invalid_manifest"),
+    ))
+
+    assert _hub_gate(conn)["status"] == "Failed"
+    assert _hub_integration(conn)["status"] == "Error"
+    assert _hub_program(conn)["github_sync_status"] == "Error"
+
+
+def test_sync_approval_not_started_when_nothing_measured(conn, tmp_path):
+    """All producers unmeasured (no checkout) rolls up to NotStarted, not Blocked."""
+    _seed(conn, tmp_path, _snapshot(_producer(
+        "gone-pr", checkout_present=False, manifest_present=False, manifest_valid=False,
+        package_present=False, package_valid=False, live_execution_ready=False,
+        blocker_class="missing_checkout",
+    )))
+    assert _hub_gate(conn)["status"] == "NotStarted"
+
+
+def test_hub_program_seeds_once_and_survives_a_restart(conn, tmp_path):
+    snapshot = _snapshot(_producer("a-pr"))
+    first = _seed(conn, tmp_path, snapshot)
+    assert first["Programs"] == 1
+
+    edited = _hub_program(conn)
+    edited["description"] = "reviewed by hand"
+    conn.execute("UPDATE entities SET data=? WHERE entity_type='Programs' AND entity_id='prog-control'",
+                 (json.dumps(edited), ))
+    conn.commit()
+
+    second = _seed(conn, tmp_path, snapshot)     # a second boot
+    assert "Programs" not in second
+    assert _hub_program(conn)["description"] == "reviewed by hand"
+
+
+def test_no_hub_rollup_rows_in_registry_only_mode(conn, tmp_path):
+    """No snapshot means no evidence — the rollup gate/integration stay absent
+    entirely rather than asserting a status nothing measured."""
+    _seed(conn, tmp_path, snapshot=None, registry=REGISTRY)
+
+    assert _rows(conn, "ValidationGates") == []
+    assert all(r["integration_name"] != "GitHub" for r in _rows(conn, "IntegrationStatus"))
+
+    program = _hub_program(conn)
+    assert program["parity_status"] == "Unmeasured"
+    assert program["transition_status"] == "Unmeasured"
+
+
 # ── Registry-only fallback ────────────────────────────────────────────────────
 
 REGISTRY = """
@@ -312,7 +429,8 @@ def test_lifespan_is_what_seeds(tmp_path, monkeypatch):
     monkeypatch.setattr(main, "DB_PATH", tmp_path / "hub.db")
 
     with TestClient(main.app) as client:
-        assert len(client.get("/api/entities/Programs").json()) == 6
+        # 6 producers plus the hub's own "prog-control" row.
+        assert len(client.get("/api/entities/Programs").json()) == 7
         assert len(client.get("/api/entities/FederationManifest").json()) == 7
 
     bare = TestClient(main.app)          # never enters the lifespan

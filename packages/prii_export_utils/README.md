@@ -35,13 +35,13 @@ serialization contract, independently unit-tested for byte-reproducibility.
 ## Installing (git URL, no package index required)
 
 ```
-pip install "prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@<commit-sha>#subdirectory=packages/prii_export_utils"
+pip install "prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@f2b81769924689b4d959554928810b1d7b7ef3d6#subdirectory=packages/prii_export_utils"
 ```
 
 ## Pinning policy
 
-Pin to the exact commit SHA (`c007a72…` is the v1 extraction commit, the
-current release), or to a release tag (`prii-export-utils-vN`) once a
+Pin to the exact commit SHA (`f2b81769…` is the current pin, per ADR 0007),
+or to a release tag (`prii-export-utils-vN`) once a
 maintainer cuts one at that SHA — never to `@main`. Bump = one line, one PR,
 per producer, on their own schedule — same convention as `prii_maintenance`.
 

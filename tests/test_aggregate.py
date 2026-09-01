@@ -78,3 +78,15 @@ def test_strict_mode_skips_invalid_package(package_factory, tmp_path):
     assert summary["errors"]["ovnis-pr"]
     assert "ovnis-pr" not in summary["producers"]
     assert summary["streams"]["sources"] == 1
+
+
+def test_aggregate_strict_checks_json_even_without_row_schema(package_factory, tmp_path):
+    pkg = package_factory(tmp_path / "bad-json", producer="moneysweep-pr")
+    (pkg / "sources.jsonl").write_text("{ not json\n")
+
+    out = tmp_path / "agg"
+    summary = aggregate({"moneysweep-pr": pkg}, out, strict=True)
+
+    assert summary["errors"]["moneysweep-pr"]
+    assert any("invalid JSON" in error for error in summary["errors"]["moneysweep-pr"])
+    assert "moneysweep-pr" not in summary["producers"]

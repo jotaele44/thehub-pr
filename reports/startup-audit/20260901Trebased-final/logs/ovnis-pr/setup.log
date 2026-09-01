@@ -1,0 +1,20 @@
+Collecting prii-maintenance @ git+https://github.com/jotaele44/thehub-pr.git@f2b81769924689b4d959554928810b1d7b7ef3d6#subdirectory=packages/prii_maintenance (from -r requirements.txt (line 7))
+  Using cached prii_maintenance-0.1.0-py3-none-any.whl
+Collecting prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@f2b81769924689b4d959554928810b1d7b7ef3d6#subdirectory=packages/prii_export_utils (from -r requirements.txt (line 8))
+  Using cached prii_export_utils-0.1.0-py3-none-any.whl
+Requirement already satisfied: pytest in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (from -r requirements.txt (line 3)) (9.0.2)
+Requirement already satisfied: pytest-cov in /Users/jotaele/.local/lib/python3.13/site-packages (from -r requirements.txt (line 4)) (7.1.0)
+Requirement already satisfied: jsonschema in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (from -r requirements.txt (line 5)) (4.26.0)
+Requirement already satisfied: iniconfig>=1.0.1 in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (from pytest->-r requirements.txt (line 3)) (2.3.0)
+Requirement already satisfied: packaging>=22 in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (from pytest->-r requirements.txt (line 3)) (25.0)
+Requirement already satisfied: pluggy<2,>=1.5 in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (from pytest->-r requirements.txt (line 3)) (1.5.0)
+Requirement already satisfied: pygments>=2.7.2 in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (from pytest->-r requirements.txt (line 3)) (2.19.1)
+Requirement already satisfied: coverage>=7.10.6 in /Users/jotaele/.local/lib/python3.13/site-packages (from coverage[toml]>=7.10.6->pytest-cov->-r requirements.txt (line 4)) (7.13.5)
+Requirement already satisfied: attrs>=22.2.0 in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (from jsonschema->-r requirements.txt (line 5)) (26.1.0)
+Requirement already satisfied: jsonschema-specifications>=2023.03.6 in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (from jsonschema->-r requirements.txt (line 5)) (2025.9.1)
+Requirement already satisfied: referencing>=0.28.4 in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (from jsonschema->-r requirements.txt (line 5)) (0.37.0)
+Requirement already satisfied: rpds-py>=0.25.0 in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (from jsonschema->-r requirements.txt (line 5)) (0.30.0)
+$ python -m pip install -r requirements.txt
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/ovnis-pr
+# started_utc: 2026-09-01T00:25:17Z
+

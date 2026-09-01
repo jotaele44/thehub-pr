@@ -1,0 +1,14 @@
+Requirement already satisfied: uv in /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages (0.11.20)
+Using Python 3.13.2 environment at: /usr/local/Caskroom/miniconda/base
+Resolved 51 packages in 732ms
+   Building centinelas @ file:///private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/centinelas-pr
+      Built centinelas @ file:///private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/centinelas-pr
+Prepared 1 package in 1.04s
+Uninstalled 1 package in 4ms
+Installed 1 package in 7ms
+ - centinelas==0.1.0 (from file:///private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/centinelas-pr)
+ + centinelas==0.1.0 (from file:///private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/centinelas-pr)
+$ python -m pip install uv && uv pip install --system -e .[dev]
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002010Z-lbw38lqk/centinelas-pr
+# started_utc: 2026-09-01T00:21:44Z
+

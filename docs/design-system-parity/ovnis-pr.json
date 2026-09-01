@@ -1,0 +1,75 @@
+{
+  "repo": "ovnis-pr",
+  "generatedAt": "2026-08-24",
+  "federationPackage": {
+    "spec": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.3.0/pr-federation-react-0.3.0.tgz",
+    "resolvedVersion": "0.3.0",
+    "shipsTestHarnessContract": false,
+    "versionSkewNote": "v0.3.0's src/index.jsx exports 10 symbols total: FederationThemeProvider, useFederationTheme, FederationButton, FederationPanel, FEDERATION_STATUS_ROLES, federationStatusRole, federationTone, FederationStatusBadge, FederationEmptyState, FederationStatCard. The wider export surface referenced by the current federation convention (FederationIconButton, FederationSemanticBadge, FederationEvidenceTierBadge, FederationConfidenceBadge, FederationProvenanceBadge, FederationFreshnessBadge, FederationSourceBadge, FederationLoadingState, FederationErrorState, FederationFilteredEmptyState, FederationOfflineState, FederationDegradedState, FederationPartialDataState, FederationStaleDataState, FederationAsyncState) does not exist in this pinned tarball and cannot be imported by this app without an upgrade. Likewise `test-harness.contract.json` is not present anywhere under node_modules/@pr-federation/react (confirmed by filesystem search) -- that export path only ships from v0.4.0-rc.1 onward per the federation changelog, so this repo cannot consume the shared contract-test harness at its current pin.",
+    "importedSymbols": {
+      "FederationEmptyState": 2,
+      "federationTone": 1
+    },
+    "importSites": {
+      "FederationEmptyState": ["dashboard/src/components/QueryState.jsx", "dashboard/src/components/CandidateReview.jsx"],
+      "federationTone": ["dashboard/src/components/CandidateReview.jsx"]
+    },
+    "cssImport": "dashboard/src/main.jsx imports '@pr-federation/react/styles.css' (dist/federation.css) as a global side-effect stylesheet, independent of which JS symbols are imported.",
+    "exportedButUnused": [
+      "FederationThemeProvider",
+      "useFederationTheme",
+      "FederationButton",
+      "FederationPanel",
+      "FEDERATION_STATUS_ROLES",
+      "federationStatusRole",
+      "FederationStatusBadge",
+      "FederationStatCard"
+    ]
+  },
+  "shadcn": {
+    "componentsJsonPresent": true,
+    "style": "new-york",
+    "baseColor": "neutral",
+    "cssVariablesEnabled": true,
+    "iconLibrary": "lucide",
+    "localUiPrimitiveCount": 49,
+    "localUiPrimitives": [
+      "accordion", "alert", "alert-dialog", "aspect-ratio", "avatar", "badge",
+      "breadcrumb", "button", "calendar", "card", "carousel", "chart",
+      "checkbox", "collapsible", "command", "context-menu", "dialog", "drawer",
+      "dropdown-menu", "form", "hover-card", "input", "input-otp", "label",
+      "menubar", "navigation-menu", "pagination", "popover", "progress",
+      "radio-group", "resizable", "scroll-area", "select", "separator",
+      "sheet", "sidebar", "skeleton", "slider", "sonner", "switch", "table",
+      "tabs", "textarea", "toast", "toaster", "toggle", "toggle-group",
+      "tooltip", "use-toast"
+    ],
+    "wiredIntoLiveApp": [
+      "badge", "input", "select", "sheet", "table", "tabs"
+    ],
+    "note": "Per docs/GUI_AUDIT.md, only a subset of the 49 primitives is reachable from the live app; the rest ship in the library unwired. This audit's control-source mapping below reflects only what the running app actually renders."
+  },
+  "controlSourceMap": {
+    "button": "bespoke -- interactive buttons the app itself renders are raw <button> elements (e.g. QueryState.jsx's Retry button, ErrorBoundary.jsx's Try again button). Local shadcn ui/button.jsx (Button) is present but only consumed internally by other shadcn primitives (alert-dialog, sidebar, carousel, pagination, calendar) that are not wired into any view, so no app-visible control renders through it. The map's zoom +/- controls are MapLibre GL's own native buttons, not app code. The package's FederationButton is exported but never imported.",
+    "dialog": "unused -- local-shadcn ui/dialog.jsx is only imported internally by ui/command.jsx (itself unwired into any view). The app's one modal-like surface (Case Detail) is built on ui/sheet.jsx (a Radix Dialog-based side sheet), not dialog.jsx.",
+    "statusBadge": "mixed -- local-shadcn Badge (ui/badge.jsx) renders every evidence-tier/confidence/agency pill across CaseGrid, CaseDetail, and CandidateReview. The one federation-vocabulary status pill (candidate review-status, in CandidateReview.jsx) is hand-rolled as a bare <span> using the package's federationTone() helper for its className/data-status attributes -- the package's own FederationStatusBadge component is exported but never imported, so even the one federation-styled badge bypasses the package's actual component.",
+    "emptyState": "package -- FederationEmptyState from @pr-federation/react, rendered by QueryState.jsx (generic empty-result state, used by StatsPanel and CandidateReview's loading/error/empty wrapper) and directly by CandidateReview.jsx (candidate-queue-empty state). This is the only UI actually rendered through a @pr-federation/react component in this app.",
+    "toggle": "unused -- ui/toggle.jsx exists only as a dependency of ui/toggle-group.jsx, which is not imported anywhere in the app."
+  },
+  "themeSupport": {
+    "light": false,
+    "dark": true,
+    "toggleFound": false,
+    "note": "dashboard/src/main.jsx hardcodes document.documentElement.dataset.theme = 'dark' on every load (comment: 'This app commits to its dark cyan console identity'). dashboard/src/index.css defines exactly one :root token set (no .dark-scoped overrides, no @media (prefers-color-scheme) block) -- there is no separate light palette to switch to. The package's FederationThemeProvider/useFederationTheme (which support toggling, OS-preference detection, and per-repo localStorage persistence) are exported but never imported or mounted, so the app also does not participate in the federation's shared theme-switching contract. Net effect: dark is the only reachable, and only implemented, theme. The '-light' suffix on this audit's screenshot filenames (carried over from the prior session's generic capture pass) is a naming artifact, not evidence of a real light theme -- see screenshots[].themeNote."
+  },
+  "screenshots": [
+    { "path": "docs/a11y-evidence/desktop-1280x800-cases-tab-light.png", "viewport": "1280x800", "state": "cases-tab", "themeNote": "app's only reachable theme (hardcoded dark); filename '-light' suffix is a capture-pass naming artifact, not a real light theme" },
+    { "path": "docs/a11y-evidence/desktop-1280x800-statistics-tab-light.png", "viewport": "1280x800", "state": "stats-tab", "themeNote": "same as above" },
+    { "path": "docs/a11y-evidence/desktop-1280x800-candidates-tab-light.png", "viewport": "1280x800", "state": "candidates-tab", "themeNote": "same as above" },
+    { "path": "docs/a11y-evidence/desktop-1280x800-case-detail.png", "viewport": "1280x800", "state": "case-detail-sheet", "themeNote": "same as above" },
+    { "path": "docs/a11y-evidence/mobile-390x844-cases-tab-light.png", "viewport": "390x844", "state": "cases-tab", "themeNote": "same as above" },
+    { "path": "docs/a11y-evidence/mobile-390x844-statistics-tab-light.png", "viewport": "390x844", "state": "stats-tab", "themeNote": "same as above" },
+    { "path": "docs/a11y-evidence/mobile-390x844-candidates-tab-light.png", "viewport": "390x844", "state": "candidates-tab", "themeNote": "same as above" },
+    { "path": "docs/a11y-evidence/mobile-390x844-case-detail.png", "viewport": "390x844", "state": "case-detail-sheet", "themeNote": "same as above" }
+  ]
+}

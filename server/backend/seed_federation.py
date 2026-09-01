@@ -232,7 +232,12 @@ def _manifest_rows(snapshot: dict[str, Any], ts: str) -> list[dict[str, Any]]:
     return rows
 
 
-def _integration_rows(snapshot: dict[str, Any], ts: str, checked: str) -> list[dict[str, Any]]:
+def _integration_rows(
+    snapshot: dict[str, Any],
+    ts: str,
+    checked: str,
+    sync_gate: Optional[dict[str, Any]] = None,
+) -> list[dict[str, Any]]:
     # Without a snapshot, "ready" means the producer *declares* readiness in the
     # registry — nothing has verified an export package. That is "Ready", not
     # "Connected"; claiming the latter on registry data alone would assert a
@@ -258,15 +263,53 @@ def _integration_rows(snapshot: dict[str, Any], ts: str, checked: str) -> list[d
             "next_action": _NEXT_ACTION.get(blocker, ""),
             "created_date": ts, "updated_date": ts,
         })
+
+    # The hub-level rollup of the GitHubSyncApproval gate below, projected onto
+    # the Integrations vocabulary. Absent whenever that gate itself is absent
+    # (registry-only mode) — no live GitHub check is ever made here, this is
+    # purely the same evidence read a second way.
+    if sync_gate is not None:
+        gate_status = sync_gate["status"]
+        status = (
+            "Connected" if gate_status == "Passed"
+            else "Error" if gate_status == "Failed"
+            else "Blocked"
+        )
+        rows.append({
+            "id": "int-prog-control-github",
+            "integration_id": "int-prog-control-github",
+            "program_id": "prog-control",
+            "integration_name": "GitHub",
+            "status": status,
+            "last_checked": checked,
+            "blocking_reason": "" if status == "Connected" else sync_gate["review_notes"],
+            "next_action": (
+                "" if status == "Connected"
+                else "Resolve the outstanding ValidationGates listed above, then "
+                     "re-run `make federation-status`."
+            ),
+            "created_date": ts, "updated_date": ts,
+        })
     return rows
 
 
+# Worst-first severity for rolling many gate statuses into one. Absence of
+# evidence (NotStarted) is deliberately not as bad as a measured failure.
+_GATE_SEVERITY = {"Passed": 0, "NotStarted": 1, "Blocked": 2, "Failed": 3}
+
+
 def _gate_rows(snapshot: dict[str, Any], ts: str, reviewed: str) -> list[dict[str, Any]]:
-    """One row per (producer, evidenced gate). Empty in registry-only mode."""
+    """One row per (producer, evidenced gate), plus one hub-level rollup gate.
+
+    Empty in registry-only mode — including the rollup, since there is no
+    evidence to roll up.
+    """
     if snapshot.get("_registry_only"):
         return []
 
     rows = []
+    worst_status = "Passed"
+    blocking_producers: list[str] = []
     for producer in snapshot["producers"]:
         pid = producer["program_id"]
         checkout = bool(producer.get("checkout_present"))
@@ -308,7 +351,92 @@ def _gate_rows(snapshot: dict[str, Any], ts: str, reviewed: str) -> list[dict[st
                 "reviewed_at": reviewed,
                 "created_date": ts, "updated_date": ts,
             })
+            if _GATE_SEVERITY[status] > _GATE_SEVERITY[worst_status]:
+                worst_status = status
+
+        if any(status != "Passed" for status in measured.values()):
+            blocking_producers.append(pid)
+
+    # GitHubSyncApproval is one of GATE_NAMES's ten entries but carries no
+    # independent evidence of its own — it is the rollup of the three gates
+    # just measured above, one row per federation rather than per producer.
+    rows.append({
+        "id": "gate-prog-control-GitHubSyncApproval",
+        "gate_id": "gate-prog-control-GitHubSyncApproval",
+        "program_id": "prog-control",
+        "gate_name": "GitHubSyncApproval",
+        "status": worst_status,
+        "blocking": True,
+        "requirement": (
+            "Every federation producer must clear ManifestValidation, "
+            "ExportPackageValidation and LiveExecutionReadiness before GitHub "
+            "sync is approved for the federation."
+        ),
+        "review_notes": (
+            "All producers cleared their gates." if not blocking_producers
+            else f"Blocking producers: {', '.join(blocking_producers)}."
+        ),
+        "reviewed_at": reviewed,
+        "created_date": ts, "updated_date": ts,
+    })
     return rows
+
+
+def _seed_control_program(
+    conn: sqlite3.Connection,
+    ts: str,
+    snapshot: dict[str, Any],
+    sync_gate: Optional[dict[str, Any]],
+) -> bool:
+    """Insert the hub's own Programs row once, if absent.
+
+    Programs is a different collection from the trio above — it is already
+    seeded (non-empty) by `_seed_programs` in main.py by the time this runs, so
+    the whole-collection `_exists` check the trio uses would always skip a hub
+    row here. Insert by id instead, the same per-row idempotency
+    `_seed_programs` already uses for producer rows.
+    """
+    exists = conn.execute(
+        "SELECT 1 FROM entities WHERE entity_type='Programs' AND entity_id='prog-control'"
+    ).fetchone()
+    if exists:
+        return False
+
+    hub_id = snapshot.get("hub", "thehub-pr")
+    if sync_gate is None:
+        parity_status = "Unmeasured"
+        transition_status = "Unmeasured"
+        github_sync_status = "NotConnected"
+    else:
+        passed = sync_gate["status"] == "Passed"
+        parity_status = "Ready" if passed else sync_gate["status"]
+        transition_status = "Complete" if passed else "InProgress"
+        github_sync_status = (
+            "Connected" if passed
+            else "Error" if sync_gate["status"] == "Failed"
+            else "Blocked"
+        )
+
+    row = {
+        "id": "prog-control",
+        "program_id": "prog-control",
+        "name": "INTSYS-PR",
+        "repo_name": hub_id,
+        "source_repo": hub_id,
+        "domain": "ControlPlane",
+        "status": "Active",
+        "lead_vector": "control_plane",
+        "description": f"Federation operational transition layer for {hub_id}.",
+        "transition_status": transition_status,
+        "parity_status": parity_status,
+        "github_sync_status": github_sync_status,
+        "created_date": ts, "updated_date": ts,
+    }
+    conn.execute(
+        "INSERT OR IGNORE INTO entities (entity_type, entity_id, data, updated_at) VALUES (?,?,?,?)",
+        ("Programs", "prog-control", json.dumps(row), ts),
+    )
+    return True
 
 
 def seed_federation_collections(
@@ -318,7 +446,8 @@ def seed_federation_collections(
     status_path: Path,
     registry_path: Path,
 ) -> dict[str, int]:
-    """Fill FederationManifest / IntegrationStatus / ValidationGates if empty.
+    """Fill FederationManifest / IntegrationStatus / ValidationGates if empty,
+    and seed the hub's own Programs row if absent.
 
     Returns the per-collection row counts written (absent keys were skipped
     because the collection already held rows).
@@ -341,15 +470,23 @@ def seed_federation_collections(
     generated = snapshot.get("generated_at") or ts
     day = generated[:10]  # the UI fields are date inputs, not timestamps
 
+    gate_rows = _gate_rows(snapshot, ts, day)
+    sync_gate = next(
+        (g for g in gate_rows if g["gate_name"] == "GitHubSyncApproval"), None
+    )
+
     written: dict[str, int] = {}
     for entity_type, rows in (
         ("FederationManifest", _manifest_rows(snapshot, ts)),
-        ("IntegrationStatus", _integration_rows(snapshot, ts, day)),
-        ("ValidationGates", _gate_rows(snapshot, ts, day)),
+        ("IntegrationStatus", _integration_rows(snapshot, ts, day, sync_gate)),
+        ("ValidationGates", gate_rows),
     ):
         if not rows or _exists(conn, entity_type):
             continue
         written[entity_type] = _insert(conn, entity_type, rows, ts)
+
+    if _seed_control_program(conn, ts, snapshot, sync_gate):
+        written["Programs"] = 1
 
     conn.commit()
     if written:

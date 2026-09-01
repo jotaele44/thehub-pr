@@ -1,0 +1,3 @@
+post_push_validate_moneysweep_package,0,PASS
+post_push_aggregate,0,PASS
+post_push_validate_federation,1,EXPECTED_PROVISIONAL_DECLARED_NOT_LIVE_2

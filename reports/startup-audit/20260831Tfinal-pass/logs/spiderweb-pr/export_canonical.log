@@ -1,0 +1,6 @@
+PPP geometry: 1 resolved, 1 left in the geocode queue
+wrote /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/spiderweb-pr/exports/federation/manifest.json — {'sources': 3, 'entities': 13, 'relationships': 16, 'observations': 1}
+$ python3 scripts/federation_export.py --mode test
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/spiderweb-pr
+# started_utc: 2026-09-01T00:18:20Z
+

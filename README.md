@@ -97,6 +97,20 @@ built-in `GITHUB_TOKEN` covers it. GitHub does not run workflows on a PR that to
 if you want CI on fixture-refresh PRs, set the repo's existing `SYNC_PAT` secret and the
 workflow will use it automatically.
 
+## Desktop app
+
+Double-click launchers at the repo root start the local desktop app (first run
+installs dependencies, later runs work offline):
+
+- `PRII-THEHUB.command` (macOS) / `PRII-THEHUB.app`
+- `PRII-THEHUB.bat` (Windows)
+- `PRII-THEHUB.sh` (Linux)
+
+See [`desktop/README.md`](desktop/README.md) for details. The launcher opens
+the hub app with an empty database — the manual steps below (`hub aggregate`,
+`hub correlate`, `hub ingest`) are how you populate it with real federation
+data; they aren't a prerequisite for the app to open.
+
 ## The hub app (single product)
 
 The hub ships as one product — a FastAPI backend that serves both the JSON API and the

@@ -2,6 +2,7 @@
 every JSONL row against its stream schema."""
 from __future__ import annotations
 
+import functools
 import hashlib
 import json
 from pathlib import Path
@@ -17,13 +18,19 @@ def _sha256(path: Path) -> str:
 
 
 def _iter_rows(path: Path):
-    for lineno, raw in enumerate(path.read_text().splitlines(), start=1):
-        raw = raw.strip()
-        if raw:
-            yield lineno, raw
+    with path.open(encoding="utf-8") as fh:
+        for lineno, raw in enumerate(fh, start=1):
+            raw = raw.strip()
+            if raw:
+                yield lineno, raw
 
 
-def validate_package(pkg_dir) -> List[str]:
+@functools.lru_cache(maxsize=None)
+def _validator(schema_name: str) -> jsonschema.Draft7Validator:
+    return jsonschema.Draft7Validator(load_schema(schema_name))
+
+
+def validate_package(pkg_dir, *, validate_rows: bool = True) -> List[str]:
     """Return a list of validation errors for an export package ([] == valid)."""
     pkg = Path(pkg_dir)
     errors: List[str] = []
@@ -72,7 +79,7 @@ def validate_package(pkg_dir) -> List[str]:
             for _lineno, _raw in _iter_rows(fpath):
                 count += 1
         else:
-            validator = jsonschema.Draft7Validator(load_schema(schema_name))
+            validator = _validator(schema_name) if validate_rows else None
             for lineno, raw in _iter_rows(fpath):
                 count += 1
                 try:
@@ -80,9 +87,10 @@ def validate_package(pkg_dir) -> List[str]:
                 except json.JSONDecodeError as exc:
                     errors.append(f"{fname}:{lineno}: invalid JSON ({exc})")
                     continue
-                for e in validator.iter_errors(row):
-                    loc = "/".join(str(p) for p in e.path) or "<root>"
-                    errors.append(f"{fname}:{lineno}: {loc}: {e.message}")
+                if validator is not None:
+                    for e in validator.iter_errors(row):
+                        loc = "/".join(str(p) for p in e.path) or "<root>"
+                        errors.append(f"{fname}:{lineno}: {loc}: {e.message}")
 
         declared_count = fentry.get("record_count")
         if declared_count is not None and count != declared_count:

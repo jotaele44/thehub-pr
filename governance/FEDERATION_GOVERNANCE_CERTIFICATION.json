@@ -1,0 +1,29 @@
+{
+  "schema_version":"prii_federation_governance_certification_v1",
+  "issued_at_utc":"2026-08-31T16:02:00Z",
+  "scope":"Seven-repository PRII federation governance: contract fingerprints, semantic diff/SemVer classification, transitive impact closure, compatibility receipts, frozen baseline, CI governance checks, documentation drift, and merge-blocking enforcement.",
+  "state":"BLOCKED",
+  "substates":{
+    "frozen_7_repo_baseline":"PASS",
+    "contract_schema_fingerprints":"PASS",
+    "semantic_structural_diff_engine":"PASS_IMPLEMENTED",
+    "automatic_required_semver_classification":"PASS_IMPLEMENTED",
+    "transitive_dependency_closure":"PASS_IMPLEMENTED",
+    "central_local_receipt_reconciliation":"PASS_IMPLEMENTED_PINNED",
+    "adversarial_regression_suite":"OPEN_CENTRAL_CI_QUEUED",
+    "producer_governance_checks":"PASS_6_OF_6",
+    "central_federation_governance_check":"OPEN_QUEUED",
+    "central_governance_certify_check":"OPEN_QUEUED",
+    "required_status_rules":"BLOCKED_NOT_ACCESSIBLE",
+    "hard_merge_blocking":"BLOCKED"
+  },
+  "known_non_governance_residue":[
+    "spiderweb-pr federation template drift reports PRII-SPIDERWEB.command and PRII-SPIDERWEB.sh drift",
+    "ovnis-pr federation template drift currently fails",
+    "skywatcher-pr federation template drift currently fails",
+    "other unrelated producer CI failures may remain and are not reclassified as governance failures"
+  ],
+  "certification_rule":"CERTIFIED is forbidden until central governance workflows complete successfully and required-status enforcement on main is evidenced for all seven repositories. No green script may override this rule.",
+  "central_pr":218,
+  "producer_prs":{"moneysweep-pr":546,"spiderweb-pr":322,"aguayluz-pr":211,"ovnis-pr":108,"skywatcher-pr":222,"centinelas-pr":113}
+}

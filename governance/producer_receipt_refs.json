@@ -1,0 +1,13 @@
+{
+  "schema_version":"prii_producer_receipt_refs_v1",
+  "central_baseline":"2026-08-31",
+  "producers":{
+    "moneysweep-pr":{"repo":"jotaele44/moneysweep-pr","sha":"a3cf7397d1ef3bfc0c79b59dc45a062d7d70744e"},
+    "spiderweb-pr":{"repo":"jotaele44/spiderweb-pr","sha":"58d07ef64ddaa8ada2f25809c0c1a80d8be8448b"},
+    "aguayluz-pr":{"repo":"jotaele44/aguayluz-pr","sha":"e39a612e1f6e91f9e48908e6a04367f1fbf71704"},
+    "ovnis-pr":{"repo":"jotaele44/ovnis-pr","sha":"4df85d0e41d2a59924cf2ed4c50dfaa9539869aa"},
+    "skywatcher-pr":{"repo":"jotaele44/skywatcher-pr","sha":"7f4cd1f1654f89b1a29ca6c273ca9e26b854abfe"},
+    "centinelas-pr":{"repo":"jotaele44/centinelas-pr","sha":"b1323d62789f9430a1cd6be8d510afb98a74bf86"}
+  },
+  "receipt_path":"governance/federation_compatibility.json"
+}

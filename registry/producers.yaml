@@ -79,4 +79,4 @@ producers:
       icon: assets/branding/icon.png
       accent_color: "#df630d"
     federation_manifest: federation.json
-    status: ready_for_live             # manifest federation_readiness_gate.ready_for_hub_live_execution=true (production_status=PRODUCTION). 274 real RSS signals bridged into data/signals/live_signals.jsonl; production export passed hub validate-package (operator-approved sweep). Reconciled 2026-07-09 to match the producer manifest.
+    status: ready_for_live             # 2026-08-25 refresh produced 100 real signals; production export and Hub package validation passed. Classification used keyword fallback because ANTHROPIC_API_KEY was unavailable.
