@@ -1,7 +1,8 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import AppCenter, { APP_CENTER_APPS, loadAppInventory } from "./AppCenter";
+import { MONEY_SWEEP_CONTINUATION_RECEIPT } from "@/lib/ios-readiness";
 
 const API_INVENTORY = APP_CENTER_APPS.map((app) => ({
   appId: app.appId,
@@ -43,6 +44,29 @@ describe("AppCenter", () => {
     }
   });
 
+  it("shows MoneySweep continuation blockers and closed PRASA evidence explicitly", () => {
+    render(<AppCenter inventoryLoader={PENDING_LOADER} />);
+    const moneySweep = screen.getByRole("article", { name: /MoneySweep application/i });
+
+    expect(moneySweep).toHaveTextContent("BLOCKED BY DESKTOP GAP");
+    expect(moneySweep).toHaveTextContent("PRASA contract evidence");
+    expect(moneySweep).toHaveTextContent("FOUND_STRUCTURED_FROM_AUTHORITY_TRANSITION_PDF");
+    expect(moneySweep).toHaveTextContent("642 contract rows");
+    expect(moneySweep).toHaveTextContent("HUD authorized DRGR export");
+    expect(moneySweep).toHaveTextContent("PARTIAL_UNRESOLVED");
+    expect(moneySweep).toHaveTextContent("No non-empty authorized DRGR export was found");
+    expect(moneySweep).not.toHaveTextContent("READY_FOR_FIRST_SURFACE");
+  });
+
+  it("attaches the receipt path to MoneySweep technical details", async () => {
+    render(<AppCenter inventoryLoader={PENDING_LOADER} />);
+    const moneySweep = screen.getByRole("article", { name: /MoneySweep application/i });
+    fireEvent.click(screen.getAllByRole("button", { name: /technical details/i }).at(-1));
+
+    expect(moneySweep).toHaveTextContent(MONEY_SWEEP_CONTINUATION_RECEIPT.receiptPath);
+    expect(moneySweep).toHaveTextContent("NONCANONICAL_REFERENCE");
+  });
+
   it("hydrates from the authenticated read-only inventory contract", async () => {
     const loader = vi.fn().mockResolvedValue(
       await loadAppInventory({
@@ -57,6 +81,8 @@ describe("AppCenter", () => {
     expect(await screen.findByRole("status")).toHaveTextContent(/connected.*read-only/i);
     expect(loader).toHaveBeenCalledOnce();
     expect(screen.getAllByText("Installed")).toHaveLength(1);
+    expect(screen.getByRole("article", { name: /MoneySweep application/i }))
+      .toHaveTextContent("HUD authorized DRGR export");
   });
 
   it("falls back safely when the native manager is unavailable", async () => {

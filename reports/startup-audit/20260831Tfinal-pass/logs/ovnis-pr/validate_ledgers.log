@@ -1,0 +1,10 @@
+# OVNIS ledger validation report
+
+Rows checked: 471
+Ledgers checked: 2
+Errors: 0
+Warnings: 0
+$ python3 scripts/validate_case_ledgers.py
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/ovnis-pr
+# started_utc: 2026-09-01T00:15:43Z
+
