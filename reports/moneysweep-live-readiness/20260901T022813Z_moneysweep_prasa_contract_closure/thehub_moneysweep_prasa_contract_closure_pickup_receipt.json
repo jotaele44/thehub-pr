@@ -1,0 +1,91 @@
+{
+  "aggregate_dir": "reports/moneysweep-live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/aggregate",
+  "aggregate_streams": {
+    "alerts": {
+      "byte_size": 4527252,
+      "rows": 4338,
+      "sha256": "1904c707501cfd3b53b2bceeecec9dff667ef250022795f21a053afb955d4416"
+    },
+    "entities": {
+      "byte_size": 39403771,
+      "rows": 47484,
+      "sha256": "844ed1c1a19ff725509a3fd5fa0dfa5d7c1e3859bad4b771d8b937c34dddcb76"
+    },
+    "observations": {
+      "byte_size": 571653,
+      "rows": 574,
+      "sha256": "c02297fa3c9ba52bfec5f3293f28c3e78e31f147efe20856b89d2158ea92f4a3"
+    },
+    "relationships": {
+      "byte_size": 44874122,
+      "rows": 66037,
+      "sha256": "1ce48bcbfe2a8f89b17a0981ca16e57b8d9eeb78bcf2c673e9f13a8619c5ead6"
+    },
+    "sources": {
+      "byte_size": 28401824,
+      "rows": 43953,
+      "sha256": "637729e981b100f9261fe919c53adcf86a00b0bef72d2cda89f6fc3aeb343c13"
+    }
+  },
+  "command_receipts": [
+    {
+      "command": "validate_federation",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    {
+      "command": "build_federation_status",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    {
+      "command": "focused_hub_tests",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    {
+      "command": "appcenter_tests",
+      "exit_code": 0,
+      "state": "PASS"
+    }
+  ],
+  "completion_claim": "TheHub consumed the pushed MoneySweep PRASA closure receipt and rebuilt aggregate/status/UI receipts. Federation live readiness remains provisional: MoneySweep and Skywatcher are declared_not_live.",
+  "federation_status": {
+    "by_blocker": {
+      "declared_not_live": 2,
+      "ready": 4
+    },
+    "moneysweep_blocker_class": "declared_not_live",
+    "producer_count": 6,
+    "ready_count": 4,
+    "skywatcher_blocker_class": "declared_not_live"
+  },
+  "generated_at_utc": "2026-09-01T02:39:27.012390Z",
+  "ios_surface": {
+    "closed_evidence": {
+      "prasa": "FOUND_STRUCTURED_FROM_AUTHORITY_TRANSITION_PDF"
+    },
+    "moneysweep_state": "BLOCKED_BY_DESKTOP_GAP",
+    "noncanonical_references": "NONCANONICAL_REFERENCE",
+    "updated_files": [
+      "server/frontend/src/lib/ios-readiness.js",
+      "server/frontend/src/pages/AppCenter.jsx",
+      "server/frontend/src/pages/AppCenter.test.jsx"
+    ],
+    "visible_partial_blockers": {
+      "hud_drgr_authorized": "PARTIAL_UNRESOLVED"
+    }
+  },
+  "lumen_status": "LUMEN_UNAVAILABLE_OR_UNHEALTHY; bounded local inspection used",
+  "moneysweep_head_sha": "b5661dd29b5905015016041057136b6c945ddf5a",
+  "moneysweep_origin_main_sha": "b5661dd29b5905015016041057136b6c945ddf5a",
+  "moneysweep_package_id": "pkg_9642c2a411343e9c0c20891ac84f4f08",
+  "moneysweep_receipt": "../moneysweep-pr/reports/live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/moneysweep_prasa_contract_closure_receipt.json",
+  "repo_id": "thehub-pr",
+  "result_state": "HUB_AGGREGATE_PASS_IOS_SURFACE_UPDATED_LIVE_READINESS_PROVISIONAL",
+  "run_id": "20260901T022813Z_moneysweep_prasa_contract_closure",
+  "schema_version": "thehub_moneysweep_prasa_contract_closure_pickup_v1",
+  "thehub_branch": "audit/startup-completion-20260831",
+  "thehub_head_sha": "b2298f5036f21d6edd9f4f296df74d96c6108b26",
+  "thehub_origin_main_sha": "b2298f5036f21d6edd9f4f296df74d96c6108b26"
+}
