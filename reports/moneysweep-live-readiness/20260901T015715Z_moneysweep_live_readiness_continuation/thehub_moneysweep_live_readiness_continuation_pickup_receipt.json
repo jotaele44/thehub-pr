@@ -1,0 +1,119 @@
+{
+  "aggregate_dir": "reports/moneysweep-live-readiness/20260901T015715Z_moneysweep_live_readiness_continuation/aggregate",
+  "aggregate_errors": {
+    "aguayluz-pr": [],
+    "centinelas-pr": [],
+    "moneysweep-pr": [],
+    "ovnis-pr": [],
+    "skywatcher-pr": [],
+    "spiderweb-pr": []
+  },
+  "aggregate_producers": {
+    "aguayluz-pr": {
+      "alerts": 4338,
+      "entities": 46401,
+      "relationships": 65389,
+      "sources": 39155
+    },
+    "centinelas-pr": {
+      "entities": 100,
+      "observations": 100,
+      "sources": 6
+    },
+    "moneysweep-pr": {
+      "entities": 207,
+      "relationships": 66,
+      "sources": 4508
+    },
+    "ovnis-pr": {
+      "entities": 758,
+      "observations": 470,
+      "relationships": 563,
+      "sources": 278
+    },
+    "skywatcher-pr": {
+      "entities": 6,
+      "observations": 3,
+      "relationships": 3,
+      "sources": 3
+    },
+    "spiderweb-pr": {
+      "entities": 13,
+      "observations": 1,
+      "relationships": 16,
+      "sources": 3
+    }
+  },
+  "aggregate_streams": {
+    "alerts": 4338,
+    "entities": 47484,
+    "observations": 574,
+    "relationships": 66037,
+    "sources": 43953
+  },
+  "closed_or_reclassified_blockers": {
+    "oficina_contralor": "removed from blocker wording after source-drop materialization",
+    "pr_cabilderos": "removed from blocker wording after source-drop materialization",
+    "source_count_wording": "updated to 11/16 required sources using current completeness/materialization evidence"
+  },
+  "command_receipts": [
+    {
+      "command": "validate_moneysweep_package",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    {
+      "command": "aggregate",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    {
+      "command": "validate_federation",
+      "exit_code": 0,
+      "state": "PASS"
+    },
+    {
+      "command": "focused_hub_tests_no_cov",
+      "exit_code": 0,
+      "state": "PASS"
+    }
+  ],
+  "completion_claim": "MoneySweep package validation and TheHub aggregate passed from current pushed MoneySweep state; all-federation live readiness remains provisional because MoneySweep and Skywatcher are declared_not_live.",
+  "federation_status": {
+    "by_blocker": {
+      "declared_not_live": 2,
+      "ready": 4
+    },
+    "moneysweep_blocker_class": "declared_not_live",
+    "producer_count": 6,
+    "ready_count": 4,
+    "skywatcher_blocker_class": "declared_not_live"
+  },
+  "generated_at_utc": "2026-09-01T02:06:45Z",
+  "lumen_status": "LUMEN_UNAVAILABLE_OR_UNHEALTHY; bounded local inspection used",
+  "moneysweep_head_sha": "b65b98a7287d604fc03195d6e5fe587e0fb9d3f0",
+  "moneysweep_origin_main_sha": "b65b98a7287d604fc03195d6e5fe587e0fb9d3f0",
+  "moneysweep_package_id": "pkg_be6ec7c2a3b0cd5fe98ea99862f6f374",
+  "moneysweep_receipt": "../moneysweep-pr/reports/live-readiness/20260901T015715Z_moneysweep_live_readiness_continuation/moneysweep_live_readiness_continuation_receipt.json",
+  "moneysweep_result_state": "PROVISIONAL_LIVE_READINESS_BLOCKER_TEXT_RECONCILED",
+  "preserved_blockers": {
+    "hud_drgr_authorized": {
+      "reason": "HUD HCV rows are not DRGR; DRGR projects and responsible-org files remain 0 rows; authorized export not proven.",
+      "reviewed_artifact_count": 3,
+      "state": "PARTIAL_UNRESOLVED"
+    },
+    "prasa": {
+      "contract_rows": 0,
+      "reason": "External PRASA contract master remains 0 rows; CER/asset files are documentary support only.",
+      "reviewed_artifact_count": 3,
+      "state": "PARTIAL"
+    }
+  },
+  "repo_id": "thehub-pr",
+  "result_state": "HUB_AGGREGATE_PASS_FEDERATION_LIVE_READINESS_PROVISIONAL",
+  "run_id": "20260901T015715Z_moneysweep_live_readiness_continuation",
+  "schema_version": "thehub_moneysweep_live_readiness_continuation_pickup_v1",
+  "thehub_branch": "audit/startup-completion-20260831",
+  "thehub_head_sha": "c50db2cc15313c9b78f5e4f82ad07dac53cddf21",
+  "thehub_origin_main_sha": "c50db2cc15313c9b78f5e4f82ad07dac53cddf21"
+}
