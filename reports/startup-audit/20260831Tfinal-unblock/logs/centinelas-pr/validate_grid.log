@@ -1,0 +1,5 @@
+[OK] PR baseline grid validation passed
+$ python3 scripts/validate_pr_grid.py --require-sha
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T000009Z-54svevsk/centinelas-pr
+# started_utc: 2026-09-01T00:01:55Z
+
