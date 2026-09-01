@@ -638,6 +638,19 @@ except Exception as _mcp_exc:  # pragma: no cover - defensive mount guard
     _logging.getLogger("hub.mcp").warning("MCP API not mounted: %s", _mcp_exc)
 
 DIST = REPO_ROOT / "server" / "frontend" / "dist"
+_SPA_INDEX = DIST / "index.html"
+_SPA_ROOT_FILES = {
+    "favicon.ico": DIST / "favicon.ico",
+    "manifest.webmanifest": DIST / "manifest.webmanifest",
+    "robots.txt": DIST / "robots.txt",
+}
+
+
+def _spa_file(full_path: str) -> Path:
+    candidate = _SPA_ROOT_FILES.get(full_path)
+    if candidate is not None and candidate.is_file():
+        return candidate
+    return _SPA_INDEX
 
 if DIST.is_dir():
     if (DIST / "assets").is_dir():
@@ -645,11 +658,8 @@ if DIST.is_dir():
 
     @app.get("/{full_path:path}")
     def spa(full_path: str):
-        # Serve a real built file when it exists (favicon, etc.); otherwise the SPA
+        # Root files are explicitly allowlisted; all other paths receive the SPA
         # shell. /api/* is handled above; block it here so unknown API paths 404.
         if full_path.startswith("api/"):
             raise HTTPException(status_code=404, detail="Not found")
-        candidate = (DIST / full_path).resolve()
-        if full_path and candidate.is_file() and DIST.resolve() in candidate.parents:
-            return FileResponse(candidate)
-        return FileResponse(DIST / "index.html")
+        return FileResponse(_spa_file(full_path))
