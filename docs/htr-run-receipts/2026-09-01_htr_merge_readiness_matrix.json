@@ -1,7 +1,7 @@
 {
-  "schema_version": "htr-merge-readiness-matrix-1.0",
+  "schema_version": "htr-merge-readiness-matrix-1.1",
   "captured_date": "2026-09-01",
-  "scope": "Explicit merge-readiness matrix for HTR producer/consumer pull requests and stacked MAJOR_HYDRO_ASSET_v3. GREEN_CODE is not MERGE_AUTHORIZED. No merge is authorized by this receipt.",
+  "scope": "Explicit terminal merge-readiness matrix for HTR producer/consumer pull requests and stacked MAJOR_HYDRO_ASSET_v3. GREEN_CODE is not MERGE_AUTHORIZED. No merge is authorized or performed by this receipt.",
   "historical_certified_heads": {
     "jotaele44/thehub-pr#212": "2f454d111729e4cfa86d9f955b619cc2c2e997e6",
     "jotaele44/skywatcher-pr#215": "a924c5ef57d4f82272e44c13b9d0a88abf1cf8e6",
@@ -16,12 +16,26 @@
       "base_sha": "60c69aa18bf93d839d59996daf8e730bff1eec7f",
       "ahead_by": 27,
       "behind_by": 0,
-      "github_mergeable": false,
+      "github_mergeable": true,
       "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
+      "hosted_runs": {
+        "HAF Contract Gate": 33490126707,
+        "Federation template drift": 33490127204,
+        "HTR v2 frozen contract": 33490126700,
+        "federation-governance-certify": 33490127757,
+        "Secret scan": 33490127022,
+        "Federation pickup bounded MAX": 33490126894,
+        "Hub CI": 33490126928,
+        "HTR river-name denominator": 33490126791,
+        "Federation Governance": 33490127015,
+        "Federation completion gate": 33490126679,
+        "CodeQL": 33490127008,
+        "HTR island-wide bounded census": 33490126872
+      },
       "review_thread_state": "ALL_RESOLVED",
       "code_state": "GREEN_CODE",
       "merge_state": "NOT_AUTHORIZED",
-      "merge_blocker": "GITHUB_MERGEABLE_FALSE_AND_SEPARATE_USER_AUTHORIZATION_REQUIRED"
+      "merge_blocker": "SEPARATE_USER_AUTHORIZATION_REQUIRED"
     },
     {
       "repo": "jotaele44/skywatcher-pr",
@@ -32,6 +46,15 @@
       "behind_by": 0,
       "github_mergeable": true,
       "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
+      "hosted_runs": {
+        "CodeQL": 33495878713,
+        "Skywatcher CI": 33495878647,
+        "Federation Compatibility": 33495878884,
+        "HAF Contract Gate": 33495878818,
+        "Secret scan": 33495878869,
+        "SATIM Runtime Smoke Tests": 33495878749,
+        "Federation template drift": 33495878663
+      },
       "review_thread_state": "ALL_RESOLVED",
       "code_state": "GREEN_CODE",
       "merge_state": "NOT_AUTHORIZED",
@@ -44,12 +67,21 @@
       "base_sha": "d46758886a40a290c15a3b138e131910163b0d1e",
       "ahead_by": 11,
       "behind_by": 0,
-      "github_mergeable": false,
+      "github_mergeable": true,
       "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
+      "hosted_runs": {
+        "GUI capability parity": 33495879972,
+        "validate": 33495879828,
+        "Secret scan": 33495879970,
+        "HAF Contract Gate": 33495879916,
+        "Federation Compatibility": 33495879919,
+        "Federation template drift": 33495879770,
+        "CodeQL": 33495879966
+      },
       "review_thread_state": "ALL_RESOLVED",
       "code_state": "GREEN_CODE",
       "merge_state": "NOT_AUTHORIZED",
-      "merge_blocker": "GITHUB_MERGEABLE_FALSE_AND_SEPARATE_USER_AUTHORIZATION_REQUIRED"
+      "merge_blocker": "SEPARATE_USER_AUTHORIZATION_REQUIRED"
     },
     {
       "repo": "jotaele44/spiderweb-pr",
@@ -60,6 +92,15 @@
       "behind_by": 0,
       "github_mergeable": true,
       "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
+      "hosted_runs": {
+        "Federation template drift": 33551395212,
+        "HAF Contract Gate": 33551395065,
+        "CodeQL": 33551395075,
+        "Federation Compatibility": 33551395058,
+        "PRII Smoke Gate": 33551394964,
+        "Secret scan": 33551395041,
+        "CI": 33551394972
+      },
       "review_thread_state": "ALL_RESOLVED",
       "code_state": "GREEN_CODE",
       "merge_state": "NOT_AUTHORIZED",
@@ -68,16 +109,35 @@
     {
       "repo": "jotaele44/thehub-pr",
       "pr": 229,
-      "head_sha": "621d08e3b4876c90d4f626a368b0a137484f07ad",
+      "head_sha": "5c6052c9a8add1815465ee8d305b797472ec5a59",
       "base_branch": "feature/htr-toponym-graph-v1",
       "base_sha": "911c3433c272af66b2ef4c30267837ec22377c67",
       "github_mergeable": true,
-      "hosted_gate_state": "V3_AUTHORITATIVE_FREEZE_PENDING_AT_CAPTURE; OTHER_OBSERVED_GATES_PASS",
-      "review_thread_state": "PREVIOUS_THREADS_RESOLVED_BEFORE_NEW_FREEZER_COMMITS",
+      "hosted_gate_state": "FINAL_HEAD_STANDARD_GATES_PASS_AND_CANONICAL_V3_ADJUDICATION_PASS",
+      "hosted_runs": {
+        "final_head_HAF Contract Gate": 33573288256,
+        "final_head_federation-governance-certify": 33573288248,
+        "final_head_Federation template drift": 33573288263,
+        "final_head_Federation pickup bounded MAX": 33573288242,
+        "final_head_Hub CI": 33573288244,
+        "canonical_v3_frozen_source_adjudication": 33572711586
+      },
+      "canonical_v3_adjudication_artifact": {
+        "id": 9825534660,
+        "digest": "sha256:ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd",
+        "execution_head_sha": "b9e690e412ff732af80d2150f7de60ec4c61ea8c"
+      },
+      "review_thread_state": "ALL_RESOLVED",
       "stack_dependency": "PR_212_MUST_BE_IN_TARGET_ANCESTRY_BEFORE_V3_INTEGRATION",
-      "code_state": "PROVISIONAL_PENDING_V3_FREEZE",
+      "code_state": "GREEN_CODE_BOUNDED_V3",
+      "v3_bounded_source_manifestation_classification": "PASS",
+      "v3_unexplained_manifestation_residue": 0,
+      "v3_major_eligibility_unresolved": 182,
+      "v3_historical_prwra_exhaustion": "OPEN",
+      "v3_usgs_conveyance_expansion_beyond_v2": "OPEN",
+      "v3_universal_hydro_exhaustion": "NOT_CLAIMED",
       "merge_state": "NOT_AUTHORIZED",
-      "merge_blocker": "STACK_DEPENDENCY_PLUS_PENDING_V3_FREEZE_PLUS_SEPARATE_USER_AUTHORIZATION_REQUIRED"
+      "merge_blocker": "STACK_DEPENDENCY_PLUS_OPEN_V3_EVIDENTIARY_RESIDUE_PLUS_SEPARATE_USER_AUTHORIZATION_REQUIRED"
     }
   ],
   "external_baseline_state_changes": [
