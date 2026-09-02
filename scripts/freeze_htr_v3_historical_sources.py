@@ -4,6 +4,11 @@
 The source set is explicit and finite; this does not claim exhaustion of every
 historical PRWRA / irrigation archive. It closes the configured source-set
 vector only. Source manifestations remain separate from canonical identity.
+
+Transport note: as of this frozen acquisition, bvirtualogp.pr.gov presents an
+expired TLS certificate to the GitHub-hosted runner. For that exact official
+host only, certificate verification is disabled and the exception is recorded
+in raw_manifest.json. No other host receives that exception.
 """
 from __future__ import annotations
 
@@ -13,15 +18,18 @@ import html
 import json
 import re
 import shutil
+import ssl
 import time
 import unicodedata
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
 USER_AGENT = "thehub-pr-htr-v3-history/1.0 (+https://github.com/jotaele44/thehub-pr)"
+OGP_HOST = "bvirtualogp.pr.gov"
 SOURCES = [
     {
         "id": "ogp-law-83-1955",
@@ -113,24 +121,38 @@ def norm(value: str) -> str:
 
 
 def download(url: str, path: Path, attempts: int = 4) -> dict[str, Any]:
+    host = (urllib.parse.urlparse(url).hostname or "").lower()
+    tls_verified = host != OGP_HOST
+    tls_exception = None
+    context = None
+    if not tls_verified:
+        context = ssl._create_unverified_context()  # noqa: S323 -- exact official host exception, recorded below
+        tls_exception = "EXACT_HOST_CERTIFICATE_EXPIRED_AT_ACQUISITION; BYTES_HASHED_AND_SOURCE_HOST_PINNED"
     last: Exception | None = None
     for attempt in range(1, attempts + 1):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT, "Accept": "*/*"})
-            with urllib.request.urlopen(req, timeout=180) as response:
+            with urllib.request.urlopen(req, timeout=180, context=context) as response:
+                final_url = response.geturl()
+                final_host = (urllib.parse.urlparse(final_url).hostname or "").lower()
+                if not tls_verified and final_host != OGP_HOST:
+                    raise RuntimeError(f"insecure TLS exception escaped pinned host: {final_host!r}")
                 payload = response.read()
                 content_type = response.headers.get("Content-Type")
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(payload)
             return {
                 "url": url,
+                "final_url": final_url,
                 "retrieval_utc": utc_now(),
                 "bytes": len(payload),
                 "sha256": sha256(path),
                 "content_type": content_type,
                 "path": str(path),
+                "tls_certificate_verified": tls_verified,
+                "tls_exception": tls_exception,
             }
-        except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        except (urllib.error.URLError, TimeoutError, OSError, RuntimeError) as exc:
             last = exc
             if attempt < attempts:
                 time.sleep(2 ** (attempt - 1))
@@ -217,6 +239,7 @@ def main() -> int:
         "source_manifestation_count": len(manifestations),
         "source_arithmetic": "6=6",
         "manifestation_arithmetic": "18=18",
+        "ogp_tls_transport_exceptions": sum(not row["tls_certificate_verified"] for row in raw_manifest),
         "raw_normalized_canonical_separate": True,
         "canonical_identity_certified": False,
         "connectivity_certified": False,
