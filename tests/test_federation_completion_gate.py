@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import importlib.util
 import hashlib
+import http.client
+import io
 import json
 import sys
 from pathlib import Path
+
+import pytest
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,6 +49,40 @@ def _two_open_prs() -> list[dict[str, object]]:
     second["head"] = {"sha": "d" * 40}
     second["merge_commit_sha"] = "e" * 40
     return [first, second]
+
+
+def test_request_json_retries_incomplete_response(monkeypatch):
+    calls = 0
+
+    def urlopen(request, timeout):
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise http.client.IncompleteRead(b'{"ok":', 4)
+        return io.BytesIO(b'{"ok": true}')
+
+    monkeypatch.setattr(gate.urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(gate.time, "sleep", lambda _: None)
+
+    assert gate.request_json("https://api.github.test/resource", "token") == {"ok": True}
+    assert calls == 2
+
+
+def test_request_json_fails_closed_after_incomplete_response_retries(monkeypatch):
+    calls = 0
+
+    def urlopen(request, timeout):
+        nonlocal calls
+        calls += 1
+        raise http.client.IncompleteRead(b'{"ok":', 4)
+
+    monkeypatch.setattr(gate.urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(gate.time, "sleep", lambda _: None)
+    monkeypatch.setattr(gate, "REQUEST_RETRIES", 1)
+
+    with pytest.raises(RuntimeError, match="GitHub API transport error"):
+        gate.request_json("https://api.github.test/resource", "token")
+    assert calls == 2
 
 
 def test_pull_request_mode_can_record_rate_limit_partial(monkeypatch, tmp_path):

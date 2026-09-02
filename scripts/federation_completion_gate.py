@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import json
 import os
 import sys
@@ -91,7 +92,7 @@ def request_json(url: str, token: str, *, method: str = "GET", body: dict[str, A
             last_error = RuntimeError(f"GitHub API {exc.code} for {url}: {detail}")
             retry_after = exc.headers.get("Retry-After")
             delay = int(retry_after) if retry_after and retry_after.isdigit() else 2**attempt
-        except (TimeoutError, urllib.error.URLError, OSError) as exc:
+        except (TimeoutError, urllib.error.URLError, OSError, http.client.HTTPException) as exc:
             if attempt >= REQUEST_RETRIES:
                 raise RuntimeError(f"GitHub API transport error for {url}: {exc}") from exc
             last_error = exc
