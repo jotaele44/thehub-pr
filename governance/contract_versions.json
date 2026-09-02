@@ -1,0 +1,39 @@
+{
+  "schema_version": "prii_contract_version_policy_v1",
+  "contracts": {
+    "repo_federation_manifest": {
+      "current": "1.0.0",
+      "compatibility": "semver",
+      "owner": "thehub-pr",
+      "breaking_requires_major": true
+    },
+    "federation_export_manifest": {
+      "current": "1.0.0",
+      "compatibility": "semver",
+      "owner": "thehub-pr",
+      "breaking_requires_major": true
+    },
+    "centinelas_financial_signal": {
+      "current": "1.0.0",
+      "compatibility": "semver",
+      "owner": "centinelas-pr",
+      "consumers": ["moneysweep-pr"],
+      "breaking_requires_major": true
+    },
+    "contract_finance_bundle": {
+      "current": "1.0.0",
+      "compatibility": "semver",
+      "owner": "moneysweep-pr",
+      "consumers": ["spiderweb-pr"],
+      "breaking_requires_major": true
+    }
+  },
+  "rules": {
+    "patch": "backward-compatible fixes only",
+    "minor": "backward-compatible additive changes only",
+    "major": "breaking schema, semantic, cardinality, identity, or required-field changes",
+    "unknown_version": "fail",
+    "unversioned_contract_change": "fail",
+    "consumer_without_disposition": "fail"
+  }
+}

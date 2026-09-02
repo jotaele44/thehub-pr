@@ -1,0 +1,5 @@
+wrote /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T000009Z-54svevsk/ovnis-pr/exports/federation/manifest.json — {'sources': 278, 'entities': 758, 'relationships': 563, 'observations': 470}
+$ python3 scripts/federation_export.py --mode production
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T000009Z-54svevsk/ovnis-pr
+# started_utc: 2026-09-01T00:05:51Z
+

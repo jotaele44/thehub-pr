@@ -1,0 +1,33 @@
+{
+  "files": {
+    "federation/ontology/BASELINE_CONTRADICTION_REVIEW.md": "57489574051d1f120641bd2b3d9b15519a255ee7",
+    "federation/ontology/CHARTER.md": "ac63dfbca9fa7e4d30304b0725ec98f34983dec3",
+    "federation/ontology/LIFECYCLE_POLICY.md": "9a8a5c3a0db8465198c20de1574c979fbe631301",
+    "federation/ontology/NAMESPACES.yaml": "2539803098eaf6f72c368dd6c24484914dfe6379",
+    "federation/ontology/README.md": "3ce9348e96b50862a0dd09dade26232d012bd975",
+    "federation/ontology/competency/CQ-001-relationship-authority.json": "83079956722c965b789e89190c57cd5a91595657",
+    "federation/ontology/competency/CQ-002-confidence-scale.json": "491d9075bf3b313bbe2b7d23584361cc56c0ba36",
+    "federation/ontology/competency/CQ-003-public-matter-lifecycle.json": "bee8d0c7cd008c7e27cd0cc9e5ac200d4d600f46",
+    "federation/ontology/competency/CQ-004-source-kind.json": "d3608fc0769a4fbdffcb47f4a66aaff66fe95512",
+    "federation/ontology/contexts/all.context.jsonld": "657612a61fe20db9121974a721e36114e28570cd",
+    "federation/ontology/contexts/core.context.jsonld": "3772d4b67af6775e625f646de86716513e49cc43",
+    "federation/ontology/core/core.jsonld": "ebddb455bc8f3d6c004853279c0efcf9d8aa7e36",
+    "federation/ontology/mappings/legacy-mappings.yaml": "9c8d3ecbbfc29b4a82b8297a17c7b1640633097c",
+    "federation/ontology/modules/aguayluz-pr.jsonld": "98f0e17b8d793cefc14aed74a95a38a02393b37d",
+    "federation/ontology/modules/centinelas-pr.jsonld": "dc0b7b7cccac124e49596f83c84187c68c36d6ad",
+    "federation/ontology/modules/moneysweep-pr.jsonld": "ed1e4891cb14e9e276ededd21b38a3cf60040d11",
+    "federation/ontology/modules/ovnis-pr.jsonld": "88d246083af23231b1d1a373b1d2c5e3605eeaaf",
+    "federation/ontology/modules/skywatcher-pr.jsonld": "797f271cae7363a94278617d80ff9a3cafb3dc23",
+    "federation/ontology/modules/spiderweb-pr.jsonld": "d27d566f0cffddfd81fd9b21640db86ecea62f05",
+    "federation/ontology/modules/thehub-pr.jsonld": "83d1ea517fe33bbece80509581eb153d965cb3e8",
+    "federation/ontology/repository-pins.json": "5ae643e9dbc0e8bf889509754438cf390a352825",
+    "federation/ontology/resolutions/priority-term-families.yaml": "da115014a3de8feb3fa464664cf3bc2d991c705d",
+    "federation/ontology/schemas/competency-question.schema.json": "a397dcd8556c2a3d6a658149d759db216290e6bf",
+    "federation/ontology/schemas/raw-term-record.schema.json": "7117863b3b434f871cc9f0979f297d2b2b69da2b",
+    "federation/ontology/schemas/term-record.schema.json": "10ed48c88456bbb36079c061e06d9ab11044aa96",
+    "federation/ontology/semantic-inventory-protocol.json": "2914962e00006368acbcbdcba822b63f1ccfd93a",
+    "schemas/common/lineage.schema.json": "e9d35e1e5f9158bb134ff4b05fa9ccfc3b82c07b"
+  },
+  "hash_algorithm": "git_blob_sha1",
+  "schema_version": "1.0.0"
+}

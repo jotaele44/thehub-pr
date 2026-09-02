@@ -51,6 +51,14 @@ def test_every_repo_in_targets_has_vars():
             assert repo in known, f"{repo} in targets.yaml but missing from vars"
 
 
+def test_spiderweb_keeps_enriched_shell_launchers_repo_owned():
+    managed = {t["template"] for t in _targets() if "spiderweb-pr" in t["repos"]}
+    assert "PRII-APP.command" not in managed
+    assert "PRII-APP.sh" not in managed
+    assert "PRII-APP.app/Contents/MacOS/PRII-APP" not in managed
+    assert "PRII-APP.bat" in managed
+
+
 def test_slug_substitution_renders_to_tmp(tmp_path):
     # Render ovnis into a temp root and confirm the .sh got the slug + the .command
     # is verbatim (slug only in the filename).
@@ -63,6 +71,15 @@ def test_slug_substitution_renders_to_tmp(tmp_path):
     assert "PRII-OVNIS.sh" in sh and "{{APP_SLUG}}" not in sh
     assert (tmp_path / "PRII-OVNIS.command").is_file()
     assert (tmp_path / "schemas" / "federation_export_manifest.schema.json").is_file()
+
+
+def test_rendered_templates_do_not_require_hub_sibling_paths(tmp_path):
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    rendered_text = "\n".join(path.read_text() for path in tmp_path.rglob("*") if path.is_file())
+    assert "../thehub-pr" not in rendered_text
 
 
 def test_check_detects_lost_executable_bit(tmp_path):
@@ -78,6 +95,74 @@ def test_check_detects_lost_executable_bit(tmp_path):
         capture_output=True, text=True,
     )
     assert r.returncode == 1 and "PRII-OVNIS.sh" in r.stdout, r.stdout + r.stderr
+
+
+def _write_template_drift_workflow(root: Path, template_ref: str) -> Path:
+    path = root / ".github" / "workflows" / "template-drift.yml"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        "name: Federation template drift\n"
+        "jobs:\n"
+        "  drift:\n"
+        "    env:\n"
+        f"      PRII_TEMPLATE_REF: {template_ref}\n"
+        "    steps:\n"
+        "      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065\n",
+        encoding="utf-8",
+    )
+    return path
+
+
+def test_template_ref_write_and_check_preserve_unrelated_workflow_bytes(tmp_path):
+    old_ref = "1" * 40
+    new_ref = "2" * 40
+    workflow = _write_template_drift_workflow(tmp_path, old_ref)
+    before = workflow.read_bytes()
+    mod = _renderer()
+
+    assert mod._manage_template_ref(tmp_path, new_ref, check=False)
+    after = workflow.read_bytes()
+    assert after == before.replace(old_ref.encode(), new_ref.encode())
+    assert mod._manage_template_ref(tmp_path, new_ref, check=True) is False
+    assert mod._manage_template_ref(tmp_path, old_ref, check=True) is True
+
+
+def test_template_ref_cli_reports_then_closes_binding_drift(tmp_path):
+    old_ref = "1" * 40
+    new_ref = "2" * 40
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True,
+    )
+    _write_template_drift_workflow(tmp_path, old_ref)
+    command = [
+        sys.executable, str(_RENDER), "--repo", "ovnis-pr",
+        "--repo-root", str(tmp_path), "--template-ref", new_ref,
+    ]
+
+    drift = subprocess.run([*command, "--check"], capture_output=True, text=True)
+    assert drift.returncode == 1
+    assert str(_renderer()._TEMPLATE_REF_PATH) in drift.stdout
+    subprocess.run(command, check=True)
+    assert subprocess.run([*command, "--check"]).returncode == 0
+
+
+@pytest.mark.parametrize("template_ref", ["main", "A" * 40, "a" * 39, "a" * 41])
+def test_template_ref_rejects_every_noncanonical_sha(tmp_path, template_ref):
+    _write_template_drift_workflow(tmp_path, "1" * 40)
+    with pytest.raises(SystemExit, match="lowercase 40-character Git SHA"):
+        _renderer()._manage_template_ref(tmp_path, template_ref, check=False)
+
+
+def test_template_ref_requires_one_semantically_bound_scalar(tmp_path):
+    workflow = _write_template_drift_workflow(tmp_path, "1" * 40)
+    scalar = f"      PRII_TEMPLATE_REF: {'1' * 40}"
+    workflow.write_text(
+        workflow.read_text(encoding="utf-8").replace(scalar, f"{scalar}\n{scalar}"),
+        encoding="utf-8",
+    )
+    with pytest.raises(SystemExit, match="expected exactly one"):
+        _renderer()._manage_template_ref(tmp_path, "2" * 40, check=False)
 
 
 def test_thehub_own_files_match_templates():
@@ -103,6 +188,46 @@ def test_per_repo_vars_substitute_beyond_the_slug(tmp_path):
     dependabot = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
     npm = [u for u in dependabot["updates"] if u["package-ecosystem"] == "npm"]
     assert [u["directory"] for u in npm] == ["/server/frontend"]
+
+
+def test_centinelas_desktop_requirements_support_plain_pip_install(tmp_path):
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "centinelas-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    requirements = (tmp_path / "requirements-desktop.txt").read_text(encoding="utf-8")
+    archive = "https://github.com/jotaele44/thehub-pr/archive/"
+    assert f"prii-desktop @ {archive}" in requirements
+    assert f"prii-maintenance @ {archive}" in requirements
+    assert f"prii-export-utils @ {archive}" in requirements
+    assert "git+https://github.com/jotaele44/thehub-pr" not in requirements
+    assert requirements.count("f2b81769924689b4d959554928810b1d7b7ef3d6.zip") == 3
+
+
+def test_every_producer_declares_an_app_title():
+    # app_title cannot be derived from app_slug: OVNIS stays upper-case while the
+    # rest are title-case, and AguaYLuz/MoneySweep/TheHub carry internal capitals,
+    # so any casing rule would corrupt four of seven repos' user-visible branding.
+    for repo, v in _vars().items():
+        assert v.get("app_title"), f"{repo} has no app_title"
+        assert v["app_title"] != v["app_slug"].title(), (
+            f"{repo}: app_title looks derived from the slug; it must be the real name"
+        )
+
+
+def test_app_bundle_launcher_is_shared_and_guards_translocation(tmp_path):
+    # The whole point of templating this file: the App Translocation fix landed in
+    # one repo and left the others broken, because every repo carried its own copy.
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    launcher = tmp_path / "PRII-OVNIS.app/Contents/MacOS/PRII-OVNIS"
+    assert launcher.stat().st_mode & 0o100, "bundle executable must be owner-executable"
+    text = launcher.read_text(encoding="utf-8")
+    assert "AppTranslocation" in text, "translocation guard missing from the shared launcher"
+    assert 'with title \\"OVNIS — PRII\\"' in text
+    assert "{{" not in text, "unsubstituted placeholder survived"
 
 
 def test_mode_falls_back_to_the_extension_contract():
