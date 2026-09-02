@@ -311,7 +311,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.cmd == "project-signs":
         summary = write_project_signs(args.in_dir, args.out)
         if not summary["count"]:
-            print(f"no funding awards found under {args.in_dir!r} — no project signs to render")
+            print(
+                f"no project entities or funding awards found under {args.in_dir!r} "
+                "— no project signs to render"
+            )
             return 1
         print(
             f"wrote {summary['count']} project sign(s) -> {summary['out_dir']} "

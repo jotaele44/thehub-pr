@@ -8,6 +8,12 @@ schema_version: prii_federation_template_targets_v1
 
 _all: &all
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
+# Spiderweb's macOS/Linux shell launchers and .app executable intentionally add
+# repo-specific setup-failure, AppTranslocation, and Node.js diagnostics. Keep
+# those three files outside byte-identical shared launcher governance rather than
+# overwriting useful behavior to satisfy drift.
+_standard_shell_launchers: &standard_shell_launchers
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, thehub-pr]
 _desktop: &desktop
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr]
 # moneysweep-pr keeps its own pip-audit workflow: it is tailored to that repo's
@@ -57,13 +63,22 @@ targets:
     repos: *all
   - template: PRII-APP.command
     output: PRII-{{APP_SLUG}}.command
-    repos: *all
+    repos: *standard_shell_launchers
   - template: PRII-APP.bat
     output: PRII-{{APP_SLUG}}.bat
     repos: *all
   - template: PRII-APP.sh
     output: PRII-{{APP_SLUG}}.sh
-    repos: *all
+    repos: *standard_shell_launchers
+  # The executable inside the .app bundle. mode is required: it has no suffix,
+  # so the renderer's .sh/.command extension rule cannot see it, and a first
+  # render into a fresh checkout would leave it 0644 — a bundle that will not
+  # launch while its content still compares equal. Spiderweb's executable is
+  # intentionally repo-specific and therefore excluded from this shared target.
+  - template: PRII-APP.app/Contents/MacOS/PRII-APP
+    output: PRII-{{APP_SLUG}}.app/Contents/MacOS/PRII-{{APP_SLUG}}
+    repos: *standard_shell_launchers
+    mode: 0755
   - template: requirements-desktop.txt
     output: requirements-desktop.txt
     repos: *desktop

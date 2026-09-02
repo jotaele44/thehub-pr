@@ -1,0 +1,5 @@
+wrote exports/federation/manifest.json — {'sources': 39171, 'entities': 46415, 'relationships': 65387, 'alerts': 4354}
+$ python3 scripts/federation_export.py --mode test --out exports/federation --no-outputs
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/aguayluz-pr
+# started_utc: 2026-09-01T00:11:58Z
+

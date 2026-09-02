@@ -1,0 +1,13 @@
+{
+  "id": "CQ-001",
+  "question": "Which repository asserted or derived this relationship, and what evidence supports that authority?",
+  "decision_supported": "Prevent a Hub-derived correlation from being represented as a producer assertion.",
+  "required_concepts": ["prii:AssertedRelationship", "prii:DerivedRelationship", "prii:Correlation"],
+  "required_properties": ["prii:assertedBy", "prii:derivedBy", "prii:hasEvidence", "prii:hasLineage"],
+  "expected_answer_shape": "relationship class, repository id, derivation or assertion method, evidence references",
+  "positive_fixture": {"type": "prii:Correlation", "derivedBy": "thehub-pr", "assertedBy": null},
+  "negative_fixture": {"type": "prii:AssertedRelationship", "derivedBy": "thehub-pr", "assertedBy": "skywatcher-pr"},
+  "owners": ["thehub-pr"],
+  "affected_repositories": ["thehub-pr", "spiderweb-pr", "centinelas-pr", "aguayluz-pr", "ovnis-pr", "skywatcher-pr", "moneysweep-pr"],
+  "status": "proposed"
+}
