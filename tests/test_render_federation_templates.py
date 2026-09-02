@@ -196,9 +196,12 @@ def test_centinelas_desktop_requirements_support_plain_pip_install(tmp_path):
         check=True, capture_output=True,
     )
     requirements = (tmp_path / "requirements-desktop.txt").read_text(encoding="utf-8")
-    assert "prii-desktop @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
-    assert "prii-maintenance @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
-    assert "prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
+    archive = "https://github.com/jotaele44/thehub-pr/archive/"
+    assert f"prii-desktop @ {archive}" in requirements
+    assert f"prii-maintenance @ {archive}" in requirements
+    assert f"prii-export-utils @ {archive}" in requirements
+    assert "git+https://github.com/jotaele44/thehub-pr" not in requirements
+    assert requirements.count("f2b81769924689b4d959554928810b1d7b7ef3d6.zip") == 3
 
 
 def test_every_producer_declares_an_app_title():
