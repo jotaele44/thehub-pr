@@ -39,18 +39,18 @@ jobs:
         repo: [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr]
     steps:
       - name: Checkout thehub-pr (canonical templates + renderer)
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: thehub-pr
 
       - name: Checkout producer (${{ matrix.repo }})
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/${{ matrix.repo }}
           path: ${{ matrix.repo }}
           token: ${{ secrets.SYNC_PAT || github.token }}
 
-      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
           cache: pip
@@ -60,6 +60,7 @@ jobs:
         run: >
           python thehub-pr/tools/render_federation_templates.py
           --repo ${{ matrix.repo }} --repo-root ${{ matrix.repo }}
+          --template-ref ${{ github.sha }}
 
       - name: Open a sync PR if the producer drifted
         env:
@@ -86,11 +87,12 @@ jobs:
           git commit -m "chore: sync shared federation boilerplate from thehub-pr
 
           Re-rendered launchers / requirements-desktop.txt / federation_export_manifest
-          schema from thehub-pr/federation-templates via render_federation_templates.py.
+          schema and rebound the producer drift gate to this exact thehub commit
+          via render_federation_templates.py.
           Automated by thehub-pr federation-template-sync."
           git push -u origin "$branch"
           gh pr create \
             --repo "jotaele44/${{ matrix.repo }}" \
             --base main --head "$branch" \
             --title "Sync shared federation boilerplate from thehub-pr" \
-            --body "Automated re-render of the shared launcher/desktop/schema boilerplate from \`thehub-pr/federation-templates\`. The canonical template changed; this brings ${{ matrix.repo }}'s copies back in sync so its template-drift check passes."
+            --body "Automated re-render of the shared launcher/desktop/schema boilerplate from \`thehub-pr/federation-templates\`, including the producer drift gate's exact TheHub commit binding. The canonical template changed; this brings ${{ matrix.repo }}'s copies back in sync so its template-drift check passes."

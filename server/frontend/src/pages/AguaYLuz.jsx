@@ -3,10 +3,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
 import AguaYLuzFeedTab from "@/components/feed/AguaYLuzFeedTab";
+import IntelligenceWorkspace from "@/components/intelligence/IntelligenceWorkspace";
 import StatusChip from "@/components/shared/StatusChip";
 import IdCode from "@/components/shared/IdCode";
 import { Droplets } from "lucide-react";
 import { MODULES, REGIONS } from "@/lib/federation";
+import { INTELLIGENCE_ADAPTERS } from "@/lib/intelligenceAdapters";
 import { GENERIC_STATUS, SENSITIVITY, SEVERITY, CONFIDENCE, REVIEW_STATUS } from "@/lib/chips";
 
 const MODULE = MODULES.find((m) => m.name === "AguaYLuz-PR");
@@ -107,13 +109,17 @@ export default function AguaYLuz() {
       <div className="mb-4 rounded-lg border border-border bg-card px-4 py-2.5 text-xs text-muted-foreground">
         Infrastructure summaries are sanitized — no sensitive vulnerability detail is stored.
       </div>
-      <Tabs defaultValue="feed">
-        <TabsList className="mb-4">
+      <Tabs defaultValue="workspace">
+        <TabsList className="mb-4 flex h-auto flex-wrap">
+          <TabsTrigger value="workspace">Workspace</TabsTrigger>
           <TabsTrigger value="feed">Water + Power Feed</TabsTrigger>
           <TabsTrigger value="assets">Infrastructure Assets</TabsTrigger>
           <TabsTrigger value="alerts">Operational Alerts</TabsTrigger>
           <TabsTrigger value="risks">Continuity Risks</TabsTrigger>
         </TabsList>
+        <TabsContent value="workspace">
+          <IntelligenceWorkspace adapter={INTELLIGENCE_ADAPTERS.aguayluz} />
+        </TabsContent>
         <TabsContent value="feed">
           <AguaYLuzFeedTab />
         </TabsContent>

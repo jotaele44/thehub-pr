@@ -141,20 +141,58 @@ def _is_person(entity: Dict[str, Any]) -> bool:
     return etype in {"person", "official", "individual", "people"}
 
 
-def build_project_signs(aggregate_dir: str | Path) -> List[Dict[str, Any]]:
-    """Group an aggregate's funding awards into per-project sign dicts.
+def _resolved_locations(observations: List[dict]) -> Dict[str, Dict[str, Any]]:
+    """producer entity_id -> the best location a spatial producer resolved for it.
 
-    Returns a deterministic list; each sign carries the project title, location, the
-    list of funding contributions (agency + officials + amount), a total, and a
-    ``synthetic`` flag set when any contributing award is synthetic.
+    A spatial producer (spiderweb-pr) cannot write a location onto another
+    producer's entity, so it publishes the geometry it resolved as an observation
+    naming the row it is for. This reads those back so a sign can show the
+    surveyed point rather than the municipality the money producer guessed from
+    an administrative record. Highest confidence wins.
+    """
+    scores: Dict[str, float] = {}
+    best: Dict[str, Dict[str, Any]] = {}
+    for obs in observations:
+        attrs = obs.get("attributes") or {}
+        target = attrs.get("producer_entity_id")
+        location = obs.get("location")
+        if not isinstance(target, str) or not isinstance(location, dict):
+            continue
+        score = float(obs.get("confidence") or 0.0)
+        if target not in best or score > scores[target]:
+            scores[target] = score
+            best[target] = dict(location)
+    return best
+
+
+def build_project_signs(aggregate_dir: str | Path) -> List[Dict[str, Any]]:
+    """Build per-project sign dicts from an aggregate.
+
+    Two kinds of project reach a sign:
+
+    * a **canonical project entity** (``entity_type == "project"``), which is how
+      a producer says "this is a project" directly, and
+    * a **group of funding awards** sharing a recipient and municipality, which
+      infers a project from money flowing to the same place.
+
+    The award path came first and is unchanged. Without the entity path, a
+    producer that models projects explicitly — moneysweep-pr's PPP concessions,
+    which arrive as entities and not as awards — could never produce a sign no
+    matter how complete its data was.
+
+    Returns a deterministic list; each sign carries the project title, location,
+    the list of funding contributions (agency + officials + amount), a total, and
+    a ``synthetic`` flag set when any contributing row is synthetic.
     """
     agg = Path(aggregate_dir)
     entities_list = _read_jsonl(agg / "entities.jsonl")
     awards = _read_jsonl(agg / "funding_awards.jsonl")
     relationships = _read_jsonl(agg / "relationships.jsonl")
+    observations = _read_jsonl(agg / "observations.jsonl")
 
     entities = {e["entity_id"]: e for e in entities_list if "entity_id" in e}
     officials = _officials_index(entities, relationships)
+    resolved = _resolved_locations(observations)
 
     # Group awards by (recipient, location municipality).
     groups: Dict[tuple, List[dict]] = {}
@@ -207,7 +245,80 @@ def build_project_signs(aggregate_dir: str | Path) -> List[Dict[str, Any]]:
             "generated_at": generated_at,
         })
 
+    # A project entity that is already an award recipient is covered by the award
+    # group above; emitting it again would double the sign.
+    covered = {recipient for recipient, _ in groups}
+    signs.extend(
+        _entity_project_signs(entities, awards, officials, resolved, generated_at, covered)
+    )
     signs.sort(key=lambda s: s["project_id"])
+    return signs
+
+
+def _entity_project_signs(
+    entities: Dict[str, dict],
+    awards: List[dict],
+    officials: Dict[str, List[dict]],
+    resolved: Dict[str, Dict[str, Any]],
+    generated_at: str,
+    covered: set[str],
+) -> List[Dict[str, Any]]:
+    """One sign per canonical project entity not already covered by an award group.
+
+    Awards are attached when they name the project's municipality; a project with
+    no awards still gets a sign, because "this concession exists, here is where it
+    is, no funding is recorded against it" is a real state worth showing rather
+    than a reason to hide the project.
+    """
+    awards_by_muni: Dict[str, List[dict]] = {}
+    for a in awards:
+        awards_by_muni.setdefault(_location_key(a.get("location", {})), []).append(a)
+
+    signs: List[Dict[str, Any]] = []
+    for entity in entities.values():
+        if entity.get("entity_type") != "project" or entity["entity_id"] in covered:
+            continue
+        # A spatial producer's surveyed point outranks the municipality the money
+        # producer attributed from an administrative record.
+        location_obj = resolved.get(entity["entity_id"]) or entity.get("location") or {}
+        loc_key = _location_key(location_obj)
+
+        contributions: List[Dict[str, Any]] = []
+        total = 0.0
+        currency = "USD"
+        synthetic = bool(entity.get("synthetic"))
+        for a in sorted(
+            awards_by_muni.get(loc_key, []) if loc_key else [],
+            key=lambda x: (-float(x.get("amount", 0) or 0), x.get("award_id", "")),
+        ):
+            agency_id = a.get("funding_agency_entity_id", "")
+            currency = a.get("currency", currency)
+            amount = float(a.get("amount", 0) or 0)
+            total += amount
+            synthetic = synthetic or bool(a.get("synthetic"))
+            contributions.append({
+                "agency_name": entities.get(agency_id, {}).get("name", agency_id or "—"),
+                "amount": amount,
+                "currency": a.get("currency", "USD"),
+                "officials": officials.get(agency_id, []),
+                "award_id": a.get("award_id", ""),
+                "award_date": a.get("award_date", ""),
+            })
+
+        signs.append({
+            "project_id": "sgn_" + hashlib.sha1(
+                entity["entity_id"].encode("utf-8")
+            ).hexdigest()[:16],
+            "title": entity.get("name") or "Proyecto",
+            "recipient_name": entity.get("name") or "—",
+            "location": _location_label(location_obj),
+            "tagline": "",
+            "contributions": contributions,
+            "total_amount": total,
+            "currency": currency,
+            "synthetic": synthetic,
+            "generated_at": generated_at,
+        })
     return signs
 
 

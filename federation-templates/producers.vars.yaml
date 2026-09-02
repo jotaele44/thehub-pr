@@ -4,6 +4,10 @@
 # See tools/render_federation_templates.py.
 #
 #   app_slug     — launcher/app naming (PRII-<SLUG>.command, etc.)
+#   app_title    — the human name shown in the .app's dialogs. NOT derivable
+#                  from app_slug: OVNIS stays upper-case while the rest are
+#                  title-case, and AguaYLuz/MoneySweep/TheHub carry internal
+#                  capitals, so any casing rule corrupts four of seven.
 #   frontend_dir — the same directory as npm_dir but WITHOUT the leading
 #                  slash, for rendered output paths. npm_dir cannot be reused
 #                  there: the renderer does `repo_root / rel`, and a leading
@@ -27,24 +31,27 @@ schema_version: prii_federation_template_vars_v1
 producers:
   aguayluz-pr:
     app_slug: AGUAYLUZ
+    app_title: "AguaYLuz — PRII"
     frontend_dir: dashboard
     npm_dir: /dashboard
     program_id: aguayluz-pr
     repo_url: https://github.com/jotaele44/aguayluz-pr
     lock_cmd: "uv lock --check"
-    desktop_extra_requirements: "\n-e ../thehub-pr/packages/prii_export_utils\njsonschema>=4.21.0\nPyYAML>=6.0"
+    desktop_extra_requirements: "\nprii-export-utils @ https://github.com/jotaele44/thehub-pr/archive/f2b81769924689b4d959554928810b1d7b7ef3d6.zip#subdirectory=packages/prii_export_utils\njsonschema>=4.21.0\nPyYAML>=6.0"
     program_desc: the Puerto Rico water, power and utility infrastructure intelligence producer
   centinelas-pr:
     app_slug: CENTINELAS
+    app_title: "Centinelas — PRII"
     frontend_dir: frontend
     npm_dir: /frontend
     program_id: centinelas-pr
     repo_url: https://github.com/jotaele44/centinelas-pr
     lock_cmd: "uv lock --check"
-    desktop_extra_requirements: ""
+    desktop_extra_requirements: "\nprii-maintenance @ https://github.com/jotaele44/thehub-pr/archive/f2b81769924689b4d959554928810b1d7b7ef3d6.zip#subdirectory=packages/prii_maintenance\nprii-export-utils @ https://github.com/jotaele44/thehub-pr/archive/f2b81769924689b4d959554928810b1d7b7ef3d6.zip#subdirectory=packages/prii_export_utils"
     program_desc: the universal online intelligence monitor and routing engine
   moneysweep-pr:
     app_slug: MONEYSWEEP
+    app_title: "MoneySweep — PRII"
     frontend_dir: dashboard
     npm_dir: /dashboard
     program_id: moneysweep-pr
@@ -54,6 +61,7 @@ producers:
     program_desc: the public-money intelligence producer
   ovnis-pr:
     app_slug: OVNIS
+    app_title: "OVNIS — PRII"
     frontend_dir: dashboard
     npm_dir: /dashboard
     program_id: ovnis-pr
@@ -63,15 +71,17 @@ producers:
     program_desc: the historical case-corpus producer for Puerto Rico-centered anomalous-event research
   skywatcher-pr:
     app_slug: SKYWATCHER
+    app_title: "Skywatcher — PRII"
     frontend_dir: frontend
     npm_dir: /frontend
     program_id: skywatcher-pr
     repo_url: https://github.com/jotaele44/skywatcher-pr
-    lock_cmd: "uv pip compile requirements.txt --universal --python-version 3.12 -o requirements.lock"
+    lock_cmd: "uv lock --check"
     desktop_extra_requirements: ""
     program_desc: the airspace and aircraft-intelligence producer
   spiderweb-pr:
     app_slug: SPIDERWEB
+    app_title: "Spiderweb — PRII"
     frontend_dir: server/frontend
     npm_dir: /server/frontend
     program_id: spiderweb-pr
@@ -80,6 +90,7 @@ producers:
     program_desc: the spatial and operational producer, covering FR24 OCR/GIS flight intelligence and the GEBCO bathymetry pipeline
   thehub-pr:
     app_slug: THEHUB
+    app_title: "TheHub — PRII"
     frontend_dir: server/frontend
     npm_dir: /server/frontend
     program_id: thehub-pr
