@@ -1,7 +1,7 @@
 {
-  "schema_version": "major-hydro-asset-v3-bounded-closure-receipt-1.0",
+  "schema_version": "major-hydro-asset-v3-bounded-closure-receipt-1.1",
   "captured_date": "2026-09-01",
-  "scope": "Bounded MAJOR_HYDRO_ASSET_v3 authoritative source-manifestation closure over frozen v2 plus the explicitly acquired USACE, NID/NTAD, AAA/PRASA 2015, SIGE Canal de Riego, and DRNA 2004/2016 source artifacts. Cross-source canonical identity and universal Puerto Rico hydro exhaustion are not claimed.",
+  "scope": "Bounded MAJOR_HYDRO_ASSET_v3 authoritative source-manifestation and approved asset-scope eligibility closure over frozen v2 plus the explicitly acquired USACE, NID/NTAD, AAA/PRASA 2015, SIGE Canal de Riego, and DRNA 2004/2016 source artifacts. Cross-source canonical identity and universal Puerto Rico hydro exhaustion are not claimed.",
   "base": {
     "v2_manifestations": 107,
     "identity": "PRESERVED_UNCHANGED"
@@ -22,8 +22,7 @@
       "aaa_filegdb_feature_total": 724501,
       "aaa_intake_rows": 182,
       "aaa_stable_facility_ids": 182,
-      "aaa_distinct_raw_names": 180,
-      "aaa_major_hydro_asset_eligibility": "UNRESOLVED"
+      "aaa_distinct_raw_names": 180
     },
     "sige_canal": {
       "workflow_run_id": 33571990439,
@@ -60,7 +59,7 @@
       "drna_2004_category_arithmetic_with_v2": "44=34+10"
     }
   },
-  "canonical_adjudication": {
+  "canonical_source_adjudication": {
     "workflow_run_id": 33572711586,
     "execution_head_sha": "b9e690e412ff732af80d2150f7de60ec4c61ea8c",
     "artifact_id": 9825534660,
@@ -68,13 +67,8 @@
     "artifact_digest": "sha256:ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd",
     "artifact_size_bytes": 437983,
     "certification": "PASS_BOUNDED_SOURCE_MANIFESTATION_CLASSIFICATION",
-    "new_v3_source_manifestation_arithmetic": "3506=70+3254+182",
+    "source_manifestation_arithmetic_before_scope_refinement": "3506=70+3254+182",
     "new_v3_source_manifestations": 3506,
-    "supported_for_major_discovery": 70,
-    "unsupported_discovery_key": 3254,
-    "major_hydro_asset_eligibility_unresolved": 182,
-    "total_source_manifestations_with_v2": 3613,
-    "bounded_supported_discovery_manifestations_with_v2": 177,
     "unexplained_manifestation_residue": 0,
     "unresolved_cross_source_identity": true,
     "identity_promotions": 0,
@@ -91,8 +85,31 @@
       "summary.json": "908eb180db0517cac479a7e6dface036922abeecc6c1375a3ce8610bec801a35"
     }
   },
+  "canonical_asset_scope_eligibility": {
+    "workflow_run_id": 33573591927,
+    "execution_head_sha": "43f8aaa3732330722c59a20fe298812858b9f36f",
+    "artifact_id": 9825809337,
+    "artifact_name": "htr-v3-scope-closed-43f8aaa3732330722c59a20fe298812858b9f36f",
+    "artifact_digest": "sha256:2212834ac56650c08c5eafa18b921e5266396069ece6310bdda8487b1e66ecd3",
+    "artifact_size_bytes": 10338,
+    "scope_binding": "conversation:MAJOR_HYDRO_ASSET_scope:named_intakes=INCLUDE",
+    "scope_effect": "ASSET_SCOPE_ELIGIBILITY_ONLY_NOT_IDENTITY_OR_CONNECTIVITY",
+    "aaa_named_intake_rows": 182,
+    "aaa_named_intakes_in_scope": 182,
+    "aaa_scope_eligibility_unresolved": 0,
+    "refined_v3_source_manifestation_arithmetic": "3506=252+3254+0",
+    "supported_for_major_discovery": 252,
+    "unsupported_discovery_key": 3254,
+    "major_hydro_asset_eligibility_unresolved": 0,
+    "total_source_manifestations_with_v2": 3613,
+    "bounded_supported_discovery_manifestations_with_v2": 359,
+    "file_hashes": {
+      "aaa_2015_named_intakes_in_scope.jsonl": "592ee2b0f3bca8668c71ef203afc38555c0d10f2a128dac0de93c1163f3a2d0e",
+      "summary.json": "bd7fccb426bf8d9369d11328206ffe60c21bda1c9e9b74a94c8fcc16d745ad9b"
+    },
+    "certification": "PASS_BOUNDED_V3_ASSET_SCOPE_ELIGIBILITY"
+  },
   "open_required_evidentiary_residue": {
-    "aaa_major_intake_classification": 182,
     "historical_prwra_exhaustion": "OPEN",
     "usgs_conveyance_expansion_beyond_v2": "OPEN",
     "cross_source_canonical_identity": "UNRESOLVED",
