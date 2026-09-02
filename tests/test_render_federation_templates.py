@@ -51,6 +51,14 @@ def test_every_repo_in_targets_has_vars():
             assert repo in known, f"{repo} in targets.yaml but missing from vars"
 
 
+def test_spiderweb_keeps_enriched_shell_launchers_repo_owned():
+    managed = {t["template"] for t in _targets() if "spiderweb-pr" in t["repos"]}
+    assert "PRII-APP.command" not in managed
+    assert "PRII-APP.sh" not in managed
+    assert "PRII-APP.app/Contents/MacOS/PRII-APP" not in managed
+    assert "PRII-APP.bat" in managed
+
+
 def test_slug_substitution_renders_to_tmp(tmp_path):
     # Render ovnis into a temp root and confirm the .sh got the slug + the .command
     # is verbatim (slug only in the filename).
@@ -188,9 +196,12 @@ def test_centinelas_desktop_requirements_support_plain_pip_install(tmp_path):
         check=True, capture_output=True,
     )
     requirements = (tmp_path / "requirements-desktop.txt").read_text(encoding="utf-8")
-    assert "prii-desktop @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
-    assert "prii-maintenance @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
-    assert "prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
+    archive = "https://github.com/jotaele44/thehub-pr/archive/"
+    assert f"prii-desktop @ {archive}" in requirements
+    assert f"prii-maintenance @ {archive}" in requirements
+    assert f"prii-export-utils @ {archive}" in requirements
+    assert "git+https://github.com/jotaele44/thehub-pr" not in requirements
+    assert requirements.count("f2b81769924689b4d959554928810b1d7b7ef3d6.zip") == 3
 
 
 def test_every_producer_declares_an_app_title():
