@@ -1,10 +1,9 @@
 name: HTR v3 historical source-set acquisition
 
+# Manual acquisition after the successful bounded freeze at run 33574165964.
+# Ordinary PR commits reuse the artifact digest rather than redownloading these
+# mutable public endpoints or repeating the exact-host OGP TLS exception.
 on:
-  pull_request:
-    paths:
-      - "scripts/freeze_htr_v3_historical_sources.py"
-      - ".github/workflows/htr-v3-historical-source-set.yml"
   workflow_dispatch:
 
 permissions:
@@ -33,7 +32,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: htr-v3-history-${{ github.event.pull_request.head.sha || github.sha }}
+          name: htr-v3-history-${{ github.sha }}
           path: artifacts/htr_v3_historical
           if-no-files-found: error
           retention-days: 30
