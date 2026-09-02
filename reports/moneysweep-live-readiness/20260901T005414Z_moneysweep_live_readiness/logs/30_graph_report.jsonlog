@@ -1,0 +1,15 @@
+started_utc=2026-09-01T01:10:58Z
+{
+  "aggregate_dir": "reports/moneysweep-live-readiness/20260901T005414Z_moneysweep_live_readiness/aggregate",
+  "anchored_observations": 574,
+  "correlation_count": 0,
+  "duplicate_external_ids": {},
+  "entity_count": 47484,
+  "low_confidence_edges": 76,
+  "match_basis_distribution": {},
+  "observation_count": 574,
+  "orphan_entities": 641,
+  "producer_pair_counts": {},
+  "relationship_count": 66037
+}
+finished_utc=2026-09-01T01:11:00Z
