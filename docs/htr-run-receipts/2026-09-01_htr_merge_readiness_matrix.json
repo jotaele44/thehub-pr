@@ -1,13 +1,7 @@
 {
-  "schema_version": "htr-merge-readiness-matrix-1.2",
+  "schema_version": "htr-merge-readiness-matrix-1.3",
   "captured_date": "2026-09-01",
   "scope": "Explicit terminal merge-readiness matrix for HTR producer/consumer pull requests and stacked MAJOR_HYDRO_ASSET_v3. GREEN_CODE is not MERGE_AUTHORIZED. No merge is authorized or performed by this receipt.",
-  "historical_certified_heads": {
-    "jotaele44/thehub-pr#212": "2f454d111729e4cfa86d9f955b619cc2c2e997e6",
-    "jotaele44/skywatcher-pr#215": "a924c5ef57d4f82272e44c13b9d0a88abf1cf8e6",
-    "jotaele44/aguayluz-pr#195": "bb6480e99e45caa09de6f2f63b0b78b710c24e65",
-    "jotaele44/spiderweb-pr#308": "c8ff0ae91d2b67f1389c031e6b0f6d29063f8eba"
-  },
   "current": [
     {
       "repo": "jotaele44/thehub-pr",
@@ -18,20 +12,6 @@
       "behind_by": 0,
       "github_mergeable": true,
       "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
-      "hosted_runs": {
-        "HAF Contract Gate": 33490126707,
-        "Federation template drift": 33490127204,
-        "HTR v2 frozen contract": 33490126700,
-        "federation-governance-certify": 33490127757,
-        "Secret scan": 33490127022,
-        "Federation pickup bounded MAX": 33490126894,
-        "Hub CI": 33490126928,
-        "HTR river-name denominator": 33490126791,
-        "Federation Governance": 33490127015,
-        "Federation completion gate": 33490126679,
-        "CodeQL": 33490127008,
-        "HTR island-wide bounded census": 33490126872
-      },
       "review_thread_state": "ALL_RESOLVED",
       "code_state": "GREEN_CODE",
       "merge_state": "NOT_AUTHORIZED",
@@ -46,15 +26,6 @@
       "behind_by": 0,
       "github_mergeable": true,
       "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
-      "hosted_runs": {
-        "CodeQL": 33495878713,
-        "Skywatcher CI": 33495878647,
-        "Federation Compatibility": 33495878884,
-        "HAF Contract Gate": 33495878818,
-        "Secret scan": 33495878869,
-        "SATIM Runtime Smoke Tests": 33495878749,
-        "Federation template drift": 33495878663
-      },
       "review_thread_state": "ALL_RESOLVED",
       "code_state": "GREEN_CODE",
       "merge_state": "NOT_AUTHORIZED",
@@ -69,15 +40,6 @@
       "behind_by": 0,
       "github_mergeable": true,
       "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
-      "hosted_runs": {
-        "GUI capability parity": 33495879972,
-        "validate": 33495879828,
-        "Secret scan": 33495879970,
-        "HAF Contract Gate": 33495879916,
-        "Federation Compatibility": 33495879919,
-        "Federation template drift": 33495879770,
-        "CodeQL": 33495879966
-      },
       "review_thread_state": "ALL_RESOLVED",
       "code_state": "GREEN_CODE",
       "merge_state": "NOT_AUTHORIZED",
@@ -92,15 +54,6 @@
       "behind_by": 0,
       "github_mergeable": true,
       "hosted_gate_state": "ALL_OBSERVED_CURRENT_HEAD_GATES_PASS",
-      "hosted_runs": {
-        "Federation template drift": 33551395212,
-        "HAF Contract Gate": 33551395065,
-        "CodeQL": 33551395075,
-        "Federation Compatibility": 33551395058,
-        "PRII Smoke Gate": 33551394964,
-        "Secret scan": 33551395041,
-        "CI": 33551394972
-      },
       "review_thread_state": "ALL_RESOLVED",
       "code_state": "GREEN_CODE",
       "merge_state": "NOT_AUTHORIZED",
@@ -109,37 +62,22 @@
     {
       "repo": "jotaele44/thehub-pr",
       "pr": 229,
-      "head_sha": "da63c1cae8cb79f7217df9e997ff85549a48a4c3",
+      "head_sha": "9032f5962e72d1d7465769adc50514507e16dad3",
       "base_branch": "feature/htr-toponym-graph-v1",
       "base_sha": "911c3433c272af66b2ef4c30267837ec22377c67",
       "github_mergeable": true,
-      "hosted_gate_state": "ALL_TRIGGERED_FINAL_HEAD_GATES_PASS_PLUS_CANONICAL_V3_SOURCE_AND_SCOPE_AND_HISTORY_EXECUTIONS_PASS",
-      "hosted_runs": {
-        "final_head_HAF Contract Gate": 33574494631,
-        "final_head_federation-governance-certify": 33574494674,
-        "final_head_Federation template drift": 33574494662,
-        "final_head_Federation pickup bounded MAX": 33574494671,
-        "final_head_Hub CI": 33574494717,
-        "canonical_v3_frozen_source_adjudication": 33572711586,
-        "canonical_v3_named_intake_scope_eligibility": 33573591927,
-        "canonical_v3_historical_source_set": 33574165964
+      "hosted_gate_state": "ALL_TRIGGERED_FINAL_HEAD_GATES_PASS_PLUS_CANONICAL_V3_SOURCE_SCOPE_AND_HISTORY_EXECUTIONS_PASS",
+      "final_head_runs": {
+        "HAF Contract Gate": [33574897394, "PASS"],
+        "federation-governance-certify": [33574897407, "PASS"],
+        "Federation template drift": [33574897388, "PASS"],
+        "Federation pickup bounded MAX": [33574897434, "PASS"],
+        "Hub CI": [33574897423, "PASS"]
       },
       "canonical_v3_artifacts": {
-        "source_adjudication": {
-          "id": 9825534660,
-          "digest": "sha256:ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd",
-          "execution_head_sha": "b9e690e412ff732af80d2150f7de60ec4c61ea8c"
-        },
-        "named_intake_scope_eligibility": {
-          "id": 9825809337,
-          "digest": "sha256:2212834ac56650c08c5eafa18b921e5266396069ece6310bdda8487b1e66ecd3",
-          "execution_head_sha": "43f8aaa3732330722c59a20fe298812858b9f36f"
-        },
-        "historical_source_set": {
-          "id": 9826015550,
-          "digest": "sha256:22cd7093ad5742eeee064548a8d6375bc8ca2d9596b24fa985304a0dbf1f278c",
-          "execution_head_sha": "e832206a0c7634ccbf8f6145e061c577a6eff97f"
-        }
+        "source_adjudication": {"run_id":33572711586,"artifact_id":9825534660,"digest":"sha256:ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd"},
+        "named_intake_scope_eligibility": {"run_id":33573591927,"artifact_id":9825809337,"digest":"sha256:2212834ac56650c08c5eafa18b921e5266396069ece6310bdda8487b1e66ecd3"},
+        "historical_source_set": {"run_id":33574165964,"artifact_id":9826015550,"digest":"sha256:22cd7093ad5742eeee064548a8d6375bc8ca2d9596b24fa985304a0dbf1f278c"}
       },
       "review_thread_state": "ALL_RESOLVED",
       "stack_dependency": "PR_212_MUST_BE_IN_TARGET_ANCESTRY_BEFORE_V3_INTEGRATION",
@@ -161,20 +99,8 @@
     }
   ],
   "external_baseline_state_changes": [
-    {
-      "repo": "jotaele44/thehub-pr",
-      "pr": 228,
-      "merged": true,
-      "merge_commit_sha": "4a2668b37c2f38fc77c9f2a3d71bdf2d92c91602",
-      "attribution": "EXTERNAL_STATE_CHANGE_NOT_PERFORMED_BY_THIS_HYDRO_VECTOR"
-    },
-    {
-      "repo": "jotaele44/spiderweb-pr",
-      "pr": 323,
-      "merged": true,
-      "merge_commit_sha": "02169e73bf7ae110eeccb8cfaf47a4f7dfa2989f",
-      "attribution": "EXTERNAL_STATE_CHANGE_NOT_PERFORMED_BY_THIS_HYDRO_VECTOR"
-    }
+    {"repo":"jotaele44/thehub-pr","pr":228,"merged":true,"merge_commit_sha":"4a2668b37c2f38fc77c9f2a3d71bdf2d92c91602","attribution":"EXTERNAL_STATE_CHANGE_NOT_PERFORMED_BY_THIS_HYDRO_VECTOR"},
+    {"repo":"jotaele44/spiderweb-pr","pr":323,"merged":true,"merge_commit_sha":"02169e73bf7ae110eeccb8cfaf47a4f7dfa2989f","attribution":"EXTERNAL_STATE_CHANGE_NOT_PERFORMED_BY_THIS_HYDRO_VECTOR"}
   ],
   "invariants": {
     "all_five_htr_v3_pull_requests_github_mergeable_at_terminal_capture": true,
