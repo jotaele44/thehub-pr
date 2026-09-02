@@ -1,5 +1,5 @@
 {
-  "schema_version": "htr-v3-460-terminal-receipt-1.1",
+  "schema_version": "htr-v3-460-terminal-receipt-1.2",
   "captured_date": "2026-09-01",
   "scope": "Terminal bounded execution receipt for the 460 HTR v2 evidence groups, MAJOR_HYDRO_ASSET_v3 configured authoritative source denominator, and explicit merge readiness. Existing HTR feature heads and frozen v1/v2 artifacts were preserved; no merge was performed by this execution.",
   "htr_v2": {
@@ -9,11 +9,7 @@
     "source_row_relations_preserved": 1738,
     "pair_groups": 460,
     "pair_group_arithmetic": "460=274+178+8",
-    "row_dispositions": {
-      "EXACT_NAME_RECURRENCE_UNBOUND": 997,
-      "ORTHOGRAPHIC_RECURRENCE_UNBOUND": 617,
-      "ORTHOGRAPHIC_VARIANT_UNBOUND": 124
-    },
+    "row_dispositions": {"EXACT_NAME_RECURRENCE_UNBOUND":997,"ORTHOGRAPHIC_RECURRENCE_UNBOUND":617,"ORTHOGRAPHIC_VARIANT_UNBOUND":124},
     "direct_pair_binding_evidence_found_groups": 0,
     "unresolved_relations": 1738,
     "unexplained_residue": 0,
@@ -21,23 +17,12 @@
     "connectivity_promotions": 0,
     "pair_binding_promotions": 0,
     "transitive_context_inheritance": 0,
-    "derived_artifact": {
-      "name": "htr-v2-460-pair-evidence-2026-09-01.zip",
-      "sha256": "4e18deb59f82bff58d36e34b84be78117f781f028b06ad60ba1b8ec5ffadde98",
-      "pair_group_ledger_sha256": "8c7ec01662cbbe61b82bbf78fc80578de18671f12de685bd7dc65f80d9f1a66b",
-      "relation_conservation_ledger_sha256": "55143ac0f9f4549d5d0746304289c72f7522ef6265ab5d248ec404c3709a2891"
-    },
-    "certification": {
-      "pair_group_classification_arithmetic": "PASS",
-      "candidate_row_conservation": "PASS",
-      "zero_unexplained_residue": "PASS",
-      "relation_resolution": "OPEN",
-      "zero_unresolved_relation_residue": "FAIL"
-    }
+    "derived_artifact": {"name":"htr-v2-460-pair-evidence-2026-09-01.zip","sha256":"4e18deb59f82bff58d36e34b84be78117f781f028b06ad60ba1b8ec5ffadde98","pair_group_ledger_sha256":"8c7ec01662cbbe61b82bbf78fc80578de18671f12de685bd7dc65f80d9f1a66b","relation_conservation_ledger_sha256":"55143ac0f9f4549d5d0746304289c72f7522ef6265ab5d248ec404c3709a2891"},
+    "certification": {"pair_group_classification_arithmetic":"PASS","candidate_row_conservation":"PASS","zero_unexplained_residue":"PASS","relation_resolution":"OPEN","zero_unresolved_relation_residue":"FAIL"}
   },
   "major_hydro_asset_v3": {
     "pr": 229,
-    "final_head_sha": "da63c1cae8cb79f7217df9e997ff85549a48a4c3",
+    "final_head_sha": "9032f5962e72d1d7465769adc50514507e16dad3",
     "base_htr_head_sha": "911c3433c272af66b2ef4c30267837ec22377c67",
     "base_v2_manifestations": 107,
     "new_source_manifestation_arithmetic": "3524=270+3254+0",
@@ -52,100 +37,26 @@
     "cross_source_identity_state": "UNRESOLVED",
     "universal_historical_archive_exhaustion": false,
     "universal_hydro_exhaustion_claimed": false,
-    "source_adjudication": {
-      "run_id": 33572711586,
-      "execution_head_sha": "b9e690e412ff732af80d2150f7de60ec4c61ea8c",
-      "artifact_id": 9825534660,
-      "artifact_digest": "sha256:ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd",
-      "artifact_size_bytes": 437983,
-      "certification": "PASS_BOUNDED_SOURCE_MANIFESTATION_CLASSIFICATION"
-    },
-    "scope_eligibility": {
-      "run_id": 33573591927,
-      "execution_head_sha": "43f8aaa3732330722c59a20fe298812858b9f36f",
-      "artifact_id": 9825809337,
-      "artifact_digest": "sha256:2212834ac56650c08c5eafa18b921e5266396069ece6310bdda8487b1e66ecd3",
-      "scope_binding": "conversation:MAJOR_HYDRO_ASSET_scope:named_intakes=INCLUDE",
-      "aaa_named_intakes_in_scope": 182,
-      "canonical_identity_certified": false,
-      "certification": "PASS_BOUNDED_V3_ASSET_SCOPE_ELIGIBILITY"
-    },
-    "historical_source_set": {
-      "run_id": 33574165964,
-      "execution_head_sha": "e832206a0c7634ccbf8f6145e061c577a6eff97f",
-      "artifact_id": 9826015550,
-      "artifact_digest": "sha256:22cd7093ad5742eeee064548a8d6375bc8ca2d9596b24fa985304a0dbf1f278c",
-      "configured_sources": 6,
-      "frozen_sources": 6,
-      "source_manifestations": 18,
-      "ogp_tls_transport_exceptions": 2,
-      "historical_source_set_exhausted": true,
-      "universal_historical_archive_exhausted": false,
-      "certification": "PASS_BOUNDED_HISTORICAL_SOURCE_SET"
-    },
-    "nid": {
-      "source_rows": 36,
-      "stable_nid_ids": 36,
-      "supported_primary_name_manifestations": 36,
-      "unsupported_raw_alias_field_manifestations": 67
-    },
-    "aaa_2015": {
-      "source_rows": 182,
-      "stable_facility_ids": 182,
-      "distinct_raw_names": 180,
-      "major_asset_eligibility": "IN_SCOPE_NAMED_INTAKE",
-      "canonical_identity_certified": false
-    },
-    "sige_canal": {
-      "source_rows": 3187,
-      "raw_name_family_count": 1,
-      "raw_name": "Canal de Riego",
-      "discovery_key_status": "UNSUPPORTED",
-      "unsupported_reason": "GENERIC_FEATURE_CLASS_ONLY"
-    },
-    "drna": {
-      "planagua_2004_lesser_rows": 10,
-      "pira_2016_table_rows": 22,
-      "pira_2016_table_mayor_rows": 18,
-      "pira_2016_table_intermedio_rows": 4,
-      "pira_2016_prose_total_reservoirs": 39,
-      "pira_2016_prose_major_works": 15,
-      "pira_2016_unenumerated_vs_prose_total": 17,
-      "count_class_contradictions": 1,
-      "contradiction_state": "UNRESOLVED_SEMANTIC_SCOPE_DIFFERENCE_OR_SOURCE_CONTRADICTION"
-    },
-    "final_head_runs": {
-      "HAF Contract Gate": [33574494631, "PASS"],
-      "federation-governance-certify": [33574494674, "PASS"],
-      "Federation template drift": [33574494662, "PASS"],
-      "Federation pickup bounded MAX": [33574494671, "PASS"],
-      "Hub CI": [33574494717, "PASS"]
-    },
+    "source_adjudication": {"run_id":33572711586,"execution_head_sha":"b9e690e412ff732af80d2150f7de60ec4c61ea8c","artifact_id":9825534660,"artifact_digest":"sha256:ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd","certification":"PASS_BOUNDED_SOURCE_MANIFESTATION_CLASSIFICATION"},
+    "scope_eligibility": {"run_id":33573591927,"execution_head_sha":"43f8aaa3732330722c59a20fe298812858b9f36f","artifact_id":9825809337,"artifact_digest":"sha256:2212834ac56650c08c5eafa18b921e5266396069ece6310bdda8487b1e66ecd3","scope_binding":"conversation:MAJOR_HYDRO_ASSET_scope:named_intakes=INCLUDE","aaa_named_intakes_in_scope":182,"certification":"PASS_BOUNDED_V3_ASSET_SCOPE_ELIGIBILITY"},
+    "historical_source_set": {"run_id":33574165964,"execution_head_sha":"e832206a0c7634ccbf8f6145e061c577a6eff97f","artifact_id":9826015550,"artifact_digest":"sha256:22cd7093ad5742eeee064548a8d6375bc8ca2d9596b24fa985304a0dbf1f278c","configured_sources":6,"frozen_sources":6,"source_manifestations":18,"historical_source_set_exhausted":true,"universal_historical_archive_exhausted":false,"certification":"PASS_BOUNDED_HISTORICAL_SOURCE_SET"},
+    "nid": {"source_rows":36,"stable_nid_ids":36,"supported_primary_name_manifestations":36,"unsupported_raw_alias_field_manifestations":67},
+    "aaa_2015": {"source_rows":182,"stable_facility_ids":182,"distinct_raw_names":180,"major_asset_eligibility":"IN_SCOPE_NAMED_INTAKE","canonical_identity_certified":false},
+    "sige_canal": {"source_rows":3187,"raw_name_family_count":1,"raw_name":"Canal de Riego","discovery_key_status":"UNSUPPORTED","unsupported_reason":"GENERIC_FEATURE_CLASS_ONLY"},
+    "drna": {"planagua_2004_lesser_rows":10,"pira_2016_table_rows":22,"pira_2016_table_mayor_rows":18,"pira_2016_table_intermedio_rows":4,"pira_2016_prose_total_reservoirs":39,"pira_2016_prose_major_works":15,"pira_2016_unenumerated_vs_prose_total":17,"count_class_contradictions":1,"contradiction_state":"UNRESOLVED_SEMANTIC_SCOPE_DIFFERENCE_OR_SOURCE_CONTRADICTION"},
+    "final_head_runs": {"HAF Contract Gate":[33574897394,"PASS"],"federation-governance-certify":[33574897407,"PASS"],"Federation template drift":[33574897388,"PASS"],"Federation pickup bounded MAX":[33574897434,"PASS"],"Hub CI":[33574897423,"PASS"]},
     "mutable_source_workflows_default": "MANUAL_ONLY_REUSE_FROZEN_SNAPSHOTS"
   },
   "merge_readiness": {
-    "thehub_212": ["911c3433c272af66b2ef4c30267837ec22377c67", "GREEN_CODE", "NOT_AUTHORIZED"],
-    "skywatcher_215": ["3395e9bb66971edeb6660fd64c9edcc66ade6f22", "GREEN_CODE", "NOT_AUTHORIZED"],
-    "aguayluz_195": ["d083ef1dff401c292055707cad5e3a64ee067a61", "GREEN_CODE", "NOT_AUTHORIZED"],
-    "spiderweb_308": ["e666cab0fd30239ce45392f59f690717ab3a4fa5", "GREEN_CODE", "NOT_AUTHORIZED"],
-    "thehub_229": ["da63c1cae8cb79f7217df9e997ff85549a48a4c3", "GREEN_CODE_BOUNDED_V3", "NOT_AUTHORIZED"],
+    "thehub_212": ["911c3433c272af66b2ef4c30267837ec22377c67","GREEN_CODE","NOT_AUTHORIZED"],
+    "skywatcher_215": ["3395e9bb66971edeb6660fd64c9edcc66ade6f22","GREEN_CODE","NOT_AUTHORIZED"],
+    "aguayluz_195": ["d083ef1dff401c292055707cad5e3a64ee067a61","GREEN_CODE","NOT_AUTHORIZED"],
+    "spiderweb_308": ["e666cab0fd30239ce45392f59f690717ab3a4fa5","GREEN_CODE","NOT_AUTHORIZED"],
+    "thehub_229": ["9032f5962e72d1d7465769adc50514507e16dad3","GREEN_CODE_BOUNDED_V3","NOT_AUTHORIZED"],
     "all_five_github_mergeable_at_terminal_capture": true,
     "all_current_htr_v3_review_threads_resolved": true,
     "merges_performed_by_this_execution": 0,
-    "external_baseline_merges_observed": {
-      "thehub_228": "4a2668b37c2f38fc77c9f2a3d71bdf2d92c91602",
-      "spiderweb_323": "02169e73bf7ae110eeccb8cfaf47a4f7dfa2989f"
-    }
+    "external_baseline_merges_observed": {"thehub_228":"4a2668b37c2f38fc77c9f2a3d71bdf2d92c91602","spiderweb_323":"02169e73bf7ae110eeccb8cfaf47a4f7dfa2989f"}
   },
-  "global_invariants": {
-    "raw_normalized_canonical_separate": true,
-    "unsupported_not_rejected": true,
-    "name_identity_prohibited": true,
-    "fuzzy_identity_prohibited": true,
-    "proximity_identity_prohibited": true,
-    "cluster_identity_prohibited": true,
-    "discovery_connectivity_prohibited": true,
-    "transitive_context_inheritance": false,
-    "universal_exhaustion_claimed": false
-  }
+  "global_invariants": {"raw_normalized_canonical_separate":true,"unsupported_not_rejected":true,"name_identity_prohibited":true,"fuzzy_identity_prohibited":true,"proximity_identity_prohibited":true,"cluster_identity_prohibited":true,"discovery_connectivity_prohibited":true,"transitive_context_inheritance":false,"universal_exhaustion_claimed":false}
 }
