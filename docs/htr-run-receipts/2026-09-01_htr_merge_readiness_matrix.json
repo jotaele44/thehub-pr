@@ -1,5 +1,5 @@
 {
-  "schema_version": "htr-merge-readiness-matrix-1.1",
+  "schema_version": "htr-merge-readiness-matrix-1.2",
   "captured_date": "2026-09-01",
   "scope": "Explicit terminal merge-readiness matrix for HTR producer/consumer pull requests and stacked MAJOR_HYDRO_ASSET_v3. GREEN_CODE is not MERGE_AUTHORIZED. No merge is authorized or performed by this receipt.",
   "historical_certified_heads": {
@@ -109,35 +109,55 @@
     {
       "repo": "jotaele44/thehub-pr",
       "pr": 229,
-      "head_sha": "5c6052c9a8add1815465ee8d305b797472ec5a59",
+      "head_sha": "da63c1cae8cb79f7217df9e997ff85549a48a4c3",
       "base_branch": "feature/htr-toponym-graph-v1",
       "base_sha": "911c3433c272af66b2ef4c30267837ec22377c67",
       "github_mergeable": true,
-      "hosted_gate_state": "FINAL_HEAD_STANDARD_GATES_PASS_AND_CANONICAL_V3_ADJUDICATION_PASS",
+      "hosted_gate_state": "ALL_TRIGGERED_FINAL_HEAD_GATES_PASS_PLUS_CANONICAL_V3_SOURCE_AND_SCOPE_AND_HISTORY_EXECUTIONS_PASS",
       "hosted_runs": {
-        "final_head_HAF Contract Gate": 33573288256,
-        "final_head_federation-governance-certify": 33573288248,
-        "final_head_Federation template drift": 33573288263,
-        "final_head_Federation pickup bounded MAX": 33573288242,
-        "final_head_Hub CI": 33573288244,
-        "canonical_v3_frozen_source_adjudication": 33572711586
+        "final_head_HAF Contract Gate": 33574494631,
+        "final_head_federation-governance-certify": 33574494674,
+        "final_head_Federation template drift": 33574494662,
+        "final_head_Federation pickup bounded MAX": 33574494671,
+        "final_head_Hub CI": 33574494717,
+        "canonical_v3_frozen_source_adjudication": 33572711586,
+        "canonical_v3_named_intake_scope_eligibility": 33573591927,
+        "canonical_v3_historical_source_set": 33574165964
       },
-      "canonical_v3_adjudication_artifact": {
-        "id": 9825534660,
-        "digest": "sha256:ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd",
-        "execution_head_sha": "b9e690e412ff732af80d2150f7de60ec4c61ea8c"
+      "canonical_v3_artifacts": {
+        "source_adjudication": {
+          "id": 9825534660,
+          "digest": "sha256:ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd",
+          "execution_head_sha": "b9e690e412ff732af80d2150f7de60ec4c61ea8c"
+        },
+        "named_intake_scope_eligibility": {
+          "id": 9825809337,
+          "digest": "sha256:2212834ac56650c08c5eafa18b921e5266396069ece6310bdda8487b1e66ecd3",
+          "execution_head_sha": "43f8aaa3732330722c59a20fe298812858b9f36f"
+        },
+        "historical_source_set": {
+          "id": 9826015550,
+          "digest": "sha256:22cd7093ad5742eeee064548a8d6375bc8ca2d9596b24fa985304a0dbf1f278c",
+          "execution_head_sha": "e832206a0c7634ccbf8f6145e061c577a6eff97f"
+        }
       },
       "review_thread_state": "ALL_RESOLVED",
       "stack_dependency": "PR_212_MUST_BE_IN_TARGET_ANCESTRY_BEFORE_V3_INTEGRATION",
       "code_state": "GREEN_CODE_BOUNDED_V3",
-      "v3_bounded_source_manifestation_classification": "PASS",
+      "v3_source_manifestation_arithmetic": "3524=270+3254+0",
+      "v3_source_manifestations": 3524,
+      "v3_supported_for_major_discovery": 270,
+      "v3_unsupported_discovery_keys": 3254,
+      "v3_asset_scope_eligibility_unresolved": 0,
+      "total_source_manifestations_with_v2": 3631,
+      "bounded_supported_discovery_manifestations_with_v2": 377,
       "v3_unexplained_manifestation_residue": 0,
-      "v3_major_eligibility_unresolved": 182,
-      "v3_historical_prwra_exhaustion": "OPEN",
-      "v3_usgs_conveyance_expansion_beyond_v2": "OPEN",
+      "v3_configured_authoritative_source_denominator_complete": true,
+      "v3_cross_source_identity": "UNRESOLVED",
+      "v3_universal_historical_archive_exhaustion": false,
       "v3_universal_hydro_exhaustion": "NOT_CLAIMED",
       "merge_state": "NOT_AUTHORIZED",
-      "merge_blocker": "STACK_DEPENDENCY_PLUS_OPEN_V3_EVIDENTIARY_RESIDUE_PLUS_SEPARATE_USER_AUTHORIZATION_REQUIRED"
+      "merge_blocker": "STACK_DEPENDENCY_PLUS_SEPARATE_USER_AUTHORIZATION_REQUIRED"
     }
   ],
   "external_baseline_state_changes": [
@@ -157,6 +177,8 @@
     }
   ],
   "invariants": {
+    "all_five_htr_v3_pull_requests_github_mergeable_at_terminal_capture": true,
+    "all_current_htr_v3_review_threads_resolved": true,
     "green_code_equals_merge_authorized": false,
     "merges_performed_by_this_execution": 0,
     "htr_identity_promotion_from_name_fuzzy_proximity_cluster": 0,
