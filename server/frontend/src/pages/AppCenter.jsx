@@ -15,6 +15,7 @@ import {
 import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { withIosReadiness } from "@/lib/ios-readiness";
 
 export const APP_CENTER_APPS = [
   { appId: "thehub", name: "TheHub", profile: "Core", lifecycle: "Ready", readiness: {} },
@@ -65,20 +66,24 @@ export async function loadAppInventory({
       || inventory.some((app) => !expected.has(app.appId))) {
     throw new ManagerUnavailableError("Native manager returned an invalid app identity.");
   }
-  return inventory.map((app) => ({
+  return withIosReadiness(inventory.map((app) => ({
     appId: app.appId,
     name: app.displayName,
     profile: titleCase(app.profile),
     lifecycle: titleCase(app.lifecycle),
     readiness: app.readiness,
-  }));
+  })));
 }
 
 function AppTile({ app }) {
   const [expanded, setExpanded] = useState(false);
   const Icon = ICONS[app.appId];
+  const iosReadiness = app.iosReadiness;
+  const blockers = iosReadiness?.blockers || [];
+  const closedEvidence = iosReadiness?.closedEvidence || [];
+  const hasBlockers = blockers.length > 0;
   return (
-    <Card data-app-id={app.appId} aria-label={`${app.name} application`}>
+    <Card data-app-id={app.appId} role="article" aria-label={`${app.name} application`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3">
@@ -95,7 +100,17 @@ function AppTile({ app }) {
               <p className="text-xs text-muted-foreground mt-1">{app.profile} profile</p>
             </div>
           </div>
-          <span className="text-xs rounded-md border px-2 py-1">{app.lifecycle}</span>
+          <div className="flex flex-col items-end gap-2">
+            <span className="text-xs rounded-md border px-2 py-1">{app.lifecycle}</span>
+            {iosReadiness && (
+              <span
+                className="text-xs rounded-md border border-status-caution/40 bg-status-caution/10 px-2 py-1 text-status-caution-fg"
+                aria-label={`${app.name} iOS state ${titleCase(iosReadiness.iosStartState)}`}
+              >
+                {titleCase(iosReadiness.iosStartState)}
+              </span>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -111,6 +126,54 @@ function AppTile({ app }) {
             </div>
           ))}
         </dl>
+        {iosReadiness && (
+          <div className="mt-4 rounded-md border border-border bg-muted/35 p-3 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="font-medium">iOS readiness</p>
+              <span
+                className={`rounded-md border px-2 py-0.5 ${
+                  hasBlockers
+                    ? "border-status-warning/40 bg-status-warning/10 text-status-warning-fg"
+                    : "border-status-success/40 bg-status-success/10 text-status-success-fg"
+                }`}
+              >
+                {iosReadiness.certificationState}
+              </span>
+            </div>
+            {hasBlockers ? (
+              <ul className="mt-2 space-y-2" aria-label={`${app.name} iOS blockers`}>
+                {blockers.map((blocker) => (
+                  <li key={blocker.sourceId} className="rounded-md border bg-background p-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium">{blocker.label}</span>
+                      <span className="rounded-md border border-status-caution/40 bg-status-caution/10 px-2 py-0.5 text-status-caution-fg">
+                        {blocker.state}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-muted-foreground">{blocker.reason}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-2 text-muted-foreground">No receipt-backed iOS blockers recorded for this surface.</p>
+            )}
+            {closedEvidence.length > 0 && (
+              <ul className="mt-2 space-y-2" aria-label={`${app.name} closed iOS evidence`}>
+                {closedEvidence.map((evidence) => (
+                  <li key={evidence.sourceId} className="rounded-md border border-status-success/30 bg-status-success/10 p-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-medium">{evidence.label}</span>
+                      <span className="rounded-md border border-status-success/40 bg-status-success/10 px-2 py-0.5 text-status-success-fg">
+                        {evidence.state}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-muted-foreground">{evidence.reason}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
         <div className="flex flex-wrap gap-2 mt-4">
           <Button disabled aria-disabled="true">
             {app.appId === "thehub" ? "Open" : "Install"}
@@ -130,6 +193,21 @@ function AppTile({ app }) {
             <p>Application ID: <code>{app.appId}</code></p>
             <p className="mt-1">Lifecycle actions are unavailable in the Phase 1 read-only foundation.</p>
             <p className="mt-1 flex items-center gap-1"><LockKeyhole className="h-3 w-3" /> Secret values are never exposed.</p>
+            {iosReadiness?.canonicalReceipts?.length > 0 && (
+              <div className="mt-3">
+                <p className="font-medium">Canonical receipt references</p>
+                <ul className="mt-1 space-y-1">
+                  {iosReadiness.canonicalReceipts.map((receiptPath) => (
+                    <li key={receiptPath}><code>{receiptPath}</code></li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {iosReadiness?.noncanonicalReferences?.length > 0 && (
+              <p className="mt-3">
+                ZIP references: <code>{iosReadiness.noncanonicalReferences.join(", ")}</code>
+              </p>
+            )}
           </div>
         )}
       </CardContent>
@@ -138,7 +216,7 @@ function AppTile({ app }) {
 }
 
 export default function AppCenter({ inventoryLoader = loadAppInventory }) {
-  const [apps, setApps] = useState(APP_CENTER_APPS);
+  const [apps, setApps] = useState(withIosReadiness(APP_CENTER_APPS));
   const [managerState, setManagerState] = useState("loading");
 
   useEffect(() => {
