@@ -1,7 +1,7 @@
 {
-  "schema_version": "major-hydro-asset-v3-bounded-closure-receipt-1.1",
+  "schema_version": "major-hydro-asset-v3-bounded-closure-receipt-1.2",
   "captured_date": "2026-09-01",
-  "scope": "Bounded MAJOR_HYDRO_ASSET_v3 authoritative source-manifestation and approved asset-scope eligibility closure over frozen v2 plus the explicitly acquired USACE, NID/NTAD, AAA/PRASA 2015, SIGE Canal de Riego, and DRNA 2004/2016 source artifacts. Cross-source canonical identity and universal Puerto Rico hydro exhaustion are not claimed.",
+  "scope": "Bounded MAJOR_HYDRO_ASSET_v3 authoritative source-manifestation, approved asset-scope eligibility, and configured historical-source-set closure over frozen v2 plus USACE, NID/NTAD, AAA/PRASA 2015, SIGE Canal de Riego, DRNA 2004/2016, OGP Laws 83/84-1955, and selected USGS historical publications. Cross-source canonical identity and universal Puerto Rico hydro/archive exhaustion are not claimed.",
   "base": {
     "v2_manifestations": 107,
     "identity": "PRESERVED_UNCHANGED"
@@ -57,6 +57,33 @@
       "contradiction": "COUNT|CLASS: prose says 15 major works; Table 3.5 visually classifies 18 of 22 columns as Mayor",
       "contradiction_state": "UNRESOLVED_SEMANTIC_SCOPE_DIFFERENCE_OR_SOURCE_CONTRADICTION",
       "drna_2004_category_arithmetic_with_v2": "44=34+10"
+    },
+    "historical_prwra_usgs": {
+      "workflow_run_id": 33574165964,
+      "execution_head_sha": "e832206a0c7634ccbf8f6145e061c577a6eff97f",
+      "artifact_id": 9826015550,
+      "artifact_name": "htr-v3-history-e832206a0c7634ccbf8f6145e061c577a6eff97f",
+      "artifact_digest": "sha256:22cd7093ad5742eeee064548a8d6375bc8ca2d9596b24fa985304a0dbf1f278c",
+      "artifact_size_bytes": 4847895,
+      "configured_sources": 6,
+      "frozen_sources": 6,
+      "supported_source_manifestations": 18,
+      "source_set_exhaustion": "PASS",
+      "universal_historical_archive_exhaustion": false,
+      "ogp_tls_transport_exceptions": 2,
+      "ogp_tls_exception_basis": "Exact bvirtualogp.pr.gov host presented an expired certificate; verification exception was restricted to that host, final host pinned, bytes preserved and hashed.",
+      "file_hashes": {
+        "historical_source_manifestations.jsonl": "aa6d41857fbdae4db94fd43eb41f77cc7b3acdf7e98ef504ada1cd337bb2f7c7",
+        "raw/ogp-law-83-1955.pdf": "389eacbc79fc7f1711e9a586e548a6f4a34f891449867a0c67617680c134c8d1",
+        "raw/ogp-law-84-1955.pdf": "46d8f997c11d49e924856f840215671891df0957187ea67bae887b8a6eeb32d6",
+        "raw/usgs-sim-2990-publication.html": "e817bc0fc0c684cc356d41798fdfd46793b59537ab0d903b341455dff8dc9524",
+        "raw/usgs-sim-3128-publication.html": "af9c99e96063f5d3f82616175c8be69772c6000cd21725ed99330403b39fff6e",
+        "raw/usgs-sim-3364.pdf": "1180cd04507c7395a06429259129f49cfe6eabb63b4bbc6694277e6d072c3cbd",
+        "raw/usgs-wri-1999-4169.pdf": "cecfdcf36a6f424c3d87a95cce9c65d8e14928852538167716051305b5f74541",
+        "raw_manifest.json": "4b7191167cc6a278fe57c5941f87dd3c89361dd19b4cc29a03b09fade9b241c7",
+        "summary.json": "e0f50470e5c2ecddf9b4410b2309b97bdcc1073f44fa53e3cbadacaf247c2a07"
+      },
+      "certification": "PASS_BOUNDED_HISTORICAL_SOURCE_SET"
     }
   },
   "canonical_source_adjudication": {
@@ -68,7 +95,7 @@
     "artifact_size_bytes": 437983,
     "certification": "PASS_BOUNDED_SOURCE_MANIFESTATION_CLASSIFICATION",
     "source_manifestation_arithmetic_before_scope_refinement": "3506=70+3254+182",
-    "new_v3_source_manifestations": 3506,
+    "new_v3_source_manifestations_before_historical_source_set": 3506,
     "unexplained_manifestation_residue": 0,
     "unresolved_cross_source_identity": true,
     "identity_promotions": 0,
@@ -97,22 +124,25 @@
     "aaa_named_intake_rows": 182,
     "aaa_named_intakes_in_scope": 182,
     "aaa_scope_eligibility_unresolved": 0,
-    "refined_v3_source_manifestation_arithmetic": "3506=252+3254+0",
-    "supported_for_major_discovery": 252,
-    "unsupported_discovery_key": 3254,
-    "major_hydro_asset_eligibility_unresolved": 0,
-    "total_source_manifestations_with_v2": 3613,
-    "bounded_supported_discovery_manifestations_with_v2": 359,
     "file_hashes": {
       "aaa_2015_named_intakes_in_scope.jsonl": "592ee2b0f3bca8668c71ef203afc38555c0d10f2a128dac0de93c1163f3a2d0e",
       "summary.json": "bd7fccb426bf8d9369d11328206ffe60c21bda1c9e9b74a94c8fcc16d745ad9b"
     },
     "certification": "PASS_BOUNDED_V3_ASSET_SCOPE_ELIGIBILITY"
   },
-  "open_required_evidentiary_residue": {
-    "historical_prwra_exhaustion": "OPEN",
-    "usgs_conveyance_expansion_beyond_v2": "OPEN",
+  "final_bounded_denominator": {
+    "v3_source_manifestation_arithmetic": "3524=270+3254+0",
+    "v3_source_manifestations": 3524,
+    "supported_for_major_discovery": 270,
+    "unsupported_discovery_key": 3254,
+    "major_hydro_asset_eligibility_unresolved": 0,
+    "base_v2_manifestations": 107,
+    "total_source_manifestations_with_v2": 3631,
+    "bounded_supported_discovery_manifestations_with_v2": 377,
+    "zero_unexplained_manifestation_residue": true,
+    "configured_authoritative_source_denominator_complete": true,
     "cross_source_canonical_identity": "UNRESOLVED",
+    "universal_historical_archive_exhaustion": false,
     "universal_hydro_exhaustion": "NOT_CLAIMED"
   },
   "invariants": {
