@@ -36,7 +36,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          PULL_REQUEST_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           set -euo pipefail
           python - <<'PY'
@@ -72,24 +71,29 @@ jobs:
           producer_frozen = {repo: sha for repo, sha in frozen.items() if repo != control}
           assert len(producer_frozen) == 6
 
-          if os.environ.get("GITHUB_EVENT_NAME") == "pull_request":
-              if os.environ.get("GITHUB_REPOSITORY") != control:
-                  raise SystemExit(
-                      "BLOCKED: pull_request control-plane binding requires "
-                      f"GITHUB_REPOSITORY={control}"
-                  )
-              live = os.environ.get("PULL_REQUEST_BASE_SHA", "").strip()
-          else:
-              proc = subprocess.run(
-                  ["gh", "api", f"repos/{control}/commits/main", "--jq", ".sha"],
-                  text=True,
-                  capture_output=True,
-                  check=False,
-                  env=os.environ.copy(),
+          if (
+              os.environ.get("GITHUB_EVENT_NAME") == "pull_request"
+              and os.environ.get("GITHUB_REPOSITORY") != control
+          ):
+              raise SystemExit(
+                  "BLOCKED: pull_request control-plane binding requires "
+                  f"GITHUB_REPOSITORY={control}"
               )
-              if proc.returncode:
-                  raise SystemExit(f"BLOCKED: control-plane main lookup failed: {proc.stderr.strip()}")
-              live = proc.stdout.strip()
+
+          # The policy is RUNTIME_BIND_CONTROL_PLANE_MAIN_ONLY. A PR's recorded
+          # base SHA can become stale when main advances after the PR run is
+          # queued, so bind to the live main head immediately before fed MAX.
+          # Producer rows remain frozen and are never rebound here.
+          proc = subprocess.run(
+              ["gh", "api", f"repos/{control}/commits/main", "--jq", ".sha"],
+              text=True,
+              capture_output=True,
+              check=False,
+              env=os.environ.copy(),
+          )
+          if proc.returncode:
+              raise SystemExit(f"BLOCKED: control-plane main lookup failed: {proc.stderr.strip()}")
+          live = proc.stdout.strip()
           if len(live) != 40 or any(ch not in "0123456789abcdef" for ch in live.lower()):
               raise SystemExit(f"BLOCKED: invalid control-plane main SHA: {live!r}")
 
@@ -106,11 +110,12 @@ jobs:
 
           ledger_path.write_text(yaml.safe_dump(ledger, sort_keys=False), encoding="utf-8")
           evidence = {
-              "schema_version": 1,
+              "schema_version": 2,
               "mode": policy["mode"],
               "control_plane": control,
               "frozen_control_plane_sha": frozen[control],
               "runtime_control_plane_sha": live,
+              "runtime_binding_basis": "LIVE_MAIN_LOOKUP_IMMEDIATELY_BEFORE_FED_MAX",
               "runtime_rebind_count": 1,
               "producer_exact_sha_count": len(producer_frozen),
               "producer_expected_shas": producer_frozen,
@@ -141,6 +146,7 @@ jobs:
           snapshot = receipt["snapshot"]
 
           assert binding["mode"] == "RUNTIME_BIND_CONTROL_PLANE_MAIN_ONLY"
+          assert binding["runtime_binding_basis"] == "LIVE_MAIN_LOOKUP_IMMEDIATELY_BEFORE_FED_MAX"
           assert binding["runtime_rebind_count"] == 1
           assert binding["producer_exact_sha_count"] == 6
           assert len(binding["producer_expected_shas"]) == 6
@@ -172,14 +178,8 @@ jobs:
               counts[status] = counts.get(status, 0) + 1
           assert sum(counts.values()) == certification["vector_count"] == 8
           # FEDERATION_PICKUP_SYSTEM_LEVEL_3 is owned by the control plane
-          # (jotaele44/thehub-pr) itself, which always self-matches (asserted
-          # below), so it is the one vector safe to pin to PASS unconditionally.
-          # CREATE_PRUFON_CASE_SCHEMA_IMPORT_PIPELINE is producer-owned
-          # (jotaele44/ovnis-pr) and is intentionally NOT pinned here: its
-          # terminal status depends on that producer's live drift state, which
-          # is asserted dynamically below via the drifted/matched invariant
-          # rather than hardcoded, so it doesn't go stale as ovnis-pr's main
-          # advances independently of this PR.
+          # (jotaele44/thehub-pr) itself, which must self-match the live main
+          # binding immediately above. Producer-owned vectors remain dynamic.
           assert execution["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
           assert counts.get("READY", 0) == 0
           assert counts.get("FAIL", 0) == 0
