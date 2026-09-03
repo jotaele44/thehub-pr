@@ -1,0 +1,38 @@
+{
+  "schema": "federation_snapshot_adjudication/v1",
+  "created_at_utc": "2026-08-18T00:15:00Z",
+  "classification": "ADJUDICATED_STALE_SNAPSHOT",
+  "certification": "PASS",
+  "scope": "FEDERATION_PICKUP_SYSTEM_LEVEL_3 snapshot contradiction only",
+  "project_lead_causality": false,
+  "snapshot": {
+    "source": "registry/development_vectors.yaml",
+    "captured_at_utc": "2026-08-17T21:23:26Z",
+    "repository": "jotaele44/thehub-pr",
+    "expected_main_sha": "55ff3a2ad763ca5f550cc698617ff2e268c4b672"
+  },
+  "observed": {
+    "main_sha": "94d2c0d53f2d99e8b5c248e3279921c4964a59f5",
+    "commit_time_utc": "2026-08-17T21:30:32Z",
+    "commit_subject": "Merge pull request #176 from jotaele44/dependabot/github_actions/actions/setup-python-7",
+    "first_parent_sha": "55ff3a2ad763ca5f550cc698617ff2e268c4b672",
+    "comparison_status": "ahead",
+    "ahead_by": 3,
+    "behind_by": 0
+  },
+  "adjudication": {
+    "contradiction_type": "TIME_SOURCE_MANIFESTATION",
+    "cause": "the frozen snapshot predates a verified main-branch advancement",
+    "stale_or_unverified_sha": true,
+    "feature_regression": false,
+    "effective_vector_status": "BLOCKED",
+    "reason": "exact_main_sha_snapshot invariant correctly fails closed when observed main no longer equals the frozen expected SHA"
+  },
+  "disposition": {
+    "preserve_original_frozen_ledger": true,
+    "modify_ledger_in_project_lead_vector": false,
+    "dedicated_snapshot_refresh_required_for_recertification": true,
+    "universal_exhaustion_claimed": false
+  },
+  "merge_or_production_promotion": false
+}
