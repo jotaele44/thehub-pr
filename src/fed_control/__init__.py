@@ -494,7 +494,6 @@ def run_ready(
         if vector_id in completed_set:
             dynamic_status[vector_id] = "PASS"
             continue
-        row = rec[vector_id]
         status = dynamic_status[vector_id]
         vector = vectors[vector_id]
         if status != "READY":

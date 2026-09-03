@@ -25,7 +25,10 @@ to copy: the `Fix-Gatekeeper.command` and `PRII-<APP>.{command,bat,sh}` launcher
 
 `.github/workflows/federation-template-sync.yml` closes the write side: on a
 change to `federation-templates/` (or manual dispatch) it re-renders every
-producer and **opens a sync PR** on any that drifted. It's **dry-run by default**
+producer, rebinds that producer's drift gate to the exact TheHub commit used for
+the render, and **opens a sync PR** on any that drifted. The binding and rendered
+payload therefore advance together instead of comparing new files against an
+older frozen template snapshot. It's **dry-run by default**
 — without an operator-provided `SYNC_PAT` secret (contents + PR write on the
 producers) it only renders and prints the drift, opening nothing. Set `SYNC_PAT`
 to turn on the automatic per-producer PRs. Until then, edit a template → run

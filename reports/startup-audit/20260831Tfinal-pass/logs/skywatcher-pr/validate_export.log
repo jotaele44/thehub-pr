@@ -1,0 +1,5 @@
+VALIDATION PASSED
+$ python scripts/validate_airspace_export.py exports/examples/synthetic_airspace_package --mode test
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T001032Z-pxserduk/skywatcher-pr
+# started_utc: 2026-09-01T00:16:06Z
+
