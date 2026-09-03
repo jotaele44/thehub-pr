@@ -17,11 +17,18 @@ for (const [sourceId, url] of sources) {
     test.skip(!runLive, 'live provider observations run only in the dedicated workflow');
     await page.goto('/gis');
     const observation = await page.evaluate(async (target) => {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10_000);
       try {
-        const response = await fetch(target, { headers: { Accept: 'application/json' } });
+        const response = await fetch(target, {
+          headers: { Accept: 'application/json' },
+          signal: controller.signal,
+        });
         return { reachable: true, ok: response.ok, status: response.status, body: (await response.text()).slice(0, 256) };
       } catch (error) {
         return { reachable: false, ok: false, status: null, error: String(error) };
+      } finally {
+        clearTimeout(timeout);
       }
     }, url);
     console.log('GIS_BROWSER_CORS', JSON.stringify({ sourceId, ...observation }));
