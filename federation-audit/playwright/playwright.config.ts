@@ -15,7 +15,7 @@ export default defineConfig({
     serviceWorkers: "block",
   },
   webServer: {
-    command: "python -m http.server 4173 --directory fixtures",
+    command: "python -m http.server 4173 --directory fixtures >/dev/null 2>&1",
     port: 4173,
     reuseExistingServer: false,
     stdout: "ignore",
