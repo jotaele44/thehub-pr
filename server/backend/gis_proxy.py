@@ -119,7 +119,10 @@ def _open_upstream(source_id: str, target: str, headers: dict[str, str], timeout
         if prefix_parts.scheme == "https"
         else http.client.HTTPConnection
     )
-    connection = connection_type(prefix_parts.hostname, port=prefix_parts.port, timeout=timeout)
+    hostname = prefix_parts.hostname
+    if hostname is None:
+        raise ValueError("registered GIS source is missing a hostname")
+    connection = connection_type(hostname, port=prefix_parts.port, timeout=timeout)
     request_target = urllib.parse.urlunsplit(("", "", target_parts.path, target_parts.query, ""))
     try:
         connection.request("GET", request_target, headers=headers)
