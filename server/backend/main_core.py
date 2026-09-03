@@ -53,17 +53,7 @@ log = logging.getLogger("hub.backend")
 # caller and a route that writes to data/hub.db.
 #
 #   PRII_WRITE_TOKEN set    -> mutating routes require Authorization: Bearer <token>
-#   PRII_WRITE_TOKEN unset  -> mutating routes are served to clients on a local
-#                              network (loopback, RFC1918 private, link-local)
-#                              and refused for public addresses
-#
-# The private-range allowance is deliberate, not laziness. This repo ships a
-# Dockerfile and docker-compose.yml; when the UI is opened from the host against
-# a container, uvicorn sees the Docker bridge address (typically 172.17.0.1), not
-# 127.0.0.1. A strict loopback-only rule would 403 every write in the documented
-# container deployment, which would simply get this guard reverted. Refusing
-# public addresses still closes the case this is meant to close — an instance
-# accidentally exposed to the internet.
+#   PRII_WRITE_TOKEN unset  -> every mutating route fails closed
 #
 # Caveat when the token IS set: the browser UI has no write-credential input
 # (federationClient sources only the federation access token, and AuthContext
@@ -99,14 +89,10 @@ def require_write_access(request: Request) -> None:
             )
         return
 
-    if not _is_local_network(request.client.host if request.client else ""):
-        raise HTTPException(
-            status_code=403,
-            detail=(
-                "Writes from public addresses are refused while PRII_WRITE_TOKEN "
-                "is unset. Set it to enable authenticated writes from anywhere."
-            ),
-        )
+    raise HTTPException(
+        status_code=503,
+        detail="Administrative writes are disabled until PRII_WRITE_TOKEN is configured",
+    )
 
 
 _WRITE_GUARD = [Depends(require_write_access)]
@@ -119,9 +105,7 @@ async def lifespan(app: FastAPI):
     _seed_federation()
     if not _WRITE_TOKEN:
         log.warning(
-            "PRII_WRITE_TOKEN is unset — mutating /api routes accept any client on "
-            "a local network and are refused for public addresses. Set the token "
-            "before exposing this server beyond a trusted network."
+            "PRII_WRITE_TOKEN is unset — all mutating /api routes fail closed."
         )
     yield
 
@@ -276,6 +260,29 @@ def public_settings():
             "mode": "diagnostic",
             "write_token_required": bool(_WRITE_TOKEN),
         },
+    }
+
+
+@app.get("/api/admin-companion/capabilities")
+def admin_companion_capabilities():
+    """The complete bounded iOS surface; absence means deny.
+
+    This endpoint intentionally advertises no execution, secret, deployment,
+    certification, role, schema, or Lockstep-override authority.
+    """
+    return {
+        "contract": "THEHUB_ADMIN_BOUNDARY/1.0",
+        "client_class": "thehub_ios",
+        "token_audience": "federation-admin-companion",
+        "default_effect": "DENY",
+        "capabilities": [
+            "federation.status.read",
+            "federation.search",
+            "report.read",
+            "certification.status.read",
+            "alert.read",
+        ],
+        "workstation_manager_access": False,
     }
 
 
@@ -605,7 +612,7 @@ def project_sign_html(project_id: str):
     raise HTTPException(status_code=404, detail="project sign not found")
 
 
-@app.post("/api/project-signs/generate")
+@app.post("/api/project-signs/generate", dependencies=_WRITE_GUARD)
 async def project_signs_generate(request: Request):
     # Optional {"write": true} also persists the HTML + index.json to reports/signs,
     # mirroring the CLI; otherwise it just (re)builds and returns the signs.

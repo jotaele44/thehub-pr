@@ -244,12 +244,13 @@ def snapshot_local(ledger: Mapping[str, Any], root: Path) -> Dict[str, Any]:
 
 
 def _gh_head(repo: str, branch: str) -> Tuple[Optional[str], Optional[str]]:
-    if shutil.which("gh") is None:
+    try:
+        proc = subprocess.run(
+            ["gh", "api", "repos/%s/commits/%s" % (repo, branch), "--jq", ".sha"],
+            text=True, capture_output=True, check=False,
+        )
+    except FileNotFoundError:
         return None, "gh_missing"
-    proc = subprocess.run(
-        ["gh", "api", "repos/%s/commits/%s" % (repo, branch), "--jq", ".sha"],
-        text=True, capture_output=True, check=False,
-    )
     if proc.returncode:
         return None, "gh_api_failed:%s" % proc.stderr.strip()
     sha = proc.stdout.strip()

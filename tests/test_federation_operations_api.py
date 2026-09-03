@@ -173,6 +173,12 @@ def test_an_invalid_bearer_is_refused(client):
     assert response.status_code == 401
 
 
+def test_mobile_client_cannot_enter_workstation_manager(client, auth):
+    headers = {**auth, "X-PRII-Client-Class": "thehub_ios"}
+    response = client.get("/api/federation-manager/operations", headers=headers)
+    assert response.status_code == 403
+
+
 # ── inventory and accounting ────────────────────────────────────────────────
 
 

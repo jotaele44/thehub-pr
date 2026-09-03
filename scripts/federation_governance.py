@@ -187,6 +187,27 @@ def validate_contract_versions(policy: dict) -> None:
             fail(f"{name}: invalid semantic version {version!r}")
 
 
+def validate_admin_boundary() -> None:
+    matrix = load_json("governance/admin_control_plane/privilege_matrix.json")
+    if matrix.get("default_effect") != "DENY":
+        fail("admin control plane must default to DENY")
+    signed = load_json("config/operations_policy.json")
+    expected = {row["operation_id"] for row in signed["policy"]["operations"]}
+    bindings = matrix.get("operation_bindings")
+    if not isinstance(bindings, list):
+        fail("admin privilege matrix operation_bindings must be a list")
+    ids = [row.get("operation_id") for row in bindings if isinstance(row, dict)]
+    if len(ids) != len(set(ids)) or set(ids) != expected:
+        fail("admin privilege matrix must classify every signed operation exactly once")
+    for row in bindings:
+        if row.get("allowed_clients") != ["thehub_workstation"]:
+            fail(f"{row.get('operation_id')}: operation execution must be workstation-only")
+        if row.get("authority_class") not in {"LOCAL_REPO", "CROSS_REPO", "FEDERATION_GLOBAL"}:
+            fail(f"{row.get('operation_id')}: invalid authority class")
+        if row.get("audit_required") is not True:
+            fail(f"{row.get('operation_id')}: audit must be required")
+
+
 def validate_impacted_dispositions(
     matrix: dict, files: list[str], *, all_impacted: bool
 ) -> set[str]:
@@ -219,6 +240,7 @@ def main() -> None:
 
     validate_matrix(matrix)
     validate_contract_versions(policy)
+    validate_admin_boundary()
 
     dep_nodes = parse_dependency_nodes()
     if dep_nodes != EXPECTED:
