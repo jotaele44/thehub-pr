@@ -162,8 +162,8 @@ def download(url: str, path: Path, attempts: int = 4) -> dict[str, Any]:
 def source_text(path: Path, kind: str) -> str:
     if kind == "html":
         raw = path.read_text(encoding="utf-8", errors="replace")
-        raw = re.sub(r"<script\b[^>]*>.*?</script>", " ", raw, flags=re.I | re.S)
-        raw = re.sub(r"<style\b[^>]*>.*?</style>", " ", raw, flags=re.I | re.S)
+        raw = re.sub(r"<script\b[^>]*>.*?</script\s*>", " ", raw, flags=re.I | re.S)
+        raw = re.sub(r"<style\b[^>]*>.*?</style\s*>", " ", raw, flags=re.I | re.S)
         return norm(raw)
     from pypdf import PdfReader
     return norm("\n".join((page.extract_text() or "") for page in PdfReader(str(path)).pages))
