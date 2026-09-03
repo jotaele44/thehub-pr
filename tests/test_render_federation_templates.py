@@ -73,6 +73,26 @@ def test_slug_substitution_renders_to_tmp(tmp_path):
     assert (tmp_path / "schemas" / "federation_export_manifest.schema.json").is_file()
 
 
+def test_rendered_launchers_remove_only_successful_setup_logs(tmp_path):
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    launchers = (
+        tmp_path / "PRII-OVNIS.sh",
+        tmp_path / "PRII-OVNIS.command",
+        tmp_path / "PRII-OVNIS.app" / "Contents" / "MacOS" / "PRII-OVNIS",
+    )
+    for launcher in launchers:
+        source = launcher.read_text(encoding="utf-8")
+        setup = source.index("desktop/setup.py --ensure")
+        retained_failure_log = max(source.find("Full log: $LOG"), source.find("Details: $LOG"))
+        cleanup = source.index('rm -f "$LOG"')
+        launch = source.index("exec .venv/bin/python desktop/launch.py")
+
+        assert setup < retained_failure_log < cleanup < launch, launcher
+
+
 def test_rendered_templates_do_not_require_hub_sibling_paths(tmp_path):
     subprocess.run(
         [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
