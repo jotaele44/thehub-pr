@@ -5,7 +5,9 @@ import { loadMunicipiosGeoJSON, MUNICIPIOS_STYLE } from "./MunicipiosLayer";
 
 const PR_CENTER = Object.freeze([-66.4, 18.22]);
 const BASEMAP = Object.freeze({
-  url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  // MapLibre raster sources support XYZ {z}/{x}/{y}; Leaflet-only {s}/{r}
+  // placeholders are deliberately not carried across the renderer boundary.
+  url: "https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
   attribution: "&copy; OpenStreetMap, &copy; CARTO",
 });
 
