@@ -105,6 +105,15 @@
     "contradiction_rows_are_subset_of_candidate_not_identity_unresolved_rows": 93,
     "unsupported_is_false_or_rejected": false
   },
+  "targeted_public_pair_binding_search": {
+    "receipt": "data/htr/runs/2026-09-02_htr_v3_targeted_public_pair_binding_search.json",
+    "receipt_sha256": "3f9a1fe8502481917326a854f42a06d19c39a416f3486770f396c808d65016b3",
+    "targeted_pair_families": 6,
+    "direct_pair_binding_found": 0,
+    "unresolved": 6,
+    "arithmetic": "6=0+6",
+    "universal_public_search_exhaustion_claimed": false
+  },
   "v2_pair_binding_continuation": {
     "bounded_public_web_exhaustion_claimed": false,
     "direct_pair_binding_evidence_found_groups": 0,
