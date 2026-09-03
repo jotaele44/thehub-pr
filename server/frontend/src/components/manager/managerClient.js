@@ -51,8 +51,6 @@ async function request(
     } catch {
       detail = response.statusText;
     }
-    // The server's detail is the useful part -- it carries the reason an
-    // operation is disabled, or which parameter failed validation.
     throw new ManagerRequestError(detail || "Manager request failed.", response.status, detail);
   }
   return response.status === 204 ? null : response.json();
@@ -60,6 +58,7 @@ async function request(
 
 export const managerApi = {
   listOperations: (opts) => request("/operations", opts),
+  repositories: (opts) => request("/repositories", opts),
   prerequisites: (appId, opts) =>
     request(`/apps/${encodeURIComponent(appId)}/prerequisites`, opts),
   accounting: (opts) => request("/operations/accounting", opts),
@@ -102,10 +101,6 @@ export const managerApi = {
     }),
 };
 
-// Subscribe to a run's redacted log stream.
-//
-// The ticket is minted by an authenticated POST and consumed by the stream, so
-// the session bearer never appears in a URL. Returns an unsubscribe function.
 export function subscribeToRunLogs(
   runId,
   { onLine, onDone, onError, EventSourceImpl = globalThis.EventSource, ...opts } = {},
@@ -135,8 +130,6 @@ export function subscribeToRunLogs(
         }
       };
       source.onerror = () => {
-        // The ticket is single-use, so reconnecting would fail anyway. Fall
-        // back to the snapshot endpoint rather than retrying blindly.
         source.close();
         onError?.(new Error("Log stream interrupted."));
       };
@@ -149,7 +142,6 @@ export function subscribeToRunLogs(
   };
 }
 
-// Which fields a typed parameter schema should render.
 export function formFields(parameters = {}) {
   return Object.entries(parameters)
     .filter(([, spec]) => spec.type !== "fixed")
@@ -175,8 +167,6 @@ export function initialValues(parameters = {}) {
   return values;
 }
 
-// Drop empty optional values so the server applies its declared defaults
-// instead of receiving an empty string that fails type validation.
 export function cleanValues(fields, values) {
   const payload = {};
   for (const field of fields) {

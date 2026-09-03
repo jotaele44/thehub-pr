@@ -1,0 +1,125 @@
+{
+  "schema": "project_lead_premerge_certification/v1",
+  "scope": "four_repo_project_lead_feature_premerge_only",
+  "certification": "PASS",
+  "merge_or_production_promotion": false,
+  "pull_requests": {
+    "centinelas-pr#91": {
+      "repo": "jotaele44/centinelas-pr",
+      "pr": 91,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "mergeable": true,
+      "head_sha": "e37bbb514139fc53f5bd3ac0438d5e65c1fb7d07"
+    },
+    "moneysweep-pr#487": {
+      "repo": "jotaele44/moneysweep-pr",
+      "pr": 487,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "mergeable": true,
+      "head_sha": "9154cfb23eba5837da16ee3898056a5476cfd169"
+    },
+    "spiderweb-pr#283": {
+      "repo": "jotaele44/spiderweb-pr",
+      "pr": 283,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "mergeable": true,
+      "head_sha": "7a1fa4fb92d5a1150cff4eda12fe3e1a989df307"
+    },
+    "thehub-pr#186": {
+      "repo": "jotaele44/thehub-pr",
+      "pr": 186,
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "mergeable": true,
+      "certified_code_head_sha": "105217bdf584c44805439b9b6afc8abad55d9a17",
+      "note": "this ledger commit is metadata-only and becomes the PR head after creation"
+    }
+  },
+  "ci": {
+    "centinelas": {
+      "head_sha": "e37bbb514139fc53f5bd3ac0438d5e65c1fb7d07",
+      "required_non_excluded_state": "PASS"
+    },
+    "moneysweep": {
+      "head_sha": "9154cfb23eba5837da16ee3898056a5476cfd169",
+      "required_non_excluded_state": "PASS"
+    },
+    "spiderweb": {
+      "head_sha": "7a1fa4fb92d5a1150cff4eda12fe3e1a989df307",
+      "required_non_excluded_state": "PASS"
+    },
+    "thehub": {
+      "certified_code_head_sha": "105217bdf584c44805439b9b6afc8abad55d9a17",
+      "hub_ci": {"run_id": 32083954213, "conclusion": "success"},
+      "codeql": {"run_id": 32083954256, "conclusion": "success"},
+      "federation_template_drift": {"run_id": 32083954272, "conclusion": "success"},
+      "secret_scan": {"run_id": 32083954215, "conclusion": "success"},
+      "federation_semgrep": {"run_id": 32083954233, "conclusion": "success"},
+      "project_lead_canary": {"run_id": 32083954210, "conclusion": "success"},
+      "federation_pickup_bounded_max": {
+        "run_id": 32083954223,
+        "conclusion": "failure",
+        "classification": "EXCLUDED_ADJUDICATED_CONTRADICTION",
+        "causal_to_project_lead": false,
+        "adjudication_report": "reports/project_lead_stale_hub_max_adjudication_20260817.json"
+      }
+    }
+  },
+  "canary": {
+    "run_id": 32083954210,
+    "job_id": 95552441040,
+    "artifact_id": 9306041710,
+    "artifact_name": "project-lead-branch-canary",
+    "artifact_archive_sha256": "48a3f048d8c555020ba9b53c30e5a7dc2b184a38f2f47c8161fdf2971559e53d",
+    "artifact_retention_days": 90,
+    "lead_id": "prjlead_2c6a249756b5c7127c4c409eca119962",
+    "branch_heads": {
+      "centinelas-pr": "e37bbb514139fc53f5bd3ac0438d5e65c1fb7d07",
+      "moneysweep-pr": "9154cfb23eba5837da16ee3898056a5476cfd169",
+      "spiderweb-pr": "7a1fa4fb92d5a1150cff4eda12fe3e1a989df307",
+      "thehub-pr": "105217bdf584c44805439b9b6afc8abad55d9a17"
+    },
+    "producer_artifacts": {
+      "moneysweep_fiscal_assertions_sha256": "0668979a3e9ba4f4a4def89ddb1c11b7599b24da44dacefadd367e69d9dbff9b",
+      "spiderweb_physical_assertions_sha256": "e66cfad4f186955fcc1300cb68983ac7fad10ea95d942e93a0b768703ab3b01c",
+      "spiderweb_receipt_sha256": "5fb2e54cae0bde42150fdbc317610526f5a3ef6bef285564e585df9466b824c9",
+      "spiderweb_collision_sha256": "b907152b0b3bb5df3c292278aa990476afd9b9afd7a1641b62192a66b9575f67"
+    }
+  },
+  "claims": {
+    "PROJECT_LEAD_E2E": "PASS",
+    "LOS_ROSALES": {
+      "certification": "CANDIDATE_NOT_IDENTITY",
+      "hub_state": "CROSS_DOMAIN_CANDIDATE",
+      "identity_effect": "NONE",
+      "banner": null,
+      "fiscal_candidate_count": 1,
+      "physical_candidate_count": 1
+    },
+    "AUTH_BINDING_CONTROL": {
+      "certification": "PASS",
+      "hub_state": "BANNER_ELIGIBLE",
+      "banner_schema": "project_banner/v1",
+      "banner_id": "prjban_2fef66051e01ee841ea9cba539a0a126",
+      "binding_evidence_type": "stable_project_id",
+      "binding_value": "AUTH-LOS-ROSALES-2025-000139"
+    },
+    "REPLAY_AND_FORK_GATES": {
+      "certification": "PASS",
+      "first_exit": 0,
+      "replay_exit": 0,
+      "fork_exit": 1,
+      "receipt_sha256_first": "5fb2e54cae0bde42150fdbc317610526f5a3ef6bef285564e585df9466b824c9",
+      "receipt_sha256_replay": "5fb2e54cae0bde42150fdbc317610526f5a3ef6bef285564e585df9466b824c9",
+      "collision_evidence_preserved": true
+    }
+  },
+  "stop_condition": "STOP_BEFORE_MERGE"
+}
