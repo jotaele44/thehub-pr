@@ -1,6 +1,6 @@
 # PRII Portfolio ROAD_TO_100 Policy
 
-**Version:** `road_to_100_normalization_v0_2`  
+**Version:** `road_to_100_normalization_v0_2`
 **Effective when merged:** proposed; no current status or readiness gate is changed by this document.
 
 ## Companion governance artifacts

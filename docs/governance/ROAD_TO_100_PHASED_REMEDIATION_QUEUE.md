@@ -1,6 +1,6 @@
 # ROAD_TO_100 Phased Remediation Queue
 
-**Audit date:** 2026-07-27  
+**Audit date:** 2026-07-27
 **Execution principle:** evidence before status; no merge or readiness flip is authorized by this queue.
 
 ## Phase 0 — acceptance and truth repair

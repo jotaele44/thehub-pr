@@ -1,6 +1,6 @@
 # ROAD_TO_100 Contradiction Register
 
-**Audit date:** 2026-07-27  
+**Audit date:** 2026-07-27
 **Governance version:** `road_to_100_normalization_v0_2`
 
 | ID | Repository | Contradiction | Adjudication | Required closure evidence |

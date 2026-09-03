@@ -1,7 +1,7 @@
 # Final ROAD_TO_100 Adjudication Ledger v0.3
 
-**Adjudication date:** 2026-07-27  
-**Scope:** PRs `moneysweep-pr#413`, `spiderweb-pr#212`, `aguayluz-pr#63`, `ovnis-pr#47`, `skywatcher-pr#107`, `centinelas-pr#49`, `thehub-pr#98`, and corrective `skywatcher-pr#100`.  
+**Adjudication date:** 2026-07-27
+**Scope:** PRs `moneysweep-pr#413`, `spiderweb-pr#212`, `aguayluz-pr#63`, `ovnis-pr#47`, `skywatcher-pr#107`, `centinelas-pr#49`, `thehub-pr#98`, and corrective `skywatcher-pr#100`.
 **Preservation rule:** all PRs remain draft; no merge, production-status change, or live-gate change is authorized.
 
 ## PR-by-PR decision

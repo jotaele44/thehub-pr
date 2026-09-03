@@ -1,6 +1,6 @@
 # Reconciled Seven-Repository ROAD_TO_100 Matrix
 
-**Audit date:** 2026-07-27  
+**Audit date:** 2026-07-27
 **Governance version:** `road_to_100_normalization_v0_2`
 
 | Repository | Implemented scope | CI maturity | Operational data readiness | Evidence depth | Live gate | Last verified `main` commit | Last executed baseline |
