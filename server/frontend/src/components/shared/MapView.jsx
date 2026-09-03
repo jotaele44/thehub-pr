@@ -1,15 +1,17 @@
 import React from "react";
 import MapLibrePointMap from "./MapLibrePointMap";
+import { buildSinglePointParityModel } from "./sharedMapParity";
 
 // Simple single-coordinate display using the federation's canonical 2D engine.
 export default function MapView({ lat, lon, label, height = 240 }) {
-  if (lat === undefined || lat === null || lon === undefined || lon === null) return null;
+  const model = buildSinglePointParityModel(lat, lon, label);
+  if (!model) return null;
   return (
     <MapLibrePointMap
-      points={[{ id: "single-point", lat: Number(lat), lon: Number(lon), title: label || "" }]}
+      points={model.points}
       height={height}
-      zoom={10}
-      scrollZoom={false}
+      zoom={model.zoom}
+      scrollZoom={model.scrollZoom}
     />
   );
 }
