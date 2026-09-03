@@ -1,0 +1,59 @@
+name: Federation GUI Fixture Matrix
+
+on:
+  push:
+    branches:
+      - feature/federation-forensic-semantics-20260822
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fixture-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: federation-design/fixture-lab
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: feature/federation-forensic-semantics-20260822
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '22'
+      - name: Install fixture lab
+        run: npm ci --no-audit --no-fund
+      - name: Install browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Build fixture lab
+        run: npm run build
+      - name: Start fixture lab
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run dev > /tmp/federation-fixture-lab.log 2>&1 &
+          echo $! > /tmp/federation-fixture-lab.pid
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:5173/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/federation-fixture-lab.log
+          exit 1
+      - name: Execute 32-fixture tri-engine viewport matrix
+        run: node tests/runtime-matrix.mjs
+      - name: Upload fixture evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: federation-gui-fixture-matrix
+          path: federation-design/fixture-lab/artifacts/runtime-matrix/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Dump server log on failure
+        if: failure()
+        run: cat /tmp/federation-fixture-lab.log || true
