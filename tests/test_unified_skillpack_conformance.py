@@ -1,7 +1,9 @@
 from __future__ import annotations
 import importlib.util
 import json
+import os
 import unittest
+from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,6 +38,14 @@ class UnifiedSkillpackConformanceTests(unittest.TestCase):
         for entry in ledger["entries"]:
             target = entry["unified_target"].split("#", 1)[1]
             self.assertIn(f'<a id="{target}"></a>', skill, entry["capability_id"])
+
+    def test_historical_scope_is_not_applied_to_other_prs(self) -> None:
+        with mock.patch.dict(
+            os.environ, {"GITHUB_HEAD_REF": "federation/persistent-identity-v0-2"}
+        ):
+            result = MODULE.validate(ROOT)
+        self.assertEqual(result["status"], "success", result["errors"])
+        self.assertIn("declared_branch_scope_not_applicable", result["checks"])
 
 
 if __name__ == "__main__":
