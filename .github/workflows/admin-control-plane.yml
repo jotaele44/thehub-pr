@@ -57,8 +57,6 @@ jobs:
 
   production-proof:
     runs-on: ubuntu-latest
-    env:
-      CONSUMER_REF: ${{ github.event_name == 'pull_request' && 'feat/admin-control-plane-v1' || 'main' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -66,32 +64,32 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/moneysweep-pr
-          ref: ${{ env.CONSUMER_REF }}
+          ref: 74b10245f925bfd9b9ea07b2ce986981d5d65525
           path: consumers/moneysweep-pr
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/spiderweb-pr
-          ref: ${{ env.CONSUMER_REF }}
+          ref: f46546ef24c7dc2164b3f203d1af57e7d2570219
           path: consumers/spiderweb-pr
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/aguayluz-pr
-          ref: ${{ env.CONSUMER_REF }}
+          ref: 8daa575df73d1024703f8397716e0dbfce7a815d
           path: consumers/aguayluz-pr
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/ovnis-pr
-          ref: ${{ env.CONSUMER_REF }}
+          ref: ef16535ddc0aca4d8a6c412ea58812df569caa5a
           path: consumers/ovnis-pr
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/skywatcher-pr
-          ref: ${{ env.CONSUMER_REF }}
+          ref: 6b95f816f1dc2c2081734df582920703743fbdf3
           path: consumers/skywatcher-pr
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: jotaele44/centinelas-pr
-          ref: ${{ env.CONSUMER_REF }}
+          ref: caf086598a4f99e2eb0ca4aac6d51e2d9bd46321
           path: consumers/centinelas-pr
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:

@@ -17,8 +17,8 @@
       "iOS Simulator",
       "ephemeral deployed ASGI runtime"
     ],
-    "source_revision": "thehub-pr@b369b9f38d08badbbeb6b252750b7ee28c3f1e07; moneysweep-pr@d7a705c5573e3fe5bf9a346e73827c1addd43bed; spiderweb-pr@8a42a1712a89636f4e90ffdea75d6af4a0ca4900; aguayluz-pr@7b5d718d86aa43a07cf047a62b539a4c98bcb0d1; ovnis-pr@7e7e247752497e4651902276430e72e73a5317af; skywatcher-pr@1f7083ebf82dfcc5435938c113be11655716ef4c; centinelas-pr@64d2e72801a9fd83012a37f14f513aa3b796b5f1",
-    "snapshot_at": "2026-09-03T08:10:29Z",
+    "source_revision": "thehub-pr@76b26042fe30ab55e439fb813d2953a6da9df70d; moneysweep-pr@74b10245f925bfd9b9ea07b2ce986981d5d65525; spiderweb-pr@f46546ef24c7dc2164b3f203d1af57e7d2570219; aguayluz-pr@8daa575df73d1024703f8397716e0dbfce7a815d; ovnis-pr@ef16535ddc0aca4d8a6c412ea58812df569caa5a; skywatcher-pr@6b95f816f1dc2c2081734df582920703743fbdf3; centinelas-pr@caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+    "snapshot_at": "2026-09-03T17:37:31Z",
     "inclusions": [
       "68-operation privilege accounting",
       "workstation boundary",
@@ -52,16 +52,16 @@
     {
       "id": "ACP-E003",
       "class": "COMPUTED",
-      "description": "Six producer isolation scans passed across 2198 tracked source and workflow files.",
+      "description": "Six producer isolation scans passed across 2432 tracked source and workflow files at the exact merged default-branch heads.",
       "source": "six .federation/check_admin_boundary.py runs",
-      "captured_at": "2026-09-03T16:30:00Z"
+      "captured_at": "2026-09-03T17:37:31Z"
     },
     {
       "id": "ACP-E004",
       "class": "FACT",
       "description": "Seven-node federation governance and signed remote receipt reconciliation passed with five versioned contracts.",
       "source": "scripts/federation_governance.py --all and scripts/federation_reconcile_remote_receipts.py",
-      "captured_at": "2026-09-03T08:10:29Z"
+      "captured_at": "2026-09-03T17:37:31Z"
     },
     {
       "id": "ACP-E005",
