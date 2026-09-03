@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.dev/schemas/runtime-certification.schema.json",
+  "title": "Federation Runtime Certification",
+  "type": "object",
+  "required": ["schema_version", "generated_at", "certification", "certified", "workspace", "strict_static", "runtime_receipts", "summary", "failures"],
+  "properties": {
+    "schema_version": {"const": "0.2.0"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "certification": {"enum": ["SEVEN_REPOSITORY_EXECUTABILITY_CONFIRMED", "NOT_CERTIFIED"]},
+    "certified": {"type": "boolean"},
+    "workspace": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "required": ["repository", "workspace_directory", "expected_commit", "actual_commit", "present", "exact_commit", "entry_points"],
+        "properties": {
+          "repository": {"type": "string"},
+          "workspace_directory": {"type": "string"},
+          "expected_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "actual_commit": {"type": ["string", "null"]},
+          "present": {"type": "boolean"},
+          "exact_commit": {"type": "boolean"},
+          "entry_points": {"type": "array", "items": {"type": "object"}}
+        },
+        "additionalProperties": true
+      }
+    },
+    "strict_static": {"type": "object"},
+    "runtime_receipts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["probe_id", "repository", "entry_point", "runtime_isolated", "t2_receipt", "gate", "passed", "receipt_sha256"],
+        "properties": {
+          "probe_id": {"type": "string"},
+          "repository": {"type": "string"},
+          "entry_point": {"type": "string"},
+          "runtime_isolated": {"type": "boolean"},
+          "t2_receipt": {"const": true},
+          "gate": {"enum": ["G0", "G1", "G2", "G3", "G4", "G5", "G6"]},
+          "passed": {"type": "boolean"},
+          "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["repositories_expected", "repositories_exact", "entry_points_expected", "entry_points_present", "probes_expected", "probes_passed", "g6_receipts", "production_egress_events", "production_credential_events", "uncontained_side_effects", "strict_static", "calibration"],
+      "properties": {
+        "repositories_expected": {"const": 7},
+        "repositories_exact": {"type": "integer", "minimum": 0, "maximum": 7},
+        "entry_points_expected": {"type": "integer", "minimum": 0},
+        "entry_points_present": {"type": "integer", "minimum": 0},
+        "probes_expected": {"const": 7},
+        "probes_passed": {"type": "integer", "minimum": 0, "maximum": 7},
+        "g6_receipts": {"type": "integer", "minimum": 0},
+        "production_egress_events": {"type": "integer", "minimum": 0},
+        "production_credential_events": {"type": "integer", "minimum": 0},
+        "uncontained_side_effects": {"type": "integer", "minimum": 0},
+        "strict_static": {"type": "object"},
+        "calibration": {"type": "object"}
+      },
+      "additionalProperties": true
+    },
+    "failures": {"type": "array", "items": {"type": "string"}, "uniqueItems": true}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,104 @@
+{
+  "schema_version": "major-hydro-asset-v3-source-manifest-1.0",
+  "scope": "Versioned authoritative-source expansion beyond MAJOR_HYDRO_ASSET_v2. This manifest preserves source manifestations separately and does not claim universal Puerto Rico hydro exhaustion.",
+  "base_version": "MAJOR_HYDRO_ASSET_v2",
+  "identity_policy": {
+    "name_only_identity": false,
+    "fuzzy_identity": false,
+    "proximity_identity": false,
+    "cluster_identity": false,
+    "nearest_only_identity": false,
+    "connectivity_from_name_or_proximity": false,
+    "transitive_context_inheritance": false,
+    "canonical_entity_id_default": null
+  },
+  "sources": [
+    {
+      "source_id": "drna:planagua:embalses:2004",
+      "authority": "Puerto Rico Department of Natural and Environmental Resources",
+      "url": "https://www.drna.pr.gov/wp-content/uploads/2015/07/INFORME_EMBALSES_2MAR04.pdf",
+      "source_type": "authoritative_report",
+      "status": "BOUND_EXISTING_V2_PLUS_OPEN_MINOR_DENOMINATOR",
+      "known_denominator_claims": {
+        "public_reservoirs": 36,
+        "active_important": 19,
+        "active_major": 15,
+        "active_intermediate": 4,
+        "active_lesser_importance_not_in_table_4_0_2": 10,
+        "sedimented": 7,
+        "under_construction_2004": 2,
+        "planning_2004": 6
+      },
+      "v3_work": "Enumerate the ten active lesser-importance/private-or-small manifestations separately from the existing v2 Table 4.0-2 manifestations; preserve apparent denominator/category overlap rather than forcing arithmetic across unlike scopes."
+    },
+    {
+      "source_id": "drna:pira:2016",
+      "authority": "Puerto Rico Department of Natural and Environmental Resources",
+      "url": "https://drna.pr.gov/wp-content/uploads/formidable/PIRA-2016.pdf",
+      "source_type": "authoritative_plan",
+      "status": "OPEN_ENUMERATION",
+      "v3_work": "Extract named reservoir/system/conveyance manifestations and current-at-publication operational context without back-propagating identity to 2004 rows."
+    },
+    {
+      "source_id": "usace:nid:public-feature-service",
+      "authority": "U.S. Army Corps of Engineers National Inventory of Dams",
+      "url": "https://geospatial.sec.usace.army.mil/dls/rest/services/NID/National_Inventory_of_Dams_Public_Service/FeatureServer/0",
+      "service_item_id": "73e34e4d79b84555864c0bf615c680fc",
+      "source_type": "authoritative_live_feature_service",
+      "status": "SCHEMA_BOUND_ENUMERATION_OPEN",
+      "query_scope": "STATE = PR",
+      "required_fields": [
+        "NIDID",
+        "NAME",
+        "OTHER_NAMES",
+        "FORMER_NAMES",
+        "STATE",
+        "COUNTYSTATE",
+        "RIVER_OR_STREAM",
+        "PRIMARY_PURPOSE",
+        "PURPOSES",
+        "YEAR_COMPLETED",
+        "OPERATIONAL_STATUS",
+        "DATA_UPDATED",
+        "LATITUDE",
+        "LONGITUDE"
+      ],
+      "v3_work": "Freeze complete Puerto Rico row denominator by stable NIDID and raw query bytes before canonical binding."
+    },
+    {
+      "source_id": "usace:portugues-bucana:current",
+      "authority": "U.S. Army Corps of Engineers Jacksonville District",
+      "url": "https://www.saj.usace.army.mil/About/Congressional-Fact-Sheets-2025/Portugues-and-Bucana-Rivers-PR-C/",
+      "source_type": "authoritative_project_fact_sheet",
+      "status": "BOUND_V3_MANIFESTATIONS",
+      "manifestation_count": 2
+    },
+    {
+      "source_id": "aaa-prasa:authoritative-hydro-systems",
+      "authority": "Puerto Rico Aqueduct and Sewer Authority",
+      "source_type": "authoritative_owner_operator_source",
+      "status": "OPEN_SOURCE_ACQUISITION",
+      "v3_work": "Locate and freeze authoritative reservoir/intake/aqueduct/conveyance manifests before adding rows."
+    },
+    {
+      "source_id": "usgs:puerto-rico-hydro-conveyance",
+      "authority": "U.S. Geological Survey",
+      "source_type": "authoritative_scientific_source_family",
+      "status": "PARTIAL_V2_EXISTING_EXPANSION_OPEN",
+      "v3_work": "Extend beyond the four frozen WDR conveyance manifestations using source-specific stable station/feature identifiers where available."
+    },
+    {
+      "source_id": "prwra:historical-hydro-system",
+      "authority": "Puerto Rico Water Resources Authority / predecessor irrigation services",
+      "source_type": "historical_authoritative_source_family",
+      "status": "OPEN_SOURCE_ACQUISITION",
+      "v3_work": "Recover historical named tunnels, penstocks, canals, powerhouses, diversions, forebays, tailraces and retired hydro assets as temporally scoped manifestations."
+    }
+  ],
+  "certification": {
+    "source_schema_inspection": "PARTIAL_PASS",
+    "v3_source_denominator_complete": false,
+    "universal_hydro_denominator_claimed": false,
+    "cross_source_identity_certified": false
+  }
+}
