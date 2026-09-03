@@ -1,6 +1,12 @@
+import sys
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
-from server.backend.main import app
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from server.backend.main import app  # noqa: E402
 
 
 def test_companion_capability_surface_is_read_only_and_bounded():

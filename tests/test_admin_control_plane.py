@@ -1,11 +1,13 @@
 import json
+import sys
 from pathlib import Path
 
 import pytest
 
-from server.backend.admin_control_plane import AdminBoundary, AdminBoundaryError
-
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from server.backend.admin_control_plane import AdminBoundary, AdminBoundaryError  # noqa: E402
 
 
 def test_every_signed_operation_has_exactly_one_workstation_binding():
