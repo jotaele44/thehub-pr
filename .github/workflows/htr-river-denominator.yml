@@ -1,0 +1,44 @@
+name: HTR river-name denominator
+
+on:
+  pull_request:
+    paths:
+      - "src/hub/htr.py"
+      - "scripts/freeze_htr_river_denominator.py"
+      - ".github/workflows/htr-river-denominator.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  freeze-rivers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - name: Freeze authoritative river denominator
+        run: PYTHONPATH=src python scripts/freeze_htr_river_denominator.py --out artifacts/htr_river_denominator
+
+      - name: Display summary
+        if: always()
+        run: |
+          if [ -f artifacts/htr_river_denominator/summary.json ]; then
+            cat artifacts/htr_river_denominator/summary.json
+          fi
+
+      - name: Upload frozen river denominator
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: htr-river-denominator-${{ github.event.pull_request.head.sha || github.sha }}
+          path: artifacts/htr_river_denominator
+          if-no-files-found: error
+          retention-days: 30
