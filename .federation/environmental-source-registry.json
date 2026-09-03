@@ -1,0 +1,24 @@
+{
+  "registry_version": "1.0.0",
+  "scope": "Puerto Rico ecological/watershed data plane",
+  "custody_model": "freeze once in federation evidence plane; expose versioned consumer views",
+  "sources": [
+    {"source_id":"usfs_fia_fiadb_pr","authority":"USDA Forest Service FIA","domain":["forest inventory","soils","vegetation","biomass","disturbance","regeneration"],"status":"FROZEN_PROVISIONAL","snapshot_sha256":"338b0bf6e088d94d7c9c170ba1850f50b682829670519d72325a36b9ee8d3965","consumer_priority":"P0"},
+    {"source_id":"usda_nrcs_ssurgo_pr","authority":"USDA NRCS","canonical_source":"https://www.nrcs.usda.gov/resources/data-and-reports/soil-survey-geographic-database-ssurgo","domain":["soil map units","soil properties","soil interpretations"],"status":"AUTHORITATIVE_FAMILY_BOUND_NOT_FROZEN","consumer_priority":"P0"},
+    {"source_id":"usgs_3dhp_pr","authority":"USGS","canonical_source":"https://www.usgs.gov/3d-hydrography-program/access-3dhp-data-products","domain":["hydrography","streams","lakes","catchments","drainage areas"],"status":"AUTHORITATIVE_FAMILY_BOUND_NOT_FROZEN","consumer_priority":"P0","current_service_note":"3DHP web services updated July 2026; downloadable product 2025 remains versioned reference"},
+    {"source_id":"usfws_nwi_pr","authority":"US Fish and Wildlife Service","canonical_source":"https://www.fws.gov/program/national-wetlands-inventory/data-download","domain":["wetlands","deepwater habitats"],"status":"AUTHORITATIVE_FAMILY_BOUND_NOT_FROZEN","consumer_priority":"P0","refresh_note":"NWI states downloads are updated biannually in May and October"},
+    {"source_id":"usgs_3dep_pr","authority":"USGS","domain":["elevation","terrain","lidar-derived surfaces"],"status":"AUTHORITATIVE_FAMILY_REGISTERED_NOT_FROZEN","consumer_priority":"P0"},
+    {"source_id":"landfire_prvi","authority":"USFS/USDOI LANDFIRE","canonical_source":"https://landfire.gov/data","domain":["vegetation","fuels","disturbance","topography","fire regime"],"status":"AUTHORITATIVE_FAMILY_BOUND_NOT_FROZEN","consumer_priority":"P1"},
+    {"source_id":"noaa_climate_hydro_pr","authority":"NOAA","domain":["precipitation","climate normals","storms","coastal/ocean context"],"status":"OPEN_DATASET_SCOPE","consumer_priority":"P1"}
+  ],
+  "global_gates": [
+    "freeze bytes and retrieval UTC before transformation",
+    "record source/service/layer/query/page-offset/refresh metadata",
+    "preserve CRS, geometry type, Z/M and record loss",
+    "separate source manifestation identity from canonical feature identity",
+    "assert row conservation and join cardinality",
+    "version mutable sources; never overwrite prior certified snapshots",
+    "consumer certification fails closed while any P0 source remains unfrozen or unresolved"
+  ],
+  "certification": "OPEN"
+}
