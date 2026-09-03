@@ -124,6 +124,16 @@ jobs:
           set -euo pipefail
           npm ci
           npx playwright install --with-deps chromium
+          python -m http.server 4173 --bind 127.0.0.1 --directory fixtures >/dev/null 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for _ in {1..30}; do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+          done
+          curl -fsS http://127.0.0.1:4173/ >/dev/null
           npm test
 
       - name: Stage runtime dependencies in matching container ABI
