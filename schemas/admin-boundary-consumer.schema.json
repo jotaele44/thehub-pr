@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.example/schemas/admin-boundary-consumer.schema.json",
+  "title": "THEHUB_ADMIN_BOUNDARY/1.0 operational-node manifestation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "contract_version", "repository", "plane", "federation_global_admin", "token_audience", "hub_outage_behavior", "admin_kit_allowed"],
+  "properties": {
+    "schema_version": {"const": "thehub_admin_boundary_consumer_v1"},
+    "contract_version": {"const": "1.0.0"},
+    "repository": {"enum": ["moneysweep-pr", "spiderweb-pr", "aguayluz-pr", "ovnis-pr", "skywatcher-pr", "centinelas-pr"]},
+    "plane": {"const": "BOUNDED_OPERATIONAL"},
+    "federation_global_admin": {"const": false},
+    "token_audience": {"const": "repository-operation"},
+    "hub_outage_behavior": {"const": "LOCAL_OPERATIONS_CONTINUE_GLOBAL_MUTATIONS_FAIL_CLOSED"},
+    "admin_kit_allowed": {"const": false}
+  }
+}

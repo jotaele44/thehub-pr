@@ -1,0 +1,37 @@
+{
+  "manifest_version": "1.0.0",
+  "project": {
+    "name": "Federation Admin Control Plane",
+    "claim": "TheHub is the sole federation-global administrative control plane; six producer apps are bounded operational planes; TheHub iOS is a bounded read-only companion.",
+    "platforms": ["TheHub macOS workstation", "TheHub iOS", "six producer applications"],
+    "environments": ["local seven-repository snapshot", "GitHub CI", "macOS", "iOS Simulator", "deployment"],
+    "source_revision": "thehub-pr@ed9b5e09afd45a1cf629cdc27d9fb6f154833b6e plus six recorded local commits",
+    "snapshot_at": "2026-09-03T16:30:00Z",
+    "inclusions": ["68-operation privilege accounting", "workstation boundary", "producer isolation", "Impact Lockstep", "bounded iOS source", "negative regression"],
+    "exclusions": ["unpublished remote branches", "unexecuted GitHub CI", "unavailable Apple toolchain", "undeployed runtime"]
+  },
+  "evidence": [
+    {"id":"ACP-E001","class":"FACT","description":"TheHub full local suite passed 1041 tests with 12 explicit skips and zero failures.","source":"local pytest run","captured_at":"2026-09-03T16:30:00Z"},
+    {"id":"ACP-E002","class":"COMPUTED","description":"All 68 signed operations have exactly one privilege binding and permit only thehub_workstation execution.","source":"governance/admin_control_plane/privilege_matrix.json and tests/test_admin_control_plane.py","captured_at":"2026-09-03T16:30:00Z"},
+    {"id":"ACP-E003","class":"COMPUTED","description":"Six producer isolation scans passed across 2198 tracked source and workflow files.","source":"six scripts/check_admin_boundary.py runs","captured_at":"2026-09-03T16:30:00Z"},
+    {"id":"ACP-E004","class":"FACT","description":"Seven-node federation governance passed with five versioned contracts.","source":"scripts/federation_governance.py --all","captured_at":"2026-09-03T16:30:00Z"},
+    {"id":"ACP-E005","class":"FACT","description":"The iOS source and server contract expose only five read capabilities and no workstation manager access.","source":"ios/TheHubAdminCompanion and /api/admin-companion/capabilities tests","captured_at":"2026-09-03T16:30:00Z"},
+    {"id":"ACP-E006","class":"UNKNOWN","description":"GitHub CI, macOS build, iOS simulator, merge protection, deployment smoke, production audit and rollback evidence are not available before publication.","source":"publication blocked pending explicit approval","captured_at":"2026-09-03T16:30:00Z"}
+  ],
+  "requirements": [
+    {"id":"ACP-WORKSTATION","domain":"A01","title":"Sole workstation execution boundary","critical":true,"acceptance_criteria":["All signed operations are workstation-only and unclassified operations fail closed"],"dependencies":[],"state":"PASS","gates":[{"name":"IMPLEMENTED","status":"PASS","evidence_ids":["ACP-E002"]},{"name":"NEGATIVE_TEST","status":"PASS","evidence_ids":["ACP-E001","ACP-E002"]}],"evidence_ids":["ACP-E001","ACP-E002"],"notes":"Bounded to local source and tests."},
+    {"id":"ACP-WRITE-FAIL-CLOSED","domain":"A01","title":"Unconfigured writes fail closed","critical":true,"acceptance_criteria":["No private-network fallback permits administrative writes without a token"],"dependencies":["ACP-WORKSTATION"],"state":"PASS","gates":[{"name":"IMPLEMENTED","status":"PASS","evidence_ids":["ACP-E001"]},{"name":"NEGATIVE_TEST","status":"PASS","evidence_ids":["ACP-E001"]}],"evidence_ids":["ACP-E001"],"notes":"Local API tests."},
+    {"id":"ACP-REPO-ISOLATION","domain":"A01","title":"Six producer applications lack global authority","critical":true,"acceptance_criteria":["Every producer has an exact bounded manifest and zero prohibited authority markers"],"dependencies":[],"state":"PASS","gates":[{"name":"SECURITY","status":"PASS","evidence_ids":["ACP-E003"]},{"name":"NEGATIVE_TEST","status":"PASS","evidence_ids":["ACP-E003"]}],"evidence_ids":["ACP-E003"],"notes":"Source manifestation proof; binary proof awaits CI artifacts."},
+    {"id":"ACP-LOCKSTEP","domain":"A12","title":"Boundary registered in Impact Lockstep","critical":true,"acceptance_criteria":["Contract change impacts all seven nodes and cannot certify with a missing disposition"],"dependencies":["ACP-REPO-ISOLATION"],"state":"PROVISIONAL","gates":[{"name":"IMPLEMENTED","status":"PASS","evidence_ids":["ACP-E004"]},{"name":"POSITIVE_TEST","status":"PASS","evidence_ids":["ACP-E004"]},{"name":"PRODUCTION_SMOKE","status":"BLOCKED","evidence_ids":["ACP-E006"]}],"evidence_ids":["ACP-E004","ACP-E006"],"notes":"Remote branch protection and coordinated PR enforcement unverified."},
+    {"id":"ACP-IOS-BOUNDARY","domain":"A11","title":"Bounded iOS companion","critical":true,"acceptance_criteria":["Only five read capabilities ship and manager execution is impossible"],"dependencies":["ACP-WORKSTATION"],"state":"PROVISIONAL","gates":[{"name":"IMPLEMENTED","status":"PASS","evidence_ids":["ACP-E005"]},{"name":"NEGATIVE_TEST","status":"PASS","evidence_ids":["ACP-E001","ACP-E005"]},{"name":"VISUAL_QA","status":"BLOCKED","evidence_ids":["ACP-E006"]}],"evidence_ids":["ACP-E005","ACP-E006"],"notes":"Swift/Xcode build awaits macOS CI."},
+    {"id":"ACP-CROSS-REPO-CI","domain":"A12","title":"All seven coordinated PR checks pass","critical":true,"acceptance_criteria":["All affected repository checks are green at frozen PR SHAs"],"dependencies":["ACP-LOCKSTEP","ACP-IOS-BOUNDARY"],"state":"BLOCKED","gates":[{"name":"POSITIVE_TEST","status":"BLOCKED","evidence_ids":["ACP-E006"]},{"name":"NEGATIVE_TEST","status":"BLOCKED","evidence_ids":["ACP-E006"]}],"evidence_ids":["ACP-E006"],"notes":"Branches not published."},
+    {"id":"ACP-APPLE-BUILD","domain":"A11","title":"macOS workstation and iOS simulator build","critical":true,"acceptance_criteria":["Native workstation and companion build/test on supported Apple runners"],"dependencies":["ACP-CROSS-REPO-CI"],"state":"BLOCKED","gates":[{"name":"VISUAL_QA","status":"BLOCKED","evidence_ids":["ACP-E006"]},{"name":"ACCESSIBILITY","status":"BLOCKED","evidence_ids":["ACP-E006"]}],"evidence_ids":["ACP-E006"],"notes":"Apple toolchain unavailable locally."},
+    {"id":"ACP-PRODUCTION","domain":"A12","title":"Deployment smoke, audit and rollback proof","critical":true,"acceptance_criteria":["Deployment, immutable audit, outage and rollback gates pass"],"dependencies":["ACP-APPLE-BUILD"],"state":"BLOCKED","gates":[{"name":"PRODUCTION_SMOKE","status":"BLOCKED","evidence_ids":["ACP-E006"]},{"name":"LOG_AUDIT","status":"BLOCKED","evidence_ids":["ACP-E006"]},{"name":"ROLLBACK","status":"BLOCKED","evidence_ids":["ACP-E006"]}],"evidence_ids":["ACP-E006"],"notes":"No deployment mutation attempted."}
+  ],
+  "contradictions": [],
+  "summary": {
+    "overall_state": "PROVISIONAL",
+    "state_counts": {"PASS":3,"FAIL":0,"OPEN":0,"BLOCKED":3,"PROVISIONAL":2,"AUDIT_ONLY":0,"NONCANONICAL":0,"UNRESOLVED":0,"SUPERSEDED":0},
+    "critical_residue_ids":["ACP-LOCKSTEP","ACP-IOS-BOUNDARY","ACP-CROSS-REPO-CI","ACP-APPLE-BUILD","ACP-PRODUCTION"]
+  }
+}

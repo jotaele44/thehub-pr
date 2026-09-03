@@ -1,0 +1,44 @@
+name: Admin Control Plane
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  workstation-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check pytest fastapi httpx cryptography jsonschema pyyaml
+      - name: Prove generated privilege matrix is current
+        run: |
+          python tools/build_admin_privilege_matrix.py
+          git diff --exit-code -- governance/admin_control_plane/privilege_matrix.json
+      - name: Run workstation, companion and Lockstep gates
+        env:
+          PYTHONPATH: src:.
+        run: |
+          pytest -q tests/test_admin_control_plane.py tests/test_admin_companion_api.py tests/test_federation_operations_api.py tests/test_project_signs_api.py
+          python scripts/federation_governance.py --all
+
+  ios-companion:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Generate bounded iOS project
+        run: brew install xcodegen && cd ios/TheHubAdminCompanion && xcodegen generate
+      - name: Build and test without signing
+        run: |
+          cd ios/TheHubAdminCompanion
+          xcodebuild -project TheHubAdminCompanion.xcodeproj \
+            -scheme TheHubAdminCompanion \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            CODE_SIGNING_ALLOWED=NO test

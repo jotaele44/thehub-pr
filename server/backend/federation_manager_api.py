@@ -30,6 +30,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from server.backend.federation_manager import SessionManager, read_only_inventory
+from server.backend.admin_control_plane import AdminBoundaryError, BOUNDARY, declared_client
 from server.backend.federation_manager_files import FileTokenBroker, FileTokenError
 from server.backend.federation_manager_operations import (
     OperationDisabledError,
@@ -138,6 +139,10 @@ def _authorize(request: Request, authorization: Optional[str]) -> str:
     token = authorization[7:]
     if not sessions.validate(token, origin):
         raise HTTPException(status_code=401, detail="manager session invalid or expired")
+    try:
+        declared_client(request)
+    except AdminBoundaryError as exc:
+        raise HTTPException(status_code=403, detail=str(exc)) from exc
     return token
 
 
@@ -168,6 +173,8 @@ def _operation_error(exc: Exception) -> HTTPException:
     if isinstance(exc, TransactionError):
         return HTTPException(status_code=409, detail=str(exc))
     if isinstance(exc, OperationPolicyError):
+        return HTTPException(status_code=404, detail=str(exc))
+    if isinstance(exc, AdminBoundaryError):
         return HTTPException(status_code=404, detail=str(exc))
     raise exc
 
@@ -294,6 +301,7 @@ def plan_operation(
     token = _authorize(request, authorization)
     active = _require_runtime()
     try:
+        BOUNDARY.require_operation(operation_id, "thehub_workstation")
         plan = active.runner.plan(operation_id, body.parameters, session_token=token)
     except Exception as exc:  # noqa: BLE001 - mapped to a status below
         raise _operation_error(exc) from exc
@@ -317,6 +325,7 @@ async def run_operation(
     active = _require_runtime()
 
     try:
+        BOUNDARY.require_operation(operation_id, "thehub_workstation")
         operation = active.runner.policy.require(operation_id)
     except Exception as exc:  # noqa: BLE001
         raise _operation_error(exc) from exc
