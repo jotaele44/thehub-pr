@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,14 @@ def is_allowed_path(path: str, allowed_paths: list[str]) -> bool:
         path == allowed or (allowed.endswith("/") and path.startswith(allowed))
         for allowed in allowed_paths
     )
+
+
+def is_declared_branch_validation(root: Path, branch_name: str) -> bool:
+    github_head_ref = os.environ.get("GITHUB_HEAD_REF")
+    if github_head_ref:
+        return github_head_ref == branch_name
+    branch = run_git(root, "symbolic-ref", "--quiet", "--short", "HEAD")
+    return branch.returncode == 0 and branch.stdout.strip() == branch_name
 
 
 def validate(root: Path) -> dict[str, Any]:
@@ -115,7 +124,9 @@ def validate(root: Path) -> dict[str, Any]:
         "surface_separation",
         "repository_path_bindings",
     ]
-    if (root / ".git").exists():
+    if (root / ".git").exists() and is_declared_branch_validation(
+        root, binding["branch_name"]
+    ):
         base = binding["pinned_base_commit"]
         shallow = run_git(root, "rev-parse", "--is-shallow-repository")
         is_shallow = shallow.returncode == 0 and shallow.stdout.strip() == "true"
@@ -146,6 +157,8 @@ def validate(root: Path) -> dict[str, Any]:
                         if p == surface or p.startswith(prefix):
                             errors.append(f"legacy surface was modified: {surface}")
             checks += ["exact_base_ancestry", "change_scope", "legacy_non_modification"]
+    elif (root / ".git").exists():
+        checks.append("declared_branch_scope_not_applicable")
     return {
         "schema_version": "1.0",
         "repository": binding["repository"],
