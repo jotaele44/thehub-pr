@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, Optional
 
-from src.hub.registry import Producer, load_registry
+from hub.registry import Producer, load_registry
 
 
 class RepositoryBindingError(RuntimeError):
