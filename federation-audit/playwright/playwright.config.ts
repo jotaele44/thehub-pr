@@ -18,5 +18,7 @@ export default defineConfig({
     command: "python -m http.server 4173 --directory fixtures",
     port: 4173,
     reuseExistingServer: false,
+    stdout: "ignore",
+    stderr: "ignore",
   },
 });
