@@ -5,15 +5,15 @@ import { defineConfig } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
 
 const OFFLINE = process.env.VITE_OFFLINE === '1';
-const CESIUM_SOURCE = path.resolve(__dirname, 'node_modules/cesium/Build/Cesium');
+const CESIUM_SOURCE = path.resolve(import.meta.dirname, 'node_modules/cesium/Build/Cesium');
 const CESIUM_DIRS = ['Assets', 'ThirdParty', 'Widgets', 'Workers'];
 
 function cesiumRuntimeAssets() {
-  let outDir = path.resolve(__dirname, OFFLINE ? 'export-standalone' : 'dist');
+  let outDir = path.resolve(import.meta.dirname, OFFLINE ? 'export-standalone' : 'dist');
   return {
     name: 'cesium-runtime-assets',
     configResolved(config) {
-      outDir = path.resolve(__dirname, config.build.outDir);
+      outDir = path.resolve(import.meta.dirname, config.build.outDir);
     },
     configureServer(server) {
       server.middlewares.use('/cesium', (req, res, next) => {
