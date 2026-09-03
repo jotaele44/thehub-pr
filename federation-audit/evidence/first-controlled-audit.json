@@ -1,0 +1,324 @@
+{
+  "schema_version": "0.1.0",
+  "generated_at": "2026-08-24T18:12:31.373869+00:00",
+  "traces": [
+    {
+      "trace_id": "c7c9a64b417333e1595df92a",
+      "repository": "fixture/federation-audit",
+      "commit": "af6f718bb7b484e0bd085a3ea0d1b991de3f9017",
+      "surface": {
+        "kind": "gui-control",
+        "id": "ui-no-op",
+        "label": "Ui No Op",
+        "source": "playwright/fixtures/index.html",
+        "line": null
+      },
+      "path": [
+        {
+          "node_id": "0049baf3e1d05899b40be1f7",
+          "kind": "gui-control",
+          "status": "observed",
+          "source": "playwright/fixtures/index.html"
+        },
+        {
+          "node_id": "3eb967d58536819cc4b85297",
+          "kind": "event-handler",
+          "status": "missing",
+          "source": "playwright/fixtures/index.html"
+        }
+      ],
+      "observations": {
+        "handler_bound": false,
+        "expected_classification": "UI_NO_OP",
+        "fixture_case_passed": true,
+        "production_side_effects": false
+      },
+      "classification": "UI_NO_OP",
+      "fault_boundary": "gui-to-handler",
+      "confidence": 0.99,
+      "evidence": [
+        {
+          "tier": "T2",
+          "kind": "deterministic-controlled-fixture",
+          "locator": "fixture:ui-no-op",
+          "digest": null
+        }
+      ],
+      "recommended_fix": "Bind a meaningful handler or render a non-action control."
+    },
+    {
+      "trace_id": "d0cb99f8654b5643a89c45f9",
+      "repository": "fixture/federation-audit",
+      "commit": "af6f718bb7b484e0bd085a3ea0d1b991de3f9017",
+      "surface": {
+        "kind": "gui-control",
+        "id": "partially-wired",
+        "label": "Partially Wired",
+        "source": "playwright/fixtures/index.html",
+        "line": null
+      },
+      "path": [
+        {
+          "node_id": "e020b6010f5a9b25dae34c34",
+          "kind": "gui-control",
+          "status": "observed",
+          "source": "playwright/fixtures/index.html"
+        },
+        {
+          "node_id": "9a6656f01133c7f1197269e8",
+          "kind": "event-handler",
+          "status": "resolved",
+          "source": "playwright/fixtures/index.html"
+        },
+        {
+          "node_id": "2bdbb817828706959c253be4",
+          "kind": "application-intent",
+          "status": "observed",
+          "source": "playwright/fixtures/index.html"
+        }
+      ],
+      "observations": {
+        "handler_bound": true,
+        "handler_resolved": true,
+        "intent_observed": true,
+        "expected_classification": "PARTIALLY_WIRED",
+        "fixture_case_passed": true,
+        "production_side_effects": false
+      },
+      "classification": "PARTIALLY_WIRED",
+      "fault_boundary": "handler-to-terminal",
+      "confidence": 0.88,
+      "evidence": [
+        {
+          "tier": "T2",
+          "kind": "deterministic-controlled-fixture",
+          "locator": "fixture:partially-wired",
+          "digest": null
+        }
+      ],
+      "recommended_fix": "Complete and prove the downstream target edge."
+    },
+    {
+      "trace_id": "ec837dfccebd3dcfd141b0ca",
+      "repository": "fixture/federation-audit",
+      "commit": "af6f718bb7b484e0bd085a3ea0d1b991de3f9017",
+      "surface": {
+        "kind": "gui-control",
+        "id": "target-missing",
+        "label": "Target Missing",
+        "source": "playwright/fixtures/index.html",
+        "line": null
+      },
+      "path": [
+        {
+          "node_id": "82210f93cbbad0c81929dc00",
+          "kind": "gui-control",
+          "status": "observed",
+          "source": "playwright/fixtures/index.html"
+        },
+        {
+          "node_id": "ff5cde0645bbcd97f00f1fa3",
+          "kind": "event-handler",
+          "status": "missing",
+          "source": "playwright/fixtures/index.html"
+        }
+      ],
+      "observations": {
+        "handler_bound": true,
+        "handler_resolved": false,
+        "expected_classification": "TARGET_MISSING",
+        "fixture_case_passed": true,
+        "production_side_effects": false
+      },
+      "classification": "TARGET_MISSING",
+      "fault_boundary": "dispatch-target",
+      "confidence": 0.99,
+      "evidence": [
+        {
+          "tier": "T2",
+          "kind": "deterministic-controlled-fixture",
+          "locator": "fixture:target-missing",
+          "digest": null
+        }
+      ],
+      "recommended_fix": "Implement the target or correct the binding."
+    },
+    {
+      "trace_id": "cead7fa8bff773628eaa8586",
+      "repository": "fixture/federation-audit",
+      "commit": "af6f718bb7b484e0bd085a3ea0d1b991de3f9017",
+      "surface": {
+        "kind": "gui-control",
+        "id": "contract-mismatch",
+        "label": "Contract Mismatch",
+        "source": "playwright/fixtures/index.html",
+        "line": null
+      },
+      "path": [
+        {
+          "node_id": "4cfcfbe3e3bfe59bc0c37f23",
+          "kind": "gui-control",
+          "status": "observed",
+          "source": "playwright/fixtures/index.html"
+        },
+        {
+          "node_id": "acc66e78b5b248121842ff16",
+          "kind": "event-handler",
+          "status": "resolved",
+          "source": "playwright/fixtures/index.html"
+        },
+        {
+          "node_id": "e6348ba8f42c717a72cf9ffe",
+          "kind": "declared-contract",
+          "status": "failed",
+          "source": "playwright/fixtures/index.html"
+        }
+      ],
+      "observations": {
+        "handler_bound": true,
+        "handler_resolved": true,
+        "contract_mismatch": true,
+        "expected_classification": "CONTRACT_MISMATCH",
+        "fixture_case_passed": true,
+        "production_side_effects": false
+      },
+      "classification": "CONTRACT_MISMATCH",
+      "fault_boundary": "caller-to-target-contract",
+      "confidence": 0.99,
+      "evidence": [
+        {
+          "tier": "T2",
+          "kind": "deterministic-controlled-fixture",
+          "locator": "fixture:contract-mismatch",
+          "digest": null
+        }
+      ],
+      "recommended_fix": "Align method, path, and payload schema."
+    },
+    {
+      "trace_id": "11bfb7c9c04318635f21b52d",
+      "repository": "fixture/federation-audit",
+      "commit": "af6f718bb7b484e0bd085a3ea0d1b991de3f9017",
+      "surface": {
+        "kind": "gui-control",
+        "id": "wired-but-blocked",
+        "label": "Wired But Blocked",
+        "source": "playwright/fixtures/index.html",
+        "line": null
+      },
+      "path": [
+        {
+          "node_id": "b55657c6a627b42153e451aa",
+          "kind": "gui-control",
+          "status": "observed",
+          "source": "playwright/fixtures/index.html"
+        },
+        {
+          "node_id": "16c1387e1172113835f550a5",
+          "kind": "event-handler",
+          "status": "resolved",
+          "source": "playwright/fixtures/index.html"
+        },
+        {
+          "node_id": "df181981baff0b788122b881",
+          "kind": "dependency",
+          "status": "blocked",
+          "source": "playwright/fixtures/index.html"
+        }
+      ],
+      "observations": {
+        "handler_bound": true,
+        "handler_resolved": true,
+        "blocked_precondition": true,
+        "expected_classification": "WIRED_BUT_BLOCKED",
+        "fixture_case_passed": true,
+        "production_side_effects": false
+      },
+      "classification": "WIRED_BUT_BLOCKED",
+      "fault_boundary": "dependency-or-precondition",
+      "confidence": 0.95,
+      "evidence": [
+        {
+          "tier": "T2",
+          "kind": "deterministic-controlled-fixture",
+          "locator": "fixture:wired-but-blocked",
+          "digest": null
+        }
+      ],
+      "recommended_fix": "Satisfy or explicitly surface the blocking condition."
+    },
+    {
+      "trace_id": "831cddffe4dc549da5e4df7f",
+      "repository": "fixture/federation-audit",
+      "commit": "af6f718bb7b484e0bd085a3ea0d1b991de3f9017",
+      "surface": {
+        "kind": "gui-control",
+        "id": "executable-by-contract",
+        "label": "Executable By Contract",
+        "source": "playwright/fixtures/index.html",
+        "line": null
+      },
+      "path": [
+        {
+          "node_id": "ae921e927c399d0da5bbd379",
+          "kind": "gui-control",
+          "status": "observed",
+          "source": "playwright/fixtures/index.html"
+        },
+        {
+          "node_id": "c3325fd58f521a002afcf2f4",
+          "kind": "event-handler",
+          "status": "resolved",
+          "source": "playwright/fixtures/index.html"
+        },
+        {
+          "node_id": "7bad36440ec1aef5ad40c755",
+          "kind": "intercepted-boundary",
+          "status": "terminal",
+          "source": "playwright/fixtures/index.html"
+        }
+      ],
+      "observations": {
+        "handler_bound": true,
+        "handler_resolved": true,
+        "boundary_reached": true,
+        "contract_matched": true,
+        "side_effect_intercepted": true,
+        "expected_classification": "EXECUTABLE_BY_CONTRACT",
+        "fixture_case_passed": true,
+        "production_side_effects": false
+      },
+      "classification": "EXECUTABLE_BY_CONTRACT",
+      "fault_boundary": null,
+      "confidence": 0.97,
+      "evidence": [
+        {
+          "tier": "T2",
+          "kind": "deterministic-controlled-fixture",
+          "locator": "fixture:executable-by-contract",
+          "digest": null
+        }
+      ],
+      "recommended_fix": "Graduate to an isolated shadow runtime for confirmation."
+    }
+  ],
+  "coverage": {
+    "surfaces_discovered": 6,
+    "surfaces_classified": 6,
+    "t1_or_t2_supported": 6,
+    "by_kind": {
+      "gui-control": 6
+    },
+    "classification_counts": {
+      "CONTRACT_MISMATCH": 1,
+      "EXECUTABLE_BY_CONTRACT": 1,
+      "PARTIALLY_WIRED": 1,
+      "TARGET_MISSING": 1,
+      "UI_NO_OP": 1,
+      "WIRED_BUT_BLOCKED": 1
+    },
+    "repositories_present": 1,
+    "repositories_missing": 0
+  },
+  "workspace_gaps": []
+}
