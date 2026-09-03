@@ -66,11 +66,24 @@ _stream_tickets: Dict[str, tuple[str, float]] = {}
 class ManagerRuntime:
     """Everything the operations endpoints need, assembled by the native host."""
 
-    def __init__(self, runner, files: FileTokenBroker, secrets_broker, gate_rules=()):
+    def __init__(
+        self,
+        runner,
+        files: FileTokenBroker,
+        secrets_broker,
+        gate_rules=(),
+        *,
+        repositories=None,
+        artifacts=None,
+        repository_binding_failures=None,
+    ):
         self.runner = runner
         self.files = files
         self.secrets = secrets_broker
         self.gate_rules = list(gate_rules)
+        self.repositories = repositories
+        self.artifacts = artifacts
+        self.repository_binding_failures = dict(repository_binding_failures or {})
 
 
 # ── request bodies ──────────────────────────────────────────────────────────
