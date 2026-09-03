@@ -349,9 +349,12 @@ def get_preferences(subscriber: str = Query("operator")):
 async def set_preferences(request: Request):
     """Set channel (push/sms/none) + timing (asap/brief) prefs, global or per-domain."""
     body = await request.json()
-    subscriber = body.get("subscriber", "operator")
-    prefs = body.get("prefs", {})
-    targets = body.get("targets", {})
+    try:
+        prefs, targets, subscriber = _notif.validate_subscription(
+            body.get("prefs", {}), body.get("targets", {}), body.get("subscriber", "operator")
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
     c = _conn()
     _notif.NotificationStore(c).set_subscription(prefs, targets, subscriber, _now())
     c.close()
@@ -393,12 +396,18 @@ async def create_entity(entity_name: str, request: Request):
     body["updated_date"] = ts
 
     c = _conn()
-    c.execute(
-        "INSERT INTO entities (entity_type, entity_id, data, updated_at) VALUES (?,?,?,?)",
-        (entity_name, entity_id, json.dumps(body), ts),
-    )
-    c.commit()
-    c.close()
+    try:
+        c.execute(
+            "INSERT INTO entities (entity_type, entity_id, data, updated_at) VALUES (?,?,?,?)",
+            (entity_name, entity_id, json.dumps(body), ts),
+        )
+        c.commit()
+    except sqlite3.IntegrityError as error:
+        raise HTTPException(
+            status_code=409, detail=f"{entity_name}/{entity_id} already exists"
+        ) from error
+    finally:
+        c.close()
     return body
 
 
