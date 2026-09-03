@@ -25,6 +25,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -100,6 +101,28 @@ SOURCES = [
 ]
 
 
+class VisibleHTMLText(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.hidden: list[str] = []
+        self.parts: list[str] = []
+
+    def handle_starttag(
+        self, tag: str, attrs: list[tuple[str, str | None]]
+    ) -> None:
+        if tag.lower() in {"script", "style"}:
+            self.hidden.append(tag.lower())
+
+    def handle_endtag(self, tag: str) -> None:
+        lowered = tag.lower()
+        if self.hidden and self.hidden[-1] == lowered:
+            self.hidden.pop()
+
+    def handle_data(self, data: str) -> None:
+        if not self.hidden:
+            self.parts.append(data)
+
+
 def utc_now() -> str:
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
@@ -162,9 +185,9 @@ def download(url: str, path: Path, attempts: int = 4) -> dict[str, Any]:
 def source_text(path: Path, kind: str) -> str:
     if kind == "html":
         raw = path.read_text(encoding="utf-8", errors="replace")
-        raw = re.sub(r"<script\b[^>]*>.*?</script\s*>", " ", raw, flags=re.I | re.S)
-        raw = re.sub(r"<style\b[^>]*>.*?</style\s*>", " ", raw, flags=re.I | re.S)
-        return norm(raw)
+        parser = VisibleHTMLText()
+        parser.feed(raw)
+        return norm(" ".join(parser.parts))
     from pypdf import PdfReader
     return norm("\n".join((page.extract_text() or "") for page in PdfReader(str(path)).pages))
 
