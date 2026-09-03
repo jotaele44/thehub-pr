@@ -1,14 +1,24 @@
 const ALLOWED_KINDS = new Set(['terrain', '3d-tiles', 'point-cloud']);
+const TERRAIN_DATUM_READY = 'UNIFORM_BOUND';
 
 export function certifyAdvanced3dSource(candidate) {
   if (!candidate || !ALLOWED_KINDS.has(candidate.kind)) throw new Error('unsupported advanced 3D source kind');
   if (!candidate.sourceId || !candidate.hrefManifestation) throw new Error('advanced 3D source requires stable sourceId and href manifestation');
-  if (candidate.kind === 'terrain' && !candidate.verticalDatum) {
-    return Object.freeze({ ...candidate, status: 'OPEN_VERTICAL_DATUM', canonicalIdentityStatus: 'CANDIDATE_NOT_IDENTITY' });
+
+  if (candidate.kind === 'terrain') {
+    if (!candidate.verticalDatum || candidate.verticalDatumStatus !== TERRAIN_DATUM_READY) {
+      return Object.freeze({
+        ...candidate,
+        status: 'OPEN_VERTICAL_DATUM',
+        canonicalIdentityStatus: 'CANDIDATE_NOT_IDENTITY',
+      });
+    }
   }
+
   if (candidate.kind === 'point-cloud' && !candidate.crs) {
     return Object.freeze({ ...candidate, status: 'OPEN_CRS', canonicalIdentityStatus: 'CANDIDATE_NOT_IDENTITY' });
   }
+
   return Object.freeze({
     ...candidate,
     status: 'READY_FOR_RUNTIME_BINDING',
@@ -17,3 +27,4 @@ export function certifyAdvanced3dSource(candidate) {
 }
 
 export const ADVANCED_3D_KINDS = Object.freeze([...ALLOWED_KINDS]);
+export const TERRAIN_VERTICAL_DATUM_READY_STATUS = TERRAIN_DATUM_READY;
