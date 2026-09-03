@@ -1,0 +1,33 @@
+name: HTR v2 frozen contract
+
+on:
+  pull_request:
+    paths:
+      - "src/hub/htr_v2.py"
+      - "tests/test_htr_v2.py"
+      - "scripts/validate_htr_v2_frozen.py"
+      - "data/htr/tiger2025_road_denominator_v1.json"
+      - "data/htr/major_hydro_asset_v2.json"
+      - "data/htr/runs/2026-08-31_htr_v2_rederived_receipt.json"
+      - ".github/workflows/htr-v2-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install test dependencies
+        run: python -m pip install --disable-pip-version-check pytest
+      - name: HTR v2 focused tests
+        env:
+          PYTHONPATH: src
+        run: python -m pytest tests/test_htr_v2.py -q
+      - name: Frozen denominator validation
+        run: python scripts/validate_htr_v2_frozen.py
