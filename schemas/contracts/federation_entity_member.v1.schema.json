@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/federation_entity_member/v1",
+  "x-contract-version": "1.0.0",
+  "title": "Federation Entity Member",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "federation_entity_id", "source_producer", "local_record_id", "payload_hash", "match_class", "decision_id", "created_at"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "federation_entity_id": {"type": "string", "pattern": "^fed_[a-f0-9]{32}$"},
+    "source_producer": {"type": "string", "minLength": 1},
+    "local_record_id": {"type": "string", "minLength": 1},
+    "source_revision": {"type": ["string", "null"]},
+    "source_sequence": {"type": ["integer", "null"], "minimum": 0},
+    "payload_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "match_class": {"enum": ["EXACT_IDENTIFIER", "EXPLICIT_CROSSWALK", "PROVEN_RELATIONSHIP", "REVIEWED_MATCH"]},
+    "decision_id": {"type": "string", "minLength": 1},
+    "valid_from": {"type": ["string", "null"], "format": "date-time"},
+    "valid_to": {"type": ["string", "null"], "format": "date-time"},
+    "status": {"enum": ["ACTIVE", "SUPERSEDED", "TOMBSTONED"]},
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "x-primary-key": ["source_producer", "local_record_id"],
+  "x-invariants": [
+    "producer local_record_id is immutable",
+    "decision_id binds membership to entity_resolution.v1 entity_identity_decision outcome MERGE",
+    "normalized-name-only matching cannot create membership",
+    "source_sequence is mandatory when producer revisions are not provably orderable"
+  ]
+}
