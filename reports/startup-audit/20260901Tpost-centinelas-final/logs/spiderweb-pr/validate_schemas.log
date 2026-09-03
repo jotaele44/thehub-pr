@@ -1,0 +1,11 @@
+python -c "\
+	from integration.schema_validation import SchemaValidator; \
+	v = SchemaValidator(); \
+	schemas = v.available_schemas(); \
+	print(f'Loaded {len(schemas)} schemas: {schemas}'); \
+	assert len(schemas) >= 11, f'Expected >=11, got {len(schemas)}'"
+Loaded 63 schemas: ['release_report', 'ferrocarril_poi', 'federation_export_manifest', 'ncei_coastal_dem_coverage_report', 'aircraft_intelligence_report', 'monitoring_aoi', 'headstart_context_grid', 'layer_catalog', 'prii_readiness_report', 'spiderweb_track', 'remote_observation', 'source_scene', 'aircraft_observations', 'pr_natural_feature', 'unlabeled_pin_candidates', 'federation_manifest', 'mission_inference', 'spiderweb_airspace_export', 'spiderweb_source', 'pin_link', 'manual_review', 'gis_feature', 'integration_report', 'pr_dem_candidate_review', 'review_item', 'pr_grid_cell', 'spiderweb_observation', 'spiderweb_gap_audit', 'pin', 'labeled_pins', 'operational_alert', 'ocr_raw_by_zone', 'flight_track_features', 'aasb_export', 'pr_archipelago_feature', 'export_manifest', 'calibration_report', 'aircraft_profile', 'extracted_field', 'tile_source_delivery', 'pr_intake_derivative', 'federation_entity', 'spiderweb_intake_manifest', 'satellite_source_manifest', 'headstart_service_location', 'ncei_coastal_dem_source_manifest', 'adjudication_event', 'ocr_normalized_labels', 'crim_lookup', 'ilap_corridor_candidate', 'raster_source_manifest', 'physical_contract_crosswalk', 'flight_event', 'screenshot', 'spiderweb_spatial_lane_record', 'federation_source', 'evidence_envelope', 'track_point', 'spiderweb_event', 'anomaly', 'ferrocarril_crosswalk', 'federation_relationship', 'ilap_cluster']
+$ make validate-schemas
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T002849Z-wrn0tly0/spiderweb-pr
+# started_utc: 2026-09-01T00:34:38Z
+

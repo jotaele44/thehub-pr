@@ -1,0 +1,46 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 15%]
+........................................................................ [ 20%]
+........................................................................ [ 25%]
+ssss.sss................................................................ [ 30%]
+.....................s.................................................. [ 35%]
+........................................................................ [ 40%]
+........................................................................ [ 45%]
+........................................................................ [ 50%]
+........................................................................ [ 55%]
+......................ssssssssssssss.................................... [ 60%]
+..................sss.........................ss.ssss................... [ 65%]
+........................................................................ [ 70%]
+........................................................................ [ 75%]
+........................................................................ [ 80%]
+........................................................................ [ 85%]
+........................................................................ [ 90%]
+........................................................................ [ 95%]
+...........................................................              [100%]
+=============================== warnings summary ===============================
+tests/test_io.py::test_open_gebco_requires_elevation_variable
+  <frozen importlib._bootstrap>:488: RuntimeWarning: numpy.ndarray size changed, may indicate binary incompatibility. Expected 16 from C header, got 96 from PyObject
+
+tests/test_io.py::test_open_gebco_requires_elevation_variable
+tests/test_io.py::test_open_gebco_ascending_lat_unchanged
+tests/test_io.py::test_open_gebco_descending_lat_sorted
+  /usr/local/Caskroom/miniconda/base/lib/python3.13/site-packages/xarray/backends/netCDF4_.py:96: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    data[key] = value
+
+tests/test_pr_dem_reproject.py::test_geographic_tile_is_reprojected_to_metric
+tests/test_pr_dem_reproject.py::test_no_reproject_flag_reproduces_the_degenerate_collapse
+tests/test_pr_dem_reproject.py::test_reprojected_tile_yields_metre_scale_candidates
+tests/test_pr_dem_reproject.py::test_assume_source_crs_recovers_crsless_tile
+tests/test_pr_dem_reproject.py::test_projected_tile_passes_through_unchanged
+  /private/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T000009Z-54svevsk/spiderweb-pr/tools/pr_dem_one_tile_pilot.py:140: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+  As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+    arr = dataset.read(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+1396 passed, 34 skipped, 4 deselected, 9 warnings in 69.10s (0:01:09)
+$ python -m pytest tests/ -q --tb=short
+# cwd: /var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/startup-audit-20260901T000009Z-54svevsk/spiderweb-pr
+# started_utc: 2026-09-01T00:07:00Z
+

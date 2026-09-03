@@ -16,10 +16,8 @@ class FakeHeaders(dict):
 
 
 class FakeUpstream:
-    status = 200
-
-    def __init__(self, url: str, body: bytes = b"{}"):
-        self._url = url
+    def __init__(self, url: str, body: bytes = b"{}", status: int = 200):
+        self.status = status
         self._body = io.BytesIO(body)
         self.headers = FakeHeaders({"Content-Type": "application/json", "Content-Length": str(len(body))})
 
@@ -32,8 +30,8 @@ class FakeUpstream:
     def read(self, size=-1):
         return self._body.read(size)
 
-    def geturl(self):
-        return self._url
+    def close(self):
+        self._body.close()
 
 
 def test_allowlist_rejects_lookalike_host_and_path_escape():
@@ -59,20 +57,61 @@ def test_range_is_bounded_to_one_mib():
         gis_proxy._validated_range("0-10")
 
 
-def test_proxy_revalidates_redirect_target(monkeypatch):
+def test_proxy_rejects_redirect_response(monkeypatch):
     requested = "https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/1/query?f=json"
-    monkeypatch.setattr(gis_proxy.urllib.request, "urlopen", lambda *args, **kwargs: FakeUpstream("https://evil.example/data"))
+    monkeypatch.setattr(gis_proxy, "_open_upstream", lambda *args, **kwargs: FakeUpstream(requested, status=302))
     with pytest.raises(HTTPException) as exc:
         gis_proxy.gis_proxy("pr-sige-represas", requested, None)
     assert exc.value.status_code == 502
 
 
+def test_proxy_transport_connects_only_to_registered_host(monkeypatch):
+    observed = {}
+
+    class FakeConnection:
+        def __init__(self, host, port=None, timeout=None):
+            observed.update(host=host, port=port, timeout=timeout)
+
+        def request(self, method, target, headers):
+            observed.update(method=method, target=target, headers=headers)
+
+        def getresponse(self):
+            return FakeUpstream("unused")
+
+        def close(self):
+            observed["closed"] = True
+
+    monkeypatch.setattr(gis_proxy.http.client, "HTTPSConnection", FakeConnection)
+    target = "https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/1/query?f=json"
+    with gis_proxy._open_upstream("pr-sige-represas", target, {"Accept": "*/*"}, timeout=45):
+        pass
+
+    assert observed["host"] == "sige.pr.gov"
+    assert observed["target"] == "/server/rest/services/MIPR/Infraestructura/FeatureServer/1/query?f=json"
+    assert observed["closed"] is True
+
+
 def test_proxy_returns_allowed_upstream_bytes(monkeypatch):
     requested = "https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/1/query?f=json"
-    monkeypatch.setattr(gis_proxy.urllib.request, "urlopen", lambda *args, **kwargs: FakeUpstream(requested, b'{"count":2}'))
+    monkeypatch.setattr(gis_proxy, "_open_upstream", lambda *args, **kwargs: FakeUpstream(requested, b'{"count":2}'))
     response = gis_proxy.gis_proxy("pr-sige-represas", requested, None)
     assert response.body == b'{"count":2}'
     assert response.headers["x-gis-source-id"] == "pr-sige-represas"
+
+
+def test_spa_file_selection_never_constructs_a_path_from_request_text(tmp_path, monkeypatch):
+    from server.backend import main_core
+
+    index = tmp_path / "index.html"
+    favicon = tmp_path / "favicon.ico"
+    index.write_text("index", encoding="utf-8")
+    favicon.write_bytes(b"icon")
+    monkeypatch.setattr(main_core, "_SPA_INDEX", index)
+    monkeypatch.setattr(main_core, "_SPA_ROOT_FILES", {"favicon.ico": favicon})
+
+    assert main_core._spa_file("favicon.ico") == favicon
+    assert main_core._spa_file("../../etc/passwd") == index
+    assert main_core._spa_file("unknown.txt") == index
 
 
 def test_main_entrypoint_preserves_core_namespace_and_fresh_runtime_mounts_proxy():

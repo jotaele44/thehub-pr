@@ -5,15 +5,15 @@ import { defineConfig } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
 
 const OFFLINE = process.env.VITE_OFFLINE === '1';
-const CESIUM_SOURCE = path.resolve(__dirname, 'node_modules/cesium/Build/Cesium');
+const CESIUM_SOURCE = path.resolve(import.meta.dirname, 'node_modules/cesium/Build/Cesium');
 const CESIUM_DIRS = ['Assets', 'ThirdParty', 'Widgets', 'Workers'];
 
 function cesiumRuntimeAssets() {
-  let outDir = path.resolve(__dirname, OFFLINE ? 'export-standalone' : 'dist');
+  let outDir = path.resolve(import.meta.dirname, OFFLINE ? 'export-standalone' : 'dist');
   return {
     name: 'cesium-runtime-assets',
     configResolved(config) {
-      outDir = path.resolve(__dirname, config.build.outDir);
+      outDir = path.resolve(import.meta.dirname, config.build.outDir);
     },
     configureServer(server) {
       server.middlewares.use('/cesium', (req, res, next) => {
@@ -47,13 +47,24 @@ export default defineConfig({
   logLevel: 'error',
   base: OFFLINE ? './' : '/',
   resolve: {
+    dedupe: ['react', 'react-dom'],
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@federation-design': path.resolve(__dirname, '../../federation-design'),
+      '@': path.resolve(import.meta.dirname, './src'),
+      // Canonical design-system source. The package's own "./styles.css" export
+      // points at dist/, which only exists after `npm pack` runs prepack — a
+      // `file:` dep is symlinked without lifecycle scripts, so that export can't
+      // resolve in-repo. Aliasing the canonical CSS directly is what lets the
+      // Hub single-source it instead of keeping a copy in sync.
+      '@federation-design': path.resolve(import.meta.dirname, '../../federation-design'),
     },
   },
   server: {
-    fs: { allow: [path.resolve(__dirname), path.resolve(__dirname, '../../federation-design')] },
+    fs: {
+      allow: [
+        path.resolve(import.meta.dirname),
+        path.resolve(import.meta.dirname, '../../federation-design'),
+      ],
+    },
   },
   plugins: OFFLINE ? [react(), viteSingleFile(), cesiumRuntimeAssets()] : [react(), cesiumRuntimeAssets()],
   build: OFFLINE

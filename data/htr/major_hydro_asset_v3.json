@@ -1,0 +1,154 @@
+{
+  "schema_version": "major-hydro-asset-v3-1.3",
+  "scope": "Artifact-backed, versioned authoritative source-manifestation denominator beyond MAJOR_HYDRO_ASSET_v2. v1/v2 remain immutable. V3 is complete only for the explicitly configured frozen source set; universal Puerto Rico hydro or universal historical-archive exhaustion is not claimed.",
+  "base_version": "MAJOR_HYDRO_ASSET_v2",
+  "base_supported_discovery_manifestation_count": 107,
+  "canonical_v3_source_adjudication": {
+    "workflow_run_id": 33572711586,
+    "execution_head_sha": "b9e690e412ff732af80d2150f7de60ec4c61ea8c",
+    "artifact_id": 9825534660,
+    "artifact_name": "htr-v3-adjudicated-b9e690e412ff732af80d2150f7de60ec4c61ea8c",
+    "artifact_digest": "sha256:ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd",
+    "certification": "PASS_BOUNDED_SOURCE_MANIFESTATION_CLASSIFICATION"
+  },
+  "canonical_v3_scope_eligibility": {
+    "workflow_run_id": 33573591927,
+    "execution_head_sha": "43f8aaa3732330722c59a20fe298812858b9f36f",
+    "artifact_id": 9825809337,
+    "artifact_name": "htr-v3-scope-closed-43f8aaa3732330722c59a20fe298812858b9f36f",
+    "artifact_digest": "sha256:2212834ac56650c08c5eafa18b921e5266396069ece6310bdda8487b1e66ecd3",
+    "scope_binding": "conversation:MAJOR_HYDRO_ASSET_scope:named_intakes=INCLUDE",
+    "certification": "PASS_BOUNDED_V3_ASSET_SCOPE_ELIGIBILITY"
+  },
+  "canonical_v3_historical_source_set": {
+    "workflow_run_id": 33574165964,
+    "execution_head_sha": "e832206a0c7634ccbf8f6145e061c577a6eff97f",
+    "artifact_id": 9826015550,
+    "artifact_name": "htr-v3-history-e832206a0c7634ccbf8f6145e061c577a6eff97f",
+    "artifact_digest": "sha256:22cd7093ad5742eeee064548a8d6375bc8ca2d9596b24fa985304a0dbf1f278c",
+    "configured_sources": 6,
+    "frozen_sources": 6,
+    "source_manifestations": 18,
+    "certification": "PASS_BOUNDED_HISTORICAL_SOURCE_SET",
+    "universal_historical_archive_exhausted": false,
+    "transport_caveat": "Two OGP PDF downloads required an exact-host TLS-certificate verification exception because bvirtualogp.pr.gov presented an expired certificate; final host was pinned, raw bytes were preserved and SHA256 hashed."
+  },
+  "v3_source_manifestation_arithmetic": "3524=270+3254+0",
+  "v3_source_manifestation_count": 3524,
+  "v3_supported_for_major_discovery": 270,
+  "v3_unsupported_discovery_key": 3254,
+  "v3_major_hydro_asset_eligibility_unresolved": 0,
+  "total_source_manifestations_with_v2": 3631,
+  "bounded_supported_discovery_manifestations_with_v2": 377,
+  "inline_preexisting_usace_manifestations": [
+    {
+      "source_manifestation_id": "usace-portugues-bucana:cerrillos-dam",
+      "source_id": "usace:portugues-bucana:current",
+      "source_authority": "U.S. Army Corps of Engineers Jacksonville District",
+      "source_url": "https://www.saj.usace.army.mil/About/Congressional-Fact-Sheets-2025/Portugues-and-Bucana-Rivers-PR-C/",
+      "raw_name": "Cerrillos Dam",
+      "normalized_name": "cerrillos dam",
+      "canonical_entity_id": null,
+      "cross_source_identity_state": "UNRESOLVED",
+      "asset_class": "DAM",
+      "operational_status": "TRANSFERRED_TO_LOCAL_SPONSOR",
+      "temporal_context": {
+        "turned_over_to_sponsor": "1997-08",
+        "fact_sheet_context": "current project status source"
+      },
+      "discovery_key_status": "SUPPORTED",
+      "identity_claim": false,
+      "connectivity_claim": false
+    },
+    {
+      "source_manifestation_id": "usace-portugues-bucana:portugues-dam",
+      "source_id": "usace:portugues-bucana:current",
+      "source_authority": "U.S. Army Corps of Engineers Jacksonville District",
+      "source_url": "https://www.saj.usace.army.mil/About/Congressional-Fact-Sheets-2025/Portugues-and-Bucana-Rivers-PR-C/",
+      "raw_name": "Portugués Dam",
+      "normalized_name": "portugues dam",
+      "canonical_entity_id": null,
+      "cross_source_identity_state": "UNRESOLVED",
+      "asset_class": "DAM",
+      "operational_status": "OPERATING_NORMAL_CONDITIONS",
+      "temporal_context": {
+        "construction_completed": "2013-12",
+        "final_transfer_to_local_sponsor": "2016-04",
+        "fact_sheet_context": "current project status source"
+      },
+      "discovery_key_status": "SUPPORTED",
+      "identity_claim": false,
+      "connectivity_claim": false
+    }
+  ],
+  "source_scope_outcomes": {
+    "nid_pr": {
+      "source_rows": 36,
+      "stable_nid_ids": 36,
+      "primary_supported_discovery_manifestations": 36,
+      "raw_alias_field_manifestations_unsupported": 67
+    },
+    "aaa_2015_w_intake": {
+      "source_rows": 182,
+      "stable_facility_ids": 182,
+      "distinct_raw_names": 180,
+      "major_hydro_asset_eligibility": "IN_SCOPE_NAMED_INTAKE",
+      "scope_eligibility_basis": "BINDING_SCOPE_RULE_NAMED_INTAKES_INCLUDED",
+      "canonical_identity_certified": false
+    },
+    "sige_canal_de_riego": {
+      "source_rows": 3187,
+      "raw_name_family_count": 1,
+      "raw_name": "Canal de Riego",
+      "discovery_key_status": "UNSUPPORTED",
+      "unsupported_reason": "GENERIC_FEATURE_CLASS_ONLY"
+    },
+    "drna_2004_lesser": {
+      "source_rows": 10,
+      "discovery_key_status": "SUPPORTED"
+    },
+    "drna_pira_2016_table_3_5": {
+      "source_rows": 22,
+      "mayor_rows": 18,
+      "intermedio_rows": 4,
+      "discovery_key_status": "SUPPORTED",
+      "prose_total_reservoirs": 39,
+      "prose_major_works": 15,
+      "table_vs_prose_contradiction_state": "UNRESOLVED_SEMANTIC_SCOPE_DIFFERENCE_OR_SOURCE_CONTRADICTION"
+    },
+    "historical_prwra_usgs_source_set": {
+      "configured_sources": 6,
+      "frozen_sources": 6,
+      "supported_source_manifestations": 18,
+      "source_set_exhaustion": "PASS",
+      "universal_historical_archive_exhaustion": false,
+      "cross_source_identity_state": "UNRESOLVED"
+    }
+  },
+  "invariants": {
+    "raw_normalized_canonical_separate": true,
+    "unsupported_not_rejected": true,
+    "name_only_identity_prohibited": true,
+    "fuzzy_identity_prohibited": true,
+    "proximity_identity_prohibited": true,
+    "cluster_identity_prohibited": true,
+    "connectivity_from_name_or_proximity_prohibited": true,
+    "transitive_context_inheritance": false,
+    "successful_mutable_source_snapshots_reused": true
+  },
+  "certification": {
+    "source_manifestation_classification_arithmetic": "PASS",
+    "asset_scope_eligibility_arithmetic": "PASS",
+    "historical_configured_source_set_arithmetic": "PASS",
+    "zero_unexplained_manifestation_residue": true,
+    "cross_source_identity": "UNRESOLVED",
+    "aaa_major_eligibility_residue": 0,
+    "historical_prwra_usgs_configured_source_set": "PASS",
+    "usgs_conveyance_expansion_beyond_v2": "PASS_BOUNDED_SOURCE_SET",
+    "v3_bounded_source_manifestation_classification": "PASS",
+    "v3_bounded_asset_scope_eligibility": "PASS",
+    "v3_configured_authoritative_source_denominator_complete": true,
+    "universal_historical_archive_exhaustion": false,
+    "universal_hydro_denominator_claimed": false
+  }
+}
