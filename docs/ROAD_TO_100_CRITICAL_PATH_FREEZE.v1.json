@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0.0",
+  "frozen_at": "2026-08-04T20:14:00-04:00",
+  "authority": "main_branch_normalized_ledgers",
+  "hash_note": "Git blob SHAs are frozen below. Byte-level SHA-256 remains unclaimed because the execution shell could not resolve raw.githubusercontent.com; calculate and append SHA-256 only from retrieved canonical bytes.",
+  "ledgers": [
+    {"repository":"jotaele44/thehub-pr","path":"docs/unfinished_implementation_ledger.v1.json","git_blob_sha":"d687bfe060c077065dbb3c6a63b91619f828944c","score":69.55},
+    {"repository":"jotaele44/centinelas-pr","path":"docs/unfinished_implementation_ledger.v1.json","git_blob_sha":"795150393730eaa2303d71b052ab36967887ad19","score":75.35},
+    {"repository":"jotaele44/aguayluz-pr","path":"docs/unfinished_implementation_ledger.v1.json","git_blob_sha":"c2d3c60d04c9a0d0bbb7f7fc22e768a2671136f7","score":81.55},
+    {"repository":"jotaele44/ovnis-pr","path":"docs/unfinished_implementation_ledger.v1.json","git_blob_sha":"1c92fe986c3f953468b424439ca7fa7b82a0dc26","score":79.90},
+    {"repository":"jotaele44/spiderweb-pr","path":"docs/unfinished_implementation_ledger.v1.json","git_blob_sha":"b301919c23461e4514a7a1c84a8c586843e27b61","score":70.90},
+    {"repository":"jotaele44/moneysweep-pr","path":"docs/unfinished_implementation_ledger.v1.json","git_blob_sha":"19c39fdfb8cea91de52c9f3ba1ade1cd2a367c3b","score":61.70},
+    {"repository":"jotaele44/skywatcher-pr","path":"docs/unfinished_implementation_ledger.v1.json","git_blob_sha":"b505e994ed36918a1d8e45e6a54210d8d42e16e5","score":65.05}
+  ],
+  "priority_model": {
+    "factors": ["weighted_score_effect","dependency_depth","operator_availability","evidence_tier"],
+    "rule": "No item receives completion or score credit until evidence is on main. Operator-input, operator-run, external-data, open-PR, rescue, design-authority and governance states remain distinct."
+  },
+  "priority_queue": [
+    {"rank":1,"repository":"jotaele44/moneysweep-pr","items":["MSW-001","MSW-002","MSW-003","MSW-004","MSW-007"],"state":"operator_input_and_main_gap","reason":"Largest materialization and lineage deficit; blocks production readiness and downstream federation confidence.","current_evidence":"PR #453 remains draft and unmergeable pending completed OCPR materialization; PR #451 remains open pending strict FEC closure.","exit":"Required official exports materialized with receipts and every entity-master row attributed or excluded."},
+    {"rank":2,"repository":"jotaele44/skywatcher-pr","items":["SKY-001"],"state":"open_pr_plus_operator_run","reason":"Aircraft spatial truth has high code/main/operator impact and is prerequisite to defensible geospatial analytics.","exit":"PR #171 reconciled and merged; full local corpus terminal accounting; zero false bindings; no published error above 500 m; real FR24 export retained."},
+    {"rank":3,"repository":"jotaele44/aguayluz-pr","items":["AYL-001","AYL-002","AYL-003","AYL-004","AYL-008"],"state":"open_pr_conflict_stacked_pr_design_authority","reason":"Overlapping USGS authority, stacked cave/karst work and regulatory runtime boundaries create reconciliation debt despite high current score.","exit":"One authoritative USGS implementation per category, cave/karst stack reconciled, and regulatory runtime increments remain separate reviewed PRs."},
+    {"rank":4,"repository":"jotaele44/thehub-pr","items":["HUB-001"],"state":"open_pr_and_certification_gate","reason":"Final isolated authority and all-main certification depend on producer closure and must execute last.","exit":"Isolated-clone authority on main and one current all-main federation certification with no superseded cohort reuse."}
+  ],
+  "execution_receipt": {
+    "moneysweep": {"status":"blocked_on_operator_inputs_and_long_runs","pr_453":"open_draft_unmergeable","pr_451":"open_unmerged","score_change":0},
+    "skywatcher": {"status":"blocked_on_local_corpus_and_real_fr24_export","score_change":0},
+    "aguayluz": {"status":"requires_pr_reconciliation_not_silent_merge","score_change":0},
+    "thehub": {"status":"deferred_until_producer_critical_path_closes","score_change":0}
+  }
+}

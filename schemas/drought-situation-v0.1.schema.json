@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.example/schemas/thehub/drought-situation/v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "projection_id", "area_id", "valid_at",
+    "aguayluz_record_refs", "centinelas_event_refs", "read_only",
+    "independent_ingest", "canonical_hydrology_embedded", "content_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "thehub.drought-situation/v0.1"},
+    "projection_id": {"type": "string", "pattern": "^HUB_DROUGHT_[0-9a-f]{20}$"},
+    "area_id": {"type": "string", "minLength": 1},
+    "valid_at": {"type": "string", "format": "date-time"},
+    "aguayluz_record_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["record_id", "kind", "content_sha256", "freshness", "evidence_tier"],
+        "properties": {
+          "record_id": {"type": "string", "pattern": "^AYL_DROUGHT_[A-Z_]+_[0-9a-f]{20}$"},
+          "kind": {
+            "enum": [
+              "classification_observation", "hydrologic_indicator", "impact_event",
+              "water_restriction", "outlook", "source_document"
+            ]
+          },
+          "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "freshness": {"type": ["string", "null"]},
+          "evidence_tier": {"enum": ["T1", "T2", "T3", "T4"]}
+        }
+      }
+    },
+    "centinelas_event_refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event_id", "impact_type", "content_sha256", "evidence_tier"],
+        "properties": {
+          "event_id": {"type": "string", "pattern": "^CEN_DROUGHT_[0-9a-f]{20}$"},
+          "impact_type": {
+            "enum": [
+              "wildfire_activity", "agricultural_water_shortage", "crop_stress",
+              "infrastructure_fire_damage", "stream_dry_report", "water_hauling",
+              "forage_shortage", "municipal_rationing"
+            ]
+          },
+          "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "evidence_tier": {"enum": ["T1", "T2", "T3", "T4"]}
+        }
+      }
+    },
+    "read_only": {"const": true},
+    "independent_ingest": {"const": false},
+    "canonical_hydrology_embedded": {"const": false},
+    "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
