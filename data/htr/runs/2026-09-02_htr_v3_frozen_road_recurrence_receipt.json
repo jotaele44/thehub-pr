@@ -1,0 +1,142 @@
+{
+  "certification": {
+    "bounded_scope": "PASS",
+    "candidate_classification_arithmetic": "PASS",
+    "cross_source_identity_resolution": "OPEN",
+    "frozen_input_hashes": "PASS",
+    "matcher_full_core_pair_equivalence": "PASS",
+    "pair_binding_resolution": "OPEN",
+    "road_denominator_arithmetic": "PASS",
+    "v3_hydro_manifestation_arithmetic": "PASS",
+    "zero_unexplained_computational_residue": "PASS"
+  },
+  "combined_v2_plus_v3_recurrence": {
+    "arithmetic_closed": true,
+    "candidate_not_identity_rows": 5447,
+    "candidate_rows": 9302,
+    "unsupported_rows": 3855
+  },
+  "exact_heads": {
+    "htr_v2_head": "911c3433c272af66b2ef4c30267837ec22377c67",
+    "merge_authorized": false,
+    "merges_performed": 0,
+    "new_recurrence_branch": "feature/htr-v3-road-recurrence-v1",
+    "new_recurrence_branch_created_from": "9032f5962e72d1d7465769adc50514507e16dad3",
+    "v3_base_head": "9032f5962e72d1d7465769adc50514507e16dad3"
+  },
+  "execution_artifact": {
+    "bundle_name": "htr-v3-road-recurrence-2026-09-02.zip",
+    "bundle_sha256": "216ff375e8ba9e4812e41576b5d0b6a3e09b455298beeae80e1b2064aba1a032",
+    "bundle_size_bytes": 608771,
+    "executor_sha256": "34e3acdd5f1a3f7298c3185091a5115f8d3347d65275bd0d085bcb0aa188165c",
+    "output_hashes": {
+      "matcher_equivalence.json": "6b7d1d3209627848f0a694ef9e5dbd2923a63ca26b8a687ef4bcfdd780b7ee39",
+      "summary.json": "6a89aa63db47e039befe989b753d11b881dd7136adb4202b01e6dd26cd080b68",
+      "tiger_package_ledger.json": "555b0c71f629035906a7b655f894bcc167b80f11c6804aaca3a0333278fd4d03",
+      "v2_460_pair_reassessment_with_v3_context.jsonl": "e1073c2b7916f94703429738f1b933f3aaa2198bacfc5e4ed2786992c0682a67",
+      "v3_hydro_road_recurrence_key_quality.jsonl": "8358d527200480d2b309a11f82f53351f27cc2d47d7379aa2abd2fb2310809e4",
+      "v3_incremental_candidates.jsonl": "0a05c18a02d9a34a835e709af1cc60ec1b144eaa9e24e88995dfdc0d0d4f0bd5",
+      "v3_incremental_pair_groups.jsonl": "0163cc0ff6bbc9a320396be666bf9e40b31dc7610832e4db870ddfe2bd70438b"
+    }
+  },
+  "execution_local_date": "2026-09-02",
+  "frozen_inputs": {
+    "htr_islandwide_236933e": "880f34a55690748d955e78bdece19716959609d9628e7e40db52c91f84494fac",
+    "tiger_roads_zip": "2e7d34b6e60bfe49aad48eb0a704282338822a39f6da553f5dab06b8730176a8",
+    "v2_460_pair_evidence": "4e18deb59f82bff58d36e34b84be78117f781f028b06ad60ba1b8ec5ffadde98",
+    "v3_adjudicated": "ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd",
+    "v3_history": "22cd7093ad5742eeee064548a8d6375bc8ca2d9596b24fa985304a0dbf1f278c",
+    "v3_scope_closed": "2212834ac56650c08c5eafa18b921e5266396069ece6310bdda8487b1e66ecd3"
+  },
+  "invariants": {
+    "cluster_identity_prohibited": true,
+    "discovery_connectivity_prohibited": true,
+    "fuzzy_identity_prohibited": true,
+    "green_code_equals_merge_authorized": false,
+    "name_identity_prohibited": true,
+    "proximity_identity_prohibited": true,
+    "raw_normalized_canonical_separate": true,
+    "transitive_context_inheritance": false,
+    "universal_hydro_exhaustion_claimed": false,
+    "unsupported_source_rows_preserved": true
+  },
+  "matcher_equivalence": {
+    "a_only": 0,
+    "b_only": 0,
+    "certification": "PASS",
+    "eligible_hydro_manifestation_count": 265,
+    "full_core_pair_space": 5180432,
+    "indexed_qualifying_core_pairs": 171,
+    "intersection": 171,
+    "naive_qualifying_core_pairs": 171,
+    "road_observation_count": 168906,
+    "symmetric_difference": 0,
+    "union": 171,
+    "unique_hydro_core_count": 212,
+    "unique_road_core_count": 24436
+  },
+  "road_denominator": {
+    "sige": {
+      "artifact_sha256": "880f34a55690748d955e78bdece19716959609d9628e7e40db52c91f84494fac",
+      "named_road_observations": 99060,
+      "observation_id_uniqueness": "PASS",
+      "road_observations_sha256": "468c000338c8eb05268eb57113f9d8383b9dc57a2d1b7ce96101cdc0d615711b"
+    },
+    "tiger": {
+      "composite_observation_id_uniqueness": "PASS",
+      "cross_municipio_linearid_collisions": 715,
+      "globally_unique_linearids": 183112,
+      "linearid_occurrences": 183827,
+      "municipio_packages": 78,
+      "named_road_observations": 69846,
+      "outer_archive_sha256": "2e7d34b6e60bfe49aad48eb0a704282338822a39f6da553f5dab06b8730176a8",
+      "package_ledger_sha256": "efd75b441b86da5071d24eecae813632e925f2dd47551182bfc0981a0c44e453",
+      "source_road_rows": 183827
+    },
+    "union_named_observations": 168906,
+    "union_observation_id_uniqueness": "PASS",
+    "unique_road_core_count": 24436
+  },
+  "schema_version": "htr-v3-road-recurrence-terminal-receipt-1.0",
+  "scope": "Offline recurrence over the exact frozen SIGE + TIGER2025 road denominator and the artifact-backed V3 supported source-manifestation set; V1/V2/V3 source artifacts are inputs and remain immutable. Pair-binding continuation reassesses the 460 frozen V2 groups against independent V3 source manifestations only; it does not claim universal public-source exhaustion.",
+  "state_semantics": {
+    "candidate_not_identity_may_remain_unresolved": true,
+    "contradiction_is_disjoint_arithmetic_bucket": false,
+    "contradiction_rows_are_subset_of_candidate_not_identity_unresolved_rows": 93,
+    "unsupported_is_false_or_rejected": false
+  },
+  "v2_pair_binding_continuation": {
+    "bounded_public_web_exhaustion_claimed": false,
+    "direct_pair_binding_evidence_found_groups": 0,
+    "groups_with_independent_v3_hydro_manifestation_context": 409,
+    "groups_without_new_v3_lexical_hydro_context": 51,
+    "independent_v3_context_is_pair_binding_evidence": false,
+    "pair_binding_promotions": 0,
+    "pair_groups_reassessed": 460,
+    "source_row_relations_conserved": 1738,
+    "unresolved_pair_groups": 460,
+    "unresolved_source_row_relations": 1738
+  },
+  "v3_hydro_denominator": {
+    "canonical_identity_certified": false,
+    "road_recurrence_eligible_manifestations": 265,
+    "road_recurrence_key_state_counts": {"SUPPORTED": 265, "UNSUPPORTED": 5},
+    "road_recurrence_key_unsupported_reason_counts": {"GENERIC_HYDRO_CLASS_ONLY": 1, "RAW_MOJIBAKE_DISCOVERY_KEY_UNSAFE": 4},
+    "source_family_counts": {"AAA_2015_INTAKE": 182, "DRNA_2004_LESSER": 10, "DRNA_PIRA_2016": 22, "HISTORICAL_OGP_USGS": 18, "NID": 36, "USACE_CURRENT": 2},
+    "source_manifestations_supported_for_major_discovery": 270
+  },
+  "v3_incremental_recurrence": {
+    "candidate_rows": 3733,
+    "candidate_state_counts": {"CANDIDATE_NOT_IDENTITY": 3709, "UNSUPPORTED": 24},
+    "connectivity_promotions": 0,
+    "contradiction_rows": 93,
+    "identity_promotions": 0,
+    "pair_binding_promotions": 0,
+    "pair_group_state_counts": {"CONTRADICTION": 6, "UNRESOLVED": 866, "UNSUPPORTED": 8},
+    "pair_groups": 880,
+    "transitive_context_inheritance": 0,
+    "unexplained_residue": 0,
+    "unresolved_relation_rows": 3709,
+    "unsupported_candidate_rows": 24
+  }
+}
