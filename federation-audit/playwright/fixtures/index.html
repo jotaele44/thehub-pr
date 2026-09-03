@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Executability Fixture</title></head>
+<body>
+  <button id="no-op">No Op</button>
+  <button id="partial">Partial</button>
+  <button id="missing">Missing Target</button>
+  <button id="mismatch">Contract Mismatch</button>
+  <button id="blocked" disabled data-block-reason="AUDIT_TOKEN missing">Blocked</button>
+  <button id="contract">Executable By Contract</button>
+  <output id="status"></output>
+<script>
+  const status = document.querySelector('#status');
+  document.querySelector('#partial').onclick = () => { status.textContent = 'loading'; };
+  document.querySelector('#missing').onclick = () => fetch('/api/missing', {method: 'POST'});
+  document.querySelector('#mismatch').onclick = () => fetch('/api/export', {method: 'GET'});
+  document.querySelector('#contract').onclick = async () => {
+    const response = await fetch('/api/export', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({format: 'csv'})});
+    status.textContent = response.ok ? 'accepted' : 'failed';
+  };
+</script></body></html>
