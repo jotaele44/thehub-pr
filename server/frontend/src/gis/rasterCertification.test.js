@@ -29,6 +29,15 @@ describe('raster geometry certification', () => {
     expect(() => assertRasterGeometryReadyForDirectWgs84Placement(result)).toThrow(/not certified/);
   });
 
+  it('keeps Puerto Rico State Plane EPSG:6566 reprojection-open', () => {
+    const image = imageFixture({ origin: [200000, 300000], resolution: [1, -1], bbox: [200000, 299000, 201000, 300000] });
+    image.getGeoKeys = () => ({ ProjectedCSTypeGeoKey: 6566 });
+    const result = inspectRasterGeometry(image);
+    expect(result.crs).toBe('EPSG:6566');
+    expect(result.status).toBe('OPEN_REPROJECTION_REQUIRED');
+    expect(result.pixelGeometryCertified).toBe(false);
+  });
+
   it('fails closed on missing CRS and degenerate transforms', () => {
     const missing = imageFixture();
     missing.getGeoKeys = () => ({});
