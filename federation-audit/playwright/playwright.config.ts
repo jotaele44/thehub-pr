@@ -14,11 +14,4 @@ export default defineConfig({
     acceptDownloads: false,
     serviceWorkers: "block",
   },
-  webServer: {
-    command: "python -m http.server 4173 --directory fixtures",
-    port: 4173,
-    reuseExistingServer: false,
-    stdout: "ignore",
-    stderr: "ignore",
-  },
 });
