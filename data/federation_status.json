@@ -1,9 +1,9 @@
 {
   "by_blocker": {
-    "declared_not_live": 1,
-    "missing_export_package": 5
+    "declared_not_live": 2,
+    "missing_export_package": 4
   },
-  "generated_at": "2026-07-28T15:21:37.445739+00:00",
+  "generated_at": "2026-09-02T13:54:32.546444+00:00",
   "hub": "thehub-pr",
   "kind": "federation-readiness-snapshot",
   "note": "Built by scripts/build_federation_status.py from `hub validate-federation` against a workspace holding the producer checkouts. This is a point-in-time snapshot, not live state: a deployed hub has no producer checkouts and cannot recompute it. Regenerate with `make federation-status`.",
@@ -29,7 +29,7 @@
       "checkout_present": true,
       "declared_status": "ready_for_discovery",
       "errors": [],
-      "last_package_timestamp": "2026-06-07T01:08:53.877935+00:00",
+      "last_package_timestamp": "2026-09-01T02:29:04.944465+00:00",
       "live_execution_ready": false,
       "local_path": "moneysweep-pr",
       "manifest_path": "moneysweep-pr/federation.json",
@@ -132,7 +132,7 @@
       "role": "anomaly_intelligence_node"
     },
     {
-      "blocker_class": "missing_export_package",
+      "blocker_class": "declared_not_live",
       "callable_commands": [
         "export_canonical",
         "ingest_airports",
@@ -144,7 +144,7 @@
       "checkout_present": true,
       "declared_status": "ready_for_discovery",
       "errors": [],
-      "last_package_timestamp": null,
+      "last_package_timestamp": "2026-08-28T00:11:41Z",
       "live_execution_ready": false,
       "local_path": "skywatcher-pr",
       "manifest_path": "skywatcher-pr/federation.json",
@@ -152,8 +152,8 @@
       "manifest_schema_version": "repo_federation_manifest_v1",
       "manifest_valid": true,
       "package_path": "skywatcher-pr/exports/federation",
-      "package_present": false,
-      "package_valid": false,
+      "package_present": true,
+      "package_valid": true,
       "program_id": "skywatcher-pr",
       "repo": "jotaele44/skywatcher-pr",
       "role": "airspace_intelligence_node"

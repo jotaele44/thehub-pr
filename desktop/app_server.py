@@ -24,6 +24,39 @@ def launcher_page() -> FileResponse:
     return FileResponse(_LAUNCHER_PAGE)
 
 
+def _prioritize_desktop_routes() -> None:
+    """Keep desktop-only routes ahead of the backend SPA catch-all.
+
+    The imported Hub backend registers /{full_path:path} when its frontend dist
+    exists. The desktop adapter adds /api/local/* after that import, so these
+    routes must be moved before the catch-all or they are shadowed as unknown
+    API paths.
+    """
+    desktop_routes = []
+    remaining_routes = []
+    for route in app.router.routes:
+        path = getattr(route, "path", "")
+        if path == "/launcher" or path.startswith("/api/local"):
+            desktop_routes.append(route)
+        else:
+            remaining_routes.append(route)
+
+    insert_at = next(
+        (
+            index
+            for index, route in enumerate(remaining_routes)
+            if getattr(route, "path", "") == "/{full_path:path}"
+        ),
+        len(remaining_routes),
+    )
+    app.router.routes[:] = (
+        remaining_routes[:insert_at] + desktop_routes + remaining_routes[insert_at:]
+    )
+
+
+_prioritize_desktop_routes()
+
+
 attach_spa(
     app,
     config.DIST_DIR,

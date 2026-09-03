@@ -7,10 +7,10 @@ this route exists only to cross browser CORS / HTTPS→HTTP mixed-content barrie
 """
 from __future__ import annotations
 
+import http.client
 import re
-import urllib.error
 import urllib.parse
-import urllib.request
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Optional
 
@@ -56,14 +56,16 @@ def _canonical_parts(url: str) -> urllib.parse.SplitResult:
     return parts
 
 
-def _target_allowed(source_id: str, target: str) -> bool:
+def _matched_source(
+    source_id: str, target: str
+) -> Optional[tuple[urllib.parse.SplitResult, urllib.parse.SplitResult]]:
     source = _ALLOWED.get(source_id)
     if source is None:
-        return False
+        return None
     try:
         target_parts = _canonical_parts(target)
     except ValueError:
-        return False
+        return None
     for prefix in source.prefixes:
         prefix_parts = _canonical_parts(prefix)
         same_origin = (
@@ -77,8 +79,12 @@ def _target_allowed(source_id: str, target: str) -> bool:
         prefix_path = prefix_parts.path.rstrip("/")
         target_path = target_parts.path
         if target_path == prefix_path or target_path.startswith(prefix_path + "/"):
-            return True
-    return False
+            return target_parts, prefix_parts
+    return None
+
+
+def _target_allowed(source_id: str, target: str) -> bool:
+    return _matched_source(source_id, target) is not None
 
 
 def _validated_range(value: Optional[str]) -> Optional[str]:
@@ -102,6 +108,33 @@ def _read_bounded(response, limit: int) -> bytes:
     return body
 
 
+@contextmanager
+def _open_upstream(source_id: str, target: str, headers: dict[str, str], timeout: int):
+    matched = _matched_source(source_id, target)
+    if matched is None:
+        raise ValueError("target is outside the registered GIS source boundary")
+    target_parts, prefix_parts = matched
+    connection_type = (
+        http.client.HTTPSConnection
+        if prefix_parts.scheme == "https"
+        else http.client.HTTPConnection
+    )
+    hostname = prefix_parts.hostname
+    if hostname is None:
+        raise ValueError("registered GIS source is missing a hostname")
+    connection = connection_type(hostname, port=prefix_parts.port, timeout=timeout)
+    request_target = urllib.parse.urlunsplit(("", "", target_parts.path, target_parts.query, ""))
+    try:
+        connection.request("GET", request_target, headers=headers)
+        upstream = connection.getresponse()
+        try:
+            yield upstream
+        finally:
+            upstream.close()
+    finally:
+        connection.close()
+
+
 @router.get("/proxy")
 def gis_proxy(
     source_id: str = Query(..., min_length=1, max_length=128),
@@ -116,12 +149,10 @@ def gis_proxy(
     headers = {"User-Agent": "thehub-pr-gis/2", "Accept": "*/*"}
     if normalized_range:
         headers["Range"] = normalized_range
-    request = urllib.request.Request(target, headers=headers, method="GET")
     try:
-        with urllib.request.urlopen(request, timeout=45) as upstream:  # noqa: S310 - strict allowlist-bound URL
-            final_url = upstream.geturl()
-            if not _target_allowed(source_id, final_url):
-                raise HTTPException(status_code=502, detail="upstream redirected outside registered GIS source boundary")
+        with _open_upstream(source_id, target, headers, timeout=45) as upstream:
+            if 300 <= upstream.status < 400:
+                raise HTTPException(status_code=502, detail="upstream redirects are not allowed")
             limit = _MAX_RANGE_BYTES if normalized_range else _MAX_TEXT_BYTES
             body = _read_bounded(upstream, limit)
             response_headers = {}
@@ -134,8 +165,5 @@ def gis_proxy(
             return Response(content=body, status_code=getattr(upstream, "status", 200), media_type=upstream.headers.get_content_type() if upstream.headers else "application/octet-stream", headers=response_headers)
     except HTTPException:
         raise
-    except urllib.error.HTTPError as exc:
-        detail = exc.read(512).decode("utf-8", "replace")
-        raise HTTPException(status_code=502, detail=f"upstream HTTP {exc.code}: {detail}") from exc
-    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+    except (http.client.HTTPException, TimeoutError, OSError, ValueError) as exc:
         raise HTTPException(status_code=502, detail=f"upstream transport failure: {exc}") from exc

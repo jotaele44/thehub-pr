@@ -70,9 +70,19 @@ jobs:
           producer_frozen = {repo: sha for repo, sha in frozen.items() if repo != control}
           assert len(producer_frozen) == 6
 
-          # The control-plane row is intentionally rebound at runtime to the
-          # CURRENT main head. The pull_request event base SHA is historical on a
-          # long-lived PR and must not be treated as current-main identity.
+          if (
+              os.environ.get("GITHUB_EVENT_NAME") == "pull_request"
+              and os.environ.get("GITHUB_REPOSITORY") != control
+          ):
+              raise SystemExit(
+                  "BLOCKED: pull_request control-plane binding requires "
+                  f"GITHUB_REPOSITORY={control}"
+              )
+
+          # The policy is RUNTIME_BIND_CONTROL_PLANE_MAIN_ONLY. A PR's recorded
+          # base SHA can become stale when main advances after the PR run is
+          # queued, so bind to the live main head immediately before fed MAX.
+          # Producer rows remain frozen and are never rebound here.
           proc = subprocess.run(
               ["gh", "api", f"repos/{control}/commits/main", "--jq", ".sha"],
               text=True,
@@ -99,7 +109,7 @@ jobs:
               "control_plane": control,
               "frozen_control_plane_sha": frozen[control],
               "runtime_control_plane_sha": live,
-              "runtime_binding_basis": "CURRENT_MAIN_HEAD",
+              "runtime_binding_basis": "LIVE_MAIN_LOOKUP_IMMEDIATELY_BEFORE_FED_MAX",
               "runtime_rebind_count": 1,
               "producer_exact_sha_count": len(producer_frozen),
               "producer_expected_shas": producer_frozen,
@@ -130,7 +140,7 @@ jobs:
           snapshot = receipt["snapshot"]
 
           assert binding["mode"] == "RUNTIME_BIND_CONTROL_PLANE_MAIN_ONLY"
-          assert binding["runtime_binding_basis"] == "CURRENT_MAIN_HEAD"
+          assert binding["runtime_binding_basis"] == "LIVE_MAIN_LOOKUP_IMMEDIATELY_BEFORE_FED_MAX"
           assert binding["runtime_rebind_count"] == 1
           assert binding["producer_exact_sha_count"] == 6
           assert len(binding["producer_expected_shas"]) == 6
@@ -156,6 +166,9 @@ jobs:
               assert status in allowed
               counts[status] = counts.get(status, 0) + 1
           assert sum(counts.values()) == certification["vector_count"] == 8
+          # FEDERATION_PICKUP_SYSTEM_LEVEL_3 is owned by the control plane
+          # (jotaele44/thehub-pr) itself, which must self-match the live main
+          # binding immediately above. Producer-owned vectors remain dynamic.
           assert execution["final_status"]["FEDERATION_PICKUP_SYSTEM_LEVEL_3"] == "PASS"
           assert counts.get("READY", 0) == 0
           assert counts.get("FAIL", 0) == 0

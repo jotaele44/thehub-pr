@@ -1,0 +1,18 @@
+{
+  "schema_version":"prii_governance_certification_v1",
+  "required_repositories":7,
+  "required_checks":["federation-governance","federation-governance-certify"],
+  "required_properties":[
+    "frozen_baseline",
+    "contract_fingerprints",
+    "semantic_diff",
+    "automatic_semver_classification",
+    "transitive_impact_closure",
+    "central_local_receipt_reconciliation",
+    "documentation_drift_detection",
+    "positive_regression_tests",
+    "negative_regression_tests",
+    "required_status_checks_verified"
+  ],
+  "fail_closed":true
+}

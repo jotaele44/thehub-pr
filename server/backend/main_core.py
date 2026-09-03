@@ -349,9 +349,12 @@ def get_preferences(subscriber: str = Query("operator")):
 async def set_preferences(request: Request):
     """Set channel (push/sms/none) + timing (asap/brief) prefs, global or per-domain."""
     body = await request.json()
-    subscriber = body.get("subscriber", "operator")
-    prefs = body.get("prefs", {})
-    targets = body.get("targets", {})
+    try:
+        prefs, targets, subscriber = _notif.validate_subscription(
+            body.get("prefs", {}), body.get("targets", {}), body.get("subscriber", "operator")
+        )
+    except ValueError as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
     c = _conn()
     _notif.NotificationStore(c).set_subscription(prefs, targets, subscriber, _now())
     c.close()
@@ -393,12 +396,18 @@ async def create_entity(entity_name: str, request: Request):
     body["updated_date"] = ts
 
     c = _conn()
-    c.execute(
-        "INSERT INTO entities (entity_type, entity_id, data, updated_at) VALUES (?,?,?,?)",
-        (entity_name, entity_id, json.dumps(body), ts),
-    )
-    c.commit()
-    c.close()
+    try:
+        c.execute(
+            "INSERT INTO entities (entity_type, entity_id, data, updated_at) VALUES (?,?,?,?)",
+            (entity_name, entity_id, json.dumps(body), ts),
+        )
+        c.commit()
+    except sqlite3.IntegrityError as error:
+        raise HTTPException(
+            status_code=409, detail=f"{entity_name}/{entity_id} already exists"
+        ) from error
+    finally:
+        c.close()
     return body
 
 
@@ -638,6 +647,19 @@ except Exception as _mcp_exc:  # pragma: no cover - defensive mount guard
     _logging.getLogger("hub.mcp").warning("MCP API not mounted: %s", _mcp_exc)
 
 DIST = REPO_ROOT / "server" / "frontend" / "dist"
+_SPA_INDEX = DIST / "index.html"
+_SPA_ROOT_FILES = {
+    "favicon.ico": DIST / "favicon.ico",
+    "manifest.webmanifest": DIST / "manifest.webmanifest",
+    "robots.txt": DIST / "robots.txt",
+}
+
+
+def _spa_file(full_path: str) -> Path:
+    candidate = _SPA_ROOT_FILES.get(full_path)
+    if candidate is not None and candidate.is_file():
+        return candidate
+    return _SPA_INDEX
 
 if DIST.is_dir():
     if (DIST / "assets").is_dir():
@@ -645,11 +667,8 @@ if DIST.is_dir():
 
     @app.get("/{full_path:path}")
     def spa(full_path: str):
-        # Serve a real built file when it exists (favicon, etc.); otherwise the SPA
+        # Root files are explicitly allowlisted; all other paths receive the SPA
         # shell. /api/* is handled above; block it here so unknown API paths 404.
         if full_path.startswith("api/"):
             raise HTTPException(status_code=404, detail="Not found")
-        candidate = (DIST / full_path).resolve()
-        if full_path and candidate.is_file() and DIST.resolve() in candidate.parents:
-            return FileResponse(candidate)
-        return FileResponse(DIST / "index.html")
+        return FileResponse(_spa_file(full_path))
