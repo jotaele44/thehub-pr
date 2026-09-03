@@ -3,12 +3,12 @@
   "federation_contract_baseline": "2026-08-31",
   "repos": {
     "thehub-pr": {"repo":"jotaele44/thehub-pr","state":"UPDATED","contracts":["repo_federation_manifest@1","federation_export_manifest@1","thehub_admin_boundary@1"]},
-    "moneysweep-pr": {"repo":"jotaele44/moneysweep-pr","state":"UPDATED","contracts":["repo_federation_manifest@1","federation_export_manifest@1","centinelas_financial_signal@1","contract_finance_bundle@1","thehub_admin_boundary@1"]},
-    "spiderweb-pr": {"repo":"jotaele44/spiderweb-pr","state":"UPDATED","contracts":["repo_federation_manifest@1","federation_export_manifest@1","contract_finance_bundle@1","thehub_admin_boundary@1"]},
-    "aguayluz-pr": {"repo":"jotaele44/aguayluz-pr","state":"UPDATED","contracts":["repo_federation_manifest@1","federation_export_manifest@1","thehub_admin_boundary@1"]},
-    "ovnis-pr": {"repo":"jotaele44/ovnis-pr","state":"UPDATED","contracts":["repo_federation_manifest@1","federation_export_manifest@1","thehub_admin_boundary@1"]},
-    "skywatcher-pr": {"repo":"jotaele44/skywatcher-pr","state":"UPDATED","contracts":["repo_federation_manifest@1","federation_export_manifest@1","thehub_admin_boundary@1"]},
-    "centinelas-pr": {"repo":"jotaele44/centinelas-pr","state":"UPDATED","contracts":["repo_federation_manifest@1","federation_export_manifest@1","centinelas_financial_signal@1","thehub_admin_boundary@1"]}
+    "moneysweep-pr": {"repo":"jotaele44/moneysweep-pr","state":"COMPATIBLE","contracts":["repo_federation_manifest@1","federation_export_manifest@1","centinelas_financial_signal@1","contract_finance_bundle@1","thehub_admin_boundary@1"]},
+    "spiderweb-pr": {"repo":"jotaele44/spiderweb-pr","state":"COMPATIBLE","contracts":["repo_federation_manifest@1","federation_export_manifest@1","contract_finance_bundle@1","thehub_admin_boundary@1"]},
+    "aguayluz-pr": {"repo":"jotaele44/aguayluz-pr","state":"COMPATIBLE","contracts":["repo_federation_manifest@1","federation_export_manifest@1","thehub_admin_boundary@1"]},
+    "ovnis-pr": {"repo":"jotaele44/ovnis-pr","state":"COMPATIBLE","contracts":["repo_federation_manifest@1","federation_export_manifest@1","thehub_admin_boundary@1"]},
+    "skywatcher-pr": {"repo":"jotaele44/skywatcher-pr","state":"COMPATIBLE","contracts":["repo_federation_manifest@1","federation_export_manifest@1","thehub_admin_boundary@1"]},
+    "centinelas-pr": {"repo":"jotaele44/centinelas-pr","state":"COMPATIBLE","contracts":["repo_federation_manifest@1","federation_export_manifest@1","centinelas_financial_signal@1","thehub_admin_boundary@1"]}
   },
   "allowed_states": ["UNAFFECTED","COMPATIBLE","UPDATED","BLOCKED"],
   "rules": {
