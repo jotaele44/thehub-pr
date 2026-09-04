@@ -1,10 +1,17 @@
 {
-  "registry_version": "1.0.0",
+  "registry_version": "1.1.0",
   "frontier_id": "culebrinas_frontier_v2",
   "producer_repo": "jotaele44/aguayluz-pr",
   "producer_role": "water_grid_monitoring_node",
   "consumer_role": "federation_control_plane",
   "contract": "federation.spatial-evidence/1.0",
+  "producer_interfaces": {
+    "field_packet_config": "config/culebrinas_field_operator_packet.v1.json",
+    "field_engine": "operators/culebrinas_frontier_engine.py",
+    "kvi_method": "config/culebrinas_kvi_method.v1.json",
+    "kvi_engine": "operators/culebrinas_kvi.py",
+    "field_protocol": "docs/culebrinas/EXECUTABLE_FIELD_PACKET_v1.md"
+  },
   "scope": [
     "hydrogeology",
     "surface-groundwater exchange",
@@ -21,6 +28,8 @@
   ],
   "certification": {
     "frontier_design": "CERTIFIED_DESIGN",
+    "field_execution_contract": "DEPLOYED_ON_BRANCH",
+    "kvi_method": "DEPLOYED_ON_BRANCH",
     "canonical_geometry": "BLOCKED",
     "experimental_evidence": "BLOCKED",
     "kvi_measured": "BLOCKED",
@@ -30,14 +39,17 @@
   "promotion_gates": [
     "canonical_aquifer_globalid_bound",
     "complete_subsurface_census",
+    "green_federation_integration",
     "field_QAQC_closed",
     "KVI_MEASURED_computed",
+    "withheld_validation_pass",
     "H1_H5_adjudicated",
     "zero_material_residue"
   ],
   "prohibitions": [
     "no control action from proposed observations",
     "no canonical identity from proximity",
-    "no synthetic measured KVI"
+    "no synthetic measured KVI",
+    "no production promotion from branch-only deployment"
   ]
 }
