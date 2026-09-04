@@ -1,0 +1,118 @@
+{
+  "$id": "https://prii.local/contracts/freedom-audit.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": true,
+  "properties": {
+    "certification_state": {
+      "enum": [
+        "FAIL",
+        "PROVISIONAL"
+      ]
+    },
+    "certified": {
+      "const": false
+    },
+    "dynamic_gates": {
+      "items": {
+        "properties": {
+          "status": {
+            "const": "BLOCKED"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "mode": {
+      "const": "STATIC_PRIORITY_DENOMINATOR"
+    },
+    "policy_id": {
+      "const": "FEDERATION_FREEDOM_CONTRACT_v1"
+    },
+    "repositories": {
+      "items": {
+        "required": [
+          "id",
+          "repository",
+          "expected_commit",
+          "finding_count",
+          "axis_states",
+          "findings"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "snapshot_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "summary": {
+      "properties": {
+        "arithmetic_closed": {
+          "const": true
+        },
+        "blocking_findings": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "dynamic_gates_executed": {
+          "const": 0
+        },
+        "dynamic_gates_required": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "findings_classified": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "findings_discovered": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "repositories_declared": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "repositories_present": {
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "repositories_declared",
+        "repositories_present",
+        "findings_discovered",
+        "findings_classified",
+        "blocking_findings",
+        "arithmetic_closed",
+        "dynamic_gates_executed",
+        "dynamic_gates_required"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "mode",
+    "snapshot_id",
+    "policy_id",
+    "certified",
+    "certification_state",
+    "repositories",
+    "summary",
+    "dynamic_gates"
+  ],
+  "title": "Federation freedom static audit receipt",
+  "type": "object"
+}
