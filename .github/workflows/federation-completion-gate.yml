@@ -11,6 +11,7 @@ permissions:
   contents: read
   checks: read
   pull-requests: read
+  actions: read
 
 jobs:
   remote-completion-audit:
@@ -21,6 +22,20 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.12"
+      - name: Audit federation contract currency and acquisition invariants
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          args=()
+          # PRs expose current debt without making this rollout impossible to merge;
+          # scheduled/manual runs are the fail-closed federation contract assertion.
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            args+=(--audit-only)
+          fi
+          python scripts/federation_completion_contracts.py \
+            --config federation/completion-contracts.json \
+            --out artifacts/federation-completion-contracts.json \
+            "${args[@]}"
       - name: Audit exact remote PR denominator
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -38,10 +53,12 @@ jobs:
             --config federation/completion-gate.json \
             --out artifacts/federation-completion-ledger.json \
             "${args[@]}"
-      - name: Upload evidence ledger
+      - name: Upload evidence ledgers
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: federation-completion-ledger
-          path: artifacts/federation-completion-ledger.json
+          name: federation-completion-ledgers
+          path: |
+            artifacts/federation-completion-ledger.json
+            artifacts/federation-completion-contracts.json
           if-no-files-found: error
