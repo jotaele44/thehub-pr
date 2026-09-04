@@ -1,14 +1,14 @@
 {
-  "approvals": [],
-  "required": [
-    "thehub-pr",
-    "spiderweb-pr",
-    "centinelas-pr",
-    "aguayluz-pr",
-    "ovnis-pr",
-    "skywatcher-pr",
-    "moneysweep-pr"
-  ],
-  "status": "pending",
-  "version": "1.0.0"
+  "version":"1.0.0",
+  "status":"approved_release_candidate",
+  "required":["thehub-pr","spiderweb-pr","centinelas-pr","aguayluz-pr","ovnis-pr","skywatcher-pr","moneysweep-pr"],
+  "approvals":[
+    {"repository":"thehub-pr","decision":"approved","approved_by":"jotaele44","issue_url":"https://github.com/jotaele44/thehub-pr/issues/248","current_pin":"6474028904af463cab513d1755bce0380f7b2ad1"},
+    {"repository":"spiderweb-pr","decision":"approved","approved_by":"jotaele44","issue_url":"https://github.com/jotaele44/spiderweb-pr/issues/329","current_pin":"f46546ef24c7dc2164b3f203d1af57e7d2570219"},
+    {"repository":"centinelas-pr","decision":"approved","approved_by":"jotaele44","issue_url":"https://github.com/jotaele44/centinelas-pr/issues/123","current_pin":"caf086598a4f99e2eb0ca4aac6d51e2d9bd46321"},
+    {"repository":"aguayluz-pr","decision":"approved","approved_by":"jotaele44","issue_url":"https://github.com/jotaele44/aguayluz-pr/issues/230","current_pin":"3678271a03e36375dc3e9f2fb4da0b6b655622bd"},
+    {"repository":"ovnis-pr","decision":"approved","approved_by":"jotaele44","issue_url":"https://github.com/jotaele44/ovnis-pr/issues/118","current_pin":"68b87366207cb3fe249814ee6611a03b18d67a6b"},
+    {"repository":"skywatcher-pr","decision":"approved","approved_by":"jotaele44","issue_url":"https://github.com/jotaele44/skywatcher-pr/issues/248","current_pin":"6b95f816f1dc2c2081734df582920703743fbdf3"},
+    {"repository":"moneysweep-pr","decision":"approved","approved_by":"jotaele44","issue_url":"https://github.com/jotaele44/moneysweep-pr/issues/561","current_pin":"74b10245f925bfd9b9ea07b2ce986981d5d65525"}
+  ]
 }
