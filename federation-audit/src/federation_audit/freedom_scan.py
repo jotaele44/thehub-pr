@@ -468,6 +468,10 @@ def scan_freedom(
     }
 
 
+def _load_json(path: Path) -> dict[str, Any]:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="federation-freedom-scan")
     parser.add_argument("--workspace-root", type=Path, required=True)
@@ -476,9 +480,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--require-pass", action="store_true")
     args = parser.parse_args(argv)
-    load = lambda path: json.loads(path.read_text(encoding="utf-8"))
     result = scan_freedom(
-        args.workspace_root.resolve(), load(args.snapshot), load(args.policy)
+        args.workspace_root.resolve(), _load_json(args.snapshot), _load_json(args.policy)
     )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
