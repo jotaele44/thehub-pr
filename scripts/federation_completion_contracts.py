@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 """Fail-closed federation contract sidecar.
 
-This audit complements ``federation_completion_gate.py``.  The existing gate
-continues to own current-base PR/merge-result CI classification.  This sidecar
+This audit complements ``federation_completion_gate.py``. The existing gate
+continues to own current-base PR/merge-result CI classification. This sidecar
 owns federation contract currency and acquisition invariants that are not
 proven by a green PR check suite alone.
 
 Hard rules:
-* inspect executable dependency manifests, never repository-wide text hits;
+* inspect hard dependency manifests and explicitly configured executable
+  dependency surfaces, never repository-wide text hits;
 * desktop transport and root/runtime transport are classified separately;
 * immutable TheHub provenance means an explicit 40-hex commit SHA;
+* PEP 508 git+ bindings and uv ``[tool.uv.sources]`` git+rev bindings are both
+  executable dependency evidence;
 * template drift against an old pin is not canonical-template currency;
 * if a desktop job already materializes TheHub into PRII_TOOLING_ROOT, a
   dependency manifest must not trigger another git checkout of TheHub;
+* failure stage and failure attribution are orthogonal dimensions;
 * unattributed failures, stale generated artifacts and unclassified GUI
   candidates are fail-closed states.
 """
@@ -38,7 +42,18 @@ GIT_THEHUB_RE = re.compile(
 ARCHIVE_THEHUB_RE = re.compile(
     r"https://github\.com/jotaele44/thehub-pr/archive/([0-9a-f]{40})\.zip"
 )
+UV_REV_RE = re.compile(r"rev\s*=\s*[\"']([0-9a-f]{40})[\"']")
 FAILURE_STATES = {"BASE_FAILURE", "PR_FAILURE", "TRANSIENT", "UNRESOLVED"}
+FAILURE_STAGES = {
+    "PRE_RUNNER",
+    "SETUP",
+    "DEPENDENCY_INSTALL",
+    "TEST_EXECUTION",
+    "BUILD",
+    "PACKAGING",
+    "POST_JOB",
+    "UNKNOWN",
+}
 GUI_STATES = {"BOUND", "INTERNAL", "EXEMPT", "UNCLASSIFIED"}
 
 
@@ -72,11 +87,27 @@ def main_sha(repo_full: str, token: str) -> str:
     return sha
 
 
+def uv_thehub_source_shas(text: str) -> list[str]:
+    """Return immutable revs from uv source lines that bind to TheHub git."""
+    shas: list[str] = []
+    for line in text.splitlines():
+        if "thehub-pr.git" not in line or "git" not in line:
+            continue
+        match = UV_REV_RE.search(line)
+        if match:
+            shas.append(match.group(1))
+    return shas
+
+
 def manifest_transport(text: str) -> dict[str, Any]:
-    git_shas = GIT_THEHUB_RE.findall(text)
+    pep508_git_shas = GIT_THEHUB_RE.findall(text)
+    uv_git_shas = uv_thehub_source_shas(text)
+    git_shas = [*pep508_git_shas, *uv_git_shas]
     archive_shas = ARCHIVE_THEHUB_RE.findall(text)
     return {
         "git_thehub_count": len(git_shas),
+        "pep508_git_thehub_count": len(pep508_git_shas),
+        "uv_git_thehub_count": len(uv_git_shas),
         "archive_thehub_count": len(archive_shas),
         "git_thehub_shas": sorted(set(git_shas)),
         "archive_thehub_shas": sorted(set(archive_shas)),
@@ -136,6 +167,63 @@ def classify_failure(
     return "UNRESOLVED"
 
 
+def failure_stage(job: dict[str, Any]) -> str:
+    """Locate where a job stopped without claiming who owns the failure."""
+    steps = job.get("steps") or []
+    runner_id = int(job.get("runner_id") or 0)
+    if job.get("conclusion") == "failure" and not steps and runner_id == 0:
+        return "PRE_RUNNER"
+    failed = [step for step in steps if step.get("conclusion") == "failure"]
+    if not failed:
+        return "UNKNOWN"
+    name = str(failed[0].get("name") or "").lower()
+    if any(word in name for word in ("setup", "checkout", "set up", "initialize")):
+        return "SETUP"
+    if any(word in name for word in ("install", "dependency", "pip", "uv sync", "npm ci")):
+        return "DEPENDENCY_INSTALL"
+    if any(word in name for word in ("test", "pytest", "lint", "ruff", "mypy", "validate")):
+        return "TEST_EXECUTION"
+    if any(word in name for word in ("build", "freeze", "compile")):
+        return "BUILD"
+    if any(word in name for word in ("package", "artifact", "dmg", "zip")):
+        return "PACKAGING"
+    if name.startswith("post ") or "cleanup" in name:
+        return "POST_JOB"
+    return "UNKNOWN"
+
+
+def failure_evidence(job: dict[str, Any]) -> dict[str, Any]:
+    """Normalize a diagnostic signature without converting stage into cause."""
+    steps = job.get("steps") or []
+    labels = sorted(str(label) for label in (job.get("labels") or []))
+    return {
+        "exact_sha": str(job.get("head_sha") or ""),
+        "workflow_run_id": job.get("run_id"),
+        "job_id": job.get("id"),
+        "run_attempt": job.get("run_attempt"),
+        "status": job.get("status"),
+        "conclusion": job.get("conclusion"),
+        "failure_stage": failure_stage(job),
+        "step_count": len(steps),
+        "runner_id": int(job.get("runner_id") or 0),
+        "runner_name": str(job.get("runner_name") or ""),
+        "runner_labels": labels,
+    }
+
+
+def same_failure_signature(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    """Compare diagnostic shape, not mutable IDs or workflow/job names."""
+    keys = (
+        "conclusion",
+        "failure_stage",
+        "step_count",
+        "runner_id",
+        "runner_name",
+        "runner_labels",
+    )
+    return all(left.get(key) == right.get(key) for key in keys)
+
+
 def audit_golden_fixture(cfg: dict[str, Any], token: str) -> dict[str, Any]:
     fixture = cfg["golden_windows_fixture"]
     repo_full = fixture["repository"]
@@ -151,10 +239,7 @@ def audit_golden_fixture(cfg: dict[str, Any], token: str) -> dict[str, Any]:
     jobs = request_json(run["jobs_url"], token).get("jobs", [])
     observed = {job.get("name"): job.get("conclusion") for job in jobs}
     missing = [name for name in fixture["required_jobs"] if name not in observed]
-    bad = [
-        name for name in fixture["required_jobs"]
-        if observed.get(name) != "success"
-    ]
+    bad = [name for name in fixture["required_jobs"] if observed.get(name) != "success"]
     reasons = [*(f"GOLDEN_JOB_MISSING:{name}" for name in missing)]
     reasons.extend(f"GOLDEN_JOB_NOT_SUCCESS:{name}:{observed.get(name)}" for name in bad)
     return {
@@ -164,6 +249,32 @@ def audit_golden_fixture(cfg: dict[str, Any], token: str) -> dict[str, Any]:
         "state": "PASS" if not reasons else "FAIL",
         "reasons": reasons,
     }
+
+
+def _audit_transport_paths(
+    repo_full: str,
+    paths: list[str],
+    observed_main: str,
+    token: str,
+    *,
+    reason_prefix: str,
+    reasons: list[str],
+) -> tuple[list[dict[str, Any]], int, int]:
+    findings: list[dict[str, Any]] = []
+    git_count = 0
+    archive_count = 0
+    for path in paths:
+        try:
+            finding = manifest_transport(fetch_text(repo_full, path, observed_main, token))
+            finding["path"] = path
+            findings.append(finding)
+            git_count += finding["git_thehub_count"]
+            archive_count += finding["archive_thehub_count"]
+            if not finding["immutable_sha_provenance"]:
+                reasons.append(f"{reason_prefix}_NONIMMUTABLE_PROVENANCE:{path}")
+        except Exception as exc:
+            reasons.append(f"{reason_prefix}_AUDIT_ERROR:{path}:{exc}")
+    return findings, git_count, archive_count
 
 
 def audit_repository(
@@ -184,33 +295,30 @@ def audit_repository(
     except Exception as exc:
         reasons.append(f"TEMPLATE_REF_AUDIT_ERROR:{exc}")
 
-    desktop_manifests: list[dict[str, Any]] = []
-    desktop_git_count = 0
-    desktop_archive_count = 0
-    for path in spec.get("desktop_requirement_manifests", []):
-        try:
-            finding = manifest_transport(fetch_text(repo_full, path, observed_main, token))
-            finding["path"] = path
-            desktop_manifests.append(finding)
-            desktop_git_count += finding["git_thehub_count"]
-            desktop_archive_count += finding["archive_thehub_count"]
-            if not finding["immutable_sha_provenance"]:
-                reasons.append(f"DESKTOP_NONIMMUTABLE_PROVENANCE:{path}")
-        except Exception as exc:
-            reasons.append(f"DESKTOP_MANIFEST_AUDIT_ERROR:{path}:{exc}")
-
-    root_manifests: list[dict[str, Any]] = []
-    root_git_count = 0
-    for path in spec.get("root_requirement_manifests", []):
-        try:
-            finding = manifest_transport(fetch_text(repo_full, path, observed_main, token))
-            finding["path"] = path
-            root_manifests.append(finding)
-            root_git_count += finding["git_thehub_count"]
-            if not finding["immutable_sha_provenance"]:
-                reasons.append(f"ROOT_NONIMMUTABLE_PROVENANCE:{path}")
-        except Exception as exc:
-            reasons.append(f"ROOT_MANIFEST_AUDIT_ERROR:{path}:{exc}")
+    desktop_manifests, desktop_git_count, desktop_archive_count = _audit_transport_paths(
+        repo_full,
+        spec.get("desktop_requirement_manifests", []),
+        observed_main,
+        token,
+        reason_prefix="DESKTOP_MANIFEST",
+        reasons=reasons,
+    )
+    root_manifests, root_git_count, root_archive_count = _audit_transport_paths(
+        repo_full,
+        spec.get("root_requirement_manifests", []),
+        observed_main,
+        token,
+        reason_prefix="ROOT_MANIFEST",
+        reasons=reasons,
+    )
+    executable_surfaces, executable_git_count, executable_archive_count = _audit_transport_paths(
+        repo_full,
+        spec.get("executable_dependency_surfaces", []),
+        observed_main,
+        token,
+        reason_prefix="EXECUTABLE_SURFACE",
+        reasons=reasons,
+    )
 
     authority = spec.get("desktop_authority")
     if authority == "STANDARD":
@@ -221,9 +329,7 @@ def audit_repository(
 
     workflow_materializes_thehub = False
     try:
-        workflow_text = fetch_text(
-            repo_full, spec["desktop_workflow_path"], observed_main, token
-        )
+        workflow_text = fetch_text(repo_full, spec["desktop_workflow_path"], observed_main, token)
         workflow_materializes_thehub = (
             "PRII_TOOLING_ROOT" in workflow_text
             and "git clone" in workflow_text
@@ -236,9 +342,10 @@ def audit_repository(
         reasons.append("MULTIPLE_THEHUB_MATERIALIZATIONS_POSSIBLE")
 
     # Root/runtime transport is deliberately independent of desktop transport.
-    # Configured hard-manifest git+ bindings are explicit migration residue.
     if root_git_count:
         reasons.append(f"ROOT_RUNTIME_GIT_THEHUB:{root_git_count}")
+    if executable_git_count:
+        reasons.append(f"EXECUTABLE_SURFACE_GIT_THEHUB:{executable_git_count}")
 
     return {
         "repository": repo_full,
@@ -249,9 +356,13 @@ def audit_repository(
         "canonical_template_current": template_ref == approved_template_ref,
         "desktop_manifests": desktop_manifests,
         "root_manifests": root_manifests,
+        "executable_dependency_surfaces": executable_surfaces,
         "desktop_git_thehub_dependency_count": desktop_git_count,
         "desktop_archive_thehub_dependency_count": desktop_archive_count,
         "root_git_thehub_dependency_count": root_git_count,
+        "root_archive_thehub_dependency_count": root_archive_count,
+        "executable_surface_git_thehub_dependency_count": executable_git_count,
+        "executable_surface_archive_thehub_dependency_count": executable_archive_count,
         "workflow_materializes_thehub": workflow_materializes_thehub,
         "one_thehub_materialization_contract": not (
             workflow_materializes_thehub and desktop_git_count
@@ -301,8 +412,8 @@ def main() -> int:
             errors.extend(f"{repo_full}:{reason}" for reason in row["reasons"])
 
     result = {
-        "schema_version": 1,
-        "scope": "FEDERATION_CONTRACTS_REMOTE_HARD_MANIFESTS",
+        "schema_version": 2,
+        "scope": "FEDERATION_CONTRACTS_REMOTE_HARD_BINDINGS",
         "certification": "PASS" if not errors else "FAIL",
         "golden_windows_fixture": golden,
         "approved_canonical_template_ref": approved,
