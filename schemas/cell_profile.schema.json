@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/federation/schemas/cell_profile.schema.json",
+  "title": "Cell Profile",
+  "description": "Envelope returned by GET /cells/{Cell_ID}/profile. Every repository answers the same shape with its own payload: same cell identity everywhere, different semantics everywhere. Geometry never travels with a profile -- a consumer that needs the cell drawn asks the geometry authority for it, so domain repositories neither fetch nor duplicate canonical geometry.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["cell_id", "repository", "profile_type", "summary"],
+  "properties": {
+    "cell_id": {"type": "string", "pattern": "^R(?:0|[1-9][0-9]{0,2})_C(?:0|[1-9][0-9]{0,2})$"},
+    "repository": {"type": "string", "enum": ["spiderweb-pr", "aguayluz-pr", "skywatcher-pr", "centinelas-pr", "moneysweep-pr", "ovnis-pr"]},
+    "profile_type": {"type": "string", "minLength": 1, "examples": ["water_hydrology", "financial_activity", "flight_activity", "anomalous_cases", "monitoring_state", "spatial_datasets"]},
+    "summary": {"type": "object", "description": "Domain-specific counts and aggregates."},
+    "categories": {"type": "array", "items": {"type": "object"}},
+    "top_records": {"type": "array", "items": {"type": "object"}, "maxItems": 25},
+    "completeness": {"type": "object"},
+    "updated_at": {"type": ["string", "null"]},
+    "geometry_version": {"type": "string"},
+    "certification_state": {"type": "string", "enum": ["VERIFIED", "PROVISIONAL"], "description": "Inherited from the geometry authority's transform. A consumer must not present a PROVISIONAL cell as a certified location."},
+    "identity_default": {"type": "string", "const": "CANDIDATE_NOT_IDENTITY"}
+  }
+}
