@@ -1,0 +1,13 @@
+{
+  "schema_version":"1.0.0",
+  "baseline_inventory_date":"2026-08-05",
+  "source_artifact_id":8951397319,
+  "source_artifact_sha256":"f14d40978f729ec80d56cb0bfe039de5bfac2987e1e7e5f3a0f7c899964c1a7c",
+  "outputs":{
+    "authority-adjudications.jsonl":{"records":3717,"sha256":"7655cd93431e383dc7a7ed02d0a1840eea3aedc2fc2e1ee66431d23ca2a2cccc"},
+    "homonym-adjudications.jsonl":{"records":8777,"sha256":"6ffb756c8b4aeabbeddcb6f1f55b5c1a46d2dccc5c851500b198e77bd17d080e"},
+    "priority-authority-resolutions.json":{"records":8,"sha256":"a1dcad297a23766108147fd5f84e23aee52b5eeabc288c495ff11b78e9fa3884"},
+    "scale-adjudications.json":{"records":21,"sha256":"8cf9a96d81c72494097b2f6ce008779bd03bec45a4e8c90ea3124b19b4e6f451"},
+    "synonym-mappings.jsonl":{"records":9338,"sha256":"85a40e3fac1a6863e8de71ae87bc11b2ecee43715026fd6ff368c8900262c339"}
+  }
+}

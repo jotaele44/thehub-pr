@@ -1,0 +1,14 @@
+{
+  "approvals": [],
+  "required": [
+    "thehub-pr",
+    "spiderweb-pr",
+    "centinelas-pr",
+    "aguayluz-pr",
+    "ovnis-pr",
+    "skywatcher-pr",
+    "moneysweep-pr"
+  ],
+  "status": "pending",
+  "version": "1.0.0"
+}

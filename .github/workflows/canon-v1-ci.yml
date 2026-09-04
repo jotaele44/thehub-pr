@@ -1,0 +1,183 @@
+name: Canon v1 verification
+
+on:
+  push:
+    branches: ["ontology/federation-canon-v1"]
+    paths:
+      - "federation/ontology/v1/**"
+      - "tools/ontology/**"
+      - ".github/workflows/canon-v1-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "federation/ontology/v1/**"
+      - "tools/ontology/**"
+      - ".github/workflows/canon-v1-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  canon-v1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+      - run: pip install PyYAML jsonschema
+      - name: Validate committed Canon v1
+        run: python tools/ontology/validate_canon_v1.py --root .
+      - name: Baseline checkout thehub-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/thehub-pr
+          ref: bf4c9d85a595d22f57f46d3fd7e192ccb5b77798
+          path: _canon_v1_baseline/thehub-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Baseline checkout spiderweb-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/spiderweb-pr
+          ref: ed12141c3cb6480846c859e5780242a62ae71283
+          path: _canon_v1_baseline/spiderweb-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Baseline checkout centinelas-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/centinelas-pr
+          ref: f766efb6ede23398114a85cebf52d6530fa13891
+          path: _canon_v1_baseline/centinelas-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Baseline checkout aguayluz-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/aguayluz-pr
+          ref: 4a1c400c3f6288c97a7226c4fa4adaffabcc4388
+          path: _canon_v1_baseline/aguayluz-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Baseline checkout ovnis-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/ovnis-pr
+          ref: 400994dcc4e0e752c6ead984b0956f65adb0e153
+          path: _canon_v1_baseline/ovnis-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Baseline checkout skywatcher-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/skywatcher-pr
+          ref: f940dc1d4afae7740eaa2a94dbf4684d11ae156b
+          path: _canon_v1_baseline/skywatcher-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Baseline checkout moneysweep-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/moneysweep-pr
+          ref: e14b9b8f4eb05b446a2da2072b0e247486b58e1e
+          path: _canon_v1_baseline/moneysweep-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Regenerate baseline reports and Canon v1 adjudications
+        run: |
+          rm -rf /tmp/canon-v1-baseline /tmp/canon-v1-adjudicated
+          python tools/ontology/extract_terms.py --workspace _canon_v1_baseline --pins federation/ontology/repository-pins.json --out /tmp/canon-v1-baseline
+          python tools/ontology/analyze_terms.py --ledger /tmp/canon-v1-baseline/raw-term-ledger.jsonl --coverage /tmp/canon-v1-baseline/coverage.json --resolutions federation/ontology/resolutions/priority-term-families.yaml --out /tmp/canon-v1-baseline
+          python tools/ontology/adjudicate_canon_v1.py --reports /tmp/canon-v1-baseline --out /tmp/canon-v1-adjudicated
+          python tools/ontology/validate_canon_v1.py --root . --generated /tmp/canon-v1-adjudicated
+      - name: Current checkout aguayluz-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/aguayluz-pr
+          ref: 3678271a03e36375dc3e9f2fb4da0b6b655622bd
+          path: _canon_v1_current/aguayluz-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Current checkout centinelas-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/centinelas-pr
+          ref: caf086598a4f99e2eb0ca4aac6d51e2d9bd46321
+          path: _canon_v1_current/centinelas-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Current checkout moneysweep-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/moneysweep-pr
+          ref: 74b10245f925bfd9b9ea07b2ce986981d5d65525
+          path: _canon_v1_current/moneysweep-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Current checkout ovnis-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/ovnis-pr
+          ref: 68b87366207cb3fe249814ee6611a03b18d67a6b
+          path: _canon_v1_current/ovnis-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Current checkout skywatcher-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/skywatcher-pr
+          ref: 6b95f816f1dc2c2081734df582920703743fbdf3
+          path: _canon_v1_current/skywatcher-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Current checkout spiderweb-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/spiderweb-pr
+          ref: f46546ef24c7dc2164b3f203d1af57e7d2570219
+          path: _canon_v1_current/spiderweb-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Current checkout thehub-pr
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/thehub-pr
+          ref: 6474028904af463cab513d1755bce0380f7b2ad1
+          path: _canon_v1_current/thehub-pr
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Current-head semantic safety check
+        run: |
+          rm -rf /tmp/canon-v1-current
+          python tools/ontology/extract_terms.py --workspace _canon_v1_current --pins federation/ontology/v1/current-head-pins.json --out /tmp/canon-v1-current
+          python tools/ontology/analyze_terms.py --ledger /tmp/canon-v1-current/raw-term-ledger.jsonl --coverage /tmp/canon-v1-current/coverage.json --resolutions federation/ontology/resolutions/priority-term-families.yaml --out /tmp/canon-v1-current
+          python - <<'PY'
+          import json
+          c=json.load(open('/tmp/canon-v1-current/coverage.json'))
+          s=json.load(open('/tmp/canon-v1-current/summary.json'))
+          assert c['all_repositories_100_percent'] is True
+          assert s['unowned_high_severity_priority_families']==0
+          print(json.dumps({'records':s['input_records'],'unique_labels':s['unique_normalized_labels'],'unowned_high_severity':0},indent=2))
+          PY
+      - name: Release approval gate
+        run: |
+          if python - <<'PY'
+          import json
+          v=json.load(open('federation/ontology/v1/VERSION.json'))
+          raise SystemExit(0 if v.get('status') == 'released' else 1)
+          PY
+          then
+            python tools/ontology/validate_canon_v1.py --root . --require-approvals
+          else
+            echo "release candidate: approvals may still be pending"
+          fi
+      - name: Upload generated Canon v1 adjudications
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: prii-canon-v1-${{ github.sha }}
+          path: |
+            /tmp/canon-v1-adjudicated
+            /tmp/canon-v1-current/summary.json
+            /tmp/canon-v1-current/coverage.json
+          retention-days: 90
