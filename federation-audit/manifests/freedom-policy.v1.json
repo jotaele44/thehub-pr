@@ -124,6 +124,7 @@
     },
     {
       "axes": [
+        "SERVICE_INDEPENDENT",
         "SELF_CONTAINED_RELEASE",
         "OFFLINE_REPRODUCIBLE_BUILD"
       ],
@@ -235,7 +236,8 @@
       ".html",
       ".yml",
       ".yaml",
-      ".toml"
+      ".toml",
+      ".sql"
     ],
     "exact_names": [
       "package.json",
