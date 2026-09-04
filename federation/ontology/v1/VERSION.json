@@ -1,0 +1,25 @@
+{
+  "baseline_inventory": {
+    "artifact_id": 8951397319,
+    "artifact_sha256": "f14d40978f729ec80d56cb0bfe039de5bfac2987e1e7e5f3a0f7c899964c1a7c",
+    "date": "2026-08-05",
+    "ledger_sha256": "9a5c23de7bda3c9ac94530b9610d676dc01b37ed69f00776bd2d00c910d19d68"
+  },
+  "current_head_verification": {
+    "date": "2026-09-04",
+    "pins_file": "current-head-pins.json",
+    "required_before_release": true
+  },
+  "namespace_identity_rule": "CURIEs are canonical identifiers; expanded prii.dev IRIs are provisional serialization aliases pending domain-control attestation.",
+  "ontology_version": "1.0.0",
+  "release_gates": [
+    "all_v1_files_validate",
+    "all_21_scale_conflicts_dispositioned",
+    "all_8_priority_families_owned_and_dispositioned",
+    "8777_homonym_groups_classified",
+    "9338_synonym_candidates_mapped_without_automatic_merge",
+    "formal_owner_approvals_recorded",
+    "current_head_exhaustive_scan_passes"
+  ],
+  "status": "release_candidate"
+}

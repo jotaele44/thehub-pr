@@ -1,0 +1,21 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:prii:canon:v1:confidence-assessment",
+  "title":"PRII Canon v1 Confidence Assessment",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["value","scale","assessment_target","method","assessor"],
+  "properties":{
+    "value":{"type":"number"},
+    "scale":{"enum":["0..1","0..100"]},
+    "assessment_target":{"type":"string","minLength":1},
+    "method":{"type":"string","minLength":1},
+    "assessor":{"type":"string","minLength":1},
+    "normalized_value":{"type":"number","minimum":0,"maximum":1},
+    "normalization":{"enum":["identity","divide_by_100",null]}
+  },
+  "allOf":[
+    {"if":{"properties":{"scale":{"const":"0..1"}}},"then":{"properties":{"value":{"minimum":0,"maximum":1}}}},
+    {"if":{"properties":{"scale":{"const":"0..100"}}},"then":{"properties":{"value":{"minimum":0,"maximum":100}}}}
+  ]
+}

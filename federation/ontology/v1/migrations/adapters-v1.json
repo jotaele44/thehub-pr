@@ -1,0 +1,16 @@
+{
+  "version":"1.0.0",
+  "confidence":{
+    "preserve":["native value","native scale","assessment target","method","assessor"],
+    "rules":[
+      {"from_scale":"0..1","to_projection":"normalized_0..1","formula":"value","preconditions":["same assessment_target","compatible method semantics"]},
+      {"from_scale":"0..100","to_projection":"normalized_0..1","formula":"value / 100","preconditions":["same assessment_target","compatible method semantics"]}
+    ],
+    "prohibited":["comparing bare values with unknown scale","converting across incompatible assessment targets"]
+  },
+  "coordinates":{"latitude":{"domain":"-90..90","unit":"decimal_degrees"},"longitude":{"domain":"-180..180","unit":"decimal_degrees"}},
+  "non_convertible":[
+    {"left":"aguayluz:HydroIlapScore","right":"spiderweb:PrDemPrioritizationScore","reason":"different assessment targets and native scales"},
+    {"left":"prii:SourceRowIndex","right":"prii:GridRowIndex","reason":"different identity domains and bounds"}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "version":"1.0.0",
+  "patterns":[
+    {"legacy":"bare cross-repo confidence number","replacement":"prii:ConfidenceAssessment","status":"deprecated"},
+    {"legacy":"generic federation Source","replacement":["prii:SourceRecord","prii:MonitoredSource","prii:SourceReference"],"status":"deprecated"},
+    {"legacy":"generic federation Observation","replacement":["prii:RawObservation","prii:CanonicalObservation"],"status":"deprecated"},
+    {"legacy":"generic federation Relationship","replacement":["prii:AssertedRelationship","prii:DerivedRelationship","prii:Correlation"],"status":"deprecated"},
+    {"legacy":"generic federation Evidence","replacement":["prii:EvidenceItem","prii:ValidationEvidence","prii:Attestation"],"status":"deprecated"},
+    {"legacy":"universal federation Status enum","replacement":"owner-scoped lifecycle state machine","status":"prohibited"},
+    {"legacy":"generic ILAP score equivalence","replacement":["aguayluz:HydroIlapScore","spiderweb:PrDemPrioritizationScore"],"status":"prohibited"}
+  ]
+}
