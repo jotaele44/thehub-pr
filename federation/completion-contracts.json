@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "approved_canonical_template_ref": "b1a6f59fc7edacd8172f2849ca17a70f9454390d",
   "golden_windows_fixture": {
     "repository": "jotaele44/aguayluz-pr",
@@ -17,6 +17,7 @@
       "desktop_authority": "STANDARD",
       "desktop_requirement_manifests": ["requirements-desktop.txt"],
       "root_requirement_manifests": [],
+      "executable_dependency_surfaces": [],
       "template_ref_path": ".github/workflows/template-drift.yml",
       "desktop_workflow_path": ".github/workflows/desktop-build.yml"
     },
@@ -24,6 +25,7 @@
       "desktop_authority": "STANDARD",
       "desktop_requirement_manifests": ["requirements-desktop.txt"],
       "root_requirement_manifests": [],
+      "executable_dependency_surfaces": [],
       "template_ref_path": ".github/workflows/template-drift.yml",
       "desktop_workflow_path": ".github/workflows/desktop-build.yml"
     },
@@ -31,6 +33,7 @@
       "desktop_authority": "STANDARD",
       "desktop_requirement_manifests": ["requirements-desktop.txt"],
       "root_requirement_manifests": ["requirements.in"],
+      "executable_dependency_surfaces": [],
       "template_ref_path": ".github/workflows/template-drift.yml",
       "desktop_workflow_path": ".github/workflows/desktop-build.yml"
     },
@@ -38,13 +41,15 @@
       "desktop_authority": "STANDARD",
       "desktop_requirement_manifests": ["requirements-desktop.txt"],
       "root_requirement_manifests": ["requirements.txt"],
+      "executable_dependency_surfaces": [],
       "template_ref_path": ".github/workflows/template-drift.yml",
       "desktop_workflow_path": ".github/workflows/desktop-build.yml"
     },
     "jotaele44/skywatcher-pr": {
       "desktop_authority": "STANDARD",
       "desktop_requirement_manifests": ["requirements-desktop.txt"],
-      "root_requirement_manifests": [],
+      "root_requirement_manifests": ["pyproject.toml"],
+      "executable_dependency_surfaces": ["federation.json"],
       "template_ref_path": ".github/workflows/template-drift.yml",
       "desktop_workflow_path": ".github/workflows/desktop-build.yml"
     },
@@ -52,6 +57,7 @@
       "desktop_authority": "CUSTOM",
       "desktop_requirement_manifests": ["requirements-desktop.txt"],
       "root_requirement_manifests": [],
+      "executable_dependency_surfaces": [".github/workflows/ci.yml"],
       "template_ref_path": ".github/workflows/template-drift.yml",
       "desktop_workflow_path": ".github/workflows/desktop-build.yml"
     }
@@ -68,8 +74,38 @@
   },
   "failure_attribution_contract": {
     "states": ["BASE_FAILURE", "PR_FAILURE", "TRANSIENT", "UNRESOLVED"],
+    "stages": [
+      "PRE_RUNNER",
+      "SETUP",
+      "DEPENDENCY_INSTALL",
+      "TEST_EXECUTION",
+      "BUILD",
+      "PACKAGING",
+      "POST_JOB",
+      "UNKNOWN"
+    ],
     "default": "UNRESOLVED",
     "path_non_overlap_is_discovery_only": true,
-    "unattributed_failure_state": "FAIL"
+    "unattributed_failure_state": "FAIL",
+    "diagnostic_signature_fields": [
+      "exact_sha",
+      "workflow_run_id",
+      "job_id",
+      "run_attempt",
+      "status",
+      "conclusion",
+      "failure_stage",
+      "step_count",
+      "runner_id",
+      "runner_name",
+      "runner_labels"
+    ],
+    "pre_runner_fixture": {
+      "conclusion": "failure",
+      "failure_stage": "PRE_RUNNER",
+      "step_count": 0,
+      "runner_id": 0,
+      "runner_name": ""
+    }
   }
 }
