@@ -1,0 +1,43 @@
+{
+  "registry_version": "1.0.0",
+  "frontier_id": "culebrinas_frontier_v2",
+  "producer_repo": "jotaele44/aguayluz-pr",
+  "producer_role": "water_grid_monitoring_node",
+  "consumer_role": "federation_control_plane",
+  "contract": "federation.spatial-evidence/1.0",
+  "scope": [
+    "hydrogeology",
+    "surface-groundwater exchange",
+    "western karst linkage",
+    "fresh-salt interface",
+    "coastal SGD",
+    "KVI"
+  ],
+  "source_manifestations": [
+    {"source_id":"pr_sige_aquifer","authority":"Puerto Rico SIGE","status":"AUTHORITATIVE_SERVICE_BOUND_FEATURE_UNRESOLVED"},
+    {"source_id":"usgs_sim3296_culebrinas","authority":"USGS","status":"AUTHORITATIVE_HISTORICAL_GAP_EVIDENCE"},
+    {"source_id":"usace_culebrinas_borings_1998","authority":"USACE","status":"LOCAL_SHALLOW_SUBSURFACE_EVIDENCE"},
+    {"source_id":"uprm_pr418_seismic_2026","authority":"UPRM","status":"DIRECT_GEOPHYSICS_INTERPRETATION_PENDING"}
+  ],
+  "certification": {
+    "frontier_design": "CERTIFIED_DESIGN",
+    "canonical_geometry": "BLOCKED",
+    "experimental_evidence": "BLOCKED",
+    "kvi_measured": "BLOCKED",
+    "H1_H5": "OPEN",
+    "overall": "OPEN_BLOCKED"
+  },
+  "promotion_gates": [
+    "canonical_aquifer_globalid_bound",
+    "complete_subsurface_census",
+    "field_QAQC_closed",
+    "KVI_MEASURED_computed",
+    "H1_H5_adjudicated",
+    "zero_material_residue"
+  ],
+  "prohibitions": [
+    "no control action from proposed observations",
+    "no canonical identity from proximity",
+    "no synthetic measured KVI"
+  ]
+}
