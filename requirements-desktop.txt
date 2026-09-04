@@ -2,3 +2,8 @@
 pywebview>=6.2.1
 # Shared native setup, repair, diagnostics, launcher, and same-origin serving.
 -e packages/prii_desktop
+# prii_desktop's setup_center.diagnostics() optionally calls into this if
+# installed (see packages/prii_doctor) -- installed here so the CI test run
+# of packages/prii_desktop/tests exercises that integration for real,
+# instead of only exercising its "not installed" fallback path.
+-e packages/prii_doctor
