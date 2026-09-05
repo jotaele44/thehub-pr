@@ -7,7 +7,8 @@ on:
       - 'docs/adr/0010-federation-spatial-identity-authority.md'
       - 'registry/federation/**'
       - 'registry/spatial/**'
-      - 'scripts/validate_authority_boundary.py'
+      - 'scripts/validate_authority_boundary_v2.py'
+      - 'tests/test_authority_boundary_quarantine.py'
       - '.github/workflows/authority-boundary-certification.yml'
   workflow_dispatch:
 
@@ -60,9 +61,12 @@ jobs:
           ref: caf086598a4f99e2eb0ca4aac6d51e2d9bd46321
           path: _authority_peers/centinelas-pr
 
+      - name: Quarantine regression
+        run: python3 -m pytest -q tests/test_authority_boundary_quarantine.py
+
       - name: Execute fail-closed B.1-B.5 census
         run: |
-          python3 scripts/validate_authority_boundary.py \
+          python3 scripts/validate_authority_boundary_v2.py \
             --repo-root . \
             --peer-root _authority_peers \
             --report reports/authority_boundary_validation.json
