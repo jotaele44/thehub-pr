@@ -5,7 +5,8 @@
     "undeclared_emitted_namespace": "FAIL",
     "cross_namespace_collision": "FAIL_WHEN_SEMANTICS_OVERLAP",
     "producer_local_ids_replace_federation_ids": false,
-    "similarity_establishes_identity": false
+    "similarity_establishes_identity": false,
+    "producer_local_namespace_key": "(source_producer, local_record_id)"
   },
   "namespaces": [
     {"namespace":"FED_ENTITY_STREAM","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^ent_[0-9a-fA-F]+$","scope":"SHARED_INTERCHANGE","identity_bearing":false},
@@ -23,9 +24,14 @@
     {"namespace":"AGUAYLUZ_WASTEWATER","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^WWT.*$","scope":"DOMAIN_ONLY","identity_bearing":true},
     {"namespace":"AGUAYLUZ_OSM_POWER","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^OSMP.*$","scope":"DOMAIN_ONLY","identity_bearing":true},
     {"namespace":"AGUAYLUZ_HIFLD_POWER","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^HIFLD_.*$","scope":"DOMAIN_ONLY","identity_bearing":true},
-    {"namespace":"SKYWATCHER_SATIM_VISUAL","owner":"skywatcher-pr","repository":"jotaele44/skywatcher-pr","pattern":"^SATIM-VIS.*$","scope":"DOMAIN_ONLY","identity_bearing":false}
+    {"namespace":"SKYWATCHER_SATIM_VISUAL","owner":"skywatcher-pr","repository":"jotaele44/skywatcher-pr","pattern":"^SATIM-VIS.*$","scope":"DOMAIN_ONLY","identity_bearing":false},
+    {"namespace":"OVNIS_MASTER_RECORD","owner":"ovnis-pr","repository":"jotaele44/ovnis-pr","pattern":"^PRUFON-[0-9]{4,}$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/promote_candidate.py"},
+    {"namespace":"OVNIS_MASTER_CASE","owner":"ovnis-pr","repository":"jotaele44/ovnis-pr","pattern":"^PRUAP-[0-9]{4,}$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/promote_candidate.py"},
+    {"namespace":"CENTINELAS_SIGNAL","owner":"centinelas-pr","repository":"jotaele44/centinelas-pr","pattern":"^CENT-SIG-.+$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/build_signal_ledger.py"},
+    {"namespace":"CENTINELAS_MATTER","owner":"centinelas-pr","repository":"jotaele44/centinelas-pr","pattern":"^CENT-MAT-.+$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/build_signal_ledger.py"},
+    {"namespace":"CENTINELAS_RSS_SOURCE","owner":"centinelas-pr","repository":"jotaele44/centinelas-pr","pattern":"^CENT-SRC-RSS-.+$","scope":"DOMAIN_ONLY","identity_bearing":false,"evidence":"scripts/build_signal_ledger.py"}
   ],
   "census_state": "PROVISIONAL_UNTIL_REPOSITORY_CRAWLER_PASSES",
-  "known_unclosed_repositories": ["jotaele44/ovnis-pr","jotaele44/centinelas-pr"],
+  "known_unclosed_repositories": [],
   "certification_effect": "BLOCKING_UNTIL_CRAWLER_ZERO_UNKNOWN"
 }
