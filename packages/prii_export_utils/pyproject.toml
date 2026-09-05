@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prii-export-utils"
-version = "0.1.0"
-description = "Shared envelope-id/hash helpers for PRII producer federation_export.py scripts."
+version = "0.2.0"
+description = "Deterministic export identity and local artifact transport for the PRII Federation."
 requires-python = ">=3.10"
 dependencies = []
 

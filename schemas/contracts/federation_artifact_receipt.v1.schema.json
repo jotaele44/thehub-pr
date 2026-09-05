@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://the-federation.local/schemas/federation_artifact_receipt.v1.schema.json",
+  "title": "Federation local artifact receipt v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "message_id",
+    "target",
+    "consumer",
+    "payload_sha256",
+    "acknowledged_at_utc"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "prii.artifact-receipt.v1"
+    },
+    "message_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "target": {
+      "$ref": "#/$defs/component"
+    },
+    "consumer": {
+      "$ref": "#/$defs/component"
+    },
+    "payload_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "acknowledged_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    }
+  },
+  "$defs": {
+    "component": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    }
+  }
+}

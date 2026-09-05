@@ -37,9 +37,15 @@
     "source_truth": {"type": "object"},
     "hub_callable_commands": {
       "type": "object",
-      "description": "Shell commands the Hub may invoke. setup MUST install everything the other declared commands import, and may use the network only to install SHA-pinned dependencies (e.g. the shared prii-* packages via git+https). Every command other than setup MUST be offline-safe (no network).",
+      "description": "Shell commands the Hub may invoke. setup is the backward-compatible audit/development setup and MUST install everything used by the other declared Hub commands. A producer may additionally declare runtime_setup as the smaller certified-core environment and setup_test as a test-only overlay for profile-aware runners. setup, runtime_setup, and setup_test may use the network only to acquire version/SHA-pinned dependencies. Every other command, including test_suite, MUST be offline-safe. Hosted retrieval remains acquisition convenience and does not prove an offline-reproducible build.",
       "minProperties": 1,
       "required": ["setup", "test_suite"],
+      "properties": {
+        "setup": {"type": "string", "minLength": 1},
+        "runtime_setup": {"type": "string", "minLength": 1},
+        "setup_test": {"type": "string", "minLength": 1},
+        "test_suite": {"type": "string", "minLength": 1}
+      },
       "additionalProperties": {"type": "string"}
     },
     "canonical_outputs": {
