@@ -1,0 +1,84 @@
+name: Authority Boundary Certification
+
+on:
+  pull_request:
+    paths:
+      - 'docs/adr/0009-persistent-federation-identity-authority.md'
+      - 'docs/adr/0010-federation-spatial-identity-authority.md'
+      - 'registry/federation/**'
+      - 'registry/spatial/**'
+      - 'scripts/authority_boundary_validator.py'
+      - 'scripts/validate_authority_boundary.py'
+      - 'scripts/validate_authority_boundary_v2.py'
+      - 'tests/test_authority_boundary_validator.py'
+      - 'tests/test_authority_boundary_quarantine.py'
+      - '.github/workflows/authority-boundary-certification.yml'
+  workflow_dispatch:
+
+jobs:
+  authority-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout candidate TheHub
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Checkout Spiderweb frozen baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/spiderweb-pr
+          ref: f46546ef24c7dc2164b3f203d1af57e7d2570219
+          path: _authority_peers/spiderweb-pr
+
+      - name: Checkout MoneySweep frozen baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/moneysweep-pr
+          ref: 74b10245f925bfd9b9ea07b2ce986981d5d65525
+          path: _authority_peers/moneysweep-pr
+
+      - name: Checkout AguaYLuz frozen baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/aguayluz-pr
+          ref: 3678271a03e36375dc3e9f2fb4da0b6b655622bd
+          path: _authority_peers/aguayluz-pr
+
+      - name: Checkout Skywatcher frozen baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/skywatcher-pr
+          ref: 39e1fb297e24cd9017167a8725b40e73dd0349e4
+          path: _authority_peers/skywatcher-pr
+
+      - name: Checkout OVNIS frozen baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/ovnis-pr
+          ref: 68b87366207cb3fe249814ee6611a03b18d67a6b
+          path: _authority_peers/ovnis-pr
+
+      - name: Checkout Centinelas frozen baseline
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/centinelas-pr
+          ref: caf086598a4f99e2eb0ca4aac6d51e2d9bd46321
+          path: _authority_peers/centinelas-pr
+
+      - name: Quarantine regression
+        run: python3 -m pytest -q tests/test_authority_boundary_quarantine.py
+
+      - name: Execute fail-closed B.1-B.5 census
+        run: |
+          python3 scripts/validate_authority_boundary.py \
+            --repo-root . \
+            --peer-root _authority_peers \
+            --report reports/authority_boundary_validation.json
+
+      - name: Upload census evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: authority-boundary-validation
+          path: reports/authority_boundary_validation.json

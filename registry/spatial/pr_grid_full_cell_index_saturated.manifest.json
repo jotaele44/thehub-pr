@@ -1,4 +1,5 @@
 {
+  "schema_version": "pr_grid_artifact_manifest_v2",
   "dataset": "pr_grid_full_cell_index_saturated",
   "path": "registry/spatial/pr_grid_full_cell_index_saturated.csv",
   "sha256": "17733f3f18c8a644e31c1eb25fb27b73b4bf353c6de57d5203c4311e05d64483",
@@ -19,10 +20,7 @@
     "Land_Pixel_Ratio",
     "Classification"
   ],
-  "grid": {
-    "rows": 256,
-    "columns": 384
-  },
+  "grid": {"rows": 256, "columns": 384},
   "classification_counts": {
     "Water_or_Empty": 96339,
     "Gridline_Dominant": 1171,
@@ -30,5 +28,25 @@
   },
   "schema": "schemas/pr_grid_cell.schema.json",
   "validator": "scripts/validate_pr_grid.py",
-  "status": "baseline_required"
+  "authority_class": "NONCANONICAL_LEGACY_IMAGE_SPACE",
+  "canonical_ground_geometry": false,
+  "georeferenced": false,
+  "crs": null,
+  "affine_transform": null,
+  "ground_coordinate_binding": null,
+  "permitted_uses": [
+    "legacy image-space diagnostics",
+    "byte/reproduction regression fixture"
+  ],
+  "prohibited_uses": [
+    "federation spatial identity",
+    "municipio or barrio containment",
+    "parcel intersection",
+    "metric distance",
+    "ground-coordinate joins",
+    "identity equivalence"
+  ],
+  "superseded_role": "canonical_cross_repo_spatial_cell_index",
+  "superseded_by": "registry/spatial/federation_admin_geometry.manifest.json",
+  "status": "NONCANONICAL_RETAINED_FOR_PROVENANCE"
 }
