@@ -1,0 +1,54 @@
+name: GIS raster certification
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/gis_certify_cog_fixture.py'
+      - '.github/workflows/gis-raster-certification.yml'
+      - 'server/frontend/src/gis/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  certify-raster:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GDAL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin python3-gdal
+      - name: Generate and certify real COG fixture
+        run: python scripts/gis_certify_cog_fixture.py
+      - name: Assert receipt boundaries
+        run: |
+          python - <<'PY'
+          import json, pathlib
+          p = pathlib.Path('tmp/gis-cog-cert/receipt.json')
+          r = json.loads(p.read_text())
+          assert r['status'] == 'PASS'
+          assert r['validator'] == 'GDAL_COG_VALIDATOR'
+          assert len(r['fullAssetSha256']) == 64
+          assert r['sourceCrs'] == 'EPSG:6566'
+          assert r['targetCrs'] == 'EPSG:4326'
+          assert r['claims']['cogByteLayoutValidated'] is True
+          assert r['claims']['wholeAssetIdentityBound'] is True
+          assert r['claims']['pixelGeometryPlacementBounded'] is True
+          assert r['claims']['crossSourceCanonicalIdentity'] is False
+          PY
+      - name: Negative control — stripped TIFF is not a COG claim
+        run: |
+          gdal_create -of GTiff -outsize 16 16 -bands 1 -burn 1 -ot Byte -a_srs EPSG:4326 -a_ullr -67 19 -66.9 18.9 tmp/gis-cog-cert/strip.tif
+          if python -m osgeo_utils.samples.validate_cloud_optimized_geotiff tmp/gis-cog-cert/strip.tif; then
+            echo 'validator unexpectedly accepted plain stripped TIFF' >&2
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gis-raster-certification-receipt
+          path: |
+            tmp/gis-cog-cert/receipt.json
+            tmp/gis-cog-cert/fixture_6566.cog.tif
+            tmp/gis-cog-cert/fixture_4326.tif
