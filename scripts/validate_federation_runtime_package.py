@@ -41,6 +41,8 @@ def main(argv: list[str] | None = None) -> int:
         quarantine = validate_review_quarantine_package(
             args.package_root,
             certification=args.certification,
+            producer_commit=package.producer_commit,
+            producer_tree=package.producer_tree,
         )
     except (
         OSError,
