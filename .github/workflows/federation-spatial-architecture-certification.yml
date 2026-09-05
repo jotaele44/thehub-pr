@@ -65,6 +65,43 @@ jobs:
             test "$(sha256sum "$file" | awk '{print $1}')" = "$first"
           done
 
+      - name: Cross-repo WGS84 distance equivalence
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          def load(name, path):
+              spec = importlib.util.spec_from_file_location(name, Path(path))
+              module = importlib.util.module_from_spec(spec)
+              spec.loader.exec_module(module)
+              return module
+
+          spider = load("spider_spatial_core", "spiderweb/federation/spatial_core.py")
+          sky = load("sky_gis_geodesic", "skywatcher/tools/satim_engine/src/satim_engine/plugins/gis_geodesic.py")
+          cases = [
+              (-66.1057, 18.4655, -66.1057, 18.4655),
+              (-66.1057, 18.4655, -66.6135, 18.4724),
+              (-67.1541, 18.2011, -65.4323, 18.1497),
+              (-66.50, 18.60, -66.50, 18.15),
+          ]
+          for case in cases:
+              a = spider.geodesic_distance_m(*case)
+              b = sky.distance_m(*case)
+              delta = abs(a - b)
+              if delta > 1e-6:
+                  raise SystemExit(f"distance mismatch {case}: spider={a} sky={b} delta={delta}")
+          for fn in (spider.geodesic_distance_m, sky.distance_m):
+              try:
+                  fn(-181, 18, -66, 18)
+              except ValueError:
+                  pass
+              else:
+                  raise SystemExit(f"{fn.__module__}.{fn.__name__} accepted invalid longitude")
+          print("PASS: Spiderweb/Skywatcher WGS84 distance equivalence")
+          PY
+
       - name: Structural spatial-identity invariants
         run: python3 spiderweb/scripts/validate_federation_spatial_identity_v1_1.py
 
