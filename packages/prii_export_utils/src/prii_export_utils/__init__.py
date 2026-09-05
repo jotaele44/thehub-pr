@@ -1,6 +1,7 @@
 from .artifact_transport import (
     ArtifactTransportError,
     InvalidEnvelopeError,
+    InvalidReceiptError,
     MessageCollisionError,
     TransportResult,
     acknowledge_message,
@@ -10,12 +11,14 @@ from .artifact_transport import (
     emit_message,
     iter_inbox,
     verify_envelope,
+    verify_receipt,
 )
 from .helpers import fid, norm, sha256
 
 __all__ = [
     "ArtifactTransportError",
     "InvalidEnvelopeError",
+    "InvalidReceiptError",
     "MessageCollisionError",
     "TransportResult",
     "acknowledge_message",
@@ -28,4 +31,5 @@ __all__ = [
     "norm",
     "sha256",
     "verify_envelope",
+    "verify_receipt",
 ]
