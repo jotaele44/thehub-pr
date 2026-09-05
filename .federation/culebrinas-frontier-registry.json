@@ -1,0 +1,78 @@
+{
+  "registry_version": "1.2.0",
+  "frontier_id": "culebrinas_frontier_v2",
+  "producer_repo": "jotaele44/aguayluz-pr",
+  "producer_role": "water_grid_monitoring_node",
+  "consumer_role": "federation_control_plane",
+  "contract": "federation.spatial-evidence/1.0",
+  "producer_interfaces": {
+    "field_packet_config": "config/culebrinas_field_operator_packet.v1.json",
+    "crew_packet_config": "config/culebrinas_crew_packet.v2.json",
+    "field_engine": "operators/culebrinas_frontier_engine.py",
+    "strict_field_ingest_schema": "data/culebrinas/frontier/v2/field_observation_ingest_schema_v3.json",
+    "strict_field_ingest_validator": "operators/validate_culebrinas_field_ingest_v3.py",
+    "kvi_method": "config/culebrinas_kvi_method.v1.json",
+    "kvi_engine": "operators/culebrinas_kvi.py",
+    "field_protocol": "docs/culebrinas/EXECUTABLE_FIELD_PACKET_v1.md",
+    "crew_protocol": "docs/culebrinas/CREW_EXECUTION_PACKAGE_v2.md",
+    "packet_manifest_template": "data/culebrinas/frontier/v2/templates/packet_manifest.template.json",
+    "kvi_evidence_template": "data/culebrinas/frontier/v2/templates/kvi_evidence.template.json",
+    "observations_template": "data/culebrinas/frontier/v2/templates/observations.template.csv"
+  },
+  "scope": [
+    "hydrogeology",
+    "surface-groundwater exchange",
+    "western karst linkage",
+    "fresh-salt interface",
+    "coastal SGD",
+    "KVI"
+  ],
+  "source_manifestations": [
+    {"source_id":"pr_sige_aquifer","authority":"Puerto Rico SIGE","status":"AUTHORITATIVE_SERVICE_BOUND_FEATURE_UNRESOLVED"},
+    {"source_id":"usgs_sim3296_culebrinas","authority":"USGS","status":"AUTHORITATIVE_HISTORICAL_GAP_EVIDENCE"},
+    {"source_id":"usace_culebrinas_borings_1998","authority":"USACE","status":"LOCAL_SHALLOW_SUBSURFACE_EVIDENCE"},
+    {"source_id":"uprm_pr418_seismic_2026","authority":"UPRM","status":"DIRECT_GEOPHYSICS_INTERPRETATION_NOT_FOUND_IN_BOUNDED_PUBLIC_CORPUS"}
+  ],
+  "hardening": {
+    "production_kvi_requires_real_evidence_receipt": true,
+    "nonfinite_kvi_components_rejected": true,
+    "withheld_calibration_overlap_rejected": true,
+    "unresolved_hypothesis_blocks_certification": true,
+    "hypothesis_evidence_ids_required": true,
+    "falsifier_tests_required": true,
+    "supported_hypothesis_requires_two_independent_methods": true,
+    "strict_experimental_ingest_observed_only": true,
+    "templates_fail_closed": true
+  },
+  "certification": {
+    "frontier_design": "CERTIFIED_DESIGN",
+    "crew_execution_contract": "DEPLOYED_ON_BRANCH",
+    "experimental_computation_contract": "HARDENED_ON_BRANCH",
+    "canonical_geometry": "BLOCKED",
+    "experimental_evidence": "BLOCKED_NO_NEW_FIELD_OBSERVATIONS",
+    "kvi_measured": "BLOCKED",
+    "H1_H5": "OPEN",
+    "federation_ci": "RED_PRESTART_NO_JOB_STEPS",
+    "overall": "OPEN_BLOCKED"
+  },
+  "promotion_gates": [
+    "canonical_aquifer_globalid_bound",
+    "complete_subsurface_census",
+    "usace_boring_crs_closed",
+    "uprm_seismic_interpretation_recovered",
+    "green_federation_integration",
+    "field_QAQC_closed",
+    "real_authorized_observations_present",
+    "KVI_MEASURED_computed",
+    "withheld_validation_pass",
+    "H1_H5_adjudicated_without_unresolved",
+    "zero_material_residue"
+  ],
+  "prohibitions": [
+    "no control action from proposed observations",
+    "no canonical identity from proximity",
+    "no synthetic measured KVI",
+    "no unresolved hypothesis in certification candidate",
+    "no production promotion from branch-only deployment"
+  ]
+}
