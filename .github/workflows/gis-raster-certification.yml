@@ -11,6 +11,9 @@ on:
 permissions:
   contents: read
 
+env:
+  GDAL_PYTHON: /usr/bin/python3
+
 jobs:
   certify-raster:
     runs-on: ubuntu-latest
@@ -30,6 +33,7 @@ jobs:
           r = json.loads(p.read_text())
           assert r['status'] == 'PASS'
           assert r['validator'] == 'GDAL_COG_VALIDATOR'
+          assert r['validatorPython'] == '/usr/bin/python3'
           assert len(r['fullAssetSha256']) == 64
           assert r['sourceCrs'] == 'EPSG:6566'
           assert r['targetCrs'] == 'EPSG:4326'
@@ -41,7 +45,7 @@ jobs:
       - name: Negative control — stripped TIFF is not a COG claim
         run: |
           gdal_create -of GTiff -outsize 16 16 -bands 1 -burn 1 -ot Byte -a_srs EPSG:4326 -a_ullr -67 19 -66.9 18.9 tmp/gis-cog-cert/strip.tif
-          if python -m osgeo_utils.samples.validate_cloud_optimized_geotiff tmp/gis-cog-cert/strip.tif; then
+          if /usr/bin/python3 -m osgeo_utils.samples.validate_cloud_optimized_geotiff tmp/gis-cog-cert/strip.tif; then
             echo 'validator unexpectedly accepted plain stripped TIFF' >&2
             exit 1
           fi
