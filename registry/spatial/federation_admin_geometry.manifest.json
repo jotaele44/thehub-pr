@@ -1,0 +1,40 @@
+{
+  "schema_version": "federation_admin_geometry_manifest_v1",
+  "authority_plane": "prii-federation-spatial-identity",
+  "external_source_authority": "U.S. Census Bureau cartographic boundaries",
+  "source_vintage": "UNKNOWN_NOT_ASSERTED",
+  "canonical_crs": "EPSG:4326",
+  "geometry_roles": ["municipio containment", "barrio containment", "federation administrative normalization"],
+  "custodial_manifestation": {
+    "repository": "jotaele44/aguayluz-pr",
+    "commit": "3678271a03e36375dc3e9f2fb4da0b6b655622bd",
+    "producer_role": "water_grid_monitoring_node",
+    "authority_note": "AguaYLuz is the pinned producer manifestation/custodian only; it does not supersede the external Census source authority or the federation shared-geometry authority."
+  },
+  "layers": [
+    {
+      "layer_id": "PR_MUNICIPIOS",
+      "path": "data/geo/pr_municipios.geojson",
+      "git_blob_sha": "b3a240482478261577b27140d7918f311e2d46a0",
+      "expected_feature_count": 78,
+      "geometry_type": "Polygon_or_MultiPolygon",
+      "crs": "EPSG:4326",
+      "federation_role": "SHARED_ADMIN_REFERENCE"
+    },
+    {
+      "layer_id": "PR_BARRIOS",
+      "path": "data/geo/pr_barrios.geojson",
+      "git_blob_sha": "ae6a8a26233ba53293bd814cac050bab85ab8b35",
+      "expected_feature_count": 901,
+      "geometry_type": "Polygon_or_MultiPolygon",
+      "crs": "EPSG:4326",
+      "federation_role": "SHARED_ADMIN_REFERENCE"
+    }
+  ],
+  "projection_policy": "Repository-local copies are read-only projections/caches. A different source revision requires a new manifest and compatibility/adjudication receipt before promotion.",
+  "containment_policy": "Cross-repository municipio/barrio containment MUST use this pinned manifestation or a certified successor; producer-local centroids or fuzzy place names cannot override polygon containment.",
+  "open_metadata": [
+    "Exact upstream Census release/vintage is not asserted by this manifest because current repository evidence does not prove it. This does not prevent byte-level authority for the frozen manifestation, but upstream-vintage recovery is required before calling the external-source lineage fully certified."
+  ],
+  "status": "PINNED_MANIFESTATION_PROVISIONAL_SOURCE_VINTAGE"
+}
