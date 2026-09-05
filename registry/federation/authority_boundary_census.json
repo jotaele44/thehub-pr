@@ -1,0 +1,52 @@
+{
+  "schema_version":"authority_boundary_census_v1",
+  "frozen_at":"2026-09-05T19:05:00Z",
+  "repository_denominator":7,
+  "authority_plane":"prii-federation-spatial-identity",
+  "producers":[
+    {"id":"moneysweep-pr","domain":"public money/contracts/finance/control","authority_class":"DOMAIN_ONLY","consumer":"thehub-pr"},
+    {"id":"spiderweb-pr","domain":"spatial operational evidence/geoprocessing","authority_class":"DOMAIN_ONLY_WITH_SHARED_GEOMETRY_PROPOSALS","consumer":"thehub-pr"},
+    {"id":"aguayluz-pr","domain":"water/wastewater/electric topology and operations","authority_class":"DOMAIN_ONLY_WITH_SHARED_IDENTITY_PROPOSALS","consumer":"thehub-pr"},
+    {"id":"skywatcher-pr","domain":"aviation/aircraft/flight/airspace observations","authority_class":"DOMAIN_ONLY_WITH_SHARED_IDENTITY_PROPOSALS","consumer":"thehub-pr"},
+    {"id":"ovnis-pr","domain":"anomalous/UAP case facts and promotion","authority_class":"DOMAIN_ONLY_WITH_SHARED_LOCATION_PROPOSALS","consumer":"thehub-pr"},
+    {"id":"centinelas-pr","domain":"pre-officialization signals and routing state","authority_class":"DOMAIN_ONLY_WORKFLOW","consumer":"thehub-pr"}
+  ],
+  "control_plane": {
+    "id":"thehub-pr",
+    "role":"governance/validation/aggregation/query client",
+    "authority_class":"SHARED_GOVERNANCE_CLIENT",
+    "sovereign_identity_authority":false
+  },
+  "producer_consumer_edges":[
+    {"producer":"centinelas-pr","consumer":"aguayluz-pr","payload":"ENVIRONMENTAL|SAFETY_COMPLIANCE signals","authority_rule":"signal state remains Centinelas until domain adjudication"},
+    {"producer":"centinelas-pr","consumer":"moneysweep-pr","payload":"FINANCIAL|POLITICAL signals","authority_rule":"pre-official signal -> MoneySweep official domain fact"},
+    {"producer":"centinelas-pr","consumer":"spiderweb-pr","payload":"GEO_GEOLOGY signals","authority_rule":"signal -> spatial evidence candidate"},
+    {"producer":"centinelas-pr","consumer":"ovnis-pr","payload":"ANOMALOUS signals","authority_rule":"candidate intake; OVNIS reviewed promotion"},
+    {"producer":"centinelas-pr","consumer":"skywatcher-pr","payload":"MILITARY_AEROSPACE signals","authority_rule":"signal -> aviation/airspace domain"},
+    {"producer":"moneysweep-pr","consumer":"spiderweb-pr","payload":"contract-finance/PPP location bundle","authority_rule":"MoneySweep owns finance; Spiderweb owns spatial derivation; federation authority owns adjudicated shared identity"},
+    {"producer":"all-six","consumer":"thehub-pr","payload":"canonical federation packages","authority_rule":"Hub validates/aggregates/queries but does not re-own domain facts or shared identity"}
+  ],
+  "duplicate_source_families":[
+    {"id":"DUP-PR-GRID","repositories":"all seven","classification":"BYTE_REPLICATED_LEGACY","authority":"NONE_FOR_GROUND_GEOMETRY","disposition":"NONCANONICAL_LEGACY_IMAGE_SPACE"},
+    {"id":"DUP-GEBCO","repositories":["spiderweb-pr","skywatcher-pr"],"classification":"DIVERGENT_DOMAIN_DERIVATIVES","authority":"external GEBCO source; each producer owns only its derivative semantics","disposition":"RETAIN_WITH_DRIFT_MONITOR"},
+    {"id":"DUP-ADMIN-GEOMETRY","repositories":["spiderweb-pr","aguayluz-pr","other consumers may cache"],"classification":"MULTIPLE_REFERENCE_COPIES","authority":"prii-federation-spatial-identity via pinned Census GENZ2023 manifestation","disposition":"PROJECTIONS_NOT_COMPETING_AUTHORITIES"},
+    {"id":"DUP-POWER-LINEAGE","repositories":["aguayluz-pr","spiderweb-pr lineage artifact"],"classification":"CROSS_REPO_DERIVED_SOURCE","authority":"aguayluz-pr for utility semantics; source provenance retained","disposition":"NO_AUTHORITY_TRANSFER_BY_FILENAME"}
+  ],
+  "shared_planes":[
+    {"plane":"cross-producer real-world spatial identity","owner":"prii-federation-spatial-identity"},
+    {"plane":"shared identifier namespace registration","owner":"prii-federation-spatial-identity"},
+    {"plane":"shared identity relationship registration","owner":"prii-federation-spatial-identity"},
+    {"plane":"municipio/barrio containment reference","owner":"prii-federation-spatial-identity","manifest":"registry/spatial/federation_admin_geometry.manifest.json"}
+  ],
+  "arithmetic": {
+    "repository_expected":7,
+    "repository_classified":7,
+    "repository_difference":0,
+    "producer_expected":6,
+    "producer_classified":6,
+    "producer_difference":0,
+    "unclassified_authority_planes":0
+  },
+  "static_census_state":"CLOSED",
+  "runtime_crawler_state":"PENDING_ZERO_BLOCKER_RECEIPT"
+}
