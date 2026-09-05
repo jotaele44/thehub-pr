@@ -98,7 +98,8 @@ def _validate_scope(
     nonblocking = scope.get("nonblocking_disclosed_residue_classes")
     if not isinstance(nonblocking, list) or REQUIRED_NONBLOCKING_CLASS not in nonblocking:
         errors.append("certification scope must classify domain record adjudication explicitly")
-    if not isinstance(scope.get("blocking_residue_classes"), list) or "UNCLASSIFIED" not in scope["blocking_residue_classes"]:
+    blocking = scope.get("blocking_residue_classes")
+    if not isinstance(blocking, list) or "UNCLASSIFIED" not in blocking:
         errors.append("certification scope must fail closed on unclassified residue")
     promotion_rule = scope.get("promotion_rule")
     if not isinstance(promotion_rule, str) or "must never be rewritten as resolved" not in promotion_rule:
@@ -247,19 +248,21 @@ def validate_review_quarantine_package(
     relationships = _jsonl(root / "outputs" / "federation" / "relationships.jsonl", "relationships")
     alerts = _jsonl(root / "outputs" / "federation" / "alerts.jsonl", "alerts")
 
-    entity_ids: set[str] = set()
+    entity_by_id: dict[str, dict[str, Any]] = {}
+    primary_ids: set[str] = set()
     primary_counts = {"assets": 0, "events": 0, "alerts": len(alerts)}
     for index, entity in enumerate(entities):
         eid = entity.get("entity_id")
         if not isinstance(eid, str) or not eid:
             errors.append(f"entities[{index}] missing entity_id")
             continue
-        if eid in entity_ids:
+        if eid in entity_by_id:
             errors.append(f"duplicate canonical entity_id: {eid}")
-        entity_ids.add(eid)
+        entity_by_id[eid] = entity
         etype = entity.get("entity_type")
         if etype not in {"utility_asset", "service_event"}:
             continue
+        primary_ids.add(eid)
         key = "assets" if etype == "utility_asset" else "events"
         primary_counts[key] += 1
         attrs = entity.get("attributes")
@@ -295,11 +298,27 @@ def validate_review_quarantine_package(
             f"canonical alerts count={len(alerts)} != accepted input count={accepted_counts.get('alerts', 0)}"
         )
 
+    support_sources: dict[str, set[str]] = {}
     for index, relationship in enumerate(relationships):
         left = relationship.get("source_entity_id")
         right = relationship.get("target_entity_id")
-        if left not in entity_ids or right not in entity_ids:
+        rel_source = relationship.get("source_id")
+        if left not in entity_by_id or right not in entity_by_id:
             errors.append(f"relationships[{index}] endpoint is outside retained canonical entity set")
+            continue
+        if not isinstance(rel_source, str) or not rel_source:
+            errors.append(f"relationships[{index}] missing source_id")
+            continue
+        for endpoint, other in ((left, right), (right, left)):
+            if endpoint not in primary_ids and other in primary_ids:
+                support_sources.setdefault(str(endpoint), set()).add(rel_source)
+
+    for support_id, accepted_sources in support_sources.items():
+        support = entity_by_id.get(support_id, {})
+        if support.get("source_id") not in accepted_sources:
+            errors.append(
+                f"support entity {support_id} provenance is not bound to an accepted-primary relationship source"
+            )
 
     if errors:
         raise ReviewQuarantineError("; ".join(errors))
