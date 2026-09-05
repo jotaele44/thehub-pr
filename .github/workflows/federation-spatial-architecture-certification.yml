@@ -1,0 +1,72 @@
+name: Federation Spatial Architecture Certification
+
+on:
+  pull_request:
+    paths:
+      - 'schemas/federation_spatial_identity_v1_1.schema.json'
+      - 'federation/**'
+      - '.github/workflows/federation-spatial-architecture-certification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  coordinated-spatial-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout TheHub candidate
+        uses: actions/checkout@v4
+        with:
+          path: thehub
+
+      - name: Checkout Spiderweb candidate
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/spiderweb-pr
+          ref: feat/federation-spatial-architecture-v1
+          path: spiderweb
+
+      - name: Checkout AguaYLuz candidate
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/aguayluz-pr
+          ref: feat/federation-spatial-architecture-v1
+          path: aguayluz
+
+      - name: Checkout Skywatcher candidate
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/skywatcher-pr
+          ref: feat/federation-spatial-architecture-v1
+          path: skywatcher
+
+      - name: Checkout MoneySweep candidate
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/moneysweep-pr
+          ref: feat/federation-spatial-architecture-v1
+          path: moneysweep
+
+      - name: Prove byte-identical v1.1 contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            thehub/schemas/federation_spatial_identity_v1_1.schema.json
+            spiderweb/schemas/federation_spatial_identity_v1_1.schema.json
+            aguayluz/schemas/federation_spatial_identity_v1_1.schema.json
+            skywatcher/schemas/federation_spatial_identity_v1_1.schema.json
+            moneysweep/schemas/federation_spatial_identity_v1_1.schema.json
+          )
+          sha256sum "${files[@]}"
+          first="$(sha256sum "${files[0]}" | awk '{print $1}')"
+          for file in "${files[@]:1}"; do
+            test "$(sha256sum "$file" | awk '{print $1}')" = "$first"
+          done
+
+      - name: Structural spatial-identity invariants
+        run: python3 spiderweb/scripts/validate_federation_spatial_identity_v1_1.py
+
+      - name: Certification gate - zero unresolved residue required
+        run: python3 spiderweb/scripts/validate_federation_spatial_identity_v1_1.py --certify
