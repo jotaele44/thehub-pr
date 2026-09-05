@@ -13,6 +13,8 @@ from hub.review_quarantine import (
 
 PRODUCER_COMMIT = "1" * 40
 PRODUCER_TREE = "2" * 40
+SOURCE_ID = "src_" + "4" * 32
+OTHER_SOURCE_ID = "src_" + "5" * 32
 
 
 def _write_json(path: Path, value) -> None:
@@ -64,33 +66,16 @@ def _receipt():
         },
         "legacy_alias_count": 0,
         "quarantined": [
-            {
-                "kind": "asset",
-                "record_id": "A2",
-                "review_status_raw": "blocked",
-                "review_status": "blocked",
-                "reason": "review_status=blocked",
-            },
-            {
-                "kind": "event",
-                "record_id": "E2",
-                "review_status_raw": "needs_review",
-                "review_status": "needs_review",
-                "reason": "review_status=needs_review",
-            },
-            {
-                "kind": "alert",
-                "record_id": "AL2",
-                "review_status_raw": "needs_review",
-                "review_status": "needs_review",
-                "reason": "review_status=needs_review",
-            },
+            {"kind": "asset", "record_id": "A2", "review_status_raw": "blocked", "review_status": "blocked", "reason": "review_status=blocked"},
+            {"kind": "event", "record_id": "E2", "review_status_raw": "needs_review", "review_status": "needs_review", "reason": "review_status=needs_review"},
+            {"kind": "alert", "record_id": "AL2", "review_status_raw": "needs_review", "review_status": "needs_review", "reason": "review_status=needs_review"},
         ],
         "invariants": {
             "input_arithmetic_closed": True,
             "quarantined_primary_entities_absent": True,
             "canonical_alerts_accepted_only": True,
             "relationship_endpoints_retained": True,
+            "support_entities_rebound_to_accepted_provenance": True,
         },
         "problems": [],
     }
@@ -127,34 +112,34 @@ def _package(tmp_path: Path) -> Path:
 
     asset = {
         "entity_id": "ent_" + "a" * 32,
+        "source_id": SOURCE_ID,
         "entity_type": "utility_asset",
-        "attributes": {
-            "review_status_raw": "accepted",
-            "review_status": "accepted",
-            "promotion_eligible": True,
-        },
+        "attributes": {"review_status_raw": "accepted", "review_status": "accepted", "promotion_eligible": True},
     }
     event = {
         "entity_id": "ent_" + "b" * 32,
+        "source_id": SOURCE_ID,
         "entity_type": "service_event",
-        "attributes": {
-            "review_status_raw": "approved",
-            "review_status": "accepted",
-            "promotion_eligible": True,
-        },
+        "attributes": {"review_status_raw": "approved", "review_status": "accepted", "promotion_eligible": True},
     }
-    municipality = {"entity_id": "ent_" + "c" * 32, "entity_type": "municipality"}
+    municipality = {
+        "entity_id": "ent_" + "c" * 32,
+        "source_id": SOURCE_ID,
+        "entity_type": "municipality",
+    }
     _write_jsonl(root / "outputs" / "federation" / "entities.jsonl", [asset, event, municipality])
     _write_jsonl(
         root / "outputs" / "federation" / "relationships.jsonl",
         [
             {
                 "relationship_id": "rel_" + "d" * 32,
+                "source_id": SOURCE_ID,
                 "source_entity_id": asset["entity_id"],
                 "target_entity_id": municipality["entity_id"],
             },
             {
                 "relationship_id": "rel_" + "e" * 32,
+                "source_id": SOURCE_ID,
                 "source_entity_id": asset["entity_id"],
                 "target_entity_id": event["entity_id"],
             },
@@ -166,11 +151,7 @@ def _package(tmp_path: Path) -> Path:
             {
                 "alert_id": "alrt_" + "f" * 32,
                 "is_critical": True,
-                "attributes": {
-                    "review_status_raw": "accepted",
-                    "review_status": "accepted",
-                    "promotion_eligible": True,
-                },
+                "attributes": {"review_status_raw": "accepted", "review_status": "accepted", "promotion_eligible": True},
             }
         ],
     )
@@ -224,61 +205,72 @@ def test_audit_can_inspect_legacy_package_but_never_promotes(tmp_path):
 
 def test_nonaccepted_primary_in_canonical_stream_fails_closed(tmp_path):
     root = _package(tmp_path)
-    entities_path = root / "outputs" / "federation" / "entities.jsonl"
-    rows = [json.loads(line) for line in entities_path.read_text().splitlines()]
+    path = root / "outputs" / "federation" / "entities.jsonl"
+    rows = [json.loads(line) for line in path.read_text().splitlines()]
     rows[0]["attributes"]["review_status"] = "blocked"
     rows[0]["attributes"]["promotion_eligible"] = False
-    _write_jsonl(entities_path, rows)
+    _write_jsonl(path, rows)
     with pytest.raises(ReviewQuarantineError, match="is not accepted"):
         _validate_certification(root)
 
 
 def test_nonaccepted_critical_alert_fails_closed(tmp_path):
     root = _package(tmp_path)
-    alert_path = root / "outputs" / "federation" / "alerts.jsonl"
-    rows = [json.loads(line) for line in alert_path.read_text().splitlines()]
+    path = root / "outputs" / "federation" / "alerts.jsonl"
+    rows = [json.loads(line) for line in path.read_text().splitlines()]
     rows[0]["attributes"]["review_status"] = "blocked"
     rows[0]["attributes"]["promotion_eligible"] = False
-    _write_jsonl(alert_path, rows)
+    _write_jsonl(path, rows)
     with pytest.raises(ReviewQuarantineError, match="is not accepted"):
         _validate_certification(root)
 
 
 def test_relationship_to_quarantined_or_missing_entity_fails_closed(tmp_path):
     root = _package(tmp_path)
-    rel_path = root / "outputs" / "federation" / "relationships.jsonl"
-    rows = [json.loads(line) for line in rel_path.read_text().splitlines()]
+    path = root / "outputs" / "federation" / "relationships.jsonl"
+    rows = [json.loads(line) for line in path.read_text().splitlines()]
     rows[0]["target_entity_id"] = "ent_" + "0" * 32
-    _write_jsonl(rel_path, rows)
+    _write_jsonl(path, rows)
     with pytest.raises(ReviewQuarantineError, match="outside retained canonical entity set"):
+        _validate_certification(root)
+
+
+def test_support_node_cannot_keep_quarantined_provenance(tmp_path):
+    root = _package(tmp_path)
+    path = root / "outputs" / "federation" / "entities.jsonl"
+    rows = [json.loads(line) for line in path.read_text().splitlines()]
+    support = next(row for row in rows if row["entity_type"] == "municipality")
+    support["source_id"] = OTHER_SOURCE_ID
+    _write_jsonl(path, rows)
+    with pytest.raises(ReviewQuarantineError, match="provenance is not bound"):
         _validate_certification(root)
 
 
 def test_scope_drift_fails_closed(tmp_path):
     root = _package(tmp_path)
-    scope_path = root / "governance" / "federation_spatial_certification_scope_v1.json"
-    scope = json.loads(scope_path.read_text())
+    path = root / "governance" / "federation_spatial_certification_scope_v1.json"
+    scope = json.loads(path.read_text())
     scope["nonblocking_disclosed_residue_classes"] = []
-    _write_json(scope_path, scope)
+    _write_json(path, scope)
     with pytest.raises(ReviewQuarantineError, match="domain record adjudication"):
         _validate_certification(root)
 
 
 def test_scope_receipt_must_bind_runtime_producer_identity(tmp_path):
     root = _package(tmp_path)
-    receipt_path = root / "outputs" / "federation_spatial_certification_scope_receipt.json"
-    receipt = json.loads(receipt_path.read_text())
+    path = root / "outputs" / "federation_spatial_certification_scope_receipt.json"
+    receipt = json.loads(path.read_text())
     receipt["producer_commit"] = "9" * 40
-    _write_json(receipt_path, receipt)
+    _write_json(path, receipt)
     with pytest.raises(ReviewQuarantineError, match="producer_commit does not match runtime producer"):
         _validate_certification(root)
 
 
 def test_scope_receipt_hash_detects_mutated_policy_bytes(tmp_path):
     root = _package(tmp_path)
-    scope_path = root / "governance" / "federation_spatial_certification_scope_v1.json"
-    scope = json.loads(scope_path.read_text())
+    path = root / "governance" / "federation_spatial_certification_scope_v1.json"
+    scope = json.loads(path.read_text())
     scope["claim_version"] = "9.9.9"
-    _write_json(scope_path, scope)
+    _write_json(path, scope)
     with pytest.raises(ReviewQuarantineError, match="SHA256 mismatch"):
         _validate_certification(root)
