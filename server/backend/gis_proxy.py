@@ -21,6 +21,7 @@ router = APIRouter(prefix="/api/gis", tags=["gis"])
 _MAX_TEXT_BYTES = 32 * 1024 * 1024
 _MAX_RANGE_BYTES = 1024 * 1024
 _RANGE_RE = re.compile(r"^bytes=(\d+)-(\d*)$")
+_MAX_PATH_DECODE_PASSES = 4
 
 
 @dataclass(frozen=True)
@@ -53,6 +54,18 @@ def _canonical_parts(url: str) -> urllib.parse.SplitResult:
         raise ValueError("target must be an absolute HTTP(S) URL")
     if parts.username or parts.password or parts.fragment:
         raise ValueError("userinfo and fragments are not allowed")
+    path = parts.path
+    for _ in range(_MAX_PATH_DECODE_PASSES):
+        if "\\" in path or "\x00" in path or any(
+            segment in {".", ".."} for segment in path.split("/")
+        ):
+            raise ValueError("dot-segments and ambiguous separators are not allowed")
+        decoded = urllib.parse.unquote(path, errors="strict")
+        if decoded == path:
+            break
+        path = decoded
+    else:
+        raise ValueError("target path exceeds the decoding bound")
     return parts
 
 
@@ -153,6 +166,8 @@ def gis_proxy(
         with _open_upstream(source_id, target, headers, timeout=45) as upstream:
             if 300 <= upstream.status < 400:
                 raise HTTPException(status_code=502, detail="upstream redirects are not allowed")
+            if normalized_range and upstream.status != 206:
+                raise HTTPException(status_code=502, detail="upstream did not honor byte_range")
             limit = _MAX_RANGE_BYTES if normalized_range else _MAX_TEXT_BYTES
             body = _read_bounded(upstream, limit)
             response_headers = {}

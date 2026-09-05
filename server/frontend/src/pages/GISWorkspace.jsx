@@ -5,7 +5,7 @@ import { acquireOnlineSource, acquireRasterAsset } from '@/gis/acquisitionFacade
 import { compareRendererEquivalence, createCanonicalMapState, switchRenderMode } from '@/gis/contracts';
 import { buildRasterPreview } from '@/gis/rasterPreview';
 import RendererSurface from '@/gis/renderers/RendererSurface';
-import { GEOSPATIAL_PROVIDERS, GIS_RUNTIME_RESPONSIBILITIES, ONLINE_SOURCE_CATALOG, listOnlineSourceDefinitions } from '@/gis/sourceRegistry';
+import { GEOSPATIAL_PROVIDERS, GIS_RUNTIME_RESPONSIBILITIES, ONLINE_SOURCE_CATALOG, listOnlineSourceDefinitions, preferredOnlineSourceDefinition } from '@/gis/sourceRegistry';
 
 const BASEMAPS = Object.freeze({
   cartoDark: { label: 'CARTO Dark', url: 'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', attribution: '&copy; OpenStreetMap, &copy; CARTO' },
@@ -44,7 +44,7 @@ export default function GISWorkspace() {
   const [endDate, setEndDate] = useState('');
   const basemap = BASEMAPS[basemapId];
   const providerSources = useMemo(() => listOnlineSourceDefinitions(onlineProviderId), [onlineProviderId]);
-  const selectedOnlineSource = ONLINE_SOURCE_CATALOG.find((item) => item.sourceId === onlineSourceId) || providerSources[0] || null;
+  const selectedOnlineSource = ONLINE_SOURCE_CATALOG.find((item) => item.sourceId === onlineSourceId) || preferredOnlineSourceDefinition(onlineProviderId);
 
   const canonicalState = useMemo(() => {
     const provenanceRefs = [];
@@ -88,8 +88,9 @@ export default function GISWorkspace() {
   function onProviderChange(event) {
     const nextProviderId = event.target.value;
     const nextSources = listOnlineSourceDefinitions(nextProviderId);
+    const preferredSource = nextSources.find((item) => item.runtimeStatus === 'IMPLEMENTED') || nextSources[0] || null;
     setOnlineProviderId(nextProviderId);
-    setOnlineSourceId(nextSources[0]?.sourceId || '');
+    setOnlineSourceId(preferredSource?.sourceId || '');
     setDiscovery(null);
   }
 

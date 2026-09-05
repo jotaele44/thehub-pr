@@ -217,7 +217,8 @@ class IdentityRegistry:
             raise ValueError("unsupported entity_resolution.v1 decision_type")
         if outcome is not None and outcome not in ALLOWED_OUTCOMES:
             raise ValueError("unsupported entity_resolution.v1 outcome")
-        if not reason_code or not evidence_ids:
+        canonical_evidence_ids = sorted({str(value) for value in evidence_ids if str(value)})
+        if not reason_code or not canonical_evidence_ids:
             raise ValueError("decision requires reason_code and evidence_ids")
         if reason_code in {
             "normalized_name",
@@ -228,7 +229,7 @@ class IdentityRegistry:
             "embedding_similarity",
         }:
             raise ValueError("non-adjudicative reason_code is prohibited")
-        evidence_json = json.dumps(list(evidence_ids), sort_keys=True)
+        evidence_json = json.dumps(canonical_evidence_ids, separators=(",", ":"))
         expected = (
             decision_type,
             outcome,
@@ -267,8 +268,19 @@ class IdentityRegistry:
             "fprov", source_producer, local_record_id, evidence_id
         )
         with self._connect() as db:
+            existing = db.execute(
+                "SELECT source_producer,local_record_id,evidence_id,payload_hash FROM federation_provenance WHERE provenance_id=?",
+                (provenance_id,),
+            ).fetchone()
+            expected = (source_producer, local_record_id, evidence_id, payload_hash_value)
+            if existing:
+                if tuple(existing) != expected:
+                    raise ValueError(
+                        "immutable provenance_id already recorded with different semantics"
+                    )
+                return provenance_id
             db.execute(
-                "INSERT OR IGNORE INTO federation_provenance (provenance_id,source_producer,local_record_id,evidence_id,payload_hash,created_at) VALUES (?,?,?,?,?,?)",
+                "INSERT INTO federation_provenance (provenance_id,source_producer,local_record_id,evidence_id,payload_hash,created_at) VALUES (?,?,?,?,?,?)",
                 (
                     provenance_id,
                     source_producer,

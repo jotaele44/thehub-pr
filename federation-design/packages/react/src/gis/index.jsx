@@ -8,6 +8,11 @@ function GisButton({ children, className = '', ...props }) {
 }
 
 export function FederationDatasetGrid({ records, columns, getRecordId, selection, onSelectRecord, compact = true }) {
+  const activate = (event, recordId) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return
+    event.preventDefault()
+    onSelectRecord?.(recordId)
+  }
   return (
     <div className={`fd-gis-grid${compact ? ' fd-gis-grid--compact' : ''}`} role="region" aria-label="Dataset records">
       <table>
@@ -16,7 +21,7 @@ export function FederationDatasetGrid({ records, columns, getRecordId, selection
           const recordId = String(getRecordId(record))
           const selected = selection?.recordId === recordId
           return (
-            <tr key={recordId} data-record-id={recordId} aria-selected={selected || undefined} onClick={() => onSelectRecord?.(recordId)}>
+            <tr key={recordId} data-record-id={recordId} aria-selected={selected || undefined} tabIndex={onSelectRecord ? 0 : undefined} onClick={() => onSelectRecord?.(recordId)} onKeyDown={(event) => activate(event, recordId)}>
               {columns.map((column) => <td key={column.key}>{column.render ? column.render(record) : String(record[column.key] ?? '')}</td>)}
             </tr>
           )
@@ -44,10 +49,12 @@ export function FederationBasemapSelector({ basemaps = [], value, onChange }) {
 
 export function FederationMapWorkspace({ records, columns, getRecordId, bridge, provider, basemaps = [], initialBasemapId, onBack, onExportKml }) {
   const mapNode = useRef(null)
-  const [basemapId, setBasemapId] = useState(initialBasemapId ?? basemaps[0]?.id ?? '')
+  const requestedBasemapId = basemaps.some((item) => item.id === initialBasemapId) ? initialBasemapId : basemaps[0]?.id ?? ''
+  const [basemapId, setBasemapId] = useState(requestedBasemapId)
   const [selection, setSelection] = useState(() => bridge.getSelection())
 
   useEffect(() => bridge.subscribe(setSelection), [bridge])
+  useEffect(() => { setBasemapId(requestedBasemapId) }, [requestedBasemapId])
   useEffect(() => {
     if (!provider || !mapNode.current) return undefined
     const instance = provider.mount({ container: mapNode.current, basemapId, onFeatureSelect: (geometryId) => bridge.selectFeature(geometryId, { source: 'map' }) })
@@ -75,13 +82,13 @@ export function FederationMapWorkspace({ records, columns, getRecordId, bridge, 
   )
 }
 
-export function FederationDatasetWorkspace({ records = [], features = [], columns = [], getRecordId, getFeatureRecordId, getGeometryId, provider, basemaps, exports = [], onExport, onExportKml, onBack }) {
+export function FederationDatasetWorkspace({ records = [], features = [], columns = [], getRecordId, getFeatureRecordId, getGeometryId, provider, basemaps, initialBasemapId, exports = [], onExport, onExportKml, onBack }) {
   const [mode, setMode] = useState('table')
   const bridge = useMemo(() => createDatasetMapBridge({ records, features, getRecordId, getFeatureRecordId, getGeometryId }), [records, features, getRecordId, getFeatureRecordId, getGeometryId])
   const [selection, setSelection] = useState(() => bridge.getSelection())
   useEffect(() => bridge.subscribe(setSelection), [bridge])
 
-  if (mode === 'map') return <FederationMapWorkspace records={records} columns={columns} getRecordId={getRecordId} bridge={bridge} provider={provider} basemaps={basemaps} onBack={() => setMode('table')} onExportKml={onExportKml} />
+  if (mode === 'map') return <FederationMapWorkspace records={records} columns={columns} getRecordId={getRecordId} bridge={bridge} provider={provider} basemaps={basemaps} initialBasemapId={initialBasemapId} onBack={() => setMode('table')} onExportKml={onExportKml} />
   return (
     <section className="fd-gis-dataset-workspace">
       <header className="fd-gis-dataset-workspace__header">

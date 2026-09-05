@@ -7,6 +7,17 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 const OFFLINE = process.env.VITE_OFFLINE === '1';
 const CESIUM_SOURCE = path.resolve(import.meta.dirname, 'node_modules/cesium/Build/Cesium');
 const CESIUM_DIRS = ['Assets', 'ThirdParty', 'Widgets', 'Workers'];
+export const CESIUM_CONTENT_TYPES = Object.freeze({
+  '.js': 'text/javascript',
+  '.json': 'application/json',
+  '.css': 'text/css',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.svg': 'image/svg+xml',
+  '.xml': 'application/xml',
+  '.wasm': 'application/wasm',
+});
 
 function cesiumRuntimeAssets() {
   let outDir = path.resolve(import.meta.dirname, OFFLINE ? 'export-standalone' : 'dist');
@@ -23,8 +34,7 @@ function cesiumRuntimeAssets() {
           const root = `${CESIUM_SOURCE}${path.sep}`;
           if (!candidate.startsWith(root) || !fs.existsSync(candidate) || !fs.statSync(candidate).isFile()) return next();
           const ext = path.extname(candidate).toLowerCase();
-          const types = { '.js': 'text/javascript', '.json': 'application/json', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.svg': 'image/svg+xml', '.xml': 'application/xml' };
-          if (types[ext]) res.setHeader('Content-Type', types[ext]);
+          if (CESIUM_CONTENT_TYPES[ext]) res.setHeader('Content-Type', CESIUM_CONTENT_TYPES[ext]);
           fs.createReadStream(candidate).pipe(res);
         } catch {
           next();

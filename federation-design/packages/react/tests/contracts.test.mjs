@@ -9,6 +9,7 @@ const pkgRoot = join(here, '..')
 const designRoot = join(pkgRoot, '..', '..')
 const indexSource = readFileSync(join(pkgRoot, 'src', 'index.jsx'), 'utf8')
 const css = ['foundation.css', 'primitives.css', 'states.css'].map((name) => readFileSync(join(designRoot, 'styles', name), 'utf8')).join('\n')
+const gisCss = readFileSync(join(designRoot, 'styles', 'gis.css'), 'utf8')
 const snapshot = JSON.parse(readFileSync(join(pkgRoot, 'api-snapshot.json'), 'utf8'))
 
 test('API snapshot is additive over the complete v0.3 public API', () => {
@@ -51,4 +52,16 @@ test('CSS preserves reduced motion and forced-colors behavior', () => {
   assert.match(css, /prefers-reduced-motion: reduce/)
   assert.match(css, /forced-colors: active/)
   assert.match(css, /scroll-behavior:auto!important/)
+})
+
+test('GIS public API and styling are governed by the package contract', () => {
+  for (const name of [
+    'createDatasetMapBridge', 'FederationDatasetGrid', 'FederationExportMenu',
+    'FederationBasemapSelector', 'FederationMapWorkspace', 'FederationDatasetWorkspace',
+  ]) {
+    assert.ok(snapshot.exports.includes(name), `${name} missing from snapshot`)
+  }
+  assert.doesNotMatch(gisCss, /Arial|#[0-9a-f]{3,8}/i)
+  assert.match(gisCss, /var\(--fd-font-sans\)/)
+  assert.match(gisCss, /var\(--fd-surface\)/)
 })

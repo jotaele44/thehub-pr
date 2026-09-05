@@ -100,7 +100,7 @@ def adjudicate_project(
     """Classify one project lead without heuristic identity promotion."""
     resolved_lead_id = str(
         lead_id or ((lead or {}).get("lead_id") if isinstance(lead, dict) else "") or ""
-    )
+    ).strip()
     if not resolved_lead_id:
         raise ValueError("lead_id required")
 
@@ -133,7 +133,7 @@ def adjudicate_project(
     # into a synthetic record that did not exist in either producer.
     binding_pairs: list[dict[str, Any]] = []
     conflicts: list[dict[str, Any]] = []
-    contradictions: list[dict[str, Any]] = []
+    contradictions = _contradictions(*fiscals, *physicals)
     for fiscal in fiscals:
         fk = _binding_keys(fiscal)
         for physical in physicals:
@@ -157,7 +157,6 @@ def adjudicate_project(
                         "physical_keys": sorted(pk),
                     }
                 )
-            contradictions.extend(_contradictions(fiscal, physical))
 
     # De-duplicate exact evidence tuples without collapsing distinct assertion pairs.
     result["binding_candidates"] = binding_pairs
@@ -189,7 +188,7 @@ def build_project_banner(
     lead: dict[str, Any], *, evidence_type: str, binding_value: str
 ) -> dict[str, Any]:
     """Create ``project_banner/v1`` only after the binding gate has passed."""
-    lead_id = str(lead.get("lead_id") or "")
+    lead_id = str(lead.get("lead_id") or "").strip()
     if not lead_id:
         raise ValueError("lead_id required")
     digest = hashlib.sha256(

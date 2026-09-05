@@ -5,6 +5,8 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
+import hub.contract_runtime as contract_runtime
+
 CONTRACTS = (
     "federation_entity.v1.schema.json",
     "federation_entity_member.v1.schema.json",
@@ -22,6 +24,17 @@ def test_identity_contracts_are_valid_draft_2020_12_schemas():
     for name in CONTRACTS:
         schema = json.loads((root / name).read_text(encoding="utf-8"))
         Draft202012Validator.check_schema(schema)
+
+
+def test_contract_schema_loader_caches_each_frozen_document():
+    contract_runtime._load_contract.cache_clear()
+
+    first = contract_runtime._load_contract("entity_resolution.v1")
+    second = contract_runtime._load_contract("entity_resolution.v1")
+
+    assert first is second
+    assert contract_runtime._load_contract.cache_info().hits == 1
+    assert contract_runtime._load_contract.cache_info().misses == 1
 
 
 def test_member_contract_reuses_entity_resolution_decision_id():

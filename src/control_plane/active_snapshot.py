@@ -71,6 +71,10 @@ def promote_snapshot(storage_root, manifest_path, *, actor: str, promoted_at: st
     immutable_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_bytes = _canonical_bytes(manifest)
     if immutable_path.exists():
+        if immutable_path.is_symlink() or not immutable_path.is_file():
+            raise ActiveSnapshotError(
+                f"existing immutable snapshot must be a regular file: {immutable_path}"
+            )
         if immutable_path.read_bytes() != manifest_bytes:
             raise ActiveSnapshotError("snapshot id already exists with different content")
     else:

@@ -99,6 +99,15 @@ class WorkspaceRepositoryRegistry:
                 f"repository root escapes configured workspace: {candidate}"
             ) from exc
 
+    @staticmethod
+    def _assert_within_producer(candidate: Path, producer_root: Path) -> None:
+        try:
+            candidate.relative_to(producer_root)
+        except ValueError as exc:
+            raise RepositoryBindingError(
+                f"registered manifest escapes producer root: {candidate}"
+            ) from exc
+
     def _producer_root(self, producer: Producer) -> Path:
         relative = producer.local_path or producer.repo_name
         candidate = (self.workspace_root / relative).resolve()
@@ -131,6 +140,7 @@ class WorkspaceRepositoryRegistry:
 
         manifest_path = (root / producer.federation_manifest).resolve()
         self._assert_within_workspace(manifest_path)
+        self._assert_within_producer(manifest_path, root)
         if not manifest_path.is_file():
             raise RepositoryBindingError(
                 f"registered manifest is missing for {producer.repo}: {manifest_path}"
