@@ -1,12 +1,15 @@
 """Federation spatial-sidecar discovery and cross-producer query primitives.
 
 The Hub is the sole cross-producer correlation authority. Producer geometry is
-context/evidence only and MUST NOT establish canonical identity.
+context/evidence only and MUST NOT establish canonical identity. Audit loading
+is explicitly non-promotable; certified loading requires every v1 producer gate
+to be PASS.
 """
 from __future__ import annotations
 
 import json
 import math
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Mapping, Sequence
@@ -15,6 +18,30 @@ SPATIAL_MANIFEST_VERSION = "federation-spatial-manifest/1.0"
 SPATIAL_CONTRACT_VERSION = "federation-spatial-contract/1.0"
 IDENTITY_DEFAULT = "CANDIDATE_NOT_IDENTITY"
 HUB_AUTHORITY = "thehub-pr"
+REQUIRED_CERTIFICATION_GATES = (
+    "schema",
+    "geometry",
+    "tests",
+    "postgis",
+    "security",
+    "performance",
+    "desktop",
+    "ios",
+    "federation",
+)
+ALLOWED_GATE_STATES = {
+    "PASS",
+    "FAIL",
+    "OPEN",
+    "BLOCKED",
+    "PROVISIONAL",
+    "AUDIT_ONLY",
+    "UNRESOLVED",
+    "UNKNOWN",
+    "NOT_APPLICABLE",
+}
+_HEX40 = re.compile(r"^[0-9a-f]{40}$")
+_HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
 
 class SpatialContractError(ValueError):
@@ -27,15 +54,29 @@ class SpatialProducer:
     authority: str
     frozen_base_sha: str
     manifest: Mapping[str, object]
+    ingestion_mode: str
+    promotable: bool
 
 
-def validate_spatial_manifest(manifest: Mapping[str, object]) -> list[str]:
+def validate_spatial_manifest(
+    manifest: Mapping[str, object], *, certification: bool = False
+) -> list[str]:
+    """Validate a producer manifest.
+
+    Audit mode validates structure and fail-closed identity semantics but permits
+    unresolved gate states so analysts can inspect evidence. Certification mode
+    additionally requires the complete v1 gate set and PASS for every gate.
+    """
     errors: list[str] = []
     if manifest.get("contract_version") != SPATIAL_MANIFEST_VERSION:
         errors.append("unsupported spatial manifest version")
     producer = manifest.get("producer_repo")
     if not isinstance(producer, str) or not producer:
         errors.append("producer_repo is required")
+    frozen_base_sha = manifest.get("frozen_base_sha")
+    if not isinstance(frozen_base_sha, str) or not _HEX40.fullmatch(frozen_base_sha):
+        errors.append("frozen_base_sha must be a lowercase 40-character Git SHA")
+
     cross_repo = manifest.get("cross_repo")
     if not isinstance(cross_repo, Mapping):
         errors.append("cross_repo object is required")
@@ -44,26 +85,54 @@ def validate_spatial_manifest(manifest: Mapping[str, object]) -> list[str]:
             errors.append("identity_default must be CANDIDATE_NOT_IDENTITY")
         if cross_repo.get("hub_correlation_authority") != HUB_AUTHORITY:
             errors.append("cross-producer correlation authority must remain thehub-pr")
+
     storage = manifest.get("storage")
     if not isinstance(storage, Mapping) or storage.get("ownership") != "REPO_LOCAL":
         errors.append("producer spatial storage ownership must be REPO_LOCAL")
     contracts = manifest.get("contracts")
     if not isinstance(contracts, Mapping) or not contracts:
         errors.append("contracts object is required")
+
+    gates = manifest.get("gates")
+    if not isinstance(gates, Mapping):
+        if certification:
+            errors.append("certification requires a gates object")
+        return errors
+
+    missing = [gate for gate in REQUIRED_CERTIFICATION_GATES if gate not in gates]
+    if certification and missing:
+        errors.append(f"missing certification gates: {missing}")
+    extra = sorted(set(gates) - set(REQUIRED_CERTIFICATION_GATES))
+    if certification and extra:
+        errors.append(f"unexpected certification gates: {extra}")
+    for gate, state in gates.items():
+        if not isinstance(state, str) or state not in ALLOWED_GATE_STATES:
+            errors.append(f"invalid gate state {gate}={state!r}")
+        elif certification and gate in REQUIRED_CERTIFICATION_GATES and state != "PASS":
+            errors.append(f"certification gate {gate} is {state}, expected PASS")
     return errors
 
 
-def load_spatial_manifest(path: str | Path) -> SpatialProducer:
+def load_spatial_manifest(path: str | Path, *, certification: bool = False) -> SpatialProducer:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
-    errors = validate_spatial_manifest(data)
+    if not isinstance(data, Mapping):
+        raise SpatialContractError("spatial manifest root must be an object")
+    errors = validate_spatial_manifest(data, certification=certification)
     if errors:
         raise SpatialContractError("; ".join(errors))
     return SpatialProducer(
         producer_repo=str(data["producer_repo"]),
-        authority=str(data.get("domain_authority", "")),
+        authority=str(data.get("authority", data.get("domain_authority", ""))),
         frozen_base_sha=str(data.get("frozen_base_sha", "")),
         manifest=data,
+        ingestion_mode="CERTIFIED" if certification else "AUDIT_ONLY",
+        promotable=bool(certification),
     )
+
+
+def load_certified_spatial_manifest(path: str | Path) -> SpatialProducer:
+    """Load a producer only when its entire v1 certification gate set is PASS."""
+    return load_spatial_manifest(path, certification=True)
 
 
 def validate_spatial_feature(feature: Mapping[str, object], producer_repo: str) -> list[str]:
@@ -77,10 +146,12 @@ def validate_spatial_feature(feature: Mapping[str, object], producer_repo: str) 
     geometry = feature.get("geometry")
     if not isinstance(geometry, Mapping):
         errors.append("geometry is required")
-    if not isinstance(feature.get("logical_sha256"), str):
-        errors.append("logical_sha256 is required")
-    if not isinstance(feature.get("source_manifestation_sha256"), str):
-        errors.append("source_manifestation_sha256 is required")
+    logical_sha = feature.get("logical_sha256")
+    if not isinstance(logical_sha, str) or not _HEX64.fullmatch(logical_sha):
+        errors.append("logical_sha256 must be a lowercase 64-character SHA-256")
+    manifestation_sha = feature.get("source_manifestation_sha256")
+    if not isinstance(manifestation_sha, str) or not _HEX64.fullmatch(manifestation_sha):
+        errors.append("source_manifestation_sha256 must be a lowercase 64-character SHA-256")
     return errors
 
 
@@ -89,9 +160,12 @@ def _point(feature: Mapping[str, object]) -> tuple[float, float] | None:
     if not isinstance(geometry, Mapping) or geometry.get("type") != "Point":
         return None
     coordinates = geometry.get("coordinates")
-    if not isinstance(coordinates, Sequence) or len(coordinates) < 2:
+    if not isinstance(coordinates, Sequence) or isinstance(coordinates, (str, bytes)) or len(coordinates) < 2:
         return None
-    lon, lat = float(coordinates[0]), float(coordinates[1])
+    try:
+        lon, lat = float(coordinates[0]), float(coordinates[1])
+    except (TypeError, ValueError):
+        return None
     if not math.isfinite(lon) or not math.isfinite(lat):
         return None
     if not -180 <= lon <= 180 or not -90 <= lat <= 90:
