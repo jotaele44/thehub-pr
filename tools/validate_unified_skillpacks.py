@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -50,6 +51,13 @@ def validate(root: Path) -> dict[str, Any]:
         errors.append("repository identity mismatch")
     if manifest["pinned_base_commit"] != binding["pinned_base_commit"]:
         errors.append("pinned base mismatch")
+    skill_base_match = re.search(
+        r"^Pinned base: `([0-9a-f]{40})`\.$", skill_text, flags=re.MULTILINE
+    )
+    if skill_base_match is None:
+        errors.append("SKILL pinned base is missing or invalid")
+    elif skill_base_match.group(1) != manifest["pinned_base_commit"]:
+        errors.append("SKILL pinned base mismatch")
     if manifest.get("runtime_enabled") is not False:
         errors.append("runtime is not fail-closed")
     if any(v is not False for v in binding["activation"].values()):
