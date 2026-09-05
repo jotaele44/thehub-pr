@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GEOSPATIAL_PROVIDERS, ONLINE_SOURCE_CATALOG, SOURCE_PROTOCOL_ADAPTERS, getOnlineSourceDefinition, getProvider } from './sourceRegistry';
+import { GEOSPATIAL_PROVIDERS, ONLINE_SOURCE_CATALOG, SOURCE_PROTOCOL_ADAPTERS, getOnlineSourceDefinition, getProvider, preferredOnlineSourceDefinition } from './sourceRegistry';
 
 describe('GIS source registry invariants', () => {
   it('has unique provider and source stable IDs', () => {
@@ -46,5 +46,14 @@ describe('GIS source registry invariants', () => {
     expect(municipios.where).toBe("STATE='72'");
     expect(state.expectedFeatureCount).toBe(1);
     expect(municipios.expectedFeatureCount).toBe(78);
+  });
+
+  it('prefers an executable source without removing registry-only candidates', () => {
+    const preferred = preferredOnlineSourceDefinition('pr-geodata-wfs');
+
+    expect(preferred.sourceId).toBe('pr-geodata-municipios-2015');
+    expect(preferred.runtimeStatus).toBe('IMPLEMENTED');
+    expect(ONLINE_SOURCE_CATALOG.some((item) => item.sourceId === 'pr-geodata-barrios-2015-simpl')).toBe(true);
+    expect(preferredOnlineSourceDefinition('usgs-3dhp').runtimeStatus).toBe('OPEN_REQUIRES_LAYER_AND_AOI');
   });
 });

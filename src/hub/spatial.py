@@ -55,12 +55,14 @@ def validate_spatial_manifest(manifest: Mapping[str, object]) -> list[str]:
 
 def load_spatial_manifest(path: str | Path) -> SpatialProducer:
     data = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(data, Mapping):
+        raise SpatialContractError("spatial manifest must be an object")
     errors = validate_spatial_manifest(data)
     if errors:
         raise SpatialContractError("; ".join(errors))
     return SpatialProducer(
         producer_repo=str(data["producer_repo"]),
-        authority=str(data.get("domain_authority", "")),
+        authority=str(data["cross_repo"]["hub_correlation_authority"]),
         frozen_base_sha=str(data.get("frozen_base_sha", "")),
         manifest=data,
     )
@@ -89,9 +91,18 @@ def _point(feature: Mapping[str, object]) -> tuple[float, float] | None:
     if not isinstance(geometry, Mapping) or geometry.get("type") != "Point":
         return None
     coordinates = geometry.get("coordinates")
-    if not isinstance(coordinates, Sequence) or len(coordinates) < 2:
+    if (
+        not isinstance(coordinates, Sequence)
+        or isinstance(coordinates, (str, bytes))
+        or len(coordinates) < 2
+    ):
         return None
-    lon, lat = float(coordinates[0]), float(coordinates[1])
+    if isinstance(coordinates[0], bool) or isinstance(coordinates[1], bool):
+        return None
+    try:
+        lon, lat = float(coordinates[0]), float(coordinates[1])
+    except (TypeError, ValueError):
+        return None
     if not math.isfinite(lon) or not math.isfinite(lat):
         return None
     if not -180 <= lon <= 180 or not -90 <= lat <= 90:
@@ -133,13 +144,13 @@ def cross_producer_within_distance(
         if errors:
             raise SpatialContractError("; ".join(errors))
 
+    right_points = [(feature, _point(feature)) for feature in right_rows]
     relations: list[dict[str, object]] = []
     for a in left_rows:
         pa = _point(a)
         if pa is None:
             continue
-        for b in right_rows:
-            pb = _point(b)
+        for b, pb in right_points:
             if pb is None:
                 continue
             distance_m = _haversine_m(pa, pb)

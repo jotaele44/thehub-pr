@@ -31,7 +31,7 @@ export function createDatasetMapBridge({ records = [], features = [], getRecordI
     featuresByRecordId.set(recordId, list)
   }
 
-  let selection = { recordId: null, geometryId: null, source: null }
+  let selection = Object.freeze({ recordId: null, geometryId: null, source: null })
   const listeners = new Set()
   function emit() { for (const listener of listeners) listener(selection) }
 
@@ -44,7 +44,7 @@ export function createDatasetMapBridge({ records = [], features = [], getRecordI
       throw new Error(`geometryId ${gid} is not bound to recordId ${rid}`)
     }
     if (gid === null && candidates.length === 1) gid = String(getGeometryId(candidates[0]))
-    selection = { recordId: rid, geometryId: gid, source }
+    selection = Object.freeze({ recordId: rid, geometryId: gid, source })
     emit()
     return selection
   }
@@ -54,7 +54,7 @@ export function createDatasetMapBridge({ records = [], features = [], getRecordI
     const feature = featureByGeometryId.get(gid)
     if (!feature) throw new Error(`unknown geometryId: ${gid}`)
     const rid = String(getFeatureRecordId(feature))
-    selection = { recordId: rid, geometryId: gid, source }
+    selection = Object.freeze({ recordId: rid, geometryId: gid, source })
     emit()
     return selection
   }

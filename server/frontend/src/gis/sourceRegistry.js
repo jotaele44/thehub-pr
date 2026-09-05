@@ -64,6 +64,10 @@ export const ONLINE_SOURCE_CATALOG = Object.freeze([
 export function getProvider(providerId) { const provider = GEOSPATIAL_PROVIDERS.find((item) => item.providerId === providerId); if (!provider) throw new Error(`unknown providerId: ${providerId}`); return provider; }
 export function getOnlineSourceDefinition(sourceId) { const source = ONLINE_SOURCE_CATALOG.find((item) => item.sourceId === sourceId); if (!source) throw new Error(`unknown online sourceId: ${sourceId}`); return source; }
 export function listOnlineSourceDefinitions(providerId = null) { return ONLINE_SOURCE_CATALOG.filter((item) => !providerId || item.providerId === providerId); }
+export function preferredOnlineSourceDefinition(providerId) {
+  const sources = listOnlineSourceDefinitions(providerId);
+  return sources.find((item) => item.runtimeStatus === 'IMPLEMENTED') || sources[0] || null;
+}
 
 export function createSourceManifest(input = {}) {
   if (!input.providerId || !input.sourceId) throw new Error('source manifest requires providerId and sourceId');
