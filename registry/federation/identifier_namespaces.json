@@ -1,0 +1,31 @@
+{
+  "schema_version": "federation_identifier_namespace_registry_v1",
+  "authority_plane": "prii-federation-spatial-identity",
+  "policy": {
+    "undeclared_emitted_namespace": "FAIL",
+    "cross_namespace_collision": "FAIL_WHEN_SEMANTICS_OVERLAP",
+    "producer_local_ids_replace_federation_ids": false,
+    "similarity_establishes_identity": false
+  },
+  "namespaces": [
+    {"namespace":"FED_ENTITY_STREAM","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^ent_[0-9a-fA-F]+$","scope":"SHARED_INTERCHANGE","identity_bearing":false},
+    {"namespace":"FED_SOURCE_STREAM","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^src_[0-9a-fA-F]+$","scope":"SHARED_INTERCHANGE","identity_bearing":false},
+    {"namespace":"FED_REL_STREAM","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^rel_[0-9a-fA-F]+$","scope":"SHARED_INTERCHANGE","identity_bearing":false},
+    {"namespace":"FED_OBSERVATION_STREAM","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^obs_[0-9a-fA-F]+$","scope":"SHARED_INTERCHANGE","identity_bearing":false},
+    {"namespace":"FED_ALERT_STREAM","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^alrt_[0-9a-fA-F]+$","scope":"SHARED_INTERCHANGE","identity_bearing":false},
+    {"namespace":"FED_PERSISTENT_ENTITY","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^fed_[0-9a-f]{32}$","scope":"SHARED_IDENTITY","identity_bearing":true},
+    {"namespace":"FED_PERSISTENT_RELATIONSHIP","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^frel_[0-9a-f]{32}$","scope":"SHARED_RELATIONSHIP","identity_bearing":true},
+    {"namespace":"MONEYSWEEP_GOVERNMENT_ENTITY","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^GOV_[A-Z0-9]{4,}$","scope":"DOMAIN_ONLY","identity_bearing":true},
+    {"namespace":"SPIDERWEB_PIN","owner":"spiderweb-pr","repository":"jotaele44/spiderweb-pr","pattern":"^PIN_[A-Z0-9]+(?:_[A-Z0-9]+)*$","scope":"DOMAIN_ONLY","identity_bearing":true},
+    {"namespace":"SPIDERWEB_INTAKE_SW","owner":"spiderweb-pr","repository":"jotaele44/spiderweb-pr","pattern":"^SW-PRINTAKE-.*$","scope":"WORKFLOW_ONLY","identity_bearing":false},
+    {"namespace":"SPIDERWEB_INTAKE_CS","owner":"spiderweb-pr","repository":"jotaele44/spiderweb-pr","pattern":"^CS-PRINTAKE-.*$","scope":"WORKFLOW_ONLY","identity_bearing":false},
+    {"namespace":"AGUAYLUZ_WATER_TREATMENT","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^WTR.*$","scope":"DOMAIN_ONLY","identity_bearing":true},
+    {"namespace":"AGUAYLUZ_WASTEWATER","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^WWT.*$","scope":"DOMAIN_ONLY","identity_bearing":true},
+    {"namespace":"AGUAYLUZ_OSM_POWER","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^OSMP.*$","scope":"DOMAIN_ONLY","identity_bearing":true},
+    {"namespace":"AGUAYLUZ_HIFLD_POWER","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^HIFLD_.*$","scope":"DOMAIN_ONLY","identity_bearing":true},
+    {"namespace":"SKYWATCHER_SATIM_VISUAL","owner":"skywatcher-pr","repository":"jotaele44/skywatcher-pr","pattern":"^SATIM-VIS.*$","scope":"DOMAIN_ONLY","identity_bearing":false}
+  ],
+  "census_state": "PROVISIONAL_UNTIL_REPOSITORY_CRAWLER_PASSES",
+  "known_unclosed_repositories": ["jotaele44/ovnis-pr","jotaele44/centinelas-pr"],
+  "certification_effect": "BLOCKING_UNTIL_CRAWLER_ZERO_UNKNOWN"
+}
