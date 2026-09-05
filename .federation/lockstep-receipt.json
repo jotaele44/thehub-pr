@@ -1,0 +1,19 @@
+{
+  "schema_version": "federation_lockstep_peer_receipt_v1",
+  "repo": "thehub-pr",
+  "reference_repo": "ovnis-pr",
+  "generation": 1,
+  "baseline_id": "sha256:44a190b6cc9451c86e2abbc39c447bcfe6fe642bea7d3636b0aae0f2a03e7f63",
+  "source_sha": "94e000b5e0f21a5d1acaed42e79e73523c86ab56",
+  "disposition": "COMPATIBLE_UNCHANGED",
+  "contracts": [
+    "federation_export_manifest@1",
+    "ovnis_case_schema@1",
+    "repo_federation_manifest@1"
+  ],
+  "impact_set": [
+    "centinelas-pr",
+    "ovnis-pr",
+    "thehub-pr"
+  ]
+}
