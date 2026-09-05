@@ -86,6 +86,75 @@ def test_diagnostics_cover_bundle_icon_workspace_and_state(tmp_path):
     assert by_label["Setup record"]["status"] == "info"
 
 
+def test_diagnostics_unchanged_without_a_doctor_manifest(tmp_path):
+    """Regression guard: a producer with no `.federation/doctor-checks.json`
+    yet (every producer except the one this feature first lands in) must see
+    exactly the same 5-item diagnostics list as before this integration."""
+    config = _config(tmp_path)
+    checks = diagnostics(config)
+    assert [c["label"] for c in checks] == [
+        "Self-contained runtime",
+        "Application interface",
+        "App icon",
+        "Workspace",
+        "Setup record",
+    ]
+
+
+def test_diagnostics_appends_federation_doctor_checks_when_manifest_present(tmp_path):
+    """When the target repo declares a doctor manifest, its results are
+    appended after the 5 bundle checks -- additive, never replacing them."""
+    config = _config(tmp_path)
+    fed_dir = config.repo_root / ".federation"
+    fed_dir.mkdir(parents=True, exist_ok=True)
+    (fed_dir / "doctor-checks.json").write_text(
+        json.dumps(
+            {
+                "schema_version": "prii.doctor-checks/v1",
+                "repository": "test/repo",
+                "checks": [
+                    {
+                        "id": "some_manual_source",
+                        "diagnosability_class": "not-automatable",
+                        "check": {"type": "manual"},
+                        "last_known_state": {"as_of": "2026-01-01", "note": "test fixture"},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    checks = diagnostics(config)
+    labels = [c["label"] for c in checks]
+    assert labels[:5] == [
+        "Self-contained runtime",
+        "Application interface",
+        "App icon",
+        "Workspace",
+        "Setup record",
+    ]
+    assert labels[5:] == ["some_manual_source"]
+    assert checks[5]["status"] == "info"
+
+
+def test_diagnostics_survives_a_broken_doctor_manifest(tmp_path, monkeypatch, caplog):
+    """A malformed manifest must not break the setup screen -- it degrades
+    to logging at debug level and returning the 5 original checks only."""
+    config = _config(tmp_path)
+    fed_dir = config.repo_root / ".federation"
+    fed_dir.mkdir(parents=True, exist_ok=True)
+    (fed_dir / "doctor-checks.json").write_text("{not valid json", encoding="utf-8")
+
+    checks = diagnostics(config)
+    assert [c["label"] for c in checks] == [
+        "Self-contained runtime",
+        "Application interface",
+        "App icon",
+        "Workspace",
+        "Setup record",
+    ]
+
+
 def test_setup_html_is_accessible_and_has_no_command_line_step(tmp_path):
     document = render_setup_html(_config(tmp_path))
     assert '<html lang="en">' in document
