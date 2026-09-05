@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prii-doctor"
+version = "0.1.0"
+description = "Shared, manifest-driven diagnostics engine for PRII federation producers. Runs each repo's declared external-dependency checks without ever reporting a false PASS for something it cannot verify."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+# No hard runtime deps: jsonschema (manifest schema validation) is imported
+# lazily in manifest.py and degrades to a skipped validation step if
+# unavailable -- matching the "WARN/SKIP, never fake-PASS" posture this
+# package exists to enforce, and keeping it as cheap to import as
+# prii-desktop/prii-maintenance for producers that install it into a frozen
+# desktop bundle.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "jsonschema>=4.21"]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+prii_doctor = ["schemas/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
