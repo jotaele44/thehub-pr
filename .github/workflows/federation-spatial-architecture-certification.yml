@@ -1,0 +1,161 @@
+name: Federation Spatial Architecture Certification
+
+on:
+  pull_request:
+    paths:
+      - 'schemas/federation_spatial_identity_v1_1.schema.json'
+      - 'schemas/federation_spatial_migration_receipt_v1_1.schema.json'
+      - 'federation/**'
+      - 'scripts/query_federation_spatial_registry.py'
+      - 'tests/test_query_federation_spatial_registry.py'
+      - '.github/workflows/federation-spatial-architecture-certification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  coordinated-spatial-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout TheHub candidate
+        uses: actions/checkout@v4
+        with:
+          path: thehub
+
+      - name: Checkout Spiderweb candidate
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/spiderweb-pr
+          ref: feat/federation-spatial-architecture-v1
+          path: spiderweb
+
+      - name: Checkout AguaYLuz candidate
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/aguayluz-pr
+          ref: feat/federation-spatial-architecture-v1
+          path: aguayluz
+
+      - name: Checkout Skywatcher candidate
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/skywatcher-pr
+          ref: feat/federation-spatial-architecture-v1
+          path: skywatcher
+
+      - name: Checkout MoneySweep candidate
+        uses: actions/checkout@v4
+        with:
+          repository: jotaele44/moneysweep-pr
+          ref: feat/federation-spatial-architecture-v1
+          path: moneysweep
+
+      - name: Install targeted test dependency
+        run: python3 -m pip install --disable-pip-version-check pytest
+
+      - name: Prove byte-identical spatial identity contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            thehub/schemas/federation_spatial_identity_v1_1.schema.json
+            spiderweb/schemas/federation_spatial_identity_v1_1.schema.json
+            aguayluz/schemas/federation_spatial_identity_v1_1.schema.json
+            skywatcher/schemas/federation_spatial_identity_v1_1.schema.json
+            moneysweep/schemas/federation_spatial_identity_v1_1.schema.json
+          )
+          sha256sum "${files[@]}"
+          first="$(sha256sum "${files[0]}" | awk '{print $1}')"
+          for file in "${files[@]:1}"; do
+            test "$(sha256sum "$file" | awk '{print $1}')" = "$first"
+          done
+
+      - name: Prove byte-identical migration receipt contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          files=(
+            thehub/schemas/federation_spatial_migration_receipt_v1_1.schema.json
+            spiderweb/schemas/federation_spatial_migration_receipt_v1_1.schema.json
+            aguayluz/schemas/federation_spatial_migration_receipt_v1_1.schema.json
+            skywatcher/schemas/federation_spatial_migration_receipt_v1_1.schema.json
+            moneysweep/schemas/federation_spatial_migration_receipt_v1_1.schema.json
+          )
+          sha256sum "${files[@]}"
+          first="$(sha256sum "${files[0]}" | awk '{print $1}')"
+          for file in "${files[@]:1}"; do
+            test "$(sha256sum "$file" | awk '{print $1}')" = "$first"
+          done
+
+      - name: Cross-repo WGS84 distance equivalence
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          def load(name, path):
+              spec = importlib.util.spec_from_file_location(name, Path(path))
+              module = importlib.util.module_from_spec(spec)
+              assert spec and spec.loader
+              spec.loader.exec_module(module)
+              return module
+
+          spider = load("spider_spatial_core", "spiderweb/federation/spatial_core.py")
+          sky = load("sky_gis_geodesic", "skywatcher/tools/satim_engine/src/satim_engine/plugins/gis_geodesic.py")
+          cases = [
+              (-66.1057, 18.4655, -66.1057, 18.4655),
+              (-66.1057, 18.4655, -66.6135, 18.4724),
+              (-67.1541, 18.2011, -65.4323, 18.1497),
+              (-66.50, 18.60, -66.50, 18.15),
+          ]
+          for case in cases:
+              a = spider.geodesic_distance_m(*case)
+              b = sky.distance_m(*case)
+              delta = abs(a - b)
+              if delta > 1e-6:
+                  raise SystemExit(f"distance mismatch {case}: spider={a} sky={b} delta={delta}")
+          for fn in (spider.geodesic_distance_m, sky.distance_m):
+              try:
+                  fn(-181, 18, -66, 18)
+              except ValueError:
+                  pass
+              else:
+                  raise SystemExit(f"{fn.__module__}.{fn.__name__} accepted invalid longitude")
+          print("PASS: Spiderweb/Skywatcher WGS84 distance equivalence")
+          PY
+
+      - name: TheHub read-only spatial query regressions
+        working-directory: thehub
+        run: python3 -m pytest -q tests/test_query_federation_spatial_registry.py
+
+      - name: Spiderweb spatial arithmetic regressions
+        working-directory: spiderweb
+        run: python3 -m pytest -q tests/test_federation_spatial_migration_receipt_v1_1.py
+
+      - name: AguaYLuz binding regressions
+        working-directory: aguayluz
+        run: python3 -m pytest -q tests/test_federation_spatial_binding_v1_1.py
+
+      - name: Skywatcher binding regressions
+        working-directory: skywatcher
+        run: python3 -m pytest -q tests/test_federation_spatial_binding_v1_1.py
+
+      - name: MoneySweep binding regressions
+        working-directory: moneysweep
+        run: python3 -m pytest -q tests/test_federation_spatial_bindings_v1_1.py
+
+      - name: Structural spatial-identity invariants
+        run: python3 spiderweb/scripts/validate_federation_spatial_identity_v1_1.py
+
+      - name: TheHub can read but not reinterpret canonical registry
+        run: |
+          python3 thehub/scripts/query_federation_spatial_registry.py \
+            --registry spiderweb/registry/spatial/federation_spatial_identity_v1_1.json
+          python3 thehub/scripts/query_federation_spatial_registry.py \
+            --registry spiderweb/registry/spatial/federation_spatial_identity_v1_1.json \
+            --scope coastline_archipelago
+
+      - name: Certification gate - zero unresolved residue required
+        run: python3 spiderweb/scripts/validate_federation_spatial_identity_v1_1.py --certify
