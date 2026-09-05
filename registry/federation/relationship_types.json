@@ -1,0 +1,66 @@
+{
+  "schema_version": "federation_relationship_authority_registry_v1",
+  "authority_plane": "prii-federation-spatial-identity",
+  "policy": {
+    "undeclared_relationship_type": "FAIL",
+    "multiple_authority_owners": "FAIL",
+    "hub_correlation_is_identity": false,
+    "domain_relationship_may_be_reowned_by_hub": false
+  },
+  "shared_relationships": [
+    {"id":"SAME_ENTITY_AS","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":true},
+    {"id":"FEDERATION_MEMBER_OF","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":true},
+    {"id":"SUPERSEDES_IDENTITY","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":true},
+    {"id":"SPLIT_FROM_IDENTITY","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":true},
+    {"id":"SHARED_CONTAINS","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":false},
+    {"id":"SHARED_WITHIN","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":false}
+  ],
+  "domain_registries": [
+    {
+      "owner":"moneysweep-pr",
+      "repository":"jotaele44/moneysweep-pr",
+      "source":"config/government_entities/relationship_types.yml",
+      "source_blob_sha":"317d67bb79b03ab84de12944851d0a9a52930992",
+      "scope":"DOMAIN_ONLY",
+      "types":["parent_of","component_of","reports_to","controlled_by","owns","predecessor_of","successor_of","renamed_to","merged_into","split_into","absorbed_functions_from","transferred_functions_to","created_from","abolished_by","fiscal_agent_for","bond_issuer_for","operator_of","concessionaire_for","procurement_agent_for","oversight_of","regulated_by","administers_program_for","municipal_component_of","possible_successor_of","possible_predecessor_of"]
+    },
+    {
+      "owner":"aguayluz-pr",
+      "repository":"jotaele44/aguayluz-pr",
+      "scope":"DOMAIN_ONLY",
+      "families":["water-network/topology","power-grid/topology","energizes","utility-operation","outage/restoration"]
+    },
+    {
+      "owner":"skywatcher-pr",
+      "repository":"jotaele44/skywatcher-pr",
+      "scope":"DOMAIN_ONLY",
+      "families":["aircraft/flight","observation/track","airspace/corridor","airport/reference"]
+    },
+    {
+      "owner":"ovnis-pr",
+      "repository":"jotaele44/ovnis-pr",
+      "scope":"DOMAIN_ONLY",
+      "families":["case/source","candidate/promotion","case-evidence"]
+    },
+    {
+      "owner":"centinelas-pr",
+      "repository":"jotaele44/centinelas-pr",
+      "scope":"DOMAIN_ONLY",
+      "families":["signal/classification","signal/routing","signal/handoff"]
+    },
+    {
+      "owner":"spiderweb-pr",
+      "repository":"jotaele44/spiderweb-pr",
+      "scope":"DOMAIN_ONLY",
+      "families":["spatial-evidence","operational-overlay","domain-containment","geocode-candidate"]
+    }
+  ],
+  "hub_derived": {
+    "owner":"thehub-pr",
+    "scope":"SHARED_DERIVED_CANDIDATE",
+    "identity_bearing":false,
+    "rule":"Hub correlation edges may propose cross-producer candidates but cannot establish identity equivalence or re-own producer-domain relationships."
+  },
+  "census_state":"PROVISIONAL_UNTIL_REPOSITORY_CRAWLER_PASSES",
+  "certification_effect":"BLOCKING_UNTIL_EVERY_LITERAL_OR_ENUM_RELATIONSHIP_TYPE_RESOLVES_TO_ONE_OWNER"
+}
