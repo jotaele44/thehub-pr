@@ -24,9 +24,11 @@
   - municipios blob `b3a240482478261577b27140d7918f311e2d46a0`, expected 78 features;
   - barrios blob `ae6a8a26233ba53293bd814cac050bab85ab8b35`, expected 901 features;
   - canonical CRS EPSG:4326.
-- External source authority is U.S. Census Bureau. **Exact upstream Census release/vintage is
-  not proven by current repository evidence and remains blocking for full source-lineage
-  certification.**
+- External lineage is now closed to the **2023 U.S. Census Bureau GENZ cartographic boundary
+  release**. The frozen producer script explicitly names
+  `cb_2023_us_county_500k.zip` and `cb_2023_72_cousub_500k.zip`, filters Puerto Rico by
+  `STATEFP == 72`, reprojects to EPSG:4326, simplifies with topology preserved, and emits the
+  pinned GeoJSON manifestations.
 
 ## B.3 — identifier namespaces
 
@@ -58,7 +60,6 @@ The validator fails closed on:
 - malformed/duplicate/shared-owner identifier namespaces;
 - undeclared repository identifier families;
 - unowned/colliding relationship literals;
-- unknown exact Census source vintage;
 - any denominator mismatch.
 
 The produced `reports/authority_boundary_validation.json` is the machine certification receipt.
@@ -71,7 +72,8 @@ Only `blocker_count = 0` may emit `AUTHORITY_BOUNDARY_CERTIFIED` and unlock Phas
    zero-unknown receipt.
 3. `AB-004` — full relationship literal/enum census has not yet produced a zero-collision,
    one-owner receipt.
-4. `AB-005-CENSUS-VINTAGE-UNKNOWN` — exact upstream Census release/vintage for the pinned
-   municipio/barrio bytes is unproven.
+
+`AB-002` and `AB-005` are now closed in the candidate: the pixel grid is noncanonical and the
+municipio/barrio source lineage is pinned through Census GENZ2023.
 
 Therefore no certification is asserted by this document.
