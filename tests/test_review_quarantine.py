@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -9,6 +10,9 @@ from hub.review_quarantine import (
     ReviewQuarantineError,
     validate_review_quarantine_package,
 )
+
+PRODUCER_COMMIT = "1" * 40
+PRODUCER_TREE = "2" * 40
 
 
 def _write_json(path: Path, value) -> None:
@@ -94,9 +98,26 @@ def _receipt():
 
 def _package(tmp_path: Path) -> Path:
     root = tmp_path / "pkg"
+    scope_path = root / "governance" / "federation_spatial_certification_scope_v1.json"
+    _write_json(scope_path, _scope())
+    scope_bytes = scope_path.read_bytes()
     _write_json(
-        root / "governance" / "federation_spatial_certification_scope_v1.json",
-        _scope(),
+        root / "outputs" / "federation_spatial_certification_scope_receipt.json",
+        {
+            "schema_version": "prii_federation_spatial_certification_scope_receipt_v1",
+            "state": "PASS",
+            "claim": "FEDERATION_SPATIAL_ARCHITECTURE",
+            "claim_version": "1.0.0",
+            "producer_repository": "jotaele44/aguayluz-pr",
+            "producer_commit": PRODUCER_COMMIT,
+            "producer_tree": PRODUCER_TREE,
+            "scope_path": "governance/federation_spatial_certification_scope_v1.json",
+            "scope_bytes": len(scope_bytes),
+            "scope_sha256": hashlib.sha256(scope_bytes).hexdigest(),
+            "scope_git_blob_sha": "3" * 40,
+            "scope_status": "PROVISIONAL_UNTIL_REFERENCE_EXECUTION_PASSES",
+            "problems": [],
+        },
     )
     _write_json(root / "outputs" / "review_quarantine_receipt.json", _receipt())
     _write_json(
@@ -122,10 +143,7 @@ def _package(tmp_path: Path) -> Path:
             "promotion_eligible": True,
         },
     }
-    municipality = {
-        "entity_id": "ent_" + "c" * 32,
-        "entity_type": "municipality",
-    }
+    municipality = {"entity_id": "ent_" + "c" * 32, "entity_type": "municipality"}
     _write_jsonl(root / "outputs" / "federation" / "entities.jsonl", [asset, event, municipality])
     _write_jsonl(
         root / "outputs" / "federation" / "relationships.jsonl",
@@ -159,10 +177,23 @@ def _package(tmp_path: Path) -> Path:
     return root
 
 
+def _validate_certification(root: Path):
+    return validate_review_quarantine_package(
+        root,
+        certification=True,
+        producer_commit=PRODUCER_COMMIT,
+        producer_tree=PRODUCER_TREE,
+    )
+
+
 def test_valid_quarantine_package_passes_audit_without_promotion(tmp_path):
     root = _package(tmp_path)
-    result = validate_review_quarantine_package(root, certification=False)
-
+    result = validate_review_quarantine_package(
+        root,
+        certification=False,
+        producer_commit=PRODUCER_COMMIT,
+        producer_tree=PRODUCER_TREE,
+    )
     assert result.state == "PASS"
     assert result.promotable is False
     assert result.quarantined_total == 3
@@ -171,8 +202,7 @@ def test_valid_quarantine_package_passes_audit_without_promotion(tmp_path):
 
 def test_valid_quarantine_package_can_support_certification(tmp_path):
     root = _package(tmp_path)
-    result = validate_review_quarantine_package(root, certification=True)
-
+    result = _validate_certification(root)
     assert result.state == "PASS"
     assert result.promotable is True
 
@@ -180,15 +210,13 @@ def test_valid_quarantine_package_can_support_certification(tmp_path):
 def test_certification_requires_quarantine_receipt(tmp_path):
     root = _package(tmp_path)
     (root / "outputs" / "review_quarantine_receipt.json").unlink()
-
     with pytest.raises(ReviewQuarantineError, match="missing outputs/review_quarantine_receipt"):
-        validate_review_quarantine_package(root, certification=True)
+        _validate_certification(root)
 
 
 def test_audit_can_inspect_legacy_package_but_never_promotes(tmp_path):
     root = _package(tmp_path)
     (root / "outputs" / "review_quarantine_receipt.json").unlink()
-
     result = validate_review_quarantine_package(root, certification=False)
     assert result.state == "UNVERIFIED_LEGACY_AUDIT"
     assert result.promotable is False
@@ -201,9 +229,8 @@ def test_nonaccepted_primary_in_canonical_stream_fails_closed(tmp_path):
     rows[0]["attributes"]["review_status"] = "blocked"
     rows[0]["attributes"]["promotion_eligible"] = False
     _write_jsonl(entities_path, rows)
-
     with pytest.raises(ReviewQuarantineError, match="is not accepted"):
-        validate_review_quarantine_package(root, certification=True)
+        _validate_certification(root)
 
 
 def test_nonaccepted_critical_alert_fails_closed(tmp_path):
@@ -213,9 +240,8 @@ def test_nonaccepted_critical_alert_fails_closed(tmp_path):
     rows[0]["attributes"]["review_status"] = "blocked"
     rows[0]["attributes"]["promotion_eligible"] = False
     _write_jsonl(alert_path, rows)
-
     with pytest.raises(ReviewQuarantineError, match="is not accepted"):
-        validate_review_quarantine_package(root, certification=True)
+        _validate_certification(root)
 
 
 def test_relationship_to_quarantined_or_missing_entity_fails_closed(tmp_path):
@@ -224,9 +250,8 @@ def test_relationship_to_quarantined_or_missing_entity_fails_closed(tmp_path):
     rows = [json.loads(line) for line in rel_path.read_text().splitlines()]
     rows[0]["target_entity_id"] = "ent_" + "0" * 32
     _write_jsonl(rel_path, rows)
-
     with pytest.raises(ReviewQuarantineError, match="outside retained canonical entity set"):
-        validate_review_quarantine_package(root, certification=True)
+        _validate_certification(root)
 
 
 def test_scope_drift_fails_closed(tmp_path):
@@ -235,6 +260,25 @@ def test_scope_drift_fails_closed(tmp_path):
     scope = json.loads(scope_path.read_text())
     scope["nonblocking_disclosed_residue_classes"] = []
     _write_json(scope_path, scope)
-
     with pytest.raises(ReviewQuarantineError, match="domain record adjudication"):
-        validate_review_quarantine_package(root, certification=True)
+        _validate_certification(root)
+
+
+def test_scope_receipt_must_bind_runtime_producer_identity(tmp_path):
+    root = _package(tmp_path)
+    receipt_path = root / "outputs" / "federation_spatial_certification_scope_receipt.json"
+    receipt = json.loads(receipt_path.read_text())
+    receipt["producer_commit"] = "9" * 40
+    _write_json(receipt_path, receipt)
+    with pytest.raises(ReviewQuarantineError, match="producer_commit does not match runtime producer"):
+        _validate_certification(root)
+
+
+def test_scope_receipt_hash_detects_mutated_policy_bytes(tmp_path):
+    root = _package(tmp_path)
+    scope_path = root / "governance" / "federation_spatial_certification_scope_v1.json"
+    scope = json.loads(scope_path.read_text())
+    scope["claim_version"] = "9.9.9"
+    _write_json(scope_path, scope)
+    with pytest.raises(ReviewQuarantineError, match="SHA256 mismatch"):
+        _validate_certification(root)
