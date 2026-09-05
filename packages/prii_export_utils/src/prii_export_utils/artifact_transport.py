@@ -15,13 +15,37 @@ import os
 import re
 import tempfile
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterator, Mapping
 
 SCHEMA_VERSION = "prii.artifact-message.v1"
 RECEIPT_SCHEMA_VERSION = "prii.artifact-receipt.v1"
 _COMPONENT = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
+_SHA256 = re.compile(r"^[0-9a-f]{64}$")
+_ENVELOPE_FIELDS = frozenset(
+    {
+        "schema_version",
+        "message_id",
+        "source",
+        "target",
+        "kind",
+        "idempotency_key",
+        "created_at_utc",
+        "payload_sha256",
+        "payload",
+    }
+)
+_RECEIPT_FIELDS = frozenset(
+    {
+        "schema_version",
+        "message_id",
+        "target",
+        "consumer",
+        "payload_sha256",
+        "acknowledged_at_utc",
+    }
+)
 
 
 class ArtifactTransportError(RuntimeError):
@@ -30,6 +54,10 @@ class ArtifactTransportError(RuntimeError):
 
 class InvalidEnvelopeError(ArtifactTransportError):
     """Raised when an envelope is malformed or fails its content hashes."""
+
+
+class InvalidReceiptError(ArtifactTransportError):
+    """Raised when a receipt is malformed or does not bind to its message."""
 
 
 class MessageCollisionError(ArtifactTransportError):
@@ -49,9 +77,27 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
-def _component(value: str, field: str) -> str:
+def _component(value: Any, field: str) -> str:
     if not isinstance(value, str) or not _COMPONENT.fullmatch(value):
         raise ValueError(f"{field} must match {_COMPONENT.pattern!r}; got {value!r}")
+    return value
+
+
+def _sha256(value: Any, field: str) -> str:
+    if not isinstance(value, str) or not _SHA256.fullmatch(value):
+        raise ValueError(f"{field} must be a lowercase SHA-256 hex digest")
+    return value
+
+
+def _utc(value: Any, field: str) -> str:
+    if not isinstance(value, str) or not value.endswith("Z"):
+        raise ValueError(f"{field} must be an RFC3339 UTC string ending in Z")
+    try:
+        parsed = datetime.fromisoformat(value[:-1] + "+00:00")
+    except ValueError as exc:
+        raise ValueError(f"{field} must be a valid RFC3339 UTC timestamp") from exc
+    if parsed.utcoffset() != timedelta(0):
+        raise ValueError(f"{field} must use UTC")
     return value
 
 
@@ -132,35 +178,35 @@ def build_envelope(
     return envelope
 
 
-def verify_envelope(envelope: Mapping[str, Any]) -> None:
-    """Fail closed when required fields, hashes, or identifiers disagree."""
-
-    required = {
-        "schema_version",
-        "message_id",
-        "source",
-        "target",
-        "kind",
-        "idempotency_key",
-        "created_at_utc",
-        "payload_sha256",
-        "payload",
-    }
-    missing = sorted(required - set(envelope))
-    extra = sorted(set(envelope) - required)
+def _require_fields(
+    value: Mapping[str, Any], required: frozenset[str], label: str
+) -> None:
+    missing = sorted(required - set(value))
+    extra = sorted(set(value) - required)
     if missing or extra:
-        raise InvalidEnvelopeError(f"envelope fields mismatch missing={missing} extra={extra}")
-    if envelope["schema_version"] != SCHEMA_VERSION:
-        raise InvalidEnvelopeError(f"unsupported schema_version {envelope['schema_version']!r}")
+        raise ValueError(f"{label} fields mismatch missing={missing} extra={extra}")
+
+
+def verify_envelope(envelope: Mapping[str, Any]) -> None:
+    """Fail closed when required fields, types, hashes, or identifiers disagree."""
+
     try:
-        source = _component(str(envelope["source"]), "source")
-        target = _component(str(envelope["target"]), "target")
-        kind = _component(str(envelope["kind"]), "kind")
-        key = _component(str(envelope["idempotency_key"]), "idempotency_key")
-    except ValueError as exc:
+        _require_fields(envelope, _ENVELOPE_FIELDS, "envelope")
+        if envelope["schema_version"] != SCHEMA_VERSION:
+            raise ValueError(f"unsupported schema_version {envelope['schema_version']!r}")
+        message_id = _sha256(envelope["message_id"], "message_id")
+        source = _component(envelope["source"], "source")
+        target = _component(envelope["target"], "target")
+        kind = _component(envelope["kind"], "kind")
+        key = _component(envelope["idempotency_key"], "idempotency_key")
+        _utc(envelope["created_at_utc"], "created_at_utc")
+        declared_payload_sha256 = _sha256(
+            envelope["payload_sha256"], "payload_sha256"
+        )
+        payload_sha256 = sha256_bytes(canonical_json_bytes(envelope["payload"]))
+    except (KeyError, TypeError, ValueError) as exc:
         raise InvalidEnvelopeError(str(exc)) from exc
-    payload_sha256 = sha256_bytes(canonical_json_bytes(envelope["payload"]))
-    if payload_sha256 != envelope["payload_sha256"]:
+    if payload_sha256 != declared_payload_sha256:
         raise InvalidEnvelopeError("payload_sha256 does not match canonical payload")
     identity = _identity_document(
         source=source,
@@ -170,11 +216,71 @@ def verify_envelope(envelope: Mapping[str, Any]) -> None:
         payload_sha256=payload_sha256,
     )
     expected_id = sha256_bytes(canonical_json_bytes(identity))
-    if expected_id != envelope["message_id"]:
+    if expected_id != message_id:
         raise InvalidEnvelopeError("message_id does not match canonical identity")
-    created = envelope["created_at_utc"]
-    if not isinstance(created, str) or not created.endswith("Z"):
-        raise InvalidEnvelopeError("created_at_utc must be an RFC3339 UTC string ending in Z")
+
+
+def verify_receipt(
+    receipt: Mapping[str, Any], envelope: Mapping[str, Any] | None = None
+) -> None:
+    """Validate exact receipt schema and, when supplied, its envelope binding."""
+
+    try:
+        _require_fields(receipt, _RECEIPT_FIELDS, "receipt")
+        if receipt["schema_version"] != RECEIPT_SCHEMA_VERSION:
+            raise ValueError(
+                f"unsupported receipt schema_version {receipt['schema_version']!r}"
+            )
+        message_id = _sha256(receipt["message_id"], "message_id")
+        target = _component(receipt["target"], "target")
+        _component(receipt["consumer"], "consumer")
+        payload_sha256 = _sha256(receipt["payload_sha256"], "payload_sha256")
+        _utc(receipt["acknowledged_at_utc"], "acknowledged_at_utc")
+    except (KeyError, TypeError, ValueError) as exc:
+        raise InvalidReceiptError(str(exc)) from exc
+    if envelope is not None:
+        verify_envelope(envelope)
+        if (
+            message_id != envelope["message_id"]
+            or target != envelope["target"]
+            or payload_sha256 != envelope["payload_sha256"]
+        ):
+            raise InvalidReceiptError("receipt does not bind to the inbox envelope")
+
+
+def _reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    value: dict[str, Any] = {}
+    for key, item in pairs:
+        if key in value:
+            raise ValueError(f"duplicate JSON key: {key}")
+        value[key] = item
+    return value
+
+
+def _load_json_object(path: Path, label: str) -> dict[str, Any]:
+    try:
+        value = json.loads(
+            path.read_text(encoding="utf-8"), object_pairs_hook=_reject_duplicate_keys
+        )
+    except (OSError, json.JSONDecodeError, ValueError) as exc:
+        error = InvalidEnvelopeError if label == "envelope" else InvalidReceiptError
+        raise error(f"cannot read {label} {path}: {exc}") from exc
+    if not isinstance(value, dict):
+        error = InvalidEnvelopeError if label == "envelope" else InvalidReceiptError
+        raise error(f"{path} is not a JSON object")
+    return value
+
+
+def _load_envelope(path: Path) -> dict[str, Any]:
+    value = _load_json_object(path, "envelope")
+    verify_envelope(value)
+    return value
+
+
+def _load_receipt(path: Path, envelope: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    value = _load_json_object(path, "receipt")
+    verify_receipt(value, envelope)
+    return value
 
 
 def _atomic_write(path: Path, data: bytes) -> None:
@@ -187,19 +293,19 @@ def _atomic_write(path: Path, data: bytes) -> None:
             handle.flush()
             os.fsync(handle.fileno())
         os.replace(temporary_path, path)
+        try:
+            directory_fd = os.open(path.parent, os.O_RDONLY)
+        except OSError:
+            directory_fd = None
+        if directory_fd is not None:
+            try:
+                os.fsync(directory_fd)
+            except OSError:
+                pass
+            finally:
+                os.close(directory_fd)
     finally:
         temporary_path.unlink(missing_ok=True)
-
-
-def _load_envelope(path: Path) -> dict[str, Any]:
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as exc:
-        raise InvalidEnvelopeError(f"cannot read {path}: {exc}") from exc
-    if not isinstance(value, dict):
-        raise InvalidEnvelopeError(f"{path} is not a JSON object")
-    verify_envelope(value)
-    return value
 
 
 def _same_identity(left: Mapping[str, Any], right: Mapping[str, Any]) -> bool:
@@ -279,9 +385,15 @@ def iter_inbox(
     if not inbox.is_dir():
         return
     for path in sorted(inbox.glob("*.json")):
-        if not include_acknowledged and (receipts / path.name).is_file():
-            continue
-        yield path, _load_envelope(path)
+        envelope = _load_envelope(path)
+        if path.name != f"{envelope['message_id']}.json" or envelope["target"] != target:
+            raise InvalidEnvelopeError(f"inbox path does not match envelope identity: {path}")
+        receipt_path = receipts / path.name
+        if receipt_path.is_file():
+            _load_receipt(receipt_path, envelope)
+            if not include_acknowledged:
+                continue
+        yield path, envelope
 
 
 def acknowledge_message(
@@ -295,8 +407,7 @@ def acknowledge_message(
 
     target = _component(target, "target")
     consumer = _component(consumer, "consumer")
-    if not re.fullmatch(r"[0-9a-f]{64}", message_id):
-        raise ValueError("message_id must be a lowercase SHA-256 hex digest")
+    message_id = _sha256(message_id, "message_id")
     root = Path(exchange_root)
     inbox_path = root / "inbox" / target / f"{message_id}.json"
     envelope = _load_envelope(inbox_path)
@@ -310,12 +421,10 @@ def acknowledge_message(
         "payload_sha256": envelope["payload_sha256"],
         "acknowledged_at_utc": _utc_now(),
     }
+    verify_receipt(receipt, envelope)
     path = root / "receipts" / target / f"{message_id}.json"
     if path.exists():
-        try:
-            existing = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            raise ArtifactTransportError(f"cannot read receipt {path}: {exc}") from exc
+        existing = _load_receipt(path, envelope)
         stable_keys = (
             "schema_version",
             "message_id",
@@ -323,7 +432,7 @@ def acknowledge_message(
             "consumer",
             "payload_sha256",
         )
-        if not isinstance(existing, dict) or any(existing.get(key) != receipt[key] for key in stable_keys):
+        if any(existing[key] != receipt[key] for key in stable_keys):
             raise MessageCollisionError(f"receipt collision at {path}")
         return TransportResult("DUPLICATE", message_id, path)
     _atomic_write(path, canonical_json_bytes(receipt) + b"\n")
