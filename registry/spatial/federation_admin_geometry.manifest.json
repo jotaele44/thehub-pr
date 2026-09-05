@@ -1,9 +1,19 @@
 {
   "schema_version": "federation_admin_geometry_manifest_v1",
   "authority_plane": "prii-federation-spatial-identity",
-  "external_source_authority": "U.S. Census Bureau cartographic boundaries",
-  "source_vintage": "UNKNOWN_NOT_ASSERTED",
+  "external_source_authority": "U.S. Census Bureau cartographic boundary files",
+  "source_vintage": "2023",
   "canonical_crs": "EPSG:4326",
+  "source_derivation": {
+    "producer_script": "scripts/build_pr_geo_boundaries.py",
+    "producer_script_blob_sha": "6e8f19a97fa57da095912f8c7978725262c461a0",
+    "municipio_input": "https://www2.census.gov/geo/tiger/GENZ2023/shp/cb_2023_us_county_500k.zip",
+    "barrio_input": "https://www2.census.gov/geo/tiger/GENZ2023/shp/cb_2023_72_cousub_500k.zip",
+    "municipio_filter": "STATEFP == 72",
+    "barrio_filter": "STATEFP == 72",
+    "transform": "reproject to EPSG:4326; simplify tolerance 0.0003 degrees preserving topology; GeoJSON coordinate precision 5",
+    "source_note": "The producer script explicitly names GENZ2023 inputs and documents Census cartographic boundary files as public-domain web-mapping sources."
+  },
   "geometry_roles": ["municipio containment", "barrio containment", "federation administrative normalization"],
   "custodial_manifestation": {
     "repository": "jotaele44/aguayluz-pr",
@@ -19,6 +29,7 @@
       "expected_feature_count": 78,
       "geometry_type": "Polygon_or_MultiPolygon",
       "crs": "EPSG:4326",
+      "source_geography": "2023 Census county-equivalent cartographic boundary",
       "federation_role": "SHARED_ADMIN_REFERENCE"
     },
     {
@@ -28,13 +39,12 @@
       "expected_feature_count": 901,
       "geometry_type": "Polygon_or_MultiPolygon",
       "crs": "EPSG:4326",
+      "source_geography": "2023 Census Puerto Rico county-subdivision cartographic boundary",
       "federation_role": "SHARED_ADMIN_REFERENCE"
     }
   ],
   "projection_policy": "Repository-local copies are read-only projections/caches. A different source revision requires a new manifest and compatibility/adjudication receipt before promotion.",
   "containment_policy": "Cross-repository municipio/barrio containment MUST use this pinned manifestation or a certified successor; producer-local centroids or fuzzy place names cannot override polygon containment.",
-  "open_metadata": [
-    "Exact upstream Census release/vintage is not asserted by this manifest because current repository evidence does not prove it. This does not prevent byte-level authority for the frozen manifestation, but upstream-vintage recovery is required before calling the external-source lineage fully certified."
-  ],
-  "status": "PINNED_MANIFESTATION_PROVISIONAL_SOURCE_VINTAGE"
+  "open_metadata": [],
+  "status": "PINNED_SOURCE_LINEAGE_CLOSED"
 }
