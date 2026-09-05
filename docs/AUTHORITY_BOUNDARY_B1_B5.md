@@ -27,13 +27,14 @@
 - Ground joins, containment, parcel operations, metric distance and identity use are forbidden.
 - Municipio and barrio references are pinned to the frozen AguaYLuz manifestations at commit
   `3678271a03e36375dc3e9f2fb4da0b6b655622bd`:
-  - municipios blob `b3a240482478261577b27140d7918f311e2d46a0`, expected 78 features;
-  - barrios blob `ae6a8a26233ba53293bd814cac050bab85ab8b35`, expected 901 features;
-  - canonical CRS EPSG:4326.
+  - municipios blob `048265807f94e5142c34c9edae27356e27ffae42`, expected 78 features;
+  - barrios blob `55786963138da192deccb756a37fab94f096cf13`, expected 901 features;
+  - serialized GeoJSON CRS `urn:ogc:def:crs:OGC:1.3:CRS84` with longitude/latitude order.
 - External lineage is closed to the **2023 U.S. Census Bureau GENZ cartographic boundary
   release**. The frozen producer script explicitly names `cb_2023_us_county_500k.zip` and
   `cb_2023_72_cousub_500k.zip`, filters Puerto Rico by `STATEFP == 72`, reprojects to
-  EPSG:4326, simplifies with topology preserved, and emits the pinned GeoJSON manifestations.
+  EPSG:4326, simplifies with topology preserved, and emits the pinned GeoJSON manifestations in
+  CRS84 longitude/latitude order.
 
 **B.2 candidate state: CLOSED.**
 
@@ -69,7 +70,8 @@ must be classified as an explicit shared semantic or separated into owner-qualif
   duplicated source families, SHARED vs DOMAIN authority classes, and static arithmetic.
 - `.github/workflows/authority-boundary-certification.yml` checks out the six peer revisions
   beside the candidate TheHub checkout and invokes the quarantine-aware
-  `scripts/validate_authority_boundary_v2.py`.
+  canonical `scripts/validate_authority_boundary.py` entry point. The historical v2 filename is a
+  compatibility wrapper over the same implementation.
 
 The validator fails closed on active identity-authority leakage, invalid grid/admin geometry,
 malformed or unreconciled identifier namespaces, unowned/colliding relationships and any

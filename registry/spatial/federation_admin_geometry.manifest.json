@@ -3,7 +3,7 @@
   "authority_plane": "prii-federation-spatial-identity",
   "external_source_authority": "U.S. Census Bureau cartographic boundary files",
   "source_vintage": "2023",
-  "canonical_crs": "EPSG:4326",
+  "canonical_crs": "urn:ogc:def:crs:OGC:1.3:CRS84",
   "source_derivation": {
     "producer_script": "scripts/build_pr_geo_boundaries.py",
     "producer_script_blob_sha": "6e8f19a97fa57da095912f8c7978725262c461a0",
@@ -11,7 +11,9 @@
     "barrio_input": "https://www2.census.gov/geo/tiger/GENZ2023/shp/cb_2023_72_cousub_500k.zip",
     "municipio_filter": "STATEFP == 72",
     "barrio_filter": "STATEFP == 72",
-    "transform": "reproject to EPSG:4326; simplify tolerance 0.0003 degrees preserving topology; GeoJSON coordinate precision 5",
+    "transform": "reproject to EPSG:4326; simplify tolerance 0.0003 degrees preserving topology; serialize GeoJSON as CRS84 longitude/latitude with coordinate precision 5",
+    "source_processing_crs": "EPSG:4326",
+    "coordinate_order": "longitude_latitude",
     "source_note": "The producer script explicitly names GENZ2023 inputs and documents Census cartographic boundary files as public-domain web-mapping sources."
   },
   "geometry_roles": ["municipio containment", "barrio containment", "federation administrative normalization"],
@@ -25,20 +27,20 @@
     {
       "layer_id": "PR_MUNICIPIOS",
       "path": "data/geo/pr_municipios.geojson",
-      "git_blob_sha": "b3a240482478261577b27140d7918f311e2d46a0",
+      "git_blob_sha": "048265807f94e5142c34c9edae27356e27ffae42",
       "expected_feature_count": 78,
       "geometry_type": "Polygon_or_MultiPolygon",
-      "crs": "EPSG:4326",
+      "crs": "urn:ogc:def:crs:OGC:1.3:CRS84",
       "source_geography": "2023 Census county-equivalent cartographic boundary",
       "federation_role": "SHARED_ADMIN_REFERENCE"
     },
     {
       "layer_id": "PR_BARRIOS",
       "path": "data/geo/pr_barrios.geojson",
-      "git_blob_sha": "ae6a8a26233ba53293bd814cac050bab85ab8b35",
+      "git_blob_sha": "55786963138da192deccb756a37fab94f096cf13",
       "expected_feature_count": 901,
       "geometry_type": "Polygon_or_MultiPolygon",
-      "crs": "EPSG:4326",
+      "crs": "urn:ogc:def:crs:OGC:1.3:CRS84",
       "source_geography": "2023 Census Puerto Rico county-subdivision cartographic boundary",
       "federation_role": "SHARED_ADMIN_REFERENCE"
     }

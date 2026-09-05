@@ -31,5 +31,5 @@ def test_pixel_grid_is_noncanonical_and_admin_geometry_is_pinned() -> None:
     admin = json.loads((ROOT / "registry/spatial/federation_admin_geometry.manifest.json").read_text())
     assert admin["authority_plane"] == "prii-federation-spatial-identity"
     assert admin["source_vintage"] == "2023"
-    assert admin["canonical_crs"] == "EPSG:4326"
+    assert admin["canonical_crs"] == "urn:ogc:def:crs:OGC:1.3:CRS84"
     assert {x["expected_feature_count"] for x in admin["layers"]} == {78, 901}
