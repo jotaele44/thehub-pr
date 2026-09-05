@@ -16,6 +16,10 @@ from hub.federation_runtime import (  # noqa: E402
     FederationRuntimeError,
     load_federation_runtime_manifest,
 )
+from hub.review_quarantine import (  # noqa: E402
+    ReviewQuarantineError,
+    validate_review_quarantine_package,
+)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -34,7 +38,17 @@ def main(argv: list[str] | None = None) -> int:
             package_root=args.package_root,
             certification=args.certification,
         )
-    except (OSError, UnicodeError, json.JSONDecodeError, FederationRuntimeError) as exc:
+        quarantine = validate_review_quarantine_package(
+            args.package_root,
+            certification=args.certification,
+        )
+    except (
+        OSError,
+        UnicodeError,
+        json.JSONDecodeError,
+        FederationRuntimeError,
+        ReviewQuarantineError,
+    ) as exc:
         print(
             json.dumps(
                 {
@@ -48,6 +62,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 1
 
+    promotable = bool(package.promotable and quarantine.promotable)
     print(
         json.dumps(
             {
@@ -58,7 +73,10 @@ def main(argv: list[str] | None = None) -> int:
                 "producer_tree": package.producer_tree,
                 "producer_state": package.state,
                 "ingestion_mode": package.ingestion_mode,
-                "promotable": package.promotable,
+                "review_quarantine_state": quarantine.state,
+                "quarantined_total": quarantine.quarantined_total,
+                "canonical_primary_counts": dict(quarantine.canonical_primary_counts),
+                "promotable": promotable,
             },
             indent=2,
             sort_keys=True,
