@@ -76,3 +76,17 @@ def test_non_promote_decision_cannot_be_activated(tmp_path):
     path = _write_manifest(tmp_path, rejected)
     with pytest.raises(ActiveSnapshotError, match="not PROMOTE"):
         promote_snapshot(tmp_path / "store", path, actor="a", promoted_at="2026-01-01T00:00:00Z")
+
+
+def test_existing_immutable_snapshot_symlink_is_rejected(tmp_path):
+    manifest = _manifest("snap_" + "4" * 32)
+    manifest_path = _write_manifest(tmp_path, manifest)
+    store = tmp_path / "store"
+    snapshots = store / "registry" / "snapshots"
+    snapshots.mkdir(parents=True)
+    target = tmp_path / "outside.json"
+    target.write_text(json.dumps(manifest), encoding="utf-8")
+    (snapshots / f"{manifest['snapshot_id']}.json").symlink_to(target)
+
+    with pytest.raises(ActiveSnapshotError, match="regular file"):
+        promote_snapshot(store, manifest_path, actor="a", promoted_at="2026-01-01T00:00:00Z")

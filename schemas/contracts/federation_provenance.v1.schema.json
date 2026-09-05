@@ -5,18 +5,13 @@
   "title": "Federation Provenance",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version","provenance_id","source_producer","local_record_id","payload_hash","recorded_at"],
+  "required": ["provenance_id","source_producer","local_record_id","evidence_id","payload_hash","created_at"],
   "properties": {
-    "schema_version": {"const":"1.0.0"},
     "provenance_id": {"type":"string","pattern":"^fprov_[a-f0-9]{32}$"},
     "source_producer": {"type":"string","minLength":1},
     "local_record_id": {"type":"string","minLength":1},
-    "source_revision": {"type":["string","null"]},
-    "payload_hash": {"type":"string","pattern":"^[a-f0-9]{64}$"},
-    "evidence_ids": {"type":"array","items":{"type":"string"},"uniqueItems":true},
-    "confidence": {"type":["number","null"],"minimum":0,"maximum":1},
-    "valid_from": {"type":["string","null"],"format":"date-time"},
-    "valid_to": {"type":["string","null"],"format":"date-time"},
-    "recorded_at": {"type":"string","format":"date-time"}
+    "evidence_id": {"type":"string","minLength":1},
+    "payload_hash": {"type":["string","null"],"pattern":"^[a-f0-9]{64}$"},
+    "created_at": {"type":"string","format":"date-time"}
   }
 }

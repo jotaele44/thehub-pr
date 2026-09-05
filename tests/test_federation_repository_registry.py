@@ -12,7 +12,12 @@ from server.backend.federation_manager_repository_registry import (
 )
 
 
-def _write_registry(path: Path, *, local_path: Optional[str] = None) -> None:
+def _write_registry(
+    path: Path,
+    *,
+    local_path: Optional[str] = None,
+    federation_manifest: str = "federation.json",
+) -> None:
     local = f"\n    local_path: {local_path}" if local_path is not None else ""
     path.write_text(
         "\n".join(
@@ -23,7 +28,7 @@ def _write_registry(path: Path, *, local_path: Optional[str] = None) -> None:
                 "  - program_id: spiderweb-pr",
                 "    repo: jotaele44/spiderweb-pr",
                 "    role: spatial_operational_producer",
-                "    federation_manifest: federation.json",
+                f"    federation_manifest: {federation_manifest}",
                 f"    status: ready_for_live{local}",
                 "",
             ]
@@ -42,12 +47,21 @@ def _write_manifest(root: Path, **overrides) -> None:
     (root / "federation.json").write_text(json.dumps(doc), encoding="utf-8")
 
 
-def _registry(tmp_path: Path, *, local_path: Optional[str] = None) -> WorkspaceRepositoryRegistry:
+def _registry(
+    tmp_path: Path,
+    *,
+    local_path: Optional[str] = None,
+    federation_manifest: str = "federation.json",
+) -> WorkspaceRepositoryRegistry:
     workspace = tmp_path / "workspace"
     hub = workspace / "thehub-pr"
     hub.mkdir(parents=True)
     registry = hub / "producers.yaml"
-    _write_registry(registry, local_path=local_path)
+    _write_registry(
+        registry,
+        local_path=local_path,
+        federation_manifest=federation_manifest,
+    )
     return WorkspaceRepositoryRegistry(
         workspace_root=workspace,
         hub_root=hub,
@@ -99,4 +113,13 @@ def test_local_path_escape_is_rejected(tmp_path: Path) -> None:
     _write_manifest(outside)
 
     with pytest.raises(RepositoryBindingError, match="escapes configured workspace"):
+        registry.resolve("spiderweb-pr")
+
+
+def test_manifest_must_remain_inside_its_producer_root(tmp_path: Path) -> None:
+    registry = _registry(tmp_path, federation_manifest="../other/federation.json")
+    (registry.workspace_root / "spiderweb-pr").mkdir()
+    _write_manifest(registry.workspace_root / "other")
+
+    with pytest.raises(RepositoryBindingError, match="escapes producer root"):
         registry.resolve("spiderweb-pr")

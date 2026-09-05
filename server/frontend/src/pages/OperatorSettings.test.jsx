@@ -110,6 +110,23 @@ describe("OperatorSettings", () => {
     expect(await screen.findByText(/preferences saved/i)).toBeInTheDocument();
   });
 
+  it("adopts the normalized preferences returned by the backend", async () => {
+    const api = makeApi({
+      setPreferences: vi.fn().mockResolvedValue({
+        prefs: { all: { channels: [], timing: "brief" } },
+        targets: { push: "normalized-target" },
+      }),
+    });
+    render(<OperatorSettings api={api} />);
+
+    fireEvent.click(await screen.findByRole("button", { name: /save preferences/i }));
+
+    expect(await screen.findByText(/preferences saved/i)).toBeInTheDocument();
+    expect(document.getElementById("all-push")).not.toBeChecked();
+    expect(document.getElementById("all-timing")).toHaveValue("brief");
+    expect(document.getElementById("target-push")).toHaveValue("normalized-target");
+  });
+
   it("renders load and connection failures accessibly", async () => {
     const api = makeApi({
       getConnection: vi.fn().mockRejectedValue(new Error("Connector offline")),

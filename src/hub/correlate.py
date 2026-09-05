@@ -237,7 +237,7 @@ def correlate_spatial(entities: Sequence[Dict[str, Any]],
         ci, cj = cells[i]
         for dci in (-1, 0, 1):
             for dcj in (-1, 0, 1):
-                for j in grid.get((ci + dci, cj + dcj), ()):
+                for j in grid.get((ci + dci, cj + dcj), []):
                     if j <= i:
                         continue
                     a, pa = pts[i]
@@ -422,10 +422,11 @@ def _read_stream(in_dir: Path, stream: str) -> List[Dict[str, Any]]:
     if not fpath.exists():
         return []
     rows: List[Dict[str, Any]] = []
-    for raw in fpath.read_text().splitlines():
-        raw = raw.strip()
-        if raw:
-            rows.append(json.loads(raw))
+    with fpath.open("r", encoding="utf-8") as handle:
+        for raw in handle:
+            raw = raw.strip()
+            if raw:
+                rows.append(json.loads(raw))
     return rows
 
 

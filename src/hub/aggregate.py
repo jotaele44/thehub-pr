@@ -60,7 +60,7 @@ def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dic
         if errs and strict:
             continue
 
-        manifest = json.loads((pkg / "manifest.json").read_text())
+        manifest = json.loads((pkg / "manifest.json").read_text(encoding="utf-8"))
         per_stream_counts: Dict[str, int] = {}
         for fentry in sorted(
             manifest.get("files", []),
@@ -75,7 +75,7 @@ def aggregate(packages: Mapping[str, Path], out_dir, strict: bool = True) -> dic
             stream_owners = owners.setdefault(stream, {})
             stream_blocked = blocked.setdefault(stream, set())
             n = 0
-            with fpath.open() as _fh:
+            with fpath.open("r", encoding="utf-8") as _fh:
                 for raw in _fh:
                     raw = raw.strip()
                     if not raw:
