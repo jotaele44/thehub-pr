@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -54,10 +54,10 @@ def main() -> int:
     if not shutil.which("gdal_create") or not shutil.which("gdal_translate") or not shutil.which("gdalwarp"):
         raise RuntimeError("GDAL CLI is required")
     OUT.mkdir(parents=True, exist_ok=True)
+    validator_python = os.environ.get("GDAL_PYTHON", "/usr/bin/python3")
+    if not Path(validator_python).exists():
+        raise RuntimeError(f"GDAL validator Python is unavailable: {validator_python}")
 
-    # Puerto Rico State Plane 2022 / EPSG:6566 fixture. Exact values are fixed so
-    # output semantics are deterministic even though compressed bytes are hashed
-    # after creation rather than assumed in source control.
     run(
         "gdal_create", "-of", "GTiff", "-outsize", "64", "64", "-bands", "1",
         "-burn", "7", "-ot", "Byte", "-a_srs", "EPSG:6566",
@@ -68,9 +68,7 @@ def main() -> int:
         "-co", "BLOCKSIZE=256", "-co", "COMPRESS=DEFLATE", "-co", "OVERVIEWS=IGNORE_EXISTING",
     )
 
-    # Independent validator: the sample validator reads byte/IFD layout rather
-    # than trusting the TIFF extension or the writer's COG driver selection.
-    validator_stdout = run(sys.executable, "-m", "osgeo_utils.samples.validate_cloud_optimized_geotiff", str(COG))
+    validator_stdout = run(validator_python, "-m", "osgeo_utils.samples.validate_cloud_optimized_geotiff", str(COG))
     if "ERROR" in validator_stdout.upper():
         raise AssertionError(validator_stdout)
 
@@ -89,6 +87,7 @@ def main() -> int:
         "status": "PASS",
         "validator": "GDAL_COG_VALIDATOR",
         "validatorVersion": run("gdalinfo", "--version").strip(),
+        "validatorPython": validator_python,
         "sourceCrs": "EPSG:6566",
         "targetCrs": "EPSG:4326",
         "fullAssetSha256": sha256(COG),
