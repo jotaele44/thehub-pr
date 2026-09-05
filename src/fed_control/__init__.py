@@ -244,12 +244,13 @@ def snapshot_local(ledger: Mapping[str, Any], root: Path) -> Dict[str, Any]:
 
 
 def _gh_head(repo: str, branch: str) -> Tuple[Optional[str], Optional[str]]:
-    if shutil.which("gh") is None:
+    try:
+        proc = subprocess.run(
+            ["gh", "api", "repos/%s/commits/%s" % (repo, branch), "--jq", ".sha"],
+            text=True, capture_output=True, check=False,
+        )
+    except FileNotFoundError:
         return None, "gh_missing"
-    proc = subprocess.run(
-        ["gh", "api", "repos/%s/commits/%s" % (repo, branch), "--jq", ".sha"],
-        text=True, capture_output=True, check=False,
-    )
     if proc.returncode:
         return None, "gh_api_failed:%s" % proc.stderr.strip()
     sha = proc.stdout.strip()
@@ -494,7 +495,6 @@ def run_ready(
         if vector_id in completed_set:
             dynamic_status[vector_id] = "PASS"
             continue
-        row = rec[vector_id]
         status = dynamic_status[vector_id]
         vector = vectors[vector_id]
         if status != "READY":

@@ -30,6 +30,15 @@ datas = [
     (str(BRANDING / "icon-256.png"), "assets/branding"),
     (str(REPO_ROOT / "registry"), "registry"),
     (str(REPO_ROOT / "schemas"), "schemas"),
+    (
+        str(
+            REPO_ROOT
+            / "governance"
+            / "admin_control_plane"
+            / "privilege_matrix.json"
+        ),
+        "governance/admin_control_plane",
+    ),
     # The committed federation readiness snapshot. The frozen app runs the same
     # FastAPI lifespan as the served build, and without this file _load_snapshot
     # returns None, seeding falls back to registry-only, and the Gates page ships
