@@ -1,7 +1,9 @@
 """Independent TheHub validation of producer review/quarantine semantics."""
 from __future__ import annotations
 
+import hashlib
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping
@@ -9,8 +11,11 @@ from typing import Any, Mapping
 POLICY_VERSION = "federation-review-quarantine/1.0"
 RECEIPT_SCHEMA = "aguayluz_federation_review_quarantine_v1"
 SCOPE_SCHEMA = "prii_federation_spatial_certification_scope_v1"
+SCOPE_RECEIPT_SCHEMA = "prii_federation_spatial_certification_scope_receipt_v1"
 CLAIM = "FEDERATION_SPATIAL_ARCHITECTURE"
 REQUIRED_NONBLOCKING_CLASS = "DOMAIN_RECORD_ADJUDICATION"
+HEX40 = re.compile(r"^[0-9a-f]{40}$")
+HEX64 = re.compile(r"^[0-9a-f]{64}$")
 
 
 class ReviewQuarantineError(ValueError):
@@ -52,6 +57,14 @@ def _jsonl(path: Path, label: str) -> list[dict[str, Any]]:
     return rows
 
 
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def _nonnegative_int(value: Any, label: str, errors: list[str]) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value < 0:
         errors.append(f"{label} must be a non-negative integer")
@@ -59,7 +72,14 @@ def _nonnegative_int(value: Any, label: str, errors: list[str]) -> int:
     return value
 
 
-def _validate_scope(package_root: Path, errors: list[str]) -> None:
+def _validate_scope(
+    package_root: Path,
+    errors: list[str],
+    *,
+    producer_commit: str | None,
+    producer_tree: str | None,
+    certification: bool,
+) -> None:
     path = package_root / "governance" / "federation_spatial_certification_scope_v1.json"
     if not path.is_file():
         errors.append("missing bound federation spatial certification scope")
@@ -83,6 +103,42 @@ def _validate_scope(package_root: Path, errors: list[str]) -> None:
     promotion_rule = scope.get("promotion_rule")
     if not isinstance(promotion_rule, str) or "must never be rewritten as resolved" not in promotion_rule:
         errors.append("certification scope promotion rule drift")
+
+    receipt_path = package_root / "outputs" / "federation_spatial_certification_scope_receipt.json"
+    if not receipt_path.is_file():
+        errors.append("missing scope Git/byte binding receipt")
+        return
+    receipt = _json(receipt_path, "certification scope receipt")
+    if receipt.get("schema_version") != SCOPE_RECEIPT_SCHEMA:
+        errors.append("certification scope receipt schema mismatch")
+    if receipt.get("state") != "PASS" or receipt.get("problems") not in ([], tuple()):
+        errors.append("certification scope receipt is not PASS/clean")
+    if receipt.get("claim") != CLAIM:
+        errors.append("certification scope receipt claim mismatch")
+    if receipt.get("producer_repository") != "jotaele44/aguayluz-pr":
+        errors.append("certification scope receipt producer mismatch")
+    if receipt.get("scope_path") != "governance/federation_spatial_certification_scope_v1.json":
+        errors.append("certification scope receipt path mismatch")
+    if receipt.get("scope_bytes") != path.stat().st_size:
+        errors.append("certification scope byte-size mismatch")
+    actual_hash = _sha256(path)
+    if receipt.get("scope_sha256") != actual_hash or not HEX64.fullmatch(str(receipt.get("scope_sha256", ""))):
+        errors.append("certification scope SHA256 mismatch")
+    if not HEX40.fullmatch(str(receipt.get("scope_git_blob_sha", ""))):
+        errors.append("certification scope Git blob SHA invalid")
+
+    receipt_commit = receipt.get("producer_commit")
+    receipt_tree = receipt.get("producer_tree")
+    if not HEX40.fullmatch(str(receipt_commit or "")):
+        errors.append("certification scope producer_commit invalid")
+    if not HEX40.fullmatch(str(receipt_tree or "")):
+        errors.append("certification scope producer_tree invalid")
+    if producer_commit is not None and receipt_commit != producer_commit:
+        errors.append("certification scope producer_commit does not match runtime producer")
+    if producer_tree is not None and receipt_tree != producer_tree:
+        errors.append("certification scope producer_tree does not match runtime producer")
+    if certification and (producer_commit is None or producer_tree is None):
+        errors.append("certification requires runtime producer commit/tree for scope binding")
 
 
 def _validate_receipt(receipt: Mapping[str, Any], errors: list[str]) -> tuple[int, dict[str, int]]:
@@ -157,6 +213,8 @@ def validate_review_quarantine_package(
     package_root: str | Path,
     *,
     certification: bool,
+    producer_commit: str | None = None,
+    producer_tree: str | None = None,
 ) -> ReviewQuarantineValidation:
     root = Path(package_root)
     receipt_path = root / "outputs" / "review_quarantine_receipt.json"
@@ -173,7 +231,13 @@ def validate_review_quarantine_package(
     errors: list[str] = []
     receipt = _json(receipt_path, "review quarantine receipt")
     q_total, accepted_counts = _validate_receipt(receipt, errors)
-    _validate_scope(root, errors)
+    _validate_scope(
+        root,
+        errors,
+        producer_commit=producer_commit,
+        producer_tree=producer_tree,
+        certification=certification,
+    )
 
     manifest = _json(root / "outputs" / "federation" / "manifest.json", "canonical manifest")
     if manifest.get("review_quarantine_policy") != POLICY_VERSION:
