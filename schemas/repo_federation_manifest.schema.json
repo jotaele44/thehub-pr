@@ -37,9 +37,14 @@
     "source_truth": {"type": "object"},
     "hub_callable_commands": {
       "type": "object",
-      "description": "Shell commands the Hub may invoke. setup MUST install everything the other declared commands import, and may use the network only to install SHA-pinned dependencies (e.g. the shared prii-* packages via git+https). Every command other than setup MUST be offline-safe (no network).",
+      "description": "Shell commands the Hub may invoke. setup owns only the certified runtime dependency profile. A producer that keeps test tooling outside runtime may declare setup_test; the Hub runs it after setup and before test_suite when setup execution is authorized. setup and setup_test may use the network only to acquire version/SHA-pinned dependencies. Every other command, including test_suite, MUST be offline-safe. Hosted retrieval remains acquisition convenience and does not prove an offline-reproducible build.",
       "minProperties": 1,
       "required": ["setup", "test_suite"],
+      "properties": {
+        "setup": {"type": "string", "minLength": 1},
+        "setup_test": {"type": "string", "minLength": 1},
+        "test_suite": {"type": "string", "minLength": 1}
+      },
       "additionalProperties": {"type": "string"}
     },
     "canonical_outputs": {
