@@ -1,0 +1,68 @@
+{
+  "contract_version": "federation-spatial-ci-baseline/1.0",
+  "generated_date": "2026-09-05",
+  "purpose": "Separate pre-existing repository CI failures from spatial-architecture branch regressions before merge/certification.",
+  "classification_enum": ["PREEXISTING_FAILURE", "BRANCH_REGRESSION", "INFRA_FAILURE", "UNKNOWN"],
+  "repositories": [
+    {
+      "repo": "spiderweb-pr",
+      "base_sha": "f46546ef24c7dc2164b3f203d1af57e7d2570219",
+      "baseline_state": "CONTAMINATED",
+      "evidence": [
+        {"workflow": "CI", "conclusion": "failure", "run_id": 33918175423},
+        {"workflow": "Federation template drift", "conclusion": "failure", "run_id": 33918175422}
+      ],
+      "branch_attribution": "UNKNOWN",
+      "rule": "Any branch failure sharing a failing baseline capability must be reproduced or delta-isolated before classification as BRANCH_REGRESSION."
+    },
+    {
+      "repo": "aguayluz-pr",
+      "base_sha": "3678271a03e36375dc3e9f2fb4da0b6b655622bd",
+      "baseline_state": "CONTAMINATED",
+      "evidence": [
+        {"workflow": "refresh", "conclusion": "failure", "run_id": 33972041762}
+      ],
+      "branch_attribution": "UNKNOWN"
+    },
+    {
+      "repo": "skywatcher-pr",
+      "base_sha": "6b95f816f1dc2c2081734df582920703743fbdf3",
+      "baseline_state": "CONTAMINATED",
+      "evidence": [
+        {"workflow": "adsb-poll", "conclusion": "failure", "run_id": 33971972118}
+      ],
+      "branch_attribution": "UNKNOWN"
+    },
+    {
+      "repo": "moneysweep-pr",
+      "base_sha": "74b10245f925bfd9b9ea07b2ce986981d5d65525",
+      "baseline_state": "CONTAMINATED",
+      "evidence": [
+        {"workflow": "Source update — drop scan", "conclusion": "failure", "run_id": 33969309040},
+        {"workflow": "Source update — freshness", "conclusion": "failure", "run_id": 33969221539}
+      ],
+      "branch_attribution": "UNKNOWN"
+    },
+    {
+      "repo": "thehub-pr",
+      "base_sha": "6474028904af463cab513d1755bce0380f7b2ad1",
+      "baseline_state": "CONTAMINATED",
+      "evidence": [
+        {"workflow": "Federation template drift", "conclusion": "failure", "run_id": 33915813750},
+        {"workflow": ".github/workflows/gis-live-source-certification.yml", "conclusion": "failure", "run_id": 33915812893}
+      ],
+      "branch_attribution": "UNKNOWN"
+    }
+  ],
+  "merge_policy": {
+    "baseline_red_is_not_branch_regression": true,
+    "mechanical_mergeable_is_not_certified": true,
+    "required_before_merge": [
+      "branch-caused failures isolated or disproven",
+      "spatial-specific gates pass",
+      "zero material unresolved spatial residue",
+      "frozen source/geometry manifestations and hashes"
+    ]
+  },
+  "certification_state": "OPEN"
+}
