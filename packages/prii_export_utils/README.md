@@ -89,22 +89,45 @@ for path, envelope in iter_inbox("/srv/federation-exchange", "moneysweep-pr"):
 - GitHub `repository_dispatch` may wrap this protocol, but cannot replace the
   local outbox/inbox as authoritative transport.
 
+## Optional exact-byte mirrors
+
+`artifact_mirror.py` wraps one committed canonical outbox file for optional
+hosted delivery. It embeds the complete envelope bytes as base64 and binds them
+to independent byte-size and SHA-256 observations.
+
+```python
+from prii_export_utils import build_mirror_payload, verify_mirror_payload
+
+mirror = build_mirror_payload(emitted.path)
+envelope, exact_bytes = verify_mirror_payload(mirror)
+```
+
+The wrapper fails closed on malformed base64, byte-size or hash drift,
+duplicate JSON keys, noncanonical serialization, and any mismatch between its
+source, target, kind, or message identity and the embedded envelope.
+
+A hosted bridge must be downstream of `emit_message()`. A hosted delivery ID,
+HTTP status, or workflow run is not authoritative identity and cannot replace a
+local receipt. The receiver must verify the wrapper before reconstructing the
+exact envelope file.
+
 Cross-language contracts are published at:
 
 - `schemas/contracts/federation_artifact_message.v1.schema.json`
 - `schemas/contracts/federation_artifact_receipt.v1.schema.json`
+- `schemas/contracts/federation_artifact_mirror.v1.schema.json`
 
 ## Installing from an immutable source
 
 ```bash
-pip install "prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@f2b81769924689b4d959554928810b1d7b7ef3d6#subdirectory=packages/prii_export_utils"
+pip install "prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@<reviewed-commit>#subdirectory=packages/prii_export_utils"
 ```
 
-That existing pin predates the artifact-transport API. Downstream repositories
-must not consume the new API until a reviewed TheHub commit or package release
-is frozen. For disconnected builds, retaining only a Git SHA is insufficient:
-the source archive or wheel bytes, SHA-256, license material, and manifest must
-also be stored locally.
+The Federation's older `f2b8176...` pins predate the local transport and mirror
+APIs. Downstream repositories must pin an exact reviewed implementation commit.
+For disconnected builds, retaining only a Git SHA is insufficient: the source
+archive or wheel bytes, SHA-256, license material, and manifest must also be
+stored locally.
 
 ## Pinning policy
 
