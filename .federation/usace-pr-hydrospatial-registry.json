@@ -1,0 +1,62 @@
+{
+  "registry_version": "1.0.0",
+  "corpus_id": "usace_pr_hydrospatial_corpus_v1",
+  "producer_repo": "jotaele44/aguayluz-pr",
+  "producer_branch": "usace-pr-hydrospatial-corpus-v1",
+  "producer_contract": ".federation/usace-pr-hydrospatial-contract.json",
+  "producer_role": "water_grid_monitoring_node",
+  "control_plane_role": "discovery_provenance_certification_only",
+  "geometry_consumer": "jotaele44/spiderweb-pr",
+  "geometry_rule": "Spiderweb may consume only independently validated canonical waterbody/project geometries; document aliases and proximity are discovery only.",
+  "identity_layers": [
+    "BYTE",
+    "SOURCE_MANIFESTATION",
+    "LOGICAL_DOCUMENT",
+    "PROJECT",
+    "WATERBODY"
+  ],
+  "declared_sources": [
+    "saj_environmental_documents_pr",
+    "usace_digital_library_global_pr",
+    "usace_digital_library_project_management_pr",
+    "saj_regulatory_public_notices_pr",
+    "saj_congressional_fact_sheets_pr",
+    "saj_civil_works_project_pages",
+    "iwr_project_assistance_library",
+    "erdc_knowledge_core",
+    "usace_hq_publications"
+  ],
+  "waterbody_universe": {
+    "primary": "USGS NHDPlus HR Puerto Rico",
+    "crosschecks": [
+      "Puerto Rico detailed hydrography GIS",
+      "Puerto Rico SIGE waterbody service"
+    ],
+    "marine_extension": "authoritative USACE/NOAA manifestations retained as candidates until independently bound"
+  },
+  "known_regression_fixture": {
+    "id": "usace_culebrinas_2004_geotech_uploaded_v1",
+    "state": "PASS_LOCAL_FIXTURE",
+    "notable_identity_issue": "uploaded Appendix-B-named bytes also contain an Appendix C heading; filename is not logical-document identity proof"
+  },
+  "certification": {
+    "target": "USACE_PR_HYDROSPATIAL_CORPUS_CERTIFIED",
+    "state": "OPEN",
+    "required": [
+      "declared_source_universe_frozen",
+      "all_source_adapters_executed_or_dispositioned",
+      "family_expansion_closed",
+      "all_recoverable_manifestations_hashed",
+      "byte_manifestation_logical_project_waterbody_identity_adjudicated",
+      "source_arithmetic_closed",
+      "unresolved_zero"
+    ]
+  },
+  "prohibitions": [
+    "TheHub must not store or become authoritative for raw corpus bytes.",
+    "Name normalization cannot establish project or waterbody identity.",
+    "Different SHA256 values prove byte difference only.",
+    "Source absence cannot establish nonexistence.",
+    "Certification cannot be promoted while any declared source adapter is unimplemented or any candidate remains unexplained."
+  ]
+}
