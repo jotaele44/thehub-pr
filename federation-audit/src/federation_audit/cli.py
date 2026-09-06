@@ -10,7 +10,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 from .fixture import fixture_passed, run_fixture_audit
 from .inventory_graph import build_inventory_graph
-from .parity import certify_federation
+from .parity_ancestry import certify_federation
 from .runtime_cert import runtime_certify
 from .scanner import scan_federation, write_json
 from .strict_scan import strict_scan_federation
