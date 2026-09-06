@@ -1,0 +1,17 @@
+{
+  "schema_version": "thehub.culebrinas-prefield-control/v1.2",
+  "issued_date": "2026-09-06",
+  "producer_repo": "jotaele44/aguayluz-pr",
+  "producer_receipt_commit": "ee31c879b01f0a53ccebd125069679aafde148bc",
+  "state": "OPEN_BLOCKED",
+  "B01": "BLOCKED_FEATURE_EXTRACTION",
+  "B02": "OPEN_AUTHORITATIVE_BINDING",
+  "B03": "OPEN_INCOMPLETE",
+  "B04": "OPEN_PENDING_SEISMIC_INTERPRETATION",
+  "B05": "BLOCKED_EXTERNAL_GITHUB_ACTIONS_RUNNER",
+  "prefield_certified": false,
+  "merge_allowed": false,
+  "field_execution_allowed_as_certified_campaign": false,
+  "KVI_MEASURED": "BLOCKED_NO_FIELD_DATA",
+  "zero_material_residue": false
+}
