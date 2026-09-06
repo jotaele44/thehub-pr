@@ -1,0 +1,70 @@
+{
+  "schema_version": "federation.gui-backend-authority-matrix/1.0",
+  "generated_at": "2026-09-06T13:09:00Z",
+  "policy": {
+    "thehub_is_federation_control_plane": true,
+    "thehub_is_not_domain_fact_authority": true,
+    "spiderweb_is_bounded_spatial_authority": true,
+    "domain_repositories_retain_semantic_authority": true,
+    "cross_repo_mutation_requires_declared_delegation": true,
+    "geometry_consumption_does_not_transfer_geometry_authority": true
+  },
+  "repositories": {
+    "thehub-pr": {
+      "semantic_authority": "federation-control-and-cross-domain-orchestration-only",
+      "mutation_authority": "federation-control-plane-only",
+      "identity_authority": "federation-linkage-and-discovery-not-domain-identity",
+      "geometry_authority": "none-consumer-of-spiderweb",
+      "provenance_authority": "federation-receipts-and-cross-domain-query-provenance",
+      "prohibited": ["author-domain-facts", "silently-rewrite-domain-identities", "silently-author-canonical-geometry"]
+    },
+    "spiderweb-pr": {
+      "semantic_authority": "bounded-spatial-relations-and-spatial-analysis",
+      "mutation_authority": "spatial-substrate-state-only",
+      "identity_authority": "spatial-manifestation-identities-not-domain-entity-semantics",
+      "geometry_authority": "canonical-bounded-spatial-substrate",
+      "provenance_authority": "geometry-transformation-and-spatial-relation-provenance",
+      "prohibited": ["author-domain-semantic-facts", "overwrite-domain-identity-with-spatial-id"]
+    },
+    "aguayluz-pr": {
+      "semantic_authority": "water-hydrology-ecology-utility-monitoring",
+      "mutation_authority": "aguayluz-domain-state-only",
+      "identity_authority": "aguayluz-domain-entities-and-source-manifestations",
+      "geometry_authority": "domain-geometry-claims-consume-spiderweb-where-federated",
+      "provenance_authority": "aguayluz-domain-source-and-evidence-provenance",
+      "prohibited": ["mutate-other-domain-state", "promote-proximity-to-causation"]
+    },
+    "moneysweep-pr": {
+      "semantic_authority": "entities-contractors-ownership-control-procurement-capital",
+      "mutation_authority": "moneysweep-domain-state-only",
+      "identity_authority": "corporate-procurement-control-capital-domain-identities",
+      "geometry_authority": "consumer-of-spiderweb-for-federated-geometry",
+      "provenance_authority": "financial-corporate-procurement-property-source-provenance",
+      "prohibited": ["mutate-other-domain-state", "treat-proximity-as-control-or-ownership"]
+    },
+    "skywatcher-pr": {
+      "semantic_authority": "aircraft-aviation-telemetry-flight-observation",
+      "mutation_authority": "skywatcher-domain-state-only",
+      "identity_authority": "aircraft-flight-track-and-observation-identities",
+      "geometry_authority": "track-geometry-producer-with-federated-spatial-consumption",
+      "provenance_authority": "aviation-provider-flight-track-and-observation-provenance",
+      "prohibited": ["mutate-other-domain-state", "silently-collapse-registration-flight-track-identities"]
+    },
+    "ovnis-pr": {
+      "semantic_authority": "uap-uso-observation-evidence-domain",
+      "mutation_authority": "ovnis-domain-state-only",
+      "identity_authority": "uap-uso-case-observation-source-identities",
+      "geometry_authority": "consumer-of-spiderweb-for-federated-geometry",
+      "provenance_authority": "uap-uso-source-and-case-evidence-provenance",
+      "prohibited": ["mutate-other-domain-state", "promote-uncorroborated-observation-to-confirmed-event"]
+    },
+    "centinelas-pr": {
+      "semantic_authority": "alert-advisory-intake-validation-and-handoff",
+      "mutation_authority": "centinelas-intake-validation-handoff-state-only",
+      "identity_authority": "candidate-advisory-alert-and-handoff-identities",
+      "geometry_authority": "consumer-of-spiderweb-for-federated-geometry",
+      "provenance_authority": "intake-source-validation-and-handoff-provenance",
+      "prohibited": ["mutate-other-domain-state", "promote-candidate-without-validation-contract"]
+    }
+  }
+}
