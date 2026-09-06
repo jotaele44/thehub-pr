@@ -1,13 +1,14 @@
 {
-  "registry_version": "1.0.0",
+  "registry_version": "2.0.0",
   "corpus_id": "usace_pr_hydrospatial_corpus_v1",
   "producer_repo": "jotaele44/aguayluz-pr",
   "producer_branch": "usace-pr-hydrospatial-corpus-v1",
+  "producer_source_registry": "data/usace_pr/source_registry_v4.json",
   "producer_contract": ".federation/usace-pr-hydrospatial-contract.json",
   "producer_role": "water_grid_monitoring_node",
   "control_plane_role": "discovery_provenance_certification_only",
   "geometry_consumer": "jotaele44/spiderweb-pr",
-  "geometry_rule": "Spiderweb may consume only independently validated canonical waterbody/project geometries; document aliases and proximity are discovery only.",
+  "geometry_rule": "Spiderweb may consume only independently validated canonical waterbody/project geometries; document aliases, normalized names and proximity are discovery only.",
   "identity_layers": [
     "BYTE",
     "SOURCE_MANIFESTATION",
@@ -15,23 +16,51 @@
     "PROJECT",
     "WATERBODY"
   ],
-  "declared_sources": [
-    "saj_environmental_documents_pr",
-    "usace_digital_library_global_pr",
-    "usace_digital_library_project_management_pr",
-    "saj_regulatory_public_notices_pr",
-    "saj_congressional_fact_sheets_pr",
-    "saj_civil_works_project_pages",
-    "iwr_project_assistance_library",
-    "erdc_knowledge_core",
-    "usace_hq_publications"
-  ],
+  "producer_interfaces": {
+    "source_harvester": "operators/harvest_usace_pr_v4.py",
+    "family_expander": "operators/expand_usace_pr_families_v1.py",
+    "waterbody_binder": "operators/bind_usace_pr_waterbodies_v1.py",
+    "manifestation_validation": "src/aguayluz/usace_manifestation.py",
+    "enterprise_adapters": "src/aguayluz/usace_enterprise_adapters.py",
+    "waterbody_binding": "src/aguayluz/usace_waterbody_binding.py"
+  },
+  "declared_sources": {
+    "count": 16,
+    "primary_report": [
+      "saj_environmental_documents_pr",
+      "usace_digital_library_global_pr",
+      "usace_digital_library_project_management_pr",
+      "iwr_project_assistance_library",
+      "erdc_knowledge_core"
+    ],
+    "current_regulatory": [
+      "rrs_public_notices_pr",
+      "orm_public_pr"
+    ],
+    "historical_backfill": [
+      "saj_regulatory_public_notices_pr"
+    ],
+    "project_discovery": [
+      "saa_site_index",
+      "saa_rio_puerto_nuevo_project_hub",
+      "saa_fy26_contract_forecast",
+      "saj_congressional_fact_sheets_pr",
+      "saj_civil_works_project_pages"
+    ],
+    "secondary_reference": [
+      "sad_puerto_rico_regulatory_portal",
+      "usace_units_repository_metaregistry",
+      "usace_hq_publications"
+    ]
+  },
   "waterbody_universe": {
-    "primary": "USGS NHDPlus HR Puerto Rico",
-    "crosschecks": [
+    "primary": "existing AguaYLuz NHDPlus V2.1 Puerto Rico VPU 21 graph/assets",
+    "stable_crosscheck": "data/geo/pr_natural_features.json — USGS GNIS Puerto Rico natural features",
+    "additional_crosschecks": [
       "Puerto Rico detailed hydrography GIS",
       "Puerto Rico SIGE waterbody service"
     ],
+    "identity_rule": "NAME_ONLY/NORMALIZED_NAME_ONLY/PROXIMITY_ONLY cannot certify project-waterbody identity",
     "marine_extension": "authoritative USACE/NOAA manifestations retained as candidates until independently bound"
   },
   "known_regression_fixture": {
@@ -39,16 +68,26 @@
     "state": "PASS_LOCAL_FIXTURE",
     "notable_identity_issue": "uploaded Appendix-B-named bytes also contain an Appendix C heading; filename is not logical-document identity proof"
   },
+  "adapter_state": {
+    "SAJ_environmental_documents": "IMPLEMENTED",
+    "ContentDM": "IMPLEMENTED_PAGINATION_GATE",
+    "ERDC_DSpace7": "IMPLEMENTED_NEEDS_LIVE_EXECUTION",
+    "PAL": "BLOCKED_SEARCH_REQUEST_SCHEMA_RESOLVER_IMPLEMENTED",
+    "RRS": "BLOCKED_PUBLIC_MACHINE_ENDPOINT_NOT_DISCOVERED",
+    "ORM_Public": "BLOCKED_PUBLIC_MACHINE_ENDPOINT_NOT_DISCOVERED"
+  },
   "certification": {
     "target": "USACE_PR_HYDROSPATIAL_CORPUS_CERTIFIED",
     "state": "OPEN",
     "required": [
-      "declared_source_universe_frozen",
-      "all_source_adapters_executed_or_dispositioned",
+      "bounded_declared_source_universe_frozen",
+      "all_required_source_adapters_executed",
       "family_expansion_closed",
       "all_recoverable_manifestations_hashed",
-      "byte_manifestation_logical_project_waterbody_identity_adjudicated",
-      "source_arithmetic_closed",
+      "archive_member_identity_closed",
+      "project_waterbody_identity_adjudicated",
+      "source_family_identity_arithmetic_closed",
+      "green_merged_federation_integration",
       "unresolved_zero"
     ]
   },
@@ -56,7 +95,8 @@
     "TheHub must not store or become authoritative for raw corpus bytes.",
     "Name normalization cannot establish project or waterbody identity.",
     "Different SHA256 values prove byte difference only.",
+    "Filename equality does not prove logical-document identity.",
     "Source absence cannot establish nonexistence.",
-    "Certification cannot be promoted while any declared source adapter is unimplemented or any candidate remains unexplained."
+    "Certification cannot be promoted while any required source adapter, family, manifestation or identity residue remains unresolved."
   ]
 }
