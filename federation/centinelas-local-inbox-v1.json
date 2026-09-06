@@ -25,9 +25,24 @@
     "whole_envelope_required": true,
     "local_inbox_authoritative": true,
     "hosted_delivery_authoritative": false,
-    "hosted_delivery_can_mint_identity": false
+    "hosted_delivery_can_mint_identity": false,
+    "shared_package": {
+      "name": "prii-export-utils",
+      "declared_version": "0.2.1",
+      "source_parent_sha": "2a8b662262130fc9013a7bc5016a6c74117e8c4a",
+      "binding_scope": "COMPLETE_PYTHON_SOURCE_MEMBER_SET",
+      "python_source_blobs": {
+        "__init__.py": "8e22ab3332d266259e211b55b5fb3a6bd55c8d7d",
+        "artifact_mirror.py": "25d36d61fa393ac1236a1f2d46499b96aeb8dc13",
+        "artifact_transport.py": "45043023bbcd34e214256a4f71b28b0765cc74ab",
+        "helpers.py": "1f15f759fd30b7443d1281d47ebf75f757f1c0c4"
+      },
+      "source_checkout_precedes_installed_distribution": true,
+      "whole_wheel_identity_proven": false
+    }
   },
   "processing_order": [
+    "VERIFY_EXACT_SHARED_PACKAGE_PYTHON_SOURCE_MEMBERS",
     "VERIFY_EXACT_CANONICAL_ENVELOPE_BYTES",
     "VERIFY_SOURCE_TARGET_KIND_FILENAME_AND_HASH_BINDINGS",
     "DELIVER_TO_LOCAL_THEHUB_INBOX",
@@ -79,7 +94,9 @@
     "offline_reproducible_build_proven": false,
     "retained_wheel_is_disconnected_rebuild": false,
     "github_workflow_success_is_service_independence": false,
-    "dynamic_gates_closed": 0
+    "dynamic_gates_closed": 0,
+    "shared_package_python_source_members_bound": true,
+    "whole_shared_package_wheel_identity_proven": false
   },
   "scope_exclusions": [
     "RAW_SOURCE_ACQUISITIONS",

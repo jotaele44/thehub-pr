@@ -9,4 +9,9 @@ Responsibilities:
 The Hub owns the canonical schemas under ``schemas/``; producers conform to them.
 """
 
+from ._shared_transport_binding import install_import_guard as _install_import_guard
+
+_install_import_guard()
+del _install_import_guard
+
 __version__ = "0.1.0"

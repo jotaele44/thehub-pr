@@ -75,15 +75,28 @@ rejection/failure dispositions.
 
 ## Packaging boundary
 
-The consumer imports the exact `prii_export_utils` implementation already
-carried by TheHub #260. A complete source checkout resolves that in-repository
-package without a sibling checkout; a packaged deployment must install the exact
-shared-package wheel separately. The root Hub distribution is not widened with a
-Python 3.10+ package, so unrelated Hub commands retain the existing Python 3.9
-compatibility floor. Local-envelope execution itself requires Python 3.10+.
+The consumer loads the exact `prii_export_utils` implementation already
+carried by TheHub #260. Before import, it verifies the complete four-member Python
+source set and each member's Git blob identity:
 
-An in-repository source path or retained wheel is provenance/package evidence,
-not proof of retained dependency-byte completeness or a disconnected rebuild.
+```text
+__init__.py            8e22ab3332d266259e211b55b5fb3a6bd55c8d7d
+artifact_mirror.py     25d36d61fa393ac1236a1f2d46499b96aeb8dc13
+artifact_transport.py  45043023bbcd34e214256a4f71b28b0765cc74ab
+helpers.py             1f15f759fd30b7443d1281d47ebf75f757f1c0c4
+```
+
+A complete source checkout is authoritative and cannot be shadowed by an
+unrelated installed package. A packaged deployment may use a separately
+installed distribution only when those same four source members and identities
+are present. Missing, extra, symlinked, or byte-different members fail closed.
+
+The root Hub distribution is not widened with a Python 3.10+ package, so
+unrelated Hub commands retain the existing Python 3.9 compatibility floor.
+Local-envelope execution itself requires Python 3.10+.
+
+This four-source-member binding is not whole-wheel identity, retained dependency-
+byte completeness, or proof of a disconnected rebuild.
 
 ## Gate crosswalk
 
