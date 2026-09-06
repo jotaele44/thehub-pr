@@ -1,3 +1,10 @@
+from .artifact_mirror import (
+    MIRROR_SCHEMA_VERSION,
+    InvalidMirrorError,
+    build_mirror_payload,
+    read_canonical_envelope,
+    verify_mirror_payload,
+)
 from .artifact_transport import (
     ArtifactTransportError,
     InvalidEnvelopeError,
@@ -18,18 +25,23 @@ from .helpers import fid, norm, sha256
 __all__ = [
     "ArtifactTransportError",
     "InvalidEnvelopeError",
+    "InvalidMirrorError",
     "InvalidReceiptError",
+    "MIRROR_SCHEMA_VERSION",
     "MessageCollisionError",
     "TransportResult",
     "acknowledge_message",
     "build_envelope",
+    "build_mirror_payload",
     "canonical_json_bytes",
     "deliver_message",
     "emit_message",
     "fid",
     "iter_inbox",
     "norm",
+    "read_canonical_envelope",
     "sha256",
     "verify_envelope",
+    "verify_mirror_payload",
     "verify_receipt",
 ]
