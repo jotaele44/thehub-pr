@@ -19,7 +19,10 @@ def test_compose_parses_and_maps_port():
     compose = yaml.safe_load((REPO_ROOT / "docker-compose.yml").read_text())
     service = compose["services"]["thehub"]
     assert service["build"] == "."
-    assert "8000:8000" in service["ports"]
+    # Loopback-only by default (SEC-1): this build ships with no login, so a
+    # published port must not default to every interface. See
+    # docs/federation/MCP_DEPLOYMENT.md.
+    assert "127.0.0.1:8000:8000" in service["ports"]
     assert any(v.endswith("/app/data") for v in service["volumes"])
 
 

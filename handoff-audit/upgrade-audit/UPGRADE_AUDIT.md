@@ -2,7 +2,86 @@
 
 **Scope:** recommendable improvements found by a read-only audit of `thehub-pr` at pinned commit
 `70765a2c4bd67470ee6b9892023f3ff4c80913b8` (plus the Spatial-RAG donor where noted).
-**Status: RECOMMENDATIONS ONLY — no code, config, or dependency was changed. HOLD is retained.**
+**Status: Phase 1 + Phase 2 applied 2026-09-06 (see below). Phase 3 + Phase 4 remain
+RECOMMENDATIONS ONLY — HOLD is retained for those.**
+
+## Status update (2026-09-06) — Phase 1 + Phase 2 closure
+
+Applied on `claude/federation-gap-closure-audit-o7wao8` as part of a federation-wide
+gap-closure audit, verified against current `main` (the backend has since split
+`server/backend/main.py` into a thin compat shim over `server/backend/main_core.py` —
+line numbers below are stale; re-verify against current HEAD rather than trusting them).
+Full test suite green (1176 passed, 3 skipped), `ruff check src/hub server tests` and
+`mypy src/hub server/backend` both clean. A branch-protection audit across all seven
+federation repos also landed in `governance/merge_blocking_status.json`. Everything
+below this section is left verbatim as the historical record of the original,
+pre-closure audit.
+
+**Applied — Phase 1 (config/doc):**
+- **DEP-3** — documented the sub-package Python-floor inconsistency in place (no
+  3.10-only syntax was found, so the floors were left as-is rather than risk an
+  unverified install-floor change on desktop packaging).
+- **DEP-10** — added `"engines": {"node": ">=22"}` to `server/frontend/package.json`.
+- **SEC-1 (config half)** — `docker-compose.yml` now publishes `127.0.0.1:8000:8000`,
+  not `8000:8000`; the no-auth-past-loopback invariant is now spelled out in
+  `docs/federation/MCP_DEPLOYMENT.md`.
+
+**Investigated, not applied — recorded so this isn't re-litigated:**
+- **DEP-2** — attempted (set mypy's `python_version` to `3.9` to match
+  `requires-python`), then reverted: the resolved mypy (`>=1.10`, currently 2.3.1) has
+  dropped support for `python_version = "3.9"` outright — it prints a warning and does
+  not check 3.9 semantics at all. See the comment left on `[tool.mypy]` in
+  `pyproject.toml`. A real fix means either pinning an older mypy that still supports a
+  3.9 target, or raising the floor to 3.10 (which also means dropping 3.9 from the CI
+  test matrix) — both bigger, deliberate decisions than a config-only pass.
+- **DEP-4** — already substantially done on this HEAD: `.github/workflows/pip-audit.yml`
+  (weekly + on lockfile-touching PRs) and `.github/dependabot.yml` (pip/npm/actions) both
+  already exist, and `pyproject.toml`'s `[tool.coverage.report] fail_under = 88` is
+  already an enforced gate. The one remaining piece — `ci.yml` still runs
+  `npm ci --no-audit --no-fund` — lives in federation-templated infrastructure
+  (`federation-templates/baseline/`, synced by `federation-template-sync.yml`), out of
+  scope for a thehub-pr-only change.
+- **DEP-6 / FEAT-2** — `server/backend/requirements.txt`'s apparent duplication of the
+  `server` extra is deliberate and already documented in-file (`desktop-build.yml`
+  installs it directly, without `-e .[server]`). Pinning the Docker image install
+  against `handoff-audit/phase0/RUNTIME_LOCK.json` needs a real Docker build to confirm
+  it doesn't regress, which this pass couldn't do safely without a Docker daemon. Left
+  on HOLD.
+- **DEP-1** — out of scope as originally noted: it's about the unmerged Spatial-RAG
+  donor, not shipped Hub code ("not a merge unit").
+
+**Applied — Phase 2 (small correctness fixes):**
+- **BUG-1** — `contextlib.closing(_conn())` now wraps every remaining route that opens a
+  connection in `server/backend/main_core.py` (`health`, `_load_alerts`,
+  `notifications`/`notifications_ack`/`*_preferences`, `list_entities`, `get_entity`,
+  `update_entity`, `delete_entity`, `filter_entities`, `bulk_create`).
+- **BUG-3** — every mutating route's `await request.json()` now goes through a new
+  `_read_json_body()` helper (400 on invalid JSON or a non-object body);
+  `filter_entities`/`bulk_create` also validate `filters`/`items` shape (400 on a
+  non-dict/non-list).
+- **BUG-6** — `list_entities`'s `limit` query param now has `ge=1, le=2000`;
+  `filter_entities`'s body `limit` goes through a new `_clamp_limit()` helper with the
+  same bounds — which also fixes the negative-limit case silently returning exactly one
+  row.
+- **BUG-7** — `src/hub/manifest.py`'s `load_and_validate_manifest` now catches
+  `FileNotFoundError`/`json.JSONDecodeError` and returns `({}, [error])`, mirroring
+  `validate.py`'s existing pattern, instead of raising a raw traceback.
+- **DEP-7** — swapped `starlette.testclient.TestClient` for
+  `fastapi.testclient.TestClient` in the three named test files.
+- New regression tests: `tests/test_entity_api.py` (BUG-2/3/6) and two new cases in
+  `tests/test_manifest.py` (BUG-7).
+
+**Found already fixed on this HEAD (no action needed):**
+- **BUG-2** — `create_entity` already caught `sqlite3.IntegrityError` and returned 409,
+  inside a `try/finally` that closes the connection — ahead of the rest of BUG-1's
+  pattern, which this pass now extends to every other route. A regression test now
+  guards it (`test_duplicate_create_returns_409_not_500`).
+
+**Not attempted this pass:** Phase 3 (BUG-4 WAL/busy_timeout, BUG-5/FEAT-1 single-source
+DDL) and Phase 4 (FEAT-3 observability, BUG-8/9/10/11, SEC-2/3, DEP-5/8/9) remain on HOLD
+exactly as documented below.
+
+---
 
 Each item is tagged:
 - **HOLD-safe?** — `config/doc` (a new/isolated config or documentation change) vs `CODE` (edits existing
