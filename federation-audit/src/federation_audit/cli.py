@@ -10,6 +10,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 from .fixture import fixture_passed, run_fixture_audit
 from .inventory_graph import build_inventory_graph
+from .parity import certify_federation
 from .runtime_cert import runtime_certify
 from .scanner import scan_federation, write_json
 from .strict_scan import strict_scan_federation
@@ -37,6 +38,15 @@ def validate(instance: Path, schema: Path) -> None:
     validate_instance(load_json(instance), schema)
 
 
+def _validate_gui_contracts(workspace_root: Path, manifest: dict, fallback_root: Path | None, schema: Path) -> None:
+    for repo in manifest["repositories"]:
+        local = workspace_root / repo["workspace_directory"] / ".federation" / "gui_backend_contract.json"
+        fallback = fallback_root / f"{repo['id']}.json" if fallback_root else None
+        contract = local if local.is_file() else fallback if fallback and fallback.is_file() else None
+        if contract:
+            validate(contract, schema)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="federation-audit")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -59,6 +69,19 @@ def build_parser() -> argparse.ArgumentParser:
     strict.add_argument("--manifest", type=Path, required=True)
     strict.add_argument("--output", type=Path, required=True)
     strict.add_argument("--require-all", action="store_true")
+
+    parity = sub.add_parser("gui-backend-parity", help="federation GUI/backend contract certification")
+    parity.add_argument("--workspace-root", type=Path, required=True)
+    parity.add_argument("--manifest", type=Path, required=True)
+    parity.add_argument("--authority-matrix", type=Path, required=True)
+    parity.add_argument("--fallback-contract-root", type=Path)
+    parity.add_argument("--output", type=Path, required=True)
+    parity.add_argument(
+        "--contract-schema",
+        type=Path,
+        default=contract_path("gui-backend-contract.schema.json"),
+    )
+    parity.add_argument("--require-pass", action="store_true")
 
     runtime = sub.add_parser("runtime-certify", help="G0-G6 shadow-runtime certification")
     runtime.add_argument("--workspace-root", type=Path, required=True)
@@ -105,6 +128,20 @@ def main(argv: list[str] | None = None) -> int:
         if args.require_all and result["workspace_gaps"]:
             return 3
         return 0
+    if args.command == "gui-backend-parity":
+        manifest = load_json(args.manifest)
+        workspace = args.workspace_root.resolve()
+        fallback = args.fallback_contract_root.resolve() if args.fallback_contract_root else None
+        _validate_gui_contracts(workspace, manifest, fallback, args.contract_schema)
+        result = certify_federation(
+            workspace,
+            manifest,
+            authority_matrix=load_json(args.authority_matrix),
+            fallback_contract_root=fallback,
+        )
+        write_json(args.output, result)
+        print(json.dumps(result["summary"], sort_keys=True))
+        return 0 if (result["certified"] or not args.require_pass) else 5
     if args.command == "runtime-certify":
         manifest = load_json(args.manifest)
         result = runtime_certify(
