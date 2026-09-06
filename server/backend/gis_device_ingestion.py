@@ -23,7 +23,7 @@ MAX_ARCHIVE_MEMBERS = 256
 MAX_ARCHIVE_UNCOMPRESSED = 128 * 1024 * 1024
 MAX_MEMBER_UNCOMPRESSED = 64 * 1024 * 1024
 MAX_COMPRESSION_RATIO = 200.0
-GPKG_APPLICATION_ID = 0x47504B47
+GPKG_APPLICATION_ID = 0x47503130  # b"GP10": the real GeoPackage 1.0-1.2 SQLite application_id
 
 
 class GisIngestionError(ValueError):
@@ -141,15 +141,15 @@ def parse_gpx(raw: bytes) -> tuple[dict[str, Any], dict[str, Any]]:
             props["name"] = name.text
         features.append(_feature({"type": "Point", "coordinates": coords}, props))
     for trkseg in root.findall(".//{*}trkseg"):
-        coords = []
+        seg_coords: list[list[float]] = []
         for pt in trkseg.findall("{*}trkpt"):
             vals: list[float] = [float(pt.attrib["lon"]), float(pt.attrib["lat"])]
             ele = pt.find("{*}ele")
             if ele is not None and ele.text:
                 vals.append(float(ele.text))
-            coords.append(vals)
-        if coords:
-            features.append(_feature({"type": "LineString", "coordinates": coords}))
+            seg_coords.append(vals)
+        if seg_coords:
+            features.append(_feature({"type": "LineString", "coordinates": seg_coords}))
     fc = {"type": "FeatureCollection", "features": features}
     schema = sorted({k for f in features for k in f["properties"]})
     return fc, _receipt(
@@ -301,9 +301,12 @@ def parse_shapefile_zip(raw: bytes) -> tuple[dict[str, Any], dict[str, Any]]:
     if len(shp) != 1:
         raise GisIngestionError("SHP ZIP requires exactly one .shp member")
     stem = str(Path(shp[0]).with_suffix(""))
-    matching = lambda suffix: next(
-        (n for n in names if str(Path(n).with_suffix("")) == stem and n.lower().endswith(suffix)), None
-    )
+
+    def matching(suffix: str) -> str | None:
+        return next(
+            (n for n in names if str(Path(n).with_suffix("")) == stem and n.lower().endswith(suffix)), None
+        )
+
     prj = matching(".prj")
     dbf = matching(".dbf")
     cpg = matching(".cpg")
@@ -345,32 +348,40 @@ def _wkb(data: bytes, offset: int = 0) -> tuple[dict[str, Any], int]:
     if geom_type == 1:
         if p + 16 > len(data):
             raise GisIngestionError("truncated WKB Point")
-        x, y = struct.unpack(order + "2d", data[p:p + 16]); p += 16
+        x, y = struct.unpack(order + "2d", data[p:p + 16])
+        p += 16
         return {"type": "Point", "coordinates": [x, y]}, p
     if geom_type == 2:
         if p + 4 > len(data):
             raise GisIngestionError("truncated WKB LineString count")
-        n = struct.unpack(order + "I", data[p:p + 4])[0]; p += 4
+        n = struct.unpack(order + "I", data[p:p + 4])[0]
+        p += 4
         coords = []
         for _ in range(n):
             if p + 16 > len(data):
                 raise GisIngestionError("truncated WKB LineString")
-            x, y = struct.unpack(order + "2d", data[p:p + 16]); p += 16; coords.append([x, y])
+            x, y = struct.unpack(order + "2d", data[p:p + 16])
+            p += 16
+            coords.append([x, y])
         return {"type": "LineString", "coordinates": coords}, p
     if geom_type == 3:
         if p + 4 > len(data):
             raise GisIngestionError("truncated WKB Polygon count")
-        nr = struct.unpack(order + "I", data[p:p + 4])[0]; p += 4
+        nr = struct.unpack(order + "I", data[p:p + 4])[0]
+        p += 4
         rings = []
         for _ in range(nr):
             if p + 4 > len(data):
                 raise GisIngestionError("truncated WKB ring count")
-            n = struct.unpack(order + "I", data[p:p + 4])[0]; p += 4
+            n = struct.unpack(order + "I", data[p:p + 4])[0]
+            p += 4
             ring = []
             for _ in range(n):
                 if p + 16 > len(data):
                     raise GisIngestionError("truncated WKB Polygon")
-                x, y = struct.unpack(order + "2d", data[p:p + 16]); p += 16; ring.append([x, y])
+                x, y = struct.unpack(order + "2d", data[p:p + 16])
+                p += 16
+                ring.append([x, y])
             rings.append(ring)
         return {"type": "Polygon", "coordinates": rings}, p
     raise GisIngestionError(f"unsupported WKB geometry type {geom_type}")
@@ -394,7 +405,8 @@ def _gpkg_geom(blob: bytes) -> tuple[dict[str, Any], int]:
 
 def parse_gpkg(raw: bytes) -> tuple[dict[str, Any], dict[str, Any]]:
     with tempfile.NamedTemporaryFile(suffix=".gpkg") as fh:
-        fh.write(raw); fh.flush()
+        fh.write(raw)
+        fh.flush()
         try:
             con = sqlite3.connect(fh.name)
         except sqlite3.DatabaseError as exc:
@@ -426,7 +438,8 @@ def parse_gpkg(raw: bytes) -> tuple[dict[str, Any], dict[str, Any]]:
                 if row[gi] is None:
                     features.append(_feature(None, {c: row[i] for i, c in enumerate(cols) if i != gi}))
                     continue
-                geom, srs = _gpkg_geom(row[gi]); observed_srs.add(srs)
+                geom, srs = _gpkg_geom(row[gi])
+                observed_srs.add(srs)
                 props = {c: row[i] for i, c in enumerate(cols) if i != gi}
                 features.append(_feature(geom, props))
             if observed_srs and observed_srs != {int(declared_srs)}:

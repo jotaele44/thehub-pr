@@ -74,7 +74,8 @@ def _gpkg_point() -> bytes:
         gpkg_header = b"GP\x00\x01" + struct.pack("<i", 4326)
         wkb = b"\x01" + struct.pack("<I2d", 1, -66.4, 18.2)
         con.execute("INSERT INTO points(name, geom) VALUES(?, ?)", ("A", gpkg_header + wkb))
-        con.commit(); con.close()
+        con.commit()
+        con.close()
         fh.seek(0)
         return fh.read()
 
