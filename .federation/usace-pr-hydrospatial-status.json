@@ -1,0 +1,36 @@
+{
+  "checkpoint_id": "USACE_PR_HYDROSPATIAL_CORPUS_v1_20260906",
+  "producer_repo": "jotaele44/aguayluz-pr",
+  "producer_branch": "usace-pr-hydrospatial-corpus-v1",
+  "certification_target": "USACE_PR_HYDROSPATIAL_CORPUS_CERTIFIED",
+  "state": "OPEN",
+  "source_universe": {
+    "declared_source_count": 9,
+    "saj_pr_environmental_index_rows": 29,
+    "culebrinas_2004_index_family_members": 7
+  },
+  "producer_capabilities": [
+    "SAJ Puerto Rico environmental-document family discovery",
+    "CONTENTdm candidate discovery with pagination logic",
+    "Puerto Rico scoped regulatory link over-discovery",
+    "mixed-index discovery requiring child classification",
+    "atomic retrieval with SHA256 sidecar receipts",
+    "BYTE/SOURCE_MANIFESTATION/LOGICAL_DOCUMENT/PROJECT/WATERBODY separation",
+    "source arithmetic fail-closed gate"
+  ],
+  "blockers": [
+    "PAL API adapter unresolved",
+    "ERDC search adapter unresolved",
+    "mixed-index child classification open",
+    "live bulk download blocked in current execution runtime",
+    "all family expansion not closed",
+    "all recoverable bytes not hashed",
+    "project/waterbody identity not fully adjudicated",
+    "source arithmetic not closed",
+    "unresolved residue nonzero",
+    "GitHub Actions jobs continue to fail before runner steps"
+  ],
+  "promotion_allowed": false,
+  "raw_bytes_authority": "AGUAYLUZ_ONLY",
+  "thehub_role": "DISCOVERY_PROVENANCE_CERTIFICATION_ONLY"
+}
