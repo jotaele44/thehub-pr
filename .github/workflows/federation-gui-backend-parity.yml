@@ -1,0 +1,169 @@
+name: Federation GUI backend parity
+
+on:
+  pull_request:
+    paths:
+      - "federation-audit/**"
+      - ".github/workflows/federation-gui-backend-parity.yml"
+  workflow_dispatch:
+    inputs:
+      require_pass:
+        description: "Fail unless federation GUI/backend parity has zero material residue"
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  inventory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      WORKSPACE: ${{ github.workspace }}/federation-workspace
+      AUDIT_ROOT: ${{ github.workspace }}/federation-audit
+      PIN_MANIFEST: federation-audit/manifests/gui-backend-parity-pins.json
+    steps:
+      - name: Checkout parity control plane
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout TheHub exact local-contract pin
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/thehub-pr
+          ref: 6f037e038442ee6cea76c5f3592ed921adbb6f83
+          path: federation-workspace/thehub-pr
+          persist-credentials: false
+
+      - name: Checkout Spiderweb exact local-contract pin
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/spiderweb-pr
+          ref: a657d2254edbe3a0103421ed25e3e974227ac2ec
+          path: federation-workspace/spiderweb-pr
+          persist-credentials: false
+
+      - name: Checkout Skywatcher exact local-contract pin
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/skywatcher-pr
+          ref: 20caeb4a9bfd33df8b83f0c6ed13b0c1775bc3b8
+          path: federation-workspace/skywatcher-pr
+          persist-credentials: false
+
+      - name: Checkout Ovnis exact local-contract pin
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/ovnis-pr
+          ref: 457b6de4128e5348df5d395b530bcb2e9f3249a8
+          path: federation-workspace/ovnis-pr
+          persist-credentials: false
+
+      - name: Checkout AguaYLuz exact local-contract pin
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/aguayluz-pr
+          ref: 9203124f0e670700b4204040815eef64efb2fb9e
+          path: federation-workspace/aguayluz-pr
+          persist-credentials: false
+
+      - name: Checkout Centinelas exact local-contract pin
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/centinelas-pr
+          ref: df4d098cd5ee123caa8985f023bfdf0bb5d191d1
+          path: federation-workspace/centinelas-pr
+          persist-credentials: false
+
+      - name: Checkout MoneySweep exact local-contract pin
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/moneysweep-pr
+          ref: 312996e9e00cb48582a038ec1ec8878c6373bb11
+          path: federation-workspace/moneysweep-pr
+          persist-credentials: false
+
+      - name: Verify exact pins against parity manifest
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          manifest = json.loads(Path('federation-audit/manifests/gui-backend-parity-pins.json').read_text())
+          assert manifest['schema_version'] == 'federation.gui-backend-parity-pins/1.0'
+          assert len(manifest['repositories']) == 7
+          for repo in manifest['repositories']:
+              root = Path('federation-workspace') / repo['workspace_directory']
+              actual = subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'], text=True).strip()
+              assert actual == repo['commit'], (repo['id'], repo['commit'], actual)
+              assert (root / '.federation/gui_backend_contract.json').is_file(), repo['id']
+          print('exact local-contract pins: 7/7')
+          PY
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install auditor
+        run: python -m pip install -e './federation-audit[dev]'
+
+      - name: Validate contracts and parity tests
+        run: |
+          set -euo pipefail
+          federation-audit validate-manifest federation-audit/manifests/federation.json
+          pytest federation-audit/tests/test_parity.py federation-audit/tests/test_parity_ancestry.py federation-audit/tests/test_scanner.py federation-audit/tests/test_strict_scan.py
+          ruff check federation-audit/src/federation_audit/parity.py federation-audit/src/federation_audit/parity_ancestry.py federation-audit/tests/test_parity.py federation-audit/tests/test_parity_ancestry.py
+          mypy federation-audit/src/federation_audit/parity.py federation-audit/src/federation_audit/parity_ancestry.py
+
+      - name: Generate exact-pin GUI backend parity ledger
+        run: |
+          set -euo pipefail
+          mkdir -p federation-audit/artifacts
+          federation-audit gui-backend-parity \
+            --workspace-root "$WORKSPACE" \
+            --manifest "$PIN_MANIFEST" \
+            --authority-matrix federation-audit/manifests/gui-backend-authority-matrix.json \
+            --fallback-contract-root federation-audit/manifests/gui-backend-contracts \
+            --output federation-audit/artifacts/gui-backend-parity.json
+
+      - name: Validate inventory arithmetic
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('federation-audit/artifacts/gui-backend-parity.json').read_text())
+          assert report['schema_version'] == 'federation.gui-backend-parity-report/1.0'
+          assert report['summary']['repositories_expected'] == 7
+          assert report['summary']['repositories_audited'] == 7
+          assert report['workspace_gaps'] == []
+          assert len(report['repositories']) == 7
+          assert report['summary']['material_residue'] == sum(r['material_residue'] for r in report['repositories'])
+          assert all(r.get('contract_source') == 'repository' for r in report['repositories'])
+          assert all(r.get('contract_commit_relation', {}).get('relation') in {'EXACT','ANCESTOR_CLEAN'} for r in report['repositories'])
+          print(json.dumps(report['summary'], sort_keys=True))
+          PY
+
+      - name: Enforce zero residue when explicitly requested
+        if: github.event_name == 'workflow_dispatch' && inputs.require_pass
+        run: |
+          federation-audit gui-backend-parity \
+            --workspace-root "$WORKSPACE" \
+            --manifest "$PIN_MANIFEST" \
+            --authority-matrix federation-audit/manifests/gui-backend-authority-matrix.json \
+            --fallback-contract-root federation-audit/manifests/gui-backend-contracts \
+            --output federation-audit/artifacts/gui-backend-parity-certification.json \
+            --require-pass
+
+      - name: Upload parity receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: federation-gui-backend-parity-${{ github.sha }}
+          path: federation-audit/artifacts/gui-backend-parity*.json
+          if-no-files-found: warn
+          retention-days: 30
