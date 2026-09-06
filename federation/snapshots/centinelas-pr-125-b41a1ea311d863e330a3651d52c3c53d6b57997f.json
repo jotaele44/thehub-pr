@@ -1,0 +1,36 @@
+{
+  "schema_version": "federation.producer-drift-snapshot.v1",
+  "repository": "Jotaele44/centinelas-pr",
+  "pull_request": 125,
+  "branch": "remediate/local-authority-v1",
+  "previous_head_sha": "a5b328d2dc302c553959daea96f7e93ba35a4b35",
+  "previous_tree_sha": "4beb488bdca130fb00ec9fa2b90334c39748af01",
+  "current_head_sha": "b41a1ea311d863e330a3651d52c3c53d6b57997f",
+  "current_tree_sha": "116cbf9469bb90cec1fcf9dd56ad859179cfc626",
+  "relationship": "AHEAD_2_BEHIND_0",
+  "changed_paths": [
+    "README.md"
+  ],
+  "commits": [
+    {
+      "sha": "52d92411ff25fd97e2a0fd0791869771cef455d3",
+      "classification": "DOCUMENTATION_CORRECTION",
+      "effect": "correct .centinelas/exchange spelling"
+    },
+    {
+      "sha": "b41a1ea311d863e330a3651d52c3c53d6b57997f",
+      "classification": "DOCUMENTATION_CORRECTION",
+      "effect": "bind inbox directory to target identity"
+    }
+  ],
+  "implementation_files_changed": false,
+  "dependency_files_changed": false,
+  "raw_source_acquisitions_changed": false,
+  "scientific_or_geospatial_libraries_changed": false,
+  "authority_model_falsified": false,
+  "disposition": "ACCEPT_CURRENT_DOCUMENTATION_ONLY_HEAD",
+  "prior_snapshot_status": "SUPERSEDED_FOR_CURRENT_HEAD_ONLY_RETAINED_AS_PASSED_HISTORICAL_EVIDENCE",
+  "source_redownloaded": false,
+  "certification_state": "PROVISIONAL",
+  "dynamic_gates_closed": 0
+}

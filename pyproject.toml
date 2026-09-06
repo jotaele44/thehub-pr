@@ -21,6 +21,7 @@ server = ["fastapi>=0.100", "uvicorn[standard]>=0.22", "cryptography>=41"]
 [project.scripts]
 hub = "hub.cli:main"
 fed = "fed_entry:main"
+hub-local-inbox = "hub.local_inbox_cli:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

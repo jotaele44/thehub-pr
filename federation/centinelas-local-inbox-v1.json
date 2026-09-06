@@ -1,0 +1,93 @@
+{
+  "schema_version": "thehub.centinelas-local-inbox-governance.v1",
+  "repository": "Jotaele44/thehub-pr",
+  "branch": "consume/centinelas-local-inbox-v1",
+  "certification_state": "PROVISIONAL",
+  "certified": false,
+  "governance": {
+    "policy_pr": "Jotaele44/thehub-pr#246",
+    "policy_head_sha": "39671553bc3c159342e39731b3c71748292faeca",
+    "implementation_pr": "Jotaele44/thehub-pr#260",
+    "implementation_head_sha": "2a8b662262130fc9013a7bc5016a6c74117e8c4a",
+    "completion_contract_pr": "Jotaele44/thehub-pr#247",
+    "completion_contract_relationship": "INDEPENDENT_AUDIT_NOT_STACK_PARENT",
+    "producer_pr": "Jotaele44/centinelas-pr#125",
+    "producer_head_sha": "b41a1ea311d863e330a3651d52c3c53d6b57997f",
+    "producer_previous_head_sha": "a5b328d2dc302c553959daea96f7e93ba35a4b35",
+    "producer_tree_sha": "116cbf9469bb90cec1fcf9dd56ad859179cfc626",
+    "producer_drift_snapshot": "federation/snapshots/centinelas-pr-125-b41a1ea311d863e330a3651d52c3c53d6b57997f.json"
+  },
+  "authority": {
+    "source": "centinelas-pr",
+    "target": "thehub-pr",
+    "kind": "centinelas-signal",
+    "accepted_schema": "prii.artifact-message.v1",
+    "whole_envelope_required": true,
+    "local_inbox_authoritative": true,
+    "hosted_delivery_authoritative": false,
+    "hosted_delivery_can_mint_identity": false
+  },
+  "processing_order": [
+    "VERIFY_EXACT_CANONICAL_ENVELOPE_BYTES",
+    "VERIFY_SOURCE_TARGET_KIND_FILENAME_AND_HASH_BINDINGS",
+    "DELIVER_TO_LOCAL_THEHUB_INBOX",
+    "COMMIT_IMMUTABLE_WHOLE_ENVELOPE_ACCEPTED_RECORD",
+    "COMMIT_IMMUTABLE_PROCESSED_RECEIPT",
+    "WRITE_LOCAL_TRANSPORT_ACKNOWLEDGEMENT"
+  ],
+  "dynamic_composite_gates": {
+    "CLEAN_CACHE_INSTALL_LOCK_AND_RUNTIME_CLOSURE": "OPEN",
+    "NETWORK_DENY_STARTUP": "OPEN",
+    "ALLOWLIST_ONLY_CONNECTOR_RUN": "OPEN",
+    "NO_SECRET_STARTUP_AND_CORE_OPERATION": "OPEN",
+    "PACKAGED_RELEASE_EGRESS_CAPTURE": "OPEN",
+    "POSTINSTALL_BINARY_AND_EXTENSION_CAPTURE": "OPEN",
+    "OFFLINE_BROWSE_MAP_ANALYZE_REPORT_EXPORT": "OPEN",
+    "REBUILD_FROM_FROZEN_SOURCE_AND_LOCAL_DEPENDENCY_BYTES": "OPEN"
+  },
+  "policy_gate_crosswalk": {
+    "CLEAN_CACHE_INSTALL_LOCK_AND_RUNTIME_CLOSURE": [
+      1,
+      2,
+      3
+    ],
+    "NETWORK_DENY_STARTUP": [
+      4
+    ],
+    "ALLOWLIST_ONLY_CONNECTOR_RUN": [
+      5
+    ],
+    "NO_SECRET_STARTUP_AND_CORE_OPERATION": [
+      6
+    ],
+    "PACKAGED_RELEASE_EGRESS_CAPTURE": [
+      7
+    ],
+    "POSTINSTALL_BINARY_AND_EXTENSION_CAPTURE": [
+      8
+    ],
+    "OFFLINE_BROWSE_MAP_ANALYZE_REPORT_EXPORT": [
+      9
+    ],
+    "REBUILD_FROM_FROZEN_SOURCE_AND_LOCAL_DEPENDENCY_BYTES": [
+      10
+    ]
+  },
+  "claims": {
+    "service_independence_proven": false,
+    "self_contained_release_proven": false,
+    "offline_reproducible_build_proven": false,
+    "retained_wheel_is_disconnected_rebuild": false,
+    "github_workflow_success_is_service_independence": false,
+    "dynamic_gates_closed": 0
+  },
+  "scope_exclusions": [
+    "RAW_SOURCE_ACQUISITIONS",
+    "MATURE_SCIENTIFIC_LIBRARIES",
+    "MATURE_GEOSPATIAL_LIBRARIES",
+    "DOMAIN_CONSUMER_MIGRATIONS",
+    "AUDIT_POLICY_PR_246_CONTENT",
+    "INDEPENDENT_COMPLETION_AUDIT_PR_247_CONTENT",
+    "CENTINELAS_PRODUCER_BRANCH_REBASE_OR_REWRITE"
+  ]
+}
