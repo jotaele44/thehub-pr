@@ -3,18 +3,7 @@
   "$id": "https://prii.dev/schemas/gui-backend-contract.schema.json",
   "title": "PRII GUI Backend Contract",
   "type": "object",
-  "required": [
-    "schema_version",
-    "repository",
-    "source_commit",
-    "policy",
-    "discovery",
-    "authority",
-    "auth",
-    "provenance",
-    "devices",
-    "certification"
-  ],
+  "required": ["schema_version", "repository", "source_commit", "policy", "discovery", "authority", "auth", "provenance", "devices", "runtime_evidence", "certification"],
   "properties": {
     "schema_version": {"const": "federation.gui-backend-contract/1.0"},
     "repository": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
@@ -152,12 +141,34 @@
         "additionalProperties": false
       }
     },
+    "runtime_evidence": {
+      "type": "object",
+      "required": ["data", "identity", "geometry", "device"],
+      "properties": {
+        "data": {"$ref": "#/$defs/runtimeDimension"},
+        "identity": {"$ref": "#/$defs/runtimeDimension"},
+        "geometry": {"$ref": "#/$defs/runtimeDimension"},
+        "device": {"$ref": "#/$defs/runtimeDimension"}
+      },
+      "additionalProperties": false
+    },
     "certification": {
       "type": "object",
       "required": ["state", "material_residue"],
       "properties": {
         "state": {"enum": ["OPEN", "PROVISIONAL", "PASS", "BLOCKED"]},
         "material_residue": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "runtimeDimension": {
+      "type": "object",
+      "required": ["state", "evidence"],
+      "properties": {
+        "state": {"enum": ["OPEN", "PROVISIONAL", "PASS", "BLOCKED"]},
+        "evidence": {"type": "array", "items": {"type": "string"}}
       },
       "additionalProperties": false
     }
