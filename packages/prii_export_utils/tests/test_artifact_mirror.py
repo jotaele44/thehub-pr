@@ -14,6 +14,9 @@ from prii_export_utils.artifact_mirror import (
 )
 from prii_export_utils.artifact_transport import emit_message, sha256_bytes
 
+REPO_ROOT = Path(__file__).resolve().parents[3]
+SCHEMA = REPO_ROOT / "schemas" / "contracts" / "federation_artifact_mirror.v1.schema.json"
+
 
 def _message(tmp_path: Path):
     return emit_message(
@@ -35,6 +38,22 @@ def test_exact_byte_mirror_round_trip(tmp_path: Path) -> None:
     assert data == emitted.path.read_bytes()
     assert payload["envelope_size"] == len(data)
     assert payload["envelope_sha256"] == sha256_bytes(data)
+
+
+def test_mirror_schema_matches_runtime_contract() -> None:
+    schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
+    assert schema["properties"]["schema_version"]["const"] == "prii.artifact-mirror.v1"
+    assert schema["additionalProperties"] is False
+    assert set(schema["required"]) == {
+        "schema_version",
+        "message_id",
+        "source",
+        "target",
+        "kind",
+        "envelope_size",
+        "envelope_sha256",
+        "envelope_base64",
+    }
 
 
 def test_noncanonical_envelope_file_is_rejected(tmp_path: Path) -> None:
@@ -96,7 +115,9 @@ def test_unknown_wrapper_fields_fail_closed(tmp_path: Path) -> None:
 def test_duplicate_embedded_json_keys_are_rejected(tmp_path: Path) -> None:
     payload = build_mirror_payload(_message(tmp_path).path)
     data = base64.b64decode(payload["envelope_base64"])
-    duplicate = data.replace(b'{"created_at_utc"', b'{"source":"evil","created_at_utc"')
+    duplicate = data.replace(
+        b'{"created_at_utc"', b'{"source":"evil","created_at_utc"'
+    )
     payload["envelope_base64"] = base64.b64encode(duplicate).decode("ascii")
     payload["envelope_size"] = len(duplicate)
     payload["envelope_sha256"] = sha256_bytes(duplicate)
