@@ -7,6 +7,10 @@ name = "prii-desktop"
 version = "0.2.0"
 description = "Shared self-contained desktop runtime with native setup, repair, diagnostics, same-origin ASGI serving, and pywebview."
 readme = "README.md"
+# Intentionally higher than the root repo's `>=3.9` (see UPGRADE_AUDIT.md DEP-3):
+# no 3.10-only syntax was found in this package as of 2026-09, so the floor is
+# metadata-only drift, not a verified requirement. Left as-is rather than
+# silently lowered, since desktop packaging has not been re-validated on 3.9.
 requires-python = ">=3.10"
 license = { text = "MIT" }
 # No hard runtime deps: the desktop .venv already provides fastapi + uvicorn
