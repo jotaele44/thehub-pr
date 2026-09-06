@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr.local/schemas/contracts/federation_artifact_mirror.v1.schema.json",
+  "title": "PRII Federation Artifact Mirror v1",
+  "description": "Optional hosted wrapper for the exact canonical bytes of a locally authoritative artifact envelope.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "message_id",
+    "source",
+    "target",
+    "kind",
+    "envelope_size",
+    "envelope_sha256",
+    "envelope_base64"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "prii.artifact-mirror.v1"
+    },
+    "message_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "target": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "kind": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "envelope_size": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "envelope_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "envelope_base64": {
+      "type": "string",
+      "minLength": 4,
+      "contentEncoding": "base64"
+    }
+  }
+}

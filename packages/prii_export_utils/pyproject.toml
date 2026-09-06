@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prii-export-utils"
-version = "0.2.0"
-description = "Deterministic export identity and local artifact transport for the PRII Federation."
+version = "0.2.1"
+description = "Deterministic export identity, local artifact transport, and exact-byte optional mirroring for the PRII Federation."
 requires-python = ">=3.10"
 dependencies = []
 
