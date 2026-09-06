@@ -1,0 +1,60 @@
+{
+  "checkpoint_id": "USACE_PR_HYDROSPATIAL_CORPUS_v4_20260906",
+  "producer_repo": "jotaele44/aguayluz-pr",
+  "producer_branch": "usace-pr-hydrospatial-corpus-v1",
+  "producer_source_registry": "data/usace_pr/source_registry_v4.json",
+  "certification_target": "USACE_PR_HYDROSPATIAL_CORPUS_CERTIFIED",
+  "state": "OPEN",
+  "source_universe": {
+    "declared_source_count": 16,
+    "primary_report_source_count": 5,
+    "current_regulatory_source_count": 2,
+    "historical_backfill_source_count": 1,
+    "project_discovery_source_count": 5,
+    "secondary_reference_source_count": 3,
+    "saj_pr_environmental_index_rows_seed": 29,
+    "culebrinas_2004_index_family_members": 7
+  },
+  "producer_capabilities": [
+    "SAJ Puerto Rico environmental-document family discovery",
+    "CONTENTdm candidate discovery with pagination logic",
+    "ERDC DSpace 7 discovery/pagination adapter",
+    "PAL resource/download resolver with explicit exhaustive-search blocker",
+    "Puerto Rico scoped legacy regulatory link over-discovery",
+    "mixed-index discovery requiring child classification",
+    "bounded recursive report-family expansion",
+    "atomic retrieval with byte signature validation and SHA256 sidecar receipts",
+    "ZIP member PATH + UNCOMPRESSED_SIZE + SHA256 identity classification",
+    "BYTE/SOURCE_MANIFESTATION/LOGICAL_DOCUMENT/PROJECT/WATERBODY separation",
+    "fail-closed project-waterbody binding against reused AguaYLuz hydrography",
+    "source/family identity arithmetic gates"
+  ],
+  "source_adapter_states": {
+    "saj_environmental_documents_pr": "IMPLEMENTED",
+    "usace_digital_library_global_pr": "IMPLEMENTED_PAGINATION_GATE",
+    "usace_digital_library_project_management_pr": "IMPLEMENTED_PAGINATION_GATE",
+    "erdc_knowledge_core": "IMPLEMENTED_NEEDS_LIVE_EXECUTION",
+    "iwr_project_assistance_library": "BLOCKED_SEARCH_REQUEST_SCHEMA_RESOLVER_IMPLEMENTED",
+    "rrs_public_notices_pr": "BLOCKED_PUBLIC_MACHINE_ENDPOINT_NOT_DISCOVERED",
+    "orm_public_pr": "BLOCKED_PUBLIC_MACHINE_ENDPOINT_NOT_DISCOVERED"
+  },
+  "blockers": [
+    "PAL public API is documented but exhaustive search request schema remains unbound",
+    "RRS is current regulatory primary but a public machine-readable endpoint has not been discovered",
+    "ORM Public is required but a public machine-readable query endpoint has not been discovered",
+    "ERDC DSpace adapter requires live execution against the authoritative service",
+    "runtime DNS access to USACE hosts is unavailable for bulk byte acquisition",
+    "mixed/project index child classification remains open",
+    "all report-family expansion is not closed",
+    "all recoverable bytes are not hashed",
+    "archive payload identity is not globally closed",
+    "project/waterbody identity is not fully adjudicated",
+    "source/family/identity arithmetic is not closed",
+    "unresolved residue is nonzero",
+    "GitHub Actions jobs have been failing before runner steps and are not green"
+  ],
+  "promotion_allowed": false,
+  "raw_bytes_authority": "AGUAYLUZ_ONLY",
+  "thehub_role": "DISCOVERY_PROVENANCE_CERTIFICATION_ONLY",
+  "spiderweb_role": "VALIDATED_GEOMETRY_CONSUMER_ONLY"
+}
