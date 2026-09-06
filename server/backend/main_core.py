@@ -17,7 +17,7 @@ import os
 import secrets
 import sqlite3
 import uuid
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, closing
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Optional
@@ -155,6 +155,38 @@ def _row(row: sqlite3.Row) -> dict[str, Any]:
     d.setdefault("updated_date", row["updated_at"])
     return d
 
+
+async def _read_json_body(request: Request) -> dict[str, Any]:
+    """Parse the request body as a JSON object, or raise a clean 400.
+
+    ``Request.json()`` raises ``json.JSONDecodeError`` on malformed JSON, which
+    FastAPI otherwise lets escape as an unhandled 500. Every mutating route
+    also assumes the parsed body is a ``dict`` (it immediately calls
+    ``.get(...)`` on it), so a valid-JSON-but-wrong-shape body (a list, a
+    string, `null`) is rejected here too instead of failing later downstream.
+    """
+    try:
+        body = await request.json()
+    except json.JSONDecodeError as error:
+        raise HTTPException(status_code=400, detail=f"invalid JSON body: {error}") from error
+    if not isinstance(body, dict):
+        raise HTTPException(status_code=400, detail="request body must be a JSON object")
+    return body
+
+
+def _clamp_limit(value: Any, *, default: int = 500, minimum: int = 1, maximum: int = 2000) -> int:
+    """Coerce a caller-supplied ``limit`` into ``[minimum, maximum]``.
+
+    A non-int (including bool, which is technically an int subclass) falls
+    back to ``default`` rather than raising, since ``limit`` is optional in
+    every caller. Clamping (not just validating) also closes the negative-limit
+    case where ``len(results) >= limit`` short-circuits true on the first
+    match and silently returns exactly one row instead of the intended range.
+    """
+    if isinstance(value, bool) or not isinstance(value, int):
+        return default
+    return max(minimum, min(value, maximum))
+
 # ── Seed ──────────────────────────────────────────────────────────────────────
 
 _DOMAIN_MAP = {
@@ -234,10 +266,9 @@ def _seed_federation() -> None:
 
 @app.get("/health")
 def health():
-    c = _conn()
-    row = c.execute("SELECT COUNT(*) as n FROM entities").fetchone()
-    n = row["n"] if row else 0
-    c.close()
+    with closing(_conn()) as c:
+        row = c.execute("SELECT COUNT(*) as n FROM entities").fetchone()
+        n = row["n"] if row else 0
     return {"status": "ok", "entity_count": n}
 
 
@@ -305,23 +336,21 @@ _ALERT_COLLECTION = "GovernanceAlerts"
 
 
 def _load_alerts() -> list[dict[str, Any]]:
-    c = _conn()
-    rows = c.execute(
-        "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
-        "ORDER BY updated_at DESC LIMIT 2000",
-        (_ALERT_COLLECTION,),
-    ).fetchall()
-    c.close()
+    with closing(_conn()) as c:
+        rows = c.execute(
+            "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
+            "ORDER BY updated_at DESC LIMIT 2000",
+            (_ALERT_COLLECTION,),
+        ).fetchall()
     return [_row(r) for r in rows]
 
 
 @app.get("/api/notifications")
 def notifications(since: Optional[str] = Query(None), subscriber: str = Query("operator")):
     """New alerts since ``since`` (or the subscriber's stored cursor), ranked."""
-    c = _conn()
-    store = _notif.NotificationStore(c)
-    cursor = since if since is not None else store.get_cursor(subscriber)
-    c.close()
+    with closing(_conn()) as c:
+        store = _notif.NotificationStore(c)
+        cursor = since if since is not None else store.get_cursor(subscriber)
     fresh = _notif.rank_new_alerts(_load_alerts(), cursor)
     return {
         "cursor": cursor,
@@ -334,20 +363,18 @@ def notifications(since: Optional[str] = Query(None), subscriber: str = Query("o
 @app.post("/api/notifications/ack", dependencies=_WRITE_GUARD)
 async def notifications_ack(request: Request):
     """Advance the subscriber's last-seen cursor (marks the digest read)."""
-    body = await request.json()
+    body = await _read_json_body(request)
     subscriber = body.get("subscriber", "operator")
     last_seen = body.get("last_seen") or _now()
-    c = _conn()
-    _notif.NotificationStore(c).set_cursor(last_seen, subscriber)
-    c.close()
+    with closing(_conn()) as c:
+        _notif.NotificationStore(c).set_cursor(last_seen, subscriber)
     return {"subscriber": subscriber, "last_seen": last_seen}
 
 
 @app.get("/api/notifications/preferences")
 def get_preferences(subscriber: str = Query("operator")):
-    c = _conn()
-    sub = _notif.NotificationStore(c).get_subscription(subscriber)
-    c.close()
+    with closing(_conn()) as c:
+        sub = _notif.NotificationStore(c).get_subscription(subscriber)
     return {"subscriber": subscriber, **sub, "domains": sorted(set(_notif.DOMAIN_FOR_MODULE.values())),
             "channels": list(_notif.VALID_CHANNELS), "timing": list(_notif.VALID_TIMING)}
 
@@ -355,22 +382,25 @@ def get_preferences(subscriber: str = Query("operator")):
 @app.put("/api/notifications/preferences", dependencies=_WRITE_GUARD)
 async def set_preferences(request: Request):
     """Set channel (push/sms/none) + timing (asap/brief) prefs, global or per-domain."""
-    body = await request.json()
+    body = await _read_json_body(request)
     try:
         prefs, targets, subscriber = _notif.validate_subscription(
             body.get("prefs", {}), body.get("targets", {}), body.get("subscriber", "operator")
         )
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
-    c = _conn()
-    _notif.NotificationStore(c).set_subscription(prefs, targets, subscriber, _now())
-    c.close()
+    with closing(_conn()) as c:
+        _notif.NotificationStore(c).set_subscription(prefs, targets, subscriber, _now())
     return {"subscriber": subscriber, "prefs": prefs, "targets": targets}
 
 # ── Generic entity CRUD ────────────────────────────────────────────────────────
 
 @app.get("/api/entities/{entity_name}")
-def list_entities(entity_name: str, sort: str = Query("-created_date"), limit: int = Query(500)):
+def list_entities(
+    entity_name: str,
+    sort: str = Query("-created_date"),
+    limit: int = Query(500, ge=1, le=2000),
+):
     # Order by the write timestamp before applying LIMIT so a bounded page returns
     # the most-recently-touched rows rather than an arbitrary slice — otherwise, past
     # `limit` rows, genuinely-new items can be dropped before the client re-sorts.
@@ -378,19 +408,18 @@ def list_entities(entity_name: str, sort: str = Query("-created_date"), limit: i
     # (all fields collapse to updated_at, the indexed write time). `direction` is a
     # validated literal, so interpolating it into the query is injection-safe.
     direction = "ASC" if sort and not sort.startswith("-") else "DESC"
-    c = _conn()
-    rows = c.execute(
-        f"SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
-        f"ORDER BY updated_at {direction} LIMIT ?",
-        (entity_name, limit),
-    ).fetchall()
-    c.close()
+    with closing(_conn()) as c:
+        rows = c.execute(
+            f"SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
+            f"ORDER BY updated_at {direction} LIMIT ?",
+            (entity_name, limit),
+        ).fetchall()
     return [_row(r) for r in rows]
 
 
 @app.post("/api/entities/{entity_name}", dependencies=_WRITE_GUARD)
 async def create_entity(entity_name: str, request: Request):
-    body = await request.json()
+    body = await _read_json_body(request)
     ts = _now()
     entity_id = (
         body.get("id")
@@ -420,12 +449,11 @@ async def create_entity(entity_name: str, request: Request):
 
 @app.get("/api/entities/{entity_name}/{entity_id}")
 def get_entity(entity_name: str, entity_id: str):
-    c = _conn()
-    row = c.execute(
-        "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? AND entity_id=?",
-        (entity_name, entity_id),
-    ).fetchone()
-    c.close()
+    with closing(_conn()) as c:
+        row = c.execute(
+            "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? AND entity_id=?",
+            (entity_name, entity_id),
+        ).fetchone()
     if not row:
         raise HTTPException(status_code=404, detail=f"{entity_name}/{entity_id} not found")
     return _row(row)
@@ -433,60 +461,60 @@ def get_entity(entity_name: str, entity_id: str):
 
 @app.patch("/api/entities/{entity_name}/{entity_id}", dependencies=_WRITE_GUARD)
 async def update_entity(entity_name: str, entity_id: str, request: Request):
-    patch = await request.json()
-    c = _conn()
-    row = c.execute(
-        "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? AND entity_id=?",
-        (entity_name, entity_id),
-    ).fetchone()
-    if not row:
-        c.close()
-        raise HTTPException(status_code=404, detail=f"{entity_name}/{entity_id} not found")
+    patch = await _read_json_body(request)
+    with closing(_conn()) as c:
+        row = c.execute(
+            "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? AND entity_id=?",
+            (entity_name, entity_id),
+        ).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail=f"{entity_name}/{entity_id} not found")
 
-    data = json.loads(row["data"])
-    data.update(patch)
-    ts = _now()
-    data["updated_date"] = ts
-    c.execute(
-        "UPDATE entities SET data=?, updated_at=? WHERE entity_type=? AND entity_id=?",
-        (json.dumps(data), ts, entity_name, entity_id),
-    )
-    c.commit()
-    c.close()
+        data = json.loads(row["data"])
+        data.update(patch)
+        ts = _now()
+        data["updated_date"] = ts
+        c.execute(
+            "UPDATE entities SET data=?, updated_at=? WHERE entity_type=? AND entity_id=?",
+            (json.dumps(data), ts, entity_name, entity_id),
+        )
+        c.commit()
     return data
 
 
 @app.delete("/api/entities/{entity_name}/{entity_id}", status_code=204, dependencies=_WRITE_GUARD)
 def delete_entity(entity_name: str, entity_id: str):
-    c = _conn()
-    c.execute(
-        "DELETE FROM entities WHERE entity_type=? AND entity_id=?",
-        (entity_name, entity_id),
-    )
-    c.commit()
-    c.close()
+    with closing(_conn()) as c:
+        c.execute(
+            "DELETE FROM entities WHERE entity_type=? AND entity_id=?",
+            (entity_name, entity_id),
+        )
+        c.commit()
     return Response(status_code=204)
 
 
 @app.post("/api/entities/{entity_name}/filter")
 async def filter_entities(entity_name: str, request: Request):
-    body = await request.json()
-    filters: dict = body.get("filters", {})
-    limit: int = body.get("limit", 500)
+    body = await _read_json_body(request)
+    filters = body.get("filters", {})
+    if not isinstance(filters, dict):
+        raise HTTPException(status_code=400, detail="filters must be a JSON object")
+    limit = _clamp_limit(body.get("limit", 500))
     sort: str = body.get("sort") or "-created_date"
+    if not isinstance(sort, str):
+        raise HTTPException(status_code=400, detail="sort must be a string")
 
-    c = _conn()
     # Order by write time before the (oversized) prefetch cap so the Python-side filter
     # scans the right end of the range — otherwise, past the cap, matching rows can be
     # missed. Honor the caller's requested direction (as list_entities does) so ascending
     # requests (e.g. chronological chat transcripts) aren't silently reversed.
     direction = "ASC" if not sort.startswith("-") else "DESC"
-    rows = c.execute(
-        f"SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
-        f"ORDER BY updated_at {direction} LIMIT ?",
-        (entity_name, max(limit * 10, 5000)),
-    ).fetchall()
-    c.close()
+    with closing(_conn()) as c:
+        rows = c.execute(
+            f"SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
+            f"ORDER BY updated_at {direction} LIMIT ?",
+            (entity_name, max(limit * 10, 5000)),
+        ).fetchall()
 
     results = []
     for r in rows:
@@ -500,23 +528,24 @@ async def filter_entities(entity_name: str, request: Request):
 
 @app.post("/api/entities/{entity_name}/bulk", dependencies=_WRITE_GUARD)
 async def bulk_create(entity_name: str, request: Request):
-    body = await request.json()
-    items: list = body.get("items", [])
+    body = await _read_json_body(request)
+    items = body.get("items", [])
+    if not isinstance(items, list) or not all(isinstance(item, dict) for item in items):
+        raise HTTPException(status_code=400, detail="items must be a JSON array of objects")
     ts = _now()
-    c = _conn()
     created = []
-    for item in items:
-        entity_id = item.get("id") or str(uuid.uuid4())
-        item.setdefault("id", entity_id)
-        item.setdefault("created_date", ts)
-        item["updated_date"] = ts
-        c.execute(
-            "INSERT OR REPLACE INTO entities (entity_type, entity_id, data, updated_at) VALUES (?,?,?,?)",
-            (entity_name, entity_id, json.dumps(item), ts),
-        )
-        created.append(item)
-    c.commit()
-    c.close()
+    with closing(_conn()) as c:
+        for item in items:
+            entity_id = item.get("id") or str(uuid.uuid4())
+            item.setdefault("id", entity_id)
+            item.setdefault("created_date", ts)
+            item["updated_date"] = ts
+            c.execute(
+                "INSERT OR REPLACE INTO entities (entity_type, entity_id, data, updated_at) VALUES (?,?,?,?)",
+                (entity_name, entity_id, json.dumps(item), ts),
+            )
+            created.append(item)
+        c.commit()
     return created
 
 # ── Diagnostic-mode stub endpoints ─────────────────────────────────────────────

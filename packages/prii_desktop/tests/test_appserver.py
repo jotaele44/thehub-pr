@@ -14,7 +14,7 @@ pytest.importorskip("fastapi")
 pytest.importorskip("httpx")
 
 from fastapi import FastAPI  # noqa: E402
-from starlette.testclient import TestClient  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
 
 from prii_desktop import DesktopConfig, attach_spa  # noqa: E402
 
