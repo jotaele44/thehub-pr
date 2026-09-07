@@ -1,9 +1,9 @@
 from __future__ import annotations
+
 import importlib.util
 import json
-import os
+import subprocess
 import unittest
-from unittest import mock
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -20,6 +20,17 @@ class UnifiedSkillpackConformanceTests(unittest.TestCase):
     def test_full_conformance(self) -> None:
         result = MODULE.validate(ROOT)
         self.assertEqual(result["status"], "success", result["errors"])
+
+    def test_change_scope_can_use_current_integration_base(self) -> None:
+        head = subprocess.run(
+            ["git", "-C", str(ROOT), "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+        result = MODULE.validate(ROOT, enforce_change_scope=True, change_base=head)
+        self.assertEqual(result["status"], "success", result["errors"])
+        self.assertIn("change_base_ancestry", result["checks"])
 
     def test_dispatch_metadata_is_complete(self) -> None:
         manifest = json.loads((ROOT / ".claude/skillpacks/MANIFEST.json").read_text())
@@ -40,12 +51,9 @@ class UnifiedSkillpackConformanceTests(unittest.TestCase):
             self.assertIn(f'<a id="{target}"></a>', skill, entry["capability_id"])
 
     def test_historical_scope_is_not_applied_to_other_prs(self) -> None:
-        with mock.patch.dict(
-            os.environ, {"GITHUB_HEAD_REF": "federation/persistent-identity-v0-2"}
-        ):
-            result = MODULE.validate(ROOT)
+        result = MODULE.validate(ROOT)
         self.assertEqual(result["status"], "success", result["errors"])
-        self.assertIn("declared_branch_scope_not_applicable", result["checks"])
+        self.assertNotIn("change_scope", result["checks"])
 
 
 if __name__ == "__main__":
