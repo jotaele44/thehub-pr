@@ -29,7 +29,18 @@ def _contract(**overrides):
         "source_commit": SHA,
         "policy": {
             "require_zero_material_residue": True,
-            "dimensions": ["executability", "semantic", "state", "auth", "data", "provenance", "device", "identity", "geometry", "authority"],
+            "dimensions": [
+                "executability",
+                "semantic",
+                "state",
+                "auth",
+                "data",
+                "provenance",
+                "device",
+                "identity",
+                "geometry",
+                "authority",
+            ],
         },
         "discovery": {
             "backend_roots": ["server"],
@@ -124,7 +135,9 @@ def _codes(report):
 def test_clean_fixture_can_close_all_static_and_runtime_dimensions(tmp_path: Path):
     root = tmp_path / "fixture-pr"
     _fixture(root)
-    report = audit_repository(root, _repo(), _contract(), contract_source="repository", authority_matrix=MATRIX)
+    report = audit_repository(
+        root, _repo(), _contract(), contract_source="repository", authority_matrix=MATRIX
+    )
     assert report["state"] == "PASS", report["findings"]
     assert report["material_residue"] == 0
 
@@ -132,7 +145,9 @@ def test_clean_fixture_can_close_all_static_and_runtime_dimensions(tmp_path: Pat
 def test_gui_target_missing_is_p0(tmp_path: Path):
     root = tmp_path / "fixture-pr"
     _fixture(root, fetch_target="/missing")
-    report = audit_repository(root, _repo(), _contract(), contract_source="repository", authority_matrix=MATRIX)
+    report = audit_repository(
+        root, _repo(), _contract(), contract_source="repository", authority_matrix=MATRIX
+    )
     assert "GUI_ONLY_UNJUSTIFIED" in _codes(report)
     assert report["state"] == "BLOCKED"
 
@@ -149,7 +164,9 @@ def test_unguarded_mutation_is_p0(tmp_path: Path):
 def test_high_strength_state_language_requires_backend_predicate(tmp_path: Path):
     root = tmp_path / "fixture-pr"
     _fixture(root, risky="CURRENT")
-    report = audit_repository(root, _repo(), _contract(), contract_source="repository", authority_matrix=MATRIX)
+    report = audit_repository(
+        root, _repo(), _contract(), contract_source="repository", authority_matrix=MATRIX
+    )
     assert "UNDECLARED_STATE_CLAIM" in _codes(report)
 
 

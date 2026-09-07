@@ -199,7 +199,10 @@ def certify_federation(
                     "repository": repo["id"],
                     "dimension": "state",
                     "subject": "source_commit",
-                    "detail": "Audited backend/frontend/capability paths changed after the contract source_commit.",
+                    "detail": (
+                        "Audited backend/frontend/capability paths changed after the "
+                        "contract source_commit."
+                    ),
                     "evidence": relation["changed_watched_paths"],
                     "severity": "P0",
                 }
@@ -212,7 +215,10 @@ def certify_federation(
                     "repository": repo["id"],
                     "dimension": "state",
                     "subject": "source_commit",
-                    "detail": f"Contract source relation is {relation['relation']}; exact source ancestry cannot be proven.",
+                    "detail": (
+                        f"Contract source relation is {relation['relation']}; exact source ancestry "
+                        "cannot be proven."
+                    ),
                     "evidence": [
                         f"source={relation['source_commit']}",
                         f"manifest={relation['manifest_commit']}",

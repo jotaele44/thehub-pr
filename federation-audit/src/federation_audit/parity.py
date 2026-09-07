@@ -3,9 +3,10 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from .strict_scan import strict_scan_repository
 
@@ -86,7 +87,9 @@ def _normal_route(value: str) -> str:
     return value.rstrip("/") or "/"
 
 
-def _existing_capability_bindings(root: Path, contract: dict[str, Any]) -> tuple[set[str], set[str], list[str]]:
+def _existing_capability_bindings(
+    root: Path, contract: dict[str, Any]
+) -> tuple[set[str], set[str], list[str]]:
     backend: set[str] = set()
     gui: set[str] = set()
     gaps: list[str] = []
@@ -210,7 +213,16 @@ def _claim_declared(text: str, contract: dict[str, Any]) -> bool:
 def _authority_findings(repo_id: str, contract: dict[str, Any], matrix: dict[str, Any]) -> list[Finding]:
     expected = matrix.get("repositories", {}).get(repo_id)
     if not expected:
-        return [Finding("AUTHORITY_UNDECLARED", repo_id, "authority", repo_id, "Repository has no federation authority row.", severity="P0")]
+        return [
+            Finding(
+                "AUTHORITY_UNDECLARED",
+                repo_id,
+                "authority",
+                repo_id,
+                "Repository has no federation authority row.",
+                severity="P0",
+            )
+        ]
     mapping = {
         "semantic_authority": "semantic_authority",
         "mutation_authority": "mutation_authority",
@@ -250,14 +262,50 @@ def audit_repository(
     expected_sha = repo["commit"]
 
     if contract.get("repository", "").lower() != repo["repository"].lower():
-        findings.append(Finding("CONTRACT_REPOSITORY_MISMATCH", repo_id, "authority", "repository", "Contract repository does not match audit manifest.", severity="P0"))
+        findings.append(
+            Finding(
+                "CONTRACT_REPOSITORY_MISMATCH",
+                repo_id,
+                "authority",
+                "repository",
+                "Contract repository does not match audit manifest.",
+                severity="P0",
+            )
+        )
     if contract.get("source_commit") != expected_sha:
-        findings.append(Finding("CONTRACT_SHA_DRIFT", repo_id, "state", "source_commit", f"contract={contract.get('source_commit')} manifest={expected_sha}", severity="P0"))
+        findings.append(
+            Finding(
+                "CONTRACT_SHA_DRIFT",
+                repo_id,
+                "state",
+                "source_commit",
+                f"contract={contract.get('source_commit')} manifest={expected_sha}",
+                severity="P0",
+            )
+        )
     actual_sha = _git_head(repo_root)
     if actual_sha and actual_sha != expected_sha:
-        findings.append(Finding("WORKSPACE_SHA_DRIFT", repo_id, "state", "HEAD", f"workspace={actual_sha} manifest={expected_sha}", severity="P0"))
+        findings.append(
+            Finding(
+                "WORKSPACE_SHA_DRIFT",
+                repo_id,
+                "state",
+                "HEAD",
+                f"workspace={actual_sha} manifest={expected_sha}",
+                severity="P0",
+            )
+        )
     if contract_source != "repository":
-        findings.append(Finding("CONTRACT_NOT_LOCAL", repo_id, "authority", ".federation/gui_backend_contract.json", "Parity contract is using control-plane fallback rather than a repository-local contract.", severity="P1"))
+        findings.append(
+            Finding(
+                "CONTRACT_NOT_LOCAL",
+                repo_id,
+                "authority",
+                ".federation/gui_backend_contract.json",
+                "Parity contract is using control-plane fallback rather than a repository-local contract.",
+                severity="P1",
+            )
+        )
 
     traces, index = strict_scan_repository(repo_root, repo)
     existing_backend, existing_gui, manifest_gaps = _existing_capability_bindings(repo_root, contract)
@@ -271,8 +319,8 @@ def audit_repository(
     }
     accounted_backend = existing_backend | resolved_gui_targets
     backend_allow = contract.get("backend_only_allowlist", [])
-    for route in index.routes:
-        key = _normal_route(f"{route.method} {route.path}")
+    for backend_route in index.routes:
+        key = _normal_route(f"{backend_route.method} {backend_route.path}")
         if key not in accounted_backend and not _allowlisted(key, backend_allow):
             findings.append(
                 Finding(
@@ -280,13 +328,21 @@ def audit_repository(
                     repo_id,
                     "executability",
                     key,
-                    "Backend route is neither GUI-bound nor explicitly classified as intentional backend-only.",
-                    (f"{route.source}:{route.line}",),
+                    "Backend route is neither GUI-bound nor explicitly classified as intentional "
+                    "backend-only.",
+                    (f"{backend_route.source}:{backend_route.line}",),
                     "P1",
                 )
             )
 
-    bad_gui = {"UI_NO_OP", "TARGET_MISSING", "CONTRACT_MISMATCH", "PARTIALLY_WIRED", "PRECONDITION_UNDECLARED", "RUNTIME_FAILURE"}
+    bad_gui = {
+        "UI_NO_OP",
+        "TARGET_MISSING",
+        "CONTRACT_MISMATCH",
+        "PARTIALLY_WIRED",
+        "PRECONDITION_UNDECLARED",
+        "RUNTIME_FAILURE",
+    }
     gui_allow = contract.get("gui_only_allowlist", [])
     for trace in traces:
         if trace.surface.get("kind") != "gui-control" or trace.classification not in bad_gui:
@@ -308,40 +364,49 @@ def audit_repository(
 
     gui_routes, route_evidence = _gui_routes(repo_root, contract)
     nav_targets = _navigation_targets(repo_root, contract)
-    for route in sorted(gui_routes):
-        if route in {"/", "*"} or route.startswith("*"):
+    for gui_route in sorted(gui_routes):
+        if gui_route in {"/", "*"} or gui_route.startswith("*"):
             continue
-        if route in existing_gui or route in nav_targets or _allowlisted(route, gui_allow):
+        if (
+            gui_route in existing_gui
+            or gui_route in nav_targets
+            or _allowlisted(gui_route, gui_allow)
+        ):
             continue
         findings.append(
             Finding(
                 "UNCLASSIFIED_GUI_ROUTE",
                 repo_id,
                 "executability",
-                route,
-                "GUI route is not mapped by the reviewed capability contract and has no declared navigation/presentation-only classification.",
-                (route_evidence.get(route, "route-file"),),
+                gui_route,
+                "GUI route is not mapped by the reviewed capability contract and has no declared "
+                "navigation/presentation-only classification.",
+                (route_evidence.get(gui_route, "route-file"),),
                 "P2",
             )
         )
 
-    public_mutations = {_normal_route(v) for v in contract.get("auth", {}).get("explicit_public_mutations", [])}
+    public_mutations = {
+        _normal_route(value)
+        for value in contract.get("auth", {}).get("explicit_public_mutations", [])
+    }
     guard_patterns = contract.get("auth", {}).get("guard_patterns", [])
-    for route in index.routes:
-        if route.method not in MUTATING:
+    for mutation_route in index.routes:
+        if mutation_route.method not in MUTATING:
             continue
-        key = _normal_route(f"{route.method} {route.path}")
+        key = _normal_route(f"{mutation_route.method} {mutation_route.path}")
         if key in public_mutations:
             continue
-        if not _guarded(repo_root, route, guard_patterns):
+        if not _guarded(repo_root, mutation_route, guard_patterns):
             findings.append(
                 Finding(
                     "AUTH_DRIFT_UNGUARDED_MUTATION",
                     repo_id,
                     "auth",
                     key,
-                    "Mutating route has no configured guard pattern in its decorator/handler window and is not explicitly public.",
-                    (f"{route.source}:{route.line}",),
+                    "Mutating route has no configured guard pattern in its decorator/handler window "
+                    "and is not explicitly public.",
+                    (f"{mutation_route.source}:{mutation_route.line}",),
                     "P0",
                 )
             )
@@ -355,7 +420,8 @@ def audit_repository(
                     repo_id,
                     "provenance",
                     field,
-                    "Required provenance field is not represented in the configured GUI provenance evidence files.",
+                    "Required provenance field is not represented in the configured GUI provenance "
+                    "evidence files.",
                     tuple(contract.get("provenance", {}).get("frontend_evidence_files", [])),
                     "P2",
                 )
@@ -379,7 +445,16 @@ def audit_repository(
     if devices.get("native_ios"):
         evidence_files = devices.get("native_evidence_files", [])
         if not evidence_files or not any((repo_root / rel).is_file() for rel in evidence_files):
-            findings.append(Finding("DEVICE_DRIFT_NATIVE_UNEVIDENCED", repo_id, "device", "native_ios", "Contract claims native iOS but no configured native evidence file exists.", severity="P1"))
+            findings.append(
+                Finding(
+                    "DEVICE_DRIFT_NATIVE_UNEVIDENCED",
+                    repo_id,
+                    "device",
+                    "native_ios",
+                    "Contract claims native iOS but no configured native evidence file exists.",
+                    severity="P1",
+                )
+            )
 
     findings.extend(_authority_findings(repo_id, contract, authority_matrix))
 
@@ -403,7 +478,12 @@ def audit_repository(
     by_dimension: dict[str, str] = {}
     for dimension in dimensions:
         dimension_findings = [finding for finding in findings if finding.dimension == dimension]
-        by_dimension[dimension] = "PASS" if not dimension_findings else "BLOCKED" if any(f.severity == "P0" for f in dimension_findings) else "OPEN"
+        if not dimension_findings:
+            by_dimension[dimension] = "PASS"
+        elif any(finding.severity == "P0" for finding in dimension_findings):
+            by_dimension[dimension] = "BLOCKED"
+        else:
+            by_dimension[dimension] = "OPEN"
 
     material = [finding for finding in findings if finding.severity in {"P0", "P1", "P2"}]
     state = "BLOCKED" if any(f.severity == "P0" for f in material) else "OPEN" if material else "PASS"
