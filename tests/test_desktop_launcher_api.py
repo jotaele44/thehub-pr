@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 pytest.importorskip("fastapi")
 pytest.importorskip("httpx")
 
-from starlette.testclient import TestClient  # noqa: E402
+from fastapi.testclient import TestClient  # noqa: E402
 
 from desktop import launcher_api  # noqa: E402
 
