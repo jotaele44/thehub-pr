@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://thehub-pr/contracts/query_lifecycle/v1",
-  "x-contract-version": "1.0.0",
+  "x-contract-version": "1.0.1",
   "x-status": "FROZEN — schemas/contracts (Phase 1)",
   "title": "Query (Index) Lifecycle State + Transition",
   "description": "Query-snapshot lifecycle. Only ACTIVE snapshots answer normal user queries; INDEX_FAILED never becomes ACTIVE and never disturbs the current ACTIVE snapshot.",
@@ -9,7 +9,7 @@
   "additionalProperties": false,
   "required": ["snapshot_id", "state", "transitioned_at"],
   "$defs": {
-    "state": {"enum": ["CERTIFIED", "INDEXING", "QUERY_VALIDATED", "ACTIVE", "INDEX_FAILED"]}
+    "state": {"enum": ["CERTIFIED", "INDEXING", "QUERY_VALIDATED", "ACTIVE", "INDEX_FAILED", "SUPERSEDED"]}
   },
   "properties": {
     "snapshot_id": {"type": "string", "pattern": "^snap_[0-9a-f]{16,64}$"},
@@ -23,7 +23,7 @@
     "CERTIFIED": ["INDEXING"],
     "INDEXING": ["QUERY_VALIDATED", "INDEX_FAILED"],
     "QUERY_VALIDATED": ["ACTIVE", "INDEX_FAILED"],
-    "ACTIVE": ["SUPERSEDED_BY_NEW_ACTIVE"],
+    "ACTIVE": ["SUPERSEDED"],
     "INDEX_FAILED": []
   },
   "x-invariants": [
