@@ -271,7 +271,7 @@ def _install_block_wrappers(root: Path) -> tuple[Path, Path]:
     bin_dir, log_path = root / "blocked-bin", root / "blocked-subprocess.jsonl"
     bin_dir.mkdir(parents=True, exist_ok=True)
     script = (
-        '#!/bin/sh\nname=$(basename "$0")\nargc=$#\n'
+        '#!/bin/sh\nname=${0##*/}\nargc=$#\n'
         'printf \'{"command":"%s","argc":%s}\\n\' '
         '"$name" "$argc" >> "$FEDERATION_AUDIT_BLOCK_LOG"\n'
         "exit 126\n"
