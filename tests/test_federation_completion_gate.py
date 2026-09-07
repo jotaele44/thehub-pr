@@ -247,6 +247,65 @@ def test_max_prs_marks_non_certifying_truncated_partial(monkeypatch, tmp_path):
     assert ledger["open_pr_denominator"] == 1
 
 
+def test_actionable_residue_is_non_certifying_without_exit_enforcement(monkeypatch, tmp_path):
+    config = _write_config(tmp_path)
+    out = tmp_path / "ledger.json"
+
+    def request_json(url, token, *, method="GET", body=None):
+        if url.endswith("/commits/main"):
+            return {"sha": SHA}
+        if "/pulls?state=open" in url:
+            return _one_open_pr()
+        raise AssertionError(url)
+
+    def classify(repo_full, pr, observed_main_sha, token):
+        return gate.Disposition(
+            repo_full, 7, "Dependency refresh", "b" * 40, "main", SHA,
+            observed_main_sha, "c" * 40, False, "MERGE_READY", [],
+        )
+
+    monkeypatch.setenv("GITHUB_TOKEN", "token")
+    monkeypatch.setattr(gate, "request_json", request_json)
+    monkeypatch.setattr(gate, "classify", classify)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["federation_completion_gate.py", "--config", str(config), "--out", str(out)],
+    )
+
+    assert gate.main() == 0
+    ledger = json.loads(out.read_text())
+    assert ledger["certification"] == "FAIL_ACTIONABLE_RESIDUE"
+    assert ledger["actionable_counts"] == {"MERGE_READY": 1}
+    assert ledger["actionable_exit_enforced"] is False
+
+
+def test_complete_zero_residue_denominator_can_certify_pass(monkeypatch, tmp_path):
+    config = _write_config(tmp_path)
+    out = tmp_path / "ledger.json"
+
+    def request_json(url, token, *, method="GET", body=None):
+        if url.endswith("/commits/main"):
+            return {"sha": SHA}
+        if "/pulls?state=open" in url:
+            return []
+        raise AssertionError(url)
+
+    monkeypatch.setenv("GITHUB_TOKEN", "token")
+    monkeypatch.setattr(gate, "request_json", request_json)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["federation_completion_gate.py", "--config", str(config), "--out", str(out)],
+    )
+
+    assert gate.main() == 0
+    ledger = json.loads(out.read_text())
+    assert ledger["certification"] == "PASS"
+    assert ledger["actionable_counts"] == {}
+    assert ledger["actionable_exit_enforced"] is False
+
+
 def test_resume_retries_only_audit_exception_with_frozen_inputs(monkeypatch, tmp_path):
     config = _write_config(tmp_path)
     out = tmp_path / "resumed.json"
