@@ -1,0 +1,20 @@
+{
+  "schema_version": "admin_control_plane_baseline_v1",
+  "captured_at": "2026-09-03T16:00:00Z",
+  "claim_scope": "default branches before feat/admin-control-plane-v1 changes",
+  "repositories": {
+    "thehub-pr": "b1a6f59fc7edacd8172f2849ca17a70f9454390d",
+    "moneysweep-pr": "06b37617e5150fda8914becf31d362a5fee761e3",
+    "spiderweb-pr": "ee48d4bb1003c705bf66c5324afa0d76a7e29d91",
+    "aguayluz-pr": "e66e263564a4e177dd5d950424e2508ca70cce01",
+    "ovnis-pr": "6f1cb5da2abe1fdb5b8845f77d9fceff36e4841c",
+    "skywatcher-pr": "6d7831c1cc665ad3080c9cab92a673cc5eb8e2e9",
+    "centinelas-pr": "7bdab17291b47ee99bc4182b35a17eb4ea9961b6"
+  },
+  "observations": [
+    "TheHub already owned the signed 68-operation manager and seven-node governance.",
+    "Unconfigured generic entity writes accepted private-network clients before this change.",
+    "MoneySweep main lacked .federation/haf_contract.json at capture time.",
+    "No repository contained the new admin-boundary consumer manifestation at capture time."
+  ]
+}

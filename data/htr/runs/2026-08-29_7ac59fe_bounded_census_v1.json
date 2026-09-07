@@ -1,0 +1,76 @@
+{
+  "schema_version": "htr-islandwide-run-receipt-1.0",
+  "run_id": "github-actions:33222352121",
+  "workflow": "HTR island-wide bounded census",
+  "head_sha": "7ac59fe7785a1c6ca4002cb75773ecf9b92ff0db",
+  "artifact": {
+    "artifact_id": 9705708388,
+    "name": "htr-islandwide-7ac59fe7785a1c6ca4002cb75773ecf9b92ff0db",
+    "size_bytes": 9308809,
+    "digest": "sha256:281760d63ac8ddb60f101e01d9bddffbdeebbe886ddf7c5c78b1b757e5ab16cc",
+    "created_at": "2026-08-29T00:07:56Z"
+  },
+  "scope": "Puerto Rico SIGE named-road layer x frozen PREPA/PREB + SIGE Represas hydro-name registry",
+  "retrieval_window_utc": {
+    "started": "2026-08-29T00:03:11Z",
+    "completed": "2026-08-29T00:07:53Z"
+  },
+  "counts": {
+    "source_road_rows": 214372,
+    "named_road_observations": 99060,
+    "dam_source_rows": 35,
+    "dynamic_dam_name_manifestations": 42,
+    "static_hydro_name_rows": 27,
+    "expanded_hydro_name_rows": 69,
+    "candidate_rows": 2946,
+    "luchetti_candidate_rows": 42,
+    "context_supported_rows": 0,
+    "unresolved_candidate_rows": 2946,
+    "identity_edges": 0
+  },
+  "gates": {
+    "road_row_conservation": "PASS",
+    "dam_row_conservation": "PASS",
+    "hydro_id_uniqueness": "PASS",
+    "candidate_identity_nonpromotion": "PASS",
+    "candidate_connectivity_nonpromotion": "PASS",
+    "luchetti_regression_rediscovery": "PASS"
+  },
+  "important_hashes": {
+    "summary.json": "cbad6386fa67ee50f5866da376ed661db17896797f1c328546d5b89cd98362cd",
+    "raw_manifest.json": "299472ae28675dd3f17c086f26ce96a80b358bcae4bb1bdf101747f2db66e380",
+    "SHA256SUMS.json": "5e7785700d2d275c0f0df4afd0d0adb370028647c2988349de4b2d4dac27a0b2",
+    "bundle/candidates.jsonl": "6162363b584d96315d80894acbf8face7e68af5aa12b345137ffcb1c332d8a4d",
+    "expanded_hydro_registry.jsonl": "8d98316e3c69b7eabb1411001b9a8e849eb6c17ccfbef7e1d5cfb36142810bbd",
+    "luchetti_candidates.jsonl": "aa51def758d8eb5b0a3c94de62b37836a1afdf6761124e3b429823d9b755a052",
+    "road_observations.jsonl": "468c000338c8eb05268eb57113f9d8383b9dc57a2d1b7ce96101cdc0d615711b",
+    "source_road_rows.jsonl": "bda9e783e98a51de84347ac0d85004c1ede868a19e136132cd862103d151614e"
+  },
+  "source_snapshot": {
+    "road_layer": {
+      "url": "https://sige.pr.gov/server/rest/services/Carreteras/MapServer/29",
+      "service_item_id": "997e9c259608441a90b5b5d02ee8a6d7",
+      "ids_receipt_sha256": "705ee0cedd73c61142eea3492683bb866141690b33aa251b52be04de47b54ada"
+    },
+    "dam_layer": {
+      "url": "https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/1",
+      "service_item_id": "1e9d99124f2d4abdb09c15c10f1e80a5"
+    },
+    "static_registry_sha256": "0999ad40826a26995de455e83c6d68ce384d116eb15d387dda874e75ac0e98e4"
+  },
+  "quality_adjudication": {
+    "state": "SUPERSEDED_FOR_DISCOVERY_QUALITY_ONLY",
+    "source_snapshot_integrity": "PASS",
+    "reason": "The complete source snapshot is retained, but five one-character SIGE OTHER_NAME manifestations (A, C, D, R, Y) generated high-volume semantically weak name matches. They are source facts but are not safe hydro-name discovery keys without independent evidence that the letters are actual alternate names. A successor run must preserve them in a rejected/non-discovery manifestation ledger rather than discard them.",
+    "affected_source_manifestations": ["A", "C", "D", "R", "Y"],
+    "candidate_interpretation_certified": false
+  },
+  "universal_toponym_claim": false,
+  "universal_hydro_feature_claim": false,
+  "certification": {
+    "source_enumeration_and_row_conservation": "PASS",
+    "identity_and_connectivity_nonpromotion": "PASS",
+    "candidate_adjudication": "OPEN",
+    "zero_unresolved_candidate_residue": false
+  }
+}

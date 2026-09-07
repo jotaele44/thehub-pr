@@ -1,33 +1,32 @@
-import { useEffect, useState } from "react";
-import { GeoJSON, Pane } from "react-leaflet";
+export const MUNICIPIOS_STYLE = Object.freeze({
+  color: "#475569",
+  weight: 1,
+  fillColor: "#1e293b",
+  fillOpacity: 0.6,
+});
 
-// Puerto Rico municipality outlines, drawn in a pane beneath the tile layer so
-// the geography is still visible when the online basemap tiles can't load
-// (i.e. offline). Served from public/geo/ (resolved against the document base
-// so it works in the normal build and the single-file offline export).
-const STYLE = { color: "#475569", weight: 1, fillColor: "#1e293b", fillOpacity: 0.6 };
+let cachedPromise = null;
 
+// Renderer-agnostic loader for the committed Puerto Rico municipality fallback.
+// The asset remains resolved against document.baseURI so it works in the normal
+// Vite build and in the single-file/offline desktop export.
+export function loadMunicipiosGeoJSON() {
+  if (cachedPromise) return cachedPromise;
+  const url = new URL("geo/pr_municipios.geojson", document.baseURI).href;
+  cachedPromise = fetch(url)
+    .then((response) => {
+      if (!response.ok) throw new Error(`municipios fallback fetch failed: HTTP ${response.status}`);
+      return response.json();
+    })
+    .catch((error) => {
+      cachedPromise = null;
+      throw error;
+    });
+  return cachedPromise;
+}
+
+// Compatibility export retained while consumers migrate to the shared MapLibre
+// component. Rendering ownership no longer lives in this module.
 export default function MunicipiosLayer() {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    let alive = true;
-    const url = new URL("geo/pr_municipios.geojson", document.baseURI).href;
-    fetch(url)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (alive) setData(d);
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  if (!data) return null;
-  return (
-    <Pane name="municipios" style={{ zIndex: 150 }}>
-      <GeoJSON data={data} style={STYLE} interactive={false} />
-    </Pane>
-  );
+  return null;
 }

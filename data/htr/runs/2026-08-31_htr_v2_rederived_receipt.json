@@ -1,0 +1,78 @@
+{
+  "schema_version": "htr-frozen-union-2.0",
+  "execution_date": "2026-08-31",
+  "scope": "Frozen SIGE named roads + complete supplied TIGER2025 78-municipio roads x frozen HTR v1 hydro manifestations + authoritative MAJOR_HYDRO_ASSET_v2 extension",
+  "input_hashes": {
+    "htr-islandwide-236933e.zip": "880f34a55690748d955e78bdece19716959609d9628e7e40db52c91f84494fac",
+    "htr-river-denominator-8745cb.zip": "f45fd7f6973c840636ddcf0c27c2f754254c647e83ccf7e9252ac935b9ae19d9",
+    "tiger roads.zip": "2e7d34b6e60bfe49aad48eb0a704282338822a39f6da553f5dab06b8730176a8",
+    "hydro_v2_master.xlsx": "f832ba9eed348ed5cb547c7162321c322a6a7f5b225174354c3724dcca1efe54",
+    "PRI.gpkg": "fb1d4388e1c83a7ba06e7ea10ea84d908ef10104cd429506e5aa6887a7497cf3"
+  },
+  "road_denominator": {
+    "sige_named_observations": 99060,
+    "tiger_named_observations": 69846,
+    "union_observations": 168906,
+    "observation_id_unique": true
+  },
+  "hydro_denominator": {
+    "frozen_v1_manifestations": 69,
+    "v2_extension_manifestations": 38,
+    "combined_manifestations": 107
+  },
+  "candidate_adjudication": {
+    "candidate_rows": 5569,
+    "unsupported_rows": 3831,
+    "retained_candidate_rows": 1738,
+    "contradiction_rows": 124,
+    "unresolved_relation_rows": 1738,
+    "unclassified_rows": 0,
+    "unexplained_residue_rows": 0,
+    "arithmetic_closed": true,
+    "arithmetic_equation": "5569 = 3831 + 1738"
+  },
+  "discovery_methods_supported": {
+    "EXACT_NORMALIZED_NAME": 997,
+    "ORTHOGRAPHIC_NEAR_MATCH": 741
+  },
+  "unsupported_reasons": {
+    "AMBIGUOUS_SINGLE_CHARACTER_OTHER_NAME": 3791,
+    "LOW_INFORMATION_HYDRO_DISCOVERY_KEY": 3791,
+    "RIVER_CLASS_TOKEN_COLLAPSE": 22,
+    "WEAK_SINGLE_TOKEN_FUZZY_PREFIX_MISMATCH": 18
+  },
+  "matcher_equivalence": {
+    "schema_version": "htr-matcher-equivalence-2.0",
+    "road_observation_count": 168906,
+    "unique_road_core_count": 24436,
+    "hydro_manifestation_count": 107,
+    "pair_space": 2614652,
+    "naive_qualifying_core_pairs": 165,
+    "indexed_qualifying_core_pairs": 165,
+    "intersection": 165,
+    "a_only": 0,
+    "b_only": 0,
+    "union": 165,
+    "symmetric_difference": 0,
+    "certification": "PASS"
+  },
+  "safety_invariants": {
+    "identity_promotions": 0,
+    "connectivity_promotions": 0,
+    "pair_binding_promotions": 0,
+    "transitive_context_inheritance": 0,
+    "name_fuzzy_proximity_cluster_may_promote_identity": false,
+    "name_fuzzy_proximity_cluster_may_promote_connectivity": false
+  },
+  "legacy_1513_disposition": "SUPERSEDED_NONREPRODUCIBLE",
+  "certification": {
+    "tiger_78_municipio_denominator": "PASS",
+    "source_specific_normalization": "PASS",
+    "candidate_classification_coverage": "PASS",
+    "arithmetic_closure": "PASS",
+    "zero_unexplained_residue": "PASS",
+    "canonical_identity_resolution": "OPEN",
+    "connectivity_resolution": "OPEN",
+    "universal_puerto_rico_hydro_denominator": "NOT_CLAIMED"
+  }
+}

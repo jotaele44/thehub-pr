@@ -11,8 +11,6 @@ import json
 import os
 import socket
 import sys
-from pathlib import Path
-
 import pytest
 
 from prii_desktop import launcher as launch

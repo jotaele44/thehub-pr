@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "federation.readiness.v1",
+  "title": "Federation Readiness",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "repo", "generated_at", "overall_status", "overall_completion_pct", "dimensions"],
+  "properties": {
+    "schema_version": {"const": "federation.readiness.v1"},
+    "repo": {"enum": ["thehub-pr", "skywatcher-pr", "moneysweep-pr", "aguayluz-pr", "centinelas-pr", "ovnis-pr", "spiderweb-pr"]},
+    "generated_at": {"type": "string", "minLength": 1},
+    "overall_status": {"enum": ["green", "yellow", "red", "critical", "unknown"]},
+    "overall_completion_pct": {"type": "number", "minimum": 0, "maximum": 100},
+    "dimensions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "label", "completion_pct", "status", "required", "blockers", "evidence_refs"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "label": {"type": "string", "minLength": 1},
+          "completion_pct": {"type": "number", "minimum": 0, "maximum": 100},
+          "status": {"enum": ["green", "yellow", "red", "critical", "unknown"]},
+          "required": {"type": "boolean"},
+          "blockers": {"type": "array", "items": {"type": "string"}},
+          "evidence_refs": {"type": "array", "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}

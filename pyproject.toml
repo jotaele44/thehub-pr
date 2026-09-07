@@ -38,6 +38,18 @@ target-version = "py39"
 select = ["E4", "E7", "E9", "F"]
 
 [tool.mypy]
+# NOTE (DEP-2, handoff-audit/upgrade-audit/UPGRADE_AUDIT.md): this repo's floor
+# is `requires-python = ">=3.9"` (exercised for real in ci.yml's test matrix),
+# but the currently resolved mypy (>=1.10, floating) has dropped support for
+# `python_version = "3.9"` entirely — it now hard-requires 3.10+ and ignores a
+# 3.9 setting with a warning rather than checking 3.9 semantics. So "align
+# mypy to the floor" is no longer achievable by changing this value; the
+# floor's actual 3.9-compatibility guarantee rests on the CI matrix's real
+# 3.9 test run, not on mypy. Fixing this for real means either pinning an
+# older mypy that still supports a 3.9 target, or raising requires-python to
+# 3.10 (which would also mean dropping 3.9 from the CI matrix) — both are
+# bigger, deliberate decisions than a config-only pass, so left for a
+# follow-up rather than done here.
 python_version = "3.10"
 ignore_missing_imports = true
 disable_error_code = ["import-untyped"]

@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "project_banner/v1",
+  "title": "Project Banner v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "banner_id", "lead_id", "binding", "certification_state"],
+  "properties": {
+    "schema": {"const": "project_banner/v1"},
+    "banner_id": {"type": "string", "pattern": "^prjban_[a-f0-9]{32}$"},
+    "lead_id": {"type": "string", "minLength": 1},
+    "title_raw": {"type": ["string", "null"]},
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_type", "value"],
+      "properties": {
+        "evidence_type": {
+          "enum": [
+            "stable_project_id",
+            "contract_id",
+            "award_id",
+            "parcel_id",
+            "facility_id",
+            "certified_geometry_binding"
+          ]
+        },
+        "value": {"type": "string", "minLength": 1}
+      }
+    },
+    "certification_state": {"const": "PASS"}
+  }
+}

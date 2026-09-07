@@ -1,0 +1,57 @@
+name: GIS live provider certification
+
+on:
+  pull_request:
+    paths:
+      - 'server/frontend/src/gis/**'
+      - 'server/backend/gis_proxy.py'
+      - 'server/backend/main.py'
+      - 'server/backend/main_core.py'
+      - 'tests/test_gis_proxy.py'
+      - '.github/workflows/gis-live-providers.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provider-invariants:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: server/frontend/package-lock.json
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: server/frontend
+      - name: Query live authoritative providers
+        env:
+          GIS_LIVE_PROVIDER_TESTS: '1'
+        run: npx vitest run src/gis/liveProviders.test.js --reporter=verbose
+        working-directory: server/frontend
+
+  browser-cors-observation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: server/frontend/package-lock.json
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: server/frontend
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+        working-directory: server/frontend
+      - name: Observe direct browser CORS without treating CORS policy as a data failure
+        env:
+          GIS_LIVE_PROVIDER_TESTS: '1'
+        run: npx playwright test tests/visual/gis-live-cors.spec.js --project=desktop --reporter=list
+        working-directory: server/frontend

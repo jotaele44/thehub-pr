@@ -43,7 +43,7 @@ const normalizeError = async (response) => {
   let message = response.statusText || 'Request failed';
   try {
     data = await response.json();
-    message = data?.message || data?.error || message;
+    message = data?.detail || data?.message || data?.error || message;
   } catch {
     try {
       const text = await response.text();
@@ -70,7 +70,7 @@ async function request(path, options = {}) {
     headers.set('Content-Type', 'application/json');
   }
   if (token && !headers.has('Authorization')) {
-    headers.set('Authorization', `Bearer ${token}`);
+    headers.set('Authorization', 'Bearer ' + token);
   }
 
   const response = await fetch(`${baseUrl}${path}`, {

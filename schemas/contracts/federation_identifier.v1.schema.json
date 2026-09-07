@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/federation_identifier/v1",
+  "x-contract-version": "1.0.0",
+  "title": "Federation Entity Identifier",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "identifier_id", "federation_entity_id", "namespace", "identifier_value", "provenance_id", "decision_id", "status", "created_at"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "identifier_id": {"type": "string", "pattern": "^fid_[a-f0-9]{32}$"},
+    "federation_entity_id": {"type": "string", "pattern": "^fed_[a-f0-9]{32}$"},
+    "namespace": {"type": "string", "minLength": 1},
+    "identifier_value": {"type": "string", "minLength": 1},
+    "provenance_id": {"type": "string", "pattern": "^fprov_[a-f0-9]{32}$"},
+    "decision_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["ACTIVE", "SUPERSEDED", "TOMBSTONED"]},
+    "created_at": {"type": "string", "format": "date-time"}
+  },
+  "x-unique-active": ["namespace", "identifier_value"],
+  "x-invariants": ["global namespace plus identifier value uniqueness is enforced", "identifier collision never silently auto-merges entities"]
+}

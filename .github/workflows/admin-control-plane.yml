@@ -1,0 +1,141 @@
+name: Admin Control Plane
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  workstation-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install --disable-pip-version-check pytest fastapi httpx cryptography jsonschema pyyaml
+      - name: Prove generated privilege matrix is current
+        run: |
+          python tools/build_admin_privilege_matrix.py
+          git diff --exit-code -- governance/admin_control_plane/privilege_matrix.json
+      - name: Run workstation, companion and Lockstep gates
+        env:
+          PYTHONPATH: src:.
+        run: |
+          pytest -q tests/test_admin_control_plane.py tests/test_admin_companion_api.py tests/test_federation_operations_api.py tests/test_project_signs_api.py
+          python scripts/federation_governance.py --all
+
+  ios-companion:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Generate bounded iOS project
+        run: brew install xcodegen && cd ios/TheHubAdminCompanion && xcodegen generate
+      - name: Build and test without signing
+        run: |
+          cd ios/TheHubAdminCompanion
+          xcodebuild -project TheHubAdminCompanion.xcodeproj \
+            -scheme TheHubAdminCompanion \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            CODE_SIGNING_ALLOWED=NO build
+          simulator_id=$(xcrun simctl list devices available -j | python3 -c \
+            'import json,sys; d=json.load(sys.stdin); print(next((x["udid"] for xs in d["devices"].values() for x in xs if x["name"].startswith("iPhone")), ""))')
+          if [ -n "$simulator_id" ]; then
+            destination="platform=iOS Simulator,id=$simulator_id"
+          else
+            destination="platform=macOS,arch=arm64,variant=Designed for [iPad,iPhone]"
+          fi
+          xcodebuild -project TheHubAdminCompanion.xcodeproj \
+            -scheme TheHubAdminCompanion \
+            -destination "$destination" \
+            CODE_SIGNING_ALLOWED=NO test
+
+  production-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: thehub
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/moneysweep-pr
+          ref: 74b10245f925bfd9b9ea07b2ce986981d5d65525
+          path: consumers/moneysweep-pr
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/spiderweb-pr
+          ref: f46546ef24c7dc2164b3f203d1af57e7d2570219
+          path: consumers/spiderweb-pr
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/aguayluz-pr
+          ref: 8daa575df73d1024703f8397716e0dbfce7a815d
+          path: consumers/aguayluz-pr
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/ovnis-pr
+          ref: ef16535ddc0aca4d8a6c412ea58812df569caa5a
+          path: consumers/ovnis-pr
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/skywatcher-pr
+          ref: 6b95f816f1dc2c2081734df582920703743fbdf3
+          path: consumers/skywatcher-pr
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/centinelas-pr
+          ref: caf086598a4f99e2eb0ca4aac6d51e2d9bd46321
+          path: consumers/centinelas-pr
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Install deployed runtime and proof dependencies
+        working-directory: thehub
+        run: python -m pip install --disable-pip-version-check -e ".[server,dev]"
+      - name: Deployment smoke and fail-closed mutation
+        working-directory: thehub
+        env:
+          PYTHONPATH: src:.
+        run: |
+          uvicorn server.backend.main:app --host 127.0.0.1 --port 8765 >/tmp/thehub-admin-proof.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:8765/health >/dev/null && break
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8765/api/admin-companion/capabilities |
+            python -c 'import json,sys; d=json.load(sys.stdin); assert d["workstation_manager_access"] is False'
+          code=$(curl --silent --output /tmp/entity-write.json --write-out '%{http_code}' \
+            --request POST --header 'content-type: application/json' \
+            --data '{"id":"must-fail-closed"}' \
+            http://127.0.0.1:8765/api/entities/Programs)
+          test "$code" = "503"
+          kill "$server_pid"
+          wait "$server_pid" || true
+          if kill -0 "$server_pid" 2>/dev/null; then
+            echo "TheHub process survived the outage boundary" >&2
+            exit 1
+          fi
+          trap - EXIT
+      - name: Prove consumer independence during TheHub outage
+        run: |
+          for repo in consumers/*-pr; do
+            (cd "$repo" && python .federation/check_admin_boundary.py)
+          done
+      - name: Prove immutable audit, deployment assets and forced rollback
+        working-directory: thehub
+        env:
+          PYTHONPATH: src:.
+        run: |
+          pytest -q \
+            tests/test_federation_receipts.py \
+            tests/test_deployment_assets.py \
+            tests/test_federation_operations_e2e.py::test_rollback_restores_the_database_after_a_forced_post_commit_failure \
+            tests/test_federation_operations_e2e.py::test_a_failed_run_is_recorded_rather_than_lost \
+            tests/test_federation_operations_e2e.py::test_no_secret_appears_anywhere_in_the_evidence

@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional
 
 from .manifest import load_and_validate_manifest
 from .registry import Producer, Registry
+from .spatial import SpatialContractError, load_spatial_manifest
 from .validate import validate_package
 
 
@@ -27,6 +28,10 @@ class ProducerReadiness:
     manifest_path: str
     manifest_present: bool
     manifest_valid: bool
+    spatial_manifest_path: str
+    spatial_manifest_present: bool
+    spatial_manifest_valid: bool
+    spatial_authority: str | None
     package_path: str
     package_present: bool
     package_valid: bool
@@ -71,7 +76,6 @@ def _blocker_class(
 
 
 def _read_federation_json(manifest_path: Path) -> Dict[str, Any]:
-    """Parse a producer's federation.json; return {} on any failure."""
     try:
         return json.loads(manifest_path.read_text())
     except (OSError, json.JSONDecodeError):
@@ -79,13 +83,14 @@ def _read_federation_json(manifest_path: Path) -> Dict[str, Any]:
 
 
 def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str, Any]:
-    """Return a Hub-level readiness summary for all registered producers."""
+    """Return Hub-level readiness including optional spatial-sidecar validity."""
     root_path = Path(root)
     producers: List[ProducerReadiness] = []
 
     for producer in registry.producers:
         base = _producer_base(root_path, producer)
         manifest_path = base / producer.federation_manifest
+        spatial_manifest_path = base / "federation.spatial.json"
         package_path = base / producer.export_path
         errors: List[str] = []
 
@@ -106,6 +111,23 @@ def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str,
             gate = fed_data.get("federation_readiness_gate", {})
             live_execution_ready = bool(gate.get("ready_for_hub_live_execution", False))
             callable_commands = sorted(fed_data.get("hub_callable_commands", {}).keys())
+
+        spatial_manifest_present = spatial_manifest_path.exists()
+        spatial_manifest_valid = False
+        spatial_authority: str | None = None
+        if spatial_manifest_present:
+            try:
+                spatial = load_spatial_manifest(spatial_manifest_path)
+            except (OSError, json.JSONDecodeError, SpatialContractError) as exc:
+                errors.append(f"spatial_manifest: {exc}")
+            else:
+                if spatial.producer_repo != producer.program_id:
+                    errors.append(
+                        "spatial_manifest: producer_repo does not match registry program_id"
+                    )
+                else:
+                    spatial_manifest_valid = True
+                    spatial_authority = spatial.authority
 
         package_present = package_path.exists()
         package_valid = False
@@ -148,6 +170,10 @@ def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str,
                 manifest_path=str(manifest_path),
                 manifest_present=manifest_present,
                 manifest_valid=manifest_valid,
+                spatial_manifest_path=str(spatial_manifest_path),
+                spatial_manifest_present=spatial_manifest_present,
+                spatial_manifest_valid=spatial_manifest_valid,
+                spatial_authority=spatial_authority,
                 package_path=str(package_path),
                 package_present=package_present,
                 package_valid=package_valid,
@@ -160,8 +186,8 @@ def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str,
         )
 
     by_blocker: Dict[str, int] = {}
-    for pr in producers:
-        by_blocker[pr.blocker_class] = by_blocker.get(pr.blocker_class, 0) + 1
+    for readiness in producers:
+        by_blocker[readiness.blocker_class] = by_blocker.get(readiness.blocker_class, 0) + 1
 
     return {
         "hub": registry.hub,
@@ -169,6 +195,8 @@ def validate_federation(registry: Registry, root: str | Path = ".") -> Dict[str,
         "root": str(root_path),
         "producer_count": len(producers),
         "ready_count": by_blocker.get("ready", 0),
+        "spatial_manifest_count": sum(p.spatial_manifest_present for p in producers),
+        "spatial_valid_count": sum(p.spatial_manifest_valid for p in producers),
         "by_blocker": dict(sorted(by_blocker.items())),
         "producers": [asdict(producer) for producer in producers],
     }

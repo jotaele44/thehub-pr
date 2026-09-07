@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "federation.evidence_ledger.v1",
+  "title": "Federation Evidence Ledger Rows",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["required_columns", "evidence_tiers"],
+  "properties": {
+    "required_columns": {
+      "const": ["evidence_id", "repo", "evidence_tier", "claim", "artifact_path", "artifact_type", "generated_by", "validation_status", "sha256", "notes"]
+    },
+    "evidence_tiers": {"const": ["T1", "T2", "T3", "T4"]}
+  }
+}

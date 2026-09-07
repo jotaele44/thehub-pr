@@ -1,0 +1,133 @@
+{
+  "schema_version": "gis_live_certification_v1",
+  "scope": "bounded live authoritative provider acquisition on Puerto Rico GIS vertical slice",
+  "certification_commit": "3164c12dfe3d8f8d69e5a4012fa63b776adebb66",
+  "github_actions_run_id": 33278424527,
+  "retrieval_date_utc": "2026-08-29",
+  "identity_policy": "CANDIDATE_NOT_IDENTITY",
+  "raw_query_snapshot_normalized_canonical_identity_separated": true,
+  "sige_browser_cors": {
+    "status": "PASS",
+    "direct_proxy_required": false,
+    "observed_http_status": 200,
+    "sources": {
+      "pr-sige-municipios": 78,
+      "pr-sige-represas": 35,
+      "pr-sige-aeropuertos": 14,
+      "pr-sige-helipuertos": 6,
+      "pr-sige-cuencas": 22,
+      "pr-sige-acuiferos": 500,
+      "pr-sige-sumideros": 1,
+      "pr-sige-aaa-pozos": 527
+    }
+  },
+  "vector_sources": {
+    "pr-sige-municipios": {
+      "status": "PASS",
+      "count": 78,
+      "snapshot_sha256": "50d4478ed0f019efef809091d037387b47b436ee591a2dc7c48c9634a684e5a9",
+      "query_receipt_sha256": "13ecc7124ea385ef94471e9a2e1a7e78224e81ebaf4a8b2c8509945ef31b0dc0"
+    },
+    "pr-sige-represas": {
+      "status": "PASS",
+      "count": 35,
+      "snapshot_sha256": "4bad43963d4fa286f621ade50c3df3a915c29b8fdd4adcae9e7545809090a2bf",
+      "query_receipt_sha256": "3531619bc8ff97d27929978d0095712bfdd8b2c25a9c9870e1e809dee597dc2c"
+    },
+    "pr-sige-aeropuertos": {
+      "status": "PASS",
+      "count": 14,
+      "snapshot_sha256": "1b8362cdcabd9b5a44f217751c24a784ca6e47391183b6acd9cb25d2267dc946",
+      "query_receipt_sha256": "c07d4ccf4c6161afe307b611056b922581895081b60a4e381c1543d9f0552e18"
+    },
+    "pr-sige-helipuertos": {
+      "status": "PASS",
+      "count": 6,
+      "snapshot_sha256": "6fceaf55aa09c9c857d75b20dce899fd8db1fd556fb5527df724790c4d609c80",
+      "query_receipt_sha256": "da4aa99e8d67a85474390963f6e984b7449b3e719729bb00ceb2a19688252a38"
+    },
+    "pr-sige-cuencas": {
+      "status": "PASS",
+      "count": 22,
+      "snapshot_sha256": "87092a22865e021fe9ebd3177f1d889a70208959d50c4610325f950885005a51",
+      "query_receipt_sha256": "c2080948c89c9fcc947c04c3f65d105b0dae3da3c6b9f23a5a7cd724477770f1"
+    },
+    "pr-sige-acuiferos": {
+      "status": "PASS",
+      "count": 500,
+      "snapshot_sha256": "bcf7a93b4844fe809e933d46c50d32b119c186f1464ce55f59d791818a9084f7",
+      "query_receipt_sha256": "9b4bf741592218340f163f1ec0f4654a442629b2c2af03a0970d6e163a5cc0a4"
+    },
+    "pr-sige-sumideros": {
+      "status": "PASS",
+      "count": 1,
+      "snapshot_sha256": "5885a9983e244f357acc3b11cc7d713c5a7b8ad8be55399d9856d0e9f5eb5c01",
+      "query_receipt_sha256": "d5a25356406e8d6649ce0647a983a4fba995c3c7a59d825ab2778723a247bacc"
+    },
+    "pr-sige-aaa-pozos": {
+      "status": "PASS",
+      "count": 527,
+      "snapshot_sha256": "9c736568b5028c278b69e59d18722b3225cd5451d7ca3dc6d4fc7a41fb79be3f",
+      "query_receipt_sha256": "3ed1bc5a6f14e3dc8bd8c841e11c0080910db961be8d490cb3f00dadcd1c5c25"
+    },
+    "pr-geodata-municipios-2015": {
+      "status": "PASS",
+      "count": 78,
+      "snapshot_sha256": "29680f647baede236c46b184fef569d3b5330922b4b6e07e422683ffa1f18982",
+      "query_receipt_sha256": "8ed44c16497db9241ae487fd0ceba7ff83e9f1e599500ba4617f6da459b15106",
+      "transport": "proxy-required",
+      "prior_snapshot_observation_sha256": "ed89324be9b25930d0451f41e1ef082180d9f3846f23d8c37c340c592d584c08",
+      "contradiction_class": "BYTE|TIME",
+      "identity_effect": "NONE_WITHOUT_ADDITIONAL_EVIDENCE"
+    },
+    "census-tigerweb-pr-state-2025": {
+      "status": "PASS",
+      "count": 1
+    },
+    "census-tigerweb-pr-municipios-2025": {
+      "status": "PASS",
+      "count": 78
+    }
+  },
+  "imagery_discovery": {
+    "usgs-landsat-stac-sr": {
+      "status": "PASS",
+      "bounded_window": "2025-01-01T00:00:00Z/2025-01-31T23:59:59Z",
+      "candidate_count": 20,
+      "snapshot_sha256": "2c2359f39d2cc4752207a1efc620fd6258eb75c6804ada899e60438be151dfc8",
+      "query_receipt_sha256": "a441de7ac6801e4a163c1713b372858f5873d5e93a3630daa3b5ff07dd3f58db",
+      "sample_range": {
+        "item_id": "LC09_L2SP_004048_20250127_20250128_02_T1_SR",
+        "asset_key": "coastal",
+        "classification": "COG_AUTHORITATIVE_BINDING",
+        "range_sha256": "79ca42fc5dfdc04b480bb420a27b946f02bf5781d565c055186c2285d94105ca",
+        "full_asset_byte_identity": "OPEN",
+        "prior_range_sha256": "3aee0cba1f5b3250f19e67819c40a4877956b171c1ff9ffb3c80bf8c31aee083",
+        "contradiction_class": "BYTE|TIME",
+        "identity_effect": "PARTIAL_RANGE_MANIFESTATION_ONLY"
+      }
+    },
+    "copernicus-cdse-sentinel-2-l2a": {
+      "status": "PASS",
+      "bounded_window": "2025-01-01T00:00:00Z/2025-01-31T23:59:59Z",
+      "candidate_count": 80,
+      "snapshot_sha256": "796639847cd40a65f1df7e5cbbb3cb9d89eedc4e461df91bca4b87e731a9099e",
+      "query_receipt_sha256": "e8880e8b45fddda31064c0c958d9d9a6c098b9c188dd0201a626a71e500dcb91"
+    },
+    "noaa-pr-naip-2021-2023-stac": {
+      "status": "PASS",
+      "candidate_count": 265,
+      "snapshot_sha256": "e146ea4e3bdbe028e863a94a37a3875c5422c8dbadd68196bd93cfa88ecc6ed3",
+      "asset_identity": "GEOTIFF_UNVERIFIED_COG"
+    }
+  },
+  "open_residue": [
+    "FULL_LANDSAT_ASSET_BYTES_NOT_HASHED",
+    "NOAA_GEOTIFF_NOT_PROVEN_COG",
+    "RASTER_MAP_VISUALIZATION_NOT_IMPLEMENTED",
+    "NASA_CMR_STAC_COLLECTION_NOT_BOUND",
+    "USGS_3DHP_EXACT_LAYER_AOI_NOT_BOUND",
+    "MAPLIBRE_RUNTIME_ADAPTER_OPEN",
+    "CESIUM_RUNTIME_ROUNDTRIP_OPEN"
+  ]
+}

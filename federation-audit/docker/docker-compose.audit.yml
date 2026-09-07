@@ -1,0 +1,37 @@
+services:
+  federation-audit:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    command: ["scan", "--workspace-root", "/workspace", "--manifest", "/audit/manifests/federation.json", "--output", "/artifacts/audit-graph.json"]
+    user: "1000:1000"
+    read_only: true
+    network_mode: "none"
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 256
+    mem_limit: 2g
+    cpus: 2
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=512m
+    volumes:
+      - ../../:/workspace:ro
+      - ./artifacts:/artifacts:rw
+
+  federation-playwright:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    entrypoint: ["sh", "-lc"]
+    command: ["cd /audit/playwright && npm test"]
+    user: "1000:1000"
+    read_only: true
+    network_mode: "none"
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 256
+    mem_limit: 2g
+    cpus: 2
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=1g
+      - /audit/playwright/artifacts:rw,nosuid,nodev,size=512m

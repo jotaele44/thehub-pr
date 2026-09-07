@@ -17,6 +17,12 @@ describe('nav config', () => {
     expect(new Set(paths).size).toBe(paths.length);
   });
 
+  it('exposes operator settings in primary navigation', () => {
+    expect(items).toEqual(expect.arrayContaining([
+      expect.objectContaining({ label: 'Operator Settings', path: '/operator-settings' }),
+    ]));
+  });
+
   it('matches active routes correctly', () => {
     expect(isNavActive('/', '/')).toBe(true);
     expect(isNavActive('/activity', '/')).toBe(true);

@@ -26,8 +26,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sqlite3
 from typing import Any, Iterable
+from urllib.parse import urlparse
 
 # ── Domain taxonomy ─────────────────────────────────────────────────────────────
 # Alert module -> the coarse domain a subscriber tunes preferences against. Keeps the
@@ -48,6 +50,7 @@ DEFAULT_DOMAIN = "other"
 
 VALID_CHANNELS = ("push", "sms")
 VALID_TIMING = ("asap", "brief")
+VALID_DOMAINS = frozenset(DOMAIN_FOR_MODULE.values()) | {DEFAULT_DOMAIN}
 
 # The preference used when a subscriber has set neither a per-domain nor an "all"
 # default: in-app only (empty channel set), ASAP. The in-app center is unconditional,
@@ -91,6 +94,66 @@ def normalize_pref(pref: Any) -> dict[str, Any]:
     channels = tuple(c for c in pref.get("channels", ()) if c in VALID_CHANNELS)
     timing = pref.get("timing") if pref.get("timing") in VALID_TIMING else "asap"
     return {"channels": channels, "timing": timing}
+
+
+def validate_subscription(
+    prefs: Any, targets: Any, subscriber_id: Any = "operator"
+) -> tuple[dict[str, dict[str, Any]], dict[str, str], str]:
+    """Validate and normalize the notification preferences write contract."""
+    if not isinstance(subscriber_id, str) or not subscriber_id.strip():
+        raise ValueError("subscriber must be a non-empty string")
+    subscriber = subscriber_id.strip()
+    if len(subscriber) > 128:
+        raise ValueError("subscriber must be at most 128 characters")
+    if not isinstance(prefs, dict):
+        raise ValueError("prefs must be an object")
+    if not isinstance(targets, dict):
+        raise ValueError("targets must be an object")
+
+    normalized_prefs: dict[str, dict[str, Any]] = {}
+    for scope, pref in prefs.items():
+        if scope != "all" and scope not in VALID_DOMAINS:
+            raise ValueError(f"unknown notification domain: {scope}")
+        if not isinstance(pref, dict):
+            raise ValueError(f"preference for {scope} must be an object")
+        channels = pref.get("channels", [])
+        timing = pref.get("timing", "asap")
+        if not isinstance(channels, list) or any(
+            not isinstance(channel, str) or channel not in VALID_CHANNELS
+            for channel in channels
+        ):
+            raise ValueError(f"channels for {scope} must use: {', '.join(VALID_CHANNELS)}")
+        if timing not in VALID_TIMING:
+            raise ValueError(f"timing for {scope} must use: {', '.join(VALID_TIMING)}")
+        normalized_prefs[scope] = {
+            "channels": list(dict.fromkeys(channels)),
+            "timing": timing,
+        }
+
+    unknown_targets = set(targets) - set(VALID_CHANNELS)
+    if unknown_targets:
+        raise ValueError(f"unknown notification target: {sorted(unknown_targets)[0]}")
+    enabled_channels = {
+        channel
+        for pref in normalized_prefs.values()
+        for channel in pref["channels"]
+    }
+    normalized_targets: dict[str, str] = {}
+    for channel, raw_target in targets.items():
+        if channel not in enabled_channels or raw_target in ("", None):
+            continue
+        if not isinstance(raw_target, str):
+            raise ValueError(f"{channel} target must be a string")
+        target = raw_target.strip()
+        if channel == "push":
+            parsed = urlparse(target)
+            if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+                raise ValueError("push target must be an absolute HTTP(S) URL")
+        elif not re.fullmatch(r"\+[1-9]\d{7,14}", target):
+            raise ValueError("sms target must be an E.164 phone number")
+        normalized_targets[channel] = target
+
+    return normalized_prefs, normalized_targets, subscriber
 
 
 def resolve_pref(prefs: dict[str, Any], domain: str) -> dict[str, Any]:

@@ -1,0 +1,127 @@
+{
+  "schema_version": "htr-bounded-execution-receipt-1.0",
+  "as_of_utc": "2026-08-29T00:18:02Z",
+  "scope_statement": "Bounded Puerto Rico HTR execution: SIGE named-road census against frozen PREPA/PREB + SIGE Represas hydro-name manifestations, plus a separately frozen SIGE Rios/Quebradas authoritative name denominator. This receipt makes no universal toponym or universal hydro-feature exhaustion claim.",
+  "islandwide_named_road_census": {
+    "head_sha": "236933e51192dbe64f4f5ec3abaebddb75453551",
+    "workflow_run_id": 33222725142,
+    "artifact_id": 9705885625,
+    "artifact_name": "htr-islandwide-236933e51192dbe64f4f5ec3abaebddb75453551",
+    "artifact_digest": "sha256:880f34a55690748d955e78bdece19716959609d9628e7e40db52c91f84494fac",
+    "artifact_size_bytes": 9553314,
+    "retrieval_window_utc": {
+      "started": "2026-08-29T00:10:30Z",
+      "completed": "2026-08-29T00:17:58Z"
+    },
+    "source_scope": {
+      "roads": {
+        "url": "https://sige.pr.gov/server/rest/services/Carreteras/MapServer/29",
+        "service_item_id": "997e9c259608441a90b5b5d02ee8a6d7",
+        "source_rows": 214372,
+        "named_observations": 99060
+      },
+      "dams": {
+        "url": "https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/FeatureServer/1",
+        "service_item_id": "1e9d99124f2d4abdb09c15c10f1e80a5",
+        "source_rows": 35,
+        "name_manifestations": 42
+      },
+      "static_registry_rows": 27,
+      "expanded_registry_rows": 69,
+      "static_registry_sha256": "0999ad40826a26995de455e83c6d68ce384d116eb15d387dda874e75ac0e98e4"
+    },
+    "discovery": {
+      "candidate_rows": 2946,
+      "luchetti_candidate_rows": 42,
+      "identity_edges": 0,
+      "context_promotions": 0,
+      "identity_promotions": 0,
+      "connectivity_promotions": 0,
+      "transitive_context_inheritance": 0
+    },
+    "negative_control_adjudication": {
+      "rejected_candidate_rows": 2406,
+      "unresolved_candidate_rows": 540,
+      "rejected_source_manifestations": 5,
+      "rejection_code": "AMBIGUOUS_SINGLE_CHARACTER_OTHER_NAME",
+      "rejected_raw_manifestations": ["A", "C", "D", "R", "Y"],
+      "remaining_methods": {
+        "EXACT_NORMALIZED_NAME": 307,
+        "ORTHOGRAPHIC_NEAR_MATCH": 233
+      },
+      "remaining_unique_road_observations": 391,
+      "remaining_unique_hydro_ids": 39,
+      "all_remaining_candidate_relations": "UNRESOLVED"
+    },
+    "luchetti_regression": {
+      "road_raw_name": "Calle Luchetti",
+      "unique_sige_road_segments": 21,
+      "candidate_rows": 42,
+      "matched_hydro_manifestations": {
+        "Lucchetti": 21,
+        "Lucchetti Dam": 21
+      },
+      "disposition": "ORTHOGRAPHIC_NEAR_MATCH / CANDIDATE_NOT_IDENTITY / UNBOUND"
+    },
+    "gates": {
+      "road_row_conservation": "PASS",
+      "dam_row_conservation": "PASS",
+      "hydro_id_uniqueness": "PASS",
+      "candidate_row_conservation": "PASS",
+      "candidate_id_uniqueness": "PASS",
+      "adjudication_arithmetic": "PASS",
+      "source_manifestation_retention": "PASS",
+      "identity_nonpromotion": "PASS",
+      "connectivity_nonpromotion": "PASS",
+      "luchetti_regression_rediscovery": "PASS",
+      "zero_unresolved_candidate_residue": false
+    },
+    "hashes": {
+      "adjudicated_candidates.jsonl": "1add1ae8e3a9ddbae8f8d386e1eed11a0483db92a2dfca81dd8222e783517bc6",
+      "candidate_adjudication_summary.json": "d452b0416c2fd9f8db25935f516639593c5798deb5721b5fc1d974282d775f91",
+      "rejected_hydro_name_manifestations.jsonl": "deffa7ff126b16a46fd82327a7965f734d2bba787c34e4b45867b00cf56db7c2",
+      "rejection_ledger.jsonl": "7077fff8b4d7cf18af48fd9533776aede4aea819665b4c5b5d9651f72eff344c",
+      "unresolved_ledger.jsonl": "dd6cdcaeb69e5b2c047f99cb3a10e5a3e1150e49298cc1ff75d025195c47afaa"
+    }
+  },
+  "river_name_denominator": {
+    "head_sha": "8745cb53c4a2b1b0c3418e85160e3ad16e9eaee6",
+    "workflow_run_id": 33222878834,
+    "artifact_id": 9705814269,
+    "artifact_name": "htr-river-denominator-8745cb53c4a2b1b0c3418e85160e3ad16e9eaee6",
+    "artifact_digest": "sha256:f45fd7f6973c840636ddcf0c27c2f754254c647e83ccf7e9252ac935b9ae19d9",
+    "artifact_size_bytes": 3722066,
+    "source_url": "https://sige.pr.gov/server/rest/services/Rios/MapServer/0",
+    "service_item_id": "fe35e5e03451417db95d5db60414d60b",
+    "retrieval_window_utc": {
+      "started": "2026-08-29T00:13:29Z",
+      "completed": "2026-08-29T00:13:54Z"
+    },
+    "source_segment_count": 77688,
+    "named_segment_manifestation_count": 33395,
+    "exact_raw_name_family_count": 677,
+    "gates": {
+      "row_conservation": "PASS",
+      "source_id_uniqueness": "PASS",
+      "equal_name_implies_identity": false,
+      "canonical_identity_certified": false
+    },
+    "hashes": {
+      "summary.json": "46473a96a01b8aa6a13f9bcdf67a3405a35f1588e69ea7e410c468258bc11aef",
+      "raw_manifest.json": "adfe3c137d7ebf9146251db438e42a3529531a55ab573f9ce33b9d9f706ec136",
+      "river_named_manifestations.jsonl": "29ea77069893c12b32e2f00016e96d0e729341bbcf2bebcaef7605aee6b12af1",
+      "river_raw_name_families.jsonl": "1403f7ed246278026fa14988d81401a38b33768b03fae3ac3d6baf0e51a40207",
+      "river_source_rows.jsonl": "0c716a2b217b13e136e1e1751a46dd3d8b2b46d9d6c60d14e8ee978eb28c586c"
+    }
+  },
+  "certification": {
+    "bounded_source_enumeration": "PASS",
+    "bounded_source_row_conservation": "PASS",
+    "identity_and_connectivity_nonpromotion": "PASS",
+    "negative_control_arithmetic": "PASS",
+    "remaining_candidate_interpretation": "OPEN",
+    "direct_calle_luchetti_naming_origin": "PROVISIONAL_INFERENCE",
+    "universal_hydro_name_denominator": "OPEN",
+    "universal_toponym_denominator": "OPEN"
+  }
+}

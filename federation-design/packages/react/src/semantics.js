@@ -18,6 +18,18 @@ export const FEDERATION_ASYNC_STATES = Object.freeze([
   'idle', 'loading', 'empty', 'filtered_empty', 'error', 'partial', 'offline', 'degraded', 'stale',
 ])
 
+// These two axes are intentionally independent of presentation tone. Epistemic
+// class describes what kind of claim a value is; certification describes its
+// adjudication/control state. Neither may be inferred from color alone.
+export const FEDERATION_EPISTEMIC_STATES = Object.freeze([
+  'fact', 'computed', 'binding', 'inference', 'assumption', 'hypothesis', 'unknown',
+])
+
+export const FEDERATION_CERTIFICATION_STATES = Object.freeze([
+  'pass', 'fail', 'open', 'blocked', 'provisional', 'audit_only', 'noncanonical',
+  'candidate_not_identity', 'unresolved', 'superseded',
+])
+
 const DEFINITIONS = Object.freeze({
   operational: Object.freeze({
     operational: { label: 'Operational', tone: 'success' },
@@ -72,11 +84,32 @@ const DEFINITIONS = Object.freeze({
     degraded: { label: 'Degraded', tone: 'warning' },
     stale: { label: 'Stale data', tone: 'caution' },
   }),
+  epistemic: Object.freeze({
+    fact: { label: 'Fact', tone: 'info' },
+    computed: { label: 'Computed', tone: 'process' },
+    binding: { label: 'Binding', tone: 'success' },
+    inference: { label: 'Inference', tone: 'caution' },
+    assumption: { label: 'Assumption', tone: 'warning' },
+    hypothesis: { label: 'Hypothesis', tone: 'elevated' },
+    unknown: { label: 'Unknown', tone: 'neutral' },
+  }),
+  certification: Object.freeze({
+    pass: { label: 'Pass', tone: 'success' },
+    fail: { label: 'Fail', tone: 'danger' },
+    open: { label: 'Open', tone: 'info' },
+    blocked: { label: 'Blocked', tone: 'danger' },
+    provisional: { label: 'Provisional', tone: 'caution' },
+    audit_only: { label: 'Audit only', tone: 'neutral' },
+    noncanonical: { label: 'Noncanonical', tone: 'warning' },
+    candidate_not_identity: { label: 'Candidate — not identity', tone: 'warning' },
+    unresolved: { label: 'Unresolved', tone: 'warning' },
+    superseded: { label: 'Superseded', tone: 'info' },
+  }),
 })
 
 const FALLBACKS = Object.freeze({
   operational: 'unknown', workflow: 'queued', evidenceTier: 'ungraded', confidence: 'unknown',
-  provenance: 'missing', freshness: 'unknown', asyncState: 'idle',
+  provenance: 'missing', freshness: 'unknown', asyncState: 'idle', epistemic: 'unknown', certification: 'open',
 })
 
 const LEGACY_TONE_ALIASES = Object.freeze({

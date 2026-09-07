@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/federation_entity/v1",
+  "x-contract-version": "1.0.0",
+  "title": "Persistent Federation Entity",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","federation_entity_id","entity_type","canonical_name","federation_authority","status","created_at","updated_at"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "federation_entity_id": {"type":"string","pattern":"^fed_[a-f0-9]{32}$"},
+    "entity_type": {"type":"string","minLength":1},
+    "canonical_name": {"type":"string","minLength":1},
+    "domain_owner": {"type":["string","null"]},
+    "federation_authority": {"const":"thehub-pr"},
+    "status": {"enum":["ACTIVE","SUPERSEDED","TOMBSTONED"]},
+    "valid_from": {"type":["string","null"],"format":"date-time"},
+    "valid_to": {"type":["string","null"],"format":"date-time"},
+    "superseded_by": {"type":["string","null"],"pattern":"^fed_[a-f0-9]{32}$"},
+    "created_at": {"type":"string","format":"date-time"},
+    "updated_at": {"type":"string","format":"date-time"}
+  },
+  "x-invariants": [
+    "federation_entity_id is Hub-owned and never replaces a producer local_record_id",
+    "historical entities are superseded or tombstoned, never audit-deleted"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "federation.offline_package.v1",
+  "title": "Federation Offline Package Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "repo", "node_type", "package_id", "generated_at", "commit_sha", "branch", "data_mode", "production_status", "offline_ready", "localhost_required", "summary", "files", "gates"],
+  "properties": {
+    "schema_version": {"const": "federation.offline_package.v1"},
+    "repo": {"enum": ["thehub-pr", "skywatcher-pr", "moneysweep-pr", "aguayluz-pr", "centinelas-pr", "ovnis-pr", "spiderweb-pr"]},
+    "node_type": {"enum": ["hub", "producer"]},
+    "package_id": {"type": "string", "minLength": 1},
+    "generated_at": {"type": "string", "minLength": 1},
+    "commit_sha": {"type": "string", "minLength": 1},
+    "branch": {"type": "string", "minLength": 1},
+    "data_mode": {"enum": ["diagnostic_seed", "live", "mixed", "unknown"]},
+    "production_status": {"enum": ["diagnostic", "staging", "production_blocked", "production_candidate", "production"]},
+    "offline_ready": {"const": true},
+    "localhost_required": {"const": false},
+    "summary": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["records", "sources", "blockers_open", "critical_blockers_open", "evidence_items"],
+      "properties": {
+        "records": {"type": "number", "minimum": 0},
+        "sources": {"type": "number", "minimum": 0},
+        "blockers_open": {"type": "number", "minimum": 0},
+        "critical_blockers_open": {"type": "number", "minimum": 0},
+        "evidence_items": {"type": "number", "minimum": 0},
+        "overall_completion_pct": {"type": "number", "minimum": 0, "maximum": 100}
+      }
+    },
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "type", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "type": {"type": "string", "minLength": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "gates": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["tests", "schema_validation", "export_generated", "offline_dashboard_generated", "hub_ingest_compatible"],
+      "properties": {
+        "tests": {"enum": ["pass", "fail", "not_applicable", "unknown"]},
+        "schema_validation": {"enum": ["pass", "fail", "unknown"]},
+        "export_generated": {"enum": ["pass", "fail"]},
+        "offline_dashboard_generated": {"enum": ["pass", "fail"]},
+        "hub_ingest_compatible": {"enum": ["pass", "fail", "unknown"]}
+      }
+    }
+  }
+}

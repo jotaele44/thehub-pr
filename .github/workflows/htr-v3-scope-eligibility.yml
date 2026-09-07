@@ -1,0 +1,41 @@
+name: HTR v3 asset-scope eligibility
+
+# One-shot/manual scope refinement. Canonical successful receipt is run
+# 33573591927; ordinary commits reuse its artifact rather than regenerate it.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  scope-eligibility:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - name: Reuse canonical frozen v3 adjudication
+        uses: actions/download-artifact@v4
+        with:
+          name: htr-v3-adjudicated-b9e690e412ff732af80d2150f7de60ec4c61ea8c
+          path: frozen/v3
+          github-token: ${{ github.token }}
+          repository: jotaele44/thehub-pr
+          run-id: 33572711586
+      - name: Apply approved named-intake scope eligibility
+        run: python scripts/refine_htr_v3_scope_eligibility.py --input frozen/v3 --out artifacts/htr_v3_scope_closed
+      - name: Display summary
+        run: cat artifacts/htr_v3_scope_closed/summary.json
+      - name: Upload scope-closed v3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: htr-v3-scope-closed-${{ github.sha }}
+          path: artifacts/htr_v3_scope_closed
+          if-no-files-found: error
+          retention-days: 30

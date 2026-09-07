@@ -562,19 +562,19 @@ def evaluate_gates(
 
     verified_attestations: Dict[str, tuple[Mapping[str, Any], str]] = {}
     for document in attestations:
-        digest = None
+        attestation_digest: Optional[str] = None
         for key in attestation_keys:
             try:
-                digest = verify_attestation(
+                attestation_digest = verify_attestation(
                     document, public_key_pem=key, schema=attestation_schema
                 )
                 break
             except (ReceiptError, Exception):  # noqa: BLE001 - try the next trusted key
                 continue
-        if digest is None:
+        if attestation_digest is None:
             continue
         body = document["attestation"]
-        verified_attestations[body["attestation_id"]] = (body, digest)
+        verified_attestations[body["attestation_id"]] = (body, attestation_digest)
 
     gates: List[Dict[str, Any]] = []
     for rule in rules:

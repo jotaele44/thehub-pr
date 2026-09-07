@@ -1,0 +1,109 @@
+{
+  "schema_version": "htr-v3-targeted-public-pair-binding-search-1.0",
+  "execution_local_date": "2026-09-02",
+  "scope": "Targeted public-search continuation for high-frequency unresolved HTR road/hydro pair families. This is not universal web exhaustion and does not supersede the separately frozen Luchetti/Lucchetti public adjudication.",
+  "query_families": [
+    {
+      "road_name": "Calle/Cll Portugués",
+      "hydro_family": "Portugués Dam/Reservoir",
+      "bounded_queries": ["\"Calle Portugués\" Ponce presa Portugués", "\"Calle Portugués\" Ponce ordenanza"],
+      "direct_pair_binding_evidence_found": false,
+      "disposition": "UNRESOLVED",
+      "notes": "Official results independently manifest Ponce's Portugués place-name context and DRNA access to Represa Portugués, but no naming/dedication instrument or stable-ID road-to-dam relation was recovered."
+    },
+    {
+      "road_name": "Camino Las Curias",
+      "hydro_family": "Las Curias",
+      "bounded_queries": ["\"Camino Las Curias\" embalse OR represa", "\"Camino Las Curias\" ordenanza"],
+      "direct_pair_binding_evidence_found": false,
+      "disposition": "UNRESOLVED"
+    },
+    {
+      "road_name": "Calle Río Caonillas",
+      "hydro_family": "Caonillas",
+      "bounded_queries": ["\"Calle Rio Caonillas\" embalse OR lago", "\"Calle Rio Caonillas\" ordenanza"],
+      "direct_pair_binding_evidence_found": false,
+      "disposition": "UNRESOLVED"
+    },
+    {
+      "road_name": "Calle Río La Plata",
+      "hydro_family": "La Plata",
+      "bounded_queries": ["\"Calle Rio La Plata\" embalse OR lago", "\"Calle Rio La Plata\" ordenanza"],
+      "direct_pair_binding_evidence_found": false,
+      "disposition": "UNRESOLVED"
+    },
+    {
+      "road_name": "Calle/Cll Carite",
+      "hydro_family": "Carite",
+      "bounded_queries": ["\"Calle Carite\" embalse OR lago", "\"Calle Carite\" ordenanza"],
+      "direct_pair_binding_evidence_found": false,
+      "disposition": "UNRESOLVED",
+      "notes": "Official public results independently manifest Calle Carite as an address in Trujillo Alto; that does not bind the road to the Carite hydro asset."
+    },
+    {
+      "road_name": "Calle/Cll Guajataca",
+      "hydro_family": "Guajataca",
+      "bounded_queries": ["\"Calle Guajataca\" embalse OR lago", "\"Calle Guajataca\" ordenanza"],
+      "direct_pair_binding_evidence_found": false,
+      "disposition": "UNRESOLVED",
+      "notes": "Official AAA results independently manifest Lago/Embalse Guajataca infrastructure; no road naming/dedication binding was recovered."
+    }
+  ],
+  "official_result_context": [
+    {
+      "source": "Puerto Rico Administración de Vivienda Pública",
+      "url": "https://portal.avp.pr.gov/centro-educativo-tecnologico",
+      "observation": "Ponce has an independently manifested Portugués place-name/address context.",
+      "binds_candidate_pair": false
+    },
+    {
+      "source": "Puerto Rico DRNA",
+      "url": "https://www.drna.pr.gov/noticias/recursos-naturales-mantiene-activo-su-plan-de-limpieza-en-pueblos-de-la-isla/",
+      "observation": "DRNA independently manifests terrestrial access to Represa Portugués in Ponce.",
+      "binds_candidate_pair": false
+    },
+    {
+      "source": "Puerto Rico ACAA provider directory",
+      "url": "https://www.acaa.pr.gov/proveedores?71f64e61_page=31&ce16343a_page=2",
+      "observation": "Calle Carite is independently manifested as a Trujillo Alto address.",
+      "binds_candidate_pair": false
+    },
+    {
+      "source": "Puerto Rico AAA",
+      "url": "https://www.acueductos.pr.gov/?25e1a784_page=44",
+      "observation": "AAA independently manifests Lago/Embalse Guajataca and a current intake project.",
+      "binds_candidate_pair": false
+    }
+  ],
+  "naming_instrument_query_result": {
+    "query_family_count": 6,
+    "official_domain_exact_road_name_plus_ordenanza_queries": 6,
+    "search_results_returned": 0,
+    "absence_proves_no_naming_instrument_exists": false
+  },
+  "prior_frozen_evidence": {
+    "luchetti_lucchetti": {
+      "artifact": "data/htr/luchetti_public_adjudication_v1.json",
+      "street_naming_instrument_state": "OPEN",
+      "canonical_pair_identity": "CANDIDATE_NOT_IDENTITY",
+      "reused_without_research_refresh": true
+    }
+  },
+  "arithmetic": {
+    "targeted_pair_families": 6,
+    "direct_pair_binding_found": 0,
+    "unresolved": 6,
+    "equation": "6=0+6"
+  },
+  "invariants": {
+    "context_is_pair_binding": false,
+    "name_is_pair_binding": false,
+    "proximity_is_pair_binding": false,
+    "identity_promotions": 0,
+    "connectivity_promotions": 0,
+    "pair_binding_promotions": 0,
+    "transitive_context_inheritance": 0,
+    "universal_public_search_exhaustion_claimed": false
+  },
+  "certification": "PASS_BOUNDED_TARGETED_SEARCH_WITH_REQUIRED_UNRESOLVED_RESIDUE"
+}
