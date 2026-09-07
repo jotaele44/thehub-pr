@@ -6,6 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "prii-maintenance"
 version = "0.1.0"
 description = "Shared deterministic, audit-first maintenance core for PRII producer repos."
+# Intentionally higher than the root repo's `>=3.9` (see UPGRADE_AUDIT.md DEP-3):
+# no 3.10-only syntax was found in this package as of 2026-09, so the floor is
+# metadata-only drift, not a verified requirement. Left as-is rather than
+# silently lowered, since this package has not been re-validated on 3.9.
 requires-python = ">=3.10"
 dependencies = []
 

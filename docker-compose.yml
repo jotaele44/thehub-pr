@@ -8,7 +8,12 @@ services:
     build: .
     image: thehub-mcp
     ports:
-      - "8000:8000"
+      # Loopback-only by default: this build ships with no authentication
+      # (write access is either open to the local network or gated by
+      # PRII_WRITE_TOKEN, never by a login). Never widen this to "8000:8000"
+      # or a bind address without first setting PRII_WRITE_TOKEN — see
+      # docs/federation/MCP_DEPLOYMENT.md.
+      - "127.0.0.1:8000:8000"
     volumes:
       # Persist the SQLite store / aggregate outputs across restarts.
       - ./data:/app/data

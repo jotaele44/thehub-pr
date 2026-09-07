@@ -38,7 +38,12 @@ def validate(instance: Path, schema: Path) -> None:
     validate_instance(load_json(instance), schema)
 
 
-def _validate_gui_contracts(workspace_root: Path, manifest: dict, fallback_root: Path | None, schema: Path) -> None:
+def _validate_gui_contracts(
+    workspace_root: Path,
+    manifest: dict,
+    fallback_root: Path | None,
+    schema: Path,
+) -> None:
     for repo in manifest["repositories"]:
         local = workspace_root / repo["workspace_directory"] / ".federation" / "gui_backend_contract.json"
         fallback = fallback_root / f"{repo['id']}.json" if fallback_root else None
