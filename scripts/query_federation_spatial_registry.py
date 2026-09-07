@@ -4,24 +4,47 @@
 TheHub orchestrates discovery and provenance. It does not transform geometry,
 resolve identity, or mutate the producer-owned Spiderweb registry.
 """
+
 from __future__ import annotations
 
 import argparse
 import json
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
 CONTRACT_VERSION = "federation-spatial-contract/1.1"
+COLLECTION_FIELDS = (
+    "source_manifestations",
+    "geometry_manifestations",
+    "canonical_entities",
+    "identity_bindings",
+    "unresolved",
+)
+
+
+def validate_registry_shape(data: Any) -> dict[str, Any]:
+    if not isinstance(data, Mapping):
+        raise ValueError("spatial registry root must be an object")
+    if data.get("contract_version") != CONTRACT_VERSION:
+        raise ValueError("unsupported spatial registry contract")
+    for field in COLLECTION_FIELDS:
+        rows = data.get(field)
+        if not isinstance(rows, list):
+            raise ValueError(f"spatial registry {field} must be an array")
+        for index, row in enumerate(rows):
+            if not isinstance(row, Mapping):
+                raise ValueError(f"spatial registry {field}[{index}] must be an object")
+    return dict(data)
 
 
 def load_registry(path: Path) -> dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
-    if data.get("contract_version") != CONTRACT_VERSION:
-        raise ValueError("unsupported spatial registry contract")
-    return data
+    return validate_registry_shape(data)
 
 
 def summary(data: dict[str, Any]) -> dict[str, Any]:
+    data = validate_registry_shape(data)
     return {
         "contract_version": data["contract_version"],
         "source_manifestations": len(data.get("source_manifestations", [])),
@@ -33,12 +56,14 @@ def summary(data: dict[str, Any]) -> dict[str, Any]:
 
 
 def query_scope(data: dict[str, Any], scope: str) -> list[dict[str, Any]]:
+    data = validate_registry_shape(data)
     return [
         row for row in data.get("unresolved", []) if str(row.get("scope", "")) == scope
     ]
 
 
 def query_canonical(data: dict[str, Any], canonical_id: str) -> list[dict[str, Any]]:
+    data = validate_registry_shape(data)
     return [
         row
         for row in data.get("canonical_entities", [])
@@ -47,6 +72,7 @@ def query_canonical(data: dict[str, Any], canonical_id: str) -> list[dict[str, A
 
 
 def query_source(data: dict[str, Any], manifestation_id: str) -> list[dict[str, Any]]:
+    data = validate_registry_shape(data)
     return [
         row
         for row in data.get("source_manifestations", [])
@@ -63,7 +89,10 @@ def main() -> int:
     group.add_argument("--source-manifestation-id")
     args = parser.parse_args()
 
-    data = load_registry(args.registry)
+    try:
+        data = load_registry(args.registry)
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+        parser.error(str(exc))
     if args.scope:
         result: Any = query_scope(data, args.scope)
     elif args.canonical_id:
