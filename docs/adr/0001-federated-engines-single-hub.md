@@ -1,6 +1,6 @@
 # ADR 0001 — Federated engines, one hub app
 
-- **Status:** Accepted
+- **Status:** Product-surface decision superseded by [ADR 0010](0010-seven-local-production-apps.md); historical rationale retained.
 - **Date:** 2026-07-06
 - **Deciders:** PRII federation maintainers
 - **Scope:** `thehub-pr` and the six PRII producer repositories

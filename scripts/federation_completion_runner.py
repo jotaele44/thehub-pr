@@ -19,7 +19,7 @@ REPO_ORDER = [
     "aguayluz-pr",
     "centinelas-pr",
     "moneysweep-pr",
-    "ovnis-pr-actual",
+    "ovnis-pr",
     "skywatcher-pr",
     "spiderweb-pr",
     "thehub-pr",
@@ -150,7 +150,7 @@ def write_implementation_plan(path: Path, summary: dict[str, Any]) -> None:
         "",
         f"- Generated UTC: `{summary['generated_utc']}`",
         f"- Run ID: `{summary['run_id']}`",
-        f"- Scope: `7 federation repos + open PR remote gate`",
+        "- Scope: `7 federation repos + open PR remote gate`",
         f"- Certification: `{summary['certification']}`",
         f"- Remote PR denominator: `{remote.get('open_pr_denominator')}`",
         f"- Remote certification: `{remote.get('certification')}`",
@@ -218,6 +218,31 @@ def python_alias_env() -> tuple[dict[str, str], str | None]:
     return env, str(shim_dir)
 
 
+def completion_exit_code(summary: dict[str, Any]) -> int:
+    """Propagate failures and incomplete evidence; AUDIT_ONLY is not a pass."""
+    snapshots = summary.get("repo_snapshots_after_fetch", [])
+    if sorted(row.get("repo_id", "") for row in snapshots) != sorted(REPO_ORDER):
+        return 1
+    if any(row.get("head_sha") != row.get("origin_main_sha") or row.get("dirty_count") != 0 for row in snapshots):
+        return 1
+    if not summary.get("commands") or any(row.get("exit_code") != 0 for row in summary["commands"]):
+        return 1
+    remote = summary.get("remote_gate", {})
+    if remote.get("open_pr_denominator_complete") is not True or remote.get("audit_truncated") is not False:
+        return 1
+    if remote.get("errors") or remote.get("missing"):
+        return 1
+    if any(remote.get("actionable_counts", {}).values()):
+        return 1
+    if str(remote.get("certification", "")).startswith(("FAIL", "BLOCKED")):
+        return 1
+    startup = summary.get("startup_audit", {})
+    if startup.get("startup_setup_certification") != "PASS":
+        return 1
+    if summary.get("release_evidence", {}).get("state") != "PASS":
+        return 1
+    return 0
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", default="..", help="Directory holding the seven federation checkouts.")
@@ -226,6 +251,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--startup-timeout", type=int, default=600)
     parser.add_argument("--run-setup", action="store_true")
     parser.add_argument("--fail-on-actionable", action="store_true")
+    parser.add_argument("--release-evidence", type=Path, help="49-axis/21-platform evidence bundle")
     args = parser.parse_args(argv)
 
     here = Path(__file__).resolve().parents[1]
@@ -234,6 +260,7 @@ def main(argv: list[str] | None = None) -> int:
     out_dir = Path(args.out) if args.out else here / "reports" / "federation-completion" / run_id
     if not out_dir.is_absolute():
         out_dir = (here / out_dir).resolve()
+    out_dir.mkdir(parents=True, exist_ok=False)
     log_dir = out_dir / "logs"
 
     before = [repo_snapshot(root, repo_id) for repo_id in REPO_ORDER]
@@ -311,10 +338,21 @@ def main(argv: list[str] | None = None) -> int:
         "artifact_sha256": artifact_hashes,
         "certification": "AUDIT_ONLY",
     }
+    if args.release_evidence:
+        from federation_release_evidence import assess, read_json
+        release_bundle = read_json(args.release_evidence)
+        summary["release_evidence"] = assess(release_bundle, args.release_evidence.parent)
+        expected_heads = {row["repo_id"]: row["origin_main_sha"] for row in after}
+        if release_bundle.get("heads") != expected_heads:
+            summary["release_evidence"]["state"] = "FAIL"
+            summary["release_evidence"]["errors"].append("release heads differ from observed remote-main vector")
+    else:
+        summary["release_evidence"] = {"state": "BLOCKED", "reason": "release evidence not supplied"}
     write_implementation_plan(Path(artifacts["implementation_plan"]), summary)
+    summary["artifact_sha256"]["implementation_plan"] = sha256_file(Path(artifacts["implementation_plan"]))
     write_json(out_dir / "summary.json", summary)
     print(json.dumps({"summary": str(out_dir / "summary.json"), "certification": "AUDIT_ONLY"}, indent=2))
-    return 0
+    return completion_exit_code(summary)
 
 
 if __name__ == "__main__":

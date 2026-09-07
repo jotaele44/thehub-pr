@@ -35,7 +35,7 @@ PRODUCT_COMPLETION_BLOCKERS = {
     "skywatcher-pr": "MANIFEST_READY_FOR_HUB_LIVE_EXECUTION_FALSE",
 }
 
-SETUP_REQUIRED = {"setup", "test_suite", "export_canonical", "startup_smoke"}
+SETUP_REQUIRED = {"setup", "test_suite", "export_canonical", "startup_smoke", "startup_execution"}
 CODE_COMPLETION_REQUIRED = {"test_suite", "export_canonical", "startup_smoke"}
 DEFAULT_TIMEOUT = 600
 
@@ -202,10 +202,12 @@ def thehub_command_plan(audit_tmp: Path, run_setup: bool) -> list[tuple[str, str
     ]
     startup_name, startup_cmd = startup_smoke_command("thehub-pr", Path.cwd())
     plan.append((startup_name, startup_cmd, ""))
+    probe_out = shlex.quote(str(audit_tmp / "startup-execution.json"))
+    plan.append(("startup_execution", f"python3 scripts/desktop_startup_probe.py --out {probe_out}", ""))
     return plan
 
 
-def producer_command_plan(repo_id: str, repo_path: Path, manifest: dict[str, Any], run_setup: bool) -> list[tuple[str, str | None, str]]:
+def producer_command_plan(repo_id: str, repo_path: Path, manifest: dict[str, Any], run_setup: bool, audit_tmp: Path) -> list[tuple[str, str | None, str]]:
     commands = manifest.get("hub_callable_commands") or {}
     plan: list[tuple[str, str | None, str]] = [
         ("setup", commands.get("setup") if run_setup else None, "setup skipped by audit policy; use --run-setup to execute")
@@ -218,6 +220,8 @@ def producer_command_plan(repo_id: str, repo_path: Path, manifest: dict[str, Any
     plan.append(("export_canonical", commands.get("export_canonical"), "export command not declared"))
     startup_name, startup_cmd = startup_smoke_command(repo_id, repo_path)
     plan.append((startup_name, startup_cmd, ""))
+    probe_out = shlex.quote(str(audit_tmp / "startup-execution.json"))
+    plan.append(("startup_execution", f"python3 scripts/desktop_startup_probe.py --out {probe_out}", ""))
     return plan
 
 
@@ -230,7 +234,7 @@ def command_plan(
 ) -> list[tuple[str, str | None, str]]:
     if repo_id == "thehub-pr":
         return thehub_command_plan(audit_tmp, run_setup)
-    return producer_command_plan(repo_id, repo_path, manifest, run_setup)
+    return producer_command_plan(repo_id, repo_path, manifest, run_setup, audit_tmp)
 
 
 def classify_startup_setup(command_results: list[CommandResult]) -> tuple[str, list[str]]:
@@ -245,6 +249,10 @@ def classify_startup_setup(command_results: list[CommandResult]) -> tuple[str, l
     if skipped_required:
         reasons.extend(f"{result.name}:{result.reason}" for result in skipped_required)
         return "BLOCKED", reasons
+    names = [result.name for result in command_results]
+    missing = SETUP_REQUIRED - set(names)
+    if missing or len(names) != len(set(names)):
+        return "BLOCKED", ["MISSING_OR_DUPLICATE_REQUIRED_COMMANDS"]
     return "STARTUP_SETUP_COMPLETE", []
 
 
@@ -285,6 +293,9 @@ def classify_code_completion(command_results: list[CommandResult]) -> tuple[str,
     if skipped_required:
         reasons.extend(f"{result.name}:{result.reason}" for result in skipped_required)
         return "CODE_COMPLETION_UNRESOLVED", reasons
+    names = [result.name for result in command_results]
+    if CODE_COMPLETION_REQUIRED - set(names) or len(names) != len(set(names)):
+        return "CODE_COMPLETION_UNRESOLVED", ["MISSING_OR_DUPLICATE_REQUIRED_COMMANDS"]
     return "CODE_COMPLETE_CANDIDATE", []
 
 
@@ -302,7 +313,7 @@ def classify_product_completion(
         reasons.append(PRODUCT_COMPLETION_BLOCKERS.get(repo_id, "MANIFEST_READY_FOR_HUB_LIVE_EXECUTION_FALSE"))
     if reasons:
         return "BLOCKED_FOR_PRODUCT_COMPLETION", reasons
-    return "PRODUCT_COMPLETE", []
+    return "BLOCKED_FOR_PRODUCT_COMPLETION", ["RELEASE_AXIS_AND_PLATFORM_EVIDENCE_REQUIRED"]
 
 
 def classify_repo(
@@ -410,8 +421,9 @@ def build_summary(
         product_counts[product_state] = product_counts.get(product_state, 0) + 1
         code_counts[code_state] = code_counts.get(code_state, 0) + 1
     classified = sum(setup_counts.values())
-    startup_certification = "PASS" if setup_counts == {"STARTUP_SETUP_COMPLETE": len(REPO_ORDER)} else "PROVISIONAL"
-    product_certification = "PASS" if product_counts == {"PRODUCT_COMPLETE": len(REPO_ORDER)} else "PROVISIONAL"
+    identities_complete = sorted(result["repo_id"] for result in repo_results) == sorted(REPO_ORDER)
+    startup_certification = "PASS" if identities_complete and setup_counts == {"STARTUP_SETUP_COMPLETE": len(REPO_ORDER)} else "PROVISIONAL"
+    product_certification = "PROVISIONAL"  # Startup receipts do not establish the release matrix.
     return {
         "schema_version": "startup_completion_audit.v2",
         "run_id": run_id,
@@ -430,19 +442,19 @@ def build_summary(
             "total": len(REPO_ORDER),
             "classified": classified,
             "counts": setup_counts,
-            "closed": classified == len(REPO_ORDER),
+            "closed": identities_complete and classified == len(REPO_ORDER),
         },
         "product_arithmetic": {
             "total": len(REPO_ORDER),
             "classified": sum(product_counts.values()),
             "counts": product_counts,
-            "closed": sum(product_counts.values()) == len(REPO_ORDER),
+            "closed": identities_complete and sum(product_counts.values()) == len(REPO_ORDER),
         },
         "code_completion_arithmetic": {
             "total": len(REPO_ORDER),
             "classified": sum(code_counts.values()),
             "counts": code_counts,
-            "closed": sum(code_counts.values()) == len(REPO_ORDER),
+            "closed": identities_complete and sum(code_counts.values()) == len(REPO_ORDER),
             "certification_language": "CODE_COMPLETE_CANDIDATE is not source-certified or product-certified.",
         },
         "repositories": repo_results,

@@ -150,3 +150,24 @@ def test_write_implementation_plan_keeps_code_completion_candidate_bounded(tmp_p
     text = plan.read_text()
     assert "CODE_COMPLETE_CANDIDATE is not source-certified or product-certified" in text
     assert "CERTIFIED` is not emitted by this runner" in text
+
+
+def test_runner_rejects_missing_and_failed_receipts():
+    assert runner.completion_exit_code({}) == 1
+    summary = {
+        "repo_snapshots_after_fetch": [{"repo_id": repo, "head_sha": "a" * 40, "origin_main_sha": "a" * 40, "dirty_count": 0} for repo in runner.REPO_ORDER],
+        "commands": [{"exit_code": 0}],
+        "remote_gate": {"open_pr_denominator_complete": True, "audit_truncated": False,
+                        "errors": [], "actionable_counts": {}, "certification": "PASS"},
+        "startup_audit": {"startup_setup_certification": "PASS"},
+        "release_evidence": {"state": "PASS"},
+    }
+    assert runner.completion_exit_code(summary) == 0
+    summary["commands"][0]["exit_code"] = 1
+    assert runner.completion_exit_code(summary) == 1
+    summary["commands"][0]["exit_code"] = 0
+    summary["remote_gate"]["audit_truncated"] = True
+    assert runner.completion_exit_code(summary) == 1
+    summary["remote_gate"]["audit_truncated"] = False
+    summary["remote_gate"]["certification"] = "FAIL_ACTIONABLE_RESIDUE"
+    assert runner.completion_exit_code(summary) == 1

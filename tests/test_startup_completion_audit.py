@@ -33,7 +33,7 @@ def test_live_readiness_false_blocks_product_not_startup_setup():
         "skywatcher-pr",
         False,
         [],
-        [_result("setup"), _result("test_suite"), _result("export_canonical"), _result("startup_smoke")],
+        [_result("setup"), _result("test_suite"), _result("export_canonical"), _result("startup_smoke"), _result("startup_execution")],
     )
     assert startup_state == "STARTUP_SETUP_COMPLETE"
     assert startup_blockers == []
@@ -46,7 +46,7 @@ def test_command_failure_fails_startup_setup_before_product_completion():
         "moneysweep-pr",
         False,
         ["manual sources missing"],
-        [_result("setup"), _result("test_suite", "FAIL"), _result("export_canonical"), _result("startup_smoke")],
+        [_result("setup"), _result("test_suite", "FAIL"), _result("export_canonical"), _result("startup_smoke"), _result("startup_execution")],
     )
     assert startup_state == "FAIL"
     assert startup_blockers == ["test_suite:FAIL"]
@@ -60,7 +60,7 @@ def test_skipped_required_gate_blocks_official_startup_setup():
             audit.skipped("setup", "setup skipped by audit policy"),
             _result("test_suite"),
             _result("export_canonical"),
-            _result("startup_smoke"),
+            _result("startup_smoke"), _result("startup_execution"),
         ]
     )
     assert startup_state == "BLOCKED"
@@ -73,7 +73,7 @@ def test_skipped_setup_does_not_block_code_completion_candidate():
             audit.skipped("setup", "setup skipped by audit policy"),
             _result("test_suite"),
             _result("export_canonical"),
-            _result("startup_smoke"),
+            _result("startup_smoke"), _result("startup_execution"),
         ]
     )
     assert code_state == "CODE_COMPLETE_CANDIDATE"
@@ -86,7 +86,7 @@ def test_failed_code_gate_blocks_code_completion_candidate():
             audit.skipped("setup", "setup skipped by audit policy"),
             _result("test_suite", "FAIL"),
             _result("export_canonical"),
-            _result("startup_smoke"),
+            _result("startup_smoke"), _result("startup_execution"),
         ]
     )
     assert code_state == "CODE_INCOMPLETE"
@@ -108,7 +108,7 @@ def test_stale_source_export_failure_does_not_mark_code_incomplete(tmp_path):
                 elapsed_seconds=0.1,
                 log_path=str(log),
             ),
-            _result("startup_smoke"),
+            _result("startup_smoke"), _result("startup_execution"),
         ]
     )
     assert code_state == "CODE_COMPLETE_CANDIDATE_SOURCE_BLOCKED"
@@ -136,7 +136,7 @@ def test_summary_arithmetic_requires_all_seven_repos(tmp_path):
     ]
     summary = audit.build_summary("run", tmp_path, repos, tmp_path, tmp_path / "workspace")
     assert summary["startup_setup_certification"] == "PASS"
-    assert summary["product_completion_certification"] == "PASS"
+    assert summary["product_completion_certification"] == "PROVISIONAL"
     assert summary["arithmetic"]["closed"] is True
     assert summary["arithmetic"]["classified"] == 7
     assert summary["arithmetic"]["counts"] == {"STARTUP_SETUP_COMPLETE": 7}
@@ -166,3 +166,14 @@ def test_run_command_timeout_enforces_child_process_group(tmp_path):
     assert result.elapsed_seconds < 10
     assert result.log_path is not None
     assert "timeout_enforced_utc" in Path(result.log_path).read_text()
+
+
+def test_no_commands_cannot_pass_startup_or_code():
+    assert audit.classify_startup_setup([])[0] == "BLOCKED"
+    assert audit.classify_code_completion([])[0] == "CODE_COMPLETION_UNRESOLVED"
+
+
+def test_live_manifest_and_startup_do_not_certify_product():
+    state, reasons = audit.classify_product_completion("centinelas-pr", True, [], "STARTUP_SETUP_COMPLETE")
+    assert state == "BLOCKED_FOR_PRODUCT_COMPLETION"
+    assert "RELEASE_AXIS_AND_PLATFORM_EVIDENCE_REQUIRED" in reasons

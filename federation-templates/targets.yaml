@@ -157,3 +157,11 @@ targets:
   - template: baseline/ISSUE_TEMPLATE/question.yml
     output: .github/ISSUE_TEMPLATE/question.yml
     repos: *governance
+
+  - template: baseline/local-production-apps.md
+    output: .federation/local-production-apps.md
+    repos: *all
+
+  - template: baseline/desktop_startup_probe.py
+    output: scripts/desktop_startup_probe.py
+    repos: *all
