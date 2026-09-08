@@ -16,9 +16,9 @@ describe('advanced 3D promotion fixtures', () => {
     expect(tiles.canonicalIdentityStatus).toBe('CANDIDATE_NOT_IDENTITY');
   });
 
-  it('requires explicit horizontal CRS for point-cloud fixture while leaving vertical datum unresolved', () => {
+  it('binds horizontal CRS but keeps Z semantics open when point-cloud vertical datum is unresolved', () => {
     const cloud = evaluatedAdvanced3dFixtures().find((x) => x.kind === 'point-cloud');
-    expect(cloud.status).toBe('READY_FOR_RUNTIME_BINDING');
+    expect(cloud.status).toBe('OPEN_VERTICAL_DATUM');
     expect(cloud.crs).toBe('EPSG:6566');
     expect(cloud.verticalDatum).toBe('UNRESOLVED');
     expect(cloud.canonicalIdentityStatus).toBe('CANDIDATE_NOT_IDENTITY');
