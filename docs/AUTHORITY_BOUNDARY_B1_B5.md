@@ -1,6 +1,6 @@
 # Authority Boundary Closure — B.1 through B.5
 
-**Candidate date:** 2026-09-05
+**Candidate date:** 2026-09-08
 **Certification state:** `NOT_CERTIFIED`
 **Successor phase:** `A — FEDERATION IDENTITY CONTRACT` is forbidden until blocker count = 0.
 
@@ -47,20 +47,27 @@ OVNIS PRUFON/PRUAP master IDs, and Centinelas signal/matter/RSS-source IDs.
 
 The registry remains intentionally `PROVISIONAL_UNTIL_REPOSITORY_CRAWLER_PASSES`. It must not be
 promoted to exhaustive merely because all seven repositories now have at least one declared
-family; the crawler must demonstrate zero undeclared emitted/local families.
+family. The current prefix-assignment scanner can return an empty census even though structured
+JSON/JSONL records contain many local, external, operational, schema and GUI identifier forms.
+That silent-success risk prevents promotion: a replacement crawler must classify the full
+structured-ID denominator without treating source taxonomy or normalized names as identity.
 
 ## B.4 — relationship authority
 
 `registry/federation/relationship_types.json` separates shared identity relationships from
-producer-domain semantics. MoneySweep's authoritative government relationship enum is pinned
-by blob SHA. Repository inspection additionally confirms representative producer-export verbs
-such as AguaYLuz `operated_by`, `located_in`, `affected_by`, `duplicate_of`, `energized_by`;
-Skywatcher `detected_by`, `located_in`; Spiderweb `reported_by`, `observed`; OVNIS `located_in`,
-`reported_by`, `duplicate_of`; and Centinelas `involves_agency`, `located_in`.
+producer-domain semantics. MoneySweep's authoritative government relationship enum remains
+separate from exporter-only manifestations. Every literal-bearing domain or Hub-derived row is
+pinned to its exact source blob, and the validator verifies each pin against the frozen checkout.
 
-Those observations do not substitute for the executable full-tree crawl. Every literal/enum
-must still resolve to exactly one authority owner and any cross-producer same-literal collision
-must be classified as an explicit shared semantic or separated into owner-qualified namespaces.
+The exact seven-repository local crawl now reconciles 25 unique literals across 45
+repository/literal observations with zero unknown, ambiguous, owner-mismatch, cross-producer,
+source-pin or Python-parse blockers. Python helper calls are resolved through AST binding to
+locally defined `relationship_type`, `rel_type` or `rtype` parameters, avoiding arbitrary string
+matches. `duplicate_of`, `located_in` and `reported_by` are centrally shared because multiple
+producers emit them; registration authorizes their semantic type and does not prove any specific
+record identity. Hub correlation types remain non-identity candidates.
+
+**B.4 candidate state: CLOSED BY EXACT LOCAL CRAWL + PINNED SOURCE VERIFICATION.**
 
 ## B.5 — source/duplicate/producer-consumer census and arithmetic
 
@@ -82,17 +89,15 @@ Only `blocker_count = 0` may emit `AUTHORITY_BOUNDARY_CERTIFIED` and unlock Phas
 
 ## Current material residue
 
-1. `AB-003` — full seven-repository identifier crawler has not yet produced and reconciled a
-   zero-unknown receipt.
-2. `AB-004` — full relationship literal/enum crawler has not yet produced and reconciled a
-   zero-collision / exactly-one-owner receipt.
-3. `B-RUNTIME-RECEIPT` — the new GitHub Actions authority-boundary run is currently failing
-   before executing job steps (the first run reported a failed job with an empty step list), so
-   no executable B.3/B.4 receipt exists yet. This is treated as infrastructure residue, not as a
-   semantic PASS.
+1. `AB-003` — the seven-repository identifier crawler has not yet classified the complete
+   structured-ID denominator and remains vulnerable to empty-census silent success.
+2. `B-RUNTIME-RECEIPT` — GitHub Actions jobs are rejected before source execution because the
+   account is locked for a billing issue. The exact local B.4 receipt does not substitute for the
+   hosted runtime matrix, and the admission failure is infrastructure residue rather than source
+   evidence.
 
-`AB-001`, `AB-002`, and `AB-005` are closed in the candidate. Static B.5 arithmetic closes at
-7/7 repositories and 6/6 producers, but runtime certification remains blocked by the receipt
-requirements above.
+`AB-001`, `AB-002`, `AB-004`, and `AB-005` are closed in the candidate. Static B.5 arithmetic
+closes at 7/7 repositories and 6/6 producers, but runtime certification remains blocked by the
+identifier-census and hosted-receipt requirements above.
 
 Therefore `AUTHORITY_BOUNDARY_CERTIFIED` is **not issued** and Phase A remains locked.

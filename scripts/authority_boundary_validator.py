@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import ast
 import json
 import re
 import subprocess
@@ -50,6 +51,7 @@ RELATIONSHIP_LITERAL_RES = (
 YAML_RELATIONSHIP_LITERAL_RE = re.compile(
     r"^\s*relationship_type\s*:\s*[\"']?([A-Za-z0-9_.:/-]+)", re.MULTILINE
 )
+RELATIONSHIP_PARAMETER_NAMES = {"relationship_type", "rel_type", "rtype"}
 
 
 def load_json(path: Path) -> Any:
@@ -74,14 +76,54 @@ def extract_id_signals(text: str) -> set[str]:
 
 
 def extract_relationship_literals(
-    text: str, include_bare_yaml: bool = True
+    text: str,
+    include_bare_yaml: bool = True,
+    include_python_calls: bool = False,
 ) -> set[str]:
     values: set[str] = set()
     for pattern in RELATIONSHIP_LITERAL_RES:
         values.update(pattern.findall(text))
     if include_bare_yaml:
         values.update(YAML_RELATIONSHIP_LITERAL_RE.findall(text))
+    if include_python_calls:
+        values.update(extract_python_relationship_literals(text))
     return {value for value in values if 1 <= len(value) <= 96 and "{" not in value}
+
+
+def extract_python_relationship_literals(text: str) -> set[str]:
+    tree = ast.parse(text)
+    definitions: dict[str, list[tuple[list[str], set[str]]]] = defaultdict(list)
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        positional = [
+            argument.arg for argument in [*node.args.posonlyargs, *node.args.args]
+        ]
+        keyword_only = {argument.arg for argument in node.args.kwonlyargs}
+        definitions[node.name].append((positional, keyword_only))
+
+    values: set[str] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Name):
+            continue
+        for positional, keyword_only in definitions.get(node.func.id, []):
+            for index, parameter in enumerate(positional):
+                if parameter not in RELATIONSHIP_PARAMETER_NAMES:
+                    continue
+                if index < len(node.args):
+                    value = node.args[index]
+                    if isinstance(value, ast.Constant) and isinstance(value.value, str):
+                        values.add(value.value)
+            accepted_keywords = set(positional) | keyword_only
+            for keyword in node.keywords:
+                if (
+                    keyword.arg in RELATIONSHIP_PARAMETER_NAMES
+                    and keyword.arg in accepted_keywords
+                    and isinstance(keyword.value, ast.Constant)
+                    and isinstance(keyword.value.value, str)
+                ):
+                    values.add(keyword.value.value)
+    return values
 
 
 def regex_literal_prefix(pattern: str) -> str:
@@ -573,13 +615,95 @@ def validate_relationship_census(
     return blockers, resolutions
 
 
-def collect_census(paths: dict[str, Path]) -> tuple[dict[str, Any], dict[str, Any]]:
+def verify_relationship_registry_sources(
+    registry: dict[str, Any], paths: dict[str, Path]
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    blockers: list[dict[str, Any]] = []
+    findings: list[dict[str, Any]] = []
+    entries = [
+        ("domain_registries", index, row)
+        for index, row in enumerate(registry.get("domain_registries", []))
+    ]
+    hub = registry.get("hub_derived", {})
+    if isinstance(hub, dict):
+        entries.append(("hub_derived", 0, hub))
+
+    for registry_name, index, row in entries:
+        owner = row.get("owner")
+        source = row.get("source")
+        declared_blob = row.get("source_blob_sha")
+        has_types = bool(row.get("types"))
+        detail: dict[str, Any] = {
+            "registry": registry_name,
+            "index": index,
+            "owner": owner,
+            "source": source,
+            "declared_blob": declared_blob,
+        }
+        has_source = isinstance(source, str) and bool(source)
+        has_blob = isinstance(declared_blob, str) and bool(declared_blob)
+        if has_source != has_blob or (has_types and not has_source):
+            detail["state"] = "INCOMPLETE"
+            findings.append(detail)
+            blockers.append(
+                {"id": "AB-004-REGISTRY-SOURCE-INCOMPLETE", "detail": detail}
+            )
+            continue
+        if not has_source:
+            detail["state"] = "NO_LITERAL_SOURCE_REQUIRED"
+            findings.append(detail)
+            continue
+        source_path = Path(source)
+        if source_path.is_absolute() or ".." in source_path.parts:
+            detail["state"] = "INVALID_PATH"
+            findings.append(detail)
+            blockers.append(
+                {"id": "AB-004-REGISTRY-SOURCE-INVALID", "detail": detail}
+            )
+            continue
+        repo_root = paths.get(str(owner))
+        if repo_root is None or not repo_root.exists():
+            detail["state"] = "REPOSITORY_MISSING"
+            findings.append(detail)
+            blockers.append(
+                {"id": "AB-004-REGISTRY-SOURCE-MISSING", "detail": detail}
+            )
+            continue
+        file_path = repo_root / source_path
+        blob_result = _git(repo_root, "rev-parse", f"HEAD:{source}", check=False)
+        actual_blob = (
+            blob_result.stdout.strip() if blob_result.returncode == 0 else None
+        )
+        detail["actual_blob"] = actual_blob
+        if not file_path.is_file() or actual_blob is None:
+            detail["state"] = "SOURCE_MISSING"
+            findings.append(detail)
+            blockers.append(
+                {"id": "AB-004-REGISTRY-SOURCE-MISSING", "detail": detail}
+            )
+            continue
+        if actual_blob != declared_blob:
+            detail["state"] = "BLOB_MISMATCH"
+            findings.append(detail)
+            blockers.append(
+                {"id": "AB-004-REGISTRY-SOURCE-BLOB-MISMATCH", "detail": detail}
+            )
+            continue
+        detail["state"] = "PASS_EXACT_HEAD_BLOB"
+        findings.append(detail)
+    return blockers, findings
+
+
+def collect_census(
+    paths: dict[str, Path],
+) -> tuple[dict[str, Any], dict[str, Any], list[dict[str, Any]]]:
     identifier_census: dict[str, dict[str, set[str]]] = defaultdict(
         lambda: defaultdict(set)
     )
     relationship_census: dict[str, dict[str, set[str]]] = defaultdict(
         lambda: defaultdict(set)
     )
+    census_errors: list[dict[str, Any]] = []
     for program_id, repo_root in paths.items():
         if not repo_root.exists():
             continue
@@ -589,11 +713,28 @@ def collect_census(paths: dict[str, Path]) -> tuple[dict[str, Any], dict[str, An
             relative = str(path.relative_to(repo_root))
             for signal in extract_id_signals(text):
                 identifier_census[program_id][signal].add(relative)
-            for literal in extract_relationship_literals(
-                text, include_bare_yaml=path.suffix.lower() in {".yaml", ".yml"}
-            ):
+            try:
+                literals = extract_relationship_literals(
+                    text,
+                    include_bare_yaml=path.suffix.lower() in {".yaml", ".yml"},
+                    include_python_calls=path.suffix.lower() == ".py",
+                )
+            except SyntaxError as exc:
+                census_errors.append(
+                    {
+                        "repo": program_id,
+                        "path": relative,
+                        "line": exc.lineno,
+                        "offset": exc.offset,
+                        "error": str(exc),
+                    }
+                )
+                literals = extract_relationship_literals(
+                    text, include_bare_yaml=False, include_python_calls=False
+                )
+            for literal in literals:
                 relationship_census[program_id][literal].add(relative)
-    return identifier_census, relationship_census
+    return identifier_census, relationship_census, census_errors
 
 
 def validate(root: Path, peer_root: Path) -> dict[str, Any]:
@@ -713,7 +854,21 @@ def validate(root: Path, peer_root: Path) -> dict[str, Any]:
         ):
             blockers.append({"id": "AB-003-SHARED-OWNER", "detail": namespace})
 
-    identifier_census, relationship_census = collect_census(paths)
+    registry_source_blockers, registry_source_findings = (
+        verify_relationship_registry_sources(relationship_registry, paths)
+    )
+    blockers.extend(registry_source_blockers)
+    findings.append(
+        {
+            "id": "RELATIONSHIP_REGISTRY_SOURCE_VERIFICATION",
+            "detail": registry_source_findings,
+        }
+    )
+
+    identifier_census, relationship_census, census_errors = collect_census(paths)
+    for error in census_errors:
+        blockers.append({"id": "AB-004-PYTHON-CENSUS-PARSE", "detail": error})
+    findings.append({"id": "RELATIONSHIP_PYTHON_PARSE_ERRORS", "detail": census_errors})
     identifier_blockers, identifier_resolutions = validate_identifier_census(
         identifier_census, namespaces
     )

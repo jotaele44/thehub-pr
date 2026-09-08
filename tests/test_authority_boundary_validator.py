@@ -13,6 +13,7 @@ from scripts.authority_boundary_validator import (
     validate_identifier_census,
     validate_relationship_census,
     verify_geometry,
+    verify_relationship_registry_sources,
     verify_repository_snapshots,
 )
 
@@ -110,6 +111,97 @@ def test_relationship_literal_must_be_declared_for_its_emitter() -> None:
     assert blocker_ids(blockers) == {"AB-004-UNKNOWN-RELATIONSHIP-LITERAL"}
     assert len(resolutions["moneysweep-pr"]["parent_of"]["candidates"]) == 1
     assert resolutions["moneysweep-pr"]["totally_new"]["candidates"] == []
+
+
+def test_python_relationship_helpers_are_crawled_by_semantic_parameter() -> None:
+    text = '''
+def _rel(source, rtype, target):
+    return (source, rtype, target)
+
+def _relationship(source, target, *, relationship_type):
+    return (source, target, relationship_type)
+
+def record_duplicate(value, label):
+    return (value, label)
+
+_rel("a", "affected_by", "b")
+_relationship("a", "b", relationship_type="duplicate_of")
+record_duplicate("record", "duplicate_of")
+'''
+
+    assert extract_relationship_literals(
+        text, include_bare_yaml=False, include_python_calls=True
+    ) == {"affected_by", "duplicate_of"}
+
+
+def test_cross_producer_relationship_requires_shared_owner() -> None:
+    census = {
+        "aguayluz-pr": {"located_in": {"scripts/federation_export.py"}},
+        "skywatcher-pr": {"located_in": {"scripts/federation_export.py"}},
+    }
+    domain_registry = {
+        "shared_relationships": [],
+        "domain_registries": [
+            {
+                "owner": "aguayluz-pr",
+                "scope": "DOMAIN_ONLY",
+                "types": ["located_in"],
+            }
+        ],
+        "hub_derived": {},
+    }
+
+    blockers, _ = validate_relationship_census(census, domain_registry)
+
+    assert {
+        "AB-004-RELATIONSHIP-OWNER-MISMATCH",
+        "AB-004-CROSS-PRODUCER-COLLISION",
+    }.issubset(blocker_ids(blockers))
+
+    shared_registry = copy.deepcopy(domain_registry)
+    shared_registry["domain_registries"] = []
+    shared_registry["shared_relationships"] = [
+        {
+            "id": "located_in",
+            "authority_owner": AUTHORITY,
+            "scope": "SHARED",
+        }
+    ]
+    blockers, _ = validate_relationship_census(census, shared_registry)
+    assert blockers == []
+
+
+def test_relationship_registry_source_must_match_exact_head_blob(
+    tmp_path: Path,
+) -> None:
+    repo = tmp_path / "producer-pr"
+    init_repository(repo)
+    commit = commit_file(repo, "config/relationships.yml", "types: [linked_to]\n")
+    blob = git(repo, "rev-parse", f"{commit}:config/relationships.yml")
+    registry = {
+        "domain_registries": [
+            {
+                "owner": "producer-pr",
+                "scope": "DOMAIN_ONLY",
+                "types": ["linked_to"],
+                "source": "config/relationships.yml",
+                "source_blob_sha": blob,
+            }
+        ],
+        "hub_derived": {},
+    }
+
+    blockers, findings = verify_relationship_registry_sources(
+        registry, {"producer-pr": repo}
+    )
+
+    assert blockers == []
+    assert findings[0]["state"] == "PASS_EXACT_HEAD_BLOB"
+
+    bad = copy.deepcopy(registry)
+    bad["domain_registries"][0]["source_blob_sha"] = "0" * 40
+    blockers, _ = verify_relationship_registry_sources(bad, {"producer-pr": repo})
+    assert blocker_ids(blockers) == {"AB-004-REGISTRY-SOURCE-BLOB-MISMATCH"}
 
 
 def test_hub_aggregate_is_observed_but_not_a_second_authority_emitter() -> None:
