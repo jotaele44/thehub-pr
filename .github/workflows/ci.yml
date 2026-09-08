@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -41,7 +41,7 @@ jobs:
       - name: Registry loads
         run: python -m hub list --registry registry/producers.yaml
       - name: Tests
-        run: pytest -q --cov --cov-report=term-missing:skip-covered
+        run: python -m pytest -q --cov --cov-report=term-missing:skip-covered -W error::ResourceWarning -W error::pytest.PytestUnraisableExceptionWarning
 
   lock:
     runs-on: ubuntu-latest
