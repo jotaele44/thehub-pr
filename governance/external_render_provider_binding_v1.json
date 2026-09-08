@@ -1,0 +1,14 @@
+{
+  "binding": "federation-external-render-provider-binding/1.0",
+  "repository": "thehub-pr",
+  "authority_repository": "spiderweb-pr",
+  "provider": "apple-mapkit",
+  "classification": "EXTERNAL_RENDER_PROVIDER_CONTROL_PLANE",
+  "authority": "NONE",
+  "status": "PROVISIONAL",
+  "intended_uses": ["provider_discovery", "provider_availability_state", "launch_spatial_view", "provenance_inspection"],
+  "forbidden_roles": ["imagery_authority", "geometry_authority", "provider_pixel_store", "independent_apple_maps_data_plane"],
+  "canonical_data_effect": "NONE",
+  "requirements": ["NO_PROVIDER_PIXEL_PERSISTENCE", "NO_TILE_HARVEST", "ATTRIBUTION_VISIBLE_WHEN_RENDERED", "SPIDERWEB_REMAINS_SPATIAL_PROVIDER_AUTHORITY", "CREDENTIALS_LAST"],
+  "live_enablement": "BLOCKED_UNTIL_SPIDERWEB_PROVIDER_PARITY_PASS"
+}
