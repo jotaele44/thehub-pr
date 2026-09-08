@@ -102,10 +102,10 @@ class Redactor:
     def __init__(self, values: Iterable[str] = ()):
         # Longest first, so an overlapping shorter secret cannot leave a tail.
         retained = {v for v in values if v and len(v) >= 4}
-        # The transport delivers physical lines. Retain meaningful lines of a
+        # The transport delivers physical lines. Retain nonempty lines of a
         # multiline credential as well, so a PEM/key body cannot evade redaction
         # merely because its complete value spans more than one callback.
-        retained.update(line for value in tuple(retained) for line in value.splitlines() if len(line) >= 4)
+        retained.update(line for value in tuple(retained) for line in value.splitlines() if line)
         self._values = sorted(retained, key=lambda value: (-len(value), value))
         self.count = 0
 
@@ -138,7 +138,7 @@ class Redactor:
                 spans[-1] = (spans[-1][0], max(spans[-1][1], end))
             else:
                 spans.append((start, end))
-        pieces = []
+        pieces: list[str] = []
         cursor = 0
         for start, end in spans:
             if start >= length:

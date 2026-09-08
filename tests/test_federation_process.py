@@ -356,14 +356,14 @@ def test_invalid_process_limits_fail_closed(field, value):
         ProcessLimits(**{field: value})
 
 
-def test_multiline_secret_is_redacted_in_physical_line_callbacks(workdir):
-    value = "credential-part-one\ncredential-part-two"
+@pytest.mark.parametrize("value", ["credential-part-one\ncredential-part-two", "ab\ncd"])
+def test_multiline_secret_is_redacted_in_physical_line_callbacks(workdir, value):
     script = _script(workdir, f"print({value!r})\n")
     seen = []
     result = run_process([sys.executable, str(script)], cwd=workdir, env=build_environment(),
         on_line=seen.append, redactor=Redactor([value]))
     assert result.succeeded
-    assert "credential-part" not in "".join(seen)
+    assert all(part not in "".join(seen) for part in value.splitlines())
     assert "".join(seen).count(REDACTION_PLACEHOLDER) == 2
 
 
