@@ -6,6 +6,8 @@ hash) and the log/environment half of G18 (no secret disclosure).
 from __future__ import annotations
 
 import subprocess
+import os
+import signal
 import sys
 import threading
 import time
@@ -215,6 +217,15 @@ def test_redactor_handles_overlapping_values():
     assert redactor("value=abcdefgh") == f"value={REDACTION_PLACEHOLDER}"
 
 
+def test_equal_length_overlapping_secrets_are_redacted_as_one_span():
+    assert Redactor(["abcdef", "defghi"])("abcdefghi") == REDACTION_PLACEHOLDER
+    assert Redactor(["defghi", "abcdef"])("abcdefghi") == REDACTION_PLACEHOLDER
+
+
+def test_overlapping_secrets_crossing_prefix_leave_no_partial_secret():
+    assert Redactor(["abcdef", "defghi"]).prefix("abcdefghi", 7) == REDACTION_PLACEHOLDER
+
+
 def test_redactor_ignores_values_too_short_to_be_meaningful():
     """Redacting a 2-character value would blank out unrelated output."""
     redactor = Redactor(["ab"])
@@ -281,6 +292,81 @@ def test_log_is_bounded_and_marked_truncated(workdir):
     assert result.log_bytes < 20000 * 101
 
 
+def test_long_line_redaction_covers_secret_crossing_visible_boundary(workdir):
+    prefix = "x" * (64 - 10)
+    script = _script(workdir, f"print({(prefix + CANARY + 'y' * 1000)!r})\n")
+    seen = []
+    result = run_process([sys.executable, str(script)], cwd=workdir, env=build_environment(),
+        on_line=seen.append, redactor=Redactor([CANARY]), limits=ProcessLimits(max_line_bytes=64))
+    assert result.succeeded
+    assert result.truncated
+    assert CANARY[:10] not in "".join(seen)
+    assert REDACTION_PLACEHOLDER in "".join(seen)
+
+
+def test_pipe_reads_are_bounded_even_without_newlines(workdir, monkeypatch):
+    script = _script(workdir, "import sys; sys.stdout.write('x' * 100000)\n")
+    real_popen = subprocess.Popen
+    read_sizes = []
+
+    class BoundedReader:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __iter__(self):
+            raise AssertionError("unbounded line iteration")
+
+        def readline(self, size=-1):
+            assert 0 < size <= 1024 + len(CANARY)
+            read_sizes.append(size)
+            return self.stream.readline(size)
+
+        def close(self):
+            self.stream.close()
+
+    def wrapped_popen(*args, **kwargs):
+        process = real_popen(*args, **kwargs)
+        process.stdout = BoundedReader(process.stdout)
+        return process
+
+    monkeypatch.setattr(subprocess, "Popen", wrapped_popen)
+    result = run_process([sys.executable, str(script)], cwd=workdir, env=build_environment(),
+        redactor=Redactor([CANARY]), limits=ProcessLimits(max_line_bytes=1024))
+    assert result.succeeded
+    assert result.truncated
+    assert read_sizes
+
+
+def test_log_byte_cap_includes_truncation_marker(workdir):
+    script = _script(workdir, "print('long output')\n")
+    seen = []
+    result = run_process([sys.executable, str(script)], cwd=workdir, env=build_environment(),
+        on_line=seen.append, limits=ProcessLimits(max_log_bytes=8))
+    assert result.truncated
+    assert result.log_bytes == len("".join(seen).encode()) <= 8
+
+
+@pytest.mark.parametrize("field,value", [
+    ("max_log_bytes", 0), ("max_line_bytes", -1), ("max_line_bytes", True),
+    ("max_log_bytes", 1.5), ("timeout_seconds", 0), ("timeout_seconds", float("nan")),
+    ("timeout_seconds", float("inf")), ("timeout_seconds", True),
+])
+def test_invalid_process_limits_fail_closed(field, value):
+    with pytest.raises(ProcessError):
+        ProcessLimits(**{field: value})
+
+
+def test_multiline_secret_is_redacted_in_physical_line_callbacks(workdir):
+    value = "credential-part-one\ncredential-part-two"
+    script = _script(workdir, f"print({value!r})\n")
+    seen = []
+    result = run_process([sys.executable, str(script)], cwd=workdir, env=build_environment(),
+        on_line=seen.append, redactor=Redactor([value]))
+    assert result.succeeded
+    assert "credential-part" not in "".join(seen)
+    assert "".join(seen).count(REDACTION_PLACEHOLDER) == 2
+
+
 def test_timeout_kills_the_child(workdir):
     script = _script(workdir, "import time; time.sleep(30)")
     started = time.monotonic()
@@ -302,21 +388,88 @@ def test_cancellation_stops_the_run(workdir):
     cancel = threading.Event()
     seen: list[str] = []
 
-    def _cancel_soon():
-        time.sleep(0.5)
+    def _on_line(line):
+        seen.append(line)
         cancel.set()
 
-    threading.Thread(target=_cancel_soon, daemon=True).start()
     result = run_process(
         [sys.executable, str(script)],
         cwd=workdir,
         env=build_environment(),
-        on_line=seen.append,
+        on_line=_on_line,
         cancel_event=cancel,
         limits=ProcessLimits(timeout_seconds=30),
     )
     assert result.status == "cancelled"
     assert len(seen) >= 1
+
+
+def test_already_cancelled_run_never_starts_a_child(workdir, monkeypatch):
+    cancel = threading.Event()
+    cancel.set()
+
+    def forbidden_spawn(*args, **kwargs):
+        raise AssertionError("a cancelled operation must not start")
+
+    monkeypatch.setattr(subprocess, "Popen", forbidden_spawn)
+    result = run_process([sys.executable, "unused.py"], cwd=workdir, env={}, cancel_event=cancel)
+    assert result.status == "cancelled"
+    assert result.exit_code is None
+    assert result.log_bytes == 0
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="POSIX signal escalation")
+@pytest.mark.parametrize("leader_exits", [False, True])
+def test_cancellation_escalates_when_child_ignores_sigterm(workdir, monkeypatch, leader_exits):
+    child_body = (
+        "import signal,time\nsignal.signal(signal.SIGTERM, signal.SIG_IGN)\n"
+        "print('ready', flush=True)\ntime.sleep(60)\n")
+    if leader_exits:
+        grandchild = _script_named(workdir, "resistant_grandchild.py", child_body)
+        script = _script(workdir, "import subprocess,sys\n"
+            f"subprocess.Popen([sys.executable, {str(grandchild)!r}])\n")
+    else:
+        script = _script(workdir, child_body)
+    real_popen = subprocess.Popen
+    children = []
+
+    def capture_child(*args, **kwargs):
+        process = real_popen(*args, **kwargs)
+        children.append(process)
+        return process
+
+    monkeypatch.setattr(subprocess, "Popen", capture_child)
+    cancel = threading.Event()
+    ready = threading.Event()
+    results = []
+
+    def on_line(line):
+        if line.strip() == "ready":
+            if leader_exits:
+                assert children[0].wait(timeout=5) == 0
+            ready.set()
+            cancel.set()
+
+    def run():
+        results.append(run_process([sys.executable, str(script)], cwd=workdir,
+            env=build_environment(), cancel_event=cancel, on_line=on_line,
+            limits=ProcessLimits(timeout_seconds=30)))
+
+    worker = threading.Thread(target=run, daemon=True)
+    worker.start()
+    try:
+        assert ready.wait(20), "child never became ready"
+        worker.join(timeout=5)
+        assert not worker.is_alive(), "SIGTERM-resistant child outlived cancellation"
+        assert results[0].status == "cancelled"
+        assert results[0].exit_code == (0 if leader_exits else -signal.SIGKILL)
+    finally:
+        for child in children:
+            try:
+                os.killpg(child.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        worker.join(timeout=5)
 
 
 @pytest.mark.skipif(sys.platform == "win32", reason="POSIX process groups")

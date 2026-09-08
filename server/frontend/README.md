@@ -38,8 +38,8 @@ VITE_FEDERATION_MODE=diagnostic
 | `POST /api/entities/:entity/bulk` | yes — **write-guarded** |
 | `GET /api/notifications` | yes |
 | `POST /api/notifications/ack`, `PUT /api/notifications/preferences` | yes — **write-guarded** |
-| `POST /api/functions/:name/invoke` | yes |
-| `/api/agents/*`, `/api/integrations/*` | yes |
+| `POST /api/functions/:name/invoke` | diagnostic stub; no execution backend |
+| `/api/agents/*`, `/api/integrations/*` | diagnostic/unconfigured responses; no live execution |
 | `POST /api/files/upload` | yes, returns a diagnostic stub |
 | `GET /api/connectors/:name/connection` | yes, hardcoded `not_connected` |
 | `POST /api/auth/login` | **no — 404** |
@@ -62,15 +62,13 @@ succeed.
 Mutating routes are guarded by `require_write_access` in `server/backend/main.py`:
 
 - `PRII_WRITE_TOKEN` **set** → every mutating request needs `Authorization: Bearer <token>`
-- `PRII_WRITE_TOKEN` **unset** → writes are served to local-network clients
-  (loopback, RFC1918 private, link-local) and refused for public addresses
+- `PRII_WRITE_TOKEN` **unset** → administrative writes are disabled with **503**, including local clients
 
 Reads are never affected.
 
 `public_settings` advertises `write_token_required` so the UI can tell "this
-server wants a bearer token on writes" from "this server accepts writes from my
-network" — the browser cannot read `PRII_WRITE_TOKEN`, and without that flag both
-look identical until a write 401s. Only the boolean is exposed, never the token.
+server has a configured bearer token" from "administrative writes are disabled".
+The browser cannot read `PRII_WRITE_TOKEN`. Only the boolean is exposed, never the token.
 
 ### Supplying the token from the browser
 
@@ -89,10 +87,21 @@ silently was not.
 ## Development
 
 ```bash
-npm install
+npm ci
 npm run lint
 npm run build
 ```
+
+The committed `.npmrc` installs the local `@pr-federation/react` package as a
+package copy, so its React peer dependencies resolve from this frontend's
+dependency tree. After editing that shared package, rerun `npm ci` before
+testing or building the frontend. The lockfile and local package source together
+define the install inputs.
+
+`npm run typecheck` currently uses the legacy configuration with `checkJs: false`.
+A successful exit is not evidence of full JavaScript type safety. Enabling
+`checkJs` reveals existing annotation and type errors that remain to be resolved
+before a meaningful full-source typecheck can become a required CI gate.
 
 ## Migration status
 

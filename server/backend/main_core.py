@@ -55,12 +55,10 @@ log = logging.getLogger("hub.backend")
 #   PRII_WRITE_TOKEN set    -> mutating routes require Authorization: Bearer <token>
 #   PRII_WRITE_TOKEN unset  -> every mutating route fails closed
 #
-# Caveat when the token IS set: the browser UI has no write-credential input
-# (federationClient sources only the federation access token, and AuthContext
-# drops that when /api/auth/me 401s), so token mode currently suits API/CLI
-# callers rather than the shipped UI. Wiring a write credential through the
-# frontend is tracked in docs/MATURITY_AUDIT.md — aguayluz-pr's API_SECRET_KEY
-# has the same gap, so it wants one federation-wide answer, not a local patch.
+# The browser keeps its diagnostic write token separate from its access token,
+# so AuthContext can clear a rejected login session without discarding the
+# operator's write credential. This is a shared administrative credential,
+# not a multi-user authentication service.
 #
 # Reads are unaffected in every case.
 _WRITE_TOKEN = os.environ.get("PRII_WRITE_TOKEN", "")
@@ -78,7 +76,7 @@ def _is_local_network(host: str) -> bool:
 
 
 def require_write_access(request: Request) -> None:
-    """Authorize a mutating request, by bearer token or by local-network origin."""
+    """Authorize a mutating request by its configured administrative bearer token."""
     if _WRITE_TOKEN:
         scheme, _, presented = request.headers.get("authorization", "").partition(" ")
         if scheme.lower() != "bearer" or not secrets.compare_digest(
@@ -179,7 +177,7 @@ async def _read_json_body(request: Request) -> dict[str, Any]:
 
 
 def _entity_id(body: dict[str, Any], *fallback_fields: str) -> str:
-    """Choose an explicit valid ID without normalizing its source bytes."""
+    """Choose an explicit valid ID without normalizing its raw string."""
     for field in ("id", *fallback_fields):
         if field in body:
             value = body[field]

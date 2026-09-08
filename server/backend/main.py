@@ -1,4 +1,4 @@
-"""Compatibility entrypoint for the byte-preserved FastAPI core.
+"""Compatibility entrypoint for the canonical FastAPI core.
 
 The audit verifier intentionally inspects this file rather than importing it, so
 this docstring mirrors the existing public-settings response shape without
@@ -17,7 +17,7 @@ from server.backend.gis_proxy import router as _gis_proxy_router
 
 _PROXY_PATH = "/api/gis/proxy"
 
-# Mount the extension before aliasing this module to the byte-preserved core. Use
+# Mount the extension before aliasing this module to the canonical core. Use
 # the app router's concrete route list as the final source of truth and verify the
 # postcondition immediately so an import can never silently succeed without the
 # required same-origin fallback route.
@@ -42,7 +42,7 @@ _core.app.router.routes[:] = _proxy_routes + [
     route for route in _core.app.router.routes if getattr(route, "path", None) != _PROXY_PATH
 ]
 
-# `server.backend.main` must be the *same module object* as the preserved core.
+# `server.backend.main` must be the *same module object* as the canonical core.
 # Existing tests and application code monkeypatch globals such as DB_PATH on
 # this import path; a `from ... import *` wrapper would silently split globals.
 sys.modules[__name__] = _core
