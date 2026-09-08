@@ -9,4 +9,6 @@ cryptography>=41
 # Dockerfile) get it either way — but desktop-build.yml installs this file plus
 # requirements-desktop.txt and never the project, so leaving it out crashed the
 # frozen app on startup with ModuleNotFoundError.
-jsonschema>=4.0
+jsonschema>=4.18
+# Frozen local contract resolution uses the explicit Registry API.
+referencing>=0.28.4
