@@ -51,7 +51,7 @@ jobs:
       - name: Lock file is up to date
         run: uv lock --check
 
-  # Hub app frontend (server/frontend): lint, unit/axe tests, production build.
+  # Hub app frontend: lint, UI prop contracts, unit/axe tests, production build.
   frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -66,6 +66,8 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Lint
         run: npm run lint
+      - name: UI primitive type contracts
+        run: npm run typecheck:ui
       - name: Tests
         run: npm run test
       - name: Build

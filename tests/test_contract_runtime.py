@@ -2,6 +2,9 @@
 
 import jsonschema
 import pytest
+import warnings
+import socket
+import urllib.request
 
 from hub.contract_runtime import (
     adjudication_record,
@@ -100,3 +103,37 @@ def test_machine_suggested_provenance_cannot_claim_confirmed_status():
             synthetic_status="REAL",
             access_level="PUBLIC",
         )
+
+
+def test_local_provenance_resolution_has_no_deprecated_resolver():
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", DeprecationWarning)
+        test_provenance_builder_validates_exact_frozen_contract()
+
+
+@pytest.mark.parametrize("name", ["provenance.v1", "access_classification.v1", "snapshot_manifest.v1", "entity_resolution.v1"])
+def test_unknown_contract_reference_fails_without_network(name, monkeypatch):
+    from hub import contract_runtime
+
+    requested = []
+
+    def forbidden_urlopen(*args, **kwargs):
+        requested.append(args)
+        raise AssertionError("contract validation must never retrieve a remote schema")
+
+    original = contract_runtime._load_contract
+
+    def missing_reference(contract):
+        schema = original(contract)
+        if contract == name:
+            return {"$schema": schema["$schema"], "$id": schema["$id"], "$ref": "https://missing.invalid/frozen-contract"}
+        return schema
+
+    monkeypatch.setattr(contract_runtime, "_load_contract", missing_reference)
+    monkeypatch.setattr(urllib.request, "urlopen", forbidden_urlopen)
+    monkeypatch.setattr(socket, "getaddrinfo", forbidden_urlopen)
+    from referencing.exceptions import Unresolvable
+
+    with pytest.raises(Unresolvable):
+        validate_contract(name, {})
+    assert requested == []

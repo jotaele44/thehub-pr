@@ -89,6 +89,7 @@ silently was not.
 ```bash
 npm ci
 npm run lint
+npm run typecheck:ui
 npm run build
 ```
 
@@ -102,6 +103,11 @@ define the install inputs.
 A successful exit is not evidence of full JavaScript type safety. Enabling
 `checkJs` reveals existing annotation and type errors that remain to be resolved
 before a meaningful full-source typecheck can become a required CI gate.
+
+`npm run typecheck:ui` checks the UI primitive source and positive/negative prop
+contracts in `tests/types/ui-primitives.tsx`. CI runs this bounded gate. It rejects
+invalid variants, refs, event handlers, missing select values, and unsupported
+sheet sides. It does not replace the unfinished application-wide typecheck.
 
 ## Migration status
 

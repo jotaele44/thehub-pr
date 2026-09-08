@@ -40,6 +40,16 @@ const setStoredToken = (token) => {
   }
 };
 
+export class FederationRequestError extends Error {
+  /** @param {string} message @param {number} status @param {unknown} data */
+  constructor(message, status, data) {
+    super(message);
+    this.status = status;
+    this.data = data;
+  }
+}
+
+/** @param {Response} response */
 const normalizeError = async (response) => {
   let data = null;
   let message = response.statusText || 'Request failed';
@@ -54,10 +64,7 @@ const normalizeError = async (response) => {
       // no body
     }
   }
-  const error = new Error(message);
-  error.status = response.status;
-  error.data = data;
-  return error;
+  return new FederationRequestError(message, response.status, data);
 };
 
 async function request(path, options = {}) {
@@ -113,6 +120,7 @@ const entityClient = (entityName) => ({
   delete: (id) => request(`/entities/${encode(entityName)}/${encode(id)}`, { method: 'DELETE' }),
 });
 
+/** @type {Record<string, ReturnType<typeof entityClient>>} */
 const entities = new Proxy({}, {
   get: (_target, entityName) => entityClient(entityName),
 });

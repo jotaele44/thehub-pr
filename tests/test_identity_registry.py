@@ -1,9 +1,66 @@
 from __future__ import annotations
 
 import sqlite3
+from contextlib import closing
 import pytest
 
 from hub.identity_registry import IdentityRegistry, payload_hash, stable_id
+
+
+def test_connection_context_commits_rolls_back_and_always_closes(tmp_path):
+    reg = IdentityRegistry(tmp_path / "hub.db")
+    with reg._connect() as committed:
+        committed.execute("CREATE TABLE lifetime_probe (value TEXT)")
+        committed.execute("INSERT INTO lifetime_probe VALUES ('committed')")
+    with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+        committed.execute("SELECT 1")
+
+    with pytest.raises(RuntimeError, match="abort transaction"):
+        with reg._connect() as aborted:
+            aborted.execute("INSERT INTO lifetime_probe VALUES ('rolled back')")
+            raise RuntimeError("abort transaction")
+    with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+        aborted.execute("SELECT 1")
+
+    with reg._connect() as check:
+        assert [row[0] for row in check.execute("SELECT value FROM lifetime_probe")] == ["committed"]
+
+
+def test_registry_operations_close_connections_including_setup_failure(tmp_path, monkeypatch):
+    connections = []
+    connect = sqlite3.connect
+
+    def capture(*args, **kwargs):
+        connection = connect(*args, **kwargs)
+        connections.append(connection)
+        return connection
+
+    monkeypatch.setattr(sqlite3, "connect", capture)
+    try:
+        reg = IdentityRegistry(tmp_path / "hub.db")
+        assert reg.resolve_member("unknown", "unknown") is None
+        assert len(connections) == 2
+        for connection in connections:
+            with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+                connection.execute("SELECT 1")
+    finally:
+        for connection in connections:
+            connection.close()
+
+    class SetupFailure(sqlite3.Connection):
+        def execute(self, *args, **kwargs):
+            raise RuntimeError("setup failed")
+
+    failing = connect(tmp_path / "hub.db", factory=SetupFailure)
+    monkeypatch.setattr(sqlite3, "connect", lambda *args, **kwargs: failing)
+    try:
+        with pytest.raises(RuntimeError, match="setup failed"):
+            with reg._connect():
+                pytest.fail("setup failure must not yield a connection")
+        with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+            failing.cursor()
+    finally:
+        failing.close()
 
 
 def _decision(reg: IdentityRegistry, decision_id: str, outcome: str = "MERGE") -> None:
@@ -35,7 +92,7 @@ def test_member_identity_is_stable_and_bound_to_resolution_decision(tmp_path):
     reg.attach_member(**kwargs)
     reg.attach_member(**kwargs)
     assert reg.resolve_member("moneysweep-pr", payload["entity_id"]) == fed
-    with sqlite3.connect(tmp_path / "hub.db") as db:
+    with closing(sqlite3.connect(tmp_path / "hub.db")) as db:
         assert db.execute(
             "SELECT decision_id,COUNT(*) FROM federation_entity_members"
         ).fetchone() == ("decision-1", 1)
@@ -148,7 +205,7 @@ def test_transactional_merge_moves_members_and_redirects_edges(tmp_path):
         decision_id="decision-merge",
     )
     assert reg.resolve_member("moneysweep-pr", "ent_a") == b
-    with sqlite3.connect(tmp_path / "hub.db") as db:
+    with closing(sqlite3.connect(tmp_path / "hub.db")) as db:
         db.row_factory = sqlite3.Row
         entity = db.execute(
             "SELECT status,superseded_by FROM federation_entities WHERE federation_entity_id=?",
@@ -191,7 +248,7 @@ def test_identical_merge_replay_noop_and_incompatible_second_merge_rejected(tmp_
             to_federation_entity_id=c,
             decision_id="decision-other",
         )
-    with sqlite3.connect(tmp_path / "hub.db") as db:
+    with closing(sqlite3.connect(tmp_path / "hub.db")) as db:
         assert (
             db.execute("SELECT COUNT(*) FROM federation_merge_history").fetchone()[0]
             == 1
@@ -221,7 +278,7 @@ def test_relationship_redirect_dedupes_without_delete(tmp_path):
         to_federation_entity_id=b,
         decision_id="decision-merge",
     )
-    with sqlite3.connect(tmp_path / "hub.db") as db:
+    with closing(sqlite3.connect(tmp_path / "hub.db")) as db:
         rows = db.execute(
             "SELECT federation_relationship_id,status,superseded_by FROM federation_relationships ORDER BY federation_relationship_id"
         ).fetchall()
@@ -245,7 +302,7 @@ def test_supersede_and_tombstone_preserve_history(tmp_path):
     )
     reg.supersede_entity(federation_entity_id=a, superseded_by=b, decision_id="sup-1")
     reg.tombstone_entity(b)
-    with sqlite3.connect(tmp_path / "hub.db") as db:
+    with closing(sqlite3.connect(tmp_path / "hub.db")) as db:
         rows = dict(
             db.execute(
                 "SELECT federation_entity_id,status FROM federation_entities"
@@ -295,7 +352,7 @@ def test_event_dispositions_fail_closed_and_preserve_rejections(tmp_path):
         "REJECTED_SCHEMA",
         "REJECTED_HASH",
     )
-    with sqlite3.connect(tmp_path / "hub.db") as db:
+    with closing(sqlite3.connect(tmp_path / "hub.db")) as db:
         assert db.execute("SELECT COUNT(*) FROM federation_events").fetchone()[0] == 4
         assert (
             db.execute(
@@ -330,7 +387,7 @@ def test_event_identical_replay_is_noop(tmp_path):
         and first[1] == "APPLIED"
         and second[1] == "IDEMPOTENT_REPLAY"
     )
-    with sqlite3.connect(tmp_path / "hub.db") as db:
+    with closing(sqlite3.connect(tmp_path / "hub.db")) as db:
         assert db.execute("SELECT COUNT(*) FROM federation_events").fetchone()[0] == 1
         assert (
             db.execute("SELECT COUNT(*) FROM federation_event_attempts").fetchone()[0]
