@@ -1,0 +1,82 @@
+{
+  "contract_version": "federation-spatial-ci-baseline/1.1",
+  "generated_date": "2026-09-08",
+  "purpose": "Separate pre-existing repository CI failures, branch regressions, and GitHub Actions infrastructure failures before merge/certification.",
+  "classification_enum": ["PREEXISTING_FAILURE", "BRANCH_REGRESSION", "INFRA_FAILURE", "UNKNOWN"],
+  "repositories": [
+    {
+      "repo": "spiderweb-pr",
+      "current_base_sha": "d4bfb233a032a4c2bb1331c21bc56b2d48bfbba0",
+      "current_head_sha_observed": "8ec00837f7ef19a9d0498d6f887829516f00a067",
+      "baseline_state": "CONTAMINATED",
+      "historical_baseline_evidence": [
+        {"workflow": "CI", "conclusion": "failure", "run_id": 33918175423},
+        {"workflow": "Federation template drift", "conclusion": "failure", "run_id": 33918175422}
+      ],
+      "current_infra_evidence": [
+        {"workflow": "Federation Current-Service Spatial Reference Freeze", "run_id": 34158151052, "job_id": 101854161623, "conclusion": "failure", "recorded_steps": 0, "artifacts": 0},
+        {"workflow": "CI", "run_id": 34158151014, "conclusion": "failure", "job_observation": "multiple unrelated jobs completed failure/cancelled with no recorded steps"}
+      ],
+      "branch_attribution": "INFRA_FAILURE",
+      "rule": "A zero-step workflow cannot establish a code/test regression. Reclassify only after an execution trace, artifact, annotation, or reproducible local failure exists."
+    },
+    {
+      "repo": "aguayluz-pr",
+      "current_base_sha": "64deea06e66e1c2b3db15b9f4f19c27e389bd923",
+      "current_head_sha_observed": "0b662d084540f37074945806141f5bd909740eaa",
+      "baseline_state": "CONTAMINATED",
+      "historical_baseline_evidence": [
+        {"workflow": "refresh", "conclusion": "failure", "run_id": 33972041762}
+      ],
+      "branch_attribution": "UNKNOWN"
+    },
+    {
+      "repo": "skywatcher-pr",
+      "current_base_sha": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "current_head_sha_observed": "923dbe9f2dbd877eb248af30ea9ce752a97f7680",
+      "baseline_state": "CONTAMINATED",
+      "historical_baseline_evidence": [
+        {"workflow": "adsb-poll", "conclusion": "failure", "run_id": 33971972118}
+      ],
+      "branch_attribution": "UNKNOWN"
+    },
+    {
+      "repo": "moneysweep-pr",
+      "current_base_sha": "f17bc8a203a27df6c1a63331428e05b787277471",
+      "current_head_sha_observed": "32bd5154576d9f7775b32d7c80f4ed2d2fc89939",
+      "baseline_state": "CONTAMINATED",
+      "historical_baseline_evidence": [
+        {"workflow": "Source update — drop scan", "conclusion": "failure", "run_id": 33969309040},
+        {"workflow": "Source update — freshness", "conclusion": "failure", "run_id": 33969221539}
+      ],
+      "branch_attribution": "UNKNOWN"
+    },
+    {
+      "repo": "thehub-pr",
+      "current_base_sha": "d509b78a59c7f79c716da3a004fa6e371d1cc7ce",
+      "current_head_sha_observed": "5fc969b7b5cd222771c1f373bb423a549dfdfd14",
+      "baseline_state": "CONTAMINATED",
+      "historical_baseline_evidence": [
+        {"workflow": "Federation template drift", "conclusion": "failure", "run_id": 33915813750},
+        {"workflow": ".github/workflows/gis-live-source-certification.yml", "conclusion": "failure", "run_id": 33915812893}
+      ],
+      "current_infra_evidence": [
+        {"workflow": "Federation Spatial Architecture Certification", "run_id": 34158139489, "job_id": 101854127741, "conclusion": "failure", "recorded_steps": 0}
+      ],
+      "branch_attribution": "INFRA_FAILURE",
+      "rule": "The coordinated spatial workflow has no recorded execution steps on the current head and therefore cannot prove either PASS or BRANCH_REGRESSION."
+    }
+  ],
+  "merge_policy": {
+    "baseline_red_is_not_branch_regression": true,
+    "zero_step_actions_failure_is_infrastructure_evidence": true,
+    "mechanical_mergeable_is_not_certified": true,
+    "required_before_merge": [
+      "branch-caused failures isolated or disproven",
+      "spatial-specific gates actually execute and pass",
+      "zero material unresolved spatial residue",
+      "frozen source/geometry manifestations and hashes"
+    ]
+  },
+  "certification_state": "OPEN"
+}

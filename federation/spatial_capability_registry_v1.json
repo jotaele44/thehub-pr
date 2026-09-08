@@ -1,0 +1,132 @@
+{
+  "registry_version": "federation-spatial-capabilities/1.0",
+  "status": "PROVISIONAL",
+  "scope": "GIS/spatial subsystems only; default-branch source evidence plus federation-spatial-architecture-v1 contract work",
+  "evidence_states": ["IMPLEMENTED", "TESTED", "REACHABLE", "PARTIAL", "BLOCKED", "DECLARED", "OUT_OF_SCOPE", "UNRESOLVED"],
+  "rules": {
+    "documentation_alone": "DECLARED",
+    "code_without_reachability_or_test_proof": "IMPLEMENTED",
+    "test_exercised": "TESTED",
+    "blocked_state_preserved": true,
+    "name_or_proximity_never_identity": true,
+    "percent_complete_scores": "NONCANONICAL"
+  },
+  "repositories": {
+    "spiderweb-pr": {
+      "role": "SPATIAL_SUBSTRATE",
+      "capabilities": [
+        {
+          "id": "duckdb_spatial_join",
+          "state": "TESTED",
+          "evidence": ["spiderweb/spatial/duckdb_engine.py", "tests/test_duckdb_spatial.py"],
+          "operations": ["ST_Intersects", "ST_Contains", "ST_Within", "ST_Touches", "ST_Crosses", "ST_Overlaps"]
+        },
+        {
+          "id": "federation_geodesic_core",
+          "state": "IMPLEMENTED",
+          "evidence": ["federation/spatial_core.py"],
+          "operations": ["WGS84 coordinate validation", "canonical JSON hashing", "Vincenty distance with haversine fallback", "bbox predicates", "4D segment metrics"]
+        },
+        {
+          "id": "typed_spatial_relations",
+          "state": "IMPLEMENTED",
+          "evidence": ["federation/spatial_relations.py"],
+          "notes": "Computed relations default to CANDIDATE_NOT_IDENTITY; current helper is point-geometry bounded."
+        },
+        {
+          "id": "mvt_postgis_path",
+          "state": "IMPLEMENTED",
+          "evidence": ["migrations/20260831_federation_mvt_v1.sql"],
+          "notes": "SQL implementation exists; runtime deployment/performance certification remains OPEN."
+        }
+      ]
+    },
+    "aguayluz-pr": {
+      "role": "HYDROLOGY_ENVIRONMENT_INFRASTRUCTURE_PRODUCER",
+      "capabilities": [
+        {
+          "id": "asset_map",
+          "state": "TESTED",
+          "evidence": ["dashboard/src/components/AssetMap.jsx", "dashboard/src/components/AssetMap.test.jsx", "dashboard/src/pages/MapPage.jsx"]
+        },
+        {
+          "id": "nhdplus_asset_enrichment",
+          "state": "REACHABLE",
+          "evidence": ["scripts/enrich_waters_nhd.py", "scripts/refresh.py"],
+          "notes": "Refresh pipeline declares EPA WATERS/NHDPlus enrichment step."
+        },
+        {
+          "id": "nhdplus_navigation",
+          "state": "IMPLEMENTED",
+          "evidence": ["src/aguayluz/waters/navigation.py", "src/aguayluz/waters/mapping.py"],
+          "notes": "VPU 21 extension coverage is explicitly partial; absence must not be promoted to complete attribute coverage."
+        },
+        {
+          "id": "live_waters_smoke_path",
+          "state": "PARTIAL",
+          "evidence": ["scripts/smoke_test.py"],
+          "notes": "Live proof depends on external API key/connectivity; not asserted as currently passed here."
+        }
+      ]
+    },
+    "skywatcher-pr": {
+      "role": "AVIATION_TRAJECTORY_IMAGERY_TERRAIN_PRODUCER",
+      "capabilities": [
+        {
+          "id": "gebco_fetch",
+          "state": "REACHABLE",
+          "evidence": ["scripts/fetch_gebco_pr.py", "reports/claude_runtime_gate_logs/skywatcher-pr_gebco_fetch.log"],
+          "notes": "Historical runtime log records a successful fetch; mutable external source must be re-snapshotted for new certification."
+        },
+        {
+          "id": "gebco_point_depth",
+          "state": "IMPLEMENTED",
+          "evidence": ["gebco/io.py"]
+        },
+        {
+          "id": "terrain_derivatives",
+          "state": "IMPLEMENTED",
+          "evidence": ["gebco/terrain.py"],
+          "notes": "Optional geo dependency path; not assumed part of default runtime."
+        },
+        {
+          "id": "canonical_export_adapter",
+          "state": "PARTIAL",
+          "evidence": ["scripts/federation_export.py", "frontend/src/pages/Readiness.jsx"],
+          "notes": "Test-mode/readiness evidence exists; production promotion remains separately gated."
+        }
+      ]
+    },
+    "moneysweep-pr": {
+      "role": "FINANCIAL_ENTITY_PRODUCER_SPATIAL_BINDING_CONSUMER",
+      "capabilities": [
+        {
+          "id": "gis_layer_manifest",
+          "state": "TESTED",
+          "evidence": ["scripts/build_gis_layer_manifest.py", "schemas/gis_layer_manifest.schema.json", "tests/test_gis_layers.py"]
+        },
+        {
+          "id": "project_points",
+          "state": "BLOCKED",
+          "evidence": ["exports/gis/layer_manifest.json", "tests/test_gis_layers.py"],
+          "notes": "No committed coordinates; blocked status is a positive integrity property and must remain until authoritative spatial binding exists."
+        },
+        {
+          "id": "pixel_grid_registry",
+          "state": "OUT_OF_SCOPE",
+          "evidence": ["registry/spatial/pr_grid_full_cell_index_saturated.csv"],
+          "notes": "May support image/grid classification but is not canonical georeferenced project geometry and cannot satisfy project_points."
+        }
+      ]
+    }
+  },
+  "open_proof_obligations": [
+    "exhaustive GIS-bearing file inventory per repository",
+    "runtime reachability for all IMPLEMENTED but untested capabilities",
+    "CRS transform and geometry-dimension preservation tests",
+    "cross-repository geometry equivalence fixtures",
+    "canonical source manifestation freeze for Puerto Rico reference strata",
+    "MoneySweep authoritative binding adapter",
+    "TheHub query/discovery adapter over canonical identities"
+  ]
+}
