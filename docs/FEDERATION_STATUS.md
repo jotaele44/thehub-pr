@@ -1,7 +1,9 @@
 # PRII Federation — Gap-Closure Status
 
 _Authoritative status of the Puerto Rico Integrated Intelligence (PRII) federation._
-_Last updated: 2026-08-31 (promoted centinelas to live-ready from its
+_Last updated: 2026-09-06 (federation-wide gap-closure audit: branch-protection
+verification across all seven repos, plus thehub-pr's own upgrade-audit Phase
+1+2 closure — see Part 9 below). Prior update: 2026-08-31 (promoted centinelas to live-ready from its
 authoritative producer manifest after a 100-signal real refresh, successful
 production export, and downstream Hub package validation)._
 
@@ -91,6 +93,29 @@ spatial layers).
   `UnifiedCases`/`PatternObservations`) and correlates them with the rest of the
   Federation exactly as before — this entry records that the upstream lane feeding
   those cases is now wired end to end.
+
+**Part 9 — Federation-wide gap-closure audit (2026-09-06):**
+- **Branch-protection verification.** Checked `main`'s `protected` flag via the GitHub
+  API across all seven repos (this only confirms branch protection is *on*, not which
+  specific status checks are required — that needs an admin-scoped ruleset read this
+  audit's tooling didn't have). Result, recorded in `governance/merge_blocking_status.json`:
+  `moneysweep-pr` and `spiderweb-pr` have `main` protected; `thehub-pr`, `aguayluz-pr`,
+  `ovnis-pr`, `skywatcher-pr`, and `centinelas-pr` do **not**. `merge_blocking_status`
+  stays `BLOCKED`, now with hard evidence instead of an unverified claim.
+- **thehub-pr upgrade-audit Phase 1+2 closure.** `handoff-audit/upgrade-audit/UPGRADE_AUDIT.md`
+  was a pre-existing, pre-vetted, HOLD-pending audit of thehub-pr only. Its own
+  config/doc phase (DEP-3 documented, DEP-10, SEC-1's loopback-bind half) and small
+  correctness-fix phase (BUG-1 connection-safety, BUG-3 body validation, BUG-6 limit
+  bounds, BUG-7 manifest error handling, DEP-7 test-client swap) landed, each re-verified
+  against current HEAD rather than the audit's now-stale line numbers, with new
+  regression tests and a clean `pytest`/`ruff`/`mypy` run. See that document's own
+  2026-09-06 status update for exactly what changed, what was found already fixed
+  (BUG-2), and what was investigated and deliberately left on HOLD (DEP-2, DEP-4,
+  DEP-6/FEAT-2, DEP-1) with reasoning.
+- **The other six producer repos were not touched.** Their blockers in the table below
+  were re-checked against this document and remain externally gated — skywatcher (real
+  FR24 capture), moneysweep-pr (Tranche-B manual exports + API keys), aguayluz
+  (per-asset outage granularity) — no code in this pass could close them.
 
 ## Blocked gaps — fully specified, waiting on a named external input
 
