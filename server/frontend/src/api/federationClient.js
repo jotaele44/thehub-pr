@@ -21,12 +21,14 @@ export const getWriteToken = () => {
 };
 
 export const setWriteToken = (token) => {
+  appParams.writeToken = token || null;
   if (typeof window === 'undefined') return;
   if (token) window.localStorage.setItem(WRITE_TOKEN_STORAGE_KEY, token);
   else window.localStorage.removeItem(WRITE_TOKEN_STORAGE_KEY);
 };
 
 const setStoredToken = (token) => {
+  appParams.token = token || null;
   if (typeof window === 'undefined') return;
   if (token) {
     window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
@@ -42,7 +44,7 @@ const normalizeError = async (response) => {
   let data = null;
   let message = response.statusText || 'Request failed';
   try {
-    data = await response.json();
+    data = await response.clone().json();
     message = data?.detail || data?.message || data?.error || message;
   } catch {
     try {

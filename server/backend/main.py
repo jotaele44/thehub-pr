@@ -34,6 +34,14 @@ if not any(getattr(route, "path", None) == _PROXY_PATH for route in _core.app.ro
 if not any(getattr(route, "path", None) == _PROXY_PATH for route in _core.app.routes):
     raise RuntimeError("GIS proxy route failed to mount on canonical FastAPI app")
 
+# Starlette dispatches in registration order. The built frontend's wildcard
+# exists before this extension is imported, so move the proxy ahead of it.
+# Route presence alone does not prove the endpoint is reachable in production.
+_proxy_routes = [route for route in _core.app.router.routes if getattr(route, "path", None) == _PROXY_PATH]
+_core.app.router.routes[:] = _proxy_routes + [
+    route for route in _core.app.router.routes if getattr(route, "path", None) != _PROXY_PATH
+]
+
 # `server.backend.main` must be the *same module object* as the preserved core.
 # Existing tests and application code monkeypatch globals such as DB_PATH on
 # this import path; a `from ... import *` wrapper would silently split globals.

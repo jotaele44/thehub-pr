@@ -129,3 +129,41 @@ def test_main_entrypoint_preserves_core_namespace_and_fresh_runtime_mounts_proxy
     )
     completed = subprocess.run([sys.executable, "-c", probe], check=False, capture_output=True, text=True)
     assert completed.returncode == 0, completed.stderr
+
+
+def test_proxy_precedes_production_spa_catchall():
+    probe = """
+import importlib
+from fastapi import FastAPI, HTTPException
+from fastapi.testclient import TestClient
+from server.backend import main_core
+main_core.app = FastAPI()
+@main_core.app.get('/{full_path:path}')
+def spa(full_path: str):
+    raise HTTPException(status_code=404)
+main = importlib.import_module('server.backend.main')
+with TestClient(main.app) as client:
+    response = client.get('/api/gis/proxy')
+    assert response.status_code == 422, response.text
+"""
+    completed = subprocess.run([sys.executable, "-c", probe], check=False, capture_output=True, text=True)
+    assert completed.returncode == 0, completed.stderr
+
+
+def test_packaged_cesium_assets_are_served_as_assets(tmp_path):
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+    from server.backend import main_core
+
+    assets = tmp_path / "cesium" / "Workers"
+    assets.mkdir(parents=True)
+    (assets / "worker.js").write_text("self.onmessage = () => {};", encoding="utf-8")
+    app = FastAPI()
+    main_core._mount_frontend_assets(app, tmp_path)
+    with TestClient(app) as client:
+        response = client.get("/cesium/Workers/worker.js")
+        assert response.status_code == 200
+        assert "javascript" in response.headers["content-type"]
+        assert response.text == "self.onmessage = () => {};"
+        assert client.get("/cesium/Workers/missing.js").status_code == 404
+        assert client.get("/cesium/%2e%2e/index.html").status_code == 404
