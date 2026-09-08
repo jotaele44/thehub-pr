@@ -1,7 +1,7 @@
 # Authority Boundary Closure — B.1 through B.5
 
-**Candidate date:** 2026-09-05  
-**Certification state:** `NOT_CERTIFIED`  
+**Candidate date:** 2026-09-05
+**Certification state:** `NOT_CERTIFIED`
 **Successor phase:** `A — FEDERATION IDENTITY CONTRACT` is forbidden until blocker count = 0.
 
 ## B.1 — identity authority
