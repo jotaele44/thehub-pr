@@ -1,0 +1,96 @@
+{
+  "schema_version": "prii_federation_remediation_snapshot_v1",
+  "snapshot_date": "2026-09-09",
+  "scope": "seven canonical Puerto Rico federation repositories",
+  "purpose": "non-certifying exact-head remediation baseline; preserves the historical 2026-08-31 governance baseline unchanged",
+  "repositories": {
+    "thehub-pr": {
+      "repo": "jotaele44/thehub-pr",
+      "sha": "cc78f5e3d4da59efa2fec206849fe7f351c3ed22",
+      "role": "federation control/query/provenance plane"
+    },
+    "centinelas-pr": {
+      "repo": "jotaele44/centinelas-pr",
+      "sha": "05fdb4ddeead1997f5e74b57f23a1ffc2d539f8e",
+      "role": "pre-officialization signal producer"
+    },
+    "skywatcher-pr": {
+      "repo": "jotaele44/skywatcher-pr",
+      "sha": "0521581cae5d7a46b04450322682a81a03d47149",
+      "role": "airspace intelligence producer"
+    },
+    "spiderweb-pr": {
+      "repo": "jotaele44/spiderweb-pr",
+      "sha": "8eb4b7d35e379a8e454801d52ae6d8de125904f3",
+      "role": "bounded spatial-analysis substrate"
+    },
+    "moneysweep-pr": {
+      "repo": "jotaele44/moneysweep-pr",
+      "sha": "b16cf315e76531a29c7048301986d42f26adc010",
+      "role": "public-money intelligence producer"
+    },
+    "aguayluz-pr": {
+      "repo": "jotaele44/aguayluz-pr",
+      "sha": "eb6fa76514257f1361b7ceb7ff298bb4f11161e9",
+      "role": "water/grid/environmental monitoring producer"
+    },
+    "ovnis-pr": {
+      "repo": "jotaele44/ovnis-pr",
+      "sha": "d70adbb49b562717001834957f85fdba88365c36",
+      "role": "anomaly intelligence producer"
+    }
+  },
+  "invariants": {
+    "repository_count": 7,
+    "historical_baseline_overwritten": false,
+    "domain_authority_collapsed_into_thehub": false,
+    "credentials_provisioned": false,
+    "certification_claimed": false
+  },
+  "preserved_pass_boundaries": [
+    "TheHub remains control/query/provenance rather than domain geometry or airspace authority",
+    "Spiderweb PPP processing must not silently replace authoritative WGS84 project points with municipality centroids",
+    "OVNIS automated ingestion remains candidate-side until reviewed promotion",
+    "Skywatcher remains the active aircraft/airspace ingestion authority"
+  ],
+  "confirmed_open_or_blocked": [
+    {
+      "class": "AUTHORIZATION",
+      "repository": "moneysweep-pr",
+      "state": "REMEDIATION_PR_OPEN",
+      "evidence": "Case Manager trusted caller-supplied actor/clearance on the frozen main; remediation isolated in moneysweep-pr PR #583"
+    },
+    {
+      "class": "LOCK_REPRODUCIBILITY",
+      "repository": "moneysweep-pr",
+      "state": "FAIL_BASELINE_CONTAMINATION",
+      "evidence": "Lockfile drift failed on exact frozen main before auth remediation; must be repaired independently"
+    },
+    {
+      "class": "REMOTE_COMPLETION",
+      "repository": "thehub-pr",
+      "state": "FAIL_ACTIONABLE_RESIDUE",
+      "evidence": "remote completion gate remains fail-closed while actionable pull-request residue exists"
+    },
+    {
+      "class": "IDENTITY",
+      "repository": "thehub-pr",
+      "state": "OPEN",
+      "evidence": "name-derived registry ID reuse requires caller/idempotency adjudication under the no-name-only identity rule"
+    }
+  ],
+  "superseded_findings": [
+    {
+      "finding": "Hub discovery is fail-open for missing or malformed federation.json",
+      "state": "SUPERSEDED",
+      "reason": "full-flow review found a downstream status gate excludes missing/malformed manifests; helper permissiveness alone was not the final admission decision"
+    },
+    {
+      "finding": "scheduled federation completion workflow calls obsolete producer-claim flags",
+      "state": "SUPERSEDED",
+      "reason": "frozen workflow executes the remote completion auditor with --fail-on-actionable on scheduled/manual runs"
+    }
+  ],
+  "certification": "BLOCKED",
+  "certification_reason": "zero material unresolved residue and arithmetic closure have not been demonstrated across the declared scope"
+}
