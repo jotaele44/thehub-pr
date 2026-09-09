@@ -1,0 +1,34 @@
+{
+  "schema_version": "thehub.culebrinas-source-bindings/v1.0",
+  "frontier_id": "culebrinas_frontier_v2",
+  "bindings": [
+    {
+      "source_id": "pr_sige_aquifer",
+      "authority": "Puerto Rico SIGE / PRPB",
+      "service": "MIPR/Geologia_v10_N/FeatureServer/2",
+      "service_item_id": "294d280fa3094e4e8d3cffa339fd33b7",
+      "native_epsg": 32161,
+      "globalid_field": "GlobalID",
+      "feature_state": "BLOCKED_FEATURE_EXTRACTION",
+      "binding_anchor": "USGS-182252067115800",
+      "binding_anchor_local_aquifer_code": "110RCBV",
+      "identity_rule": "intersect authoritative SIGE feature with USGS groundwater well explicitly assigned to Rio Culebrinas Valley Aquifer; require exactly one feature + non-null GlobalID + compatible intergranular aquifer type"
+    },
+    {
+      "source_id": "usace_culebrinas_borings_1998",
+      "authority": "USACE",
+      "boring_header_census": "PASS_15_OF_15_DESIGN_BORINGS",
+      "raw_xy_state": "PASS_RAW",
+      "candidate_crs": "EPSG:3991",
+      "candidate_crs_state": "INFERENCE_HIGH_CONFIDENCE_NOT_CERTIFIED",
+      "canonical_transform_allowed": false
+    },
+    {
+      "source_id": "uprm_pr418_seismic_2026",
+      "authority": "UPRM",
+      "campaign_state": "PASS_DIRECT_GEOPHYSICS",
+      "interpretation_state": "OPEN_PENDING"
+    }
+  ],
+  "promotion_allowed": false
+}
