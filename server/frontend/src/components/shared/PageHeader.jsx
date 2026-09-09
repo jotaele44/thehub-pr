@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 //  - accented: pass `accent` (a domainAccent() object) to tint the icon tile,
 //    and optionally `badge` for a small pill next to the title.
 // ModulePageHeader is a thin preset over this — the markup lives in one place.
+/** @param {{title: React.ReactNode, description?: React.ReactNode, icon?: React.ComponentType<{className?: string}>, actions?: React.ReactNode, accent?: {bg: string, border: string, text: string}, badge?: React.ReactNode}} props */
 export default function PageHeader({ title, description, icon: Icon, actions, accent, badge }) {
   return (
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">

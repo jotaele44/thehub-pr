@@ -9,6 +9,8 @@ a wrong answer).
 from __future__ import annotations
 
 import pytest
+import json
+from contextlib import closing
 
 pytest.importorskip("fastapi")
 pytest.importorskip("httpx")
@@ -120,3 +122,111 @@ def test_filter_oversized_limit_is_clamped_not_unbounded(client):
     )
     assert response.status_code == 200
     assert len(response.json()) == 5  # bounded by the actual row count, not the huge prefetch
+
+
+@pytest.mark.parametrize("entity_id", [None, "", "   ", 0, 42, False, [], {}, ["id"]])
+@pytest.mark.parametrize("bulk", [False, True])
+def test_invalid_ids_fail_before_writing(client, entity_id, bulk):
+    item = {"id": entity_id, "name": "invalid"}
+    path = "/api/entities/BadId" + ("/bulk" if bulk else "")
+    payload = {"items": [{"id": "valid"}, item]} if bulk else item
+    response = client.post(path, json=payload, headers=auth())
+    assert response.status_code == 400
+    assert client.get("/api/entities/BadId").json() == []
+
+
+def test_raw_id_round_trips_and_cannot_be_reassigned(client):
+    raw_id = " ID-á "
+    response = client.post("/api/entities/TestThing", json={"id": raw_id}, headers=auth())
+    assert response.json()["id"] == raw_id
+    response = client.patch(
+        f"/api/entities/TestThing/{raw_id}", json={"id": "replacement"}, headers=auth()
+    )
+    assert response.status_code == 400
+    assert client.get(f"/api/entities/TestThing/{raw_id}").json()["id"] == raw_id
+    response = client.patch(
+        f"/api/entities/TestThing/{raw_id}", json={"id": raw_id, "name": "updated"}, headers=auth()
+    )
+    assert response.status_code == 200
+    assert response.json()["id"] == raw_id
+
+
+def test_bulk_duplicate_ids_fail_atomically(client):
+    response = client.post(
+        "/api/entities/TestThing/bulk",
+        json={"items": [{"id": "same", "name": "first"}, {"id": "same", "name": "second"}]},
+        headers=auth(),
+    )
+    assert response.status_code == 400
+    assert client.get("/api/entities/TestThing").json() == []
+
+
+@pytest.mark.parametrize("sort", ["created_date", "-created_date"])
+def test_filter_finds_matches_beyond_old_prefetch_cap(client, sort):
+    with closing(backend_main._conn()) as connection:
+        connection.executemany(
+            "INSERT INTO entities VALUES (?, ?, ?, ?)",
+            [("DeepMatch", f"row-{i:05}", json.dumps({"id": f"row-{i:05}", "match": i == 5500}), f"{i:05}")
+             for i in range(11001)],
+        )
+        connection.commit()
+    response = client.post(
+        "/api/entities/DeepMatch/filter", json={"filters": {"match": True}, "limit": 1, "sort": sort}
+    )
+    assert response.status_code == 200
+    assert [row["id"] for row in response.json()] == ["row-05500"]
+
+
+def test_invalid_utf8_returns_400(client):
+    response = client.post("/api/entities/TestThing", content=b'\xff', headers=auth())
+    assert response.status_code == 400
+
+
+@pytest.mark.parametrize("body", [b"[]", b"null", b'"text"', b'{invalid', b'\xff'])
+def test_sign_generation_rejects_invalid_optional_body(client, body):
+    response = client.post("/api/project-signs/generate", content=body, headers=auth())
+    assert response.status_code == 400
+
+
+def test_sign_generation_accepts_omitted_body(client):
+    assert client.post("/api/project-signs/generate", headers=auth()).status_code == 200
+
+
+@pytest.mark.parametrize("value", ["false", 1, [], None])
+def test_sign_generation_requires_boolean_write_flag(client, value):
+    response = client.post("/api/project-signs/generate", json={"write": value}, headers=auth())
+    assert response.status_code == 400
+
+
+def test_bulk_upsert_existing_record_preserves_supported_behavior(client):
+    client.post("/api/entities/TestThing", json={"id": "existing", "name": "old"}, headers=auth())
+    response = client.post(
+        "/api/entities/TestThing/bulk",
+        json={"items": [{"id": "existing", "name": "new"}, {"name": "generated"}]}, headers=auth(),
+    )
+    assert response.status_code == 200
+    assert len({item["id"] for item in response.json()}) == 2
+    assert client.get("/api/entities/TestThing/existing").json()["name"] == "new"
+
+
+def test_generated_and_legacy_field_ids_remain_supported(client):
+    created = client.post("/api/entities/TestThing", json={"name": "generated"}, headers=auth())
+    assert isinstance(created.json()["id"], str)
+    assert client.get(f'/api/entities/TestThing/{created.json()["id"]}').status_code == 200
+    legacy = client.post("/api/entities/Programs", json={"program_id": " raw-á "}, headers=auth())
+    assert legacy.json()["id"] == " raw-á "
+
+
+@pytest.mark.parametrize("value", [b"NaN", b"Infinity", b"-Infinity", b"1e309"])
+def test_nonfinite_json_is_rejected_without_persisting(client, value):
+    response = client.post(
+        "/api/entities/Nonfinite", content=b'{"nested": {"value": ' + value + b'}}', headers=auth()
+    )
+    assert response.status_code == 400
+    assert client.get("/api/entities/Nonfinite").json() == []
+
+
+@pytest.mark.parametrize("value", [False, 0, [], {}, 2])
+def test_filter_rejects_non_string_sort_even_when_falsy(client, value):
+    response = client.post("/api/entities/TestThing/filter", json={"sort": value})
+    assert response.status_code == 400

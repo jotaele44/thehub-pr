@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
+/** @param {{label: React.ReactNode, value: React.ReactNode, icon?: React.ComponentType<{className?: string}>, accent?: string, sub?: React.ReactNode, alert?: boolean}} props */
 export default function StatCard({ label, value, icon: Icon, accent = "text-foreground", sub, alert }) {
   return (
     <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-2">

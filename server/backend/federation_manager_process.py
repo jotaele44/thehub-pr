@@ -20,6 +20,7 @@ Three properties matter beyond "don't use a shell":
 from __future__ import annotations
 
 import hashlib
+import math
 import os
 import re
 import signal
@@ -60,6 +61,19 @@ class ProcessLimits:
     max_log_bytes: int = 4 * 1024 * 1024
     max_line_bytes: int = 64 * 1024
 
+    def __post_init__(self) -> None:
+        if (
+            isinstance(self.timeout_seconds, bool)
+            or not isinstance(self.timeout_seconds, (int, float))
+            or not 0 < self.timeout_seconds <= threading.TIMEOUT_MAX
+            or not math.isfinite(self.timeout_seconds)
+        ):
+            raise ProcessError("timeout_seconds must be a positive supported finite duration")
+        for name in ("max_log_bytes", "max_line_bytes"):
+            value = getattr(self, name)
+            if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+                raise ProcessError(f"{name} must be a positive integer")
+
 
 @dataclass
 class ProcessResult:
@@ -87,19 +101,53 @@ class Redactor:
 
     def __init__(self, values: Iterable[str] = ()):
         # Longest first, so an overlapping shorter secret cannot leave a tail.
-        self._values = sorted({v for v in values if v and len(v) >= 4}, key=len, reverse=True)
+        retained = {v for v in values if v and len(v) >= 4}
+        # The transport delivers physical lines. Retain nonempty lines of a
+        # multiline credential as well, so a PEM/key body cannot evade redaction
+        # merely because its complete value spans more than one callback.
+        retained.update(line for value in tuple(retained) for line in value.splitlines() if line)
+        self._values = sorted(retained, key=lambda value: (-len(value), value))
         self.count = 0
 
     def __call__(self, text: str) -> str:
-        for value in self._values:
-            if value in text:
-                self.count += text.count(value)
-                text = text.replace(value, REDACTION_PLACEHOLDER)
-        return text
+        return self.prefix(text, len(text))
 
     def clear(self) -> None:
         """Drop the retained values as soon as the run finishes."""
         self._values = []
+
+    @property
+    def lookahead(self) -> int:
+        """Context needed to recognize a secret crossing a visible line cap."""
+        return max((len(value) for value in self._values), default=1)
+
+    def prefix(self, text: str, length: int) -> str:
+        """Redact a bounded prefix using the hidden suffix only as context."""
+        matches = []
+        for value in self._values:
+            start = text.find(value)
+            while start >= 0:
+                matches.append((start, start + len(value)))
+                start = text.find(value, start + 1)
+        # Match against the original text, then merge overlapping spans. Doing
+        # successive replacements can destroy a second match and expose its
+        # prefix/suffix; equal-length secrets must not depend on set ordering.
+        spans: list[tuple[int, int]] = []
+        for start, end in sorted(matches):
+            if spans and start < spans[-1][1]:
+                spans[-1] = (spans[-1][0], max(spans[-1][1], end))
+            else:
+                spans.append((start, end))
+        pieces: list[str] = []
+        cursor = 0
+        for start, end in spans:
+            if start >= length:
+                break
+            pieces.extend((text[cursor:start], REDACTION_PLACEHOLDER))
+            cursor = end
+            self.count += 1
+        pieces.append(text[min(cursor, length):length])
+        return "".join(pieces)
 
 
 def build_environment(
@@ -184,6 +232,14 @@ def run_process(
     digest = hashlib.sha256()
     total = 0
     truncated = False
+    log_limit_reached = False
+
+    if cancel_event is not None and cancel_event.is_set():
+        redactor.clear()
+        return ProcessResult(
+            status="cancelled", exit_code=None, log_bytes=0,
+            log_sha256=digest.hexdigest(), truncated=False, redactions=0, argv=tuple(argv),
+        )
 
     popen_kwargs: dict[str, Any] = {
         "cwd": str(cwd),
@@ -205,25 +261,51 @@ def run_process(
         # shell=False is the default and is never overridden anywhere in this module.
         process = subprocess.Popen(argv, **popen_kwargs)  # noqa: S603
     except FileNotFoundError as exc:
+        redactor.clear()
         raise ProcessError(f"executable not found: {argv[0]!r}") from exc
     except PermissionError as exc:
+        redactor.clear()
         raise ProcessError(f"executable is not runnable: {argv[0]!r}") from exc
 
     status = "succeeded"
     timer_fired = threading.Event()
+    finished = threading.Event()
+    termination_lock = threading.Lock()
+    escalation: Optional[threading.Timer] = None
+
+    def _force_kill_tree() -> None:
+        try:
+            if sys.platform == "win32":  # pragma: no cover - Windows operator gate
+                subprocess.run(
+                    ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                    check=False, timeout=5,
+                )
+            else:
+                # start_new_session binds the group ID to this PID. The group
+                # can outlive its leader while descendants hold the log pipe.
+                os.killpg(process.pid, signal.SIGKILL)
+        except (ProcessLookupError, PermissionError, OSError, subprocess.TimeoutExpired):
+            pass
 
     def _kill_tree() -> None:
+        nonlocal escalation
         try:
             if sys.platform == "win32":  # pragma: no cover
                 process.send_signal(signal.CTRL_BREAK_EVENT)
             else:
-                os.killpg(os.getpgid(process.pid), signal.SIGTERM)
+                os.killpg(process.pid, signal.SIGTERM)
         except (ProcessLookupError, PermissionError, OSError):
             # Racing a process that has already exited is the expected case, not
             # an error: the timeout fires and the child finishes at the same
             # moment. Killing an already-dead group must not mask the real
             # outcome, which the caller reads from the exit code and timer flag.
-            pass
+            return
+        with termination_lock:
+            if escalation is None:
+                escalation = threading.Timer(1.0, _force_kill_tree)
+                escalation.daemon = True
+                escalation.start()
 
     def _on_timeout() -> None:
         timer_fired.set()
@@ -236,7 +318,7 @@ def run_process(
     cancelled = threading.Event()
 
     def _watch_cancel() -> None:
-        while process.poll() is None:
+        while not finished.is_set():
             if cancel_event is not None and cancel_event.wait(0.1):
                 cancelled.set()
                 _kill_tree()
@@ -249,33 +331,63 @@ def run_process(
         watcher = threading.Thread(target=_watch_cancel, daemon=True)
         watcher.start()
 
+    def _record(line: str) -> None:
+        nonlocal total, truncated, log_limit_reached
+        if log_limit_reached:
+            return
+        encoded = line.encode("utf-8", "replace")
+        remaining = limits.max_log_bytes - total
+        if len(encoded) > remaining:
+            truncated = True
+            log_limit_reached = True
+            encoded = b"\n[log truncated at the configured byte limit]\n"[:remaining]
+            line = encoded.decode("utf-8")
+        digest.update(encoded)
+        total += len(encoded)
+        if line and on_line is not None:
+            on_line(line)
+
     try:
         assert process.stdout is not None
-        for raw_line in process.stdout:
-            line = raw_line[: limits.max_line_bytes]
-            line = redactor(line)
-            encoded = line.encode("utf-8", "replace")
-            if total + len(encoded) > limits.max_log_bytes:
-                if not truncated:
-                    truncated = True
-                    marker = "\n[log truncated at the configured byte limit]\n"
-                    digest.update(marker.encode("utf-8"))
-                    total += len(marker)
-                    if on_line is not None:
-                        on_line(marker)
-                continue
-            digest.update(encoded)
-            total += len(encoded)
-            if on_line is not None:
-                on_line(line)
+        # Iterating TextIOWrapper lines reads an unbounded physical line before
+        # slicing it. Read a bounded prefix plus secret lookahead, then discard
+        # the remaining physical line in bounded chunks without logging it.
+        read_size = limits.max_line_bytes + redactor.lookahead
+        while raw_line := process.stdout.readline(read_size):
+            encoded = raw_line.encode("utf-8", "replace")
+            visible = encoded[:limits.max_line_bytes].decode("utf-8", "ignore")
+            line_truncated = len(encoded) > limits.max_line_bytes
+            line = redactor.prefix(raw_line, len(visible))
+            safe_bytes = line.encode("utf-8", "replace")
+            line_truncated |= len(safe_bytes) > limits.max_line_bytes
+            _record(safe_bytes[:limits.max_line_bytes].decode("utf-8", "ignore"))
+            if line_truncated:
+                truncated = True
+                _record("\n[line truncated at the configured byte limit]\n")
+                while raw_line and not raw_line.endswith("\n"):
+                    raw_line = process.stdout.readline(read_size)
         process.wait()
     finally:
         timer.cancel()
-        if watcher is not None:
-            watcher.join(timeout=1.0)
-        if process.poll() is None:  # pragma: no cover - defensive
-            _kill_tree()
-            process.wait(timeout=5)
+        try:
+            if process.poll() is None:  # callback/stream failure still owns cleanup
+                _kill_tree()
+                try:
+                    process.wait(timeout=2)
+                except subprocess.TimeoutExpired:
+                    _force_kill_tree()
+                    process.wait(timeout=5)
+        finally:
+            _force_kill_tree()
+            finished.set()
+            with termination_lock:
+                if escalation is not None:
+                    escalation.cancel()
+            if watcher is not None:
+                watcher.join(timeout=1.0)
+            if process.stdout is not None:
+                process.stdout.close()
+            redactor.clear()
 
     if timer_fired.is_set():
         status = "timed_out"

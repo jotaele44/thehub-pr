@@ -1,0 +1,18 @@
+{
+  "extends": "./jsconfig.json",
+  "compilerOptions": {
+    "checkJs": true,
+    "noEmit": true,
+    "strict": false
+  },
+  "include": [
+    "tests/types/ui-primitives.tsx",
+    "src/components/ui/**/*.jsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/components/ui/**/*.test.jsx",
+    "src/components/ui/toaster.jsx"
+  ]
+}

@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 import jsonschema
+from referencing import Registry, Resource
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_DIR = REPO_ROOT / "schemas" / "contracts"
@@ -41,14 +42,13 @@ def validate_contract(name: str, payload: Mapping[str, Any]) -> None:
     schema, never from the network.
     """
     schema = _load_contract(name)
-    if name == "provenance.v1":
-        access = _load_contract("access_classification.v1")
-        resolver = jsonschema.RefResolver.from_schema(
-            schema, store={access["$id"]: access}
-        )
-        jsonschema.Draft202012Validator(schema, resolver=resolver).validate(dict(payload))
-        return
-    jsonschema.Draft202012Validator(schema).validate(dict(payload))
+    # An explicit Registry has no remote retrieval fallback. Resolve only from
+    # the same frozen contract set, including references added in the future.
+    registry: Registry[dict[str, Any]] = Registry()
+    for contract in CONTRACT_FILES:
+        local = schema if contract == name else _load_contract(contract)
+        registry = registry.with_resource(local["$id"], Resource.from_contents(local))
+    jsonschema.Draft202012Validator(schema, registry=registry).validate(dict(payload))
 
 
 def _stable_id(prefix: str, *parts: str) -> str:

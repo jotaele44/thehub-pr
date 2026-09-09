@@ -55,12 +55,10 @@ log = logging.getLogger("hub.backend")
 #   PRII_WRITE_TOKEN set    -> mutating routes require Authorization: Bearer <token>
 #   PRII_WRITE_TOKEN unset  -> every mutating route fails closed
 #
-# Caveat when the token IS set: the browser UI has no write-credential input
-# (federationClient sources only the federation access token, and AuthContext
-# drops that when /api/auth/me 401s), so token mode currently suits API/CLI
-# callers rather than the shipped UI. Wiring a write credential through the
-# frontend is tracked in docs/MATURITY_AUDIT.md — aguayluz-pr's API_SECRET_KEY
-# has the same gap, so it wants one federation-wide answer, not a local patch.
+# The browser keeps its diagnostic write token separate from its access token,
+# so AuthContext can clear a rejected login session without discarding the
+# operator's write credential. This is a shared administrative credential,
+# not a multi-user authentication service.
 #
 # Reads are unaffected in every case.
 _WRITE_TOKEN = os.environ.get("PRII_WRITE_TOKEN", "")
@@ -78,7 +76,7 @@ def _is_local_network(host: str) -> bool:
 
 
 def require_write_access(request: Request) -> None:
-    """Authorize a mutating request, by bearer token or by local-network origin."""
+    """Authorize a mutating request by its configured administrative bearer token."""
     if _WRITE_TOKEN:
         scheme, _, presented = request.headers.get("authorization", "").partition(" ")
         if scheme.lower() != "bearer" or not secrets.compare_digest(
@@ -167,11 +165,26 @@ async def _read_json_body(request: Request) -> dict[str, Any]:
     """
     try:
         body = await request.json()
-    except json.JSONDecodeError as error:
+        # Python's JSON parser accepts NaN/Infinity (including float overflow),
+        # but browser JSON.parse does not. Never persist a document the UI
+        # cannot subsequently read as JSON.
+        json.dumps(body, allow_nan=False)
+    except (ValueError, UnicodeDecodeError) as error:
         raise HTTPException(status_code=400, detail=f"invalid JSON body: {error}") from error
     if not isinstance(body, dict):
         raise HTTPException(status_code=400, detail="request body must be a JSON object")
     return body
+
+
+def _entity_id(body: dict[str, Any], *fallback_fields: str) -> str:
+    """Choose an explicit valid ID without normalizing its raw string."""
+    for field in ("id", *fallback_fields):
+        if field in body:
+            value = body[field]
+            if not isinstance(value, str) or not value.strip():
+                raise HTTPException(status_code=400, detail=f"{field} must be a non-empty string")
+            return value
+    return str(uuid.uuid4())
 
 
 def _clamp_limit(value: Any, *, default: int = 500, minimum: int = 1, maximum: int = 2000) -> int:
@@ -411,7 +424,7 @@ def list_entities(
     with closing(_conn()) as c:
         rows = c.execute(
             f"SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
-            f"ORDER BY updated_at {direction} LIMIT ?",
+            f"ORDER BY updated_at {direction}, entity_id {direction} LIMIT ?",
             (entity_name, limit),
         ).fetchall()
     return [_row(r) for r in rows]
@@ -421,13 +434,10 @@ def list_entities(
 async def create_entity(entity_name: str, request: Request):
     body = await _read_json_body(request)
     ts = _now()
-    entity_id = (
-        body.get("id")
-        or body.get(f"{entity_name.rstrip('s').lower()}_id")
-        or body.get("program_id")
-        or str(uuid.uuid4())
+    entity_id = _entity_id(
+        body, f"{entity_name.rstrip('s').lower()}_id", "program_id"
     )
-    body.setdefault("id", entity_id)
+    body["id"] = entity_id
     body.setdefault("created_date", ts)
     body["updated_date"] = ts
 
@@ -462,6 +472,8 @@ def get_entity(entity_name: str, entity_id: str):
 @app.patch("/api/entities/{entity_name}/{entity_id}", dependencies=_WRITE_GUARD)
 async def update_entity(entity_name: str, entity_id: str, request: Request):
     patch = await _read_json_body(request)
+    if "id" in patch and patch["id"] != entity_id:
+        raise HTTPException(status_code=400, detail="id cannot differ from the entity path")
     with closing(_conn()) as c:
         row = c.execute(
             "SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? AND entity_id=?",
@@ -472,6 +484,7 @@ async def update_entity(entity_name: str, entity_id: str, request: Request):
 
         data = json.loads(row["data"])
         data.update(patch)
+        data["id"] = entity_id
         ts = _now()
         data["updated_date"] = ts
         c.execute(
@@ -500,29 +513,29 @@ async def filter_entities(entity_name: str, request: Request):
     if not isinstance(filters, dict):
         raise HTTPException(status_code=400, detail="filters must be a JSON object")
     limit = _clamp_limit(body.get("limit", 500))
-    sort: str = body.get("sort") or "-created_date"
+    sort = body.get("sort", "-created_date")
+    if sort is None:
+        sort = "-created_date"
     if not isinstance(sort, str):
         raise HTTPException(status_code=400, detail="sort must be a string")
 
-    # Order by write time before the (oversized) prefetch cap so the Python-side filter
-    # scans the right end of the range — otherwise, past the cap, matching rows can be
-    # missed. Honor the caller's requested direction (as list_entities does) so ascending
-    # requests (e.g. chronological chat transcripts) aren't silently reversed.
+    # Stream the ordered cursor until enough matches are found. A pre-filter cap
+    # silently hides matches outside that prefix; fetchall would instead grow
+    # memory with the entire collection. The ID breaks equal-timestamp ties.
     direction = "ASC" if not sort.startswith("-") else "DESC"
+    results = []
     with closing(_conn()) as c:
         rows = c.execute(
             f"SELECT data, updated_at, entity_id FROM entities WHERE entity_type=? "
-            f"ORDER BY updated_at {direction} LIMIT ?",
-            (entity_name, max(limit * 10, 5000)),
-        ).fetchall()
-
-    results = []
-    for r in rows:
-        d = _row(r)
-        if all(d.get(k) == v for k, v in filters.items()):
-            results.append(d)
-        if len(results) >= limit:
-            break
+            f"ORDER BY updated_at {direction}, entity_id {direction}",
+            (entity_name,),
+        )
+        for r in rows:
+            d = _row(r)
+            if all(d.get(k) == v for k, v in filters.items()):
+                results.append(d)
+            if len(results) >= limit:
+                break
     return results
 
 
@@ -534,10 +547,16 @@ async def bulk_create(entity_name: str, request: Request):
         raise HTTPException(status_code=400, detail="items must be a JSON array of objects")
     ts = _now()
     created = []
+    seen_ids: set[str] = set()
+    for item in items:
+        entity_id = _entity_id(item)
+        if entity_id in seen_ids:
+            raise HTTPException(status_code=400, detail=f"duplicate id in bulk request: {entity_id}")
+        seen_ids.add(entity_id)
+        item["id"] = entity_id
     with closing(_conn()) as c:
         for item in items:
-            entity_id = item.get("id") or str(uuid.uuid4())
-            item.setdefault("id", entity_id)
+            entity_id = item["id"]
             item.setdefault("created_date", ts)
             item["updated_date"] = ts
             c.execute(
@@ -645,11 +664,9 @@ def project_sign_html(project_id: str):
 async def project_signs_generate(request: Request):
     # Optional {"write": true} also persists the HTML + index.json to reports/signs,
     # mirroring the CLI; otherwise it just (re)builds and returns the signs.
-    body: dict[str, Any] = {}
-    try:
-        body = await request.json()
-    except Exception:  # noqa: BLE001 - empty/invalid body is fine
-        body = {}
+    body = await _read_json_body(request) if await request.body() else {}
+    if "write" in body and not isinstance(body["write"], bool):
+        raise HTTPException(status_code=400, detail="write must be a boolean")
     if body.get("write"):
         summary = write_project_signs(AGGREGATE_PATH, SIGNS_OUT)
         return {k: v for k, v in summary.items()}
@@ -697,9 +714,16 @@ def _spa_file(full_path: str) -> Path:
         return candidate
     return _SPA_INDEX
 
+def _mount_frontend_assets(application: FastAPI, dist: Path) -> None:
+    """Mount only bundled asset roots, with StaticFiles traversal protection."""
+    for name in ("assets", "cesium"):
+        directory = dist / name
+        if directory.is_dir():
+            application.mount(f"/{name}", StaticFiles(directory=directory), name=name)
+
+
 if DIST.is_dir():
-    if (DIST / "assets").is_dir():
-        app.mount("/assets", StaticFiles(directory=DIST / "assets"), name="assets")
+    _mount_frontend_assets(app, DIST)
 
     @app.get("/{full_path:path}")
     def spa(full_path: str):
