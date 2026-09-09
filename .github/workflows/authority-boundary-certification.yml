@@ -17,6 +17,7 @@ on:
       - 'tests/test_authority_boundary_quarantine.py'
       - 'tests/test_identifier_namespace_census_adversarial.py'
       - 'tests/test_relationship_authority_adversarial.py'
+      - 'tests/test_plan_max_preactivation_contracts.py'
       - 'tests/fixtures/federation_identity_adversarial/**'
       - '.github/workflows/authority-boundary-certification.yml'
   workflow_dispatch:
@@ -72,13 +73,14 @@ jobs:
           ref: caf086598a4f99e2eb0ca4aac6d51e2d9bd46321
           path: _authority_peers/centinelas-pr
 
-      - name: Run authority adversarial and quarantine suites
+      - name: Run authority adversarial, quarantine, and preactivation suites
         run: |
           python3 -m pytest -q \
             tests/test_authority_boundary_quarantine.py \
             tests/test_authority_boundary_validator.py \
             tests/test_identifier_namespace_census_adversarial.py \
-            tests/test_relationship_authority_adversarial.py
+            tests/test_relationship_authority_adversarial.py \
+            tests/test_plan_max_preactivation_contracts.py
 
       - name: Execute fail-closed PLAN MAX authority census
         env:
