@@ -1,5 +1,5 @@
 {
-  "schema_version": "federation_identifier_namespace_registry_v2",
+  "schema_version": "federation_identifier_namespace_registry_v3",
   "authority_plane": "prii-federation-spatial-identity",
   "policy": {
     "undeclared_emitted_namespace": "FAIL",
@@ -8,7 +8,8 @@
     "similarity_establishes_identity": false,
     "producer_local_namespace_key": "(source_producer, local_record_id)",
     "structured_id_denominator": "CONSTRUCTORS_AND_EMITTED_FIELDS_ENDING_IN__ID",
-    "bare_taxonomy_id_is_identity": false
+    "bare_taxonomy_id_is_identity": false,
+    "shared_workflow_ids_are_canonical_identity": false
   },
   "namespaces": [
     {"namespace":"FED_ENTITY_STREAM","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^ent_[0-9a-fA-F]+$","scope":"SHARED_INTERCHANGE","identity_bearing":false},
@@ -18,12 +19,36 @@
     {"namespace":"FED_ALERT_STREAM","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^alrt_[0-9a-fA-F]+$","scope":"SHARED_INTERCHANGE","identity_bearing":false},
     {"namespace":"FED_PERSISTENT_ENTITY","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^fed_[0-9a-f]{32}$","scope":"SHARED_IDENTITY","identity_bearing":true},
     {"namespace":"FED_PERSISTENT_RELATIONSHIP","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^frel_[0-9a-f]{32}$","scope":"SHARED_RELATIONSHIP","identity_bearing":true},
+    {"namespace":"FED_PR_INTAKE_SW","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^SW-PRINTAKE-[0-9a-f]{12}$","scope":"SHARED_INTERCHANGE","identity_bearing":false,"evidence":"moneysweep-pr/shared/pr_intake_router.py"},
+    {"namespace":"FED_PR_INTAKE_CS","owner":"prii-federation-spatial-identity","repository":"jotaele44/thehub-pr","pattern":"^CS-PRINTAKE-[0-9a-f]{12}$","scope":"SHARED_INTERCHANGE","identity_bearing":false,"evidence":"moneysweep-pr/shared/pr_intake_router.py"},
+
+    {"namespace":"THEHUB_ENTITY_RESOLUTION_DECISION","owner":"thehub-pr","repository":"jotaele44/thehub-pr","pattern":"^erd_[0-9a-f]{32}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"src/hub/contract_runtime.py"},
+    {"namespace":"THEHUB_HTR_CANDIDATE","owner":"thehub-pr","repository":"jotaele44/thehub-pr","pattern":"^htr_[0-9a-f]{24}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"src/hub/htr.py"},
+    {"namespace":"THEHUB_HTR_EDGE","owner":"thehub-pr","repository":"jotaele44/thehub-pr","pattern":"^htre_[0-9a-f]{24}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"src/hub/htr.py"},
+    {"namespace":"THEHUB_HTR2_CANDIDATE","owner":"thehub-pr","repository":"jotaele44/thehub-pr","pattern":"^htr2_[0-9a-f]{24}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"src/hub/htr_v2.py"},
 
     {"namespace":"MONEYSWEEP_GOVERNMENT_ENTITY","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^GOV_[A-Z0-9]{4,}$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"registries/government_entity_registry.json"},
+    {"namespace":"MONEYSWEEP_POLITICAL_FINANCE_EDGE","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^pfe_[0-9a-f]{20}$","scope":"DOMAIN_ONLY","identity_bearing":false,"evidence":"moneysweep/political_finance/flow_graph.py"},
+    {"namespace":"MONEYSWEEP_POLITICAL_CANDIDATE_FALLBACK","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^candidate_[0-9a-f]{16,20}$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"moneysweep/political_finance/flow_graph.py; scripts/build_campaign_finance_entities.py"},
+    {"namespace":"MONEYSWEEP_POLITICAL_COMMITTEE_FALLBACK","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^committee_[0-9a-f]{16,20}$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"moneysweep/political_finance/flow_graph.py; scripts/build_campaign_finance_entities.py"},
+    {"namespace":"MONEYSWEEP_RECIPIENT_RESOLUTION","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^recipient_[0-9a-f]{16}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"scripts/build_campaign_finance_entities.py"},
+    {"namespace":"MONEYSWEEP_CAMPAIGN_FINANCE_EDGE","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^cfedge_[0-9a-f]{16}$","scope":"DOMAIN_ONLY","identity_bearing":false,"evidence":"scripts/build_campaign_finance_entities.py"},
+    {"namespace":"MONEYSWEEP_DONOR_FALLBACK","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^donor_[0-9a-f]{16}$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/build_campaign_finance_entities.py"},
+    {"namespace":"MONEYSWEEP_UPLOADED_MASTER_ENTITY","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^upload_ent_[0-9a-f]{16}$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/prepare_uploaded_masters.py"},
+    {"namespace":"MONEYSWEEP_NGO","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^ngo_[0-9a-f]{12}$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/ngo_integration.py"},
+    {"namespace":"MONEYSWEEP_CASE","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^case_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
+    {"namespace":"MONEYSWEEP_CASE_EVIDENCE","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^case_evidence_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
+    {"namespace":"MONEYSWEEP_CLAIM","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^claim_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
+    {"namespace":"MONEYSWEEP_CLAIM_EVIDENCE","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^claim_evidence_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
+    {"namespace":"MONEYSWEEP_CASE_ENTITY","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^case_entity_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
+    {"namespace":"MONEYSWEEP_CASE_EVENT","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^case_event_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
+    {"namespace":"MONEYSWEEP_CONTRADICTION","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^contradiction_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
+    {"namespace":"MONEYSWEEP_LEAD","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^lead_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
+    {"namespace":"MONEYSWEEP_FINDING","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^finding_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
+    {"namespace":"MONEYSWEEP_CASE_SNAPSHOT","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^case_snapshot_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
+    {"namespace":"MONEYSWEEP_AUDIT_EVENT","owner":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","pattern":"^audit_event_[0-9a-f]{16,64}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"moneysweep/case_manager/ids.py"},
 
     {"namespace":"SPIDERWEB_PIN","owner":"spiderweb-pr","repository":"jotaele44/spiderweb-pr","pattern":"^PIN_[A-Z0-9]+(?:_[A-Z0-9]+)*$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/build_pin_registry.py"},
-    {"namespace":"SPIDERWEB_INTAKE_SW","owner":"spiderweb-pr","repository":"jotaele44/spiderweb-pr","pattern":"^SW-PRINTAKE-.*$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"scripts/route_pr_intake.py"},
-    {"namespace":"SPIDERWEB_INTAKE_CS","owner":"spiderweb-pr","repository":"jotaele44/spiderweb-pr","pattern":"^CS-PRINTAKE-.*$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"scripts/route_pr_intake.py"},
 
     {"namespace":"AGUAYLUZ_WATER_TREATMENT","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^WTR_.*$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/ingest_water.py"},
     {"namespace":"AGUAYLUZ_WASTEWATER","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^WWT_.*$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/ingest_water.py"},
@@ -36,8 +61,16 @@
     {"namespace":"AGUAYLUZ_EIA_PLANT","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^EIA_PLANT_.*$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/ingest_eia_facility_fuel.py"},
     {"namespace":"AGUAYLUZ_EIA_UTILITY","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^EIA_UTIL_.*$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/dedup_power_assets.py"},
     {"namespace":"AGUAYLUZ_SPIDERWEB_POWER_IMPORT","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^PWR.*$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/dedup_power_assets.py"},
+    {"namespace":"AGUAYLUZ_RESOURCE_BALANCE_UNCERTAINTY","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^AYL_RBU_[0-9a-f]{20}$","scope":"ANALYSIS_ONLY","identity_bearing":false,"evidence":"research/resource_balance/core.py"},
+    {"namespace":"AGUAYLUZ_RESOURCE_BALANCE_ATTRIBUTION","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^AYL_RBA_[0-9a-f]{20}$","scope":"ANALYSIS_ONLY","identity_bearing":false,"evidence":"research/resource_balance/core.py"},
+    {"namespace":"AGUAYLUZ_RESOURCE_BALANCE_RESULT","owner":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","pattern":"^AYL_RBR_[0-9a-f]{20}$","scope":"ANALYSIS_ONLY","identity_bearing":false,"evidence":"research/resource_balance/core.py"},
 
     {"namespace":"SKYWATCHER_SATIM_VISUAL","owner":"skywatcher-pr","repository":"jotaele44/skywatcher-pr","pattern":"^SATIM-VIS.*$","scope":"DOMAIN_ONLY","identity_bearing":false,"evidence":"fr24/calibration/satim_raster_candidate_extraction.py"},
+    {"namespace":"SKYWATCHER_TRACK_NODE","owner":"skywatcher-pr","repository":"jotaele44/skywatcher-pr","pattern":"^track:[0-9a-f]{16}$","scope":"ANALYSIS_ONLY","identity_bearing":false,"evidence":"tools/satim_engine/src/satim_engine/graph.py"},
+    {"namespace":"SKYWATCHER_VERTEX_NODE","owner":"skywatcher-pr","repository":"jotaele44/skywatcher-pr","pattern":"^vertex:[0-9a-f]{16}$","scope":"ANALYSIS_ONLY","identity_bearing":false,"evidence":"tools/satim_engine/src/satim_engine/graph.py"},
+    {"namespace":"SKYWATCHER_PAIR","owner":"skywatcher-pr","repository":"jotaele44/skywatcher-pr","pattern":"^pair:[0-9a-f]{16}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"tools/satim_engine/src/satim_engine/pairing.py"},
+    {"namespace":"SKYWATCHER_REVIEW","owner":"skywatcher-pr","repository":"jotaele44/skywatcher-pr","pattern":"^review:[0-9a-f]{16}$","scope":"WORKFLOW_ONLY","identity_bearing":false,"evidence":"tools/satim_route_findings/satim_route_findings/review_queue.py"},
+    {"namespace":"SKYWATCHER_FN_CANDIDATE","owner":"skywatcher-pr","repository":"jotaele44/skywatcher-pr","pattern":"^fn:[0-9a-f]{16}$","scope":"ANALYSIS_ONLY","identity_bearing":false,"evidence":"tools/satim_route_findings/satim_route_findings/fn_candidates.py"},
 
     {"namespace":"OVNIS_MASTER_RECORD","owner":"ovnis-pr","repository":"jotaele44/ovnis-pr","pattern":"^PRUFON-[0-9]{4,}$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/promote_candidate.py"},
     {"namespace":"OVNIS_MASTER_CASE","owner":"ovnis-pr","repository":"jotaele44/ovnis-pr","pattern":"^PRUAP-[0-9]{4,}$","scope":"DOMAIN_ONLY","identity_bearing":true,"evidence":"scripts/promote_candidate.py"},
@@ -56,8 +89,9 @@
     "bare_taxonomy_id_excluded": true,
     "silent_empty_census_forbidden": true,
     "unknown_family_policy": "BLOCK",
-    "ambiguous_family_policy": "BLOCK"
+    "ambiguous_family_policy": "BLOCK",
+    "candidate_reconciliation_note": "Registry expanded after source verification of deterministic helper families in frozen MoneySweep, Skywatcher, AguaYLuz, and TheHub trees; hosted seven-tree v4 execution remains required to falsify or surface residue."
   },
   "known_unclosed_repositories": [],
-  "certification_effect": "PASS_ONLY_IF_STRUCTURED_CRAWLER_ZERO_UNKNOWN"
+  "certification_effect": "PASS_ONLY_IF_STRUCTURED_CRAWLER_ZERO_UNKNOWN_IN_EXECUTED_RECEIPT"
 }

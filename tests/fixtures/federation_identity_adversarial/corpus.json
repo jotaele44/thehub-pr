@@ -1,0 +1,18 @@
+{
+  "schema_version": "federation_identity_adversarial_corpus_v1",
+  "status": "FROZEN_DRAFT_FIXTURES",
+  "activation_requires": "A_FEDERATION_IDENTITY_CONTRACT_ACTIVE_CANDIDATE",
+  "fixtures": [
+    {"fixture_id":"D-001","family":"heritage identity","inputs":["Observatorio de Arecibo","Monumento Eye to the Universe"],"expected":["DISTINCT","RELATED_ALLOWED"],"forbidden":["AUTO_MERGE_BY_PROXIMITY","AUTO_MERGE_BY_SHARED_SOURCE_CONTEXT"]},
+    {"fixture_id":"D-002","family":"component versus site","inputs":["Central Cambalache Remnants","Central Cambalache Chimney"],"expected":["DISTINCT","PART_OF"],"forbidden":["AUTO_DEDUPE_COMPONENT_INTO_PARENT"]},
+    {"fixture_id":"D-003","family":"homonym","inputs":["Hacienda Florida - Santa Isabel","Hacienda Florida (Antongiorgi) - Yauco"],"expected":["HOMONYM","DISTINCT"],"forbidden":["NAME_ONLY_IDENTITY"]},
+    {"fixture_id":"D-004","family":"falsified prior N:1","inputs":["Ruinas de la hacienda azucarera Esperanza - Salinas","Ruinas de la Hacienda - La Luisa, Manati"],"expected":["DISTINCT"],"forbidden":["REINTRODUCE_FALSIFIED_N_TO_1"]},
+    {"fixture_id":"D-005","family":"site component designation","inputs":["Hacienda La Esperanza","mill component","chimney component","historic district boundary"],"expected":["SEPARATE_ENTITY_IDENTITIES_FOR_ADDRESSABLE_COMPONENTS","DESIGNATION_BOUNDARY_IS_NOT_ENTITY_IDENTITY","PART_OF_RELATIONSHIPS_ALLOWED"],"forbidden":["COLLAPSE_ALL_OVERLAPPING_GEOMETRIES"]},
+    {"fixture_id":"D-006","family":"spatial conflict","inputs":["Google discovery pin","authoritative site polygon","parcel geometry","historical geometry"],"expected":["PRESERVE_MULTIPLE_GEOMETRY_ASSERTIONS","EXPLICIT_GEOMETRY_ROLE","CONFLICT_REMAINS_UNTIL_ADJUDICATED"],"forbidden":["GOOGLE_PIN_OVERWRITES_POLYGON","SILENT_GEOMETRY_REPLACEMENT"]},
+    {"fixture_id":"D-007","family":"cross-repo disagreement","inputs":["MoneySweep entity A","Spiderweb entity B","AguaYLuz asset C"],"expected":["CANDIDATE","UNRESOLVED_UNTIL_EVIDENCE"],"forbidden":["FORCED_MERGE_BY_NAME","FORCED_MERGE_BY_COUNT_EQUALITY"]},
+    {"fixture_id":"D-008","family":"source duplication","inputs":["GEBCO derivative in Spiderweb","GEBCO derivative in Skywatcher","admin reference copies"],"expected":["SHARED_EXTERNAL_LINEAGE","DISTINCT_REPO_MANIFESTATION_ROLES"],"forbidden":["SOURCE_COPY_BECOMES_AUTHORITY"]},
+    {"fixture_id":"D-009","family":"historical succession","inputs":["agency A","renamed successor B","functions transferred to C"],"expected":["EXPLICIT_SUCCESSOR_PREDECESSOR_OR_TRANSFER_RELATIONSHIPS","REVIEWED_IDENTITY_DECISION"],"forbidden":["NAIVE_MERGE_ALL_SUCCESSORS"]},
+    {"fixture_id":"D-010","family":"hydroelectric multi-domain asset","inputs":["shared hydro plant identity","AguaYLuz water topology","AguaYLuz power topology","MoneySweep finance relationships","Spiderweb spatial relationships","TheHub query projection"],"expected":["ONE_SHARED_IDENTITY","MULTIPLE_DOMAIN_RELATIONSHIP_GRAPHS","THEHUB_READ_ONLY_GOVERNANCE_QUERY_ROLE"],"forbidden":["IDENTITY_EQUALS_TOPOLOGY","THEHUB_REOWNS_DOMAIN_FACTS"]}
+  ],
+  "closure": {"expected_fixture_families":10,"actual_fixture_families":10,"difference":0,"material_unclassified_fixtures":0}
+}
