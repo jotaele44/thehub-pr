@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
 import sys
 import zipfile
@@ -74,7 +75,7 @@ def verify_bundle(path: Path, doc: dict[str, Any]) -> dict[str, Any]:
     payload = path.read_bytes()
     if hashlib.sha256(payload).hexdigest() != artifact["bundle_sha256"]:
         raise ReceiptGuardError("bundle SHA256 mismatch")
-    with zipfile.ZipFile(path) as archive:
+    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
         infos = archive.infolist()
         names = [info.filename for info in infos]
         if len(names) != len(set(names)):
