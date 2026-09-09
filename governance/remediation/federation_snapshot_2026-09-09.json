@@ -63,14 +63,20 @@
     {
       "class": "LOCK_REPRODUCIBILITY",
       "repository": "moneysweep-pr",
-      "state": "FAIL_BASELINE_CONTAMINATION",
-      "evidence": "Lockfile drift failed on exact frozen main before auth remediation; must be repaired independently"
+      "state": "BLOCKED_NOT_EXECUTED",
+      "evidence": "The frozen-main Lockfile drift workflow concluded failure but its lock-sync job recorded zero steps; no uv recompile or git diff executed, so lock drift is not proven. Current main still uses immutable TheHub SHAs through git+ transport while the canonical template uses commit-archive transport."
+    },
+    {
+      "class": "HOSTED_CI",
+      "repository": "federation",
+      "state": "BLOCKED_ZERO_STEP_ADMISSION",
+      "evidence": "Independent MoneySweep and TheHub jobs on September 9, plus earlier authority-boundary evidence, completed as failures with zero recorded workflow steps. Hosted red status cannot be used as code-failure or certification evidence until execution admission is restored."
     },
     {
       "class": "REMOTE_COMPLETION",
       "repository": "thehub-pr",
-      "state": "FAIL_ACTIONABLE_RESIDUE",
-      "evidence": "remote completion gate remains fail-closed while actionable pull-request residue exists"
+      "state": "BLOCKED_CURRENT_DENOMINATOR_NOT_EXECUTED",
+      "evidence": "The current completion workflow did not execute source steps. Historical actionable residue remains evidence of prior state, but an exact September 9 denominator has not been proven."
     },
     {
       "class": "IDENTITY",
@@ -89,8 +95,13 @@
       "finding": "scheduled federation completion workflow calls obsolete producer-claim flags",
       "state": "SUPERSEDED",
       "reason": "frozen workflow executes the remote completion auditor with --fail-on-actionable on scheduled/manual runs"
+    },
+    {
+      "finding": "MoneySweep frozen main has proven lockfile drift",
+      "state": "SUPERSEDED",
+      "reason": "the exact frozen-main lock-sync job contained zero steps, so neither lock regeneration nor drift comparison executed; the correct state is BLOCKED_NOT_EXECUTED"
     }
   ],
   "certification": "BLOCKED",
-  "certification_reason": "zero material unresolved residue and arithmetic closure have not been demonstrated across the declared scope"
+  "certification_reason": "hosted execution admission, identity closure, exact current completion denominator, lock reproducibility, and zero material unresolved residue with arithmetic closure remain unproven"
 }
