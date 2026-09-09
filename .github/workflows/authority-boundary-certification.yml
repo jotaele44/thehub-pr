@@ -5,13 +5,19 @@ on:
     paths:
       - 'docs/adr/0009-persistent-federation-identity-authority.md'
       - 'docs/adr/0010-federation-spatial-identity-authority.md'
+      - 'docs/PRE_ACTIVATION_ZERO_RESIDUE_REVIEW.md'
       - 'registry/federation/**'
       - 'registry/spatial/**'
       - 'scripts/authority_boundary_validator.py'
+      - 'scripts/authority_boundary_max_validator.py'
+      - 'scripts/identifier_namespace_census.py'
       - 'scripts/validate_authority_boundary.py'
       - 'scripts/validate_authority_boundary_v2.py'
       - 'tests/test_authority_boundary_validator.py'
       - 'tests/test_authority_boundary_quarantine.py'
+      - 'tests/test_identifier_namespace_census_adversarial.py'
+      - 'tests/test_relationship_authority_adversarial.py'
+      - 'tests/fixtures/federation_identity_adversarial/**'
       - '.github/workflows/authority-boundary-certification.yml'
   workflow_dispatch:
 
@@ -66,10 +72,17 @@ jobs:
           ref: caf086598a4f99e2eb0ca4aac6d51e2d9bd46321
           path: _authority_peers/centinelas-pr
 
-      - name: Quarantine regression
-        run: python3 -m pytest -q tests/test_authority_boundary_quarantine.py
+      - name: Run authority adversarial and quarantine suites
+        run: |
+          python3 -m pytest -q \
+            tests/test_authority_boundary_quarantine.py \
+            tests/test_authority_boundary_validator.py \
+            tests/test_identifier_namespace_census_adversarial.py \
+            tests/test_relationship_authority_adversarial.py
 
-      - name: Execute fail-closed B.1-B.5 census
+      - name: Execute fail-closed PLAN MAX authority census
+        env:
+          AUTHORITY_NEGATIVE_TESTS_PASSED: '1'
         run: |
           python3 scripts/validate_authority_boundary.py \
             --repo-root . \
@@ -80,5 +93,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: authority-boundary-validation
+          name: authority-boundary-validation-v4
           path: reports/authority_boundary_validation.json
