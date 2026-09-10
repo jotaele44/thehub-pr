@@ -23,7 +23,8 @@
   "properties": {
     "Cell_ID": {
       "type": "string",
-      "pattern": "^R\\d{3}_C\\d{3}$"
+      "pattern": "^R(?:0|[1-9][0-9]{0,2})_C(?:0|[1-9][0-9]{0,2})$",
+      "description": "Canonical unpadded cell address, e.g. R0_C0 or R255_C383. The frozen CSV is not zero-padded; a ^R\\d{3}_C\\d{3}$ pattern rejects 54,000 of the 98,304 real identifiers. Exactly one lexical form is permitted so cross-repo joins cannot diverge."
     },
     "Row_Index": {
       "type": "integer",

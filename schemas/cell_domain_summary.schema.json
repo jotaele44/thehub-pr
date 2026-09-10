@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/federation/schemas/cell_domain_summary.schema.json",
+  "title": "Cell Domain Summary",
+  "description": "Deliberately tiny per-repository, per-cell aggregate. The Hub queries only these summaries to render a cross-domain view of a cell; it never ingests a producer's internal cell index and never receives raw domain records. Counts, ranges and top-N identifiers only, so a cell click stays fast and the producer's database remains the record authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["Cell_ID", "Repository", "Domain", "Record_Count", "Has_Data"],
+  "properties": {
+    "Cell_ID": {"type": "string", "pattern": "^R(?:0|[1-9][0-9]{0,2})_C(?:0|[1-9][0-9]{0,2})$"},
+    "Repository": {"type": "string", "enum": ["spiderweb-pr", "aguayluz-pr", "skywatcher-pr", "centinelas-pr", "moneysweep-pr", "ovnis-pr"]},
+    "Domain": {"type": "string", "minLength": 1},
+    "Record_Count": {"type": "integer", "minimum": 0},
+    "Category_Count": {"type": "integer", "minimum": 0},
+    "Top_Record_IDs": {"type": "array", "items": {"type": "string"}, "maxItems": 25, "description": "Identifiers only. Resolving them is the producer's job, via its own API."},
+    "Earliest_Record": {"type": ["string", "null"]},
+    "Latest_Record": {"type": ["string", "null"]},
+    "Completeness": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "Freshness": {"type": ["string", "null"]},
+    "Has_Data": {"type": "boolean"},
+    "Geometry_Version": {"type": "string"},
+    "Identity_Default": {"type": "string", "const": "CANDIDATE_NOT_IDENTITY"}
+  }
+}
