@@ -1,0 +1,8 @@
+{
+  "version":"1.0.0",
+  "format":"jsonl",
+  "records":60,
+  "sha256":"68483c2e0c66b1ece8aa3698c2c8db51858dafc125637e4630e2951289cc6825",
+  "source_bundle":"prii-federation-canon-v1-rc2.zip",
+  "policy":"The full schema-valid canonical term records are release-artifact content bound by this digest. Changing any record is a Canon versioned change."
+}

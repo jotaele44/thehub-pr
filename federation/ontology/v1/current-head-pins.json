@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "snapshot_date": "2026-09-04",
+  "repositories": [
+    {"program_id":"thehub-pr","repository":"jotaele44/thehub-pr","directory":"thehub-pr","commit":"94e000b5e0f21a5d1acaed42e79e73523c86ab56","owner":"thehub-pr"},
+    {"program_id":"spiderweb-pr","repository":"jotaele44/spiderweb-pr","directory":"spiderweb-pr","commit":"f46546ef24c7dc2164b3f203d1af57e7d2570219","owner":"spiderweb-pr"},
+    {"program_id":"centinelas-pr","repository":"jotaele44/centinelas-pr","directory":"centinelas-pr","commit":"caf086598a4f99e2eb0ca4aac6d51e2d9bd46321","owner":"centinelas-pr"},
+    {"program_id":"aguayluz-pr","repository":"jotaele44/aguayluz-pr","directory":"aguayluz-pr","commit":"3678271a03e36375dc3e9f2fb4da0b6b655622bd","owner":"aguayluz-pr"},
+    {"program_id":"ovnis-pr","repository":"jotaele44/ovnis-pr","directory":"ovnis-pr","commit":"68b87366207cb3fe249814ee6611a03b18d67a6b","owner":"ovnis-pr"},
+    {"program_id":"skywatcher-pr","repository":"jotaele44/skywatcher-pr","directory":"skywatcher-pr","commit":"6b95f816f1dc2c2081734df582920703743fbdf3","owner":"skywatcher-pr"},
+    {"program_id":"moneysweep-pr","repository":"jotaele44/moneysweep-pr","directory":"moneysweep-pr","commit":"74b10245f925bfd9b9ea07b2ce986981d5d65525","owner":"moneysweep-pr"}
+  ]
+}

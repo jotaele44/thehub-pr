@@ -1,0 +1,8 @@
+{
+  "baseline_counts":{"scale":21,"authority":3717,"homonym":8777,"synonym":9338},
+  "automatic_synonym_merges":0,
+  "high_severity_unowned":0,
+  "homonym_classifications":{"expected_bounded_context_reuse":1417,"implementation_literal_reuse":77,"implementation_only_reuse":4242,"true_cross_repo_conflict":698,"true_local_semantic_conflict":2343},
+  "synonym_mappings":{"broad_match":4116,"close_match":2271,"non_equivalent":1505,"related_match":1446},
+  "generated_outputs_manifest":"GENERATED_OUTPUTS.json"
+}
