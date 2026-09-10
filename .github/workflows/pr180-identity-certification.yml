@@ -25,7 +25,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install validation dependencies
-        run: python -m pip install -e ".[dev,server]" httpx
+        run: python -m pip install -e ".[dev,server]" httpx==0.28.1
 
       - name: Build complete main/PR candidate ledger
         run: |

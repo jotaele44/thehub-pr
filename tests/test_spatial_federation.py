@@ -1,9 +1,13 @@
+import json
+
 import pytest
 
+import hub.spatial as spatial
 from hub.spatial import (
     IDENTITY_DEFAULT,
     SpatialContractError,
     cross_producer_within_distance,
+    load_spatial_manifest,
     validate_spatial_feature,
     validate_spatial_manifest,
 )
@@ -40,6 +44,13 @@ def test_manifest_rejects_identity_promotion():
     assert "identity_default" in " ".join(validate_spatial_manifest(manifest))
 
 
+def test_loaded_manifest_uses_validated_hub_authority(tmp_path):
+    path = tmp_path / "federation.spatial.json"
+    path.write_text(json.dumps(_manifest()), encoding="utf-8")
+
+    assert load_spatial_manifest(path).authority == "thehub-pr"
+
+
 def test_feature_rejects_wrong_producer():
     feature = _point("moneysweep-pr", "a", -66.0, 18.0)
     errors = validate_spatial_feature(feature, "spiderweb-pr")
@@ -73,3 +84,41 @@ def test_cross_producer_query_fails_closed_for_bad_feature():
             right_producer="aguayluz-pr",
             threshold_m=100.0,
         )
+
+
+@pytest.mark.parametrize("coordinate", ["not-a-number", None, {}, True])
+def test_cross_producer_query_skips_malformed_coordinates(coordinate):
+    left = [_point("skywatcher-pr", "flight:1", coordinate, 18.0)]
+    right = [_point("aguayluz-pr", "asset:1", -66.0, 18.0)]
+
+    assert spatial._point(left[0]) is None
+    assert cross_producer_within_distance(
+        left,
+        right,
+        left_producer="skywatcher-pr",
+        right_producer="aguayluz-pr",
+        threshold_m=100.0,
+    ) == []
+
+
+def test_cross_producer_query_parses_each_right_point_once(monkeypatch):
+    left = [_point("skywatcher-pr", f"flight:{i}", -66.0, 18.0) for i in range(3)]
+    right = [_point("aguayluz-pr", f"asset:{i}", -66.0, 18.0) for i in range(4)]
+    original = spatial._point
+    calls = 0
+
+    def counted(feature):
+        nonlocal calls
+        calls += 1
+        return original(feature)
+
+    monkeypatch.setattr(spatial, "_point", counted)
+    cross_producer_within_distance(
+        left,
+        right,
+        left_producer="skywatcher-pr",
+        right_producer="aguayluz-pr",
+        threshold_m=100.0,
+    )
+
+    assert calls == len(left) + len(right)

@@ -171,6 +171,8 @@ def build_situation_projection(
 def assert_zero_duplicate_ingest(projection: Mapping[str, Any]) -> None:
     """Enforce Hub ownership boundaries on a serialized projection."""
 
+    if projection.get("read_only") is not True:
+        raise ValueError("TheHub drought situation projection must remain read-only")
     if projection.get("independent_ingest") is not False:
         raise ValueError("TheHub must not independently ingest drought sources")
     if projection.get("canonical_hydrology_embedded") is not False:

@@ -30,9 +30,10 @@ def _canonical_bytes(payload: Mapping[str, Any]) -> bytes:
 
 
 def _iter_jsonl(path: Path):
-    for raw in path.read_text(encoding="utf-8").splitlines():
-        if raw.strip():
-            yield json.loads(raw)
+    with path.open("r", encoding="utf-8") as handle:
+        for raw in handle:
+            if raw.strip():
+                yield json.loads(raw)
 
 
 def build_snapshot_manifest(
@@ -102,9 +103,9 @@ def build_snapshot_manifest(
             sha_rows.append({"path": f"aggregate/{path.name}", "sha256": _sha256(path)})
             aggregate_artifacts += 1
             if path.suffix == ".jsonl" and path.stem in _JSONL_STREAMS:
-                rows = list(_iter_jsonl(path))
-                record_counts[path.stem] = len(rows)
-                for row in rows:
+                record_counts[path.stem] = 0
+                for row in _iter_jsonl(path):
+                    record_counts[path.stem] += 1
                     if row.get("synthetic") is True:
                         synthetic_count += 1
                     if row.get("synthetic_status") == "TEST_ONLY":

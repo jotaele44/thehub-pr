@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
@@ -25,6 +26,7 @@ CONTRACT_FILES = {
 }
 
 
+@lru_cache(maxsize=None)
 def _load_contract(name: str) -> dict[str, Any]:
     try:
         filename = CONTRACT_FILES[name]

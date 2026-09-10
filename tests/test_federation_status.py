@@ -38,6 +38,17 @@ _VALID_FEDERATION_JSON_LIVE = {
     },
 }
 
+_VALID_SPATIAL_JSON = {
+    "contract_version": "federation-spatial-manifest/1.0",
+    "producer_repo": "test-producer",
+    "contracts": {"feature": "schemas/federation_spatial_feature.schema.json"},
+    "storage": {"ownership": "REPO_LOCAL"},
+    "cross_repo": {
+        "identity_default": "CANDIDATE_NOT_IDENTITY",
+        "hub_correlation_authority": "thehub-pr",
+    },
+}
+
 
 def _make_registry(producer_dir: Path) -> Registry:
     return Registry(
@@ -135,6 +146,53 @@ def test_validate_federation_missing_checkout(tmp_path):
     assert p["live_execution_ready"] is False
     assert p["callable_commands"] == []
     assert p["last_package_timestamp"] is None
+    assert summary["spatial_manifest_count"] == 0
+    assert summary["spatial_valid_count"] == 0
+    assert p["spatial_manifest_present"] is False
+    assert p["spatial_manifest_valid"] is False
+    assert p["spatial_authority"] is None
+
+
+def test_validate_federation_reports_invalid_spatial_manifest(tmp_path):
+    producer_dir = tmp_path / "prod"
+    producer_dir.mkdir()
+    (producer_dir / "federation.json").write_text(
+        json.dumps(_VALID_FEDERATION_JSON), encoding="utf-8"
+    )
+    invalid = {**_VALID_SPATIAL_JSON, "producer_repo": "another-producer"}
+    (producer_dir / "federation.spatial.json").write_text(
+        json.dumps(invalid), encoding="utf-8"
+    )
+
+    summary = validate_federation(_make_registry(producer_dir), tmp_path)
+    readiness = summary["producers"][0]
+
+    assert summary["spatial_manifest_count"] == 1
+    assert summary["spatial_valid_count"] == 0
+    assert readiness["spatial_manifest_present"] is True
+    assert readiness["spatial_manifest_valid"] is False
+    assert readiness["spatial_authority"] is None
+    assert "producer_repo does not match" in " ".join(readiness["errors"])
+
+
+def test_validate_federation_reports_valid_spatial_authority(tmp_path):
+    producer_dir = tmp_path / "prod"
+    producer_dir.mkdir()
+    (producer_dir / "federation.json").write_text(
+        json.dumps(_VALID_FEDERATION_JSON), encoding="utf-8"
+    )
+    (producer_dir / "federation.spatial.json").write_text(
+        json.dumps(_VALID_SPATIAL_JSON), encoding="utf-8"
+    )
+
+    summary = validate_federation(_make_registry(producer_dir), tmp_path)
+    readiness = summary["producers"][0]
+
+    assert summary["spatial_manifest_count"] == 1
+    assert summary["spatial_valid_count"] == 1
+    assert readiness["spatial_manifest_present"] is True
+    assert readiness["spatial_manifest_valid"] is True
+    assert readiness["spatial_authority"] == "thehub-pr"
 
 
 def test_validate_federation_extracts_live_execution_flag(tmp_path, valid_package):

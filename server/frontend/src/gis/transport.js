@@ -38,7 +38,7 @@ export async function fetchSourceRange(source, target, range = 'bytes=0-65535', 
   const url = useProxy ? `${proxyUrl(source.sourceId, target)}&byte_range=${encodeURIComponent(range)}` : target;
   const headers = useProxy ? { Accept: '*/*' } : { Accept: '*/*', Range: range };
   const response = await fetchImpl(url, { headers });
-  if (!response.ok && response.status !== 206) throw new Error(`raster range fetch failed ${response.status || 'UNKNOWN'} for ${url}`);
+  if (!response.ok || response.status !== 206) throw new Error(`raster range fetch requires 206 Partial Content; received ${response.status || 'UNKNOWN'} for ${url}`);
   const bytes = new Uint8Array(await response.arrayBuffer());
   return Object.freeze({
     bytes,

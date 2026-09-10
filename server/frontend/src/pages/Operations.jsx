@@ -78,7 +78,7 @@ export default function Operations({ api = managerApi, subscribe = subscribeToRu
   useEffect(() => {
     let active = true;
     const repositoryRequest =
-      typeof api.repositories === "function" ? api.repositories() : Promise.resolve([]);
+      typeof api.repositories === "function" ? api.repositories().catch(() => []) : Promise.resolve([]);
     Promise.all([api.listOperations(), repositoryRequest, api.accounting(), api.gates()])
       .then(([ops, repos, counts, evidence]) => {
         if (!active) return;

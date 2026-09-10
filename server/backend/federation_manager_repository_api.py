@@ -15,22 +15,19 @@ from fastapi import Header, Request
 from server.backend.federation_manager_artifacts import ArtifactRegistrationError
 from server.backend.federation_manager_repository_registry import RepositoryBindingError
 
-def _last_receipt(active, app_id: str) -> Optional[Dict[str, Any]]:
-    matches = []
+def _last_receipts(active) -> Dict[str, Dict[str, Any]]:
+    latest: Dict[str, Dict[str, Any]] = {}
     for document in active.runner.receipts.all_documents():
         receipt = document.get("receipt", {})
-        if receipt.get("app_id") == app_id:
-            matches.append(receipt)
-    if not matches:
-        return None
-    matches.sort(key=lambda row: str(row.get("finished_at") or ""))
-    last = matches[-1]
-    return {
-        "runId": last.get("run_id"),
-        "operationId": last.get("operation_id"),
-        "status": last.get("status"),
-        "finishedAt": last.get("finished_at"),
-    }
+        app_id = receipt.get("app_id")
+        if isinstance(app_id, str) and app_id:
+            latest[app_id] = {
+                "runId": receipt.get("run_id"),
+                "operationId": receipt.get("operation_id"),
+                "status": receipt.get("status"),
+                "finishedAt": receipt.get("finished_at"),
+            }
+    return latest
 
 
 def _quick_actions(operations) -> Dict[str, Optional[str]]:
@@ -68,6 +65,7 @@ def install_repository_routes(api_module) -> None:
         operations_by_repo = defaultdict(list)
         for operation in active.runner.policy.operations.values():
             operations_by_repo[operation.repo].append(operation)
+        last_receipts = _last_receipts(active)
 
         rows = []
         for repo_key in sorted(operations_by_repo):
@@ -115,7 +113,7 @@ def install_repository_routes(api_module) -> None:
                     "declaredOperations": len(operations),
                     "enabledOperations": enabled,
                     "activeArtifact": active_artifact,
-                    "lastReceipt": _last_receipt(active, app_id) if app_id else None,
+                    "lastReceipt": last_receipts.get(app_id) if app_id else None,
                     "quickActions": _quick_actions(operations),
                 }
             )

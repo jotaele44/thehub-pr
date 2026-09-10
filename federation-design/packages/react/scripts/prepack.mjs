@@ -9,7 +9,7 @@ const designRoot = join(pkgRoot, '..', '..')
 const dist = join(pkgRoot, 'dist')
 const pkg = JSON.parse(readFileSync(join(pkgRoot, 'package.json'), 'utf8'))
 const snapshot = JSON.parse(readFileSync(join(pkgRoot, 'api-snapshot.json'), 'utf8'))
-const styleSources = ['foundation.css', 'primitives.css', 'states.css'].map((name) => join(designRoot, 'styles', name))
+const styleSources = ['foundation.css', 'primitives.css', 'states.css', 'gis.css'].map((name) => join(designRoot, 'styles', name))
 const assets = [
   { from: join(designRoot, 'tokens', 'federation.tokens.json'), to: join(dist, 'federation.tokens.json') },
   { from: join(designRoot, 'tokens', 'federation.tokens.schema.json'), to: join(dist, 'federation.tokens.schema.json') },
@@ -40,7 +40,8 @@ for (const { from, to } of assets) {
 const sha256 = (path) => createHash('sha256').update(readFileSync(path)).digest('hex')
 const sources = [
   join(pkgRoot, 'package.json'), join(pkgRoot, 'api-snapshot.json'), join(pkgRoot, 'src', 'index.jsx'),
-  join(pkgRoot, 'src', 'semantics.js'), join(designRoot, 'styles', 'federation.css'), ...styleSources, ...assets.map((asset) => asset.from),
+  join(pkgRoot, 'src', 'semantics.js'), join(pkgRoot, 'src', 'gis', 'index.jsx'), join(pkgRoot, 'src', 'gis', 'bridge.js'),
+  join(designRoot, 'styles', 'federation.css'), ...styleSources, ...assets.map((asset) => asset.from),
 ]
 const manifest = {
   schemaVersion: '1.0.0',

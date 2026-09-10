@@ -1,3 +1,5 @@
+import pytest
+
 from hub.project_leads import adjudicate_project
 
 
@@ -118,16 +120,32 @@ def test_join_cardinality_and_full_candidate_pairs_are_preserved():
 
 def test_duplicate_or_missing_assertion_ids_fail_closed():
     duplicate = [_fiscal(assertion_id="dup"), _fiscal(assertion_id="dup")]
-    try:
+    with pytest.raises(ValueError, match="duplicate fiscal assertion_id"):
         adjudicate_project(_lead(), duplicate, [_physical()])
-    except ValueError as exc:
-        assert "duplicate fiscal assertion_id" in str(exc)
-    else:
-        raise AssertionError("duplicate assertion IDs must fail closed")
 
-    try:
+    with pytest.raises(ValueError, match="fiscal assertion_id required"):
         adjudicate_project(_lead(), [_fiscal(assertion_id="")], [_physical()])
-    except ValueError as exc:
-        assert "fiscal assertion_id required" in str(exc)
-    else:
-        raise AssertionError("missing assertion IDs must fail closed")
+
+
+def test_whitespace_only_lead_id_fails_closed():
+    with pytest.raises(ValueError, match="lead_id required"):
+        adjudicate_project(None, [], [], lead_id="   ")
+
+
+def test_n_to_n_contradictions_are_preserved_once_per_assertion():
+    fiscal_contradiction = {"type": "COUNT", "detail": "fiscal mismatch"}
+    physical_contradiction = {"type": "NAME", "detail": "physical mismatch"}
+    fiscals = [
+        _fiscal(contradictions=[fiscal_contradiction], assertion_id="fiscal-a"),
+        _fiscal(assertion_id="fiscal-b"),
+    ]
+    physicals = [
+        _physical(contradictions=[physical_contradiction], assertion_id="physical-a"),
+        _physical(assertion_id="physical-b"),
+    ]
+
+    result = adjudicate_project(_lead(), fiscals, physicals)
+
+    assert result["join_cardinality"] == "N:N"
+    assert result["contradictions"].count(fiscal_contradiction) == 1
+    assert result["contradictions"].count(physical_contradiction) == 1

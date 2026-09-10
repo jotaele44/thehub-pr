@@ -13,6 +13,7 @@ const tokens = readJson(join(designRoot, 'tokens', 'federation.tokens.json'))
 const schema = readJson(join(designRoot, 'tokens', 'federation.tokens.schema.json'))
 const harness = readJson(join(designRoot, 'test-harness', 'test-harness.contract.json'))
 const indexSource = readFileSync(join(pkgRoot, 'src', 'index.jsx'), 'utf8')
+const gisIndexSource = readFileSync(join(pkgRoot, 'src', 'gis', 'index.jsx'), 'utf8')
 const semanticsSource = readFileSync(join(pkgRoot, 'src', 'semantics.js'), 'utf8')
 const css = ['foundation.css', 'primitives.css', 'states.css'].map((name) => readFileSync(join(designRoot, 'styles', name), 'utf8')).join('\n')
 
@@ -27,7 +28,7 @@ requireCondition(harness.viewports.length === 6, 'test harness must define six c
 requireCondition(harness.states.includes('offline') && harness.states.includes('filtered_empty'), 'test harness state matrix is incomplete')
 
 for (const symbol of snapshot.exports) {
-  requireCondition(indexSource.includes(symbol) || semanticsSource.includes(symbol), `API snapshot symbol missing from source: ${symbol}`)
+  requireCondition(indexSource.includes(symbol) || semanticsSource.includes(symbol) || gisIndexSource.includes(symbol), `API snapshot symbol missing from source: ${symbol}`)
 }
 
 for (const fragment of ['role={role}', 'aria-live={live}', 'aria-busy={busy || undefined}', 'requires label or aria-label']) {

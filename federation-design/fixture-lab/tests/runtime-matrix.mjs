@@ -47,16 +47,19 @@ for (const [engineName, engine] of Object.entries(engines)) {
           await page.evaluate(() => { document.documentElement.style.zoom = '2' })
           const zoomStress = await page.evaluate(() => ({ scrollWidth: document.documentElement.scrollWidth, clientWidth: document.documentElement.clientWidth }))
           await page.evaluate(() => { document.documentElement.style.zoom = '' })
+          const zoomStressPassed = zoomStress.scrollWidth <= zoomStress.clientWidth
 
           push({
             engine: engineName,
             viewport: width,
             fixture,
-            status: pageErrors.length === 0 && keyboardTarget ? 'PASS' : 'FAIL',
+            status: pageErrors.length === 0 && keyboardTarget && zoomStressPassed ? 'PASS' : 'FAIL',
             page_errors: pageErrors,
             keyboard_only: keyboardTarget ? 'PASS' : 'FAIL',
             keyboard_navigation_key: keyboardNavigationKey,
-            css_200_percent_zoom_stress: zoomStress.scrollWidth > 0 ? 'PASS' : 'FAIL',
+            css_200_percent_zoom_stress: zoomStressPassed ? 'PASS' : 'FAIL',
+            css_zoom_scroll_width: zoomStress.scrollWidth,
+            css_zoom_client_width: zoomStress.clientWidth,
             native_200_percent_zoom_certified: false,
             screenshot,
           })

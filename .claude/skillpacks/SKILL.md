@@ -8,7 +8,7 @@ repository: thehub-pr
 
 # thehub-pr Unified Live Skillpack
 
-Pinned base: `bf4c9d85a595d22f57f46d3fd7e192ccb5b77798`.
+Pinned base: `4d9e59d76e96b736307cc574f76b20854c349faf`.
 
 ## Execution contract
 

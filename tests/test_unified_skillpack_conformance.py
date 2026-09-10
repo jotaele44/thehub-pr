@@ -2,6 +2,8 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import shutil
+import tempfile
 import unittest
 from unittest import mock
 from pathlib import Path
@@ -46,6 +48,26 @@ class UnifiedSkillpackConformanceTests(unittest.TestCase):
             result = MODULE.validate(ROOT)
         self.assertEqual(result["status"], "success", result["errors"])
         self.assertIn("declared_branch_scope_not_applicable", result["checks"])
+
+    def test_skill_pinned_base_mismatch_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            shutil.copytree(
+                ROOT / ".claude" / "skillpacks",
+                root / ".claude" / "skillpacks",
+            )
+            binding = MODULE.load_json(root / ".claude" / "skillpacks" / "BINDING.json")
+            for bound_path in binding["implementation_roots"] + binding["test_roots"]:
+                (root / bound_path).mkdir(parents=True, exist_ok=True)
+            skill = root / ".claude" / "skillpacks" / "SKILL.md"
+            skill.write_text(
+                skill.read_text(encoding="utf-8").replace(
+                    binding["pinned_base_commit"], "0" * 40
+                ),
+                encoding="utf-8",
+            )
+            result = MODULE.validate(root)
+        self.assertIn("SKILL pinned base mismatch", result["errors"])
 
 
 if __name__ == "__main__":

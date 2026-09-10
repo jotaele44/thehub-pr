@@ -1,6 +1,6 @@
 # TheHub-PR — Normalized Road to 100 Status
 
-**Governance version:** `road_to_100_normalization_v0_2`
+**Governance version:** `road_to_100_normalization_v0_3`
 **Audit date:** 2026-07-27
 **Evidence boundary:** repository `main`, producer registry, canonical federation documents, `docs/ROAD_TO_100.md`, `docs/MATURITY_AUDIT.md`, and recorded executed baselines.
 **Status mutation:** none. This document does not change producer readiness, Hub status, or any federation gate.

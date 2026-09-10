@@ -78,7 +78,9 @@ describe("AppCenter", () => {
       }),
     );
     render(<AppCenter inventoryLoader={loader} />);
-    expect(await screen.findByRole("status")).toHaveTextContent(/connected.*read-only/i);
+    await waitFor(() => {
+      expect(screen.getByRole("status")).toHaveTextContent(/connected.*read-only/i);
+    });
     expect(loader).toHaveBeenCalledOnce();
     expect(screen.getAllByText("Installed")).toHaveLength(1);
     expect(screen.getByRole("article", { name: /MoneySweep application/i }))

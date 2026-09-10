@@ -183,6 +183,16 @@ describe("Operations", () => {
     expect(screen.getByText("centinelas.classify")).toBeInTheDocument();
   });
 
+  it("keeps core operations available when optional repository health fails", async () => {
+    const api = makeApi({ repositories: vi.fn().mockRejectedValue(new Error("health unavailable")) });
+
+    render(<Operations api={api} subscribe={noSubscribe} />);
+
+    expect(await screen.findByText("hub.list")).toBeInTheDocument();
+    expect(screen.getByText(/12 of 68 declared operations are enabled/)).toBeInTheDocument();
+    expect(api.repositories).toHaveBeenCalledOnce();
+  });
+
   it("shows why a disabled operation is disabled and refuses to select it", async () => {
     render(<Operations api={makeApi()} subscribe={noSubscribe} />);
     await screen.findByText("hub.fetch");

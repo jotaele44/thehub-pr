@@ -154,7 +154,10 @@ def test_duplicate_producer_ids_fail_closed() -> None:
         )
 
 
-@pytest.mark.parametrize("valid_at", ["2026-07-21", "not-a-date-time"])
+@pytest.mark.parametrize(
+    "valid_at",
+    ["2026-07-21", "2026-07-21T17:00:00", "not-a-date-time"],
+)
 def test_invalid_projection_timestamp_fails_closed(valid_at: str) -> None:
     with pytest.raises(ValueError, match="valid_at"):
         build_situation_projection(
@@ -178,9 +181,21 @@ def test_embedded_hydrology_is_rejected() -> None:
                 }
             ],
         )
+
+
+def test_mutable_situation_projection_is_rejected() -> None:
+    with pytest.raises(ValueError, match="read-only"):
+        assert_zero_duplicate_ingest(
+            {
+                "read_only": False,
+                "independent_ingest": False,
+                "canonical_hydrology_embedded": False,
+            }
+        )
     with pytest.raises(ValueError, match="duplicate canonical fields"):
         assert_zero_duplicate_ingest(
             {
+                "read_only": True,
                 "independent_ingest": False,
                 "canonical_hydrology_embedded": False,
                 "streamflow_value": 25,

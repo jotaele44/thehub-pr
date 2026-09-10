@@ -29,6 +29,21 @@ test('map-to-table selection uses geometry identity, not name or proximity', () 
   assert.deepEqual(bridge.selectFeature('GA'), { recordId: 'A', geometryId: 'GA', source: 'map' })
 })
 
+test('selection snapshots cannot be mutated by subscribers or callers', () => {
+  const records = [{ id: 'A' }]
+  const features = [{ properties: { recordId: 'A', geometryId: 'GA' } }]
+  const bridge = createDatasetMapBridge({ records, features, ...accessors })
+  let emitted = null
+  bridge.subscribe((selection) => { emitted = selection })
+
+  const selected = bridge.selectFeature('GA')
+
+  assert.equal(Object.isFrozen(selected), true)
+  assert.equal(Object.isFrozen(emitted), true)
+  assert.throws(() => { emitted.recordId = 'CORRUPTED' }, TypeError)
+  assert.deepEqual(bridge.getSelection(), { recordId: 'A', geometryId: 'GA', source: 'map' })
+})
+
 test('1:N record-to-geometry binding remains explicit and does not choose arbitrarily', () => {
   const records = [{ id: 'A' }]
   const features = [

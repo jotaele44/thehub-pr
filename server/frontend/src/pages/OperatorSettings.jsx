@@ -303,8 +303,12 @@ function NotificationsPanel({ api }) {
     setSaveState(null);
     try {
       const prefs = { ...model.prefs, all: globalPreference };
-      await api.setPreferences(prefs, model.targets);
-      setModel((current) => ({ ...current, prefs }));
+      const saved = await api.setPreferences(prefs, model.targets);
+      setModel((current) => ({
+        ...current,
+        prefs: saved?.prefs && typeof saved.prefs === "object" ? saved.prefs : prefs,
+        targets: saved?.targets && typeof saved.targets === "object" ? saved.targets : current.targets,
+      }));
       setSaveState({ kind: "success", message: "Notification preferences saved." });
     } catch (error) {
       setSaveState({ kind: "error", message: error?.message || "Notification preferences could not be saved." });

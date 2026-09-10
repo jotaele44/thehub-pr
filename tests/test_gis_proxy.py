@@ -41,6 +41,24 @@ def test_allowlist_rejects_lookalike_host_and_path_escape():
     assert not gis_proxy._target_allowed("unknown", "https://sige.pr.gov/")
 
 
+@pytest.mark.parametrize(
+    "escape",
+    [
+        "../17/query",
+        "%2e%2e/17/query",
+        "%252e%252e/17/query",
+        "%2e%2e%2f17/query",
+        "%252e%252e%252f17/query",
+    ],
+)
+def test_allowlist_rejects_encoded_dot_segment_escapes(escape):
+    target = (
+        "https://sige.pr.gov/server/rest/services/MIPR/Infraestructura/"
+        f"FeatureServer/1/{escape}"
+    )
+    assert not gis_proxy._target_allowed("pr-sige-represas", target)
+
+
 def test_proxy_required_wfs_is_exact_source_bound():
     target = "http://geoserver2.pr.gov/geoserver/pr_geodata/ows?service=WFS&request=GetFeature"
     assert gis_proxy._target_allowed("pr-geodata-municipios-2015", target)
@@ -63,6 +81,21 @@ def test_proxy_rejects_redirect_response(monkeypatch):
     with pytest.raises(HTTPException) as exc:
         gis_proxy.gis_proxy("pr-sige-represas", requested, None)
     assert exc.value.status_code == 502
+
+
+def test_proxy_rejects_upstream_that_ignores_range(monkeypatch):
+    requested = "https://landsatlook.usgs.gov/data/tile.tif"
+    monkeypatch.setattr(
+        gis_proxy,
+        "_open_upstream",
+        lambda *args, **kwargs: FakeUpstream(requested, b"small-full-asset", status=200),
+    )
+
+    with pytest.raises(HTTPException) as exc:
+        gis_proxy.gis_proxy("usgs-landsat-stac-sr", requested, "bytes=0-7")
+
+    assert exc.value.status_code == 502
+    assert "did not honor" in exc.value.detail
 
 
 def test_proxy_transport_connects_only_to_registered_host(monkeypatch):

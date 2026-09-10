@@ -1,7 +1,7 @@
 # Twelve-Repository Governance Ledger
 
 **Audit date:** 2026-07-27
-**Scope:** all repositories visible through the authenticated `jotaele44` GitHub installation at audit time.
+**Scope:** all repositories visible through the authenticated GitHub installation used for the audit, at audit time.
 
 | Repository | Portfolio class | ROAD_TO_100 status | Governance disposition |
 |---|---|---|---|

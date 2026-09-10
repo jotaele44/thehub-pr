@@ -12,6 +12,7 @@ import argparse
 import csv
 import hashlib
 import json
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -58,12 +59,19 @@ PRODUCTION_STATUS = {"diagnostic", "staging", "production_blocked", "production_
 NODE_TYPES = {"hub", "producer"}
 BLOCKER_SEVERITY = {"critical", "high", "medium", "low"}
 BLOCKER_STATUS = {"open", "resolved", "accepted_risk"}
-SOURCE_ACCESS = {"manual", "rss", "api", "upload", "derived", "unknown"}
+SOURCE_ACCESS = {"manual", "rss", "api", "scrape", "upload", "derived", "unknown"}
 SOURCE_SCOPE = {"puerto_rico", "caribbean", "us_federal", "global", "mixed", "unknown"}
 SOURCE_AUTHORITY = {"official", "institutional", "media", "community", "derived", "unknown"}
 SOURCE_CADENCE = {"daily", "weekly", "monthly", "event_driven", "unknown"}
-SOURCE_STATUS = {"active", "candidate", "deprecated", "unavailable"}
-GATE_STATUS = {"pass", "fail", "unknown", "not_applicable"}
+SOURCE_STATUS = {"active", "candidate", "deprecated", "blocked", "unavailable"}
+GATE_STATUS = {
+    "tests": {"pass", "fail", "not_applicable", "unknown"},
+    "schema_validation": {"pass", "fail", "unknown"},
+    "export_generated": {"pass", "fail"},
+    "offline_dashboard_generated": {"pass", "fail"},
+    "hub_ingest_compatible": {"pass", "fail", "unknown"},
+}
+SHA256_PATTERN = re.compile(r"^[0-9a-f]{64}$")
 
 
 def load_json(path: Path, errors: list[str]) -> dict[str, Any]:
@@ -103,14 +111,22 @@ def validate_manifest(root: Path, errors: list[str]) -> str:
         check(isinstance(summary.get(key), (int, float)) and summary.get(key) >= 0, errors, f"manifest.summary.{key} invalid")
 
     gates = manifest.get("gates", {})
-    for key in ["tests", "schema_validation", "export_generated", "offline_dashboard_generated", "hub_ingest_compatible"]:
-        check(gates.get(key) in GATE_STATUS, errors, f"manifest.gates.{key} invalid")
+    for key, allowed_statuses in GATE_STATUS.items():
+        check(
+            gates.get(key) in allowed_statuses,
+            errors,
+            f"manifest.gates.{key} invalid",
+        )
 
     for entry in manifest.get("files", []):
         path = entry.get("path")
         digest = entry.get("sha256")
         check(isinstance(path, str) and bool(path), errors, "manifest.files path missing")
-        check(isinstance(digest, str) and len(digest) == 64, errors, f"manifest.files sha invalid for {path}")
+        check(
+            isinstance(digest, str) and SHA256_PATTERN.fullmatch(digest) is not None,
+            errors,
+            f"manifest.files sha invalid for {path}",
+        )
     return repo
 
 

@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import json
 import sqlite3
+from pathlib import Path
+
+import jsonschema
 import pytest
 
 from hub.identity_registry import IdentityRegistry, payload_hash, stable_id
@@ -16,6 +20,46 @@ def _decision(reg: IdentityRegistry, decision_id: str, outcome: str = "MERGE") -
         candidate_ref="candidate-1",
         decided_by="reviewer",
     )
+
+
+def test_resolution_decision_evidence_order_is_idempotent(tmp_path):
+    reg = IdentityRegistry(tmp_path / "hub.db")
+    kwargs = {
+        "decision_id": "decision-order",
+        "decision_type": "rejected_match",
+        "reason_code": "authoritative_identifier_conflict",
+        "decided_by": "reviewer",
+    }
+
+    reg.record_resolution_decision(evidence_ids=["e2", "e1", "e2"], **kwargs)
+    reg.record_resolution_decision(evidence_ids=["e1", "e2"], **kwargs)
+
+    with sqlite3.connect(tmp_path / "hub.db") as db:
+        evidence_json = db.execute(
+            "SELECT evidence_json FROM federation_resolution_decisions WHERE decision_id='decision-order'"
+        ).fetchone()[0]
+    assert json.loads(evidence_json) == ["e1", "e2"]
+
+
+def test_persisted_provenance_matches_frozen_contract(tmp_path):
+    reg = IdentityRegistry(tmp_path / "hub.db")
+    provenance_id = reg.add_provenance(
+        source_producer="spiderweb-pr",
+        local_record_id="local-1",
+        evidence_id="evidence-1",
+        payload_hash_value=None,
+    )
+    with sqlite3.connect(tmp_path / "hub.db") as db:
+        db.row_factory = sqlite3.Row
+        row = dict(db.execute(
+            "SELECT provenance_id,source_producer,local_record_id,evidence_id,payload_hash,created_at FROM federation_provenance WHERE provenance_id=?",
+            (provenance_id,),
+        ).fetchone())
+    schema = json.loads(
+        (Path(__file__).parents[1] / "schemas/contracts/federation_provenance.v1.schema.json").read_text(encoding="utf-8")
+    )
+
+    jsonschema.Draft202012Validator(schema, format_checker=jsonschema.FormatChecker()).validate(row)
 
 
 def test_member_identity_is_stable_and_bound_to_resolution_decision(tmp_path):
