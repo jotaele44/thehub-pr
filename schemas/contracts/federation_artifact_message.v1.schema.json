@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://the-federation.local/schemas/federation_artifact_message.v1.schema.json",
+  "title": "Federation local artifact message v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "message_id",
+    "source",
+    "target",
+    "kind",
+    "idempotency_key",
+    "created_at_utc",
+    "payload_sha256",
+    "payload"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "prii.artifact-message.v1"
+    },
+    "message_id": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source": {
+      "$ref": "#/$defs/component"
+    },
+    "target": {
+      "$ref": "#/$defs/component"
+    },
+    "kind": {
+      "$ref": "#/$defs/component"
+    },
+    "idempotency_key": {
+      "$ref": "#/$defs/component"
+    },
+    "created_at_utc": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "Z$"
+    },
+    "payload_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "payload": true
+  },
+  "$defs": {
+    "component": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    }
+  }
+}

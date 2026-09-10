@@ -331,7 +331,11 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", default="federation/completion-gate.json")
     ap.add_argument("--out", default="artifacts/federation-completion-ledger.json")
-    ap.add_argument("--fail-on-actionable", action="store_true")
+    ap.add_argument(
+        "--fail-on-actionable",
+        action="store_true",
+        help="Return exit 3 when actionable residue exists. The ledger is non-certifying either way.",
+    )
     ap.add_argument(
         "--allow-rate-limit-partial",
         action="store_true",
@@ -435,7 +439,7 @@ def main() -> int:
         certification = "PROVISIONAL_RATE_LIMIT_PARTIAL" if only_rate_limit_errors else "FAIL"
     elif truncated_reason:
         certification = "PROVISIONAL_TRUNCATED_PARTIAL"
-    elif args.fail_on_actionable and actionable:
+    elif actionable:
         certification = "FAIL_ACTIONABLE_RESIDUE"
     result = {
         "schema_version": 2,
@@ -450,6 +454,7 @@ def main() -> int:
         "truncation_reason": truncated_reason,
         "counts": dict(sorted(counts.items())),
         "actionable_counts": actionable,
+        "actionable_exit_enforced": args.fail_on_actionable,
         "errors": errors,
         "rate_limit_error_count": len(rate_limit_errors),
         "rows": [asdict(r) for r in rows],

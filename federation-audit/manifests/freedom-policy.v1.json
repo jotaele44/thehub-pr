@@ -1,0 +1,272 @@
+{
+  "binding": true,
+  "certification_axes": {
+    "COST_FREE": "No certified-core feature requires a paid, metered, licensed, or account-gated service.",
+    "OFFLINE_REPRODUCIBLE_BUILD": "A disconnected rebuild can use frozen source plus locally retained, checksummed dependency bytes and documented toolchains.",
+    "SELF_CONTAINED_RELEASE": "A release contains every application asset, library, extension, and binary required by its declared certified profile.",
+    "SERVICE_INDEPENDENT": "Core operation and federation transport do not require SaaS, cloud, hosted authentication, hosted queues, or provider-controlled orchestration."
+  },
+  "dynamic_gates": [
+    "CLEAN_CACHE_INSTALL",
+    "NETWORK_DENY_STARTUP",
+    "ALLOWLIST_ONLY_CONNECTOR_RUN",
+    "NO_SECRET_STARTUP",
+    "PACKAGED_RELEASE_EGRESS_CAPTURE",
+    "POSTINSTALL_BINARY_CAPTURE",
+    "OFFLINE_CORE_BROWSE_ANALYZE_EXPORT",
+    "OFFLINE_REBUILD_FROM_LOCAL_DEPENDENCY_BYTES"
+  ],
+  "network_exemption_class": "DATA_ACCESS_CONNECTOR",
+  "offline_bundle_manifest_candidates": [
+    ".federation/offline-dependencies.json",
+    "vendor/manifest.json",
+    "wheelhouse/manifest.json",
+    "offline/manifest.json"
+  ],
+  "policy_id": "FEDERATION_FREEDOM_CONTRACT_v1",
+  "rules": [
+    {
+      "axes": [
+        "COST_FREE",
+        "SERVICE_INDEPENDENT"
+      ],
+      "classification": "REMOVE_OR_LOCALIZE",
+      "exclude_globs": [
+        "**/tests/**",
+        "**/docs/**",
+        "**/scan_for_secrets.py"
+      ],
+      "id": "FF-COST-PAID-MODEL-SERVICE",
+      "include_globs": [
+        "**/*.py",
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.yml",
+        "**/*.yaml",
+        "**/pyproject.toml",
+        "**/.env.example"
+      ],
+      "pattern": "api\\.anthropic\\.com|anthropic\\.Anthropic|ANTHROPIC_API_KEY",
+      "rationale": "Model-service calls and keys are not data-access connectors and may incur cost or require an external account.",
+      "severity": "BLOCKER",
+      "status": "OPEN"
+    },
+    {
+      "axes": [
+        "SERVICE_INDEPENDENT",
+        "SELF_CONTAINED_RELEASE"
+      ],
+      "classification": "REMOVE_PROHIBITED",
+      "exclude_globs": [
+        "**/tests/**",
+        "**/docs/**"
+      ],
+      "id": "FF-SERVICE-TELEMETRY",
+      "include_globs": [
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/package.json",
+        "**/.env.example"
+      ],
+      "pattern": "@sentry/react|Sentry\\.init|SENTRY_DSN",
+      "rationale": "Hosted telemetry, tracing, and session replay are not data-access exemptions.",
+      "severity": "BLOCKER",
+      "status": "OPEN"
+    },
+    {
+      "axes": [
+        "SERVICE_INDEPENDENT"
+      ],
+      "classification": "MAKE_OPTIONAL_WITH_LOCAL_DEFAULT",
+      "exclude_globs": [
+        "**/tests/**",
+        "**/docs/**",
+        "**/federation-audit/**"
+      ],
+      "id": "FF-SERVICE-REMOTE-TRANSPORT",
+      "include_globs": [
+        "**/*.py",
+        "**/*.yml",
+        "**/*.yaml"
+      ],
+      "pattern": "repository_dispatch|api\\.github\\.com/repos/.+/dispatches",
+      "rationale": "GitHub repository dispatch is provider-controlled operational transport; local artifact outbox/inbox must be authoritative.",
+      "severity": "BLOCKER",
+      "status": "OPEN"
+    },
+    {
+      "axes": [
+        "SELF_CONTAINED_RELEASE",
+        "SERVICE_INDEPENDENT"
+      ],
+      "classification": "BUNDLE_LOCALLY",
+      "exclude_globs": [
+        "**/tests/**",
+        "**/docs/**"
+      ],
+      "id": "FF-RELEASE-REMOTE-ASSET",
+      "include_globs": [
+        "**/*.py",
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.html"
+      ],
+      "pattern": "https://(?:unpkg\\.com|cdn\\.jsdelivr\\.net|cdnjs\\.cloudflare\\.com|cdn\\.datatables\\.net|kit\\.fontawesome\\.com)",
+      "rationale": "Executable reports and application pages must not fetch code, styles, fonts, or icons from a CDN at runtime.",
+      "severity": "BLOCKER",
+      "status": "OPEN"
+    },
+    {
+      "axes": [
+        "SERVICE_INDEPENDENT",
+        "SELF_CONTAINED_RELEASE",
+        "OFFLINE_REPRODUCIBLE_BUILD"
+      ],
+      "classification": "VENDOR_AND_HASH",
+      "exclude_globs": [
+        "**/tests/**",
+        "**/docs/**"
+      ],
+      "id": "FF-RELEASE-RUNTIME-EXTENSION-INSTALL",
+      "include_globs": [
+        "**/*.py",
+        "**/*.sql",
+        "**/*.toml"
+      ],
+      "pattern": "INSTALL\\s+spatial",
+      "rationale": "DuckDB INSTALL may download an extension at runtime; certified releases must load a locally retained, checksum-bound extension.",
+      "severity": "BLOCKER",
+      "status": "OPEN"
+    },
+    {
+      "axes": [
+        "SERVICE_INDEPENDENT",
+        "SELF_CONTAINED_RELEASE"
+      ],
+      "classification": "DATA_ACCESS_EXEMPT_PENDING",
+      "exclude_globs": [
+        "**/tests/**",
+        "**/docs/**"
+      ],
+      "id": "FF-CONNECTOR-BASEMAP-DIRECT",
+      "include_globs": [
+        "**/*.py",
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.html"
+      ],
+      "pattern": "tile\\.openstreetmap\\.org|server\\.arcgisonline\\.com",
+      "rationale": "Basemap tiles may be an explicit data connector only after registry binding, cache policy, and an offline neutral-background fallback are verified.",
+      "severity": "REVIEW",
+      "status": "OPEN"
+    },
+    {
+      "axes": [
+        "SERVICE_INDEPENDENT"
+      ],
+      "classification": "MAKE_OPTIONAL_PLUGIN",
+      "exclude_globs": [
+        "**/tests/**",
+        "**/docs/**"
+      ],
+      "id": "FF-SERVICE-OPTIONAL-NOTIFICATION",
+      "include_globs": [
+        "**/*.py",
+        "**/*.js",
+        "**/*.jsx",
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.yml",
+        "**/*.yaml",
+        "**/.env.example"
+      ],
+      "pattern": "SLACK_WEBHOOK_URL|NTFY_TOPIC",
+      "rationale": "Notification services may remain only outside the certified core with a no-service local event ledger as the default.",
+      "severity": "REVIEW",
+      "status": "OPEN"
+    },
+    {
+      "axes": [
+        "SELF_CONTAINED_RELEASE",
+        "OFFLINE_REPRODUCIBLE_BUILD"
+      ],
+      "classification": "BUNDLE_OR_SCOPE_EXCLUDE",
+      "exclude_globs": [
+        "**/tests/**",
+        "**/docs/**"
+      ],
+      "id": "FF-RELEASE-SYSTEM-BINARY",
+      "include_globs": [
+        "**/pyproject.toml",
+        "**/*.yml",
+        "**/*.yaml",
+        "**/*.py"
+      ],
+      "pattern": "tesseract-ocr|brew install tesseract|apt-get install tesseract",
+      "rationale": "An out-of-band executable is not part of a self-contained release unless bundled and checksummed or explicitly excluded from the certified profile.",
+      "severity": "BLOCKER",
+      "status": "OPEN"
+    }
+  ],
+  "rules_of_interpretation": [
+    "Free-tier SaaS is not service independence.",
+    "Bundled open-source code is not an external runtime service.",
+    "Lockfiles, checksums, SBOMs, license notices, and reproducibility controls are retained.",
+    "Raw evidence bytes are preserved even when they contain remote URLs or obsolete scripts.",
+    "Static discovery never certifies runtime absence.",
+    "Data-access connectors must be explicit, isolated, failure-contained, and optional to core startup."
+  ],
+  "scan": {
+    "authored_suffixes": [
+      ".py",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".mjs",
+      ".cjs",
+      ".html",
+      ".yml",
+      ".yaml",
+      ".toml",
+      ".sql"
+    ],
+    "exact_names": [
+      "package.json",
+      "requirements.txt",
+      "requirements.in",
+      "constraints.txt",
+      ".env.example"
+    ],
+    "ignored_directories": [
+      ".git",
+      "node_modules",
+      "dist",
+      "build",
+      ".venv",
+      "venv",
+      "__pycache__",
+      ".pytest_cache",
+      ".mypy_cache",
+      ".ruff_cache"
+    ],
+    "raw_evidence_globs": [
+      "data/raw/**",
+      "**/data/raw/**",
+      "archive/**",
+      "Archive/**",
+      "**/archive/**",
+      "**/snapshots/**",
+      "**/fixtures/source/**"
+    ]
+  },
+  "schema_version": "1.0.0"
+}

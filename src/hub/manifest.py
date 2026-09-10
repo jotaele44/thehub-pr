@@ -19,6 +19,7 @@ _FEDERATION_REPOS = (
     "centinelas-pr",
     "ovnis-pr",
 )
+_SETUP_COMMANDS = ("setup", "runtime_setup", "setup_test")
 
 
 def _fmt(error: jsonschema.ValidationError) -> str:
@@ -27,27 +28,30 @@ def _fmt(error: jsonschema.ValidationError) -> str:
 
 
 def _setup_isolation_errors(manifest: dict) -> List[str]:
-    """Reject Hub setup commands that depend on sibling repo filesystem paths.
+    """Reject dependency setup commands that rely on sibling repo paths.
 
     Immutable package downloads remain valid; this guard is specifically about
-    the parent-workspace coupling that lets one federation checkout block another.
+    parent-workspace coupling that lets one Federation checkout block another.
+    The same rule applies to the backward-compatible audit setup, the smaller
+    runtime profile, and an optional test overlay.
     """
     commands = manifest.get("hub_callable_commands")
     if not isinstance(commands, dict):
         return []
-    setup = commands.get("setup")
-    if not isinstance(setup, str):
-        return []
 
     errors: List[str] = []
-    for repo in _FEDERATION_REPOS:
-        token = f"../{repo}"
-        if token in setup:
-            errors.append(
-                "hub_callable_commands/setup: sibling repository path "
-                f"{token!r} is forbidden; use an immutable package, artifact, "
-                "schema, or explicit service contract instead"
-            )
+    for command_name in _SETUP_COMMANDS:
+        command = commands.get(command_name)
+        if not isinstance(command, str):
+            continue
+        for repo in _FEDERATION_REPOS:
+            token = f"../{repo}"
+            if token in command:
+                errors.append(
+                    f"hub_callable_commands/{command_name}: sibling repository path "
+                    f"{token!r} is forbidden; use an immutable package, artifact, "
+                    "schema, or explicit service contract instead"
+                )
     return errors
 
 

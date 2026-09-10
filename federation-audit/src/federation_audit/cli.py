@@ -9,6 +9,7 @@ from typing import Any
 from jsonschema import Draft202012Validator, FormatChecker
 
 from .fixture import fixture_passed, run_fixture_audit
+from .freedom_scan import scan_freedom
 from .inventory_graph import build_inventory_graph
 from .runtime_cert import runtime_certify
 from .scanner import scan_federation, write_json
@@ -60,6 +61,18 @@ def build_parser() -> argparse.ArgumentParser:
     strict.add_argument("--output", type=Path, required=True)
     strict.add_argument("--require-all", action="store_true")
 
+    freedom = sub.add_parser("freedom-scan", help="four-axis cost and dependency freedom scan")
+    freedom.add_argument("--workspace-root", type=Path, required=True)
+    freedom.add_argument("--snapshot", type=Path, required=True)
+    freedom.add_argument("--policy", type=Path, required=True)
+    freedom.add_argument("--output", type=Path, required=True)
+    freedom.add_argument("--require-no-static-blockers", action="store_true")
+    freedom.add_argument(
+        "--schema",
+        type=Path,
+        default=contract_path("freedom-audit.schema.json"),
+    )
+
     runtime = sub.add_parser("runtime-certify", help="G0-G6 shadow-runtime certification")
     runtime.add_argument("--workspace-root", type=Path, required=True)
     runtime.add_argument("--manifest", type=Path, required=True)
@@ -104,6 +117,18 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(result["coverage"], sort_keys=True))
         if args.require_all and result["workspace_gaps"]:
             return 3
+        return 0
+    if args.command == "freedom-scan":
+        result = scan_freedom(
+            args.workspace_root.resolve(),
+            load_json(args.snapshot),
+            load_json(args.policy),
+        )
+        validate_instance(result, args.schema)
+        write_json(args.output, result)
+        print(json.dumps(result["summary"], sort_keys=True))
+        if args.require_no_static_blockers and result["summary"]["blocking_findings"]:
+            return 5
         return 0
     if args.command == "runtime-certify":
         manifest = load_json(args.manifest)

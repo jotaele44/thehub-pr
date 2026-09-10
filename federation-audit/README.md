@@ -57,3 +57,23 @@ Only T1/T2 evidence may establish `EXECUTABLE_CONFIRMED` or `EXECUTABLE_BY_CONTR
 ## Current limitation
 
 The committed first controlled audit is the deterministic six-case fixture. A live repository GUI run requires a local federation workspace and installed browser binaries. The inventory records unknown authentication and destructive boundaries explicitly rather than guessing them.
+
+## Cost and dependency freedom
+
+The `freedom-scan` command applies `FEDERATION_FREEDOM_CONTRACT_v1` to four independent axes:
+`COST_FREE`, `SERVICE_INDEPENDENT`, `SELF_CONTAINED_RELEASE`, and
+`OFFLINE_REPRODUCIBLE_BUILD`.
+
+```bash
+federation-audit freedom-scan \
+  --workspace-root ../freedom-workspace \
+  --snapshot federation-audit/manifests/freedom-snapshot.v1.json \
+  --policy federation-audit/manifests/freedom-policy.v1.json \
+  --output federation-audit/artifacts/freedom-static-audit.json
+```
+
+The scan preserves raw acquisition snapshots, emits whole-row findings, verifies exact commit/tree
+identity when Git metadata is available, and closes its arithmetic. It deliberately returns
+`certified: false`: static source and manifest evidence can establish blockers, but cannot establish
+the absence of runtime egress, postinstall downloads, secret dependence, or clean-cache build
+failure. Use `--require-no-static-blockers` only after the baseline blocker set has been remediated.

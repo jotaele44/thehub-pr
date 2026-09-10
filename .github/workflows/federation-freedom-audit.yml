@@ -1,0 +1,130 @@
+name: Federation freedom audit
+
+on:
+  pull_request:
+    paths:
+      - "federation-audit/**"
+      - "docs/FEDERATION_FREEDOM_AUDIT_V1.md"
+      - ".github/workflows/federation-freedom-audit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-freedom-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      FREEDOM_WORKSPACE: ${{ github.workspace }}/freedom-workspace
+      FREEDOM_OUTPUT: ${{ github.workspace }}/federation-audit/artifacts/freedom-static-audit.json
+    steps:
+      - name: Checkout audit implementation
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          persist-credentials: false
+
+      - name: Checkout AguaYLuz exact snapshot
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/aguayluz-pr
+          ref: 3678271a03e36375dc3e9f2fb4da0b6b655622bd
+          path: freedom-workspace/aguayluz-pr
+          persist-credentials: false
+
+      - name: Checkout Centinelas exact snapshot
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/centinelas-pr
+          ref: caf086598a4f99e2eb0ca4aac6d51e2d9bd46321
+          path: freedom-workspace/centinelas-pr
+          persist-credentials: false
+
+      - name: Checkout MoneySweep exact snapshot
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/moneysweep-pr
+          ref: 74b10245f925bfd9b9ea07b2ce986981d5d65525
+          path: freedom-workspace/moneysweep-pr
+          persist-credentials: false
+
+      - name: Checkout Ovnis exact snapshot
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/ovnis-pr
+          ref: af066815759fcf479ee79eeeb921c2809a1a20a4
+          path: freedom-workspace/ovnis-pr
+          persist-credentials: false
+
+      - name: Checkout Skywatcher exact snapshot
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/skywatcher-pr
+          ref: 6b95f816f1dc2c2081734df582920703743fbdf3
+          path: freedom-workspace/skywatcher-pr
+          persist-credentials: false
+
+      - name: Checkout Spiderweb exact snapshot
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/spiderweb-pr
+          ref: f46546ef24c7dc2164b3f203d1af57e7d2570219
+          path: freedom-workspace/spiderweb-pr
+          persist-credentials: false
+
+      - name: Checkout TheHub exact snapshot
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          repository: Jotaele44/thehub-pr
+          ref: 6474028904af463cab513d1755bce0380f7b2ad1
+          path: freedom-workspace/thehub-pr
+          persist-credentials: false
+
+      - name: Run fail-closed static audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "$FREEDOM_OUTPUT")"
+          PYTHONPATH=federation-audit/src python -m federation_audit.freedom_scan \
+            --workspace-root "$FREEDOM_WORKSPACE" \
+            --snapshot federation-audit/manifests/freedom-snapshot.v1.json \
+            --policy federation-audit/manifests/freedom-policy.v1.json \
+            --output "$FREEDOM_OUTPUT"
+
+      - name: Verify receipt invariants
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          receipt = json.loads(Path(os.environ["FREEDOM_OUTPUT"]).read_text())
+          summary = receipt["summary"]
+          assert receipt["certified"] is False
+          assert receipt["certification_state"] == "FAIL"
+          assert summary["repositories_declared"] == 7
+          assert summary["repositories_present"] == 7
+          assert summary["repositories_missing"] == 0
+          assert summary["commits_verified"] == 7
+          assert summary["trees_verified"] == 7
+          assert summary["commit_mismatches"] == 0
+          assert summary["findings_discovered"] == summary["findings_classified"]
+          assert summary["arithmetic_closed"] is True
+          assert summary["blocking_findings"] > 0
+          assert summary["scan_errors"] == 0
+          assert summary["dynamic_gates_executed"] == 0
+          assert summary["dynamic_gates_required"] == 8
+          assert len(receipt["dynamic_gates"]) == 8
+          assert all(gate["status"] == "BLOCKED" for gate in receipt["dynamic_gates"])
+          PY
+
+      - name: Upload static audit receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: federation-freedom-static-audit-${{ github.sha }}
+          path: federation-audit/artifacts/freedom-static-audit.json
+          if-no-files-found: error
+          retention-days: 30

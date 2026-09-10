@@ -1,0 +1,90 @@
+{
+  "binding_rule": "Only evidence/data acquisition connectors may use runtime network access. Every entry is optional to core startup and must fail visibly without synthesizing valid empty data.",
+  "candidates": [
+    {
+      "class": "DATA_ACCESS_CONNECTOR",
+      "hosts": [
+        "a.tile.openstreetmap.org",
+        "tile.openstreetmap.org"
+      ],
+      "id": "BASEMAP_OSM_RASTER",
+      "repositories": [
+        "aguayluz-pr",
+        "ovnis-pr",
+        "skywatcher-pr"
+      ],
+      "required_hardening": [
+        "connector registry binding",
+        "offline neutral-background fallback",
+        "cache policy",
+        "rate/attribution policy"
+      ],
+      "status": "OPEN"
+    },
+    {
+      "class": "DATA_ACCESS_CONNECTOR",
+      "hosts": [
+        "server.arcgisonline.com"
+      ],
+      "id": "BASEMAP_ESRI_WORLD_IMAGERY",
+      "repositories": [
+        "aguayluz-pr"
+      ],
+      "required_hardening": [
+        "connector registry binding",
+        "offline neutral-background fallback",
+        "cache/license policy"
+      ],
+      "status": "OPEN"
+    },
+    {
+      "class": "DATA_ACCESS_CONNECTOR",
+      "hosts": [
+        "opensky-network.org"
+      ],
+      "id": "SKYWATCHER_OPENSKY",
+      "repositories": [
+        "skywatcher-pr"
+      ],
+      "required_hardening": [
+        "exact endpoint enumeration",
+        "anonymous/authenticated parity classification",
+        "raw cache",
+        "rate-limit tests"
+      ],
+      "status": "OPEN"
+    },
+    {
+      "class": "DATA_ACCESS_CONNECTOR",
+      "hosts": [
+        "gibs.earthdata.nasa.gov",
+        "sentinel-hub.com",
+        "dataspace.copernicus.eu"
+      ],
+      "id": "SKYWATCHER_IMAGERY_PROVIDERS",
+      "repositories": [
+        "skywatcher-pr",
+        "spiderweb-pr"
+      ],
+      "required_hardening": [
+        "exact endpoint enumeration",
+        "provider-by-provider cost/account classification",
+        "raw manifest",
+        "manual import fallback"
+      ],
+      "status": "OPEN"
+    }
+  ],
+  "explicit_non_exemptions": [
+    "api.anthropic.com",
+    "Sentry telemetry endpoints",
+    "Slack webhooks",
+    "ntfy notification endpoints",
+    "api.github.com repository_dispatch",
+    "unpkg.com",
+    "package registries during application runtime",
+    "DuckDB extension repositories during application runtime"
+  ],
+  "registry_id": "FEDERATION_DATA_ACCESS_EXEMPTIONS_v1",
+  "schema_version": "1.0.0"
+}
