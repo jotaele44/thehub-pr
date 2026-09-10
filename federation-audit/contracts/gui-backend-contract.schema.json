@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.dev/schemas/gui-backend-contract.schema.json",
+  "title": "PRII GUI Backend Contract",
+  "type": "object",
+  "required": ["schema_version", "repository", "source_commit", "policy", "discovery", "authority", "auth", "provenance", "devices", "runtime_evidence", "certification"],
+  "properties": {
+    "schema_version": {"const": "federation.gui-backend-contract/1.0"},
+    "repository": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
+    "source_commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "policy": {
+      "type": "object",
+      "required": ["require_zero_material_residue", "dimensions"],
+      "properties": {
+        "require_zero_material_residue": {"const": true},
+        "dimensions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"enum": ["executability", "semantic", "state", "auth", "data", "provenance", "device", "identity", "geometry", "authority"]},
+          "allOf": [
+            {"contains": {"const": "executability"}},
+            {"contains": {"const": "semantic"}},
+            {"contains": {"const": "auth"}},
+            {"contains": {"const": "provenance"}},
+            {"contains": {"const": "authority"}}
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "discovery": {
+      "type": "object",
+      "required": ["backend_roots", "frontend_roots", "route_files", "navigation_files"],
+      "properties": {
+        "backend_roots": {"type": "array", "items": {"type": "string"}},
+        "frontend_roots": {"type": "array", "items": {"type": "string"}},
+        "route_files": {"type": "array", "items": {"type": "string"}},
+        "navigation_files": {"type": "array", "items": {"type": "string"}},
+        "existing_gui_capability_manifests": {"type": "array", "items": {"type": "string"}, "default": []}
+      },
+      "additionalProperties": false
+    },
+    "authority": {
+      "type": "object",
+      "required": ["semantic_authority", "mutation_authority", "identity_authority", "geometry_authority", "provenance_authority"],
+      "properties": {
+        "semantic_authority": {"type": "string"},
+        "mutation_authority": {"type": "string"},
+        "identity_authority": {"type": "string"},
+        "geometry_authority": {"type": "string"},
+        "provenance_authority": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "auth": {
+      "type": "object",
+      "required": ["mutating_route_policy", "guard_patterns", "explicit_public_mutations"],
+      "properties": {
+        "mutating_route_policy": {"const": "require_guard_or_explicit_public"},
+        "guard_patterns": {"type": "array", "items": {"type": "string"}},
+        "explicit_public_mutations": {"type": "array", "items": {"type": "string", "pattern": "^(POST|PUT|PATCH|DELETE) /"}}
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["required_fields_when_available", "frontend_evidence_files"],
+      "properties": {
+        "required_fields_when_available": {"type": "array", "items": {"type": "string"}},
+        "frontend_evidence_files": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
+    "devices": {
+      "type": "object",
+      "required": ["desktop", "mobile_web", "native_ios", "native_evidence_files", "intentional_restrictions"],
+      "properties": {
+        "desktop": {"type": "boolean"},
+        "mobile_web": {"type": "boolean"},
+        "native_ios": {"type": "boolean"},
+        "native_evidence_files": {"type": "array", "items": {"type": "string"}},
+        "intentional_restrictions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["capability", "missing_on", "rationale"],
+            "properties": {
+              "capability": {"type": "string"},
+              "missing_on": {"type": "array", "items": {"enum": ["desktop", "mobile_web", "native_ios"]}},
+              "rationale": {"type": "string", "minLength": 8},
+              "evidence": {"type": "array", "items": {"type": "string"}}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "backend_only_allowlist": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "required": ["pattern", "classification", "rationale", "evidence"],
+        "properties": {
+          "pattern": {"type": "string"},
+          "classification": {"enum": ["INTERNAL", "ADMIN_ONLY", "AUTOMATION_ONLY", "CREDENTIAL_BOUND", "DEPRECATED", "BLOCKED"]},
+          "rationale": {"type": "string", "minLength": 8},
+          "evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "gui_only_allowlist": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "required": ["pattern", "classification", "rationale", "evidence"],
+        "properties": {
+          "pattern": {"type": "string"},
+          "classification": {"const": "PRESENTATION_ONLY"},
+          "rationale": {"type": "string", "minLength": 8},
+          "evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "state_claims": {
+      "type": "array",
+      "default": [],
+      "items": {
+        "type": "object",
+        "required": ["claim_id", "frontend_pattern", "backend_predicate", "evidence"],
+        "properties": {
+          "claim_id": {"type": "string"},
+          "frontend_pattern": {"type": "string"},
+          "backend_predicate": {"type": "string", "minLength": 3},
+          "evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "runtime_evidence": {
+      "type": "object",
+      "required": ["data", "identity", "geometry", "device"],
+      "properties": {
+        "data": {"$ref": "#/$defs/runtimeDimension"},
+        "identity": {"$ref": "#/$defs/runtimeDimension"},
+        "geometry": {"$ref": "#/$defs/runtimeDimension"},
+        "device": {"$ref": "#/$defs/runtimeDimension"}
+      },
+      "additionalProperties": false
+    },
+    "certification": {
+      "type": "object",
+      "required": ["state", "material_residue"],
+      "properties": {
+        "state": {"enum": ["OPEN", "PROVISIONAL", "PASS", "BLOCKED"]},
+        "material_residue": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "runtimeDimension": {
+      "type": "object",
+      "required": ["state", "evidence"],
+      "properties": {
+        "state": {"enum": ["OPEN", "PROVISIONAL", "PASS", "BLOCKED"]},
+        "evidence": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

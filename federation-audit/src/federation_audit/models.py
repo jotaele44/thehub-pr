@@ -28,6 +28,11 @@ class Evidence:
     locator: str
     digest: str | None = None
 
+    @property
+    def value(self) -> str:
+        """Backward-compatible semantic alias used by generic receipt collectors."""
+        return self.locator
+
 
 @dataclass
 class Trace:
