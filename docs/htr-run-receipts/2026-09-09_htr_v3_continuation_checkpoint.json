@@ -1,0 +1,119 @@
+{
+  "canonical_recurrence": {
+    "bundle_sha256": "216ff375e8ba9e4812e41576b5d0b6a3e09b455298beeae80e1b2064aba1a032",
+    "combined_candidate_not_identity": 5447,
+    "combined_unsupported": 3855,
+    "combined_v2_v3_candidates": 9302,
+    "connectivity_promotions": 0,
+    "identity_promotions": 0,
+    "pair_binding_promotions": 0,
+    "road_named_observations": 168906,
+    "transitive_context_inheritance": 0,
+    "v3_incremental_candidate_not_identity_unresolved": 3709,
+    "v3_incremental_candidates": 3733,
+    "v3_incremental_contradiction_rows_subset": 93,
+    "v3_incremental_pair_groups": 880,
+    "v3_incremental_unsupported": 24,
+    "v3_road_recurrence_eligible_manifestations": 265,
+    "v3_road_recurrence_unsupported_keys": 5,
+    "v3_supported_major_discovery_source_manifestations": 270
+  },
+  "captured_date": "2026-09-09",
+  "certification": {
+    "actions_execution": "BLOCKED",
+    "frozen_recurrence_state": "PASS_BOUNDED_EXISTING",
+    "merge_authorization": "NOT_GRANTED",
+    "pair_binding_pass2": "PASS_BOUNDED_SEARCH_DISPOSITION",
+    "pair_binding_pass3": "PASS_BOUNDED_SEARCH_DISPOSITION",
+    "pair_binding_resolution": "OPEN",
+    "validator_patch": "PREPARED_NOT_HOSTED_CERTIFIED"
+  },
+  "external_merge_state_observed": {
+    "aguayluz_195": "MERGED_EXTERNALLY",
+    "note": "These merges were observed as repository state changes and were not performed by this continuation execution.",
+    "skywatcher_215": "MERGED_EXTERNALLY",
+    "spiderweb_308": "MERGED_EXTERNALLY",
+    "thehub_htr_212": "MERGED_EXTERNALLY",
+    "thehub_recurrence_239": "MERGED_EXTERNALLY",
+    "thehub_v3_229": "MERGED_EXTERNALLY"
+  },
+  "invariants": {
+    "cluster_identity_prohibited": true,
+    "context_support_is_direct_pair_binding": false,
+    "discovery_connectivity_prohibited": true,
+    "fuzzy_identity_prohibited": true,
+    "green_code_equals_merge_authorized": false,
+    "merges_performed_by_this_continuation": 0,
+    "name_identity_prohibited": true,
+    "proximity_identity_prohibited": true,
+    "raw_normalized_canonical_separate": true,
+    "search_absence_is_negative_identity_evidence": false,
+    "transitive_context_inheritance": false,
+    "unsupported_not_rejected": true
+  },
+  "public_pair_binding_passes": {
+    "cumulative_direct_pair_binding_found": 0,
+    "cumulative_targeted_family_search_dispositions": 26,
+    "cumulative_unresolved_family_dispositions": 26,
+    "pass1": {
+      "direct_pair_binding_found": 0,
+      "receipt_sha256": "3f9a1fe8502481917326a854f42a06d19c39a416f3486770f396c808d65016b3",
+      "targeted_families": 6,
+      "unresolved": 6
+    },
+    "pass2": {
+      "context_supported_not_pair_bound": 6,
+      "direct_pair_binding_found": 0,
+      "git_commit": "aee1b94dbc04c444ddba3ffd930e3fce1b30f5a4",
+      "receipt_sha256": "458f6201b2b7a922ea3ab67092d08035031c6f1eaad39f09f61a355029c3ff01",
+      "targeted_families": 10,
+      "unresolved": 10
+    },
+    "pass3": {
+      "context_or_ambiguity_supported_not_pair_bound": 2,
+      "direct_pair_binding_found": 0,
+      "git_commit": "c78234638b11ce60cdcaf9bb6822f6b2933e84a2",
+      "receipt_sha256": "c20b5a0a5050d8c21feeb972d21a32a37e1b53ec7fa291238474b45514510341",
+      "targeted_families": 10,
+      "underlying_candidate_rows": 826,
+      "underlying_pair_groups": 76,
+      "unresolved": 10
+    },
+    "universal_public_search_exhaustion_claimed": false
+  },
+  "repository_state": {
+    "actions_blocker_issue": {
+      "classification": "BLOCKED_ACTIONS_STARTUP_OR_REPOSITORY_BASELINE",
+      "independent_reproductions": 2,
+      "issue": 283,
+      "root_cause": "UNKNOWN",
+      "state": "OPEN"
+    },
+    "main_sha_at_continuation_start": "cc78f5e3d4da59efa2fec206849fe7f351c3ed22",
+    "pair_binding_audit_pr": {
+      "change_scope": "audit receipts and SHA sidecars only",
+      "head_sha": "aa0fde939e0c11dd86c82d10b7a0a5d8aece7d49",
+      "hosted_execution_state": "BLOCKED_BEFORE_STEPS",
+      "merge_authorized": false,
+      "pr": 284,
+      "state": "OPEN_UNMERGED"
+    },
+    "validator_fix_pr": {
+      "change_scope": "validator-only; frozen receipts and recurrence semantics unchanged",
+      "head_sha": "9dbb81cbdb068d17ba0c02eaffc8d7a65689cbc1",
+      "hosted_execution_state": "BLOCKED_BEFORE_STEPS",
+      "merge_authorized": false,
+      "pr": 282,
+      "state": "OPEN_UNMERGED"
+    }
+  },
+  "schema_version": "htr-v3-continuation-checkpoint-2026-09-09-1.0",
+  "scope": "Bounded continuation checkpoint after frozen V3 road recurrence, pair-binding public search passes 1-3, and validator/Actions startup adjudication. No recurrence source artifacts are mutated by this receipt.",
+  "v2_pair_residue": {
+    "direct_pair_binding_groups": 0,
+    "pair_groups": 460,
+    "source_row_relations_preserved": 1738,
+    "unresolved_pair_groups": 460,
+    "unresolved_source_row_relations": 1738
+  }
+}
