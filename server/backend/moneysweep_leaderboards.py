@@ -29,6 +29,11 @@ def _trusted_hashes(name: str) -> set[str]:
     return {item.strip().lower() for item in raw.split(",") if item.strip()}
 
 
+def _is_sha256(value: object) -> bool:
+    text = str(value or "")
+    return len(text) == 64 and all(ch in "0123456789abcdef" for ch in text)
+
+
 def _validate_package(document: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if document.get("schemaVersion") != EXPECTED_SCHEMA:
@@ -46,30 +51,48 @@ def _validate_package(document: dict[str, Any]) -> list[str]:
     if certification.get("state") != "PASS":
         errors.append("certification.state")
     for key in ("receiptSha256", "releaseManifestSha256"):
-        digest = str(certification.get(key) or "")
-        if len(digest) != 64 or any(ch not in "0123456789abcdef" for ch in digest):
+        if not _is_sha256(certification.get(key)):
             errors.append(f"certification.{key}")
+
+    categories = document.get("categories")
+    if not isinstance(categories, list) or not categories:
+        errors.append("categories")
+        categories = []
     seen: set[str] = set()
-    for category in document.get("categories") or []:
+    for category in categories:
         category_id = str(category.get("categoryId") or "")
         if not category_id or category_id in seen:
             errors.append("categories.uniqueCategoryId")
         seen.add(category_id)
+        if not str(category.get("metricType") or ""):
+            errors.append(f"categories.{category_id}.metricType")
+        if not str(category.get("snapshotId") or ""):
+            errors.append(f"categories.{category_id}.snapshotId")
+        if not _is_sha256(category.get("snapshotSha256")):
+            errors.append(f"categories.{category_id}.snapshotSha256")
         rows = category.get("rows")
         if not isinstance(rows, list):
             errors.append(f"categories.{category_id}.rows")
             continue
-        prior_rank = 0
         prior_value: float | None = None
+        prior_rank: int | None = None
         seen_entities: set[tuple[str, str]] = set()
-        for row in rows:
+        for position, row in enumerate(rows, start=1):
             entity_id = str(row.get("entityId") or "")
+            display = str(row.get("entityDisplayName") or "")
             currency = str(row.get("currency") or "")
             key = (entity_id, currency)
             if not entity_id or key in seen_entities:
                 errors.append(f"categories.{category_id}.entityUniqueness")
             seen_entities.add(key)
-            if str(row.get("entityResolutionState") or "").startswith("NAME"):
+            if not display:
+                errors.append(f"categories.{category_id}.entityDisplayName")
+            if not currency:
+                errors.append(f"categories.{category_id}.currency")
+            identity_state = str(row.get("entityResolutionState") or "")
+            if not identity_state:
+                errors.append(f"categories.{category_id}.entityResolutionState")
+            if identity_state.startswith("NAME"):
                 errors.append(f"categories.{category_id}.nameOnlyIdentity")
             try:
                 value = float(row["metricValue"])
@@ -77,10 +100,13 @@ def _validate_package(document: dict[str, Any]) -> list[str]:
             except (KeyError, TypeError, ValueError):
                 errors.append(f"categories.{category_id}.rankShape")
                 continue
-            if rank < prior_rank:
-                errors.append(f"categories.{category_id}.rankOrder")
+            if rank < 1:
+                errors.append(f"categories.{category_id}.rankMinimum")
             if prior_value is not None and value > prior_value:
                 errors.append(f"categories.{category_id}.valueOrder")
+            expected_rank = 1 if prior_value is None else (prior_rank if value == prior_value else position)
+            if rank != expected_rank:
+                errors.append(f"categories.{category_id}.competitionRank")
             prior_rank, prior_value = rank, value
     return sorted(set(errors))
 
@@ -92,7 +118,7 @@ def _load_package(path: Path = DEFAULT_PACKAGE) -> dict[str, Any]:
             detail={
                 "state": "BLOCKED",
                 "reason": "certified MoneySweep leaderboard package is not mounted",
-                "path": str(path.relative_to(REPO_ROOT)),
+                "path": str(path.relative_to(REPO_ROOT)) if path.is_relative_to(REPO_ROOT) else str(path),
             },
         )
     raw = path.read_bytes()
