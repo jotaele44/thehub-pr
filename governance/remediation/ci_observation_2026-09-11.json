@@ -1,0 +1,75 @@
+{
+  "schema_version": "prii_federation_ci_observation_v1",
+  "observation_date": "2026-09-11",
+  "purpose": "append-only observation of hosted execution availability; does not modify the frozen September 9 seven-head snapshot or August 31 historical baseline",
+  "classification": "HOSTED_INFRASTRUCTURE_FAILURE",
+  "certification_effect": "BLOCKED",
+  "rule": "A failed GitHub Actions job with zero source steps is not evidence of semantic code failure or PASS.",
+  "observations": [
+    {
+      "repository": "jotaele44/moneysweep-pr",
+      "surface": "PR #583 Case Manager authorization",
+      "head": "ab94b21ad72e9ba09c166ada2f78c793ea366183",
+      "workflow_run": 34372651754,
+      "rerun_job": 103481866762,
+      "job_name": "test (3.13)",
+      "conclusion": "failure",
+      "steps": 0,
+      "semantic_result": "NOT_EXECUTED"
+    },
+    {
+      "repository": "jotaele44/thehub-pr",
+      "surface": "PR #258 authority-boundary certification",
+      "head_at_rerun": "e55990ea9f91a67fa555a122fbc21a7e9c0315b6",
+      "workflow_run": 34408179785,
+      "rerun_job": 103481886434,
+      "job_name": "authority-boundary",
+      "conclusion": "failure",
+      "steps": 0,
+      "semantic_result": "NOT_EXECUTED"
+    },
+    {
+      "repository": "jotaele44/moneysweep-pr",
+      "surface": "PR #584 contract-finance producer provenance rebind",
+      "head": "cc5b4f3ec17e8c30aaafede43c7c4efa034d9095",
+      "workflow_run": 34668103502,
+      "job": 103484069535,
+      "job_name": "test (3.13)",
+      "conclusion": "failure",
+      "steps": 0,
+      "semantic_result": "NOT_EXECUTED"
+    },
+    {
+      "repository": "jotaele44/spiderweb-pr",
+      "surface": "PR #351 contract-finance expected-producer pin enforcement",
+      "head": "c8e0db626d1bb589fd692321c46e62e2ba411ac0",
+      "workflow_run": 34668128543,
+      "job_names_checked": ["data-policy-lint", "test-gebco (3.11)", "frontend", "lint", "test (3.11)", "install-matrix (federation)", "security-audit", "lock"],
+      "conclusion": "failure",
+      "steps": 0,
+      "semantic_result": "NOT_EXECUTED"
+    },
+    {
+      "repository": "jotaele44/skywatcher-pr",
+      "surface": "PR #272 Centinelas handoff integrity",
+      "head": "fd4dfef237137e44933aa33ffdd1c8418824c42b",
+      "workflow_run": 34667945953,
+      "job_names_checked": ["test (3.11)", "lock", "test (3.10)", "test-imagery (3.12)", "test-adsb (3.12)", "frontend", "test (3.12)", "lint"],
+      "conclusion": "failure",
+      "steps": 0,
+      "semantic_result": "NOT_EXECUTED"
+    }
+  ],
+  "arithmetic": {
+    "observed_remediation_surfaces": 5,
+    "zero_step_surfaces": 5,
+    "source_executed_surfaces": 0,
+    "classification_difference": 0
+  },
+  "invariants": {
+    "september_9_snapshot_modified": false,
+    "august_31_baseline_modified": false,
+    "credentials_provisioned": false,
+    "certification_claimed": false
+  }
+}
