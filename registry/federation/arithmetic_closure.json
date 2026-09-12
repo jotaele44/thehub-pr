@@ -1,0 +1,26 @@
+{
+  "schema_version": "authority_boundary_arithmetic_v1",
+  "state": "FROZEN_CANDIDATE",
+  "equations": [
+    {"id":"ARITH-REPO","lhs":"REPOSITORIES","rhs_terms":["THEHUB","PRODUCERS"],"expected":{"REPOSITORIES":7,"THEHUB":1,"PRODUCERS":6},"rule":"7 = 1 + 6"},
+    {"id":"ARITH-ID","lhs":"DISCOVERED_ID_FAMILIES","rhs_terms":["REGISTERED","EXCLUDED_NONIDENTITY","BLOCKED"],"rule":"Every discovered ID family is explicitly dispositioned."},
+    {"id":"ARITH-REL","lhs":"DISCOVERED_RELATIONSHIP_LITERALS","rhs_terms":["SHARED","DOMAIN","CONSUMER_ONLY","BLOCKED"],"rule":"Every relationship literal is explicitly dispositioned."},
+    {"id":"ARITH-SOURCE","lhs":"CROSS_REPO_SOURCE_MANIFESTATIONS","rhs_terms":["AUTHORITATIVE_OR_CANONICAL","REFERENCE_COPY","DOMAIN_DERIVATIVE","CACHE_OR_VIEW","DISCOVERY_OR_HISTORICAL","BLOCKED"],"rule":"Every duplicated/cross-repo source manifestation has an ownership class."},
+    {"id":"ARITH-GEOMETRY","lhs":"GEOMETRY_MANIFESTATIONS","rhs_terms":["CANONICAL_REFERENCE","DOMAIN_GEOMETRY","DISCOVERY_GEOMETRY","LEGACY_NONCANONICAL","BLOCKED"],"rule":"Every geometry manifestation has an authority/canonicality role."},
+    {"id":"ARITH-GLOBAL","lhs":"ALL_DISCOVERED_AUTHORITY_OBJECTS","rhs_terms":["CLASSIFIED","BLOCKED"],"rule":"Certification requires BLOCKED = 0 and UNCLASSIFIED = 0."}
+  ],
+  "certification_requirements": {
+    "blocked": 0,
+    "unclassified": 0,
+    "repository_difference": 0,
+    "producer_difference": 0,
+    "unknown_id_families": 0,
+    "ambiguous_id_families": 0,
+    "unresolved_id_expressions": 0,
+    "unknown_relationship_literals": 0,
+    "ambiguous_relationship_literals": 0,
+    "relationship_owner_mismatches": 0,
+    "source_ownership_ambiguities": 0,
+    "geometry_authority_ambiguities": 0
+  }
+}

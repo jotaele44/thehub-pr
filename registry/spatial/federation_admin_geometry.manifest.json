@@ -1,0 +1,52 @@
+{
+  "schema_version": "federation_admin_geometry_manifest_v1",
+  "authority_plane": "prii-federation-spatial-identity",
+  "external_source_authority": "U.S. Census Bureau cartographic boundary files",
+  "source_vintage": "2023",
+  "canonical_crs": "urn:ogc:def:crs:OGC:1.3:CRS84",
+  "source_derivation": {
+    "producer_script": "scripts/build_pr_geo_boundaries.py",
+    "producer_script_blob_sha": "6e8f19a97fa57da095912f8c7978725262c461a0",
+    "municipio_input": "https://www2.census.gov/geo/tiger/GENZ2023/shp/cb_2023_us_county_500k.zip",
+    "barrio_input": "https://www2.census.gov/geo/tiger/GENZ2023/shp/cb_2023_72_cousub_500k.zip",
+    "municipio_filter": "STATEFP == 72",
+    "barrio_filter": "STATEFP == 72",
+    "transform": "reproject to EPSG:4326; simplify tolerance 0.0003 degrees preserving topology; serialize GeoJSON as CRS84 longitude/latitude with coordinate precision 5",
+    "source_processing_crs": "EPSG:4326",
+    "coordinate_order": "longitude_latitude",
+    "source_note": "The producer script explicitly names GENZ2023 inputs and documents Census cartographic boundary files as public-domain web-mapping sources."
+  },
+  "geometry_roles": ["municipio containment", "barrio containment", "federation administrative normalization"],
+  "custodial_manifestation": {
+    "repository": "jotaele44/aguayluz-pr",
+    "commit": "3678271a03e36375dc3e9f2fb4da0b6b655622bd",
+    "producer_role": "water_grid_monitoring_node",
+    "authority_note": "AguaYLuz is the pinned producer manifestation/custodian only; it does not supersede the external Census source authority or the federation shared-geometry authority."
+  },
+  "layers": [
+    {
+      "layer_id": "PR_MUNICIPIOS",
+      "path": "data/geo/pr_municipios.geojson",
+      "git_blob_sha": "048265807f94e5142c34c9edae27356e27ffae42",
+      "expected_feature_count": 78,
+      "geometry_type": "Polygon_or_MultiPolygon",
+      "crs": "urn:ogc:def:crs:OGC:1.3:CRS84",
+      "source_geography": "2023 Census county-equivalent cartographic boundary",
+      "federation_role": "SHARED_ADMIN_REFERENCE"
+    },
+    {
+      "layer_id": "PR_BARRIOS",
+      "path": "data/geo/pr_barrios.geojson",
+      "git_blob_sha": "55786963138da192deccb756a37fab94f096cf13",
+      "expected_feature_count": 901,
+      "geometry_type": "Polygon_or_MultiPolygon",
+      "crs": "urn:ogc:def:crs:OGC:1.3:CRS84",
+      "source_geography": "2023 Census Puerto Rico county-subdivision cartographic boundary",
+      "federation_role": "SHARED_ADMIN_REFERENCE"
+    }
+  ],
+  "projection_policy": "Repository-local copies are read-only projections/caches. A different source revision requires a new manifest and compatibility/adjudication receipt before promotion.",
+  "containment_policy": "Cross-repository municipio/barrio containment MUST use this pinned manifestation or a certified successor; producer-local centroids or fuzzy place names cannot override polygon containment.",
+  "open_metadata": [],
+  "status": "PINNED_SOURCE_LINEAGE_CLOSED"
+}

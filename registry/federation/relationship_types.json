@@ -1,0 +1,134 @@
+{
+  "schema_version": "federation_relationship_authority_registry_v1",
+  "authority_plane": "prii-federation-spatial-identity",
+  "policy": {
+    "undeclared_relationship_type": "FAIL",
+    "multiple_authority_owners": "FAIL",
+    "hub_correlation_is_identity": false,
+    "domain_relationship_may_be_reowned_by_hub": false
+  },
+  "shared_relationships": [
+    {"id":"SAME_ENTITY_AS","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":true},
+    {"id":"FEDERATION_MEMBER_OF","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":true},
+    {"id":"SUPERSEDES_IDENTITY","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":true},
+    {"id":"SPLIT_FROM_IDENTITY","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":true},
+    {"id":"SHARED_CONTAINS","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":false},
+    {"id":"SHARED_WITHIN","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":false},
+    {"id":"duplicate_of","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":true},
+    {"id":"located_in","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":false},
+    {"id":"reported_by","authority_owner":"prii-federation-spatial-identity","scope":"SHARED","identity_bearing":false}
+  ],
+  "domain_registries": [
+    {
+      "owner":"moneysweep-pr",
+      "repository":"jotaele44/moneysweep-pr",
+      "source":"config/government_entities/relationship_types.yml",
+      "source_blob_sha":"317d67bb79b03ab84de12944851d0a9a52930992",
+      "scope":"DOMAIN_ONLY",
+      "types":["parent_of","component_of","reports_to","controlled_by","owns","predecessor_of","successor_of","renamed_to","merged_into","split_into","absorbed_functions_from","transferred_functions_to","created_from","abolished_by","fiscal_agent_for","bond_issuer_for","operator_of","concessionaire_for","procurement_agent_for","oversight_of","regulated_by","administers_program_for","municipal_component_of","possible_successor_of","possible_predecessor_of"]
+    },
+    {
+      "owner":"moneysweep-pr",
+      "repository":"jotaele44/moneysweep-pr",
+      "source":"exports/federation/relationships.jsonl",
+      "source_blob_sha":"30e9b2a2658ad09a040a62f51aa70d5969ac0d09",
+      "source_role":"FROZEN_EMITTED_MANIFESTATION",
+      "scope":"DOMAIN_ONLY",
+      "types":["ADVISES","FUNDED_BY","HOLDS_DEBT","HOLDS_ROLE_IN","LOBBIES_FOR","LOCATED_IN","OWNS_OR_CONTROLS","RECEIVES_CONTRACT"]
+    },
+    {
+      "owner":"moneysweep-pr",
+      "repository":"jotaele44/moneysweep-pr",
+      "source":"moneysweep/political_finance/flow_graph.py",
+      "source_blob_sha":"1916ff72ee425306efdc96691218adb554df2405",
+      "source_role":"EXECUTABLE_PRODUCER",
+      "scope":"DOMAIN_ONLY",
+      "types":["RESOLVED_AS"]
+    },
+    {
+      "owner":"moneysweep-pr",
+      "repository":"jotaele44/moneysweep-pr",
+      "source":"exports/samples/relationships.sample.jsonl",
+      "source_blob_sha":"f568abd91cd858aa728e4e71eaf4a1e2513f5bc7",
+      "source_role":"FROZEN_SAMPLE_MANIFESTATION",
+      "scope":"DOMAIN_ONLY",
+      "types":["received_award_from"]
+    },
+    {
+      "owner":"moneysweep-pr",
+      "repository":"jotaele44/moneysweep-pr",
+      "source":"exports/conformance/v1_2/relationships.jsonl",
+      "source_blob_sha":"9717ddef33fcefb45de3f0ddffc56f940e8e1ee5",
+      "source_role":"FROZEN_CONFORMANCE_MANIFESTATION",
+      "scope":"DOMAIN_ONLY",
+      "types":["subcontractor"]
+    },
+    {
+      "owner":"aguayluz-pr",
+      "repository":"jotaele44/aguayluz-pr",
+      "source":"scripts/federation_export.py",
+      "source_blob_sha":"e83697a17ec98f1705caaf84d9e92bc2ddc1ca13",
+      "source_role":"EXECUTABLE_PRODUCER",
+      "scope":"DOMAIN_ONLY",
+      "types":["affected_by","energized_by","operated_by"],
+      "families":["water-network/topology","power-grid/topology","energizes","utility-operation","outage/restoration"]
+    },
+    {
+      "owner":"skywatcher-pr",
+      "repository":"jotaele44/skywatcher-pr",
+      "source":"scripts/federation_export.py",
+      "source_blob_sha":"f97b0e031817c0fba855b13a9b273d17222e6be8",
+      "source_role":"EXECUTABLE_PRODUCER",
+      "scope":"DOMAIN_ONLY",
+      "types":["detected_by"],
+      "families":["aircraft/flight","observation/track","airspace/corridor","airport/reference"]
+    },
+    {
+      "owner":"ovnis-pr",
+      "repository":"jotaele44/ovnis-pr",
+      "source":"scripts/federation_export.py",
+      "source_blob_sha":"46d27d859a356b1d4242783f13f2f7819c3d7712",
+      "source_role":"EXECUTABLE_SHARED_RELATIONSHIP_EMITTER",
+      "scope":"DOMAIN_ONLY",
+      "families":["case/source","candidate/promotion","case-evidence"]
+    },
+    {
+      "owner":"centinelas-pr",
+      "repository":"jotaele44/centinelas-pr",
+      "source":"scripts/federation_export.py",
+      "source_blob_sha":"a26399b9511e796611bae75de368850c7803152a",
+      "source_role":"EXECUTABLE_PRODUCER",
+      "scope":"DOMAIN_ONLY",
+      "types":["involves_agency"],
+      "families":["signal/classification","signal/routing","signal/handoff"]
+    },
+    {
+      "owner":"spiderweb-pr",
+      "repository":"jotaele44/spiderweb-pr",
+      "source":"scripts/federation_export.py",
+      "source_blob_sha":"67eeef944699b4715d11faf313cd115aae88025e",
+      "source_role":"EXECUTABLE_PRODUCER",
+      "scope":"DOMAIN_ONLY",
+      "types":["observed"],
+      "families":["spatial-evidence","operational-overlay","domain-containment","geocode-candidate"]
+    }
+  ],
+  "hub_derived": {
+    "owner":"thehub-pr",
+    "source":"src/hub/correlate.py",
+    "source_blob_sha":"4ec881df38fcf106ce4a182e0dd61c40cc3f0080",
+    "source_role":"EXECUTABLE_DERIVER",
+    "scope":"SHARED_DERIVED_CANDIDATE",
+    "identity_bearing":false,
+    "types":["alert_affects_entity","entity_correlation","observation_at_entity","spatial_proximity","temporal_proximity"],
+    "rule":"Hub correlation edges may propose cross-producer candidates but cannot establish identity equivalence or re-own producer-domain relationships."
+  },
+  "census_state":"EXHAUSTIVE_CRAWLER_RECONCILED",
+  "census_basis":{
+    "repository_denominator":7,
+    "snapshot_registry":"registry/federation/repository_snapshots.json",
+    "python_helper_binding":"AST_SEMANTIC_PARAMETER",
+    "hub_aggregate_rows":"CONSUMER_PROJECTION_ONLY"
+  },
+  "certification_effect":"BLOCKING_UNTIL_EVERY_LITERAL_OR_ENUM_RELATIONSHIP_TYPE_RESOLVES_TO_ONE_OWNER"
+}
