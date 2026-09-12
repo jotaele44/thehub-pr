@@ -1,0 +1,2194 @@
+{
+  "schema_version": "prii_rc_acceptance.v1",
+  "release_id": "prii-rc-20260912",
+  "created_utc": "2026-09-12T14:03:28.014785+00:00",
+  "integration_owner": "task:01a095e8-9725-72d3-bf8a-130efadc6506",
+  "generation": "seven-local-apps.v1",
+  "repositories": [
+    "thehub-pr",
+    "aguayluz-pr",
+    "centinelas-pr",
+    "ovnis-pr",
+    "skywatcher-pr",
+    "spiderweb-pr",
+    "moneysweep-pr"
+  ],
+  "scope_status": "FROZEN_FINITE_GATES_WITH_SCOPE_RECONCILIATION_OPEN",
+  "scope_boundary": "Approved seven local apps and their current artifact-based six-producer Hub path. Existing approved domain requirements remain mandatory through scope reconciliation; this contract does not certify all domain vectors by proxy.",
+  "exclusions": [
+    {
+      "scope": "Hosted multi-user identity and new generic agent/function/object storage services",
+      "basis": "ADR 0010 local release excludes hosted authentication; backend assessment says new stub infrastructure requires a concrete consumer need.",
+      "state": "EXCLUDED_FROM_LOCAL_RC"
+    },
+    {
+      "scope": "Merge, deployment, production data promotion, purchases",
+      "basis": "Current user control restrictions; RC verification does not authorize these actions.",
+      "state": "NOT_AUTHORIZED"
+    }
+  ],
+  "unresolved_scope": [
+    "Content-level adjudication of frozen open PR inventory",
+    "Full reconciliation of registry/development_vectors.yaml and domain ledgers",
+    "Preserved original work and saturation branches not yet integrated"
+  ],
+  "requirements": [
+    {
+      "id": "RC-PRESERVE-THEHUB",
+      "axis": "DEVELOPMENT",
+      "owner": "thehub-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Verify original index, working files and untracked file hashes against frozen baseline; reconcile every preserved repair.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-GATES-THEHUB",
+      "axis": "DEVELOPMENT",
+      "owner": "thehub-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:.github/workflows/"
+      ],
+      "dependencies": [
+        "RC-PRESERVE-THEHUB"
+      ],
+      "acceptance_test": "Execute all applicable declared lint, type, test, coverage, security, build and contract checks at the candidate SHA; terminal logs and exit codes required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-THEHUB-ENGINEERING",
+      "axis": "DEVELOPMENT",
+      "owner": "thehub-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (thehub-pr, engineering) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-THEHUB-MAIN_BRANCH_AVAILABILITY",
+      "axis": "RELEASE",
+      "owner": "thehub-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (thehub-pr, main_branch_availability) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-THEHUB-CI_ENFORCEMENT",
+      "axis": "RELEASE",
+      "owner": "thehub-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (thehub-pr, ci_enforcement) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-THEHUB-DATA_MATERIALIZATION",
+      "axis": "LIVE_DATA",
+      "owner": "thehub-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (thehub-pr, data_materialization) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-THEHUB-PRODUCT_UI",
+      "axis": "DEVELOPMENT",
+      "owner": "thehub-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (thehub-pr, product_ui) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-THEHUB-OPERATOR_PLATFORM_READINESS",
+      "axis": "RELEASE",
+      "owner": "thehub-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (thehub-pr, operator_platform_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-THEHUB-FEDERATION_READINESS",
+      "axis": "INTEGRATION",
+      "owner": "thehub-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (thehub-pr, federation_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-THEHUB-MACOS",
+      "axis": "RELEASE",
+      "owner": "thehub-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual macos: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-THEHUB-WINDOWS",
+      "axis": "RELEASE",
+      "owner": "thehub-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual windows: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-THEHUB-LINUX",
+      "axis": "RELEASE",
+      "owner": "thehub-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual linux: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PRESERVE-AGUAYLUZ",
+      "axis": "DEVELOPMENT",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Verify original index, working files and untracked file hashes against frozen baseline; reconcile every preserved repair.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-GATES-AGUAYLUZ",
+      "axis": "DEVELOPMENT",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:VERIFY",
+        "aguayluz-pr:.github/workflows/"
+      ],
+      "dependencies": [
+        "RC-PRESERVE-AGUAYLUZ"
+      ],
+      "acceptance_test": "Execute all applicable declared lint, type, test, coverage, security, build and contract checks at the candidate SHA; terminal logs and exit codes required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-AGUAYLUZ-ENGINEERING",
+      "axis": "DEVELOPMENT",
+      "owner": "aguayluz-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (aguayluz-pr, engineering) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-AGUAYLUZ-MAIN_BRANCH_AVAILABILITY",
+      "axis": "RELEASE",
+      "owner": "aguayluz-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (aguayluz-pr, main_branch_availability) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-AGUAYLUZ-CI_ENFORCEMENT",
+      "axis": "RELEASE",
+      "owner": "aguayluz-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (aguayluz-pr, ci_enforcement) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-AGUAYLUZ-DATA_MATERIALIZATION",
+      "axis": "LIVE_DATA",
+      "owner": "aguayluz-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (aguayluz-pr, data_materialization) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-AGUAYLUZ-PRODUCT_UI",
+      "axis": "DEVELOPMENT",
+      "owner": "aguayluz-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (aguayluz-pr, product_ui) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-AGUAYLUZ-OPERATOR_PLATFORM_READINESS",
+      "axis": "RELEASE",
+      "owner": "aguayluz-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (aguayluz-pr, operator_platform_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-AGUAYLUZ-FEDERATION_READINESS",
+      "axis": "INTEGRATION",
+      "owner": "aguayluz-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (aguayluz-pr, federation_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-AGUAYLUZ-MACOS",
+      "axis": "RELEASE",
+      "owner": "aguayluz-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual macos: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-AGUAYLUZ-WINDOWS",
+      "axis": "RELEASE",
+      "owner": "aguayluz-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual windows: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-AGUAYLUZ-LINUX",
+      "axis": "RELEASE",
+      "owner": "aguayluz-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual linux: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-AGUAYLUZ-NORMAL",
+      "axis": "INTEGRATION",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-AGUAYLUZ",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise aguayluz-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under normal; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-AGUAYLUZ-EMPTY",
+      "axis": "INTEGRATION",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-AGUAYLUZ",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise aguayluz-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under empty; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-AGUAYLUZ-STALE",
+      "axis": "INTEGRATION",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-AGUAYLUZ",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise aguayluz-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under stale; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-AGUAYLUZ-MALFORMED",
+      "axis": "INTEGRATION",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-AGUAYLUZ",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise aguayluz-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under malformed; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-AGUAYLUZ-DUPLICATE",
+      "axis": "INTEGRATION",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-AGUAYLUZ",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise aguayluz-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under duplicate; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-AGUAYLUZ-UNAUTHORIZED",
+      "axis": "INTEGRATION",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-AGUAYLUZ",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise aguayluz-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under unauthorized; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-AGUAYLUZ-PARTIAL_FAILURE",
+      "axis": "INTEGRATION",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-AGUAYLUZ",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise aguayluz-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under partial_failure; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-AGUAYLUZ-RETRY",
+      "axis": "INTEGRATION",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-AGUAYLUZ",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise aguayluz-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under retry; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-AGUAYLUZ-RESTART",
+      "axis": "INTEGRATION",
+      "owner": "aguayluz-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-AGUAYLUZ",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise aguayluz-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under restart; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PRESERVE-CENTINELAS",
+      "axis": "DEVELOPMENT",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Verify original index, working files and untracked file hashes against frozen baseline; reconcile every preserved repair.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-GATES-CENTINELAS",
+      "axis": "DEVELOPMENT",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:VERIFY",
+        "centinelas-pr:.github/workflows/"
+      ],
+      "dependencies": [
+        "RC-PRESERVE-CENTINELAS"
+      ],
+      "acceptance_test": "Execute all applicable declared lint, type, test, coverage, security, build and contract checks at the candidate SHA; terminal logs and exit codes required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-CENTINELAS-ENGINEERING",
+      "axis": "DEVELOPMENT",
+      "owner": "centinelas-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (centinelas-pr, engineering) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-CENTINELAS-MAIN_BRANCH_AVAILABILITY",
+      "axis": "RELEASE",
+      "owner": "centinelas-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (centinelas-pr, main_branch_availability) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-CENTINELAS-CI_ENFORCEMENT",
+      "axis": "RELEASE",
+      "owner": "centinelas-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (centinelas-pr, ci_enforcement) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-CENTINELAS-DATA_MATERIALIZATION",
+      "axis": "LIVE_DATA",
+      "owner": "centinelas-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (centinelas-pr, data_materialization) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-CENTINELAS-PRODUCT_UI",
+      "axis": "DEVELOPMENT",
+      "owner": "centinelas-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (centinelas-pr, product_ui) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-CENTINELAS-OPERATOR_PLATFORM_READINESS",
+      "axis": "RELEASE",
+      "owner": "centinelas-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (centinelas-pr, operator_platform_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-CENTINELAS-FEDERATION_READINESS",
+      "axis": "INTEGRATION",
+      "owner": "centinelas-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (centinelas-pr, federation_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-CENTINELAS-MACOS",
+      "axis": "RELEASE",
+      "owner": "centinelas-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual macos: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-CENTINELAS-WINDOWS",
+      "axis": "RELEASE",
+      "owner": "centinelas-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual windows: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-CENTINELAS-LINUX",
+      "axis": "RELEASE",
+      "owner": "centinelas-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual linux: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-CENTINELAS-NORMAL",
+      "axis": "INTEGRATION",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-CENTINELAS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise centinelas-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under normal; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-CENTINELAS-EMPTY",
+      "axis": "INTEGRATION",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-CENTINELAS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise centinelas-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under empty; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-CENTINELAS-STALE",
+      "axis": "INTEGRATION",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-CENTINELAS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise centinelas-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under stale; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-CENTINELAS-MALFORMED",
+      "axis": "INTEGRATION",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-CENTINELAS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise centinelas-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under malformed; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-CENTINELAS-DUPLICATE",
+      "axis": "INTEGRATION",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-CENTINELAS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise centinelas-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under duplicate; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-CENTINELAS-UNAUTHORIZED",
+      "axis": "INTEGRATION",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-CENTINELAS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise centinelas-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under unauthorized; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-CENTINELAS-PARTIAL_FAILURE",
+      "axis": "INTEGRATION",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-CENTINELAS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise centinelas-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under partial_failure; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-CENTINELAS-RETRY",
+      "axis": "INTEGRATION",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-CENTINELAS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise centinelas-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under retry; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-CENTINELAS-RESTART",
+      "axis": "INTEGRATION",
+      "owner": "centinelas-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-CENTINELAS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise centinelas-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under restart; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PRESERVE-OVNIS",
+      "axis": "DEVELOPMENT",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Verify original index, working files and untracked file hashes against frozen baseline; reconcile every preserved repair.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-GATES-OVNIS",
+      "axis": "DEVELOPMENT",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:VERIFY",
+        "ovnis-pr:.github/workflows/"
+      ],
+      "dependencies": [
+        "RC-PRESERVE-OVNIS"
+      ],
+      "acceptance_test": "Execute all applicable declared lint, type, test, coverage, security, build and contract checks at the candidate SHA; terminal logs and exit codes required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-OVNIS-ENGINEERING",
+      "axis": "DEVELOPMENT",
+      "owner": "ovnis-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (ovnis-pr, engineering) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-OVNIS-MAIN_BRANCH_AVAILABILITY",
+      "axis": "RELEASE",
+      "owner": "ovnis-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (ovnis-pr, main_branch_availability) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-OVNIS-CI_ENFORCEMENT",
+      "axis": "RELEASE",
+      "owner": "ovnis-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (ovnis-pr, ci_enforcement) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-OVNIS-DATA_MATERIALIZATION",
+      "axis": "LIVE_DATA",
+      "owner": "ovnis-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (ovnis-pr, data_materialization) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-OVNIS-PRODUCT_UI",
+      "axis": "DEVELOPMENT",
+      "owner": "ovnis-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (ovnis-pr, product_ui) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-OVNIS-OPERATOR_PLATFORM_READINESS",
+      "axis": "RELEASE",
+      "owner": "ovnis-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (ovnis-pr, operator_platform_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-OVNIS-FEDERATION_READINESS",
+      "axis": "INTEGRATION",
+      "owner": "ovnis-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (ovnis-pr, federation_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-OVNIS-MACOS",
+      "axis": "RELEASE",
+      "owner": "ovnis-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual macos: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-OVNIS-WINDOWS",
+      "axis": "RELEASE",
+      "owner": "ovnis-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual windows: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-OVNIS-LINUX",
+      "axis": "RELEASE",
+      "owner": "ovnis-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual linux: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-OVNIS-NORMAL",
+      "axis": "INTEGRATION",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-OVNIS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise ovnis-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under normal; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-OVNIS-EMPTY",
+      "axis": "INTEGRATION",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-OVNIS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise ovnis-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under empty; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-OVNIS-STALE",
+      "axis": "INTEGRATION",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-OVNIS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise ovnis-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under stale; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-OVNIS-MALFORMED",
+      "axis": "INTEGRATION",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-OVNIS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise ovnis-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under malformed; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-OVNIS-DUPLICATE",
+      "axis": "INTEGRATION",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-OVNIS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise ovnis-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under duplicate; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-OVNIS-UNAUTHORIZED",
+      "axis": "INTEGRATION",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-OVNIS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise ovnis-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under unauthorized; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-OVNIS-PARTIAL_FAILURE",
+      "axis": "INTEGRATION",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-OVNIS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise ovnis-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under partial_failure; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-OVNIS-RETRY",
+      "axis": "INTEGRATION",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-OVNIS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise ovnis-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under retry; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-OVNIS-RESTART",
+      "axis": "INTEGRATION",
+      "owner": "ovnis-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-OVNIS",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise ovnis-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under restart; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PRESERVE-SKYWATCHER",
+      "axis": "DEVELOPMENT",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Verify original index, working files and untracked file hashes against frozen baseline; reconcile every preserved repair.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-GATES-SKYWATCHER",
+      "axis": "DEVELOPMENT",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:VERIFY",
+        "skywatcher-pr:.github/workflows/"
+      ],
+      "dependencies": [
+        "RC-PRESERVE-SKYWATCHER"
+      ],
+      "acceptance_test": "Execute all applicable declared lint, type, test, coverage, security, build and contract checks at the candidate SHA; terminal logs and exit codes required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SKYWATCHER-ENGINEERING",
+      "axis": "DEVELOPMENT",
+      "owner": "skywatcher-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (skywatcher-pr, engineering) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SKYWATCHER-MAIN_BRANCH_AVAILABILITY",
+      "axis": "RELEASE",
+      "owner": "skywatcher-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (skywatcher-pr, main_branch_availability) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SKYWATCHER-CI_ENFORCEMENT",
+      "axis": "RELEASE",
+      "owner": "skywatcher-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (skywatcher-pr, ci_enforcement) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SKYWATCHER-DATA_MATERIALIZATION",
+      "axis": "LIVE_DATA",
+      "owner": "skywatcher-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (skywatcher-pr, data_materialization) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SKYWATCHER-PRODUCT_UI",
+      "axis": "DEVELOPMENT",
+      "owner": "skywatcher-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (skywatcher-pr, product_ui) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SKYWATCHER-OPERATOR_PLATFORM_READINESS",
+      "axis": "RELEASE",
+      "owner": "skywatcher-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (skywatcher-pr, operator_platform_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SKYWATCHER-FEDERATION_READINESS",
+      "axis": "INTEGRATION",
+      "owner": "skywatcher-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (skywatcher-pr, federation_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-SKYWATCHER-MACOS",
+      "axis": "RELEASE",
+      "owner": "skywatcher-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual macos: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-SKYWATCHER-WINDOWS",
+      "axis": "RELEASE",
+      "owner": "skywatcher-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual windows: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-SKYWATCHER-LINUX",
+      "axis": "RELEASE",
+      "owner": "skywatcher-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual linux: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SKYWATCHER-NORMAL",
+      "axis": "INTEGRATION",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SKYWATCHER",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise skywatcher-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under normal; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SKYWATCHER-EMPTY",
+      "axis": "INTEGRATION",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SKYWATCHER",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise skywatcher-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under empty; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SKYWATCHER-STALE",
+      "axis": "INTEGRATION",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SKYWATCHER",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise skywatcher-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under stale; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SKYWATCHER-MALFORMED",
+      "axis": "INTEGRATION",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SKYWATCHER",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise skywatcher-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under malformed; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SKYWATCHER-DUPLICATE",
+      "axis": "INTEGRATION",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SKYWATCHER",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise skywatcher-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under duplicate; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SKYWATCHER-UNAUTHORIZED",
+      "axis": "INTEGRATION",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SKYWATCHER",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise skywatcher-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under unauthorized; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SKYWATCHER-PARTIAL_FAILURE",
+      "axis": "INTEGRATION",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SKYWATCHER",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise skywatcher-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under partial_failure; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SKYWATCHER-RETRY",
+      "axis": "INTEGRATION",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SKYWATCHER",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise skywatcher-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under retry; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SKYWATCHER-RESTART",
+      "axis": "INTEGRATION",
+      "owner": "skywatcher-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SKYWATCHER",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise skywatcher-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under restart; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PRESERVE-SPIDERWEB",
+      "axis": "DEVELOPMENT",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Verify original index, working files and untracked file hashes against frozen baseline; reconcile every preserved repair.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-GATES-SPIDERWEB",
+      "axis": "DEVELOPMENT",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:VERIFY",
+        "spiderweb-pr:.github/workflows/"
+      ],
+      "dependencies": [
+        "RC-PRESERVE-SPIDERWEB"
+      ],
+      "acceptance_test": "Execute all applicable declared lint, type, test, coverage, security, build and contract checks at the candidate SHA; terminal logs and exit codes required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SPIDERWEB-ENGINEERING",
+      "axis": "DEVELOPMENT",
+      "owner": "spiderweb-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (spiderweb-pr, engineering) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SPIDERWEB-MAIN_BRANCH_AVAILABILITY",
+      "axis": "RELEASE",
+      "owner": "spiderweb-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (spiderweb-pr, main_branch_availability) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SPIDERWEB-CI_ENFORCEMENT",
+      "axis": "RELEASE",
+      "owner": "spiderweb-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (spiderweb-pr, ci_enforcement) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SPIDERWEB-DATA_MATERIALIZATION",
+      "axis": "LIVE_DATA",
+      "owner": "spiderweb-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (spiderweb-pr, data_materialization) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SPIDERWEB-PRODUCT_UI",
+      "axis": "DEVELOPMENT",
+      "owner": "spiderweb-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (spiderweb-pr, product_ui) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SPIDERWEB-OPERATOR_PLATFORM_READINESS",
+      "axis": "RELEASE",
+      "owner": "spiderweb-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (spiderweb-pr, operator_platform_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-SPIDERWEB-FEDERATION_READINESS",
+      "axis": "INTEGRATION",
+      "owner": "spiderweb-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (spiderweb-pr, federation_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-SPIDERWEB-MACOS",
+      "axis": "RELEASE",
+      "owner": "spiderweb-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual macos: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-SPIDERWEB-WINDOWS",
+      "axis": "RELEASE",
+      "owner": "spiderweb-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual windows: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-SPIDERWEB-LINUX",
+      "axis": "RELEASE",
+      "owner": "spiderweb-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual linux: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SPIDERWEB-NORMAL",
+      "axis": "INTEGRATION",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SPIDERWEB",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise spiderweb-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under normal; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SPIDERWEB-EMPTY",
+      "axis": "INTEGRATION",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SPIDERWEB",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise spiderweb-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under empty; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SPIDERWEB-STALE",
+      "axis": "INTEGRATION",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SPIDERWEB",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise spiderweb-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under stale; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SPIDERWEB-MALFORMED",
+      "axis": "INTEGRATION",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SPIDERWEB",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise spiderweb-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under malformed; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SPIDERWEB-DUPLICATE",
+      "axis": "INTEGRATION",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SPIDERWEB",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise spiderweb-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under duplicate; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SPIDERWEB-UNAUTHORIZED",
+      "axis": "INTEGRATION",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SPIDERWEB",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise spiderweb-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under unauthorized; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SPIDERWEB-PARTIAL_FAILURE",
+      "axis": "INTEGRATION",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SPIDERWEB",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise spiderweb-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under partial_failure; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SPIDERWEB-RETRY",
+      "axis": "INTEGRATION",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SPIDERWEB",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise spiderweb-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under retry; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-SPIDERWEB-RESTART",
+      "axis": "INTEGRATION",
+      "owner": "spiderweb-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-SPIDERWEB",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise spiderweb-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under restart; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PRESERVE-MONEYSWEEP",
+      "axis": "DEVELOPMENT",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Verify original index, working files and untracked file hashes against frozen baseline; reconcile every preserved repair.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-GATES-MONEYSWEEP",
+      "axis": "DEVELOPMENT",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:VERIFY",
+        "moneysweep-pr:.github/workflows/"
+      ],
+      "dependencies": [
+        "RC-PRESERVE-MONEYSWEEP"
+      ],
+      "acceptance_test": "Execute all applicable declared lint, type, test, coverage, security, build and contract checks at the candidate SHA; terminal logs and exit codes required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-MONEYSWEEP-ENGINEERING",
+      "axis": "DEVELOPMENT",
+      "owner": "moneysweep-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (moneysweep-pr, engineering) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-MONEYSWEEP-MAIN_BRANCH_AVAILABILITY",
+      "axis": "RELEASE",
+      "owner": "moneysweep-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (moneysweep-pr, main_branch_availability) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-MONEYSWEEP-CI_ENFORCEMENT",
+      "axis": "RELEASE",
+      "owner": "moneysweep-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (moneysweep-pr, ci_enforcement) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-MONEYSWEEP-DATA_MATERIALIZATION",
+      "axis": "LIVE_DATA",
+      "owner": "moneysweep-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (moneysweep-pr, data_materialization) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-MONEYSWEEP-PRODUCT_UI",
+      "axis": "DEVELOPMENT",
+      "owner": "moneysweep-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (moneysweep-pr, product_ui) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-MONEYSWEEP-OPERATOR_PLATFORM_READINESS",
+      "axis": "RELEASE",
+      "owner": "moneysweep-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (moneysweep-pr, operator_platform_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-AXIS-MONEYSWEEP-FEDERATION_READINESS",
+      "axis": "INTEGRATION",
+      "owner": "moneysweep-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "scripts/federation_release_evidence.py: axes cell (moneysweep-pr, federation_readiness) plus domain evidence review",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-MONEYSWEEP-MACOS",
+      "axis": "RELEASE",
+      "owner": "moneysweep-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual macos: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-MONEYSWEEP-WINDOWS",
+      "axis": "RELEASE",
+      "owner": "moneysweep-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual windows: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PLATFORM-MONEYSWEEP-LINUX",
+      "axis": "RELEASE",
+      "owner": "moneysweep-pr",
+      "source": [
+        "thehub-pr:docs/adr/0010-seven-local-production-apps.md"
+      ],
+      "dependencies": [],
+      "acceptance_test": "On actual linux: install, launch, setup, domain workflow, export, restart recovery, upgrade and rollback; test supported mobile and desktop rendered views. Frozen executable, SHA and receipts required.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-MONEYSWEEP-NORMAL",
+      "axis": "INTEGRATION",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-MONEYSWEEP",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise moneysweep-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under normal; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-MONEYSWEEP-EMPTY",
+      "axis": "INTEGRATION",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-MONEYSWEEP",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise moneysweep-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under empty; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-MONEYSWEEP-STALE",
+      "axis": "INTEGRATION",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-MONEYSWEEP",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise moneysweep-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under stale; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-MONEYSWEEP-MALFORMED",
+      "axis": "INTEGRATION",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-MONEYSWEEP",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise moneysweep-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under malformed; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-MONEYSWEEP-DUPLICATE",
+      "axis": "INTEGRATION",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-MONEYSWEEP",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise moneysweep-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under duplicate; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-MONEYSWEEP-UNAUTHORIZED",
+      "axis": "INTEGRATION",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-MONEYSWEEP",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise moneysweep-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under unauthorized; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-MONEYSWEEP-PARTIAL_FAILURE",
+      "axis": "INTEGRATION",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-MONEYSWEEP",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise moneysweep-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under partial_failure; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-MONEYSWEEP-RETRY",
+      "axis": "INTEGRATION",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-MONEYSWEEP",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise moneysweep-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under retry; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-PIPELINE-MONEYSWEEP-RESTART",
+      "axis": "INTEGRATION",
+      "owner": "moneysweep-pr",
+      "source": [
+        "user:VERIFY",
+        "thehub-pr:registry/producers.yaml"
+      ],
+      "dependencies": [
+        "RC-GATES-MONEYSWEEP",
+        "RC-GATES-THEHUB"
+      ],
+      "acceptance_test": "Exercise moneysweep-pr through real producer export and Hub fetch -> aggregate -> correlate -> ingest -> graph/report -> rendered UI under restart; preserve raw data and uncertainty, assert IDs, provenance, conservation and failure/recovery semantics.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-SCOPE",
+      "axis": "DEVELOPMENT",
+      "owner": "thehub-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE",
+        "user:VERIFY",
+        "user:FINISH"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Reconcile approved requirements, all current PRs, decisions and domain ledgers; every mandatory item has source, owner, dependency, acceptance and evidence. Unknown scope remains OPEN.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-TUPLE",
+      "axis": "RELEASE",
+      "owner": "thehub-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE",
+        "user:VERIFY",
+        "user:FINISH"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Freeze one seven-SHA tuple, environment, dependency locks, input hashes, commands and results; changed bindings invalidate affected receipts.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-CLEAN-INSTALL",
+      "axis": "DEVELOPMENT",
+      "owner": "thehub-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE",
+        "user:VERIFY",
+        "user:FINISH"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Independent clean installs of all seven apps using immutable dependency sources and locks; no sibling source path dependency; combine candidate and repeat integration.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-REVIEW",
+      "axis": "DEVELOPMENT",
+      "owner": "thehub-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE",
+        "user:VERIFY",
+        "user:FINISH"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Review diffs and acceptance coverage separately; remediate all mandatory findings.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-LOCAL-AUTHORITY",
+      "axis": "INTEGRATION",
+      "owner": "thehub-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE",
+        "user:VERIFY",
+        "user:FINISH"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Preserve Hub coordination, independent producer stores, approved artifact contracts and local production UI authority.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-HOSTED",
+      "axis": "RELEASE",
+      "owner": "thehub-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE",
+        "user:VERIFY",
+        "user:FINISH"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Required hosted checks executed and passing at exact candidate heads; no substitution with local proof.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-LIVE-SOURCES",
+      "axis": "LIVE_DATA",
+      "owner": "thehub-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE",
+        "user:VERIFY",
+        "user:FINISH"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Review source completeness/freshness and domain identity/spatial gates; fixture evidence cannot satisfy live readiness.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    },
+    {
+      "id": "RC-ROLLBACK",
+      "axis": "RELEASE",
+      "owner": "thehub-pr",
+      "source": [
+        "user:BASELINE_AND_SCOPE",
+        "user:VERIFY",
+        "user:FINISH"
+      ],
+      "dependencies": [],
+      "acceptance_test": "Prove reversible candidate upgrade/rollback preserving canonical corpora and receipts.",
+      "state": "OPEN",
+      "evidence": [],
+      "mandatory": true
+    }
+  ],
+  "counts": {
+    "repositories": 7,
+    "producers": 6,
+    "mandatory": 146
+  },
+  "amendments": []
+}

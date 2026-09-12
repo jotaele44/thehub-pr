@@ -57,7 +57,9 @@ Runner = Callable[[Sequence[str], Optional[str]], Any]
 
 def _subprocess_runner(cmd: Sequence[str], cwd: Optional[str] = None):
     """Default runner: run `cmd`, raising CalledProcessError on non-zero exit."""
-    return subprocess.run(list(cmd), cwd=cwd, check=True, capture_output=True, text=True)
+    return subprocess.run(
+        list(cmd), cwd=cwd, check=True, capture_output=True, text=True, timeout=300,
+    )
 
 
 def clone_or_pull(
@@ -69,7 +71,7 @@ def clone_or_pull(
     """Shallow-clone ``repo`` into ``dest``, or fast-forward pull if it already
     has a ``.git``. Returns ``"cloned"`` or ``"pulled"``."""
     dest = Path(dest)
-    if (dest / ".git").is_dir():
+    if (dest / ".git").is_dir() or (dest / ".git").is_file():
         runner(["git", "-C", str(dest), "pull", "--ff-only", "--quiet"], None)
         return "pulled"
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -129,9 +131,12 @@ def _validate_command(cmd: str) -> Optional[List[str]]:
     and python interpreters run a script file rather than inline code (``-c``/
     ``-e``), an arbitrary module (``-m``), or a program from stdin (``-``).
     """
-    if any(c in _SHELL_METACHAR for c in cmd):
+    if not isinstance(cmd, str) or any(c in _SHELL_METACHAR for c in cmd):
         return None
-    tokens = shlex.split(cmd)
+    try:
+        tokens = shlex.split(cmd)
+    except ValueError:
+        return None
     if not tokens:
         return None
     executable = tokens[0]
@@ -154,7 +159,12 @@ def export_command(base) -> Optional[List[str]]:
         data = json.loads(fed.read_text())
     except (ValueError, OSError):
         return None
-    cmd = (data.get("hub_callable_commands") or {}).get("export_canonical")
+    if not isinstance(data, dict):
+        return None
+    commands = data.get("hub_callable_commands")
+    if not isinstance(commands, dict):
+        return None
+    cmd = commands.get("export_canonical")
     return _validate_command(cmd) if cmd else None
 
 
@@ -167,31 +177,40 @@ def fetch_all(
 ) -> List[Dict[str, Any]]:
     """For each registered producer: clone/pull into ``<workspace>/<repo_name>``
     (unless it has a ``local_path``), then optionally run its ``export_canonical``
-    command to materialise the package. Returns a per-producer result list."""
+    command to materialise the package. Returns a per-producer result list.
+
+    Operational failures remain attached to their producer so independent work
+    continues. Callers must inspect ``status``; a requested but unavailable
+    export is a failure. Raw process output is excluded from these results
+    because producer commands may print credentials or private source content.
+    No automatic retries or new source downloads follow an export failure.
+    """
     ws = Path(workspace)
     results: List[Dict[str, Any]] = []
     for p in registry.producers:
-        if p.local_path:
-            base = Path(p.local_path)
-            action = "local"
-        else:
-            base = ws / p.repo_name
-            action = clone_or_pull(p.repo, base, runner=runner, depth=depth)
-
-        exported = False
-        if run_export:
-            cmd = export_command(base)
-            if cmd:
-                runner(cmd, str(base))
-                exported = True
-
-        results.append(
-            {
-                "program_id": p.program_id,
-                "repo": p.repo,
-                "base": str(base),
-                "action": action,
-                "exported": exported,
-            }
-        )
+        base = Path(p.local_path) if p.local_path else ws / p.repo_name
+        result: Dict[str, Any] = {
+            "program_id": p.program_id, "repo": p.repo, "base": str(base),
+            "action": "local" if p.local_path else "pending",
+            "exported": False, "status": "PASS",
+        }
+        stage = "fetch"
+        try:
+            if p.local_path:
+                if not base.is_dir():
+                    raise FileNotFoundError("local checkout unavailable")
+            else:
+                result["action"] = clone_or_pull(p.repo, base, runner=runner, depth=depth)
+            if run_export:
+                stage = "export"
+                cmd = export_command(base)
+                if cmd is None:
+                    result.update(status="FAIL", failed_stage=stage,
+                                  error_code="export_command_unavailable")
+                else:
+                    runner(cmd, str(base))
+                    result["exported"] = True
+        except (OSError, subprocess.SubprocessError) as exc:
+            result.update(status="FAIL", failed_stage=stage, error_code=type(exc).__name__)
+        results.append(result)
     return results

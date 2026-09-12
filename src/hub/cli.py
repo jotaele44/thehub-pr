@@ -186,11 +186,14 @@ def main(argv: Optional[List[str]] = None) -> int:
         results = fetch_all(reg, args.root, run_export=args.run)
         for r in results:
             print(f"{r['program_id']:16} {r['action']:8} export={'yes' if r['exported'] else 'no '}  {r['base']}")
+            if r["status"] != "PASS":
+                print(f"  FAILED {r['failed_stage']}: {r['error_code']}")
+        failed = sum(r["status"] != "PASS" for r in results)
         print(
-            f"fetched {len(results)} producer(s) into {args.root!r}; "
-            f"run `hub aggregate --root {args.root}` next"
+            f"processed {len(results)} producer(s) into {args.root!r}; "
+            f"{len(results) - failed} succeeded, {failed} failed"
         )
-        return 0
+        return 1 if failed else 0
 
     if args.cmd == "aggregate":
         reg = load_registry(args.registry)
