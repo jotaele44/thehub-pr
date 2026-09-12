@@ -90,7 +90,35 @@ def test_name_only_identity_is_rejected():
 def test_duplicate_entity_currency_pair_is_rejected():
     package = _package()
     duplicate = dict(package["categories"][0]["rows"][0])
-    duplicate["rank"] = 2
+    duplicate["rank"] = 3
     duplicate["metricValue"] = 80.0
     package["categories"][0]["rows"].append(duplicate)
     assert "categories.contract_award.entityUniqueness" in consumer._validate_package(package)
+
+
+def test_noncompetition_rank_is_rejected():
+    package = _package()
+    package["categories"][0]["rows"].insert(1, {
+        "entityId": "entity-tie",
+        "entityDisplayName": "Tie",
+        "metricValue": 100.0,
+        "currency": "USD",
+        "rank": 2,
+        "entityResolutionState": "CANONICAL_V1_ENTITY_ID",
+    })
+    assert "categories.contract_award.competitionRank" in consumer._validate_package(package)
+
+
+def test_blank_currency_and_snapshot_hash_are_rejected():
+    package = _package()
+    package["categories"][0]["snapshotSha256"] = ""
+    package["categories"][0]["rows"][0]["currency"] = ""
+    errors = consumer._validate_package(package)
+    assert "categories.contract_award.snapshotSha256" in errors
+    assert "categories.contract_award.currency" in errors
+
+
+def test_empty_category_set_is_rejected():
+    package = _package()
+    package["categories"] = []
+    assert "categories" in consumer._validate_package(package)
