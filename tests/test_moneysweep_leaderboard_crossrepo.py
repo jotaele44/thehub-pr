@@ -37,13 +37,35 @@ def test_consumer_contract_matches_money_sweep_export_schema():
     assert properties["certification"]["properties"]["state"]["const"] == "PASS"
 
 
-def test_current_money_sweep_release_cannot_be_promoted_while_blocked():
+def test_current_money_sweep_release_and_receipt_fail_closed_together():
     root = _producer_root()
     release_path = root / "data" / "manifests" / "leaderboards" / "leaderboard_release_contract_v1.json"
+    receipt_path = root / "data" / "manifests" / "leaderboards" / "MONEYSWEEP_LEADERBOARD_CERTIFICATION.json"
     _require_or_skip(release_path)
+    _require_or_skip(receipt_path)
     release = json.loads(release_path.read_text(encoding="utf-8"))
-    # This assertion is intentionally state-sensitive during the pre-certification
-    # phase. Once MoneySweep reaches PASS, replace it with an exact certified
-    # package replay test in the same PR that changes the release state.
-    if release.get("certification_state") != "PASS":
+    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+
+    assert release["ranking_contract"] == consumer.EXPECTED_RANKING
+    assert release["ontology_contract"] == consumer.EXPECTED_ONTOLOGY
+    assert receipt["rankingContractVersion"] == consumer.EXPECTED_RANKING
+    assert receipt["ontologyContractVersion"] == consumer.EXPECTED_ONTOLOGY
+
+    if release.get("certification_state") != "PASS" or receipt.get("state") != "PASS":
         assert release.get("promotion_authorized") is False
+        assert receipt.get("promotionAuthorized") is False
+        assert receipt.get("certificationIssued") is False
+        assert receipt.get("zeroMaterialUnresolvedResidue") is False
+
+
+def test_strict_crossrepo_mode_requires_all_producer_contract_files():
+    if os.environ.get("PRII_REQUIRE_MONEYSWEEP_LEADERBOARD_CONTRACT") != "1":
+        pytest.skip("strict cross-repository release mode not enabled")
+    root = _producer_root()
+    required = [
+        root / "schemas" / "leaderboard_export_package.schema.json",
+        root / "data" / "manifests" / "leaderboards" / "leaderboard_release_contract_v1.json",
+        root / "data" / "manifests" / "leaderboards" / "MONEYSWEEP_LEADERBOARD_CERTIFICATION.json",
+    ]
+    missing = [str(path) for path in required if not path.exists()]
+    assert not missing, f"missing required MoneySweep leaderboard producer contract files: {missing}"
