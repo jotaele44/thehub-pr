@@ -23,7 +23,7 @@ export default function MoneySweepLeaderboardsTab() {
         if (!alive) return;
         setStatus(body);
         if (body.state !== "PASS") return null;
-        return fetch("/api/moneysweep/leaderboards/top?category=contract_award&limit=25")
+        return fetch("/api/moneysweep/leaderboards/top?category=debt_issuance&limit=25")
           .then(async (response) => {
             const payload = await response.json();
             if (!response.ok) throw new Error(payload?.detail?.reason || `HTTP ${response.status}`);
@@ -49,7 +49,7 @@ export default function MoneySweepLeaderboardsTab() {
           <State value={status.state} />
         </div>
         <p className="text-sm text-muted-foreground">
-          Product promotion is fail-closed until MoneySweep supplies a certified frozen package and TheHub trusts the exact receipt and release hashes.
+          Product promotion is fail-closed until MoneySweep supplies the scoped certified package and TheHub trusts the exact receipt, release, and scope hashes.
         </p>
         {status.reason && <p className="text-xs text-muted-foreground">{status.reason}</p>}
       </div>
@@ -60,15 +60,18 @@ export default function MoneySweepLeaderboardsTab() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-card p-3">
         <div>
-          <h3 className="font-semibold">Certified Financial Leaderboards</h3>
-          <p className="text-xs text-muted-foreground">TheHub displays producer-certified MoneySweep rows without recomputing financial totals or rank.</p>
+          <h3 className="font-semibold">Certified Public Debt Issuance</h3>
+          <p className="text-xs text-muted-foreground">
+            DEBT_ISSUED_PAR only. TheHub displays MoneySweep-certified rows without recomputing totals, rank, identity, or geometry.
+          </p>
+          <p className="text-xs text-muted-foreground">Scope: {status.scopeId || "unresolved"}</p>
         </div>
         <State value="PASS" />
       </div>
       <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <table className="w-full text-left text-sm">
           <thead className="bg-muted/50 text-muted-foreground">
-            <tr><th className="p-2">Rank</th><th className="p-2">Entity</th><th className="p-2 text-right">Value</th><th className="p-2">Identity</th></tr>
+            <tr><th className="p-2">Rank</th><th className="p-2">Issuer</th><th className="p-2 text-right">Par amount</th><th className="p-2">Identity</th></tr>
           </thead>
           <tbody>
             {(ranking?.rows || []).map((row) => (
