@@ -1,0 +1,25 @@
+{
+  "schema_version": "floot.vector-c.bounded-completion/v1",
+  "overall_state": "PROVISIONAL",
+  "prior_execution_ledger_commit": "46cf285a4331c71d914c48b92253311f94555af5",
+  "closed_claims": {
+    "archive_scope": {"archives":8,"zip_entries":2407,"directory_entries":106,"file_members":2301,"intersection":2301,"a_only":0,"b_only":0,"union":2301,"symmetric_difference":0,"state":"PASS"},
+    "original_manifest_bundle_sha256": "7c68d691e4f826200afb1d1650aa780da4e8a7910dea924b7c08924c48e338fe",
+    "moneysweep_independent_rehash": {"files":19,"bytes":268300,"sha256_pass":19,"git_blob_sha1_pass":19,"size_pass":19,"state":"PASS"},
+    "moneysweep_historical_snapshot": {"source_commit":"fca326476f9811553888c4cc02a1fff20cc303fe","snapshot_commit":"f978cb3d3a96f180b5406bc8aa61e8774e5608a3","archive_branch":"archive/floot-export-2026-09-12","payload_files":19,"governance_additions":1,"changed_files":20,"preexisting_file_modifications":0,"preexisting_file_removals":0,"direct_byte_readback_pass":19,"nonforce_ref_updated_after_pass":true,"final_ref_readback_pass":true,"state":"PASS","authority":"NONCANONICAL_HISTORICAL_DONOR_RELEASE"},
+    "ovnis_historical_assets": {"recovered_exact_files":4,"bytes":22141625,"vm_reuse_rehash_pass":4,"state":"PASS","independent_off_floot_backup":"OPEN"},
+    "local_regressions": {"tests":25,"passed":25,"failed":0,"scope":"archive/member/gzip/blob transport guards only; not native iOS tests"},
+    "fresh_package_extraction_replay": {"package_members":17,"hash_indexed_members":16,"self_excluded_index_files":1,"original_archives_verified":8,"file_members_verified":2301,"tests_passed":25,"state":"PASS"}
+  },
+  "delivered_bundle": {"filename":"Floot_Vector_C_Evidence_2026-09-13.zip","bytes":1651409,"sha256":"4128874a21461c99f55881e7c6f5b3ae21bf2976c86218890de776942ee34231","includes":"eight original source ZIPs, unchanged original manifest bundle, read-only verifier, regression tests/log and constructed execution summaries","does_not_include":"OVNIS recovered live asset payloads, a live database dump, MoneySweep raw release payloads or native execution artifacts"},
+  "local_code_binding": {"verify_archive_bundle.py_sha256":"f1e5550ccb8361722af7b74a10381aaad78c568f7ff05bb0bc53370dcca99b80","test_verification.py_sha256":"c353f4453bc6d75574c05894220d695fbc9425a87b98b254b2c4586cc48efe66","bounded_archive_verification_v2.json_sha256":"f631aed9d1ea9081847a20c0459ce337c83252028ba234d3ca04aa32d23297ec","regression.log_sha256":"7fe095d92d7610af2d67e792fd9b648b3d44c65038e2804046909e335ebc9ac1","installed_skill":false,"online_binary_publisher_implemented":false},
+  "superseded_claims": {"archive_aggregate_2202":"correct total 2301, difference 99; per-archive counts unchanged","corillo_empty_repository":"repository stable ID 1350177598 and draft PR 1 already exist; full source import remains blocked"},
+  "remaining_open": ["full archive-member manifest publication to ovnis-pr, spiderweb-pr, aguayluz-pr, centinelas-pr and thehub-pr","independent OVNIS asset transfer/restore","full live database exports and independent restores","browser IndexedDB/workspace recovery","native compile, test, analyzer, archive and six runtime acceptance scopes","remaining per-project Floot dependency and retirement dispositions"],
+  "centinelas_failed_transport": {"state":"REJECTED_AND_REMOVED","removal_commit":"05f5fce989e65be1b87020c6949cdc89260f08d2","prewrite_to_removal_net_changed_files":0,"failed_event_history_preserved":true},
+  "skywatcher_native_gate": {"pr":273,"head":"1230bd0bbb906a408eb1bab2f0efe9c1647f4165","state":"BLOCKED_ACCOUNT_BILLING","workflow_run":34721912927,"job":103629256769,"runner_id":0,"step_count":0,"native_certification":"NOT_ASSERTED"},
+  "main_branches_modified": 0,
+  "pull_requests_merged": 0,
+  "floot_projects_retired": 0,
+  "producer_authority_changed": false,
+  "floot_retirement": "BLOCKED_PENDING_PRESERVATION_AND_REAL_EXECUTION"
+}
