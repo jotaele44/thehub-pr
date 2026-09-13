@@ -49,7 +49,7 @@ export default function MoneySweepLeaderboardsTab() {
           <State value={status.state} />
         </div>
         <p className="text-sm text-muted-foreground">
-          Product promotion is fail-closed until MoneySweep supplies the scoped certified package and TheHub trusts the exact receipt, release, and scope hashes.
+          Product promotion is fail-closed until MoneySweep supplies the scoped certified package and TheHub trusts the exact receipt, release, scope, and package SHA-256 values.
         </p>
         {status.reason && <p className="text-xs text-muted-foreground">{status.reason}</p>}
       </div>
@@ -65,6 +65,11 @@ export default function MoneySweepLeaderboardsTab() {
             DEBT_ISSUED_PAR only. TheHub displays MoneySweep-certified rows without recomputing totals, rank, identity, or geometry.
           </p>
           <p className="text-xs text-muted-foreground">Scope: {status.scopeId || "unresolved"}</p>
+          {status.consumerPackageSha256 && (
+            <p className="max-w-xl truncate font-mono text-[11px] text-muted-foreground" title={status.consumerPackageSha256}>
+              Package SHA-256: {status.consumerPackageSha256}
+            </p>
+          )}
         </div>
         <State value="PASS" />
       </div>
