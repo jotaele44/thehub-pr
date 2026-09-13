@@ -47,6 +47,12 @@ def test_consumer_contract_matches_money_sweep_export_schema_and_scope():
     assert properties["categories"]["items"]["properties"]["metricType"]["const"] == consumer.EXPECTED_METRIC
     assert properties["certification"]["properties"]["state"]["const"] == "PASS"
     assert "scopeSha256" in properties["certification"]["required"]
+    assert "certificationRuntimeSha256" in properties["certification"]["required"]
+    assert "certificationRuntimeManifest" in schema["required"]
+    assert properties["certificationRuntimeManifest"]["properties"]["schemaVersion"]["const"] == consumer.EXPECTED_CERT_RUNTIME
+    category_required = properties["categories"]["items"]["required"]
+    for field in ("accounting", "sourceVersion", "sourceManifestations", "runtimeManifest", "snapshotCertification"):
+        assert field in category_required
     assert scope["scopeId"] == consumer.EXPECTED_SCOPE
     assert [item["categoryId"] for item in scope["includedCategories"]] == [consumer.EXPECTED_CATEGORY]
 
@@ -90,12 +96,20 @@ def test_exact_producer_package_replay_when_materialized(tmp_path: Path, monkeyp
     monkeypatch.setenv("PRII_MONEYSWEEP_LEADERBOARD_RECEIPT_SHA256", _sha256(receipt_path))
     monkeypatch.setenv("PRII_MONEYSWEEP_LEADERBOARD_RELEASE_SHA256", _sha256(release_path))
     monkeypatch.setenv("PRII_MONEYSWEEP_LEADERBOARD_SCOPE_SHA256", _sha256(scope_path))
+    monkeypatch.setenv("PRII_MONEYSWEEP_LEADERBOARD_PACKAGE_SHA256", _sha256(package_path))
     loaded = consumer._load_package(package_path)
     assert loaded["scopeId"] == consumer.EXPECTED_SCOPE
     assert len(loaded["categories"]) == 1
-    assert loaded["categories"][0]["categoryId"] == consumer.EXPECTED_CATEGORY
-    assert loaded["categories"][0]["metricType"] == consumer.EXPECTED_METRIC
-    assert loaded["categories"][0]["rows"]
+    category = loaded["categories"][0]
+    assert category["categoryId"] == consumer.EXPECTED_CATEGORY
+    assert category["metricType"] == consumer.EXPECTED_METRIC
+    assert category["rows"]
+    assert category["accounting"]["arithmeticClosed"] is True
+    assert category["accounting"]["unresolvedRecords"] == 0
+    assert category["accounting"]["excludedRecords"] == 0
+    assert category["runtimeManifest"]["producerCommit"] == loaded["producerCommit"]
+    assert category["snapshotCertification"]["zeroMaterialUnresolvedResidue"] is True
+    assert loaded["consumerPackageSha256"] == _sha256(package_path)
 
 
 def test_strict_crossrepo_mode_requires_all_producer_contract_files():
@@ -104,6 +118,7 @@ def test_strict_crossrepo_mode_requires_all_producer_contract_files():
     root = _producer_root()
     required = [
         root / "schemas" / "leaderboard_export_package.schema.json",
+        root / "scripts" / "leaderboard_release_provenance.py",
         root / "data" / "manifests" / "leaderboards" / "leaderboard_release_contract_v1.json",
         root / "data" / "manifests" / "leaderboards" / "MONEYSWEEP_LEADERBOARD_CERTIFICATION.json",
         root / "data" / "manifests" / "leaderboards" / "leaderboard_certification_scope_v1.json",
