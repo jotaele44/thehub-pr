@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/jotaele44/thehub-pr/blob/main/packages/prii_doctor/src/prii_doctor/schemas/doctor-checks.schema.json",
+  "title": "PRII federation doctor-checks manifest",
+  "description": "Declares the diagnostics/health checks a doctor tool should run for one federation producer repo. Each check is explicitly classed by how authoritatively it can be verified locally (see DiagnosabilityClass in prii_doctor.types) -- the schema does not stop a manifest author from misclassifying a check, but the runners in prii_doctor.runners hardcode their own class regardless of what is declared here, so a mismatch can never produce a false PASS at runtime.",
+  "type": "object",
+  "required": ["schema_version", "repository", "checks"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": "prii.doctor-checks/v1" },
+    "repository": {
+      "type": "string",
+      "description": "e.g. 'jotaele44/aguayluz-pr', matching federation.json:repository_full_name."
+    },
+    "validation_entrypoint": {
+      "type": ["string", "null"],
+      "description": "Key into this repo's federation.json:hub_callable_commands identifying its own validation-suite command (e.g. 'validation_gates' for aguayluz-pr, 'strict_preflight' for moneysweep-pr). Used by delegate_subprocess checks that omit an explicit check.entrypoint_key."
+    },
+    "checks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/check" }
+    }
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "required": ["id", "diagnosability_class"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9_]+$",
+          "description": "Stable, unique, snake_case identifier -- shown as the check's label in both the CLI table and the desktop diagnostics list."
+        },
+        "diagnosability_class": {
+          "enum": [
+            "local-deterministic",
+            "presence-only",
+            "live-probe-best-effort",
+            "not-automatable"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "description": "Free-text grouping, e.g. 'credential', 'waf-blocked', 'stale-third-party-mirror'."
+        },
+        "description": { "type": "string" },
+        "severity_if_absent": {
+          "enum": ["blocking", "advisory"],
+          "description": "Only meaningful for presence-only/file_presence checks: whether an absent env var or file renders FAIL (blocking) or WARN (advisory)."
+        },
+        "operator_action": {
+          "type": "string",
+          "description": "What a human should do about this check -- shown in both the CLI and the GUI regardless of outcome."
+        },
+        "manifest_cross_check": {
+          "type": "string",
+          "description": "Documents which existing federation.json field this entry was derived from, e.g. 'federation.json:waf_blocked_sources[0]'. Informational only; not read by the engine."
+        },
+        "last_known_state": {
+          "type": "object",
+          "description": "Required in spirit (though not schema-enforced) for not-automatable checks -- the recorded state a human last confirmed, since no automated check can refresh it.",
+          "properties": {
+            "as_of": { "type": "string", "description": "ISO date the state was last confirmed." },
+            "note": { "type": "string" }
+          },
+          "additionalProperties": true
+        },
+        "check": {
+          "type": "object",
+          "description": "Runner-specific parameters; shape depends on 'type'. See prii_doctor.runners.RUNNERS for the dispatch table.",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "enum": [
+                "env_var_presence",
+                "file_presence",
+                "http_probe",
+                "delegate_subprocess",
+                "manifest_consistency",
+                "manual"
+              ]
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "diagnosability_class": { "const": "not-automatable" } } },
+          "then": { "properties": { "check": { "properties": { "type": { "const": "manual" } } } } }
+        },
+        {
+          "if": { "properties": { "check": { "properties": { "type": { "const": "manual" } } } } },
+          "then": { "properties": { "diagnosability_class": { "const": "not-automatable" } } }
+        }
+      ]
+    }
+  }
+}
