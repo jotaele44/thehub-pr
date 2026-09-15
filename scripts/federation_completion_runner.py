@@ -150,7 +150,7 @@ def write_implementation_plan(path: Path, summary: dict[str, Any]) -> None:
         "",
         f"- Generated UTC: `{summary['generated_utc']}`",
         f"- Run ID: `{summary['run_id']}`",
-        f"- Scope: `7 federation repos + open PR remote gate`",
+        "- Scope: `7 federation repos + open PR remote gate`",
         f"- Certification: `{summary['certification']}`",
         f"- Remote PR denominator: `{remote.get('open_pr_denominator')}`",
         f"- Remote certification: `{remote.get('certification')}`",
