@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "approved_canonical_template_ref": "b1a6f59fc7edacd8172f2849ca17a70f9454390d",
+  "golden_windows_fixture": {
+    "repository": "jotaele44/aguayluz-pr",
+    "commit": "792c80f03753afb1854d59042b9523d2a0f4dd96",
+    "workflow": "desktop-build",
+    "required_jobs": [
+      "build (windows-latest)",
+      "build (ubuntu-latest)",
+      "build (macos-latest)"
+    ],
+    "acquisition": "IMMUTABLE_COMMIT_ARCHIVE"
+  },
+  "repositories": {
+    "jotaele44/aguayluz-pr": {
+      "desktop_authority": "STANDARD",
+      "desktop_requirement_manifests": ["requirements-desktop.txt"],
+      "root_requirement_manifests": [],
+      "template_ref_path": ".github/workflows/template-drift.yml",
+      "desktop_workflow_path": ".github/workflows/desktop-build.yml"
+    },
+    "jotaele44/centinelas-pr": {
+      "desktop_authority": "STANDARD",
+      "desktop_requirement_manifests": ["requirements-desktop.txt"],
+      "root_requirement_manifests": [],
+      "template_ref_path": ".github/workflows/template-drift.yml",
+      "desktop_workflow_path": ".github/workflows/desktop-build.yml"
+    },
+    "jotaele44/moneysweep-pr": {
+      "desktop_authority": "STANDARD",
+      "desktop_requirement_manifests": ["requirements-desktop.txt"],
+      "root_requirement_manifests": ["requirements.in"],
+      "template_ref_path": ".github/workflows/template-drift.yml",
+      "desktop_workflow_path": ".github/workflows/desktop-build.yml"
+    },
+    "jotaele44/ovnis-pr": {
+      "desktop_authority": "STANDARD",
+      "desktop_requirement_manifests": ["requirements-desktop.txt"],
+      "root_requirement_manifests": ["requirements.txt"],
+      "template_ref_path": ".github/workflows/template-drift.yml",
+      "desktop_workflow_path": ".github/workflows/desktop-build.yml"
+    },
+    "jotaele44/skywatcher-pr": {
+      "desktop_authority": "STANDARD",
+      "desktop_requirement_manifests": ["requirements-desktop.txt"],
+      "root_requirement_manifests": [],
+      "template_ref_path": ".github/workflows/template-drift.yml",
+      "desktop_workflow_path": ".github/workflows/desktop-build.yml"
+    },
+    "jotaele44/spiderweb-pr": {
+      "desktop_authority": "CUSTOM",
+      "desktop_requirement_manifests": ["requirements-desktop.txt"],
+      "root_requirement_manifests": [],
+      "template_ref_path": ".github/workflows/template-drift.yml",
+      "desktop_workflow_path": ".github/workflows/desktop-build.yml"
+    }
+  },
+  "generated_artifact_contract": {
+    "required_state": "BYTE_IDENTICAL_REGENERATION",
+    "ci_mutation_forbidden": true,
+    "stale_state": "FAIL"
+  },
+  "gui_candidate_contract": {
+    "states": ["BOUND", "INTERNAL", "EXEMPT", "UNCLASSIFIED"],
+    "required_unclassified_count": 0,
+    "arithmetic_closure_required": true
+  },
+  "failure_attribution_contract": {
+    "states": ["BASE_FAILURE", "PR_FAILURE", "TRANSIENT", "UNRESOLVED"],
+    "default": "UNRESOLVED",
+    "path_non_overlap_is_discovery_only": true,
+    "unattributed_failure_state": "FAIL"
+  }
+}
