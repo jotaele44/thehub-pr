@@ -9,13 +9,8 @@ from pathlib import Path
 
 import pytest
 
+import prii_doctor.runners as runners_mod
 from prii_doctor.manifest import CheckSpec
-from prii_doctor.runners import (
-    run_delegate_subprocess,
-    run_env_var_presence,
-    run_file_presence,
-    run_manual,
-)
 from prii_doctor.types import DiagnosabilityClass
 
 
@@ -35,7 +30,7 @@ def _spec(**overrides) -> CheckSpec:
 def test_env_var_presence_present_is_info_never_pass(monkeypatch):
     monkeypatch.setenv("PRII_DOCTOR_TEST_VAR", "value")
     spec = _spec(check={"env_var": "PRII_DOCTOR_TEST_VAR"})
-    result = run_env_var_presence(spec, Path("."), {})
+    result = runners_mod.run_env_var_presence(spec, Path("."), {})
     assert result.status == "INFO"
     assert result.diagnosability_class == DiagnosabilityClass.PRESENCE_ONLY
 
@@ -43,23 +38,23 @@ def test_env_var_presence_present_is_info_never_pass(monkeypatch):
 def test_env_var_presence_absent_blocking_is_fail(monkeypatch):
     monkeypatch.delenv("PRII_DOCTOR_TEST_VAR", raising=False)
     spec = _spec(check={"env_var": "PRII_DOCTOR_TEST_VAR"}, severity_if_absent="blocking")
-    assert run_env_var_presence(spec, Path("."), {}).status == "FAIL"
+    assert runners_mod.run_env_var_presence(spec, Path("."), {}).status == "FAIL"
 
 
 def test_env_var_presence_absent_advisory_is_warn(monkeypatch):
     monkeypatch.delenv("PRII_DOCTOR_TEST_VAR", raising=False)
     spec = _spec(check={"env_var": "PRII_DOCTOR_TEST_VAR"}, severity_if_absent="advisory")
-    assert run_env_var_presence(spec, Path("."), {}).status == "WARN"
+    assert runners_mod.run_env_var_presence(spec, Path("."), {}).status == "WARN"
 
 
 def test_file_presence_reachable_vs_unreachable(tmp_path):
     (tmp_path / "present.txt").write_text("hi", encoding="utf-8")
 
     spec_present = _spec(check={"path": "present.txt"})
-    assert run_file_presence(spec_present, tmp_path, {}).status == "INFO"
+    assert runners_mod.run_file_presence(spec_present, tmp_path, {}).status == "INFO"
 
     spec_absent = _spec(check={"path": "missing.txt"}, severity_if_absent="blocking")
-    assert run_file_presence(spec_absent, tmp_path, {}).status == "FAIL"
+    assert runners_mod.run_file_presence(spec_absent, tmp_path, {}).status == "FAIL"
 
 
 def test_manual_runner_performs_zero_io(monkeypatch, tmp_path):
@@ -67,8 +62,6 @@ def test_manual_runner_performs_zero_io(monkeypatch, tmp_path):
     filesystem, network, or a subprocess -- only echo the manifest's
     recorded last_known_state. Patch subprocess.run to explode and confirm
     the runner still returns cleanly without calling it."""
-    import prii_doctor.runners as runners_mod
-
     def _boom(*_a, **_k):
         raise AssertionError("run_manual performed I/O via subprocess.run")
 
@@ -78,7 +71,7 @@ def test_manual_runner_performs_zero_io(monkeypatch, tmp_path):
         check={"type": "manual"},
         last_known_state={"as_of": "2025-03-03", "note": "third-party mirror inactive"},
     )
-    result = run_manual(spec, tmp_path, {})
+    result = runners_mod.run_manual(spec, tmp_path, {})
     assert result.status == "INFO"
     assert "2025-03-03" in result.detail
     assert result.diagnosability_class == DiagnosabilityClass.NOT_AUTOMATABLE
@@ -109,7 +102,7 @@ def test_delegate_subprocess_is_repo_agnostic(tmp_path, script_body, expect_stat
         check={"type": "delegate_subprocess", "entrypoint_key": "validation_gates"},
     )
     federation_json = {"hub_callable_commands": {"validation_gates": f"{sys.executable} {script}"}}
-    result = run_delegate_subprocess(spec, tmp_path, federation_json)
+    result = runners_mod.run_delegate_subprocess(spec, tmp_path, federation_json)
     assert result.status == expect_status
     assert result.diagnosability_class == DiagnosabilityClass.LOCAL_DETERMINISTIC
 
@@ -119,5 +112,5 @@ def test_delegate_subprocess_skips_when_entrypoint_key_unresolvable(tmp_path):
         diagnosability_class=DiagnosabilityClass.LOCAL_DETERMINISTIC,
         check={"type": "delegate_subprocess", "entrypoint_key": "does_not_exist"},
     )
-    result = run_delegate_subprocess(spec, tmp_path, {"hub_callable_commands": {}})
+    result = runners_mod.run_delegate_subprocess(spec, tmp_path, {"hub_callable_commands": {}})
     assert result.status == "SKIP"
