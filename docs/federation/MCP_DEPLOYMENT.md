@@ -8,11 +8,24 @@ all serve the same endpoints (`/mcp/route`, `/mcp/capabilities`,
 Adapter credentials are always sourced from the environment at runtime (see
 `config/.env.example`) — never baked into the image or committed.
 
+## Deployment invariant: diagnostic (no-auth) mode must never bind past loopback
+
+This build ships with no login (`/api/auth/me` always 401s, `requires_auth` is
+always `false`). The only thing standing between a network caller and a write
+to `data/hub.db` is `PRII_WRITE_TOKEN` — and when it is unset, writes are
+served to *any* local-network caller (loopback, RFC1918 private, link-local;
+see `require_write_access` / `_is_local_network` in
+`server/backend/main_core.py`). Publishing port 8000 to a public interface
+without first setting `PRII_WRITE_TOKEN` exposes anonymous create/update/
+**delete**/bulk-overwrite of every collection backing the UI. Both deployment
+paths below default to loopback-only for this reason; widen the bind only
+after `PRII_WRITE_TOKEN` is configured.
+
 ## Docker
 
 ```bash
 docker build -t thehub-mcp .
-docker run --rm -p 8000:8000 \
+docker run --rm -p 127.0.0.1:8000:8000 \
   -e MCP_CONTRACTS_API_KEY=... -e MCP_REGULATIONS_API_KEY=... \
   thehub-mcp
 curl localhost:8000/healthz     # {"status":"ok"}
@@ -28,10 +41,11 @@ The image runs as a non-root user and declares a `HEALTHCHECK` against
 docker compose up --build
 ```
 
-The `thehub` service publishes `8000:8000`, mounts `./data` for the SQLite
-store / aggregate outputs, and restarts unless stopped. To supply credentials,
-copy `config/.env.example` to `config/.env` and uncomment the `env_file` block
-in `docker-compose.yml`.
+The `thehub` service publishes `127.0.0.1:8000:8000` (loopback-only — see the
+invariant above), mounts `./data` for the SQLite store / aggregate outputs,
+and restarts unless stopped. To supply credentials, copy
+`config/.env.example` to `config/.env` and uncomment the `env_file` block in
+`docker-compose.yml`.
 
 ## systemd (non-container host)
 

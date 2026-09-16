@@ -1,0 +1,407 @@
+{
+  "manifest_version": "1.0.0",
+  "project": {
+    "name": "Federation Admin Control Plane",
+    "claim": "TheHub is the sole federation-global administrative control plane; six producer apps are bounded operational planes; TheHub iOS is a bounded read-only companion.",
+    "platforms": [
+      "TheHub macOS workstation",
+      "TheHub iOS",
+      "six producer applications"
+    ],
+    "environments": [
+      "local seven-repository snapshot",
+      "GitHub CI",
+      "Linux",
+      "macOS",
+      "Windows",
+      "iOS Simulator",
+      "ephemeral deployed ASGI runtime"
+    ],
+    "source_revision": "thehub-pr@76b26042fe30ab55e439fb813d2953a6da9df70d; moneysweep-pr@74b10245f925bfd9b9ea07b2ce986981d5d65525; spiderweb-pr@f46546ef24c7dc2164b3f203d1af57e7d2570219; aguayluz-pr@8daa575df73d1024703f8397716e0dbfce7a815d; ovnis-pr@ef16535ddc0aca4d8a6c412ea58812df569caa5a; skywatcher-pr@6b95f816f1dc2c2081734df582920703743fbdf3; centinelas-pr@caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+    "snapshot_at": "2026-09-03T17:37:31Z",
+    "inclusions": [
+      "68-operation privilege accounting",
+      "workstation boundary",
+      "producer isolation",
+      "FEDERATION LOCKSTEP",
+      "bounded iOS source and native test",
+      "negative regression",
+      "deployment smoke",
+      "outage independence",
+      "immutable audit receipts",
+      "forced rollback",
+      "cross-platform frozen desktop builds"
+    ],
+    "exclusions": []
+  },
+  "evidence": [
+    {
+      "id": "ACP-E001",
+      "class": "FACT",
+      "description": "TheHub full local suite passed 1041 tests with 12 explicit skips and zero failures.",
+      "source": "local pytest run at reviewed source tree",
+      "captured_at": "2026-09-03T16:30:00Z"
+    },
+    {
+      "id": "ACP-E002",
+      "class": "COMPUTED",
+      "description": "All 68 signed operations have exactly one privilege binding and permit only thehub_workstation execution.",
+      "source": "governance/admin_control_plane/privilege_matrix.json and tests/test_admin_control_plane.py",
+      "captured_at": "2026-09-03T16:30:00Z"
+    },
+    {
+      "id": "ACP-E003",
+      "class": "COMPUTED",
+      "description": "Six producer isolation scans passed across 2432 tracked source and workflow files at the exact merged default-branch heads.",
+      "source": "six .federation/check_admin_boundary.py runs",
+      "captured_at": "2026-09-03T17:37:31Z"
+    },
+    {
+      "id": "ACP-E004",
+      "class": "FACT",
+      "description": "Seven-node federation governance and signed remote receipt reconciliation passed with five versioned contracts.",
+      "source": "scripts/federation_governance.py --all and scripts/federation_reconcile_remote_receipts.py",
+      "captured_at": "2026-09-03T17:37:31Z"
+    },
+    {
+      "id": "ACP-E005",
+      "class": "FACT",
+      "description": "The iOS source and server contract expose only five read capabilities and no workstation manager access.",
+      "source": "ios/TheHubAdminCompanion and /api/admin-companion/capabilities tests",
+      "captured_at": "2026-09-03T08:10:29Z"
+    },
+    {
+      "id": "ACP-E006",
+      "class": "OBSERVED",
+      "description": "All 58 consumer workflows and all 11 TheHub workflows completed successfully at the frozen coordinated heads.",
+      "source": "https://github.com/jotaele44/thehub-pr/pull/240; https://github.com/jotaele44/moneysweep-pr/pull/555; https://github.com/jotaele44/spiderweb-pr/pull/325; https://github.com/jotaele44/aguayluz-pr/pull/215; https://github.com/jotaele44/ovnis-pr/pull/114; https://github.com/jotaele44/skywatcher-pr/pull/241; https://github.com/jotaele44/centinelas-pr/pull/118",
+      "captured_at": "2026-09-03T08:10:29Z"
+    },
+    {
+      "id": "ACP-E007",
+      "class": "OBSERVED",
+      "description": "The bounded companion built for the iOS Simulator SDK and its XCTest suite passed on a concrete iOS Simulator; frozen desktop smoke passed on Linux, macOS and Windows.",
+      "source": "https://github.com/jotaele44/thehub-pr/actions/runs/33731487745/job/100572206629 and https://github.com/jotaele44/thehub-pr/actions/runs/33731487714",
+      "captured_at": "2026-09-03T08:10:29Z"
+    },
+    {
+      "id": "ACP-E008",
+      "class": "OBSERVED",
+      "description": "The deployed ASGI runtime passed health and bounded-companion smoke, rejected an unconfigured write with HTTP 503, then stopped while all six consumer guards passed independently.",
+      "source": "https://github.com/jotaele44/thehub-pr/actions/runs/33731487745/job/100572206425",
+      "captured_at": "2026-09-03T08:10:29Z"
+    },
+    {
+      "id": "ACP-E009",
+      "class": "OBSERVED",
+      "description": "Immutable signed receipt, tamper/removal/forgery detection, failed-run audit persistence, secret exclusion and forced post-commit rollback tests passed.",
+      "source": "https://github.com/jotaele44/thehub-pr/actions/runs/33731487745/job/100572206425",
+      "captured_at": "2026-09-03T08:10:29Z"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "ACP-WORKSTATION",
+      "domain": "A01",
+      "title": "Sole workstation execution boundary",
+      "critical": true,
+      "acceptance_criteria": [
+        "All signed operations are workstation-only and unclassified operations fail closed"
+      ],
+      "dependencies": [],
+      "state": "PASS",
+      "gates": [
+        {
+          "name": "IMPLEMENTED",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E002"
+          ]
+        },
+        {
+          "name": "NEGATIVE_TEST",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E001",
+            "ACP-E002",
+            "ACP-E006"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "ACP-E001",
+        "ACP-E002",
+        "ACP-E006"
+      ],
+      "notes": "Enforced in source and green CI."
+    },
+    {
+      "id": "ACP-WRITE-FAIL-CLOSED",
+      "domain": "A01",
+      "title": "Unconfigured writes fail closed",
+      "critical": true,
+      "acceptance_criteria": [
+        "No private-network fallback permits administrative writes without a token"
+      ],
+      "dependencies": [
+        "ACP-WORKSTATION"
+      ],
+      "state": "PASS",
+      "gates": [
+        {
+          "name": "IMPLEMENTED",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E001"
+          ]
+        },
+        {
+          "name": "PRODUCTION_SMOKE",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E008"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "ACP-E001",
+        "ACP-E008"
+      ],
+      "notes": "Live ephemeral deployment returned HTTP 503 for unconfigured mutation."
+    },
+    {
+      "id": "ACP-REPO-ISOLATION",
+      "domain": "A01",
+      "title": "Six producer applications lack global authority",
+      "critical": true,
+      "acceptance_criteria": [
+        "Every producer has an exact bounded manifest and zero prohibited authority markers"
+      ],
+      "dependencies": [],
+      "state": "PASS",
+      "gates": [
+        {
+          "name": "SECURITY",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E003",
+            "ACP-E006"
+          ]
+        },
+        {
+          "name": "OUTAGE",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E008"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "ACP-E003",
+        "ACP-E006",
+        "ACP-E008"
+      ],
+      "notes": "Each consumer remains independently checkable while TheHub is stopped."
+    },
+    {
+      "id": "ACP-LOCKSTEP",
+      "domain": "A12",
+      "title": "Boundary registered in FEDERATION LOCKSTEP",
+      "critical": true,
+      "acceptance_criteria": [
+        "Contract change impacts all seven nodes and cannot certify with a missing disposition"
+      ],
+      "dependencies": [
+        "ACP-REPO-ISOLATION"
+      ],
+      "state": "PASS",
+      "gates": [
+        {
+          "name": "IMPLEMENTED",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E004"
+          ]
+        },
+        {
+          "name": "REMOTE_CI",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E006"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "ACP-E004",
+        "ACP-E006"
+      ],
+      "notes": "Coordinated PRs are frozen and merges use expected-head SHA guards."
+    },
+    {
+      "id": "ACP-IOS-BOUNDARY",
+      "domain": "A11",
+      "title": "Bounded iOS companion",
+      "critical": true,
+      "acceptance_criteria": [
+        "Only five read capabilities ship and manager execution is impossible"
+      ],
+      "dependencies": [
+        "ACP-WORKSTATION"
+      ],
+      "state": "PASS",
+      "gates": [
+        {
+          "name": "IMPLEMENTED",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E005"
+          ]
+        },
+        {
+          "name": "NEGATIVE_TEST",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E001",
+            "ACP-E005"
+          ]
+        },
+        {
+          "name": "NATIVE_TEST",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E007"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "ACP-E005",
+        "ACP-E007"
+      ],
+      "notes": "Simulator SDK build and XCTest passed without signing or privileged entitlements."
+    },
+    {
+      "id": "ACP-CROSS-REPO-CI",
+      "domain": "A12",
+      "title": "All seven coordinated PR checks pass",
+      "critical": true,
+      "acceptance_criteria": [
+        "All affected repository checks are green at frozen PR SHAs"
+      ],
+      "dependencies": [
+        "ACP-LOCKSTEP",
+        "ACP-IOS-BOUNDARY"
+      ],
+      "state": "PASS",
+      "gates": [
+        {
+          "name": "POSITIVE_TEST",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E006"
+          ]
+        },
+        {
+          "name": "NEGATIVE_TEST",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E006"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "ACP-E006"
+      ],
+      "notes": "69 of 69 workflows succeeded across the coordinated set."
+    },
+    {
+      "id": "ACP-APPLE-BUILD",
+      "domain": "A11",
+      "title": "macOS workstation and iOS simulator build",
+      "critical": true,
+      "acceptance_criteria": [
+        "Native workstation and companion build/test on supported Apple runners"
+      ],
+      "dependencies": [
+        "ACP-CROSS-REPO-CI"
+      ],
+      "state": "PASS",
+      "gates": [
+        {
+          "name": "MACOS_BUILD",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E007"
+          ]
+        },
+        {
+          "name": "IOS_SIMULATOR",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E007"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "ACP-E007"
+      ],
+      "notes": "Concrete simulator UUID reported BUILD SUCCEEDED and TEST SUCCEEDED."
+    },
+    {
+      "id": "ACP-PRODUCTION",
+      "domain": "A12",
+      "title": "Deployment smoke, audit and rollback proof",
+      "critical": true,
+      "acceptance_criteria": [
+        "Deployment, immutable audit, outage and rollback gates pass"
+      ],
+      "dependencies": [
+        "ACP-APPLE-BUILD"
+      ],
+      "state": "PASS",
+      "gates": [
+        {
+          "name": "PRODUCTION_SMOKE",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E008"
+          ]
+        },
+        {
+          "name": "LOG_AUDIT",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E009"
+          ]
+        },
+        {
+          "name": "ROLLBACK",
+          "status": "PASS",
+          "evidence_ids": [
+            "ACP-E009"
+          ]
+        }
+      ],
+      "evidence_ids": [
+        "ACP-E008",
+        "ACP-E009"
+      ],
+      "notes": "Proof ran against an ephemeral deployed runtime and hermetic transaction fixtures."
+    }
+  ],
+  "contradictions": [],
+  "summary": {
+    "overall_state": "PASS",
+    "state_counts": {
+      "PASS": 8,
+      "FAIL": 0,
+      "OPEN": 0,
+      "BLOCKED": 0,
+      "PROVISIONAL": 0,
+      "AUDIT_ONLY": 0,
+      "NONCANONICAL": 0,
+      "UNRESOLVED": 0,
+      "SUPERSEDED": 0
+    },
+    "critical_residue_ids": []
+  }
+}

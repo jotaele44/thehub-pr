@@ -1,0 +1,60 @@
+{
+  "schema_version": "htr-authoritative-hydro-registry-1.0",
+  "scope": {
+    "jurisdiction": "Puerto Rico",
+    "bounded_denominator": "PREPA/PREB hydroelectric fleet explicitly enumerated in the 2023 Hydroelectric Fleet Application Package, plus named hydro/dam assets explicitly listed in PREPA's 2021 10-Year Infrastructure Plan that materially expand the hydro-toponym name family set.",
+    "universal_hydro_feature_claim": false
+  },
+  "sources": [
+    {
+      "source_id": "preb:2023-10-11:hydroelectric-fleet-application-package",
+      "url": "https://energia.pr.gov/wp-content/uploads/sites/7/2023/10/20231011-MI20210002-Resolution-and-Order.pdf",
+      "authority": "Puerto Rico Energy Bureau / PREPA filing",
+      "role": "authoritative fleet denominator",
+      "enumerated_count": 16
+    },
+    {
+      "source_id": "prepa:2021-02:10-year-infrastructure-plan",
+      "url": "https://energia.pr.gov/wp-content/uploads/sites/7/2021/02/Response-to-Resolution-and-Order-Entered-on-Jan-25-2021-and-Request-for-Approval-of-Revised-10-Year-Infraestructure-Plan-NEPR-MI-2021-0002-1.pdf",
+      "authority": "Puerto Rico Electric Power Authority filing",
+      "role": "named hydro/dam asset expansion"
+    }
+  ],
+  "fleet_entities": [
+    {"hydro_entity_id":"hydroplant:caonillas_1","raw_name":"Caonillas 1","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:caonillas_2","raw_name":"Caonillas 2","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:carite_1","raw_name":"Carite 1","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:carite_2","raw_name":"Carite 2","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:carite_3","raw_name":"Carite 3","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:dos_bocas","raw_name":"Dos Bocas","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:garzas_1","raw_name":"Garzas 1","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:garzas_2","raw_name":"Garzas 2","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:isabela_1","raw_name":"Isabela 1","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:isabela_2","raw_name":"Isabela 2","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:isabela_3","raw_name":"Isabela 3","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:rio_blanco","raw_name":"Río Blanco","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:toro_negro_1","raw_name":"Toro Negro 1","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:toro_negro_2","raw_name":"Toro Negro 2","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:yauco_1","raw_name":"Yauco 1","feature_type":"HYDROELECTRIC_PLANT"},
+    {"hydro_entity_id":"hydroplant:yauco_2","raw_name":"Yauco 2","feature_type":"HYDROELECTRIC_PLANT"}
+  ],
+  "named_asset_entities": [
+    {"hydro_entity_id":"hydroasset:lucchetti_reservoir","raw_name":"Lucchetti Reservoir","feature_type":"RESERVOIR"},
+    {"hydro_entity_id":"hydroasset:lucchetti_dam","raw_name":"Lucchetti Dam","feature_type":"DAM"},
+    {"hydro_entity_id":"hydroasset:guayo_reservoir","raw_name":"Guayo Reservoir","feature_type":"RESERVOIR"},
+    {"hydro_entity_id":"hydroasset:guerrero_reservoir","raw_name":"Guerrero Reservoir","feature_type":"RESERVOIR"},
+    {"hydro_entity_id":"hydroasset:garzas_dam","raw_name":"Garzas Dam","feature_type":"DAM"},
+    {"hydro_entity_id":"hydroasset:dos_bocas_dam","raw_name":"Dos Bocas Dam","feature_type":"DAM"},
+    {"hydro_entity_id":"hydroasset:patillas_dam","raw_name":"Patillas Dam","feature_type":"DAM"},
+    {"hydro_entity_id":"hydroasset:matrullas_dam","raw_name":"Matrullas Dam","feature_type":"DAM"},
+    {"hydro_entity_id":"hydroasset:juana_diaz_canal","raw_name":"Juana Díaz Canal","feature_type":"CANAL"},
+    {"hydro_entity_id":"hydroasset:moca_canal","raw_name":"Moca Canal","feature_type":"CANAL"}
+  ],
+  "invariants": {
+    "fleet_entity_count": 16,
+    "named_asset_entity_count": 10,
+    "total_registry_rows": 26,
+    "name_or_proximity_is_identity": false,
+    "registry_source_taxonomy_is_canonical_identity": false
+  }
+}

@@ -48,6 +48,7 @@ def client(tmp_path, monkeypatch):
     ])
     monkeypatch.setattr(backend_main, "AGGREGATE_PATH", agg)
     monkeypatch.setattr(backend_main, "SIGNS_OUT", tmp_path / "signs")
+    monkeypatch.setattr(backend_main, "_WRITE_TOKEN", "test-write-token")
     with TestClient(backend_main.app) as c:
         yield c
 
@@ -75,7 +76,7 @@ def test_sign_html_missing_returns_404(client):
 
 
 def test_generate_without_write(client):
-    r = client.post("/api/project-signs/generate", json={})
+    r = client.post("/api/project-signs/generate", json={}, headers={"Authorization": "Bearer test-write-token"})
     assert r.status_code == 200
     body = r.json()
     assert body["count"] == 1
@@ -83,9 +84,13 @@ def test_generate_without_write(client):
 
 
 def test_generate_with_write_persists_files(client, tmp_path):
-    r = client.post("/api/project-signs/generate", json={"write": True})
+    r = client.post("/api/project-signs/generate", json={"write": True}, headers={"Authorization": "Bearer test-write-token"})
     assert r.status_code == 200
     body = r.json()
     assert body["count"] == 1
     assert body["out_dir"] is not None
     assert (tmp_path / "signs" / "index.json").exists()
+
+
+def test_generate_without_admin_token_fails_closed(client):
+    assert client.post("/api/project-signs/generate", json={}).status_code == 401

@@ -1,0 +1,43 @@
+{
+  "schema_version": "htr-seed-1.0",
+  "status": "CANDIDATE_NOT_IDENTITY",
+  "hydro_registry": [
+    {
+      "hydro_entity_id": "hydro:lucchetti",
+      "raw_name": "Lucchetti",
+      "feature_type": "HYDRO_PROJECT_NAME_FAMILY",
+      "canonical_identity_status": "SEPARATE_FROM_STREET"
+    }
+  ],
+  "toponym_observations": [
+    {
+      "observation_id": "toponym:calle_luchetti_villalba",
+      "raw_name": "CALLE LUCHETTI",
+      "feature_type": "ROAD",
+      "municipality": "Villalba",
+      "cluster_id": "villalba-hydro-context",
+      "source_manifestation": "Flightradar24 screenshot supplied by user, 2026-08-28",
+      "source_status": "SCREENSHOT_LABEL_ONLY"
+    }
+  ],
+  "expected": {
+    "candidate_count": 1,
+    "discovery_method": "ORTHOGRAPHIC_NEAR_MATCH",
+    "source_core": "luchetti",
+    "hydro_core": "lucchetti",
+    "identity_state": "UNRESOLVED",
+    "identity_prohibited_from_name_only": true
+  },
+  "source_snapshot": {
+    "retrieval_utc": "2026-08-28T21:36:00Z",
+    "note": "Conversation-upload manifestations; SHA256 freezes the exact JPEG bytes available to this implementation run.",
+    "images": [
+      {"filename": "IMG_4631.jpeg", "sha256": "b8b1df0c1af950fc5c86277d7cfc4361037e1a3cea829f1399e50a7180449551"},
+      {"filename": "IMG_4632.jpeg", "sha256": "23867aafb18f723095823b5c63319d4d79bbe8f8b50dad79a414851e1a0954e5"},
+      {"filename": "IMG_4633.jpeg", "sha256": "5f63bc96ee7bd6c136d554b985b26d03b2307ca517e6ebfb7a3e94f3c53ae766"},
+      {"filename": "IMG_4634.jpeg", "sha256": "d6385b0785fbbd16b8fc577d295a77e9a6194566f416d6c87177e4dd4915d506"},
+      {"filename": "IMG_4635.jpeg", "sha256": "38a90dbc1935ebe1b1d478daa6cc564b00ba9065c6921903f8e8f41f77468a64"},
+      {"filename": "IMG_4636.jpeg", "sha256": "ba2662a405b9d08b611cb6a56dd70fc18992ec1960fc27d4598dae41771a1380"}
+    ]
+  }
+}

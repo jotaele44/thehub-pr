@@ -1,0 +1,60 @@
+name: GIS renderer dependency lock
+
+on:
+  pull_request:
+    paths:
+      - 'server/frontend/package.json'
+      - '.github/workflows/gis-renderer-lock.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package-lock:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: server/frontend/package-lock.json
+      - name: Generate package-lock from frozen package.json
+        working-directory: server/frontend
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Assert exact renderer dependency versions
+        working-directory: server/frontend
+        run: |
+          node - <<'NODE'
+          const lock = require('./package-lock.json');
+          const root = lock.packages[''].dependencies;
+          const expected = { 'maplibre-gl': '6.6.0', cesium: '1.144.0', geotiff: '3.0.5' };
+          for (const [name, version] of Object.entries(expected)) {
+            if (root[name] !== version) throw new Error(`${name} root lock mismatch: ${root[name]} != ${version}`);
+            const pkg = lock.packages[`node_modules/${name}`];
+            if (!pkg || pkg.version !== version) throw new Error(`${name} package lock mismatch`);
+          }
+          console.log(JSON.stringify({status:'PASS', expected}));
+          NODE
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: gis-renderer-package-lock
+          path: server/frontend/package-lock.json
+      - name: Commit generated lock to same-repository PR branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- server/frontend/package-lock.json; then
+            echo 'package-lock.json already synchronized'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add server/frontend/package-lock.json
+          git commit -m 'lock GIS renderer dependencies'
+          git push origin "HEAD:${HEAD_REF}"

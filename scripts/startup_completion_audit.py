@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import signal
 import shlex
 import subprocess
 import tempfile
@@ -35,6 +36,7 @@ PRODUCT_COMPLETION_BLOCKERS = {
 }
 
 SETUP_REQUIRED = {"setup", "test_suite", "export_canonical", "startup_smoke"}
+CODE_COMPLETION_REQUIRED = {"test_suite", "export_canonical", "startup_smoke"}
 DEFAULT_TIMEOUT = 600
 
 
@@ -110,28 +112,36 @@ def run_command(
         log.write(f"$ {command}\n")
         log.write(f"# cwd: {cwd}\n")
         log.write(f"# started_utc: {utc_now()}\n\n")
+        log.flush()
         try:
-            proc = subprocess.run(
+            proc = subprocess.Popen(
                 command,
                 cwd=cwd,
                 shell=True,
                 text=True,
                 stdout=log,
                 stderr=subprocess.STDOUT,
-                timeout=timeout,
-                check=False,
                 env=env,
+                start_new_session=True,
             )
+            exit_code = proc.wait(timeout=timeout)
             state = "PASS" if proc.returncode == 0 else "FAIL"
             return CommandResult(
                 name,
                 command,
                 state,
-                proc.returncode,
+                exit_code,
                 round(time.monotonic() - started, 3),
                 str(log_path),
             )
         except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGTERM)
+            try:
+                proc.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                os.killpg(proc.pid, signal.SIGKILL)
+                proc.wait(timeout=5)
+            log.write(f"\n# timeout_enforced_utc: {utc_now()}\n")
             return CommandResult(
                 name,
                 command,
@@ -238,6 +248,46 @@ def classify_startup_setup(command_results: list[CommandResult]) -> tuple[str, l
     return "STARTUP_SETUP_COMPLETE", []
 
 
+def is_source_blocked_export_failure(result: CommandResult) -> bool:
+    if result.name != "export_canonical" or result.state != "FAIL" or not result.log_path:
+        return False
+    try:
+        log_text = Path(result.log_path).read_text(encoding="utf-8", errors="replace").lower()
+    except OSError:
+        return False
+    source_blocked_markers = [
+        "ledger is stale",
+        "source ledger is stale",
+        "newest capture age",
+        "live signal ledger is stale",
+    ]
+    return any(marker in log_text for marker in source_blocked_markers)
+
+
+def classify_code_completion(command_results: list[CommandResult]) -> tuple[str, list[str]]:
+    reasons: list[str] = []
+    failing = [
+        result
+        for result in command_results
+        if result.name != "setup" and result.state in {"FAIL", "BLOCKED"}
+    ]
+    if failing:
+        if all(is_source_blocked_export_failure(result) for result in failing):
+            reasons.extend(f"{result.name}:SOURCE_BLOCKED" for result in failing)
+            return "CODE_COMPLETE_CANDIDATE_SOURCE_BLOCKED", reasons
+        reasons.extend(f"{result.name}:{result.state}" for result in failing)
+        return "CODE_INCOMPLETE", reasons
+    skipped_required = [
+        result
+        for result in command_results
+        if result.name in CODE_COMPLETION_REQUIRED and result.state == "SKIP_WITH_REASON"
+    ]
+    if skipped_required:
+        reasons.extend(f"{result.name}:{result.reason}" for result in skipped_required)
+        return "CODE_COMPLETION_UNRESOLVED", reasons
+    return "CODE_COMPLETE_CANDIDATE", []
+
+
 def classify_product_completion(
     repo_id: str,
     ready_for_live: bool | None,
@@ -305,6 +355,7 @@ def audit_repo(
         blockers,
         command_results,
     )
+    code_state, code_blockers = classify_code_completion(command_results)
     return {
         "repo_id": repo_id,
         "path": str(repo_path),
@@ -323,6 +374,8 @@ def audit_repo(
         "startup_setup_blockers": startup_blockers,
         "product_completion_state": product_state,
         "product_completion_blockers": product_blockers,
+        "code_completion_state": code_state,
+        "code_completion_blockers": code_blockers,
         "completion_state": startup_state,
         "blockers": startup_blockers,
     }
@@ -348,11 +401,14 @@ def build_summary(
 ) -> dict[str, Any]:
     setup_counts: dict[str, int] = {}
     product_counts: dict[str, int] = {}
+    code_counts: dict[str, int] = {}
     for result in repo_results:
         setup_state = result["startup_setup_state"]
         product_state = result["product_completion_state"]
+        code_state = result["code_completion_state"]
         setup_counts[setup_state] = setup_counts.get(setup_state, 0) + 1
         product_counts[product_state] = product_counts.get(product_state, 0) + 1
+        code_counts[code_state] = code_counts.get(code_state, 0) + 1
     classified = sum(setup_counts.values())
     startup_certification = "PASS" if setup_counts == {"STARTUP_SETUP_COMPLETE": len(REPO_ORDER)} else "PROVISIONAL"
     product_certification = "PASS" if product_counts == {"PRODUCT_COMPLETE": len(REPO_ORDER)} else "PROVISIONAL"
@@ -382,6 +438,13 @@ def build_summary(
             "counts": product_counts,
             "closed": sum(product_counts.values()) == len(REPO_ORDER),
         },
+        "code_completion_arithmetic": {
+            "total": len(REPO_ORDER),
+            "classified": sum(code_counts.values()),
+            "counts": code_counts,
+            "closed": sum(code_counts.values()) == len(REPO_ORDER),
+            "certification_language": "CODE_COMPLETE_CANDIDATE is not source-certified or product-certified.",
+        },
         "repositories": repo_results,
         "receipt_paths": {
             "json": str(out_dir / "startup_completion_audit.json"),
@@ -399,20 +462,23 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
         f"- Startup/setup certification: `{summary['startup_setup_certification']}`",
         f"- Product completion certification: `{summary['product_completion_certification']}`",
         f"- Startup/setup arithmetic: `{summary['arithmetic']['classified']}={summary['arithmetic']['total']}`",
+        f"- Code-complete arithmetic: `{summary['code_completion_arithmetic']['classified']}={summary['code_completion_arithmetic']['total']}`",
+        f"- Code-complete language: `{summary['code_completion_arithmetic']['certification_language']}`",
         f"- Lumen: `{summary['tooling']['lumen_status']}`",
         f"- Deferred Skill selector: `{summary['tooling']['skill_selector']}`",
         "",
         "## Repository Results",
         "",
-        "| Repo | SHA | Startup/setup | Product completion | Live Ready | Setup | Tests | Export | Startup |",
-        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        "| Repo | SHA | Code complete | Startup/setup | Product completion | Live Ready | Setup | Tests | Export | Startup |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for repo in summary["repositories"]:
         commands = {result["name"]: result for result in repo["command_results"]}
         lines.append(
-            "| {repo} | `{sha}` | `{setup_state}` | `{product_state}` | `{live}` | `{setup}` | `{tests}` | `{export}` | `{startup}` |".format(
+            "| {repo} | `{sha}` | `{code_state}` | `{setup_state}` | `{product_state}` | `{live}` | `{setup}` | `{tests}` | `{export}` | `{startup}` |".format(
                 repo=repo["repo_id"],
                 sha=repo["head_sha"][:12],
+                code_state=repo["code_completion_state"],
                 setup_state=repo["startup_setup_state"],
                 product_state=repo["product_completion_state"],
                 live=repo["ready_for_hub_live_execution"],
@@ -422,6 +488,13 @@ def write_markdown(path: Path, summary: dict[str, Any]) -> None:
                 startup=commands.get("startup_smoke", {}).get("state", "SKIP_WITH_REASON"),
             )
         )
+    lines.extend(["", "## Code Completion Blockers", ""])
+    for repo in summary["repositories"]:
+        if repo["code_completion_state"] != "CODE_COMPLETE_CANDIDATE":
+            lines.append(
+                f"- `{repo['repo_id']}`: `{repo['code_completion_state']}` - "
+                f"{', '.join(repo['code_completion_blockers']) or 'no blocker text'}"
+            )
     lines.extend(["", "## Startup/Setup Blockers", ""])
     for repo in summary["repositories"]:
         if repo["startup_setup_state"] != "STARTUP_SETUP_COMPLETE":

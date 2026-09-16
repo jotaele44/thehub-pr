@@ -1,0 +1,61 @@
+name: Federation LOCKSTEP
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_app:
+        description: Source federation app id
+        required: true
+        type: choice
+        options: [aguayluz, centinelas, moneysweep, ovnis, skywatcher, spiderweb, thehub]
+      change_class:
+        description: Change classification
+        required: true
+        type: choice
+        options: [SHARED_CONTRACT, SCHEMA, GEOMETRY_AUTHORITY, IDENTITY_RULE, FEDERATION_PACKAGE, PRODUCER_INTERFACE, APP_LOCAL]
+      contract_id:
+        description: Optional exact contract id
+        required: false
+        type: string
+  repository_dispatch:
+    types: [federation-lockstep]
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate-lockstep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SOURCE_APP: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.source_app || inputs.source_app }}
+      CHANGE_CLASS: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.change_class || inputs.change_class }}
+      CONTRACT_ID: ${{ github.event_name == 'repository_dispatch' && github.event.client_payload.contract_id || inputs.contract_id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Validate dispatch payload
+        run: |
+          test -n "$SOURCE_APP" || { echo 'BLOCKED: source_app missing'; exit 2; }
+          test -n "$CHANGE_CLASS" || { echo 'BLOCKED: change_class missing'; exit 2; }
+      - name: Evaluate explicit LOCKSTEP bindings
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          args=(
+            --config federation/lockstep-bindings.json
+            --source-app "$SOURCE_APP"
+            --change-class "$CHANGE_CLASS"
+            --out artifacts/federation-lockstep-ci.json
+          )
+          if [[ -n "$CONTRACT_ID" ]]; then args+=(--contract-id "$CONTRACT_ID"); fi
+          python scripts/federation_lockstep_ci.py "${args[@]}"
+      - name: Upload LOCKSTEP receipt
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: federation-lockstep-ci
+          path: artifacts/federation-lockstep-ci.json
+          if-no-files-found: error

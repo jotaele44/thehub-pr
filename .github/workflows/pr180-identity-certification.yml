@@ -1,0 +1,63 @@
+name: PR180 identity certification
+
+on:
+  pull_request:
+    paths:
+      - "src/hub/identity_registry.py"
+      - "schemas/contracts/federation_*.schema.json"
+      - "schemas/contracts/entity_resolution.v1.schema.json"
+      - "tests/test_identity_registry.py"
+      - "tests/test_identity_contracts.py"
+      - "tools/build_identity_candidate_ledger.py"
+      - ".github/workflows/pr180-identity-certification.yml"
+  workflow_dispatch:
+
+jobs:
+  identity-certification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.11"
+
+      - name: Install validation dependencies
+        run: python -m pip install -e ".[dev,server]" httpx
+
+      - name: Build complete main/PR candidate ledger
+        run: |
+          main_ref='${{ github.event.pull_request.base.sha }}'
+          head_ref='${{ github.event.pull_request.head.sha }}'
+          if [[ -z "$main_ref" ]]; then
+            main_ref=origin/main
+          fi
+          if [[ -z "$head_ref" ]]; then
+            head_ref=HEAD
+          fi
+          python tools/build_identity_candidate_ledger.py \
+            --main-ref "$main_ref" \
+            --head-ref "$head_ref" \
+            --out build/pr180_identity_candidate_ledger.json
+
+      - name: Run identity state-machine tests
+        run: pytest -q tests/test_identity_registry.py tests/test_identity_contracts.py
+
+      - name: Run complete repository test surface
+        run: pytest -q
+
+      - name: Ruff
+        run: ruff check src/hub/identity_registry.py tests/test_identity_registry.py tests/test_identity_contracts.py tools/build_identity_candidate_ledger.py
+
+      - name: Mypy identity registry
+        run: mypy src/hub/identity_registry.py
+
+      - name: Upload denominator ledger
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pr180-identity-candidate-ledger
+          path: build/pr180_identity_candidate_ledger.json
+          if-no-files-found: error

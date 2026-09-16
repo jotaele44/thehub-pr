@@ -202,7 +202,7 @@ export default function IntelligenceWorkspace({ adapter }) {
                 id={`${adapter.key}-intelligence-search`}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                className="min-h-[44px] w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="min-h-[44px] w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm text-foreground outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
                 placeholder={`Search ${adapter.primaryNoun}…`}
               />
             </span>
@@ -214,7 +214,7 @@ export default function IntelligenceWorkspace({ adapter }) {
               id={`${adapter.key}-intelligence-category`}
               value={category}
               onChange={(event) => setCategory(event.target.value)}
-              className="mt-1 min-h-[44px] w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="mt-1 min-h-[44px] w-full rounded-md border border-input bg-background px-3 text-sm text-foreground outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
             >
               <option value="all">All categories</option>
               {categories.map((item) => <option key={item} value={item}>{item}</option>)}

@@ -26,6 +26,13 @@
       "owner": "moneysweep-pr",
       "consumers": ["spiderweb-pr"],
       "breaking_requires_major": true
+    },
+    "thehub_admin_boundary": {
+      "current": "1.0.0",
+      "compatibility": "semver",
+      "owner": "thehub-pr",
+      "consumers": ["moneysweep-pr", "spiderweb-pr", "aguayluz-pr", "ovnis-pr", "skywatcher-pr", "centinelas-pr"],
+      "breaking_requires_major": true
     }
   },
   "rules": {

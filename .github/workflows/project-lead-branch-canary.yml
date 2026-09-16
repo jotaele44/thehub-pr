@@ -1,0 +1,120 @@
+name: Project lead branch-isolated canary
+
+on:
+  push:
+    branches: [feat/project-lead-fanout-v0-1]
+    paths:
+      - scripts/project_lead_branch_canary.py
+      - .github/workflows/project-lead-branch-canary.yml
+      - src/hub/project_leads.py
+      - schemas/project_banner.v1.schema.json
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/project_lead_branch_canary.py
+      - .github/workflows/project-lead-branch-canary.yml
+      - src/hub/project_leads.py
+      - schemas/project_banner.v1.schema.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Hub feature branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: feat/project-lead-fanout-v0-1
+          path: repos/thehub-pr
+          persist-credentials: false
+
+      - name: Checkout frozen Centinelas feature head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/centinelas-pr
+          ref: e37bbb514139fc53f5bd3ac0438d5e65c1fb7d07
+          path: repos/centinelas-pr
+          persist-credentials: false
+
+      - name: Checkout frozen MoneySweep feature head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/moneysweep-pr
+          ref: 9154cfb23eba5837da16ee3898056a5476cfd169
+          path: repos/moneysweep-pr
+          persist-credentials: false
+
+      - name: Checkout frozen SpiderWeb feature head
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: jotaele44/spiderweb-pr
+          ref: 7a1fa4fb92d5a1150cff4eda12fe3e1a989df307
+          path: repos/spiderweb-pr
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install exact branch runtime dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e repos/thehub-pr
+          python -m pip install --no-deps -e repos/centinelas-pr
+          python -m pip install pydantic pandas pyyaml requests
+
+      - name: Seed isolated SpiderWeb federation package
+        run: |
+          mkdir -p repos/spiderweb-pr/exports/federation
+          cat > repos/spiderweb-pr/exports/federation/manifest.json <<'JSON'
+          {
+            "schema_version": "branch_canary_seed/v1",
+            "producer": "spiderweb-pr",
+            "mode": "test",
+            "package_id": "pkg_branch_canary_seed",
+            "files": []
+          }
+          JSON
+
+      - name: Execute branch-isolated Los Rosales and control canary
+        run: |
+          python repos/thehub-pr/scripts/project_lead_branch_canary.py \
+            --centinelas repos/centinelas-pr \
+            --moneysweep repos/moneysweep-pr \
+            --spiderweb repos/spiderweb-pr \
+            --hub repos/thehub-pr \
+            --out "$GITHUB_WORKSPACE/artifacts/project-lead-canary/receipt.json"
+
+      - name: Assert certification receipt
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('artifacts/project-lead-canary/receipt.json')
+          r = json.loads(p.read_text())
+          assert r['certification'] == 'PASS'
+          assert r['los_rosales']['state'] == 'CROSS_DOMAIN_CANDIDATE'
+          assert r['los_rosales']['banner'] is None
+          assert r['positive_control']['state'] == 'BANNER_ELIGIBLE'
+          assert r['positive_control']['banner_schema'] == 'project_banner/v1'
+          assert r['replay_fork']['first_exit'] == 0
+          assert r['replay_fork']['replay_exit'] == 0
+          assert r['replay_fork']['fork_exit'] != 0
+          assert r['replay_fork']['receipt_sha256_first'] == r['replay_fork']['receipt_sha256_replay']
+          assert r['merge_or_production_promotion'] is False
+          print('PASS: branch-isolated four-repo project-lead canary certified')
+          PY
+
+      - name: Upload immutable canary receipt
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: project-lead-branch-canary
+          path: artifacts/project-lead-canary
+          if-no-files-found: error
+          retention-days: 90

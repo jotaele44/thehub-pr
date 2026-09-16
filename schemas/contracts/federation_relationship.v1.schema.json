@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thehub-pr/contracts/federation_relationship/v1",
+  "x-contract-version": "1.0.0",
+  "title": "Persistent Federation Relationship",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","federation_relationship_id","source_federation_entity_id","target_federation_entity_id","relationship_type","federation_authority","provenance_ids","status","created_at","updated_at"],
+  "properties": {
+    "schema_version": {"const":"1.0.0"},
+    "federation_relationship_id": {"type":"string","pattern":"^frel_[a-f0-9]{32}$"},
+    "source_federation_entity_id": {"type":"string","pattern":"^fed_[a-f0-9]{32}$"},
+    "target_federation_entity_id": {"type":"string","pattern":"^fed_[a-f0-9]{32}$"},
+    "relationship_type": {"type":"string","minLength":1},
+    "domain_owner": {"type":["string","null"]},
+    "federation_authority": {"const":"thehub-pr"},
+    "confidence": {"type":["number","null"],"minimum":0,"maximum":1},
+    "provenance_ids": {"type":"array","minItems":1,"items":{"type":"string"},"uniqueItems":true},
+    "status": {"enum":["ACTIVE","SUPERSEDED","TOMBSTONED"]},
+    "valid_from": {"type":["string","null"],"format":"date-time"},
+    "valid_to": {"type":["string","null"],"format":"date-time"},
+    "superseded_by": {"type":["string","null"],"pattern":"^frel_[a-f0-9]{32}$"},
+    "created_at": {"type":"string","format":"date-time"},
+    "updated_at": {"type":"string","format":"date-time"}
+  }
+}

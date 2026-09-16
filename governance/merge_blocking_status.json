@@ -1,7 +1,21 @@
 {
   "schema_version":"prii_merge_blocking_status_v1",
   "status":"BLOCKED",
-  "reason":"Required-status branch protection/ruleset has not been verifiably read or written through the current GitHub integration.",
+  "reason":"Branch protection on main was verified via the GitHub API on 2026-09-06: 5 of 7 federation repositories (thehub-pr, aguayluz-pr, ovnis-pr, skywatcher-pr, centinelas-pr) have NO branch protection on main at all. Only moneysweep-pr and spiderweb-pr have main protected. This confirms the prior BLOCKED status with hard evidence instead of an unverified claim.",
+  "branch_protection_audit": {
+    "verified_at_utc": "2026-09-06",
+    "method": "GitHub REST API via `GET /repos/{owner}/{repo}/branches` (main.protected)",
+    "limitation": "This API surface reports only the boolean `protected` flag, not which specific status checks (federation-governance, federation-governance-certify, federation-compatibility) are marked required. Confirming the required-checks list itself needs a branch-protection/ruleset-scoped read this session's tooling does not expose (repo admin settings, not repo contents) — that remains unverified even for the two repos that do show `protected: true`.",
+    "results": {
+      "thehub-pr": {"protected": false},
+      "moneysweep-pr": {"protected": true},
+      "spiderweb-pr": {"protected": true},
+      "aguayluz-pr": {"protected": false},
+      "ovnis-pr": {"protected": false},
+      "skywatcher-pr": {"protected": false},
+      "centinelas-pr": {"protected": false}
+    }
+  },
   "required_central_checks":["federation-governance","federation-governance-certify"],
   "required_producer_check":"federation-compatibility",
   "certification_rule":"Do not issue CERTIFIED until required status enforcement is evidenced for main on all seven repositories."

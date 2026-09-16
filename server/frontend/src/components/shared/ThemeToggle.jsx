@@ -17,7 +17,7 @@ export default function ThemeToggle({ className }) {
       className={cn(
         "inline-flex items-center justify-center h-8 w-8 rounded-lg border border-sidebar-border",
         "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-        "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        "transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
         className
       )}
     >

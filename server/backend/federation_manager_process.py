@@ -28,7 +28,7 @@ import sys
 import threading
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable, Iterable, Mapping, Optional, Sequence
+from typing import Any, Callable, Iterable, Mapping, Optional, Sequence
 
 #: Variables a child may inherit. PYTHONPATH is deliberately absent: it is a
 #: code-injection channel, and a managed environment should not need it.
@@ -185,7 +185,7 @@ def run_process(
     total = 0
     truncated = False
 
-    popen_kwargs: dict[str, object] = {
+    popen_kwargs: dict[str, Any] = {
         "cwd": str(cwd),
         "env": dict(env),
         "stdout": subprocess.PIPE,

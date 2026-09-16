@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "federation.sources.v1",
+  "title": "Federation Sources",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "repo", "generated_at", "sources"],
+  "properties": {
+    "schema_version": {"const": "federation.sources.v1"},
+    "repo": {"enum": ["thehub-pr", "skywatcher-pr", "moneysweep-pr", "aguayluz-pr", "centinelas-pr", "ovnis-pr", "spiderweb-pr"]},
+    "generated_at": {"type": "string", "minLength": 1},
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "name", "category", "access_method", "scope", "authority_level", "cadence", "status", "notes"],
+        "properties": {
+          "source_id": {"type": "string", "minLength": 1},
+          "name": {"type": "string", "minLength": 1},
+          "category": {"type": "string", "minLength": 1},
+          "access_method": {"enum": ["manual", "rss", "api", "scrape", "upload", "derived", "unknown"]},
+          "scope": {"enum": ["puerto_rico", "caribbean", "us_federal", "global", "mixed", "unknown"]},
+          "authority_level": {"enum": ["official", "institutional", "media", "community", "derived", "unknown"]},
+          "cadence": {"enum": ["daily", "weekly", "monthly", "event_driven", "unknown"]},
+          "status": {"enum": ["active", "candidate", "deprecated", "blocked", "unavailable"]},
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}

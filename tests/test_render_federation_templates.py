@@ -73,6 +73,26 @@ def test_slug_substitution_renders_to_tmp(tmp_path):
     assert (tmp_path / "schemas" / "federation_export_manifest.schema.json").is_file()
 
 
+def test_rendered_launchers_remove_only_successful_setup_logs(tmp_path):
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    launchers = (
+        tmp_path / "PRII-OVNIS.sh",
+        tmp_path / "PRII-OVNIS.command",
+        tmp_path / "PRII-OVNIS.app" / "Contents" / "MacOS" / "PRII-OVNIS",
+    )
+    for launcher in launchers:
+        source = launcher.read_text(encoding="utf-8")
+        setup = source.index("desktop/setup.py --ensure")
+        retained_failure_log = max(source.find("Full log: $LOG"), source.find("Details: $LOG"))
+        cleanup = source.index('rm -f "$LOG"')
+        launch = source.index("exec .venv/bin/python desktop/launch.py")
+
+        assert setup < retained_failure_log < cleanup < launch, launcher
+
+
 def test_rendered_templates_do_not_require_hub_sibling_paths(tmp_path):
     subprocess.run(
         [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
@@ -196,9 +216,12 @@ def test_centinelas_desktop_requirements_support_plain_pip_install(tmp_path):
         check=True, capture_output=True,
     )
     requirements = (tmp_path / "requirements-desktop.txt").read_text(encoding="utf-8")
-    assert "prii-desktop @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
-    assert "prii-maintenance @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
-    assert "prii-export-utils @ git+https://github.com/jotaele44/thehub-pr.git@" in requirements
+    archive = "https://github.com/jotaele44/thehub-pr/archive/"
+    assert f"prii-desktop @ {archive}" in requirements
+    assert f"prii-maintenance @ {archive}" in requirements
+    assert f"prii-export-utils @ {archive}" in requirements
+    assert "git+https://github.com/jotaele44/thehub-pr" not in requirements
+    assert requirements.count("f2b81769924689b4d959554928810b1d7b7ef3d6.zip") == 3
 
 
 def test_every_producer_declares_an_app_title():

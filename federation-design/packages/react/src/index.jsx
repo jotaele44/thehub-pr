@@ -7,6 +7,7 @@ import {
 } from './semantics.js'
 
 export * from './semantics.js'
+export * from './gis/index.jsx'
 
 function cx(...values) {
   return values.filter(Boolean).join(' ')

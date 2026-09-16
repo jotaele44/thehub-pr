@@ -61,5 +61,17 @@ def validate_repo_manifest(manifest: dict) -> List[str]:
 
 
 def load_and_validate_manifest(path) -> Tuple[dict, List[str]]:
-    data = json.loads(Path(path).read_text())
+    """Load and validate a producer manifest, or return a clean error list.
+
+    Mirrors the error handling in ``validate.py``'s package validator: a
+    missing or malformed file is reported through the same ``(data, errors)``
+    contract every caller already expects, instead of letting
+    ``FileNotFoundError``/``json.JSONDecodeError`` escape as a raw traceback.
+    """
+    try:
+        data = json.loads(Path(path).read_text())
+    except FileNotFoundError:
+        return {}, [f"manifest not found: {path}"]
+    except json.JSONDecodeError as exc:
+        return {}, [f"{path}: invalid JSON ({exc})"]
     return data, validate_repo_manifest(data)

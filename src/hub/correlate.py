@@ -21,6 +21,10 @@ Two rows are linkable iff their ``_producers`` sets are **disjoint** (a genuine
 cross-producer pair). Same-id matches are already merged by ``aggregate`` and are
 invisible here by design. Output is deterministic (sorted, fixed timestamps,
 sha256-derived ids) so re-runs are byte-identical.
+
+Correlation is never identity. Every relationship emitted by this module is
+explicitly stamped as a CANDIDATE with UNRESOLVED identity cardinality. A separate
+evidence-bearing adjudication step is required before identity can be asserted.
 """
 from __future__ import annotations
 
@@ -30,6 +34,8 @@ import math
 from datetime import date
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence, Tuple
+
+from .identity_adjudication import annotate_candidate_relationship
 
 # Deterministic, out-of-band so re-runs are byte-identical (mirrors bridge.py).
 _FIXED_TS = "1970-01-01T00:00:00Z"
@@ -208,14 +214,6 @@ def correlate_spatial(entities: Sequence[Dict[str, Any]],
         (ent, pt) for ent, pt in _raw if pt is not None
     ]
 
-    # Degrees-per-km vary with latitude: one degree of latitude is ~110.574 km
-    # everywhere, but one degree of longitude shrinks to ~111.320*cos(lat) km.
-    # Bin lat with a fixed cell height and lon with a *wider* cell so that any
-    # two points within ``threshold_km`` always land in the same or an adjacent
-    # cell. We size cells from the most extreme latitude in the set (largest
-    # |lat| → smallest cos → widest lon cell needed) and round generously: the
-    # grid only groups candidates, it never produces an output value, so erring
-    # large just adds harmless comparisons.
     KM_PER_DEG_LAT = 110.574
     KM_PER_DEG_LON_EQUATOR = 111.320
     lat_cell = threshold_km / KM_PER_DEG_LAT
@@ -224,11 +222,9 @@ def correlate_spatial(entities: Sequence[Dict[str, Any]],
     else:
         max_abs_lat = 0.0
     cos_lat = math.cos(math.radians(min(max_abs_lat, 89.9)))
-    cos_lat = max(cos_lat, 1e-9)  # guard against division blow-up near the poles
+    cos_lat = max(cos_lat, 1e-9)
     lon_cell = threshold_km / (KM_PER_DEG_LON_EQUATOR * cos_lat)
 
-    # Bucket points by integer (lat_cell, lon_cell) index, preserving input order
-    # within each bucket so candidate enumeration is deterministic.
     grid: Dict[Tuple[int, int], List[int]] = {}
     cells: List[Tuple[int, int]] = []
     for idx, (_, pt) in enumerate(pts):
@@ -241,9 +237,9 @@ def correlate_spatial(entities: Sequence[Dict[str, Any]],
         ci, cj = cells[i]
         for dci in (-1, 0, 1):
             for dcj in (-1, 0, 1):
-                for j in grid.get((ci + dci, cj + dcj), ()):  # type: ignore[arg-type]
+                for j in grid.get((ci + dci, cj + dcj), ()):
                     if j <= i:
-                        continue  # only consider each unordered pair once, i<j
+                        continue
                     a, pa = pts[i]
                     b, pb = pts[j]
                     if a["entity_id"] == b["entity_id"] or not _disjoint(a, b):
@@ -275,19 +271,6 @@ def correlate_temporal(awards: Sequence[Dict[str, Any]],
         if isinstance(ent, str) and when is not None:
             anchored.append((ent, when, txn))
 
-    # Sorted-by-date sweep instead of an all-pairs O(n²) scan: order rows by date
-    # and, for each row, only walk forward while the next row is within
-    # ``window_days``. Because the rows are date-sorted the forward window stops
-    # early, so a row is compared against only its near-in-time neighbours.
-    #
-    # Byte-identity vs. the naive all-pairs loop: the surviving link for a pair is
-    # its min-delta (= max-confidence) one, and ``conf``/``explanation`` are pure
-    # functions of ``delta``, so *which* row wins is order-independent — except
-    # that two distinct deltas could (for a very large window) round to the same
-    # confidence, where ``_dedupe_links`` first-wins would pick by emission order.
-    # To depend on nothing, we tag every emitted link with the unordered pair of
-    # the rows' *original* indices and re-sort by it before returning, reproducing
-    # the naive ``(i, j)`` emission order exactly regardless of window size.
     order = sorted(range(len(anchored)), key=lambda k: anchored[k][1])
     tagged: List[Tuple[Tuple[int, int], Dict[str, Any]]] = []
     for si in range(len(order)):
@@ -296,9 +279,9 @@ def correlate_temporal(awards: Sequence[Dict[str, Any]],
         for sj in range(si + 1, len(order)):
             oj = order[sj]
             ent_b, date_b, row_b = anchored[oj]
-            delta = (date_b - date_a).days  # >= 0, rows are date-sorted ascending
+            delta = (date_b - date_a).days
             if delta > window_days:
-                break  # all further rows are even later → out of window
+                break
             if ent_a == ent_b or not _disjoint(row_a, row_b):
                 continue
             conf = round(max(0.0, 1.0 - 0.5 * (delta / window_days)), 3)
@@ -312,15 +295,7 @@ def correlate_temporal(awards: Sequence[Dict[str, Any]],
 
 def correlate_alerts(alerts: Sequence[Dict[str, Any]],
                      entities: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Link an alert's anchor entity to co-located cross-producer entities.
-
-    An alert (e.g. from aguayluz-pr) that carries an ``entity_id`` anchor and a
-    ``location.municipality`` is linked to every entity another producer reports
-    in the same municipality, emitting a directed ``alert_affects_entity`` edge.
-    This surfaces, in the federation graph, which cross-domain entities sit in
-    the footprint of an active infrastructure alert. Alerts without an anchor
-    entity or municipality contribute nothing (honest: an unmatched draft alert
-    has no canonical entity to anchor)."""
+    """Link an alert's anchor entity to co-located cross-producer entities."""
     by_muni: Dict[str, List[Dict[str, Any]]] = {}
     for ent in entities:
         muni = _municipality(ent)
@@ -346,22 +321,7 @@ def correlate_alerts(alerts: Sequence[Dict[str, Any]],
 
 def correlate_observations(observations: Sequence[Dict[str, Any]],
                           entities: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Link an observation's anchor entity to co-located cross-producer entities.
-
-    A canonical observation (e.g. from skywatcher-pr / spiderweb-pr) that carries
-    an ``entity_id`` anchor and a ``location.municipality`` is linked to every
-    entity another producer reports in the same municipality, emitting a directed
-    ``observation_at_entity`` edge. This surfaces, in the federation graph, which
-    cross-domain entities sit in the footprint of a recorded observation (an
-    aircraft transit, structure sighting, sensor reading). Observations without an
-    anchor entity or municipality contribute nothing — an unanchored observation
-    has no canonical entity to hang an edge on (mirrors ``correlate_alerts``).
-
-    The anchor must also resolve to an entity present in the aggregate: an
-    observations-only export ships no ``entities.jsonl``, so an anchor id that is
-    absent from the entity set would otherwise emit an edge from a node that does
-    not exist. Such observations are skipped to keep the graph free of dangling
-    edges."""
+    """Link an observation's anchor entity to co-located cross-producer entities."""
     by_muni: Dict[str, List[Dict[str, Any]]] = {}
     entity_ids = set()
     for ent in entities:
@@ -410,9 +370,6 @@ def correlator_source() -> Dict[str, Any]:
     }
 
 
-#: Correlator relationship types that are directional (source -> target order is
-#: meaningful and must be preserved). All other correlator edges are symmetric,
-#: so their endpoints are sorted to canonicalize the id and dedupe (a,b)/(b,a).
 _DIRECTED_TYPES = frozenset({"alert_affects_entity", "observation_at_entity"})
 
 
@@ -424,7 +381,7 @@ def _to_relationship(link: Dict[str, Any]) -> Dict[str, Any]:
         src, tgt = sorted((link["source_entity_id"], link["target_entity_id"]))
     rid = "rel_" + hashlib.sha256(f"{src}|{tgt}|{rtype}".encode()).hexdigest()[:32]
     sid = correlator_source_id()
-    return {
+    relationship = {
         "relationship_id": rid,
         "source_id": sid,
         "source_entity_id": src,
@@ -439,14 +396,11 @@ def _to_relationship(link: Dict[str, Any]) -> Dict[str, Any]:
         "created_at": _FIXED_TS,
         "extracted_at": _FIXED_TS,
     }
+    return annotate_candidate_relationship(relationship)
 
 
 def _dedupe_links(links: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Collapse duplicate edges (same pair + relationship_type), keeping the
-    highest-confidence one. Symmetric types (name/external-id/spatial/temporal)
-    key on an *unordered* pair so (a,b) and (b,a) collapse to one edge. Directional
-    types (``alert_affects_entity``) key on the *ordered* pair so a genuine reverse
-    edge (b->a) is preserved alongside a->b."""
+    """Collapse duplicate edges, keeping the highest-confidence candidate."""
     best: Dict[Any, Dict[str, Any]] = {}
     for link in links:
         src, tgt = link["source_entity_id"], link["target_entity_id"]
@@ -482,7 +436,7 @@ def derive_relationships(entities: Sequence[Dict[str, Any]],
                          observations: Sequence[Dict[str, Any]] = (),
                          *, window_days: int = 7,
                          threshold_km: float = 1.0) -> List[Dict[str, Any]]:
-    """Run all 6 strategies, dedupe, and emit sorted canonical relationship rows."""
+    """Run all 6 strategies, dedupe, and emit sorted canonical candidate rows."""
     links = (
         correlate_entities(entities)
         + correlate_by_external_id(entities)
@@ -499,7 +453,7 @@ def derive_relationships(entities: Sequence[Dict[str, Any]],
 
 def correlate(in_dir, out_dir, *, window_days: int = 7,
               threshold_km: float = 1.0) -> Dict[str, Any]:
-    """Read a Hub aggregate, derive cross-producer relationships, write
+    """Read a Hub aggregate, derive cross-producer candidate relationships, write
     ``<out_dir>/correlations.jsonl``. Returns a summary."""
     in_dir = Path(in_dir)
     out_dir = Path(out_dir)

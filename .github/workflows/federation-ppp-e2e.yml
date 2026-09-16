@@ -1,0 +1,228 @@
+name: Federation PPP end-to-end determinism
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: federation-ppp-e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out TheHub candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+
+      - name: Fetch frozen producer and Spiderweb candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          MONEYSWEEP_SHA=57cd18e4e8fba55160dcba42a5146dcf914c14e7
+          SPIDERWEB_SHA=454c84a16cc43048075caf6044c46e973cfc2828
+
+          git init ../moneysweep-pr
+          git -C ../moneysweep-pr remote add origin https://github.com/jotaele44/moneysweep-pr.git
+          git -C ../moneysweep-pr fetch --depth 1 origin "$MONEYSWEEP_SHA"
+          git -C ../moneysweep-pr checkout --detach FETCH_HEAD
+          test "$(git -C ../moneysweep-pr rev-parse HEAD)" = "$MONEYSWEEP_SHA"
+
+          git init ../spiderweb-pr
+          git -C ../spiderweb-pr remote add origin https://github.com/jotaele44/spiderweb-pr.git
+          git -C ../spiderweb-pr fetch --depth 1 origin "$SPIDERWEB_SHA"
+          git -C ../spiderweb-pr checkout --detach FETCH_HEAD
+          test "$(git -C ../spiderweb-pr rev-parse HEAD)" = "$SPIDERWEB_SHA"
+
+      - name: Install minimal federation runtime
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install -e packages/prii_export_utils
+
+      - name: Execute deterministic real PPP vertical slice twice
+        env:
+          PYTHONPATH: ${{ github.workspace }}/../spiderweb-pr:${{ github.workspace }}/src
+        run: |
+          python - <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import json
+          import shutil
+          import sys
+          from pathlib import Path
+
+          hub_root = Path.cwd()
+          workspace = hub_root.parent
+          spiderweb_root = workspace / "spiderweb-pr"
+          moneysweep_root = workspace / "moneysweep-pr"
+          moneysweep_pkg = moneysweep_root / "data/exports/canonical_v1_federation"
+
+          sys.path.insert(0, str(spiderweb_root))
+          sys.path.insert(0, str(hub_root / "src"))
+
+          from readiness.ppp_geometry import resolve_projects
+          from scripts.federation_export import (
+              build_ppp_geometry_streams,
+              merge_ppp_geometry,
+              write_package,
+          )
+          from hub.aggregate import aggregate
+          from hub.snapshot_runtime import build_snapshot_manifest
+
+          fixed_manifest = json.loads((moneysweep_pkg / "manifest.json").read_text(encoding="utf-8"))
+          fixed_now = fixed_manifest["extracted_at"]
+
+          assert fixed_manifest["producer"] == "moneysweep-pr"
+          assert fixed_manifest["package_id"] == "pkg_d602e438517128cd154adc2b6f0cc919"
+          entity_entry = [f for f in fixed_manifest["files"] if f["stream"] == "entities"]
+          assert len(entity_entry) == 1
+          assert entity_entry[0]["record_count"] == 205
+          assert entity_entry[0]["sha256"] == "f83e9e11c657ab7b4a953e80f30e2686478ae7c52963925308b05549cade00ed"
+
+          def tree_bytes(root: Path) -> dict[str, bytes]:
+              return {
+                  path.relative_to(root).as_posix(): path.read_bytes()
+                  for path in sorted(root.rglob("*"))
+                  if path.is_file()
+              }
+
+          def build_spiderweb(package_dir: Path, out_dir: Path) -> tuple[dict, dict]:
+              resolution = resolve_projects(package_dir)
+              assert resolution["producer_projects"] > 0
+              assert resolution["resolved_count"] > 0
+              streams = {
+                  "sources": [],
+                  "entities": [],
+                  "relationships": [],
+                  "observations": [],
+              }
+              merge_ppp_geometry(
+                  streams,
+                  build_ppp_geometry_streams(resolution, fixed_now),
+              )
+              manifest_path = write_package(streams, out_dir, "test", fixed_now)
+              manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+              return resolution, manifest
+
+          cert_root = hub_root / ".federation-e2e"
+          if cert_root.exists():
+              shutil.rmtree(cert_root)
+          cert_root.mkdir()
+
+          sw1 = cert_root / "spiderweb-1"
+          sw2 = cert_root / "spiderweb-2"
+          r1, sw_manifest_1 = build_spiderweb(moneysweep_pkg, sw1)
+          r2, sw_manifest_2 = build_spiderweb(moneysweep_pkg, sw2)
+
+          assert r1 == r2
+          assert tree_bytes(sw1) == tree_bytes(sw2)
+          assert sw_manifest_1 == sw_manifest_2
+
+          agg1 = cert_root / "aggregate-1"
+          agg2 = cert_root / "aggregate-2"
+          packages1 = {"moneysweep-pr": moneysweep_pkg, "spiderweb-pr": sw1}
+          packages2 = {"moneysweep-pr": moneysweep_pkg, "spiderweb-pr": sw2}
+          summary1 = aggregate(packages1, agg1, strict=True)
+          summary2 = aggregate(packages2, agg2, strict=True)
+          assert summary1["errors"] == {"moneysweep-pr": [], "spiderweb-pr": []}
+          assert summary2["errors"] == summary1["errors"]
+          assert summary1["collisions"]["count"] == 0
+          assert summary1 == summary2
+          assert tree_bytes(agg1) == tree_bytes(agg2)
+
+          snap1 = build_snapshot_manifest(
+              packages1,
+              agg1,
+              created_at=fixed_now,
+              decided_by="github-actions:federation-ppp-e2e",
+              decided_at=fixed_now,
+              operational=True,
+          )
+          snap2 = build_snapshot_manifest(
+              packages2,
+              agg2,
+              created_at=fixed_now,
+              decided_by="github-actions:federation-ppp-e2e",
+              decided_at=fixed_now,
+              operational=True,
+          )
+          snap_bytes_1 = json.dumps(snap1, sort_keys=True, separators=(",", ":")).encode()
+          snap_bytes_2 = json.dumps(snap2, sort_keys=True, separators=(",", ":")).encode()
+          assert snap_bytes_1 == snap_bytes_2
+          assert snap1["snapshot_id"] == snap2["snapshot_id"]
+
+          # Valid upstream drift: mutate one non-project entity, recompute the
+          # entities artifact hash and package id, and preserve record cardinality.
+          drift_pkg = cert_root / "moneysweep-drift"
+          shutil.copytree(moneysweep_pkg, drift_pkg)
+          entities_path = drift_pkg / entity_entry[0]["filename"]
+          lines = [line for line in entities_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+          rows = [json.loads(line) for line in lines]
+          target = next(row for row in rows if row.get("entity_type") != "project")
+          original_confidence = target.get("confidence")
+          target["confidence"] = 0.94 if original_confidence != 0.94 else 0.93
+          entities_path.write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in rows), encoding="utf-8")
+
+          drift_manifest_path = drift_pkg / "manifest.json"
+          drift_manifest = json.loads(drift_manifest_path.read_text(encoding="utf-8"))
+          drift_entry = next(f for f in drift_manifest["files"] if f["stream"] == "entities")
+          drift_entry["sha256"] = hashlib.sha256(entities_path.read_bytes()).hexdigest()
+          drift_entry["record_count"] = len(rows)
+          digest_material = "|".join(
+              f"{entry['filename']}:{entry['sha256']}"
+              for entry in drift_manifest["files"]
+          ) + f"|{drift_manifest['mode']}"
+          drift_manifest["package_id"] = "pkg_" + hashlib.sha256(digest_material.encode()).hexdigest()[:32]
+          drift_manifest_path.write_text(json.dumps(drift_manifest, indent=2, sort_keys=True), encoding="utf-8")
+
+          sw_drift = cert_root / "spiderweb-drift"
+          _, sw_manifest_drift = build_spiderweb(drift_pkg, sw_drift)
+          assert sw_manifest_drift["package_id"] != sw_manifest_1["package_id"]
+
+          agg_drift = cert_root / "aggregate-drift"
+          drift_packages = {"moneysweep-pr": drift_pkg, "spiderweb-pr": sw_drift}
+          drift_summary = aggregate(drift_packages, agg_drift, strict=True)
+          assert drift_summary["errors"] == {"moneysweep-pr": [], "spiderweb-pr": []}
+          drift_snapshot = build_snapshot_manifest(
+              drift_packages,
+              agg_drift,
+              created_at=fixed_now,
+              decided_by="github-actions:federation-ppp-e2e",
+              decided_at=fixed_now,
+              operational=True,
+          )
+          assert drift_snapshot["snapshot_id"] != snap1["snapshot_id"]
+
+          certificate = {
+              "status": "PASS",
+              "moneysweep_commit": "57cd18e4e8fba55160dcba42a5146dcf914c14e7",
+              "moneysweep_package_id": fixed_manifest["package_id"],
+              "moneysweep_entities_sha256": entity_entry[0]["sha256"],
+              "spiderweb_commit": "454c84a16cc43048075caf6044c46e973cfc2828",
+              "spiderweb_package_id": sw_manifest_1["package_id"],
+              "snapshot_id": snap1["snapshot_id"],
+              "resolved_ppp_projects": r1["resolved_count"],
+              "unresolved_ppp_projects": r1["unresolved_count"],
+              "byte_identical_spiderweb_rebuild": True,
+              "byte_identical_hub_aggregate_rebuild": True,
+              "byte_identical_snapshot_manifest_rebuild": True,
+              "upstream_drift_changed_spiderweb_package_id": True,
+              "upstream_drift_changed_snapshot_id": True,
+              "drift_spiderweb_package_id": sw_manifest_drift["package_id"],
+              "drift_snapshot_id": drift_snapshot["snapshot_id"],
+          }
+          certificate_path = cert_root / "certification.json"
+          certificate_path.write_text(json.dumps(certificate, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          print(certificate_path.read_text(encoding="utf-8"))
+          PY

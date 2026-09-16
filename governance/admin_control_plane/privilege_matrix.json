@@ -1,0 +1,858 @@
+{
+  "clients": {
+    "repo_app": {
+      "audience": "repository-operation",
+      "may_execute_operations": false
+    },
+    "thehub_ios": {
+      "audience": "federation-admin-companion",
+      "may_execute_operations": false
+    },
+    "thehub_workstation": {
+      "audience": "federation-admin-workstation",
+      "may_execute_operations": true
+    }
+  },
+  "companion_capabilities": [
+    "federation.status.read",
+    "federation.search",
+    "report.read",
+    "certification.status.read",
+    "alert.read"
+  ],
+  "contract_version": "1.0.0",
+  "default_effect": "DENY",
+  "operation_bindings": [
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.build_geo_boundaries",
+      "repo": "aguayluz-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.build_municipios_geo",
+      "repo": "aguayluz-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.export_canonical",
+      "repo": "aguayluz-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.fetch_luma_live",
+      "repo": "aguayluz-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.ingest_aee",
+      "repo": "aguayluz-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.ingest_power",
+      "repo": "aguayluz-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.ingest_preps",
+      "repo": "aguayluz-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.lint",
+      "repo": "aguayluz-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.maintenance",
+      "repo": "aguayluz-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.setup",
+      "repo": "aguayluz-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.test_suite",
+      "repo": "aguayluz-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "aguayluz.validation_gates",
+      "repo": "aguayluz-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.build_signal_ledger",
+      "repo": "centinelas-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.classify",
+      "repo": "centinelas-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.export_canonical",
+      "repo": "centinelas-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.ingest",
+      "repo": "centinelas-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.maintenance",
+      "repo": "centinelas-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.route",
+      "repo": "centinelas-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.run_pipeline",
+      "repo": "centinelas-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.setup",
+      "repo": "centinelas-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.status",
+      "repo": "centinelas-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.test_suite",
+      "repo": "centinelas-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "centinelas.validate_grid",
+      "repo": "centinelas-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "CROSS_REPO",
+      "enablement": "ENABLED",
+      "operation_id": "hub.aggregate",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "CROSS_REPO",
+      "enablement": "ENABLED",
+      "operation_id": "hub.analytics_v2",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "CROSS_REPO",
+      "enablement": "ENABLED",
+      "operation_id": "hub.consume_sensor_fusion",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "CROSS_REPO",
+      "enablement": "ENABLED",
+      "operation_id": "hub.correlate",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "FEDERATION_GLOBAL",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "hub.fetch",
+      "repo": "thehub-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "FEDERATION_GLOBAL",
+      "enablement": "ENABLED",
+      "operation_id": "hub.graph_report",
+      "repo": "thehub-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "CROSS_REPO",
+      "enablement": "ENABLED",
+      "operation_id": "hub.ingest",
+      "repo": "thehub-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "FEDERATION_GLOBAL",
+      "enablement": "ENABLED",
+      "operation_id": "hub.list",
+      "repo": "thehub-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "FEDERATION_GLOBAL",
+      "enablement": "ENABLED",
+      "operation_id": "hub.maintenance",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "FEDERATION_GLOBAL",
+      "enablement": "ENABLED",
+      "operation_id": "hub.validate_federation",
+      "repo": "thehub-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "FEDERATION_GLOBAL",
+      "enablement": "ENABLED",
+      "operation_id": "hub.validate_manifest",
+      "repo": "thehub-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "FEDERATION_GLOBAL",
+      "enablement": "ENABLED",
+      "operation_id": "hub.validate_package",
+      "repo": "thehub-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "FEDERATION_GLOBAL",
+      "enablement": "ENABLED",
+      "operation_id": "hub.wrap_bridge",
+      "repo": "thehub-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.build_contract_finance_bundle",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.dashboard_export",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.export_canonical",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.foia_letters",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.full_pipeline",
+      "repo": "moneysweep-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.gap_matrix",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.ingest_centinelas",
+      "repo": "moneysweep-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.maintenance",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.materialization_matrix",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.ngo_layer",
+      "repo": "moneysweep-pr",
+      "risk_class": "R2_NETWORK_INGEST",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.setup",
+      "repo": "moneysweep-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.strict_preflight",
+      "repo": "moneysweep-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "moneysweep.test_suite",
+      "repo": "moneysweep-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "ovnis.dedupe",
+      "repo": "ovnis-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "ovnis.export_canonical",
+      "repo": "ovnis-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "ovnis.maintenance",
+      "repo": "ovnis-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "ovnis.score",
+      "repo": "ovnis-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "ovnis.setup",
+      "repo": "ovnis-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "ovnis.test_suite",
+      "repo": "ovnis-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "ovnis.validate_ledgers",
+      "repo": "ovnis-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "skywatcher.export_canonical",
+      "repo": "skywatcher-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "skywatcher.ingest_airports",
+      "repo": "skywatcher-pr",
+      "risk_class": "R2_DATA_MUTATION",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "skywatcher.maintenance",
+      "repo": "skywatcher-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "skywatcher.setup",
+      "repo": "skywatcher-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "skywatcher.test_suite",
+      "repo": "skywatcher-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "skywatcher.validate_export",
+      "repo": "skywatcher-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "spiderweb.export_canonical",
+      "repo": "spiderweb-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "spiderweb.maintenance",
+      "repo": "spiderweb-pr",
+      "risk_class": "R1_DERIVED_WRITE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "spiderweb.setup",
+      "repo": "spiderweb-pr",
+      "risk_class": "R3_LIFECYCLE",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "spiderweb.test_suite",
+      "repo": "spiderweb-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "spiderweb.validate_export",
+      "repo": "spiderweb-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    },
+    {
+      "allowed_clients": [
+        "thehub_workstation"
+      ],
+      "audit_required": true,
+      "authority_class": "LOCAL_REPO",
+      "enablement": "DECLARED_NOT_ENABLED",
+      "operation_id": "spiderweb.validate_schemas",
+      "repo": "spiderweb-pr",
+      "risk_class": "R0_READ_ONLY",
+      "token_audience": "federation-admin-workstation"
+    }
+  ],
+  "schema_version": "thehub_admin_boundary_v1",
+  "source_policy_id": "prii-federation-ui-only-operations",
+  "source_policy_sha256": "9d52ef878dc5c2bf963745f31656b44c0e4f128780304a8e049cf713898c4f9d",
+  "workstation_only_capabilities": [
+    "federation.membership.write",
+    "federation.role.write",
+    "contract.publish",
+    "lockstep.override",
+    "certification.issue",
+    "deployment.promote",
+    "schema.migrate",
+    "secret.write",
+    "secret.delete",
+    "operation.execute"
+  ]
+}
