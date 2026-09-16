@@ -12,6 +12,7 @@ import base64
 import html
 import importlib
 import json
+import logging
 import os
 import re
 import sys
@@ -26,6 +27,7 @@ from .config import DesktopConfig
 _HEX = re.compile(r"^#[0-9a-fA-F]{6}$")
 _STATE_FILE = "setup.json"
 _WORKSPACE_DIRS = ("data", "exports", "logs")
+_logger = logging.getLogger(__name__)
 
 
 def application_support_dir(
@@ -163,6 +165,35 @@ def _writable_check(path: Path) -> tuple[bool, str]:
         return False, f"Not writable: {path} ({exc})"
 
 
+def _federation_doctor_checks(config: DesktopConfig) -> list[dict[str, str]]:
+    """Best-effort federation "doctor" results, appended to the bundle
+    diagnostics above.
+
+    Delegates entirely to the shared ``prii_doctor`` package, which reads
+    this repo's own ``.federation/doctor-checks.json`` (if any) and
+    ``federation.json``. A producer with no doctor manifest yet -- which is
+    every producer except the one this feature first lands in -- gets an
+    empty list here, so this function is a strict no-op addition for them:
+    the 5 checks above are unaffected either way.
+
+    Any failure (missing/unimportable ``prii_doctor``, a malformed
+    manifest) is swallowed and logged at debug level rather than raised --
+    this screen is diagnostic, not a workflow a user can get stuck in, and
+    a bug in the *doctor* layer must never take down the *setup* screen
+    that repairs it.
+    """
+    try:
+        import prii_doctor
+    except ImportError:
+        return []
+    try:
+        report = prii_doctor.run(config.repo_root)
+        return prii_doctor.to_gui_dicts(report)
+    except Exception:  # noqa: BLE001 - diagnostics must never crash the setup screen
+        _logger.debug("prii_doctor checks failed for %s", config.repo_root, exc_info=True)
+        return []
+
+
 def diagnostics(
     config: DesktopConfig, workspace: str | Path | None = None
 ) -> list[dict[str, str]]:
@@ -223,6 +254,7 @@ def diagnostics(
                 else "Setup will be completed when you save this screen."
             ),
         },
+        *_federation_doctor_checks(config),
     ]
 
 
@@ -283,6 +315,7 @@ def render_setup_html(config: DesktopConfig) -> str:
       border-radius:10px; background:#f5f7fa; }}
     .dot {{ width:13px; height:13px; margin-top:4px; border-radius:50%; background:#64748b; }}
     .pass .dot {{ background:#15803d; }} .fail .dot {{ background:#b42318; }}
+    .warn .dot {{ background:#b45309; }}
     .check strong {{ display:block; }} .detail {{ color:#526075; font-size:13px; }}
     #status {{ min-height:24px; margin-top:10px; color:#334155; }}
     .quiet {{ color:#526075; font-size:13px; }}
