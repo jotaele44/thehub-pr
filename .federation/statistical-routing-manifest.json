@@ -1,0 +1,186 @@
+{
+  "manifest_version": "1.1.0",
+  "status": "PROVISIONAL",
+  "frozen_snapshot": {
+    "source_name": "Instituto de Estadisticas de Puerto Rico - Busqueda",
+    "snapshot_kind": "user-supplied PDF rendering of catalog/search surface",
+    "snapshot_date_observed": "2026-09-17",
+    "pages": 19,
+    "limitations": [
+      "PDF proves visible catalog taxonomy and sample products, not the complete machine-readable product denominator.",
+      "Stable product IDs, complete pagination semantics, downloadable schemas, and full revision graph remain unresolved.",
+      "Source-provided equality strings are aliases/candidate bindings only and are not canonical identity proof."
+    ]
+  },
+  "live_portal_discovery": {
+    "status": "PARTIAL_PASS",
+    "catalog_host": "https://datos.estadisticas.pr",
+    "platform": "CKAN",
+    "observed_action_api": [
+      "package_search",
+      "datastore_search",
+      "datastore_search_sql"
+    ],
+    "datastore_pagination_fields_observed_or_existing_adapter_uses": ["limit", "offset", "total"],
+    "resource_id_examples_discovered": [
+      "1e2f9cd9-2767-4387-a902-404ff5d902a7",
+      "e5e78036-caf0-422e-9ef4-2db22a076d52",
+      "fbed6880-7eed-45db-8877-b71094f7e6be",
+      "f49c7a12-e606-430b-97ae-752a42dd44cf",
+      "6b971b98-d277-4e30-b614-374b4db60c87",
+      "8dcaf5f8-f2c1-49c9-a269-d17474f309f3",
+      "560e01de-2aaf-4416-b4ed-1aa69c03f251",
+      "0ed28997-b29e-43b0-b1d9-503b8e9fe0b5"
+    ],
+    "guardrails": [
+      "A discovered CKAN resource ID is a source manifestation candidate, not a canonical statistical-product identity.",
+      "Search-engine discovery of resource IDs is not a complete product denominator.",
+      "package_search result ordering must not be used as sole identity proof.",
+      "The complete package denominator and package-to-resource version graph remain OPEN."
+    ]
+  },
+  "existing_repo_crosswalk": [
+    {
+      "repo": "moneysweep-pr",
+      "path": "scripts/download_estadisticas_pr.py",
+      "state": "EXISTING_ADAPTER_REUSE_CANDIDATE",
+      "capabilities": [
+        "CKAN package_search discovery",
+        "datastore_search pagination",
+        "CSV fallback",
+        "three configured fiscal/external-trade source queries"
+      ],
+      "hardening_required": [
+        "preserve package candidate set instead of first-fetchable-resource selection",
+        "freeze resolved package ID and resource ID",
+        "freeze raw manifestation bytes/SHA256 before normalization",
+        "record raw schema and row count",
+        "fail closed on ambiguous package matches",
+        "separate RAW fields from canonical projection"
+      ]
+    },
+    {
+      "repo": "aguayluz-pr",
+      "path": "research/resource_balance/pilots/patillas_guayama_v0_5/public_source_receipts.json",
+      "state": "EXISTING_SOURCE_REFERENCE",
+      "supports": ["AAA raw-water extraction/production contextual source via Instituto"],
+      "guardrail": "existing source receipt is contextual provenance and does not prove machine-readable product acquisition"
+    }
+  ],
+  "routing_rules": {
+    "acquire_once_consume_many": true,
+    "hub_catalog_authority": "thehub-pr",
+    "raw_normalized_canonical_separation": true,
+    "category_is_not_exclusive_ownership": true,
+    "identity_requires_independent_binding": true,
+    "allowed_cardinalities": ["1:1", "1:N", "N:1", "N:N", "0:1", "UNRESOLVED"]
+  },
+  "categories": [
+    {"raw":"Agricultura","primary_owner":"aguayluz-pr","secondary_consumers":["thehub-pr","spiderweb-pr"]},
+    {"raw":"Ambiente y Energia","primary_owner":"aguayluz-pr","secondary_consumers":["thehub-pr","spiderweb-pr"]},
+    {"raw":"Demografia y Poblacion","primary_owner":"thehub-pr","secondary_consumers":["moneysweep-pr","centinelas-pr"]},
+    {"raw":"Economia y Finanzas","primary_owner":"moneysweep-pr","secondary_consumers":["thehub-pr","spiderweb-pr"]},
+    {"raw":"Educacion","primary_owner":"thehub-pr","secondary_consumers":["moneysweep-pr"]},
+    {"raw":"Geografia","primary_owner":"thehub-pr","secondary_consumers":["aguayluz-pr","skywatcher-pr","centinelas-pr","ovnis-pr","spiderweb-pr","moneysweep-pr"]},
+    {"raw":"Proteccion Social","primary_owner":"thehub-pr","secondary_consumers":["moneysweep-pr","centinelas-pr"]},
+    {"raw":"Salud","primary_owner":"thehub-pr","secondary_consumers":["centinelas-pr"]},
+    {"raw":"Tecnologia y Telecomunicaciones","primary_owner":"centinelas-pr","secondary_consumers":["spiderweb-pr","thehub-pr"]},
+    {"raw":"Trabajo","primary_owner":"moneysweep-pr","secondary_consumers":["thehub-pr","spiderweb-pr"]},
+    {"raw":"Transportacion","primary_owner":"skywatcher-pr","secondary_consumers":["centinelas-pr","thehub-pr","moneysweep-pr"]},
+    {"raw":"Turismo y Cultura","primary_owner":"thehub-pr","secondary_consumers":["moneysweep-pr","spiderweb-pr"]},
+    {"raw":"Violencia y Justicia","primary_owner":"centinelas-pr","secondary_consumers":["spiderweb-pr","moneysweep-pr","thehub-pr"]},
+    {"raw":"Vivienda y Construccion","primary_owner":"thehub-pr","secondary_consumers":["moneysweep-pr","aguayluz-pr"]}
+  ],
+  "sample_products": [
+    {
+      "title_raw":"Asegurados y Elegibles por Region y Municipios",
+      "source_entity_raw":"Administracion de Seguros de Salud de Puerto Rico (ASES)",
+      "primary_owner":"thehub-pr",
+      "secondary_consumers":["moneysweep-pr"],
+      "routing_reason":["population denominator","municipality-level social protection context"]
+    },
+    {
+      "title_raw":"Registro de vehiculos de motor por municipios y por categorias",
+      "source_entity_raw":"Departamento de Transportacion y Obras Publicas (DTOP)",
+      "primary_owner":"skywatcher-pr",
+      "secondary_consumers":["centinelas-pr","moneysweep-pr","thehub-pr"],
+      "methodology_breaks":["1980-2010 series is not comparable with the more recent methodology","2026 considers vehicles with active registration"]
+    },
+    {
+      "title_raw":"Produccion y ventas de cemento",
+      "source_entity_raw":"Departamento de Desarrollo Economico y Comercio (DDEC)",
+      "primary_owner":"moneysweep-pr",
+      "secondary_consumers":["aguayluz-pr","thehub-pr"],
+      "routing_reason":["construction-sector economic indicator","infrastructure/recovery context"]
+    },
+    {
+      "title_raw":"Accidentes fatales",
+      "source_entity_raw":"Policia de Puerto Rico (PPR)",
+      "primary_owner":"centinelas-pr",
+      "secondary_consumers":["skywatcher-pr","thehub-pr"]
+    },
+    {
+      "title_raw":"Delitos Tipo I",
+      "source_entity_raw":"Policia de Puerto Rico (PPR)",
+      "primary_owner":"centinelas-pr",
+      "secondary_consumers":["spiderweb-pr","moneysweep-pr","thehub-pr"],
+      "guardrail":"crime statistics do not establish misconduct, causation, or entity-specific wrongdoing"
+    },
+    {
+      "title_raw":"Incidentes reportados por el Cuerpo de Bomberos de Puerto Rico (2022-2025)",
+      "source_entity_raw":"Instituto de Estadisticas de Puerto Rico",
+      "primary_owner":"centinelas-pr",
+      "secondary_consumers":["aguayluz-pr","thehub-pr"]
+    }
+  ],
+  "repo_roles": {
+    "thehub-pr":"catalog, provenance, shared geography/demography/context registry",
+    "moneysweep-pr":"economic, finance, labor, fiscal and monetary-context consumption",
+    "aguayluz-pr":"water, energy, environment, agriculture and infrastructure-context consumption",
+    "centinelas-pr":"public safety, justice, emergency, telecom and incident-context consumption",
+    "skywatcher-pr":"transportation, mobility, aviation and route-context consumption",
+    "ovnis-pr":"case-relevant contextual consumption only; no indiscriminate catalog mirroring",
+    "spiderweb-pr":"identity and relationship consumption only; numeric duplication avoided"
+  },
+  "required_record_fields": [
+    "source_product_id",
+    "source_title_raw",
+    "source_title_normalized",
+    "source_entity_raw",
+    "source_entity_id",
+    "source_entity_type",
+    "category_raw",
+    "topic_raw",
+    "publication_type",
+    "publication_date",
+    "period_start",
+    "period_end",
+    "geography_type",
+    "municipality_geoid",
+    "geographic_scope",
+    "source_url",
+    "download_url",
+    "retrieval_utc",
+    "source_schema_version",
+    "source_update_date",
+    "raw_sha256",
+    "raw_row_count",
+    "primary_repo",
+    "secondary_repos",
+    "routing_reason",
+    "canonical_status"
+  ],
+  "certification_gates": [
+    "complete product denominator or explicit bounded subset",
+    "schema inspected before parse",
+    "raw strings preserved exactly",
+    "stable IDs validated where available",
+    "revision/supersession graph closed",
+    "methodological breaks preserved",
+    "row and amount conservation where applicable",
+    "geography/municipality identifiers validated",
+    "no unexplained duplicates or multiplication",
+    "source bytes/hash frozen for acquired artifacts",
+    "zero unresolved residue inside any CERTIFIED claim"
+  ]
+}
