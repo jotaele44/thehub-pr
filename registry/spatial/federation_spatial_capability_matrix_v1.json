@@ -1,0 +1,73 @@
+{
+  "schema_version": "prii_federation_spatial_capability_matrix_v1",
+  "certification_model": "asymmetric_role_conformance",
+  "identity_default": "CANDIDATE_NOT_IDENTITY",
+  "geometry_authority": "spiderweb-pr",
+  "correlation_authority": "thehub-pr",
+  "roles": {
+    "spiderweb-pr": {
+      "primary_role": "cross-domain spatial evidence fusion and generic geometry semantics",
+      "authority_classes": ["FEDERATION_AUTHORITY"],
+      "required_capabilities": ["geometry_primitives", "typed_spatial_relations", "geometry_provenance", "identity_fail_closed"],
+      "not_required": ["aircraft_trajectory_truth", "utility_network_topology", "historical_case_location_truth"]
+    },
+    "aguayluz-pr": {
+      "primary_role": "water power environmental infrastructure hydro-network and hazard geography",
+      "authority_classes": ["DOMAIN_AUTHORITY"],
+      "required_capabilities": ["infrastructure_geometry", "network_topology", "hazard_intersection", "geometry_provenance"],
+      "not_required": ["aircraft_trajectory_truth", "historical_case_location_truth"]
+    },
+    "skywatcher-pr": {
+      "primary_role": "aviation airspace terrain and 4D trajectory geography",
+      "authority_classes": ["DOMAIN_AUTHORITY"],
+      "required_capabilities": ["observation_position", "trajectory_4d", "geodesic_distance", "terrain_relationship", "observation_provenance"],
+      "not_required": ["utility_network_topology", "public_money_binding"]
+    },
+    "moneysweep-pr": {
+      "primary_role": "capital contracts ownership project and infrastructure geography",
+      "authority_classes": ["DOMAIN_AUTHORITY"],
+      "required_capabilities": ["administrative_geography", "project_spatial_binding", "corridor_or_facility_binding", "no_fabricated_coordinates"],
+      "not_required": ["aircraft_trajectory_truth", "historical_case_location_truth"]
+    },
+    "centinelas-pr": {
+      "primary_role": "pre-officialization signal localization and lifecycle spatial indexing",
+      "authority_classes": ["DOMAIN_AUTHORITY"],
+      "required_capabilities": ["cell_id_binding", "location_uncertainty", "source_provenance", "lifecycle_spatial_handoff"],
+      "not_required": ["authoritative_geometry_publication", "aircraft_trajectory_truth"]
+    },
+    "ovnis-pr": {
+      "primary_role": "historical anomalous-event case-location provenance",
+      "authority_classes": ["DOMAIN_AUTHORITY"],
+      "required_capabilities": ["case_location_reference", "location_precision_class", "source_to_geometry_lineage", "historical_location_uncertainty"],
+      "not_required": ["utility_network_topology", "aircraft_trajectory_truth"]
+    },
+    "thehub-pr": {
+      "primary_role": "federation spatial validation aggregation and cross-producer correlation",
+      "authority_classes": ["FEDERATION_AUTHORITY"],
+      "required_capabilities": ["contract_validation", "package_validation", "cross_producer_correlation", "uncertainty_preservation", "identity_fail_closed"],
+      "not_required": ["domain_geometry_truth"]
+    }
+  },
+  "shared_invariants": [
+    "Cell_ID is a spatial address and never identity proof",
+    "spatial proximity defaults to CANDIDATE_NOT_IDENTITY",
+    "WGS84/CRS84 is canonical interchange unless a projected CRS is explicitly declared for computation",
+    "RAW NORMALIZED CANONICAL representations remain distinct",
+    "missing coordinates remain missing rather than centroid-filled or inferred",
+    "rendering capability is not spatial certification",
+    "N/A is not LOW and is not FAIL",
+    "domain producers own domain truth while TheHub owns cross-producer correlation",
+    "Spiderweb owns generic geometry semantics but not producer domain truth"
+  ],
+  "fixture_denominator": {
+    "spiderweb-pr": ["point", "linestring", "polygon", "multipolygon", "null_geometry", "empty_geometry", "touch_only", "partial_overlap", "fully_within", "outside", "invalid_geometry", "crs_mismatch", "identity_candidate_not_identity"],
+    "aguayluz-pr": ["asset_point", "network_line", "service_polygon", "upstream_downstream", "hazard_intersection", "network_break", "null_asset_geometry"],
+    "skywatcher-pr": ["observed_position", "ordered_trajectory", "altitude_present", "altitude_missing", "terrain_intersection", "track_endpoint_not_airport_identity", "synthetic_observation_rejected_for_live_certification"],
+    "moneysweep-pr": ["municipio_binding", "corridor_binding", "facility_binding", "project_area_binding", "exact_point_binding", "missing_coordinate_no_fabrication", "one_to_many_project_geography"],
+    "centinelas-pr": ["cell_id_binding", "approximate_location", "multi_cell_signal", "unknown_location", "signal_to_moneysweep_lifecycle_match", "same_cell_nonidentity"],
+    "ovnis-pr": ["observed_point", "interpreted_point", "area_reference", "representative_point", "unknown_location", "offshore_approximation", "same_place_name_nonidentity"],
+    "thehub-pr": ["valid_producer_package", "invalid_schema", "count_mismatch", "duplicate_record", "many_to_many_correlation", "candidate_not_identity_preserved", "uncertainty_roundtrip", "zero_unexplained_record_loss"]
+  },
+  "certification_states": ["PASS", "FAIL", "OPEN", "BLOCKED", "PROVISIONAL", "AUDIT_ONLY", "NONCANONICAL", "CANDIDATE_NOT_IDENTITY", "UNRESOLVED", "SUPERSEDED"],
+  "federation_pass_rule": "Every required capability must close for its declared role, every shared invariant must pass, every fixture in the declared denominator must be classified, arithmetic and record conservation must close, and no unresolved residue may remain inside the claimed certification scope. Capabilities marked not_required do not count against a repository."
+}
