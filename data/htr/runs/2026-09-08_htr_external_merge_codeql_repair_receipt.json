@@ -1,0 +1,58 @@
+{
+  "schema_version": "htr-v3-post-merge-codeql-repair-1.0",
+  "captured_date": "2026-09-08",
+  "scope": "Post-merge audit of the frozen HTR v3 road-recurrence contract. No V1/V2/V3 frozen source artifact is modified. This receipt records that PR #239 was merged outside the current execution after the no-merge requirement was established, and isolates four remaining CodeQL constant-comparison findings into a new unmerged repair branch.",
+  "frozen_artifacts_preserved": {
+    "htr_islandwide_236933e": "880f34a55690748d955e78bdece19716959609d9628e7e40db52c91f84494fac",
+    "tiger_roads_zip": "2e7d34b6e60bfe49aad48eb0a704282338822a39f6da553f5dab06b8730176a8",
+    "v2_460_pair_evidence": "4e18deb59f82bff58d36e34b84be78117f781f028b06ad60ba1b8ec5ffadde98",
+    "v3_adjudicated": "ea5b45d8c94630989344fd360f40c4dfea08a7852b34fd0842fad96612b76ecd",
+    "v3_scope_closed": "2212834ac56650c08c5eafa18b921e5266396069ece6310bdda8487b1e66ecd3",
+    "v3_history": "22cd7093ad5742eeee064548a8d6375bc8ca2d9596b24fa985304a0dbf1f278c",
+    "v3_road_recurrence_bundle": "216ff375e8ba9e4812e41576b5d0b6a3e09b455298beeae80e1b2064aba1a032"
+  },
+  "observed_external_state_change": {
+    "repo": "jotaele44/thehub-pr",
+    "pr": 239,
+    "merged": true,
+    "merged_at": "2026-09-03T15:50:44Z",
+    "merge_commit_sha": "bbee2a2cb82ced3c7ad60de97e0e11bde172cd84",
+    "pr_final_head_sha": "448b4253a74a7563c8cde62fbc887daa9ee7152d",
+    "attribution": "EXTERNAL_STATE_CHANGE_NOT_PERFORMED_BY_CURRENT_EXECUTION",
+    "current_execution_cannot_retroactively_preserve_unmerged_state": true
+  },
+  "current_main_at_repair_start": "cc78f5e3d4da59efa2fec206849fe7f351c3ed22",
+  "repair_branch": {
+    "name": "fix/htr-v3-recurrence-codeql-2026-09-08",
+    "created_from": "cc78f5e3d4da59efa2fec206849fe7f351c3ed22",
+    "validator_fix_commit": "75b80dba58e2edbdf04cae676fdf4f3d7fd866f5",
+    "change_scope": "Replace constant-chain comparisons with named expected-value variables while preserving all existing receipt constants, hashes, arithmetic, certification states and HTR semantics.",
+    "merge_authorized": false,
+    "merges_performed_by_current_execution": 0
+  },
+  "review_residue_from_merged_pr_239": {
+    "resolved_premerge_review_threads": 2,
+    "open_codeql_constant_comparison_threads": 4,
+    "codeql_alerts": [91, 92, 93, 94],
+    "repair_disposition": "PATCHED_ON_NEW_UNMERGED_BRANCH_PENDING_HOSTED_GATES"
+  },
+  "semantic_invariants": {
+    "raw_normalized_canonical_separate": true,
+    "unsupported_preserved": true,
+    "candidate_not_identity_preserved": true,
+    "contradictions_preserved": true,
+    "unresolved_preserved": true,
+    "name_fuzzy_proximity_cluster_identity_promotion": 0,
+    "name_fuzzy_proximity_cluster_connectivity_promotion": 0,
+    "transitive_context_inheritance": 0,
+    "green_code_equals_merge_authorized": false,
+    "universal_exhaustion_claimed": false
+  },
+  "certification": {
+    "frozen_artifact_preservation": "PASS",
+    "external_merge_attribution": "PASS",
+    "codeql_repair_scope_isolated": "PASS",
+    "hosted_repair_gates": "PENDING",
+    "merge_authorization": "NOT_AUTHORIZED"
+  }
+}
