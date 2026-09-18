@@ -1,0 +1,195 @@
+{
+  "arithmetic": {
+    "classification_equation": "10=6+4",
+    "context_supported_not_pair_bound": 6,
+    "direct_pair_binding_found": 0,
+    "equation": "10=0+10",
+    "no_pair_specific_authority_or_direct_binding_recovered": 4,
+    "targeted_pair_families": 10,
+    "unresolved": 10
+  },
+  "base_execution": {
+    "audit_branch_base_sha": "cc78f5e3d4da59efa2fec206849fe7f351c3ed22",
+    "pass1_targeted_search_receipt_sha256": "3f9a1fe8502481917326a854f42a06d19c39a416f3486770f396c808d65016b3",
+    "repository": "jotaele44/thehub-pr",
+    "v3_recurrence_bundle_sha256": "216ff375e8ba9e4812e41576b5d0b6a3e09b455298beeae80e1b2064aba1a032",
+    "v3_recurrence_receipt": "data/htr/runs/2026-09-02_htr_v3_frozen_road_recurrence_receipt.json"
+  },
+  "captured_date": "2026-09-09",
+  "certification": {
+    "executed_query_set_classification": "PASS_BOUNDED",
+    "pair_binding_resolution": "OPEN",
+    "row_arithmetic": "PASS",
+    "universal_public_search_exhaustion": "NOT_CLAIMED",
+    "zero_unexplained_search_disposition_residue": "PASS"
+  },
+  "families": [
+    {
+      "context_sources": [
+        {
+          "authority": "Junta de Planificación / Gobierno de Puerto Rico",
+          "finding": "Lago Garzas is listed at Carr. 518, Bo. Garzas, Adjuntas; this supports hydro/place context but does not bind Calle Garza to the hydro asset.",
+          "url": "https://docs.pr.gov/files/JP-Junta%20de%20Planificacion/Planificaci%C3%B3n%20F%C3%ADsica/Planes%20Territoriales1/Orocovis/Plan-de-Ordenacion-Territorial-Orocovis-1.pdf"
+        }
+      ],
+      "context_state": "CONTEXT_SUPPORTED_NOT_PAIR_BOUND",
+      "direct_pair_binding_state": "UNBOUND",
+      "pair_family": "Calle Garza ↔ Lago/Represa/Garzas Dam",
+      "queries": [
+        "\"Calle Garza\" Garzas dam Puerto Rico official",
+        "\"Lago Garzas\" \"Carr. 518\" official Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED"
+    },
+    {
+      "context_sources": [],
+      "context_state": "NO_PAIR_SPECIFIC_AUTHORITY_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "pair_family": "Calle Moca ↔ AAA/PRASA Moca intake",
+      "queries": [
+        "\"Calle Moca\" \"Moca\" intake Puerto Rico AAA official"
+      ],
+      "relation_resolution": "UNRESOLVED"
+    },
+    {
+      "context_sources": [
+        {
+          "authority": "Senado de Puerto Rico / Resolución Conjunta 18-2025",
+          "finding": "The source identifies Represa Loíza, commonly known as Carraízo, and its 2025 legal redesignation; it does not bind Calle Loíza to that reservoir/dam.",
+          "url": "https://senado.pr.gov/document_vault/diario_sesiones/081825.pdf"
+        }
+      ],
+      "context_state": "CONTEXT_SUPPORTED_NOT_PAIR_BOUND",
+      "direct_pair_binding_state": "UNBOUND",
+      "pair_family": "Calle Loíza ↔ Represa Loíza/Carraízo",
+      "queries": [
+        "\"Calle Loiza\" \"Represa Loiza\" official Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED"
+    },
+    {
+      "context_sources": [],
+      "context_state": "NO_PAIR_SPECIFIC_AUTHORITY_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "pair_family": "Calle Canóvanas ↔ Río Canóvanas intake",
+      "queries": [
+        "\"Calle Canovanas\" \"Rio Canovanas\" intake official Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED"
+    },
+    {
+      "context_sources": [],
+      "context_state": "NO_PAIR_SPECIFIC_AUTHORITY_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "pair_family": "Calle Fajardo ↔ Fajardo reservoir/dam",
+      "queries": [
+        "\"Calle Fajardo\" \"Fajardo Dam\" Puerto Rico official"
+      ],
+      "relation_resolution": "UNRESOLVED"
+    },
+    {
+      "context_sources": [
+        {
+          "authority": "Puerto Rico Energy Bureau filing / LUMA exhibit",
+          "finding": "The filing contains Bo. Cibuco, Corozal REPRESA and Carr. 818 context; it does not establish Calle Cibuco as an access road, namesake, or identity of the represa.",
+          "url": "https://energia.pr.gov/wp-content/uploads/sites/7/2026/05/20260419-AP20230004-Exhibit-F-Anejo-1-E-Mocion-de-Desestimacion-Tormos-Aponte-v.-LUMA-Energy-SJ2024CV04490.pdf"
+        }
+      ],
+      "context_state": "CONTEXT_SUPPORTED_NOT_PAIR_BOUND",
+      "direct_pair_binding_state": "UNBOUND",
+      "pair_family": "Calle Cibuco ↔ Represa Cibuco",
+      "queries": [
+        "\"Calle Cibuco\" \"represa Cibuco\" Puerto Rico official"
+      ],
+      "relation_resolution": "UNRESOLVED"
+    },
+    {
+      "context_sources": [
+        {
+          "authority": "Junta de Planificación / Gobierno de Puerto Rico",
+          "finding": "Río Tanamá is listed with Carr. 111, Bo. Ángeles, Utuado context; this does not bind Calle Tanamá to a specific intake or river asset.",
+          "url": "https://docs.pr.gov/files/JP-Junta%20de%20Planificacion/Planificaci%C3%B3n%20F%C3%ADsica/Planes%20Territoriales1/Orocovis/Plan-de-Ordenacion-Territorial-Orocovis-1.pdf"
+        }
+      ],
+      "context_state": "CONTEXT_SUPPORTED_NOT_PAIR_BOUND",
+      "direct_pair_binding_state": "UNBOUND",
+      "pair_family": "Calle Tanamá ↔ Río Tanamá/intake",
+      "queries": [
+        "\"Calle Tanama\" intake Puerto Rico official",
+        "\"Rio Tanama\" \"Carr. 111\" official Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED"
+    },
+    {
+      "context_sources": [],
+      "context_state": "NO_DIRECT_PAIR_BINDING_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "pair_family": "Carretera Jaguas ↔ Jaguas intake",
+      "queries": [
+        "\"Carretera Jaguas\" \"Jaguas\" intake Puerto Rico official",
+        "\"Jaguas\" \"PR-149\" DRNA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED"
+    },
+    {
+      "context_sources": [
+        {
+          "authority": "Junta de Planificación de Puerto Rico",
+          "finding": "The official zoning map depicts Lago de Cidra and named road features in the municipality but does not establish a direct naming, access, identity, or connectivity relation for Calle Cidra.",
+          "url": "https://gis.jp.pr.gov/calificacionvigente/Cidra/Cidra007.pdf"
+        }
+      ],
+      "context_state": "CONTEXT_SUPPORTED_NOT_PAIR_BOUND",
+      "direct_pair_binding_state": "UNBOUND",
+      "pair_family": "Calle Cidra ↔ Lago de Cidra",
+      "queries": [
+        "\"Calle Cidra\" \"Lago de Cidra\" Puerto Rico official"
+      ],
+      "relation_resolution": "UNRESOLVED"
+    },
+    {
+      "context_sources": [
+        {
+          "authority": "Departamento de Recursos Naturales y Ambientales",
+          "finding": "DRNA identifies Lago Patillas and describes the reservoir in Patillas; it does not directly bind Calle Patillas to the reservoir.",
+          "url": "https://www.drna.pr.gov/wp-content/uploads/2015/07/APENDICE-A.pdf"
+        },
+        {
+          "authority": "U.S. Geological Survey",
+          "finding": "USGS monitoring-location metadata independently identifies Lago Patillas at the damsite near Patillas; it does not establish a direct road-to-hydro relation.",
+          "url": "https://waterdata.usgs.gov/monitoring-location/USGS-50093045"
+        }
+      ],
+      "context_state": "CONTEXT_SUPPORTED_NOT_PAIR_BOUND",
+      "direct_pair_binding_state": "UNBOUND",
+      "pair_family": "Calle Patillas ↔ Lago Patillas",
+      "queries": [
+        "\"Calle Patillas\" \"Lago Patillas\" Puerto Rico official",
+        "\"Lago Patillas\" official Puerto Rico DRNA"
+      ],
+      "relation_resolution": "UNRESOLVED"
+    }
+  ],
+  "invariants": {
+    "cluster_identity_prohibited": true,
+    "connectivity_promotions": 0,
+    "direct_pair_binding_requires_independent_pair_specific_evidence": true,
+    "discovery_connectivity_prohibited": true,
+    "fuzzy_identity_prohibited": true,
+    "identity_promotions": 0,
+    "name_identity_prohibited": true,
+    "pair_binding_promotions": 0,
+    "proximity_identity_prohibited": true,
+    "raw_normalized_canonical_separate": true,
+    "transitive_context_inheritance": false,
+    "unsupported_not_rejected": true
+  },
+  "schema_version": "htr-v3-pair-binding-public-search-pass2-1.0",
+  "scope": "Second bounded public-source search pass for ten high-value HTR road↔hydro candidate families. This receipt records only direct pair-binding adjudication and context support. It does not alter V2/V3 recurrence rows, source manifestations, canonical identity, connectivity, or prior frozen artifacts.",
+  "search_method": {
+    "absence_semantics": "NO_DIRECT_BINDING_FOUND_IN_EXECUTED_QUERIES is not evidence that no relationship exists",
+    "purpose": "seek independent authoritative evidence that directly binds a named road manifestation to a specific hydro manifestation or establishes a relation stronger than lexical recurrence",
+    "source_preference": "official government/utility/USGS sources",
+    "universal_public_search_exhaustion_claimed": false
+  }
+}

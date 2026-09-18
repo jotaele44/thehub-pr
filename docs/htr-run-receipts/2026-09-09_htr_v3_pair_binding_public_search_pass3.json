@@ -1,0 +1,288 @@
+{
+  "arithmetic": {
+    "candidate_rows": "826=826",
+    "context_classification": "10=2+8",
+    "context_or_ambiguity_supported_not_pair_bound_families": 2,
+    "direct_pair_binding_found": 0,
+    "families": "10=0+10",
+    "no_direct_pair_binding_recovered_families": 8,
+    "pair_groups": "76=76",
+    "unresolved_families": 10
+  },
+  "captured_date": "2026-09-09",
+  "certification": {
+    "bounded_search_pass": "PASS",
+    "candidate_row_conservation": "PASS",
+    "direct_pair_binding_resolution": "OPEN",
+    "family_arithmetic": "PASS",
+    "pair_group_conservation": "PASS",
+    "universal_public_source_exhaustion": "NOT_CLAIMED"
+  },
+  "families": [
+    {
+      "candidate_rows": 213,
+      "context_sources": [
+        {
+          "authority": "AAA/PRASA",
+          "finding": "AAA identifies a Sector Betances project in Cabo Rojo, while other official results place named Betances streets elsewhere; the executed result does not identify the frozen Betances intake as being on, named for, or accessed by the candidate roads.",
+          "url": "https://www.acueductos.pr.gov/en-us?25e1a784_page=72&921077c1_page=24"
+        }
+      ],
+      "context_state": "TOPONYM_AMBIGUITY_CONTEXT_NOT_PAIR_BOUND",
+      "direct_pair_binding_state": "UNBOUND",
+      "family": "Betances",
+      "hydro_manifestations": [
+        "Betances"
+      ],
+      "pair_groups": 3,
+      "queries": [
+        "\"Calle Betances\" \"Betances\" toma AAA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED",
+      "road_manifestations": [
+        "Ave Betances",
+        "Cll Betances",
+        "Calle Betances"
+      ]
+    },
+    {
+      "candidate_rows": 88,
+      "context_sources": [],
+      "context_state": "NO_DIRECT_PAIR_BINDING_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "family": "Esperanza",
+      "hydro_manifestations": [
+        "Esperanza"
+      ],
+      "pair_groups": 7,
+      "queries": [
+        "\"Calle Esperanza\" \"Esperanza\" toma AAA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED",
+      "road_manifestations": [
+        "Callejón Esperanza",
+        "Cam Esperanza",
+        "Cll Esperanza",
+        "Esperanza",
+        "Pso Esperanza",
+        "Calle Esperanza",
+        "Camino Esperanza"
+      ]
+    },
+    {
+      "candidate_rows": 77,
+      "context_sources": [],
+      "context_state": "NO_DIRECT_PAIR_BINDING_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "family": "Santa Rosa",
+      "hydro_manifestations": [
+        "Santa Rosa"
+      ],
+      "pair_groups": 11,
+      "queries": [
+        "\"Calle Santa Rosa\" \"Santa Rosa\" toma AAA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED",
+      "road_manifestations": [
+        "Ave Santa Rosa",
+        "Cam Santa Rosa",
+        "Carr Santa Rosa",
+        "Cll Santa Rosa",
+        "Cll Santa Rosa 1",
+        "Cll Santa Rosa 2",
+        "Santa Rosa",
+        "Calle Santa Rosa",
+        "Calle Santa Rosa 1",
+        "Calle Santa Rosa 2",
+        "Camino Santa Rosa"
+      ]
+    },
+    {
+      "candidate_rows": 35,
+      "context_sources": [],
+      "context_state": "NO_DIRECT_PAIR_BINDING_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "family": "Guayama",
+      "hydro_manifestations": [
+        "Guayama"
+      ],
+      "pair_groups": 2,
+      "queries": [
+        "\"Calle Guayama\" \"Guayama\" toma AAA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED",
+      "road_manifestations": [
+        "Cll Guayama",
+        "Calle Guayama"
+      ]
+    },
+    {
+      "candidate_rows": 58,
+      "context_sources": [],
+      "context_state": "NO_DIRECT_PAIR_BINDING_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "family": "Yagüez",
+      "hydro_manifestations": [
+        "Río Yagüez"
+      ],
+      "pair_groups": 8,
+      "queries": [
+        "\"Calle Yaguez\" \"Rio Yaguez\" toma AAA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED",
+      "road_manifestations": [
+        "Ave Yaguez",
+        "Cll Rio Yaguez",
+        "Cll Río Yaguez",
+        "Cll Yaguez",
+        "Yaguez",
+        "Avenida Yaguez",
+        "Calle Rio Yaguez",
+        "Calle Yaguez"
+      ]
+    },
+    {
+      "candidate_rows": 53,
+      "context_sources": [],
+      "context_state": "NO_DIRECT_PAIR_BINDING_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "family": "Guamaní",
+      "hydro_manifestations": [
+        "Río Guamani"
+      ],
+      "pair_groups": 6,
+      "queries": [
+        "\"Calle Guamani\" \"Rio Guamani\" toma AAA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED",
+      "road_manifestations": [
+        "Ave Guamani",
+        "Cll Guamani",
+        "Cll Rio Guamani",
+        "Guamani",
+        "Calle Guamani",
+        "Calle Rio Guamani"
+      ]
+    },
+    {
+      "candidate_rows": 216,
+      "context_sources": [],
+      "context_state": "MULTIPLE_SOURCE_NAME_MANIFESTATIONS_NO_DIRECT_PAIR_BINDING_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "family": "Las Marías",
+      "hydro_manifestations": [
+        "Las Marias",
+        "Las Marías",
+        "Las Marías (FO)"
+      ],
+      "pair_groups": 30,
+      "queries": [
+        "\"Calle Las Marias\" \"Las Marias\" toma AAA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED",
+      "road_manifestations": [
+        "multiple Calle/Cll/Avenida/Ave/Callejón/Cam/Sec Las Marias manifestations"
+      ]
+    },
+    {
+      "candidate_rows": 26,
+      "context_sources": [],
+      "context_state": "NO_DIRECT_PAIR_BINDING_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "family": "San Sebastián",
+      "hydro_manifestations": [
+        "San Sebastián"
+      ],
+      "pair_groups": 3,
+      "queries": [
+        "\"Calle San Sebastian\" \"San Sebastian\" toma AAA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED",
+      "road_manifestations": [
+        "Cll San Sebastian",
+        "San Sebastian",
+        "Calle San Sebastian"
+      ]
+    },
+    {
+      "candidate_rows": 37,
+      "context_sources": [
+        {
+          "authority": "AAA/PRASA",
+          "finding": "AAA reports planned improvements to the Río Grande de Añasco intake, establishing hydro-system context in Añasco but not binding any candidate Calle Añasco road manifestation to the frozen Añasco intake.",
+          "url": "https://www.acueductos.pr.gov/comunicados/inauguracion-anasco"
+        }
+      ],
+      "context_state": "HYDRO_SYSTEM_CONTEXT_NOT_PAIR_BOUND",
+      "direct_pair_binding_state": "UNBOUND",
+      "family": "Añasco",
+      "hydro_manifestations": [
+        "Añasco"
+      ],
+      "pair_groups": 4,
+      "queries": [
+        "\"Calle Anasco\" \"Añasco\" toma AAA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED",
+      "road_manifestations": [
+        "Cll Anasco",
+        "Cll Añasco",
+        "Calle Anasco",
+        "Calle Añasco"
+      ]
+    },
+    {
+      "candidate_rows": 23,
+      "context_sources": [],
+      "context_state": "NO_DIRECT_PAIR_BINDING_RECOVERED",
+      "direct_pair_binding_state": "UNBOUND",
+      "family": "Guilarte",
+      "hydro_manifestations": [
+        "Guilarte"
+      ],
+      "pair_groups": 2,
+      "queries": [
+        "\"Calle Guilarte\" \"Guilarte\" toma AAA Puerto Rico"
+      ],
+      "relation_resolution": "UNRESOLVED",
+      "road_manifestations": [
+        "Cll Guilarte",
+        "Calle Guilarte"
+      ]
+    }
+  ],
+  "frozen_input": {
+    "audit_branch_base_sha": "cc78f5e3d4da59efa2fec206849fe7f351c3ed22",
+    "v3_incremental_pair_groups_sha256": "0163cc0ff6bbc9a320396be666bf9e40b31dc7610832e4db870ddfe2bd70438b",
+    "v3_recurrence_bundle_sha256": "216ff375e8ba9e4812e41576b5d0b6a3e09b455298beeae80e1b2064aba1a032"
+  },
+  "invariants": {
+    "candidate_rows_preserved": 826,
+    "cluster_identity_prohibited": true,
+    "connectivity_promotions": 0,
+    "discovery_connectivity_prohibited": true,
+    "family_grouping_is_identity": false,
+    "fuzzy_identity_prohibited": true,
+    "identity_promotions": 0,
+    "name_identity_prohibited": true,
+    "pair_binding_promotions": 0,
+    "proximity_identity_prohibited": true,
+    "raw_normalized_canonical_separate": true,
+    "transitive_context_inheritance": 0,
+    "underlying_pair_groups_preserved": 76
+  },
+  "schema_version": "htr-v3-pair-binding-public-search-pass3-1.0",
+  "scope": "Third bounded public-source pair-binding pass focused on ten high-volume V3 road↔AAA/PRASA hydro-name families selected from the frozen 880-group V3 recurrence artifact. Family grouping is evidence-acquisition only and does not collapse the underlying pair groups or candidate rows.",
+  "search_semantics": {
+    "context_support_is_pair_binding": false,
+    "search_absence_is_negative_identity_evidence": false,
+    "universal_public_search_exhaustion_claimed": false
+  },
+  "selection": {
+    "family_count": 10,
+    "method": "highest-volume unresolved V3 families not already covered by the first two bounded public pair-binding passes",
+    "pair_group_and_row_counts_are_not_identity_counts": true,
+    "underlying_candidate_rows": 826,
+    "underlying_pair_groups": 76
+  }
+}
