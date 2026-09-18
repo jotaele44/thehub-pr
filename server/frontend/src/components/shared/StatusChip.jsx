@@ -2,6 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { chipClass } from "@/lib/chips";
 
+/** @param {{map: Record<string, string>, value: unknown, className?: string}} props */
 export default function StatusChip({ map, value, className }) {
   if (value === undefined || value === null || value === "") return <span className="text-muted-foreground text-xs">—</span>;
   return (

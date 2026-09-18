@@ -21,12 +21,14 @@ export const getWriteToken = () => {
 };
 
 export const setWriteToken = (token) => {
+  appParams.writeToken = token || null;
   if (typeof window === 'undefined') return;
   if (token) window.localStorage.setItem(WRITE_TOKEN_STORAGE_KEY, token);
   else window.localStorage.removeItem(WRITE_TOKEN_STORAGE_KEY);
 };
 
 const setStoredToken = (token) => {
+  appParams.token = token || null;
   if (typeof window === 'undefined') return;
   if (token) {
     window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
@@ -38,11 +40,21 @@ const setStoredToken = (token) => {
   }
 };
 
+export class FederationRequestError extends Error {
+  /** @param {string} message @param {number} status @param {unknown} data */
+  constructor(message, status, data) {
+    super(message);
+    this.status = status;
+    this.data = data;
+  }
+}
+
+/** @param {Response} response */
 const normalizeError = async (response) => {
   let data = null;
   let message = response.statusText || 'Request failed';
   try {
-    data = await response.json();
+    data = await response.clone().json();
     message = data?.detail || data?.message || data?.error || message;
   } catch {
     try {
@@ -52,10 +64,7 @@ const normalizeError = async (response) => {
       // no body
     }
   }
-  const error = new Error(message);
-  error.status = response.status;
-  error.data = data;
-  return error;
+  return new FederationRequestError(message, response.status, data);
 };
 
 async function request(path, options = {}) {
@@ -111,6 +120,7 @@ const entityClient = (entityName) => ({
   delete: (id) => request(`/entities/${encode(entityName)}/${encode(id)}`, { method: 'DELETE' }),
 });
 
+/** @type {Record<string, ReturnType<typeof entityClient>>} */
 const entities = new Proxy({}, {
   get: (_target, entityName) => entityClient(entityName),
 });

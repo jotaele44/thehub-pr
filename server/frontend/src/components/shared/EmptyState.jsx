@@ -6,6 +6,7 @@ import { FederationEmptyState } from "@pr-federation/react";
 // EmptyState the package's FederationEmptyState was modeled on, so consuming it
 // here keeps the two from diverging. `icon` stays a component for call-site
 // compatibility and is instantiated before being handed over as a node.
+/** @param {{icon?: React.ComponentType<{className?: string}>, title?: React.ReactNode, description?: React.ReactNode}} props */
 export default function EmptyState({ icon: Icon = Inbox, title = "No records", description }) {
   return (
     <FederationEmptyState

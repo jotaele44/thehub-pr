@@ -23,7 +23,8 @@ describe('Toaster', () => {
   it('dismisses when the close button is clicked', () => {
     render(<Toaster />);
     act(() => { toast({ title: 'Closable' }); });
-    const closeButton = screen.getByRole('button');
+    const closeButton = screen.getByRole('button', { name: 'Dismiss notification' });
+    expect(closeButton).toHaveAttribute('type', 'button');
     act(() => { fireEvent.click(closeButton); });
     expect(screen.queryByText('Closable')).not.toBeInTheDocument();
   });

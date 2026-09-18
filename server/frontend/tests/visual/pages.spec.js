@@ -45,3 +45,16 @@ for (const route of ROUTES) {
     await expect(page).toHaveScreenshot(`${route.name}.png`, { fullPage: true });
   });
 }
+
+test('empty notification viewport does not intercept page controls', async ({ page }) => {
+  await page.goto('/sources', { waitUntil: 'networkidle' });
+  await page.evaluate(() => {
+    const button = document.createElement('button');
+    button.textContent = 'Underlying control';
+    button.style.cssText = 'position:fixed;bottom:0;right:0;width:200px;height:24px;z-index:90';
+    button.onclick = () => { button.textContent = 'Control activated'; };
+    document.body.appendChild(button);
+  });
+  await page.getByRole('button', { name: 'Underlying control' }).click();
+  await expect(page.getByRole('button', { name: 'Control activated' })).toBeVisible();
+});

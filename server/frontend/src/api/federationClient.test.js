@@ -82,4 +82,32 @@ describe('federationClient request contracts', () => {
     await expect(federation.notifications.setPreferences({}, {}))
       .rejects.toThrow('Missing or invalid write token');
   });
+
+  it('replaces and clears the write token captured from the launch URL', async () => {
+    appParams.writeToken = 'launch-token';
+    setWriteToken('replacement');
+    await federation.request('/write');
+    expect(fetch.mock.calls[0][1].headers.get('Authorization')).toBe('Bearer replacement');
+    setWriteToken(null);
+    await federation.request('/write');
+    expect(fetch.mock.calls[1][1].headers.has('Authorization')).toBe(false);
+  });
+
+  it('replaces and clears cached access tokens when the session changes', async () => {
+    appParams.token = 'stale-session';
+    federation.auth.setToken('new-session');
+    await federation.request('/probe');
+    expect(fetch.mock.calls[0][1].headers.get('Authorization')).toBe('Bearer new-session');
+    federation.auth.logout();
+    expect(federation.auth.isAuthenticated()).toBe(false);
+    await federation.request('/probe');
+    expect(fetch.mock.calls[1][1].headers.has('Authorization')).toBe(false);
+  });
+
+  it('preserves plain-text server error details', async () => {
+    fetch.mockResolvedValueOnce(new Response('Producer is unavailable', {
+      status: 503, statusText: 'Service Unavailable',
+    }));
+    await expect(federation.request('/probe')).rejects.toThrow('Producer is unavailable');
+  });
 });

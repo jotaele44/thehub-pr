@@ -27,17 +27,17 @@ export function useEntityData(entityName, sort = "-created_date", options = {}) 
   const invalidate = () => qc.invalidateQueries({ queryKey: ["entity", entityName] });
 
   const createMut = useMutation({
-    mutationFn: (data) => federation.entities[entityName].create(data),
+    mutationFn: /** @param {Record<string, unknown>} data */ (data) => federation.entities[entityName].create(data),
     onSuccess: invalidate,
   });
 
   const updateMut = useMutation({
-    mutationFn: ({ id, data }) => federation.entities[entityName].update(id, data),
+    mutationFn: /** @param {{id: string, data: Record<string, unknown>}} change */ ({ id, data }) => federation.entities[entityName].update(id, data),
     onSuccess: invalidate,
   });
 
   const deleteMut = useMutation({
-    mutationFn: (id) => federation.entities[entityName].delete(id),
+    mutationFn: /** @param {string} id */ (id) => federation.entities[entityName].delete(id),
     onSuccess: invalidate,
   });
 

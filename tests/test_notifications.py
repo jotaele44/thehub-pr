@@ -5,8 +5,10 @@ offline test harness.
 """
 from __future__ import annotations
 
-import os
 import sqlite3
+from contextlib import closing
+
+import pytest
 
 from server.backend import notifications as notif
 
@@ -84,9 +86,9 @@ def test_domain_for_module():
 
 # ── senders are offline-safe ──────────────────────────────────────────────────────
 
-def test_send_via_no_config_is_noop():
+def test_send_via_no_config_is_noop(monkeypatch):
     for key in ("HUB_VAPID_PRIVATE_KEY", "HUB_SMS_API_KEY"):
-        os.environ.pop(key, None)
+        monkeypatch.delenv(key, raising=False)
     assert notif.send_via("push", "endpoint", _alert("X")) == "skipped_no_config"
     assert notif.send_via("sms", "+1787", _alert("X")) == "skipped_no_config"
 
@@ -97,27 +99,29 @@ def test_send_via_no_target():
 
 # ── store + end-to-end dispatch ───────────────────────────────────────────────────
 
-def _store():
-    return notif.NotificationStore(sqlite3.connect(":memory:"))
+@pytest.fixture
+def store():
+    with closing(sqlite3.connect(":memory:")) as connection:
+        yield notif.NotificationStore(connection)
 
 
-def test_store_cursor_roundtrip():
-    s = _store()
+def test_store_cursor_roundtrip(store):
+    s = store
     assert s.get_cursor("operator") is None
     s.set_cursor("2026-07-19T10:00:00Z", "operator")
     assert s.get_cursor("operator") == "2026-07-19T10:00:00Z"
 
 
-def test_store_subscription_roundtrip():
-    s = _store()
+def test_store_subscription_roundtrip(store):
+    s = store
     s.set_subscription({"all": {"channels": ["sms"], "timing": "asap"}}, {"sms": "+1787"}, "op", "t")
     sub = s.get_subscription("op")
     assert sub["prefs"]["all"]["channels"] == ["sms"]
     assert sub["targets"]["sms"] == "+1787"
 
 
-def test_dispatch_new_alerts_queues_brief_and_counts():
-    s = _store()
+def test_dispatch_new_alerts_queues_brief_and_counts(store):
+    s = store
     s.set_subscription({"all": {"channels": ["push"], "timing": "brief"}}, {"push": "ep"}, "op", "t")
     tally = notif.dispatch_new_alerts(s, [_alert("HYDRO_OPS")], "2026-07-19T11:00:00Z")
     assert tally["queued"] == 1
@@ -126,9 +130,9 @@ def test_dispatch_new_alerts_queues_brief_and_counts():
     assert s.drain_brief("op") == []  # drained once
 
 
-def test_dispatch_critical_asap_no_config_counts_skipped():
-    s = _store()
+def test_dispatch_critical_asap_no_config_counts_skipped(store, monkeypatch):
+    s = store
     s.set_subscription({"all": {"channels": ["sms"], "timing": "asap"}}, {"sms": "+1"}, "op", "t")
-    os.environ.pop("HUB_SMS_API_KEY", None)
+    monkeypatch.delenv("HUB_SMS_API_KEY", raising=False)
     tally = notif.dispatch_new_alerts(s, [_alert("SEISMIC_GEO", is_critical=True)], "t")
     assert tally["skipped"] == 1 and tally["sent"] == 0
