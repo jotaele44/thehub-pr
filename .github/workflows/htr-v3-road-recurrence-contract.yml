@@ -5,6 +5,8 @@ on:
     paths:
       - "data/htr/runs/2026-09-02_htr_v3_frozen_road_recurrence_receipt.json"
       - "scripts/validate_htr_v3_road_recurrence_receipt.py"
+      - "scripts/htr_v3_receipt_guard.py"
+      - "tests/test_htr_v3_receipt_guard.py"
       - ".github/workflows/htr-v3-road-recurrence-contract.yml"
   workflow_dispatch:
 
@@ -24,3 +26,7 @@ jobs:
           python-version: "3.12"
       - name: Validate frozen recurrence contract
         run: python scripts/validate_htr_v3_road_recurrence_receipt.py
+      - name: Validate whole-receipt semantic lock
+        run: python scripts/htr_v3_receipt_guard.py
+      - name: Exercise positive and negative integrity gates
+        run: python -m unittest discover -s tests -p 'test_htr_v3_receipt_guard.py' -v
