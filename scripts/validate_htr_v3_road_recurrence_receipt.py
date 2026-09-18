@@ -78,7 +78,12 @@ def main() -> int:
     require(roads["sige"]["named_road_observations"] == 99060, "SIGE denominator drift")
     require(roads["tiger"]["municipio_packages"] == 78, "TIGER package denominator drift")
     require(roads["tiger"]["named_road_observations"] == 69846, "TIGER named-road drift")
-    require(roads["union_named_observations"] == 99060 + 69846 == 168906, "road union arithmetic failed")
+    require(
+        roads["union_named_observations"]
+        == roads["sige"]["named_road_observations"] + roads["tiger"]["named_road_observations"],
+        "road union arithmetic failed",
+    )
+    require(roads["union_named_observations"] == 168906, "road union denominator drift")
     require(roads["union_observation_id_uniqueness"] == "PASS", "road observation IDs not unique")
     require(roads["unique_road_core_count"] == 24436, "road-core denominator drift")
 
@@ -138,9 +143,22 @@ def main() -> int:
     require(targeted["universal_public_search_exhaustion_claimed"] is False, "unbounded targeted-search exhaustion claim")
 
     combined = doc["combined_v2_plus_v3_recurrence"]
-    require(combined["candidate_rows"] == 5569 + 3733 == 9302, "combined candidate arithmetic failed")
-    require(combined["unsupported_rows"] == 3831 + 24 == 3855, "combined unsupported arithmetic failed")
-    require(combined["candidate_not_identity_rows"] == 1738 + 3709 == 5447, "combined retained arithmetic failed")
+    require(
+        combined["candidate_rows"] == 5569 + incremental["candidate_rows"],
+        "combined candidate arithmetic failed",
+    )
+    require(combined["candidate_rows"] == 9302, "combined candidate denominator drift")
+    require(
+        combined["unsupported_rows"] == 3831 + states["UNSUPPORTED"],
+        "combined unsupported arithmetic failed",
+    )
+    require(combined["unsupported_rows"] == 3855, "combined unsupported denominator drift")
+    require(
+        combined["candidate_not_identity_rows"]
+        == v2["source_row_relations_conserved"] + states["CANDIDATE_NOT_IDENTITY"],
+        "combined retained arithmetic failed",
+    )
+    require(combined["candidate_not_identity_rows"] == 5447, "combined retained denominator drift")
     require(combined["candidate_rows"] == combined["unsupported_rows"] + combined["candidate_not_identity_rows"], "combined row conservation failed")
     require(combined["arithmetic_closed"] is True, "combined arithmetic not closed")
 
