@@ -37,7 +37,14 @@ def _control_at_line(source: str, line: int) -> tuple[str | None, str | None]:
 
 
 def _strictify(trace: Trace) -> Trace:
-    for key in ("static_contract_resolved", "target_resolution_evidence", "t2_receipt", "runtime_isolated"):
+    for key in (
+        "static_contract_resolved",
+        "target_resolution_evidence",
+        "resolved_target",
+        "resolved_target_source",
+        "t2_receipt",
+        "runtime_isolated",
+    ):
         trace.observations.pop(key, None)
     return classify_trace(trace)
 
@@ -112,8 +119,15 @@ def _promote_gui_trace(trace: Trace, repo_root: Path, index: ResolutionIndex) ->
         ],
     )
     # Strict T1 evidence supersedes provisional legacy observations made before
-    # router-prefix/import resolution.
-    for stale in ("target_missing", "contract_mismatch", "blocked_precondition", "undeclared_precondition"):
+    # router-prefix/import resolution. Retain the concrete target so parity
+    # certification can account for backend routes without reverse-engineering a
+    # digest-only resolver receipt.
+    for stale in (
+        "target_missing",
+        "contract_mismatch",
+        "blocked_precondition",
+        "undeclared_precondition",
+    ):
         trace.observations.pop(stale, None)
     trace.observations.update(
         {
@@ -123,6 +137,8 @@ def _promote_gui_trace(trace: Trace, repo_root: Path, index: ResolutionIndex) ->
             "boundary_reached": True,
             "contract_matched": True,
             "target_resolution_evidence": True,
+            "resolved_target": f"{route.method} {route.path}",
+            "resolved_target_source": f"{route.source}:{route.line}",
             "resolver_receipt_digest": receipt["digest"],
         }
     )
@@ -163,16 +179,24 @@ def strict_scan_federation(workspace_root: Path, manifest: dict) -> dict:
         "traces": encoded,
         "coverage": {
             "surfaces_discovered": len(encoded),
-            "surfaces_classified": sum(item["classification"] != "INDETERMINATE" for item in encoded),
+            "surfaces_classified": sum(
+                item["classification"] != "INDETERMINATE" for item in encoded
+            ),
             "t1_or_t2_supported": sum(
-                any(e["tier"] in {"T1", "T2"} for e in item["evidence"]) for item in encoded
+                any(e["tier"] in {"T1", "T2"} for e in item["evidence"])
+                for item in encoded
             ),
             "target_resolved": sum(
-                bool(item["observations"].get("target_resolution_evidence")) for item in encoded
+                bool(item["observations"].get("target_resolution_evidence"))
+                for item in encoded
             ),
-            "by_kind": {kind: sum(item["surface"]["kind"] == kind for item in encoded) for kind in kinds},
+            "by_kind": {
+                kind: sum(item["surface"]["kind"] == kind for item in encoded)
+                for kind in kinds
+            },
             "classification_counts": {
-                status: sum(item["classification"] == status for item in encoded) for status in statuses
+                status: sum(item["classification"] == status for item in encoded)
+                for status in statuses
             },
             "repositories_present": len(manifest["repositories"]) - len(missing),
             "repositories_missing": len(missing),

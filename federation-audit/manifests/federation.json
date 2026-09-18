@@ -1,1 +1,174 @@
-{"schema_version":"0.1.0","generated_at":"2026-08-07T13:13:00Z","repositories":[{"id":"thehub-pr","repository":"Jotaele44/thehub-pr","commit":"a5bad05ce5eec4cc73e2eed8569d294bc3f5cd27","workspace_directory":"thehub-pr","application_types":["web","desktop","api","cli","library"],"entry_points":[{"kind":"frontend","path":"server/frontend/package.json","command":"npm run dev","confidence":1.0},{"kind":"desktop","path":"desktop/launch.py","command":"python desktop/launch.py","confidence":1.0},{"kind":"api","path":"server/backend/main.py","command":"python -m uvicorn server.backend.main:app --port 8000","confidence":1.0},{"kind":"cli","path":"src/hub/cli.py","command":"hub","confidence":1.0}],"frameworks":{"gui":["React 18","Vite 6","pywebview desktop host"],"api":["FastAPI"]},"workflow_engines":["GitHub Actions"],"authentication":{"model":"local operator session plus application API authentication; dynamic role policy requires runtime verification","confidence":0.55,"evidence":["server/frontend/src/pages/Login.jsx","server/backend/main.py"]},"destructive_boundaries":[{"kind":"network","policy":"mock","evidence":["server/frontend/src/api","server/backend/main.py"],"confidence":0.95},{"kind":"filesystem","policy":"redirect","evidence":["server/frontend/src/lib/export","desktop"],"confidence":0.9},{"kind":"shell","policy":"block","evidence":["desktop/launch.py"],"confidence":0.75},{"kind":"database","policy":"rollback","evidence":["server/backend/main.py"],"confidence":0.85},{"kind":"download","policy":"redirect","evidence":["server/frontend/src/components/exports/LedgerExportRow.jsx"],"confidence":1.0}],"confidence":0.95,"gaps":["Enumerate role-specific routes and exact persistence adapters."]},{"id":"spiderweb-pr","repository":"Jotaele44/spiderweb-pr","commit":"3c5dd01dbbdfce5dcf12ee95b6623f440488d820","workspace_directory":"spiderweb-pr","application_types":["web","desktop","api","data-pipeline"],"entry_points":[{"kind":"frontend","path":"server/frontend/package.json","command":"npm run dev","confidence":1.0},{"kind":"desktop","path":"desktop/launch.py","command":"python desktop/launch.py","confidence":1.0},{"kind":"api","path":"server/backend/main.py","command":"uvicorn server.backend.main:app --reload --port 8000","confidence":1.0},{"kind":"workflow","path":".github/workflows/ci.yml","command":null,"confidence":1.0}],"frameworks":{"gui":["React","Vite","desktop web host"],"api":["FastAPI"]},"workflow_engines":["GitHub Actions"],"authentication":{"model":"external-source credentials and local application state; user-facing API authentication requires runtime verification","confidence":0.42,"evidence":[".env.example","server/backend/main.py"]},"destructive_boundaries":[{"kind":"network","policy":"mock","evidence":["external OSINT collectors","server/backend/main.py"],"confidence":0.98},{"kind":"filesystem","policy":"redirect","evidence":["data pipeline outputs"],"confidence":0.85},{"kind":"database","policy":"rollback","evidence":["server/backend"],"confidence":0.72},{"kind":"shell","policy":"block","evidence":["desktop/launch.py"],"confidence":0.78}],"confidence":0.95,"gaps":["Map collector credentials and rate-limit behavior."]},{"id":"skywatcher-pr","repository":"Jotaele44/skywatcher-pr","commit":"f940dc1d4afae7740eaa2a94dbf4684d11ae156b","workspace_directory":"skywatcher-pr","application_types":["web","desktop","api","data-pipeline"],"entry_points":[{"kind":"frontend","path":"frontend/package.json","command":"npm run dev","confidence":1.0},{"kind":"desktop","path":"desktop/launch.py","command":"python desktop/launch.py","confidence":1.0},{"kind":"api","path":"server/backend/main.py","command":"python -m uvicorn server.backend.main:app --port 8000","confidence":1.0}],"frameworks":{"gui":["React","Vite","desktop web host"],"api":["FastAPI"]},"workflow_engines":["GitHub Actions"],"authentication":{"model":"local operator application with external data-source credentials; exact API authorization requires runtime verification","confidence":0.4,"evidence":["server/backend/main.py",".env.example"]},"destructive_boundaries":[{"kind":"network","policy":"mock","evidence":["geocoding and external-source integrations"],"confidence":0.95},{"kind":"filesystem","policy":"redirect","evidence":["exports and local datasets"],"confidence":0.82},{"kind":"database","policy":"rollback","evidence":["server/backend"],"confidence":0.65}],"confidence":0.94,"gaps":["Inventory external geocoder and data-source adapters."]},{"id":"ovnis-pr","repository":"Jotaele44/ovnis-pr","commit":"400994dcc4e0e752c6ead984b0956f65adb0e153","workspace_directory":"ovnis-pr","application_types":["web","api","data-pipeline"],"entry_points":[{"kind":"frontend","path":"dashboard/package.json","command":"npm run dev","confidence":1.0},{"kind":"api","path":"server/backend/main.py","command":"uvicorn server.backend.main:app --reload --port 8000","confidence":1.0}],"frameworks":{"gui":["React","Vite"],"api":["FastAPI"]},"workflow_engines":["GitHub Actions"],"authentication":{"model":"read-only diagnostic API; authentication requires runtime verification","confidence":0.4,"evidence":["server/backend/main.py","dashboard/README.md"]},"destructive_boundaries":[{"kind":"network","policy":"mock","evidence":["intake and external-source integrations"],"confidence":0.9},{"kind":"filesystem","policy":"redirect","evidence":["exports and datasets"],"confidence":0.78}],"confidence":0.94,"gaps":["Resolve authentication model."]},{"id":"aguayluz-pr","repository":"Jotaele44/aguayluz-pr","commit":"0e10312ab35ea0d745963d7b3b48b39fb8aaf7ef","workspace_directory":"aguayluz-pr","application_types":["web","desktop","api","data-pipeline"],"entry_points":[{"kind":"frontend","path":"dashboard/package.json","command":"npm run dev","confidence":1.0},{"kind":"desktop","path":"desktop/launch.py","command":"python desktop/launch.py","confidence":1.0},{"kind":"api","path":"server/backend/main.py","command":"uvicorn server.backend.main:app --reload --port 8000","confidence":1.0},{"kind":"workflow","path":".github/workflows","command":null,"confidence":1.0}],"frameworks":{"gui":["React","Vite","web geospatial dashboard","desktop web host"],"api":["FastAPI"]},"workflow_engines":["GitHub Actions","scheduled refresh"],"authentication":{"model":"scheduled automation plus local operator application; exact user/API authorization requires runtime verification","confidence":0.4,"evidence":["server/backend/main.py",".github/workflows"]},"destructive_boundaries":[{"kind":"network","policy":"mock","evidence":["scheduled refresh and utility data sources","server/backend/main.py"],"confidence":0.96},{"kind":"filesystem","policy":"redirect","evidence":["generated datasets"],"confidence":0.9},{"kind":"database","policy":"rollback","evidence":["application data layer"],"confidence":0.5},{"kind":"shell","policy":"block","evidence":["desktop/launch.py"],"confidence":0.7},{"kind":"email","policy":"mock","evidence":["server/backend/main.py"],"confidence":0.9},{"kind":"message","policy":"mock","evidence":["server/backend/main.py"],"confidence":0.9}],"confidence":0.95,"gaps":["Separate scheduled refresh writes from read-only GUI queries."]},{"id":"centinelas-pr","repository":"Jotaele44/centinelas-pr","commit":"f766efb6ede23398114a85cebf52d6530fa13891","workspace_directory":"centinelas-pr","application_types":["web","desktop","api","cli","data-pipeline"],"entry_points":[{"kind":"frontend","path":"frontend/package.json","command":"npm run dev","confidence":1.0},{"kind":"desktop","path":"desktop/launch.py","command":"python desktop/launch.py","confidence":1.0},{"kind":"api","path":"server/backend/main.py","command":"uvicorn server.backend.main:app --reload --port 8000","confidence":1.0},{"kind":"cli","path":"src/centinelas/cli.py","command":"centinelas","confidence":1.0},{"kind":"workflow","path":".github/workflows","command":null,"confidence":1.0}],"frameworks":{"gui":["React 18","Vite 6","Playwright GUI-parity harness","desktop web host"],"api":["FastAPI"]},"workflow_engines":["GitHub Actions","Playwright GUI-parity suite","repository GUI capability/parity verifier"],"authentication":{"model":"frontend protected-route structure is present; server-side enforcement requires dynamic verification","confidence":0.48,"evidence":["frontend/src/components/ProtectedRoute.jsx","server/backend/main.py"]},"destructive_boundaries":[{"kind":"network","policy":"mock","evidence":["src/centinelas/ingest","server/backend/water_disruption_api.py"],"confidence":0.96},{"kind":"message","policy":"mock","evidence":["dispatch and handoff pipeline"],"confidence":0.88},{"kind":"filesystem","policy":"redirect","evidence":[".centinelas/queue",".centinelas/classified",".centinelas/dispatched",".centinelas/handoffs"],"confidence":1.0},{"kind":"database","policy":"rollback","evidence":["water disruption adapters"],"confidence":0.58},{"kind":"download","policy":"redirect","evidence":["frontend export and report surfaces"],"confidence":0.72}],"confidence":0.96,"gaps":["Verify server-side authentication enforcement and role behavior.","Treat desktop/app_server.py as an ASGI compatibility module and server/backend/water_disruption_api.py as a mounted router, not standalone entry points."]},{"id":"moneysweep-pr","repository":"Jotaele44/moneysweep-pr","commit":"ab30e34e6307c6bb2782a1573e8d5ec7923af544","workspace_directory":"moneysweep-pr","application_types":["web","desktop","api","data-pipeline"],"entry_points":[{"kind":"frontend","path":"dashboard/package.json","command":"npm run dev","confidence":1.0},{"kind":"desktop","path":"desktop/launch.py","command":"python desktop/launch.py","confidence":1.0},{"kind":"api","path":"server/backend/main.py","command":"uvicorn server.backend.main:app --reload --port 8000","confidence":1.0},{"kind":"workflow","path":".github/workflows","command":null,"confidence":1.0}],"frameworks":{"gui":["React 18","Vite 6","Playwright","desktop web host"],"api":["FastAPI"]},"workflow_engines":["GitHub Actions","Vitest","Playwright visual checks","federation design verifier"],"authentication":{"model":"read-oriented local dashboard API over canonical CSVs; server-side authorization requires runtime verification","confidence":0.58,"evidence":["server/backend/main.py","dashboard/src/lib/api.js",".env.example"]},"destructive_boundaries":[{"kind":"network","policy":"mock","evidence":["external financial-source ingestion","dashboard/src/lib/api.js"],"confidence":0.98},{"kind":"filesystem","policy":"redirect","evidence":["data/canonical_v1","data/exports","scripts"],"confidence":1.0},{"kind":"shell","policy":"block","evidence":["desktop/launch.py","dashboard/package.json"],"confidence":0.82},{"kind":"download","policy":"redirect","evidence":["dashboard export surfaces","data/exports"],"confidence":0.9}],"confidence":0.96,"gaps":["Inventory write-capable ingestion jobs separately from runtime entry points.","Verify whether API authorization is intentionally absent or deferred to the desktop host."]}]}
+{
+  "schema_version": "0.1.0",
+  "generated_at": "2026-09-06T13:09:00Z",
+  "repositories": [
+    {
+      "id": "thehub-pr",
+      "repository": "Jotaele44/thehub-pr",
+      "commit": "94e000b5e0f21a5d1acaed42e79e73523c86ab56",
+      "workspace_directory": "thehub-pr",
+      "application_types": ["web", "desktop", "api", "cli", "library"],
+      "entry_points": [
+        {"kind": "frontend", "path": "server/frontend/package.json", "command": "npm run dev", "confidence": 1.0},
+        {"kind": "desktop", "path": "desktop/launch.py", "command": "python desktop/launch.py", "confidence": 1.0},
+        {"kind": "api", "path": "server/backend/main.py", "command": "python -m uvicorn server.backend.main:app --port 8000", "confidence": 1.0},
+        {"kind": "cli", "path": "src/hub/cli.py", "command": "hub", "confidence": 1.0}
+      ],
+      "frameworks": {"gui": ["React 18", "Vite 6", "pywebview desktop host"], "api": ["FastAPI"]},
+      "workflow_engines": ["GitHub Actions", "federation-audit"],
+      "authentication": {"model": "local operator session plus application API authentication; role parity is certified separately", "confidence": 0.75, "evidence": ["server/frontend/src/pages/Login.jsx", "server/frontend/src/components/ProtectedRoute.jsx", "server/backend/main_core.py"]},
+      "destructive_boundaries": [
+        {"kind": "network", "policy": "mock", "evidence": ["server/frontend/src/api", "server/backend/main_core.py"], "confidence": 0.95},
+        {"kind": "filesystem", "policy": "redirect", "evidence": ["desktop", "server/frontend/src"], "confidence": 0.9},
+        {"kind": "shell", "policy": "block", "evidence": ["desktop/launch.py"], "confidence": 0.8},
+        {"kind": "database", "policy": "rollback", "evidence": ["server/backend"], "confidence": 0.9},
+        {"kind": "download", "policy": "redirect", "evidence": ["server/frontend/src"], "confidence": 0.95}
+      ],
+      "confidence": 0.98,
+      "gaps": ["Freeze GUI/backend semantic, authority, provenance, and device parity under gui-backend-contract/1.0."]
+    },
+    {
+      "id": "spiderweb-pr",
+      "repository": "Jotaele44/spiderweb-pr",
+      "commit": "f46546ef24c7dc2164b3f203d1af57e7d2570219",
+      "workspace_directory": "spiderweb-pr",
+      "application_types": ["web", "desktop", "api", "data-pipeline"],
+      "entry_points": [
+        {"kind": "frontend", "path": "server/frontend/package.json", "command": "npm run dev", "confidence": 1.0},
+        {"kind": "desktop", "path": "desktop/launch.py", "command": "python desktop/launch.py", "confidence": 1.0},
+        {"kind": "api", "path": "server/backend/main.py", "command": "uvicorn server.backend.main:app --reload --port 8000", "confidence": 1.0},
+        {"kind": "workflow", "path": ".github/workflows/ci.yml", "command": null, "confidence": 1.0}
+      ],
+      "frameworks": {"gui": ["React", "Vite", "desktop web host"], "api": ["FastAPI"]},
+      "workflow_engines": ["GitHub Actions"],
+      "authentication": {"model": "bounded repository operational plane; exact per-route GUI/API role parity requires certification", "confidence": 0.65, "evidence": [".federation/admin-boundary.json", "server/backend/main.py"]},
+      "destructive_boundaries": [
+        {"kind": "network", "policy": "mock", "evidence": ["server/backend/main.py"], "confidence": 0.98},
+        {"kind": "filesystem", "policy": "redirect", "evidence": ["desktop", "data"], "confidence": 0.9},
+        {"kind": "database", "policy": "rollback", "evidence": ["server/backend"], "confidence": 0.8},
+        {"kind": "shell", "policy": "block", "evidence": ["desktop/launch.py"], "confidence": 0.85}
+      ],
+      "confidence": 0.97,
+      "gaps": ["Bootstrap a first-class gui-backend-contract because this repo lacks the standard gui-capabilities manifest."]
+    },
+    {
+      "id": "skywatcher-pr",
+      "repository": "Jotaele44/skywatcher-pr",
+      "commit": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "workspace_directory": "skywatcher-pr",
+      "application_types": ["web", "desktop", "api", "data-pipeline"],
+      "entry_points": [
+        {"kind": "frontend", "path": "frontend/package.json", "command": "npm run dev", "confidence": 1.0},
+        {"kind": "desktop", "path": "desktop/launch.py", "command": "python desktop/launch.py", "confidence": 1.0},
+        {"kind": "api", "path": "server/backend/main.py", "command": "python -m uvicorn server.backend.main:app --port 8000", "confidence": 1.0}
+      ],
+      "frameworks": {"gui": ["React", "Vite", "desktop web host", "native iOS workflow"], "api": ["FastAPI"]},
+      "workflow_engines": ["GitHub Actions", "repository GUI capability parity"],
+      "authentication": {"model": "bounded repository operational plane with external data-source credentials deferred from parity certification", "confidence": 0.65, "evidence": [".federation/admin-boundary.json", "server/backend/main.py", "frontend/src"]},
+      "destructive_boundaries": [
+        {"kind": "network", "policy": "mock", "evidence": ["server/backend", "frontend/src"], "confidence": 0.98},
+        {"kind": "filesystem", "policy": "redirect", "evidence": ["desktop", "data"], "confidence": 0.9},
+        {"kind": "database", "policy": "rollback", "evidence": ["server/backend"], "confidence": 0.75},
+        {"kind": "device", "policy": "manual-review", "evidence": [".github/workflows/ios-native.yml"], "confidence": 0.9}
+      ],
+      "confidence": 0.97,
+      "gaps": ["Extend existing gui-capabilities parity with semantic, provenance, authority, and device dimensions."]
+    },
+    {
+      "id": "ovnis-pr",
+      "repository": "Jotaele44/ovnis-pr",
+      "commit": "68b87366207cb3fe249814ee6611a03b18d67a6b",
+      "workspace_directory": "ovnis-pr",
+      "application_types": ["web", "api", "data-pipeline"],
+      "entry_points": [
+        {"kind": "frontend", "path": "dashboard/package.json", "command": "npm run dev", "confidence": 1.0},
+        {"kind": "api", "path": "server/backend/main.py", "command": "uvicorn server.backend.main:app --reload --port 8000", "confidence": 1.0}
+      ],
+      "frameworks": {"gui": ["React", "Vite"], "api": ["FastAPI"]},
+      "workflow_engines": ["GitHub Actions"],
+      "authentication": {"model": "diagnostic/read-oriented surface; exact route authorization remains fail-closed until parity evidence resolves it", "confidence": 0.55, "evidence": ["server/backend/main.py", "dashboard"]},
+      "destructive_boundaries": [
+        {"kind": "network", "policy": "mock", "evidence": ["server/backend", "scripts"], "confidence": 0.95},
+        {"kind": "filesystem", "policy": "redirect", "evidence": ["data", "scripts"], "confidence": 0.85}
+      ],
+      "confidence": 0.95,
+      "gaps": ["Install gui-backend-contract/1.0 and reconcile all user-visible evidence-state semantics."]
+    },
+    {
+      "id": "aguayluz-pr",
+      "repository": "Jotaele44/aguayluz-pr",
+      "commit": "3678271a03e36375dc3e9f2fb4da0b6b655622bd",
+      "workspace_directory": "aguayluz-pr",
+      "application_types": ["web", "desktop", "api", "data-pipeline"],
+      "entry_points": [
+        {"kind": "frontend", "path": "dashboard/package.json", "command": "npm run dev", "confidence": 1.0},
+        {"kind": "desktop", "path": "desktop/launch.py", "command": "python desktop/launch.py", "confidence": 1.0},
+        {"kind": "api", "path": "server/backend/main.py", "command": "uvicorn server.backend.main:app --reload --port 8000", "confidence": 1.0},
+        {"kind": "workflow", "path": ".github/workflows", "command": null, "confidence": 1.0}
+      ],
+      "frameworks": {"gui": ["React", "Vite", "web geospatial dashboard", "desktop web host"], "api": ["FastAPI"]},
+      "workflow_engines": ["GitHub Actions", "scheduled refresh", "repository GUI capability parity"],
+      "authentication": {"model": "bounded repository operational plane; mutating API guard and GUI role parity require exact route-level audit", "confidence": 0.75, "evidence": [".federation/admin-boundary.json", "server/backend/main.py", "dashboard/src"]},
+      "destructive_boundaries": [
+        {"kind": "network", "policy": "mock", "evidence": ["server/backend", ".github/workflows"], "confidence": 0.98},
+        {"kind": "filesystem", "policy": "redirect", "evidence": ["data", "desktop"], "confidence": 0.95},
+        {"kind": "database", "policy": "rollback", "evidence": ["server/backend"], "confidence": 0.75},
+        {"kind": "shell", "policy": "block", "evidence": ["desktop/launch.py"], "confidence": 0.8},
+        {"kind": "email", "policy": "mock", "evidence": ["server/backend/main.py"], "confidence": 0.9},
+        {"kind": "message", "policy": "mock", "evidence": ["server/backend/main.py"], "confidence": 0.9}
+      ],
+      "confidence": 0.98,
+      "gaps": ["Extend existing gui-capabilities parity with semantic, freshness, provenance, authority, and native-device dimensions."]
+    },
+    {
+      "id": "centinelas-pr",
+      "repository": "Jotaele44/centinelas-pr",
+      "commit": "caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+      "workspace_directory": "centinelas-pr",
+      "application_types": ["web", "desktop", "api", "cli", "data-pipeline"],
+      "entry_points": [
+        {"kind": "frontend", "path": "frontend/package.json", "command": "npm run dev", "confidence": 1.0},
+        {"kind": "desktop", "path": "desktop/launch.py", "command": "python desktop/launch.py", "confidence": 1.0},
+        {"kind": "api", "path": "server/backend/main.py", "command": "uvicorn server.backend.main:app --reload --port 8000", "confidence": 1.0},
+        {"kind": "cli", "path": "src/centinelas/cli.py", "command": "centinelas", "confidence": 1.0},
+        {"kind": "workflow", "path": ".github/workflows", "command": null, "confidence": 1.0}
+      ],
+      "frameworks": {"gui": ["React 18", "Vite 6", "Playwright GUI-parity harness", "desktop web host"], "api": ["FastAPI"]},
+      "workflow_engines": ["GitHub Actions", "Playwright GUI parity"],
+      "authentication": {"model": "protected-route frontend plus backend operational boundary; exact server-side role behavior requires parity certification", "confidence": 0.7, "evidence": ["frontend/src/components/ProtectedRoute.jsx", "server/backend/main.py"]},
+      "destructive_boundaries": [
+        {"kind": "network", "policy": "mock", "evidence": ["src/centinelas/ingest", "server/backend"], "confidence": 0.98},
+        {"kind": "message", "policy": "mock", "evidence": ["server/backend", ".github/workflows"], "confidence": 0.9},
+        {"kind": "filesystem", "policy": "redirect", "evidence": [".centinelas", "data"], "confidence": 1.0},
+        {"kind": "database", "policy": "rollback", "evidence": ["server/backend"], "confidence": 0.75},
+        {"kind": "download", "policy": "redirect", "evidence": ["frontend"], "confidence": 0.8}
+      ],
+      "confidence": 0.97,
+      "gaps": ["Install gui-backend-contract/1.0 and prove backend role enforcement against GUI visibility."]
+    },
+    {
+      "id": "moneysweep-pr",
+      "repository": "Jotaele44/moneysweep-pr",
+      "commit": "74b10245f925bfd9b9ea07b2ce986981d5d65525",
+      "workspace_directory": "moneysweep-pr",
+      "application_types": ["web", "desktop", "api", "data-pipeline"],
+      "entry_points": [
+        {"kind": "frontend", "path": "dashboard/package.json", "command": "npm run dev", "confidence": 1.0},
+        {"kind": "desktop", "path": "desktop/launch.py", "command": "python desktop/launch.py", "confidence": 1.0},
+        {"kind": "api", "path": "server/backend/main.py", "command": "uvicorn server.backend.main:app --reload --port 8000", "confidence": 1.0},
+        {"kind": "workflow", "path": ".github/workflows", "command": null, "confidence": 1.0}
+      ],
+      "frameworks": {"gui": ["React 18", "Vite 6", "Playwright", "desktop web host"], "api": ["FastAPI"]},
+      "workflow_engines": ["GitHub Actions", "Vitest", "Playwright", "repository GUI capability parity"],
+      "authentication": {"model": "bounded repository operational plane; exact API authorization and GUI role parity require route-level certification", "confidence": 0.7, "evidence": [".federation/admin-boundary.json", "server/backend/main.py", "dashboard/src"]},
+      "destructive_boundaries": [
+        {"kind": "network", "policy": "mock", "evidence": ["server/backend", "scripts", "dashboard/src/lib"], "confidence": 0.98},
+        {"kind": "filesystem", "policy": "redirect", "evidence": ["data/canonical_v1", "data/exports", "scripts"], "confidence": 1.0},
+        {"kind": "shell", "policy": "block", "evidence": ["desktop/launch.py"], "confidence": 0.85},
+        {"kind": "download", "policy": "redirect", "evidence": ["dashboard", "data/exports"], "confidence": 0.95}
+      ],
+      "confidence": 0.98,
+      "gaps": ["Extend existing gui-capabilities parity with semantic, auth, data-denominator, provenance, identity, and device dimensions."]
+    }
+  ]
+}

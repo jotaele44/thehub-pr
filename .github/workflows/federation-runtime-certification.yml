@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/thehub-pr
-          ref: a5bad05ce5eec4cc73e2eed8569d294bc3f5cd27
+          ref: 94e000b5e0f21a5d1acaed42e79e73523c86ab56
           path: federation-workspace/thehub-pr
           persist-credentials: false
 
@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/spiderweb-pr
-          ref: 3c5dd01dbbdfce5dcf12ee95b6623f440488d820
+          ref: f46546ef24c7dc2164b3f203d1af57e7d2570219
           path: federation-workspace/spiderweb-pr
           persist-credentials: false
 
@@ -44,7 +44,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/skywatcher-pr
-          ref: f940dc1d4afae7740eaa2a94dbf4684d11ae156b
+          ref: 39e1fb297e24cd9017167a8725b40e73dd0349e4
           path: federation-workspace/skywatcher-pr
           persist-credentials: false
 
@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/ovnis-pr
-          ref: 400994dcc4e0e752c6ead984b0956f65adb0e153
+          ref: 68b87366207cb3fe249814ee6611a03b18d67a6b
           path: federation-workspace/ovnis-pr
           persist-credentials: false
 
@@ -60,7 +60,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/aguayluz-pr
-          ref: 0e10312ab35ea0d745963d7b3b48b39fb8aaf7ef
+          ref: 3678271a03e36375dc3e9f2fb4da0b6b655622bd
           path: federation-workspace/aguayluz-pr
           persist-credentials: false
 
@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/centinelas-pr
-          ref: f766efb6ede23398114a85cebf52d6530fa13891
+          ref: caf086598a4f99e2eb0ca4aac6d51e2d9bd46321
           path: federation-workspace/centinelas-pr
           persist-credentials: false
 
@@ -76,7 +76,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/moneysweep-pr
-          ref: ab30e34e6307c6bb2782a1573e8d5ec7923af544
+          ref: 74b10245f925bfd9b9ea07b2ce986981d5d65525
           path: federation-workspace/moneysweep-pr
           persist-credentials: false
 
