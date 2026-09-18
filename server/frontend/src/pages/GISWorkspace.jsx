@@ -5,6 +5,7 @@ import { acquireOnlineSource, acquireRasterAsset } from '@/gis/acquisitionFacade
 import { compareRendererEquivalence, createCanonicalMapState, switchRenderMode } from '@/gis/contracts';
 import { buildRasterPreview } from '@/gis/rasterPreview';
 import RendererSurface from '@/gis/renderers/RendererSurface';
+import ImageryProviderInspector from '@/gis/ImageryProviderInspector';
 import { GEOSPATIAL_PROVIDERS, GIS_RUNTIME_RESPONSIBILITIES, ONLINE_SOURCE_CATALOG, listOnlineSourceDefinitions } from '@/gis/sourceRegistry';
 
 const BASEMAPS = Object.freeze({
@@ -142,10 +143,7 @@ export default function GISWorkspace() {
   }
 
   function onRendererViewChange(view) {
-    setMapState((previous) => createCanonicalMapState({
-      ...previous,
-      view: { ...previous.view, ...view },
-    }));
+    setMapState((previous) => createCanonicalMapState({ ...previous, view: { ...previous.view, ...view } }));
   }
 
   function switchMode(nextMode) {
@@ -188,6 +186,8 @@ export default function GISWorkspace() {
           </div>
 
           <div><label className="text-xs font-medium" htmlFor="gis-basemap">Basemap</label><select id="gis-basemap" className="mt-1 w-full rounded-md border border-border bg-background px-2 py-2 text-sm" value={basemapId} onChange={(event) => setBasemapId(event.target.value)}>{Object.entries(BASEMAPS).map(([id, item]) => <option key={id} value={id}>{item.label}</option>)}</select></div>
+
+          <ImageryProviderInspector />
 
           <div><div className="text-xs font-medium">Add data</div><div className="mt-1 grid grid-cols-2 gap-1 rounded-md border border-border bg-muted/30 p-1">
             <button type="button" className={`flex items-center justify-center gap-1.5 rounded px-2 py-1.5 text-xs ${acquisitionMode === 'device' ? 'bg-background font-medium shadow-sm' : 'text-muted-foreground'}`} onClick={() => setAcquisitionMode('device')}><HardDrive className="h-3.5 w-3.5" /> Device</button>

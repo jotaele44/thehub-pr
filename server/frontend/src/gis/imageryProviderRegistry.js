@@ -1,0 +1,112 @@
+export const IMAGERY_PROVIDER_REGISTRY = Object.freeze([
+  Object.freeze({
+    providerId: 'osm-standard-raster',
+    label: 'OpenStreetMap standard raster',
+    manifestationType: 'RENDER_MANIFESTATION',
+    classes: Object.freeze(['CURRENT', 'OPEN']),
+    authority: 'NONE_FOR_FEDERATION_GEOMETRY',
+    availability: 'AVAILABLE_BEST_EFFORT',
+    retention: 'HTTP_CACHE_ONLY_UNDER_PROVIDER_POLICY',
+    download: 'NO_BULK_SCRAPE_OR_PREFETCH',
+    temporalCoverage: 'CURRENT_RENDER_EXACT_TILE_VINTAGE_NOT_ASSERTED',
+    resolution: 'ZOOM_DEPENDENT_NOT_ANALYTICAL',
+    attribution: '© OpenStreetMap contributors',
+    endpoint: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    fallbackPriority: 30,
+  }),
+  Object.freeze({
+    providerId: 'esri-world-imagery',
+    label: 'Esri World Imagery',
+    manifestationType: 'RENDER_MANIFESTATION',
+    classes: Object.freeze(['CURRENT', 'COMMERCIAL_RENDER']),
+    authority: 'NONE_FOR_FEDERATION_GEOMETRY',
+    availability: 'TERMS_ADJUDICATION_OPEN',
+    retention: 'UNRESOLVED_NO_PIXEL_PERSISTENCE_ASSUMED',
+    download: 'UNRESOLVED_NO_OFFLINE_EXPORT_ASSUMED',
+    temporalCoverage: 'MOSAIC_SOURCE_DEPENDENT',
+    resolution: 'SOURCE_MOSAIC_DEPENDENT',
+    attribution: 'Esri and applicable contributing providers',
+    endpoint: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer',
+    fallbackPriority: 20,
+  }),
+  Object.freeze({
+    providerId: 'apple-mapkit',
+    label: 'Apple MapKit JS',
+    manifestationType: 'RENDER_MANIFESTATION',
+    classes: Object.freeze(['CURRENT', 'COMMERCIAL_RENDER']),
+    authority: 'NONE',
+    availability: 'PROVISIONAL_CREDENTIAL_FREE',
+    retention: 'PROVIDER_PIXELS_MUST_NOT_BE_PERSISTED',
+    download: 'NO_TILE_HARVEST_OR_SECONDARY_DATABASE',
+    temporalCoverage: 'CURRENT_PROVIDER_RENDER_DATE_NOT_INFERRED',
+    resolution: 'PROVIDER_MANAGED_NOT_ANALYTICAL',
+    attribution: 'APPLE_NATIVE_ATTRIBUTION_REQUIRED',
+    endpoint: 'SDK_RUNTIME_NO_FEDERATION_TILE_URL',
+    fallbackPriority: 10,
+  }),
+  Object.freeze({
+    providerId: 'noaa-pr-naip-2021-2023',
+    label: 'NOAA Digital Coast · PR + USVI NAIP 2021–2023',
+    manifestationType: 'SOURCE_MANIFESTATION',
+    classes: Object.freeze(['HISTORICAL', 'AUTHORITATIVE']),
+    authority: 'SOURCE_NATIVE_AERIAL_OBSERVATION',
+    availability: 'BOUND_PROVISIONAL',
+    retention: 'LICENSE_CODE_ADJUDICATION_REQUIRED_BEFORE_REDISTRIBUTION_CERTIFICATION',
+    download: 'ASSET_ACQUISITION_SUPPORTED_PROVENANCE_REQUIRED',
+    temporalCoverage: '2021–2023_COLLECTION_ASSET_TIMESTAMPS_NATIVE',
+    resolution: 'ASSET_NATIVE_EXAMPLE_0_6_M',
+    attribution: 'NOAA/NAIP asset-native metadata',
+    endpoint: 'https://coast.noaa.gov/htdata/raster7/imagery/PR_NAIP_2021_9825/stac/noaa_imagery_item_collection_m9825.json',
+    fallbackPriority: null,
+  }),
+  Object.freeze({
+    providerId: 'usgs-landsat-c2l2-sr',
+    label: 'USGS Landsat Collection 2 Level-2 SR',
+    manifestationType: 'SOURCE_MANIFESTATION',
+    classes: Object.freeze(['CURRENT', 'HISTORICAL', 'AUTHORITATIVE', 'OPEN']),
+    authority: 'AUTHORITATIVE_SOURCE_MANIFESTATION',
+    availability: 'BOUND_PROVISIONAL_RUNTIME',
+    retention: 'PUBLIC_DOMAIN_SOURCE_ASSET_FREEZE_ALLOWED',
+    download: 'INDIVIDUAL_AND_BULK_ACCESS_SUPPORTED',
+    temporalCoverage: 'ASSET_CATALOG_OBSERVED',
+    resolution: 'SENSOR_PRODUCT_NATIVE',
+    attribution: 'USGS source acknowledgement requested',
+    endpoint: 'https://landsatlook.usgs.gov/stac-server',
+    fallbackPriority: null,
+  }),
+  Object.freeze({
+    providerId: 'copernicus-sentinel-2-l2a',
+    label: 'Copernicus Sentinel-2 L2A',
+    manifestationType: 'SOURCE_MANIFESTATION',
+    classes: Object.freeze(['CURRENT', 'HISTORICAL', 'OPEN']),
+    authority: 'SOURCE_NATIVE_OPTICAL_OBSERVATION',
+    availability: 'BOUND_PROVISIONAL_RUNTIME',
+    retention: 'OPEN_USE_SUBJECT_TO_COPERNICUS_LEGAL_NOTICE',
+    download: 'OPEN_USE_SUBJECT_TO_COPERNICUS_LEGAL_NOTICE',
+    temporalCoverage: 'CATALOG_OBSERVED',
+    resolution: 'BAND_PRODUCT_NATIVE',
+    attribution: 'Copernicus/Sentinel product identity',
+    endpoint: 'https://stac.dataspace.copernicus.eu/v1',
+    fallbackPriority: null,
+  }),
+]);
+
+export const IMAGERY_FALLBACK_STATES = Object.freeze([
+  'UNCONFIGURED',
+  'AVAILABLE',
+  'DEGRADED',
+  'UNAVAILABLE',
+  'TERMS_BLOCKED',
+  'AUTH_BLOCKED',
+  'FALLBACK_ACTIVE',
+]);
+
+export function getImageryProvider(providerId) {
+  const provider = IMAGERY_PROVIDER_REGISTRY.find((item) => item.providerId === providerId);
+  if (!provider) throw new Error(`unknown imagery provider: ${providerId}`);
+  return provider;
+}
+
+export function listImageryProvidersByManifestation(manifestationType) {
+  return IMAGERY_PROVIDER_REGISTRY.filter((item) => item.manifestationType === manifestationType);
+}
