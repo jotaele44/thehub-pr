@@ -1,0 +1,125 @@
+{
+  "schema_version": "1.1.0",
+  "contract_id": "prii-spatial-identity-decision-v1",
+  "authority_plane": "prii-federation-spatial-identity",
+  "state": "CANDIDATE_NONCERTIFYING",
+  "purpose": "Binding decision semantics aligned to the locked federation-spatial-entity/1.0 draft without making TheHub the identity authority.",
+  "member_producers": [
+    "moneysweep-pr",
+    "spiderweb-pr",
+    "aguayluz-pr",
+    "skywatcher-pr",
+    "ovnis-pr",
+    "centinelas-pr"
+  ],
+  "canonical_federation_entity_id_pattern": "^FED-SPATIAL-PR-[0-9]{8}$",
+  "decision_types": [
+    "IDENTITY_EQUIVALENCE",
+    "CROSSWALK_ONLY"
+  ],
+  "outcomes": [
+    "MERGE",
+    "DISTINCT",
+    "DEFER"
+  ],
+  "resolution_states": [
+    "RESOLVED",
+    "UNRESOLVED",
+    "NON_IDENTITY"
+  ],
+  "identity_cardinalities": [
+    "1:1",
+    "1:N",
+    "N:1",
+    "N:N"
+  ],
+  "crosswalk_cardinalities": [
+    "0:1"
+  ],
+  "evidence_dispositions": [
+    "SUPPORTS",
+    "CONTRADICTS",
+    "NEUTRAL"
+  ],
+  "evidence_priority": [
+    "STABLE_ID",
+    "AUTHORITATIVE_BINDING",
+    "CERTIFIED_GEOMETRY",
+    "POINT_IN_POLYGON_PLUS_ALIAS_OR_ID",
+    "POINT_IN_POLYGON",
+    "AUTHORITATIVE_ALIAS_SPATIOTEMPORAL",
+    "HISTORICAL_CONTINUITY_CORROBORATED",
+    "PROXIMITY_ONLY",
+    "NEAREST_ONLY",
+    "NORMALIZED_NAME_ONLY",
+    "NAME_ONLY",
+    "COUNT_EQUALITY",
+    "SAME_CATEGORY",
+    "SOURCE_ABSENCE"
+  ],
+  "binding_evidence_classes": [
+    "STABLE_ID",
+    "AUTHORITATIVE_BINDING",
+    "CERTIFIED_GEOMETRY",
+    "POINT_IN_POLYGON_PLUS_ALIAS_OR_ID",
+    "POINT_IN_POLYGON",
+    "AUTHORITATIVE_ALIAS_SPATIOTEMPORAL",
+    "HISTORICAL_CONTINUITY_CORROBORATED"
+  ],
+  "discovery_only_evidence_classes": [
+    "PROXIMITY_ONLY",
+    "NEAREST_ONLY",
+    "NORMALIZED_NAME_ONLY",
+    "NAME_ONLY",
+    "COUNT_EQUALITY",
+    "SAME_CATEGORY",
+    "SOURCE_ABSENCE"
+  ],
+  "rules": {
+    "determinism_is_evidence": false,
+    "names_are_identity": false,
+    "candidate_set_must_be_complete_for_binding_decision": true,
+    "incomplete_candidate_set_resolution_state": "UNRESOLVED",
+    "tied_top_evidence_requires_defer": true,
+    "tied_top_evidence_resolution_state": "UNRESOLVED",
+    "binding_identity_requires_binding_evidence": true,
+    "hard_evidence_overrides_heuristics": true,
+    "equal_or_stronger_opposing_evidence_requires_defer": true,
+    "crosswalk_only_is_identity_bearing": false,
+    "zero_to_one_is_identity_cardinality": false,
+    "unresolved_is_identity_cardinality": false,
+    "raw_source_identifiers_are_normalized": false,
+    "federation_entity_id_is_authority_supplied_not_name_derived": true,
+    "duplicate_members_allowed": false,
+    "member_reuse_across_sides_allowed": false
+  },
+  "member_key": [
+    "source_producer",
+    "local_record_id"
+  ],
+  "required_decision_fields": [
+    "schema_version",
+    "authority_plane",
+    "decision_id",
+    "decision_type",
+    "outcome",
+    "resolution_state",
+    "frozen_scope_id",
+    "candidate_set_complete",
+    "top_evidence_tie_count",
+    "left_members",
+    "right_members",
+    "evidence",
+    "decision_basis",
+    "decided_by",
+    "created_at"
+  ],
+  "allowed_optional_fields": [
+    "identity_cardinality",
+    "crosswalk_cardinality",
+    "federation_entity_id",
+    "supersedes_decision_id",
+    "notes"
+  ],
+  "certification_semantics": "This contract is a candidate until authority-boundary certification, cross-repository consumer receipts, replay tests, and zero material unresolved residue close."
+}
