@@ -1,0 +1,20 @@
+{
+  "schema_version": "thehub.culebrinas-ci-blocker/v1.0",
+  "frontier_id": "culebrinas_frontier_v2",
+  "state": "BLOCKED_EXTERNAL_GITHUB_ACTIONS_RUNNER",
+  "producer_repo": "jotaele44/aguayluz-pr",
+  "producer_pr": 225,
+  "control_plane_repo": "jotaele44/thehub-pr",
+  "control_plane_pr": 244,
+  "evidence": {
+    "aguayluz_validate_run": 33975811993,
+    "aguayluz_attempts": 2,
+    "aguayluz_observation": "all failed jobs returned steps=null and logs_url=null",
+    "thehub_hub_ci_run": 33975851461,
+    "thehub_attempts": 2,
+    "thehub_observation": "all failed jobs returned steps=null and logs_url=null"
+  },
+  "adjudication": "No code/config failure can be attributed until at least one Actions runner enters executable steps. Red status is not waived; both PRs must remain unmerged.",
+  "closure_gate": "obtain a workflow run that executes steps, then remediate any real failures and require green producer + control-plane integration",
+  "promotion_allowed": false
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": "thehub.culebrinas-prefield-closure/v1.3",
+  "issued_date": "2026-09-09",
+  "producer_repo": "jotaele44/aguayluz-pr",
+  "producer_branch": "culebrinas-frontier-v2",
+  "producer_receipt": "data/culebrinas/frontier/v2/prefield_closure_receipt_20260909.json",
+  "producer_receipt_commit": "79cb3e407cf7d748b0ada22f007b230079557e24",
+  "states": {
+    "B01_SIGE_GlobalID": "BLOCKED_FEATURE_EXTRACTION",
+    "B02_USACE_CRS": "OPEN_BORING_TO_PROJECT_SURVEY_BINDING",
+    "B03_subsurface_census": "OPEN_INCOMPLETE_EXPANDED_UNIVERSE",
+    "B04_UPRM_interpretation": "OPEN_PENDING_SEISMIC_INTERPRETATION",
+    "B05_federation_CI": "BLOCKED_EXTERNAL_GITHUB_ACTIONS_RUNNER",
+    "prefield_certified": false,
+    "field_execution_allowed": false,
+    "KVI_MEASURED": "BLOCKED_NO_FIELD_DATA",
+    "H1_H5": "OPEN",
+    "zero_material_residue": false
+  },
+  "new_bindings": {
+    "project_survey_datum": "NAD83_HORIZONTAL_NGVD29_VERTICAL",
+    "DTOP_borehole_B1": "EXISTS_EXACT_BRIDGE_LOG_BINDING_OPEN",
+    "bridge_1142_PR418": "CANDIDATE_BINDING_NOT_PROVEN_TO_B1"
+  },
+  "promotion_rule": "Do not cross PRE-FIELD until B01-B05 all close and both federation repositories obtain real executed green CI steps."
+}

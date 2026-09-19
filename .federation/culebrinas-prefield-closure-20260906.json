@@ -1,0 +1,23 @@
+{
+  "schema_version": "thehub.culebrinas-prefield-closure/v1.1",
+  "issued_date": "2026-09-06",
+  "producer_repo": "jotaele44/aguayluz-pr",
+  "producer_receipt": "data/culebrinas/frontier/v2/prefield_closure_receipt_20260906.json",
+  "producer_commit": "80d8e6aacca1b7c04ccb9a2228aa2c3fb373f829",
+  "state": "OPEN_BLOCKED",
+  "B01": "BLOCKED_FEATURE_EXTRACTION",
+  "B02": "OPEN_AUTHORITATIVE_BINDING",
+  "B03": "OPEN_INCOMPLETE",
+  "B04": "OPEN_PENDING_SEISMIC_INTERPRETATION",
+  "B05": "BLOCKED_EXTERNAL_GITHUB_ACTIONS_RUNNER",
+  "latest_ci": {
+    "aguayluz_validate_run": 33986242177,
+    "thehub_hub_ci_run": 33986252824,
+    "signature": "steps=null;logs_url=null_before_runner_steps"
+  },
+  "prefield_certified": false,
+  "field_promotion_allowed": false,
+  "KVI_MEASURED": "BLOCKED",
+  "H1_H5": "OPEN",
+  "zero_material_residue": false
+}

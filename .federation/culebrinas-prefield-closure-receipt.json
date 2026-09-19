@@ -1,0 +1,18 @@
+{
+  "schema_version": "federation.culebrinas-prefield-closure/v1.0",
+  "producer_repo": "jotaele44/aguayluz-pr",
+  "producer_branch": "culebrinas-frontier-v2",
+  "producer_receipt": "data/culebrinas/frontier/v2/prefield_closure_receipt_20260905.json",
+  "state": "OPEN_BLOCKED",
+  "B01_sige_globalid": "BLOCKED_FEATURE_EXTRACTION",
+  "B02_usace_crs": "OPEN_AUTHORITATIVE_BINDING",
+  "B03_subsurface_census": "OPEN_INCOMPLETE",
+  "B04_uprm_seismic": "OPEN_PENDING_SEISMIC_INTERPRETATION",
+  "B05_federation_ci": "BLOCKED_EXTERNAL_GITHUB_ACTIONS_RUNNER",
+  "prefield_certified": false,
+  "allow_merge": false,
+  "allow_KVI_MEASURED": false,
+  "allow_H1_H5_final_adjudication": false,
+  "new_experimental_observations": 0,
+  "zero_material_residue": false
+}
