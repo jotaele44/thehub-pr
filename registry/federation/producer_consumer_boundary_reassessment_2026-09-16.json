@@ -1,0 +1,38 @@
+{
+  "schema_version": "producer_consumer_boundary_reassessment_v1",
+  "observed_date": "2026-09-16",
+  "basis": "registry/federation/producer_consumer_boundary_matrix.v1.json",
+  "historical_matrix_mutated": false,
+  "declared_edge_denominator": 14,
+  "edges": [
+    {"edge_id":"EDGE-HUB-MONEYSWEEP","state":"PASS_STATIC_DISCOVERY_ONLY_BLOCKED_HOSTED_CI","material_residue":true,"reason":"MoneySweep canonical export contract is statically bound; live execution and hosted integration proof remain blocked."},
+    {"edge_id":"EDGE-HUB-SPIDERWEB","state":"PASS_STATIC_LIVE_DECLARED_BLOCKED_HOSTED_CI","material_residue":true,"reason":"Spiderweb export/no-fallback semantics are statically bound; hosted integration proof remains blocked."},
+    {"edge_id":"EDGE-HUB-AGUAYLUZ","state":"PASS_STATIC_LIVE_DECLARED_BLOCKED_HOSTED_CI","material_residue":true,"reason":"AguaYLuz export contract and domain authority are statically bound; hosted integration proof remains blocked."},
+    {"edge_id":"EDGE-HUB-SKYWATCHER","state":"PASS_STATIC_DISCOVERY_ONLY_BLOCKED_HOSTED_CI","material_residue":true,"reason":"Skywatcher export authority is statically bound; live readiness and hosted integration proof remain blocked."},
+    {"edge_id":"EDGE-HUB-OVNIS","state":"PASS_STATIC_LIVE_DECLARED_BLOCKED_HOSTED_CI","material_residue":true,"reason":"OVNIS reviewed-promotion boundary is statically bound; hosted integration proof remains blocked."},
+    {"edge_id":"EDGE-HUB-CENTINELAS","state":"PASS_STATIC_LIVE_DECLARED_BLOCKED_HOSTED_CI","material_residue":true,"reason":"Centinelas canonical export and signal ownership are statically bound; hosted integration proof remains blocked."},
+    {"edge_id":"EDGE-CENT-ENV-AGUAYLUZ","state":"PASS_STATIC_CONSUMER_PRESENT_BLOCKED_HOSTED_CI","material_residue":true,"reason":"Destination contract and consumer adapter exist; executable positive/negative federation proof remains blocked."},
+    {"edge_id":"EDGE-CENT-FIN-MONEYSWEEP","state":"PASS_STATIC_CONSUMER_PRESENT_BLOCKED_HOSTED_CI","material_residue":true,"reason":"Pre-official finance intake exists and preserves candidate status; executable federation proof remains blocked."},
+    {"edge_id":"EDGE-CENT-POL-MONEYSWEEP","state":"PASS_STATIC_CONSUMER_PRESENT_BLOCKED_HOSTED_CI","material_residue":true,"reason":"Political/financial pre-official intake shares the bounded MoneySweep consumer; executable federation proof remains blocked."},
+    {"edge_id":"EDGE-CENT-GEO-SPIDERWEB","state":"PASS_STATIC_CONSUMER_PRESENT_BLOCKED_HOSTED_CI","material_residue":true,"reason":"Spiderweb immutable receipt/idempotency consumer exists; executable federation proof remains blocked."},
+    {"edge_id":"EDGE-CENT-ANOM-OVNIS","state":"PASS_STATIC_CONSUMER_PRESENT_BLOCKED_HOSTED_CI","material_residue":true,"reason":"OVNIS candidate-only adapter and quarantine behavior exist; executable federation proof remains blocked."},
+    {"edge_id":"EDGE-CENT-AERO-SKYWATCHER","state":"REMEDIATION_OPEN_PR_272_BLOCKED_HOSTED_CI","material_residue":true,"reason":"Consumer existed; replay fork/collision and contract validation gap is remediated in Skywatcher PR #272 but not executable-proved."},
+    {"edge_id":"EDGE-CENT-SAFETY-AGUAYLUZ","state":"PASS_STATIC_CONSUMER_PRESENT_BLOCKED_HOSTED_CI","material_residue":true,"reason":"AguaYLuz access/environment handoff validates evidence and prevents geometry injection; executable federation proof remains blocked."},
+    {"edge_id":"EDGE-MONEY-SPIDER-CONTRACT-FINANCE","state":"REMEDIATION_OPEN_PRS_584_351_BLOCKED_HOSTED_CI","material_residue":true,"reason":"Layered 4-file/11-artifact contracts are compatible; producer manifest rebind is PR #584 and exact consumer commit enforcement is PR #351, both awaiting executable proof."}
+  ],
+  "arithmetic": {
+    "declared": 14,
+    "dispositioned": 14,
+    "missing": 0,
+    "static_consumer_present_or_export_bound": 14,
+    "remediation_open": 2,
+    "hosted_execution_blocked": 14,
+    "material_residue_zero": false,
+    "equation": "14 = 14 dispositioned + 0 missing"
+  },
+  "superseded_findings": [
+    "Skywatcher consumer absent -> false negative; consumer existed, replay/collision guard was the actual gap.",
+    "MoneySweep 4-file vs Spiderweb 11-artifact contract conflict -> layered contracts; stale/unbound producer commit was the actual gap."
+  ],
+  "certification_effect": "BLOCKED"
+}

@@ -1,0 +1,17 @@
+{
+  "schema_version": "prii_federation_live_heads_observation_v1",
+  "observed_date": "2026-09-19",
+  "purpose": "Current live-head observation for remediation drift measurement; append-only successor to the 2026-09-16 observation and not a replacement for historical baselines.",
+  "baseline_replacement": false,
+  "predecessor_observation": "governance/remediation/federation_live_heads_2026-09-16.json",
+  "repositories": {
+    "thehub-pr": "f2d5a0a742215db00915475e1e494b8329608dbd",
+    "spiderweb-pr": "85089a888391eb494ad6b047831684cd6b301162",
+    "moneysweep-pr": "255eff223e1e3c99135c2b1b7e3aa4c72faea8c6",
+    "aguayluz-pr": "b6e7fc430dfb17356ac7e64fa9eeef6ae92b1c0f",
+    "skywatcher-pr": "2bef9c397e78e5847f6b3bddd6c561091720e353",
+    "ovnis-pr": "310594693a4c3436a46665173ef5a03751e3ff6c",
+    "centinelas-pr": "660ff350c02c73a654b863bf4cf7dbde689ddc7b"
+  },
+  "certification_effect": "DRIFT_REQUIRES_REVALIDATION"
+}

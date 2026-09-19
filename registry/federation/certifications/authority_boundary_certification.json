@@ -1,0 +1,46 @@
+{
+  "schema_version": "authority_boundary_certification_v1",
+  "certification_name": "AUTHORITY_BOUNDARY_CERTIFIED",
+  "scope": "B.1-B.5 plus B-H1-B-H8 federation authority-boundary closure across the frozen seven-repository denominator",
+  "authority_plane": "prii-federation-spatial-identity",
+  "state": "READY_FOR_ZERO_BLOCKER_RECEIPT",
+  "activation_requires": [
+    "hosted seven-tree authority_boundary_validation_v4 receipt exists",
+    "receipt blocker_count == 0",
+    "receipt certification == AUTHORITY_BOUNDARY_CERTIFIED",
+    "receipt repository_denominator == 7",
+    "receipt producer_denominator == 6",
+    "all frozen repository snapshots and critical manifests match the receipt"
+  ],
+  "manual_override_permitted": false,
+  "issued_at": null,
+  "receipt_sha256": null,
+  "blocker_count": null,
+  "validator_version": "authority_boundary_validation_v4",
+  "repository_commits": {
+    "thehub-pr_baseline":"94e000b5e0f21a5d1acaed42e79e73523c86ab56",
+    "spiderweb-pr":"f46546ef24c7dc2164b3f203d1af57e7d2570219",
+    "moneysweep-pr":"74b10245f925bfd9b9ea07b2ce986981d5d65525",
+    "aguayluz-pr":"3678271a03e36375dc3e9f2fb4da0b6b655622bd",
+    "skywatcher-pr":"39e1fb297e24cd9017167a8725b40e73dd0349e4",
+    "ovnis-pr":"68b87366207cb3fe249814ee6611a03b18d67a6b",
+    "centinelas-pr":"caf086598a4f99e2eb0ca4aac6d51e2d9bd46321"
+  },
+  "critical_artifacts": [
+    "registry/federation/repository_snapshots.json",
+    "registry/federation/identifier_namespaces.json",
+    "registry/federation/relationship_types.json",
+    "registry/federation/authority_matrix.json",
+    "registry/federation/source_ownership.json",
+    "registry/federation/drift_policy.json",
+    "registry/federation/arithmetic_closure.json",
+    "registry/federation/authority_boundary_receipt.schema.json",
+    "registry/spatial/federation_admin_geometry.manifest.json",
+    "registry/spatial/pr_grid_full_cell_index_saturated.manifest.json"
+  ],
+  "successor_phase": {
+    "id": "A_FEDERATION_IDENTITY_CONTRACT",
+    "state": "LOCKED",
+    "unlock_condition": "authority boundary receipt blocker_count == 0 and certification package is issued from that exact receipt"
+  }
+}

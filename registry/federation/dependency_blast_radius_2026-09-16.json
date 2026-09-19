@@ -1,0 +1,32 @@
+{
+  "schema_version": "prii_federation_dependency_blast_radius_v1",
+  "observed_date": "2026-09-16",
+  "basis": [
+    "federation/lockstep-bindings.json@542b6b54fde6f8511bec078b4f94d926b4edd207",
+    "registry/federation/producer_consumer_boundary_reassessment_2026-09-16.json"
+  ],
+  "measurement_rule": "Count only explicit direct evidence-bearing dependencies. Do not infer transitive blast radius from graph reachability.",
+  "direct_change_classes": [
+    {"source":"thehub","change_class":"SHARED_CONTRACT","direct_targets":6,"targets":["aguayluz","centinelas","moneysweep","ovnis","skywatcher","spiderweb"],"rank":1},
+    {"source":"thehub","change_class":"IDENTITY_RULE","direct_targets":6,"targets":["aguayluz","centinelas","moneysweep","ovnis","skywatcher","spiderweb"],"rank":1},
+    {"source":"centinelas","change_class":"DOMAIN_ROUTING_CONTRACT_SET","direct_targets":5,"targets":["aguayluz","moneysweep","spiderweb","ovnis","skywatcher"],"note":"Seven domain labels collapse to five unique consumer repositories.","rank":2},
+    {"source":"spiderweb","change_class":"GEOMETRY_AUTHORITY","direct_targets":1,"targets":["thehub"],"rank":3},
+    {"source":"spiderweb","change_class":"FEDERATION_PACKAGE","direct_targets":1,"targets":["thehub"],"rank":3},
+    {"source":"spiderweb","change_class":"PRODUCER_INTERFACE","direct_targets":1,"targets":["thehub"],"rank":3},
+    {"source":"moneysweep","change_class":"FEDERATION_PACKAGE","direct_targets":1,"targets":["thehub"],"rank":3},
+    {"source":"moneysweep","change_class":"PRODUCER_INTERFACE","direct_targets":1,"targets":["thehub"],"rank":3},
+    {"source":"aguayluz","change_class":"FEDERATION_PACKAGE_OR_INTERFACE","direct_targets":1,"targets":["thehub"],"rank":3},
+    {"source":"centinelas","change_class":"FEDERATION_PACKAGE_OR_INTERFACE","direct_targets":1,"targets":["thehub"],"rank":3},
+    {"source":"ovnis","change_class":"FEDERATION_PACKAGE_OR_INTERFACE","direct_targets":1,"targets":["thehub"],"rank":3},
+    {"source":"skywatcher","change_class":"FEDERATION_PACKAGE_OR_INTERFACE","direct_targets":1,"targets":["thehub"],"rank":3},
+    {"source":"moneysweep","change_class":"CONTRACT_FINANCE_HANDOFF","direct_targets":1,"targets":["spiderweb"],"rank":3}
+  ],
+  "remediation_order": [
+    "federation-wide shared contract and identity-rule correctness",
+    "Centinelas routing-contract correctness",
+    "single-edge producer/interface and geometry handoffs",
+    "domain-local APP_LOCAL residue"
+  ],
+  "transitive_radius": "UNMEASURED_BY_DESIGN_WITHOUT_EXPLICIT_BINDINGS",
+  "certification_effect": "ORDERING_EVIDENCE_ONLY"
+}

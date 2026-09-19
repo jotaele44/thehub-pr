@@ -1,0 +1,81 @@
+{
+  "schema_version": "federation_boundary_adjudications_v1",
+  "observation_date": "2026-09-11",
+  "state": "OPEN_REMEDIATION",
+  "purpose": "Preserve contradiction history while preventing superseded discovery findings from contaminating current boundary arithmetic.",
+  "adjudications": [
+    {
+      "finding_id": "BOUNDARY-SKYWATCHER-CONSUMER-SURFACE",
+      "edge_id": "EDGE-CENT-AERO-SKYWATCHER",
+      "original_finding": "No frozen Skywatcher Centinelas consumer adapter/receipt gate located.",
+      "original_state": "OPEN_CONSUMER_SURFACE",
+      "adjudication": "SUPERSEDED",
+      "reason": "The frozen/current Skywatcher head contains `.github/workflows/centinelas-handoff.yml` and `scripts/ingest_centinelas_handoff.py`. Search coverage produced a false negative.",
+      "replacement_finding": "The consumer existed but treated receipt existence as sufficient replay identity: same idempotency key with changed protected payload was not collision-tested, and consumer-side bounded signal validation was absent.",
+      "replacement_state": "OPEN_REPLAY_COLLISION_GUARD",
+      "remediation": {
+        "repository": "jotaele44/skywatcher-pr",
+        "pull_request": 272,
+        "branch": "remediation/centinelas-handoff-integrity-20260911",
+        "head": "fd4dfef237137e44933aa33ffdd1c8418824c42b",
+        "candidate_effect": "Adds deterministic-key verification for new receipts, exact-replay idempotency, same-key/different-payload collision evidence and failure, bounded consumer validation, legacy-receipt replay compatibility, identity_effect=NONE, and persistence of collision evidence even on ingest failure."
+      },
+      "certification_effect": "BLOCKED_PENDING_EXECUTABLE_POSITIVE_NEGATIVE_PROOF"
+    },
+    {
+      "finding_id": "BOUNDARY-MONEY-SPIDER-BUNDLE-SHAPE",
+      "edge_id": "EDGE-MONEY-SPIDER-CONTRACT-FINANCE",
+      "original_finding": "MoneySweep emits a four-file consumer bundle while Spiderweb expects an eleven-artifact manifest; potential producer/consumer shape incompatibility.",
+      "original_state": "OPEN_CONTRACT_SHAPE",
+      "adjudication": "SUPERSEDED",
+      "reason": "The contracts are layered: Spiderweb consumes the four required scored-layer inputs; the eleven-artifact manifest is an optional upstream integrity/readiness gate.",
+      "replacement_finding": "The committed MoneySweep integrity manifest embedded producer commit 17c21ac2f3675895d890bf51a508167de50943c9 while current main/frozen remediation evidence uses b16cf315e76531a29c7048301986d42f26adc010, and Spiderweb originally required only a nonempty commit rather than an exact expected producer revision.",
+      "replacement_state": "OPEN_PROVENANCE_PIN",
+      "byte_adjudication": "All eleven artifact Git blob identities were reverified unchanged at MoneySweep main b16cf315e76531a29c7048301986d42f26adc010, so producer-manifest rebinding is provenance-only and does not change evidence bytes.",
+      "remediation": [
+        {
+          "repository": "jotaele44/moneysweep-pr",
+          "pull_request": 584,
+          "branch": "remediation/contract-finance-provenance-pin-20260911",
+          "head": "cc5b4f3ec17e8c30aaafede43c7c4efa034d9095",
+          "candidate_effect": "Rebinds producer.commit to exact current main while preserving all artifact blob pins."
+        },
+        {
+          "repository": "jotaele44/spiderweb-pr",
+          "pull_request": 351,
+          "branch": "remediation/contract-finance-provenance-pin-20260911",
+          "head": "c8e0db626d1bb589fd692321c46e62e2ba411ac0",
+          "candidate_effect": "Adds exact expected-producer-commit enforcement and requires manifest/expected-commit pairing at the operator CLI boundary."
+        }
+      ],
+      "certification_effect": "BLOCKED_PENDING_EXECUTABLE_POSITIVE_NEGATIVE_PROOF"
+    },
+    {
+      "finding_id": "IDENTITY-CARDINALITY-MODEL",
+      "edge_id": "IDENTITY-PLANE",
+      "original_finding": "PR #279 treated 0:1 and UNRESOLVED as values in one cardinality enum and accepted `fed_<32hex>` authority IDs.",
+      "original_state": "CONTRADICTS_PR258_DRAFT",
+      "adjudication": "SUPERSEDED_BY_REALIGNMENT",
+      "reason": "PR #258's locked federation-spatial-entity/1.0 draft defines only 1:1, 1:N, N:1 and N:N as identity cardinalities, UNRESOLVED as an identity state, and canonical IDs as FED-SPATIAL-PR-%08d.",
+      "replacement_state": "CANDIDATE_ALIGNED",
+      "remediation": {
+        "repository": "jotaele44/thehub-pr",
+        "pull_request": 279,
+        "base": "83ede027dcd9b11d9d47c8d7c919930eac45ba35",
+        "head": "f7234505b207b113198119e3994b13b96f4cfeae",
+        "stack_state": "ONE_COMMIT_AHEAD_ZERO_BEHIND",
+        "candidate_effect": "Separates identity cardinality, resolution state and non-identity crosswalk shape; rejects old hash-form IDs; preserves evidence polarity and fail-closed identity semantics."
+      },
+      "certification_effect": "BLOCKED_PENDING_PR258_CERTIFICATION_AND_EXECUTABLE_TEST_PROOF"
+    }
+  ],
+  "arithmetic": {
+    "adjudication_denominator": 3,
+    "superseded_original_findings": 3,
+    "replacement_findings_or_candidate_states": 3,
+    "unclassified_original_findings": 0,
+    "material_replacement_residue": 3,
+    "closure_difference": 0
+  },
+  "certification_ready": false
+}

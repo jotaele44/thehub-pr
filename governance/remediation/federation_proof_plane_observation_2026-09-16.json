@@ -1,0 +1,39 @@
+{
+  "schema_version": "prii_federation_proof_plane_observation_v1",
+  "observed_date": "2026-09-16",
+  "historical_snapshots_modified": false,
+  "observations": [
+    {
+      "repository": "jotaele44/moneysweep-pr",
+      "pull_request": 583,
+      "head": "ab94b21ad72e9ba09c166ada2f78c793ea366183",
+      "workflow_run": 34372651754,
+      "job": "test (3.13)",
+      "rerun_requested": true,
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": null,
+      "classification": "HOSTED_INFRASTRUCTURE_FAILURE",
+      "semantic_code_result": "NOT_EXECUTED"
+    },
+    {
+      "repository": "jotaele44/thehub-pr",
+      "pull_request": 258,
+      "head": "f15f32f7b618f33f6bfaee59697f816e9456e13a",
+      "workflow_run": 34668460971,
+      "job": "authority-boundary",
+      "rerun_requested": true,
+      "status": "completed",
+      "conclusion": "failure",
+      "steps": null,
+      "classification": "HOSTED_INFRASTRUCTURE_FAILURE",
+      "semantic_code_result": "NOT_EXECUTED"
+    }
+  ],
+  "rules": {
+    "zero_step_failure_is_code_failure": false,
+    "zero_step_failure_is_pass": false,
+    "zero_step_failure_blocks_executable_certification": true
+  },
+  "certification_effect": "BLOCKED_HOSTED_CI"
+}
