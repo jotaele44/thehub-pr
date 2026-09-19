@@ -1,0 +1,34 @@
+{
+  "schema_version": "federation_source_ownership_v1",
+  "state": "FROZEN_CANDIDATE",
+  "allowed_classifications": [
+    "AUTHORITATIVE_SOURCE",
+    "CANONICAL_REFERENCE",
+    "REFERENCE_COPY",
+    "DOMAIN_DERIVATIVE",
+    "CACHE",
+    "MATERIALIZED_VIEW",
+    "DISCOVERY_MANIFESTATION",
+    "EVIDENCE_COPY",
+    "HISTORICAL_COPY",
+    "NONCANONICAL_LEGACY"
+  ],
+  "families": [
+    {"source_family_id":"SRCOWN-001","name":"Puerto Rico 98,304-cell image-space grid","repositories":["thehub-pr","spiderweb-pr","moneysweep-pr","aguayluz-pr","skywatcher-pr","ovnis-pr","centinelas-pr"],"classification":"NONCANONICAL_LEGACY","authority_owner":"none-for-ground-geometry","disposition":"Retain byte identity for provenance/diagnostics only; prohibit ground joins, containment, parcel intersection, distance, or identity proof.","shared_identity_effect":"NONE"},
+    {"source_family_id":"SRCOWN-002","name":"GEBCO bathymetry","repositories":["spiderweb-pr","skywatcher-pr"],"classification":"DOMAIN_DERIVATIVE","authority_owner":"external-GEBCO-source","disposition":"Retain independent domain derivatives and provenance; compare source version/hash for drift.","shared_identity_effect":"NONE_BY_ITSELF"},
+    {"source_family_id":"SRCOWN-003","name":"Puerto Rico municipios/barrios","repositories":["aguayluz-pr","spiderweb-pr","thehub-pr-and-other-consumers"],"classification":"CANONICAL_REFERENCE","authority_owner":"prii-federation-spatial-identity","external_source_authority":"U.S. Census Bureau GENZ2023","disposition":"Pinned AguaYLuz custodial manifestation is canonical shared reference; consumer copies are projections/caches, not competing authorities.","shared_identity_effect":"CONTAINMENT_REFERENCE_ONLY"},
+    {"source_family_id":"SRCOWN-004","name":"Power infrastructure lineage","repositories":["aguayluz-pr","spiderweb-pr"],"classification":"DOMAIN_DERIVATIVE","authority_owner":"aguayluz-pr-for-utility-domain-semantics","disposition":"Source lineage or filename does not transfer utility semantic authority to Spiderweb; preserve original source provenance and repo-local spatial derivatives.","shared_identity_effect":"PROPOSAL_ONLY"},
+    {"source_family_id":"SRCOWN-005","name":"MoneySweep PPP/project location bundle to Spiderweb","repositories":["moneysweep-pr","spiderweb-pr"],"classification":"MATERIALIZED_VIEW","authority_owner":"split-by-domain","disposition":"MoneySweep owns project/finance fact; Spiderweb owns derived geocode/spatial observation; shared place identity requires federation adjudication.","shared_identity_effect":"CANDIDATE_ONLY"},
+    {"source_family_id":"SRCOWN-006","name":"Historical Landmarks Google Maps manifestations","repositories":["heritage-corpus-consumers"],"classification":"DISCOVERY_MANIFESTATION","authority_owner":"source-manifestation-only","disposition":"Preserve every Google Maps place manifestation/token independently; never source-level dedupe into canonical identity by name or proximity.","shared_identity_effect":"CANDIDATE_ONLY"},
+    {"source_family_id":"SRCOWN-007","name":"Azucareras Google/curated sugar heritage manifestations","repositories":["heritage-corpus-consumers"],"classification":"DISCOVERY_MANIFESTATION","authority_owner":"source-manifestation-only","disposition":"Manifestationize hacienda/central/ingenio/mill records; component/site and successor/predecessor semantics remain explicit.","shared_identity_effect":"CANDIDATE_ONLY"},
+    {"source_family_id":"SRCOWN-008","name":"NRHP/OECH/JP cultural heritage records","repositories":["heritage-corpus-consumers"],"classification":"AUTHORITATIVE_SOURCE","authority_owner":"respective-external-program-authority","disposition":"Stable designation identifiers and authoritative boundaries are evidence inputs; designation does not itself define real-world identity.","shared_identity_effect":"STRONG_EVIDENCE_NOT_AUTOMATIC_IDENTITY"},
+    {"source_family_id":"SRCOWN-009","name":"Shared federation schemas/contracts","repositories":["all-seven"],"classification":"REFERENCE_COPY","authority_owner":"declared-federation-contract-authority","disposition":"Producer copies must remain compatible with the frozen contract; copies do not become independent contract authorities.","shared_identity_effect":"CONTRACT_ONLY"},
+    {"source_family_id":"SRCOWN-010","name":"TheHub aggregate federation packages","repositories":["thehub-pr"],"classification":"MATERIALIZED_VIEW","authority_owner":"thehub-pr-for-aggregation-only","disposition":"Aggregate rows are consumer projections. TheHub must not re-own producer facts, domain relationships, shared geometry, or shared identity.","shared_identity_effect":"NONE"}
+  ],
+  "closure": {
+    "unclassified_families": 0,
+    "ambiguous_authority_families": 0,
+    "rule_same_bytes_equal_authority": false,
+    "rule_source_lineage_transfers_semantic_authority": false
+  }
+}

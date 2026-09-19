@@ -1,0 +1,16 @@
+{
+  "schema_version":"federation_repository_snapshot_v1",
+  "frozen_at":"2026-09-05T18:49:00Z",
+  "denominator":7,
+  "repositories":[
+    {"program_id":"thehub-pr","repo":"jotaele44/thehub-pr","commit":"94e000b5e0f21a5d1acaed42e79e73523c86ab56","role":"governance_validation_aggregation_query_client"},
+    {"program_id":"spiderweb-pr","repo":"jotaele44/spiderweb-pr","commit":"f46546ef24c7dc2164b3f203d1af57e7d2570219","role":"spatial_operational_producer"},
+    {"program_id":"moneysweep-pr","repo":"jotaele44/moneysweep-pr","commit":"74b10245f925bfd9b9ea07b2ce986981d5d65525","role":"public_money_intelligence_node"},
+    {"program_id":"aguayluz-pr","repo":"jotaele44/aguayluz-pr","commit":"3678271a03e36375dc3e9f2fb4da0b6b655622bd","role":"water_grid_monitoring_node"},
+    {"program_id":"skywatcher-pr","repo":"jotaele44/skywatcher-pr","commit":"39e1fb297e24cd9017167a8725b40e73dd0349e4","role":"airspace_intelligence_node"},
+    {"program_id":"ovnis-pr","repo":"jotaele44/ovnis-pr","commit":"68b87366207cb3fe249814ee6611a03b18d67a6b","role":"anomaly_intelligence_node"},
+    {"program_id":"centinelas-pr","repo":"jotaele44/centinelas-pr","commit":"caf086598a4f99e2eb0ca4aac6d51e2d9bd46321","role":"pre_officialization_signal_producer"}
+  ],
+  "arithmetic":{"expected_repositories":7,"listed_repositories":7,"difference":0},
+  "status":"FROZEN_BASELINE"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version":"legacy_identity_registry_quarantine_v1",
+  "path":"src/hub/identity_registry.py",
+  "legacy_authority_value":"thehub-pr",
+  "state":"LEGACY_NONAUTHORITATIVE_TEST_FIXTURE",
+  "effective_date":"2026-09-05",
+  "superseding_authority":"prii-federation-spatial-identity",
+  "production_imports_expected":0,
+  "permitted_import_scopes":["tests"],
+  "prohibited_uses":[
+    "production federation identity persistence",
+    "authoritative merge or split decisions",
+    "shared spatial identity assignment",
+    "canonical shared geometry authority"
+  ],
+  "evidence":"GitHub code search at the frozen TheHub baseline found direct hub.identity_registry import only in tests/test_identity_registry.py; workflow references are certification/test surfaces, not runtime imports.",
+  "migration_policy":"Retain for regression and historical replay until a federation-authority client implementation replaces its tests. Any non-test import fails the authority-boundary quarantine gate.",
+  "certification_semantics":"The legacy constant is not an active authority leak only while production_imports=0 and the quarantine test passes."
+}

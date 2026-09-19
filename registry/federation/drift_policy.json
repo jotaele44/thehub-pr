@@ -1,0 +1,38 @@
+{
+  "schema_version": "authority_certification_drift_policy_v1",
+  "state": "ACTIVE_CANDIDATE_POLICY",
+  "certification_states": ["CERT_VALID", "CERT_STALE", "CERT_INVALID", "CERT_SUPERSEDED"],
+  "critical_inputs": [
+    {"kind":"REPOSITORY_SNAPSHOT","path":"registry/federation/repository_snapshots.json","change_effect":"CERT_INVALID_UNTIL_RERUN"},
+    {"kind":"IDENTIFIER_REGISTRY","path":"registry/federation/identifier_namespaces.json","change_effect":"CERT_INVALID_UNTIL_RERUN"},
+    {"kind":"RELATIONSHIP_REGISTRY","path":"registry/federation/relationship_types.json","change_effect":"CERT_INVALID_UNTIL_RERUN"},
+    {"kind":"AUTHORITY_MATRIX","path":"registry/federation/authority_matrix.json","change_effect":"CERT_INVALID_UNTIL_RERUN"},
+    {"kind":"SOURCE_OWNERSHIP","path":"registry/federation/source_ownership.json","change_effect":"CERT_INVALID_UNTIL_RERUN"},
+    {"kind":"ADMIN_GEOMETRY_MANIFEST","path":"registry/spatial/federation_admin_geometry.manifest.json","change_effect":"CERT_INVALID_UNTIL_GEOMETRY_RERUN"},
+    {"kind":"LEGACY_GRID_MANIFEST","path":"registry/spatial/pr_grid_full_cell_index_saturated.manifest.json","change_effect":"CERT_INVALID_IF_CANONICALITY_CHANGES"},
+    {"kind":"VALIDATOR","path":"scripts/authority_boundary_validator.py","change_effect":"CERT_STALE"},
+    {"kind":"STRUCTURED_ID_CRAWLER","path":"scripts/identifier_namespace_census.py","change_effect":"CERT_STALE"},
+    {"kind":"MAX_VALIDATOR","path":"scripts/authority_boundary_max_validator.py","change_effect":"CERT_STALE"},
+    {"kind":"NEGATIVE_TESTS","path":"tests/test_identifier_namespace_census_adversarial.py","change_effect":"CERT_STALE"},
+    {"kind":"NEGATIVE_TESTS","path":"tests/test_relationship_authority_adversarial.py","change_effect":"CERT_STALE"},
+    {"kind":"PREACTIVATION_TESTS","path":"tests/test_plan_max_preactivation_contracts.py","change_effect":"CERT_STALE"},
+    {"kind":"RECEIPT_SCHEMA","path":"registry/federation/authority_boundary_receipt.schema.json","change_effect":"CERT_STALE"}
+  ],
+  "external_pins": [
+    {"id":"CENSUS-MUNICIPIOS","repository":"jotaele44/aguayluz-pr","commit":"3678271a03e36375dc3e9f2fb4da0b6b655622bd","path":"data/geo/pr_municipios.geojson","expected_feature_count":78,"change_effect":"CERT_INVALID_UNTIL_GEOMETRY_RERUN"},
+    {"id":"CENSUS-BARRIOS","repository":"jotaele44/aguayluz-pr","commit":"3678271a03e36375dc3e9f2fb4da0b6b655622bd","path":"data/geo/pr_barrios.geojson","expected_feature_count":901,"change_effect":"CERT_INVALID_UNTIL_GEOMETRY_RERUN"}
+  ],
+  "non_invalidating_examples": [
+    "TheHub presentation-only UI change outside authority/contract paths",
+    "Documentation prose change that does not alter frozen semantics or evidence",
+    "Consumer cache refresh that preserves canonical source identity and hashes"
+  ],
+  "rules": {
+    "repo_head_change_without_snapshot_update":"CERT_STALE",
+    "frozen_peer_snapshot_change":"CERT_INVALID_UNTIL_RERUN",
+    "authority_registry_change":"CERT_INVALID_UNTIL_RERUN",
+    "canonical_geometry_change":"CERT_INVALID_UNTIL_GEOMETRY_RERUN",
+    "negative_suite_change":"CERT_STALE",
+    "certification_receipt_replaced_by_newer_valid_receipt":"CERT_SUPERSEDED"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prii.local/schemas/authority_boundary_validation_v4.json",
+  "title": "Authority Boundary Validation Receipt v4",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "authority_plane",
+    "receipt_metadata",
+    "repository_snapshot_receipts",
+    "identifier_namespace_census",
+    "relationship_namespace_census",
+    "geometry_authority_receipts",
+    "source_ownership_receipts",
+    "producer_consumer_receipts",
+    "authority_leakage_receipts",
+    "negative_test_receipts",
+    "arithmetic_closure",
+    "blocker_count",
+    "blockers",
+    "certification",
+    "next_phase"
+  ],
+  "properties": {
+    "schema_version": {"const": "authority_boundary_validation_v4"},
+    "authority_plane": {"const": "prii-federation-spatial-identity"},
+    "receipt_metadata": {
+      "type": "object",
+      "required": ["validator", "repository_denominator", "producer_denominator"],
+      "properties": {
+        "validator": {"type": "string"},
+        "repository_denominator": {"const": 7},
+        "producer_denominator": {"const": 6},
+        "generated_at": {"type": ["string", "null"]},
+        "receipt_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "repository_snapshot_receipts": {"type": "object"},
+    "identifier_namespace_census": {"type": "object"},
+    "relationship_namespace_census": {"type": "object"},
+    "geometry_authority_receipts": {"type": "object"},
+    "source_ownership_receipts": {"type": "object"},
+    "producer_consumer_receipts": {"type": "object"},
+    "authority_leakage_receipts": {"type": "object"},
+    "negative_test_receipts": {"type": "object"},
+    "arithmetic_closure": {
+      "type": "object",
+      "required": ["equations", "unclassified", "blocked"],
+      "properties": {
+        "equations": {"type": "array"},
+        "unclassified": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0}
+      }
+    },
+    "blocker_count": {"type": "integer", "minimum": 0},
+    "blockers": {"type": "array"},
+    "certification": {"enum": ["NOT_CERTIFIED", "AUTHORITY_BOUNDARY_CERTIFIED"]},
+    "next_phase": {"enum": ["BLOCKED", "A_FEDERATION_IDENTITY_CONTRACT"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"blocker_count": {"const": 0}}, "required": ["blocker_count"]},
+      "then": {
+        "properties": {
+          "certification": {"const": "AUTHORITY_BOUNDARY_CERTIFIED"},
+          "next_phase": {"const": "A_FEDERATION_IDENTITY_CONTRACT"}
+        }
+      },
+      "else": {
+        "properties": {
+          "certification": {"const": "NOT_CERTIFIED"},
+          "next_phase": {"const": "BLOCKED"}
+        }
+      }
+    }
+  ]
+}
