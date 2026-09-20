@@ -4,11 +4,15 @@ Input observations are preserved. Missing source bindings stay UNRESOLVED.
 Supersession edges are validated independently of report-name similarity.
 """
 from __future__ import annotations
+
 from typing import Any, Iterable, Mapping
+
 from .temporal_attestation import validate_temporal_attestation
+
 
 class LineageError(ValueError):
     pass
+
 
 def ingest_observation(row: Mapping[str, Any]) -> dict[str, Any]:
     out = dict(row)
@@ -22,6 +26,7 @@ def ingest_observation(row: Mapping[str, Any]) -> dict[str, Any]:
     out.setdefault("evidence_binding_state", "UNRESOLVED")
     validate_temporal_attestation(out)
     return out
+
 
 def adjudicate_lineage(rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
     records = [ingest_observation(r) for r in rows]
@@ -47,29 +52,56 @@ def adjudicate_lineage(rows: Iterable[Mapping[str, Any]]) -> dict[str, Any]:
                 orphans.add(edge)
             elif child not in by_id[str(newer)].get("supersedes", []):
                 reciprocal_mismatches.add(edge)
+
     children: dict[str, list[str]] = {k: [] for k in by_id}
     indegree = {k: 0 for k in by_id}
     for parent, child in edges:
-        children[parent].append(child); indegree[child] += 1
-    ready = sorted(k for k,v in indegree.items() if v == 0); seen=[]
+        children[parent].append(child)
+        indegree[child] += 1
+    ready = sorted(k for k, v in indegree.items() if v == 0)
     while ready:
-        n=ready.pop(0); seen.append(n)
-        for c in sorted(children[n]):
-            indegree[c]-=1
-            if indegree[c] == 0: ready.append(c); ready.sort()
-    cycles = sorted(k for k,v in indegree.items() if v)
-    collisions=[]
-    grouped: dict[tuple[Any,...], list[dict[str,Any]]] = {}
-    for r in records:
-        key=(r.get("program_id"),r.get("source_sha"),r.get("environment"),r.get("valid_at"),r.get("certification_scope"))
-        grouped.setdefault(key,[]).append(r)
+        node = ready.pop(0)
+        for child in sorted(children[node]):
+            indegree[child] -= 1
+            if indegree[child] == 0:
+                ready.append(child)
+                ready.sort()
+    cycles = sorted(k for k, v in indegree.items() if v)
+
+    collisions = []
+    grouped: dict[tuple[Any, ...], list[dict[str, Any]]] = {}
+    for record in records:
+        key = (
+            record.get("program_id"),
+            record.get("source_sha"),
+            record.get("environment"),
+            record.get("valid_at"),
+            record.get("certification_scope"),
+        )
+        grouped.setdefault(key, []).append(record)
     for key, group in grouped.items():
-        states={(r.get("execution_state"),r.get("test_state"),r.get("deployment_state")) for r in group}
-        if len(group)>1 and len(states)>1:
-            collisions.append({"key":key,"manifestations":sorted(str(r["manifestation_id"]) for r in group)})
+        states = {
+            (r.get("execution_state"), r.get("test_state"), r.get("deployment_state"))
+            for r in group
+        }
+        if len(group) > 1 and len(states) > 1:
+            collisions.append(
+                {
+                    "key": key,
+                    "manifestations": sorted(str(r["manifestation_id"]) for r in group),
+                }
+            )
+
     return {
-        "record_count": len(records), "edge_count": len(edges),
-        "orphan_edges": sorted(orphans), "reciprocal_mismatches": sorted(reciprocal_mismatches),
-        "cycle_nodes": cycles, "state_collisions": collisions,
-        "status": "PASS" if not (orphans or reciprocal_mismatches or cycles or collisions) else "OPEN",
+        "record_count": len(records),
+        "edge_count": len(edges),
+        "orphan_edges": sorted(orphans),
+        "reciprocal_mismatches": sorted(reciprocal_mismatches),
+        "cycle_nodes": cycles,
+        "state_collisions": collisions,
+        "status": (
+            "PASS"
+            if not (orphans or reciprocal_mismatches or cycles or collisions)
+            else "OPEN"
+        ),
     }
