@@ -1,0 +1,280 @@
+{
+  "schema_version": "historical_certification_observations_v1",
+  "scope": "User-supplied certification observations; source manifestation bindings remain unresolved unless independently established.",
+  "observations": [
+    {
+      "program_id": "aguayluz-pr",
+      "manifestation_id": "report:aguayluz-pr:certification-2026-09-06-v2",
+      "report_id": "report:aguayluz-pr:certification-2026-09-06-v2",
+      "environment": "CI",
+      "valid_at": "2026-09-06T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:aguayluz-pr:certification-2026-09-06"
+      ],
+      "superseded_by": [
+        "report:aguayluz-pr:certification-2026-09-06-v3"
+      ]
+    },
+    {
+      "program_id": "aguayluz-pr",
+      "manifestation_id": "report:aguayluz-pr:certification-2026-09-06-v3",
+      "report_id": "report:aguayluz-pr:certification-2026-09-06-v3",
+      "environment": "CI",
+      "valid_at": "2026-09-06T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:aguayluz-pr:certification-2026-09-06-v2"
+      ],
+      "superseded_by": [
+        "report:aguayluz-pr:certification-2026-09-06-v4"
+      ]
+    },
+    {
+      "program_id": "aguayluz-pr",
+      "manifestation_id": "report:aguayluz-pr:certification-2026-09-06-v4",
+      "report_id": "report:aguayluz-pr:certification-2026-09-06-v4",
+      "environment": "CI",
+      "valid_at": "2026-09-06T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:aguayluz-pr:certification-2026-09-06-v3"
+      ],
+      "superseded_by": [
+        "report:aguayluz-pr:certification-2026-09-08-v5"
+      ]
+    },
+    {
+      "program_id": "aguayluz-pr",
+      "manifestation_id": "report:aguayluz-pr:certification-2026-09-08-v5",
+      "report_id": "report:aguayluz-pr:certification-2026-09-08-v5",
+      "environment": "CI",
+      "valid_at": "2026-09-08T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:aguayluz-pr:certification-2026-09-06-v4"
+      ],
+      "superseded_by": []
+    },
+    {
+      "program_id": "aguayluz-pr",
+      "manifestation_id": "aguayluz:deployment-state:2026-09-16",
+      "report_id": null,
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-16T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "deployment_state": "BLOCKED",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "program_id": "aguayluz-pr",
+      "manifestation_id": "aguayluz:production-state:2026-09-16",
+      "report_id": null,
+      "environment": "PRODUCTION",
+      "valid_at": "2026-09-16T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "deployment_state": "OPEN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [],
+      "superseded_by": []
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-07-v2",
+      "report_id": "report:ovnis-pr:certification-2026-09-07-v2",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-07T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-06"
+      ],
+      "superseded_by": [
+        "report:ovnis-pr:certification-2026-09-07-v3"
+      ]
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-07-v3",
+      "report_id": "report:ovnis-pr:certification-2026-09-07-v3",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-07T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-07-v2"
+      ],
+      "superseded_by": [
+        "report:ovnis-pr:certification-2026-09-07-v4"
+      ]
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-07-v4",
+      "report_id": "report:ovnis-pr:certification-2026-09-07-v4",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-07T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-07-v3"
+      ],
+      "superseded_by": [
+        "report:ovnis-pr:certification-2026-09-07-v5"
+      ]
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-07-v5",
+      "report_id": "report:ovnis-pr:certification-2026-09-07-v5",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-07T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-07-v4"
+      ],
+      "superseded_by": [
+        "report:ovnis-pr:certification-2026-09-07-v6"
+      ]
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-07-v6",
+      "report_id": "report:ovnis-pr:certification-2026-09-07-v6",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-07T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-07-v5"
+      ],
+      "superseded_by": [
+        "report:ovnis-pr:certification-2026-09-07-v7"
+      ]
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-07-v7",
+      "report_id": "report:ovnis-pr:certification-2026-09-07-v7",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-07T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-07-v6"
+      ],
+      "superseded_by": [
+        "report:ovnis-pr:certification-2026-09-07-v8"
+      ]
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-07-v8",
+      "report_id": "report:ovnis-pr:certification-2026-09-07-v8",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-07T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-07-v7"
+      ],
+      "superseded_by": [
+        "report:ovnis-pr:certification-2026-09-07-v9"
+      ]
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-07-v9",
+      "report_id": "report:ovnis-pr:certification-2026-09-07-v9",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-07T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-07-v8"
+      ],
+      "superseded_by": [
+        "report:ovnis-pr:certification-2026-09-07-v10"
+      ]
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-07-v10",
+      "report_id": "report:ovnis-pr:certification-2026-09-07-v10",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-07T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-07-v9"
+      ],
+      "superseded_by": [
+        "report:ovnis-pr:certification-2026-09-07-v11"
+      ]
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-07-v11",
+      "report_id": "report:ovnis-pr:certification-2026-09-07-v11",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-07T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-07-v10"
+      ],
+      "superseded_by": [
+        "report:ovnis-pr:certification-2026-09-08-v12"
+      ]
+    },
+    {
+      "program_id": "ovnis-pr",
+      "manifestation_id": "report:ovnis-pr:certification-2026-09-08-v12",
+      "report_id": "report:ovnis-pr:certification-2026-09-08-v12",
+      "environment": "DEVELOPMENT",
+      "valid_at": "2026-09-08T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [
+        "report:ovnis-pr:certification-2026-09-07-v11"
+      ],
+      "superseded_by": []
+    },
+    {
+      "program_id": "skywatcher-pr",
+      "manifestation_id": "evidence:skywatcher:fr24-lineage",
+      "report_id": "evidence:skywatcher:fr24-lineage",
+      "environment": "UNKNOWN",
+      "valid_at": "2026-09-02T00:00:00Z",
+      "execution_state": "UNKNOWN",
+      "test_state": "UNKNOWN",
+      "evidence_binding_state": "UNRESOLVED",
+      "supersedes": [],
+      "superseded_by": []
+    }
+  ]
+}
