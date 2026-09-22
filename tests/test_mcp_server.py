@@ -78,9 +78,14 @@ def test_health_and_ready(client):
 
 def test_capabilities_lists_registry(client):
     body = client.get("/mcp/capabilities").json()
-    assert len(body["capabilities"]) == 13
+    assert len(body["capabilities"]) == 14
     assert body["capabilities"]["federation-core"]["version_pin"] == "1.0.0"
     assert body["capabilities"]["osha"]["class"] == "government"
+    jp_flood = body["capabilities"]["jp-flood-certification"]
+    assert jp_flood["class"] == "domain"
+    assert jp_flood["status"] == "active"
+    assert jp_flood["version_pin"] == "3.0.0"
+    assert sorted(jp_flood["required_by"]) == ["aguayluz", "spiderweb"]
     assert "moneysweep" in body["projects"]
 
 
