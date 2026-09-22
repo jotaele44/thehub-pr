@@ -10,12 +10,21 @@ import ConfidenceTrendChart from "@/components/dashboard/ConfidenceTrendChart";
 import CaseEvidenceTimeline from "@/components/dashboard/CaseEvidenceTimeline";
 import ImmediateReviewQueue from "@/components/dashboard/ImmediateReviewQueue";
 import GovernanceAlertsPanel from "@/components/dashboard/GovernanceAlertsPanel";
+import ProgramTimeline from "@/components/ProgramTimeline";
 import RiskHeatmap from "@/components/dashboard/RiskHeatmap";
 import StatusChip from "@/components/shared/StatusChip";
 import { GATE_STATUS } from "@/lib/chips";
 import { isTaskOpen } from "@/lib/task-utils";
 import { LayoutDashboard, FileStack, BookOpen, ListChecks, ShieldCheck, GitBranch, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
+
+const PROGRAM_TIMELINE = [
+  { id:"hub-receipts", phase:"NOW", title:"LOCKSTEP receipts", detail:"Collect producer receipts and current manifests without collapsing producer authority.", category:"Federation", href:"/history" },
+  { id:"hub-freshness", phase:"NEXT", title:"Producer freshness", detail:"Verify current producer heads, freshness windows, and source manifestation lineage.", category:"Provenance", href:"/programs" },
+  { id:"hub-contradictions", phase:"NEXT", title:"Contradiction adjudication", detail:"Preserve conflicting observations and close the narrowest authoritative adjudication path.", category:"Evidence", href:"/cases" },
+  { id:"hub-pipeline", phase:"QUEUED", title:"Federation pipeline closure", detail:"Recompute buildable and certification denominators after producer-side gates close.", category:"Pipeline", href:"/tasks" },
+  { id:"hub-freeze", phase:"BLOCKED", title:"Final source/output freeze", detail:"Exact release/hash freeze waits on production, rendered QA, and remaining credential gates.", category:"Certification", href:"/gates" },
+];
 
 export default function Dashboard() {
   const { rows: programs } = useEntityData("Programs");
@@ -36,6 +45,10 @@ export default function Dashboard() {
         title="Command Dashboard"
         description="Federation control plane for the Puerto Rico research modules. Sanitized analytical metadata only — GitHub sync remains gated until validation passes."
       />
+
+      <div className="mb-6">
+        <ProgramTimeline items={PROGRAM_TIMELINE} />
+      </div>
 
       <div className="mb-6">
         <ConfidenceTrendChart />
