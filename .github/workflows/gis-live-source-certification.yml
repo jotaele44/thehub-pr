@@ -51,12 +51,12 @@ jobs:
           echo $! > gis-proxy-uvicorn.pid
           for i in {1..30}; do
             if python - <<'PY'
-import urllib.request
-try:
-    urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=1)
-except Exception:
-    raise SystemExit(1)
-PY
+          import urllib.request
+          try:
+              urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=1)
+          except Exception:
+              raise SystemExit(1)
+          PY
             then
               exit 0
             fi
