@@ -1,6 +1,6 @@
 {
   "schema_version": "prii_compatibility_matrix_v1",
-  "federation_contract_baseline": "2026-08-31",
+  "federation_contract_baseline": "2026-09-01",
   "repos": {
     "thehub-pr": {"repo":"jotaele44/thehub-pr","state":"UPDATED","contracts":["repo_federation_manifest@1","federation_export_manifest@1","thehub_admin_boundary@1"]},
     "moneysweep-pr": {"repo":"jotaele44/moneysweep-pr","state":"COMPATIBLE","contracts":["repo_federation_manifest@1","federation_export_manifest@1","centinelas_financial_signal@1","contract_finance_bundle@1","thehub_admin_boundary@1"]},
