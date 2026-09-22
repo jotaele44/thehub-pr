@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import copy
 import importlib.util
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path("scripts").resolve()))
 
 SPEC = importlib.util.spec_from_file_location(
     "reconcile_remote_receipts",
