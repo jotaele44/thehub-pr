@@ -43,7 +43,15 @@
       "blocking_count": 0,
       "identical_count": 78,
       "metadata_only_count": 0,
-      "certification_invariant": "live observations never auto-promote frozen source_state"
+      "certification_invariant": "live observations never auto-promote frozen source_state",
+      "latest_ref": "jp-flood-v3-receipts",
+      "latest_path": "latest.json",
+      "freshness_policy": {
+        "equivalent_same_source_main": "CURRENT_EQUIVALENT",
+        "newer_source_main_same_semantics": "PIN_UPDATE_REQUIRED",
+        "transition_or_content_drift": "REQUIRES_READJUDICATION",
+        "transport_failure": "TRANSPORT_BLOCKED"
+      }
     }
   }
 }
