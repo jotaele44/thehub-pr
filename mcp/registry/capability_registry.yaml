@@ -180,6 +180,21 @@ capabilities:
     required_by:
       - centinelas
 
+  jp-flood-certification:
+    class: domain
+    status: active
+    version_pin: "3.0.0"
+    description: >
+      Read-only Puerto Rico Junta de Planificación municipal flood-document
+      certification capability. Spiderweb owns the source-state, byte-ledger,
+      reproducibility, source-transition and certification-scope gates;
+      AguaYLuz consumes the immutable producer/byte-certification contracts
+      and preserves source-state semantics in its API and GUI. Certification
+      PASS never promotes LISTED_BUT_MISSING or NOT_LISTED to AVAILABLE.
+    required_by:
+      - spiderweb
+      - aguayluz
+
 # Capabilities that are specific to a single project and are not part of
 # the shared global registry above. Manifests may declare these only for
 # their own project.
