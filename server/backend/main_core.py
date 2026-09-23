@@ -10,7 +10,6 @@ Start with:
 """
 from __future__ import annotations
 
-import ipaddress
 import json
 import logging
 import os
@@ -66,19 +65,8 @@ log = logging.getLogger("hub.backend")
 _WRITE_TOKEN = os.environ.get("PRII_WRITE_TOKEN", "")
 
 
-def _is_local_network(host: str) -> bool:
-    """True for loopback, RFC1918 private, and link-local client addresses."""
-    if host in ("localhost", ""):
-        return host == "localhost"
-    try:
-        ip = ipaddress.ip_address(host)
-    except ValueError:
-        return False
-    return ip.is_loopback or ip.is_private or ip.is_link_local
-
-
 def require_write_access(request: Request) -> None:
-    """Authorize a mutating request, by bearer token or by local-network origin."""
+    """Authorize a mutating request by bearer token; fail closed if none is configured."""
     if _WRITE_TOKEN:
         scheme, _, presented = request.headers.get("authorization", "").partition(" ")
         if scheme.lower() != "bearer" or not secrets.compare_digest(
