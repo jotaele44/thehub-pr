@@ -1,0 +1,24 @@
+{
+  "schema_version": "federation-lockstep-bindings/v1",
+  "control_plane": "thehub-pr",
+  "rules": {
+    "identity": "Bindings are explicit evidence-bearing dependencies only; graph reachability is not dependency evidence.",
+    "missing_binding": "BLOCK",
+    "missing_current_certification": "BLOCK",
+    "transport_acceptance_is_not_consumer_receipt": true
+  },
+  "bindings": [
+    {"source_app":"aguayluz","target_app":"thehub","change_classes":["FEDERATION_PACKAGE","PRODUCER_INTERFACE"],"contract_id":"aguayluz-federation-package","evidence":"TheHub consumes versioned AguaYLuz producer packages; TheHub is not AguaYLuz domain authority."},
+    {"source_app":"centinelas","target_app":"thehub","change_classes":["FEDERATION_PACKAGE","PRODUCER_INTERFACE"],"contract_id":"centinelas-federation-package","evidence":"TheHub receives Centinelas federation status/handoff manifestations; transport acceptance remains distinct from consumer ingestion."},
+    {"source_app":"moneysweep","target_app":"thehub","change_classes":["FEDERATION_PACKAGE","PRODUCER_INTERFACE"],"contract_id":"moneysweep-federation-package","evidence":"TheHub consumes MoneySweep producer/report manifestations while MoneySweep remains financial-domain authority."},
+    {"source_app":"ovnis","target_app":"thehub","change_classes":["FEDERATION_PACKAGE","PRODUCER_INTERFACE"],"contract_id":"ovnis-federation-package","evidence":"OVNIS handoff contract targets TheHub and preserves producer authority."},
+    {"source_app":"skywatcher","target_app":"thehub","change_classes":["FEDERATION_PACKAGE","PRODUCER_INTERFACE"],"contract_id":"skywatcher-federation-package","evidence":"TheHub consumes Skywatcher evidence/certification manifestations; source telemetry authority remains Skywatcher."},
+    {"source_app":"spiderweb","target_app":"thehub","change_classes":["FEDERATION_PACKAGE","PRODUCER_INTERFACE","GEOMETRY_AUTHORITY"],"contract_id":"spiderweb-spatial-package","evidence":"Spiderweb is the bounded federation spatial substrate and TheHub the non-geometric control/query plane."},
+    {"source_app":"thehub","target_app":"aguayluz","change_classes":["SHARED_CONTRACT","IDENTITY_RULE"],"contract_id":"haf-federation-governance","evidence":"TheHub owns federation governance/control-plane contracts; producer domain authority remains local."},
+    {"source_app":"thehub","target_app":"centinelas","change_classes":["SHARED_CONTRACT","IDENTITY_RULE"],"contract_id":"haf-federation-governance","evidence":"TheHub owns federation governance/control-plane contracts; producer domain authority remains local."},
+    {"source_app":"thehub","target_app":"moneysweep","change_classes":["SHARED_CONTRACT","IDENTITY_RULE"],"contract_id":"haf-federation-governance","evidence":"TheHub owns federation governance/control-plane contracts; producer domain authority remains local."},
+    {"source_app":"thehub","target_app":"ovnis","change_classes":["SHARED_CONTRACT","IDENTITY_RULE"],"contract_id":"haf-federation-governance","evidence":"TheHub owns federation governance/control-plane contracts; producer domain authority remains local."},
+    {"source_app":"thehub","target_app":"skywatcher","change_classes":["SHARED_CONTRACT","IDENTITY_RULE"],"contract_id":"haf-federation-governance","evidence":"TheHub owns federation governance/control-plane contracts; producer domain authority remains local."},
+    {"source_app":"thehub","target_app":"spiderweb","change_classes":["SHARED_CONTRACT","IDENTITY_RULE"],"contract_id":"haf-federation-governance","evidence":"TheHub owns federation governance/control-plane contracts; producer domain authority remains local."}
+  ]
+}

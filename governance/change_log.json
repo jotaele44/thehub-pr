@@ -1,0 +1,29 @@
+{
+  "schema_version": "prii_change_log_v1",
+  "repository": "thehub-pr",
+  "entries": [
+    {
+      "date": "2026-09-13",
+      "summary": "Introduced governance/change_log.json as a passive, non-enforcing per-repo change tracker (federation-wide rollout across all seven repos). It documents changes only; nothing reads or validates it, and nothing in CI depends on its contents. Prompted by removing a repo-wide change-freeze that existed in moneysweep-pr and ovnis-pr's unified-skillpack conformance checks and blocked ordinary PRs; this repo never had that freeze. Each producer tracks its own change history in its own repo (see governance/producer_receipt_refs.json for the existing self-declared-receipt precedent); TheHub does not aggregate other repos' change logs.",
+      "files": [
+        "governance/change_log.json"
+      ]
+    },
+    {
+      "date": "2026-09-22",
+      "summary": "Governance determination for moneysweep-pr #585 drift: source_truth count change (total_sources 164→167) is metadata-only; no export contract schema changed; disposition COMPATIBLE under PR #218 baseline. producer_receipt_refs.json advanced to post-#585 HEAD (105ab0e). Reconciliation receipt to follow in moneysweep-pr.",
+      "files": [
+        "governance/producer_receipt_refs.json",
+        "governance/change_log.json"
+      ],
+      "producer_drift_reconciliation": {
+        "repo": "moneysweep-pr",
+        "cause_pr": 585,
+        "cause_commit": "e2ed593",
+        "change": "source_truth count update total_sources 164→167; automatable_total 115→119; automatable_ready 115→119; queued_excluded_total 49→48",
+        "determination": "COMPATIBLE",
+        "rationale": "source_truth fields are producer-local metadata; federation export contract schema and generation federation-spatial-index/1 unchanged; all contracts listed in moneysweep-pr receipt remain valid"
+      }
+    }
+  ]
+}

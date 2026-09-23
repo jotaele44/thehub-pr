@@ -67,6 +67,54 @@ def test_skipped_required_gate_blocks_official_startup_setup():
     assert startup_blockers == ["setup:setup skipped by audit policy"]
 
 
+def test_skipped_setup_does_not_block_code_completion_candidate():
+    code_state, code_blockers = audit.classify_code_completion(
+        [
+            audit.skipped("setup", "setup skipped by audit policy"),
+            _result("test_suite"),
+            _result("export_canonical"),
+            _result("startup_smoke"),
+        ]
+    )
+    assert code_state == "CODE_COMPLETE_CANDIDATE"
+    assert code_blockers == []
+
+
+def test_failed_code_gate_blocks_code_completion_candidate():
+    code_state, code_blockers = audit.classify_code_completion(
+        [
+            audit.skipped("setup", "setup skipped by audit policy"),
+            _result("test_suite", "FAIL"),
+            _result("export_canonical"),
+            _result("startup_smoke"),
+        ]
+    )
+    assert code_state == "CODE_INCOMPLETE"
+    assert code_blockers == ["test_suite:FAIL"]
+
+
+def test_stale_source_export_failure_does_not_mark_code_incomplete(tmp_path):
+    log = tmp_path / "export_canonical.log"
+    log.write_text("FAIL — production live signal ledger is stale: newest capture age=260.6h exceeds max=168.0h")
+    code_state, code_blockers = audit.classify_code_completion(
+        [
+            audit.skipped("setup", "setup skipped by audit policy"),
+            _result("test_suite"),
+            audit.CommandResult(
+                name="export_canonical",
+                command="run export_canonical",
+                state="FAIL",
+                exit_code=1,
+                elapsed_seconds=0.1,
+                log_path=str(log),
+            ),
+            _result("startup_smoke"),
+        ]
+    )
+    assert code_state == "CODE_COMPLETE_CANDIDATE_SOURCE_BLOCKED"
+    assert code_blockers == ["export_canonical:SOURCE_BLOCKED"]
+
+
 def test_env_presence_records_only_boolean_values(monkeypatch):
     monkeypatch.setenv("PUBLIC_TEST_KEY", "secret-value")
     observed = audit.env_presence(["PUBLIC_TEST_KEY", "MISSING_TEST_KEY"])
@@ -80,6 +128,7 @@ def test_summary_arithmetic_requires_all_seven_repos(tmp_path):
             "repo_id": repo,
             "startup_setup_state": "STARTUP_SETUP_COMPLETE",
             "product_completion_state": "PRODUCT_COMPLETE",
+            "code_completion_state": "CODE_COMPLETE_CANDIDATE",
             "command_results": [],
             "head_sha": "a" * 40,
         }
@@ -91,6 +140,7 @@ def test_summary_arithmetic_requires_all_seven_repos(tmp_path):
     assert summary["arithmetic"]["closed"] is True
     assert summary["arithmetic"]["classified"] == 7
     assert summary["arithmetic"]["counts"] == {"STARTUP_SETUP_COMPLETE": 7}
+    assert summary["code_completion_arithmetic"]["counts"] == {"CODE_COMPLETE_CANDIDATE": 7}
 
 
 def test_thehub_has_explicit_commands_without_manifest(tmp_path):
@@ -100,3 +150,19 @@ def test_thehub_has_explicit_commands_without_manifest(tmp_path):
     assert commands["test_suite"]
     assert commands["export_canonical"]
     assert commands["startup_smoke"]
+
+
+def test_run_command_timeout_enforces_child_process_group(tmp_path):
+    result = audit.run_command(
+        name="timeout_gate",
+        command="python3 -c 'import time; time.sleep(30)'",
+        cwd=tmp_path,
+        log_dir=tmp_path / "logs",
+        timeout=1,
+    )
+
+    assert result.state == "BLOCKED"
+    assert result.reason == "TIMEOUT:1s"
+    assert result.elapsed_seconds < 10
+    assert result.log_path is not None
+    assert "timeout_enforced_utc" in Path(result.log_path).read_text()

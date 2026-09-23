@@ -3,6 +3,20 @@ import json
 from hub.manifest import load_and_validate_manifest, validate_repo_manifest
 
 
+def test_missing_manifest_returns_error_instead_of_raising(tmp_path):
+    data, errors = load_and_validate_manifest(tmp_path / "does_not_exist.json")
+    assert data == {}
+    assert errors and "not found" in errors[0]
+
+
+def test_malformed_manifest_json_returns_error_instead_of_raising(tmp_path):
+    bad_path = tmp_path / "bad.json"
+    bad_path.write_text("{not valid json")
+    data, errors = load_and_validate_manifest(bad_path)
+    assert data == {}
+    assert errors and "invalid JSON" in errors[0]
+
+
 def test_real_moneysweep_manifest_conforms(fixtures_dir):
     """The actual federation.json that landed on moneysweep-pr main (PR #199)
     must validate against the Hub's repo_federation_manifest_v1 schema."""

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/schemas/temporal_ci_attestation.v1.schema.json",
+  "title": "Federation Temporal CI Attestation v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","program_id","manifestation_id","environment","valid_at","execution_state","test_state","evidence_binding_state"],
+  "properties": {
+    "schema_version": {"const":"federation_temporal_ci_attestation_v1"},
+    "program_id": {"type":"string","minLength":1},
+    "manifestation_id": {"type":"string","minLength":1},
+    "report_id": {"type":["string","null"]},
+    "source_sha": {"type":["string","null"],"pattern":"^[0-9a-f]{40}$"},
+    "deployment_sha": {"type":["string","null"],"pattern":"^[0-9a-f]{40}$"},
+    "environment": {"enum":["CI","DEVELOPMENT","PRODUCTION","STAGING","LOCAL","UNKNOWN"]},
+    "valid_at": {"type":"string","format":"date-time"},
+    "observed_at": {"type":["string","null"],"format":"date-time"},
+    "certification_scope": {"type":["string","null"]},
+    "execution_state": {"enum":["EXECUTED","NONEXECUTED","PARTIAL","UNKNOWN"]},
+    "test_state": {"enum":["PASS","FAIL","NOT_RUN","PARTIAL","UNKNOWN"]},
+    "deployment_state": {"enum":["OPEN","BLOCKED","PASS","FAIL","PROVISIONAL","UNRESOLVED","UNKNOWN"]},
+    "evidence_binding_state": {"enum":["BOUND","PARTIAL","UNRESOLVED"]},
+    "supersedes": {"type":"array","items":{"type":"string","minLength":1},"uniqueItems":true},
+    "superseded_by": {"type":"array","items":{"type":"string","minLength":1},"uniqueItems":true}
+  },
+  "allOf": [
+    {"if":{"properties":{"execution_state":{"const":"NONEXECUTED"}},"required":["execution_state"]},
+     "then":{"properties":{"test_state":{"const":"NOT_RUN"}}}},
+    {"if":{"properties":{"test_state":{"enum":["PASS","FAIL"]}},"required":["test_state"]},
+     "then":{"properties":{"execution_state":{"const":"EXECUTED"}}}}
+  ]
+}
