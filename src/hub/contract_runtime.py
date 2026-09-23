@@ -22,6 +22,10 @@ CONTRACT_FILES = {
     "provenance.v1": "provenance.v1.schema.json",
     "snapshot_manifest.v1": "snapshot_manifest.v1.schema.json",
     "entity_resolution.v1": "entity_resolution.v1.schema.json",
+    "retrieval_object.v1": "retrieval_object.v1.schema.json",
+    "retrieval_profile.v1": "retrieval_profile.v1.schema.json",
+    "abstention.v1": "abstention.v1.schema.json",
+    "query_lifecycle.v1": "query_lifecycle.v1.schema.json",
 }
 
 
@@ -36,19 +40,20 @@ def _load_contract(name: str) -> dict[str, Any]:
 def validate_contract(name: str, payload: Mapping[str, Any]) -> None:
     """Validate a payload against an exact frozen Phase-1 contract.
 
-    Raises ``jsonschema.ValidationError`` on contract violation. Provenance's
-    access-classification reference is resolved only from the sibling frozen
-    schema, never from the network.
+    Raises ``jsonschema.ValidationError`` on contract violation. Cross-contract
+    ``$ref``s (e.g. provenance.v1 -> access_classification.v1, retrieval_object.v1
+    -> provenance.v1 -> access_classification.v1) are resolved only from the
+    sibling frozen schemas already registered in ``CONTRACT_FILES``, never from
+    the network.
     """
     schema = _load_contract(name)
-    if name == "provenance.v1":
-        access = _load_contract("access_classification.v1")
-        resolver = jsonschema.RefResolver.from_schema(
-            schema, store={access["$id"]: access}
-        )
-        jsonschema.Draft202012Validator(schema, resolver=resolver).validate(dict(payload))
-        return
-    jsonschema.Draft202012Validator(schema).validate(dict(payload))
+    store = {}
+    for other_name in CONTRACT_FILES:
+        other = _load_contract(other_name)
+        if "$id" in other:
+            store[other["$id"]] = other
+    resolver = jsonschema.RefResolver.from_schema(schema, store=store)
+    jsonschema.Draft202012Validator(schema, resolver=resolver).validate(dict(payload))
 
 
 def _stable_id(prefix: str, *parts: str) -> str:

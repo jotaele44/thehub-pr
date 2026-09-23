@@ -22,6 +22,7 @@ from hub.mcp_runtime.adapters.domain import (
 from hub.mcp_runtime.adapters.geospatial import GeospatialAdapter
 from hub.mcp_runtime.adapters.github_bridge import GithubBridgeAdapter
 from hub.mcp_runtime.adapters.http import BaseHttpAdapter, EnvHttpClient, HttpClient
+from hub.mcp_runtime.adapters.intelligence import IntelligenceQueryAdapter
 from hub.mcp_runtime.adapters.mock import MockAdapter
 from hub.mcp_runtime.adapters.provenance import ProvenanceAdapter
 
@@ -36,6 +37,7 @@ __all__ = [
     "GeospatialAdapter",
     "GithubBridgeAdapter",
     "HttpClient",
+    "IntelligenceQueryAdapter",
     "MockAdapter",
     "OshaAdapter",
     "ProvenanceAdapter",

@@ -180,6 +180,19 @@ capabilities:
     required_by:
       - centinelas
 
+  intelligence-query:
+    class: core
+    status: pilot
+    version_pin: "0.1.0"
+    description: >
+      Read-only Intelligence Engine query boundary (ADR 0003) over the
+      Control Plane's certified ACTIVE snapshot: exact-identifier and
+      structured lookups only, with abstention on missing/unverifiable
+      evidence. Pilot: no snapshot has been promoted in production yet, and
+      per-row access classification is not yet populated by any producer.
+    required_by:
+      - ovnis
+
   jp-flood-certification:
     class: domain
     status: active

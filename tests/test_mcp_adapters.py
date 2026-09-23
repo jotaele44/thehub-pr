@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from hub.mcp_runtime import MCPRequest, PolicyViolation, Router, RuntimeRegistry
@@ -5,6 +7,7 @@ from hub.mcp_runtime.adapters import (
     DocumentsAdapter,
     GeospatialAdapter,
     GithubBridgeAdapter,
+    IntelligenceQueryAdapter,
     ProvenanceAdapter,
 )
 
@@ -265,6 +268,90 @@ def test_github_bridge_unknown_program_id(router):
         )
 
 
+# --- intelligence-query -----------------------------------------------------
+
+def _promote_test_snapshot(tmp_path):
+    from control_plane.active_snapshot import promote_snapshot
+    from hub.snapshot_runtime import build_snapshot_manifest
+
+    aggregate = tmp_path / "aggregate"
+    aggregate.mkdir()
+    entity = {
+        "entity_id": "ent_" + "a" * 32,
+        "source_id": "src_" + "b" * 32,
+        "name": "Example",
+        "normalized_name": "EXAMPLE",
+        "entity_type": "recipient",
+        "jurisdiction": "PR",
+        "confidence": 0.9,
+        "lineage": {"producer_script": "test", "producer_phase": "TEST", "source_inputs": ["fixture"]},
+        "synthetic": False,
+        "created_at": "2026-01-01T00:00:00Z",
+        "extracted_at": "2026-01-01T00:00:00Z",
+    }
+    (aggregate / "entities.jsonl").write_text(json.dumps(entity, sort_keys=True) + "\n", encoding="utf-8")
+    manifest = build_snapshot_manifest(
+        {}, aggregate, created_at="2026-01-01T00:00:00Z", decided_by="test", decided_at="2026-01-01T00:00:00Z"
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    store = tmp_path / "store"
+    promote_snapshot(store, manifest_path, actor="test", promoted_at="2026-01-01T00:00:00Z")
+    return store, aggregate, entity["entity_id"]
+
+
+def test_intelligence_query_get_object(router, tmp_path):
+    store, aggregate, entity_id = _promote_test_snapshot(tmp_path)
+    router.register_adapter(IntelligenceQueryAdapter())
+    result = router.route(
+        MCPRequest(
+            project="ovnis", capability="intelligence-query", action="get_object",
+            params={"storage_root": str(store), "aggregate_dir": str(aggregate), "object_id": entity_id},
+        )
+    )
+    assert result.data["abstention"]["status"] == "ANSWERED"
+    assert result.data["objects"][0]["object_id"] == entity_id
+    assert result.provenance["storage_root"] == str(store)
+
+
+def test_intelligence_query_structured_search(router, tmp_path):
+    store, aggregate, entity_id = _promote_test_snapshot(tmp_path)
+    router.register_adapter(IntelligenceQueryAdapter())
+    result = router.route(
+        MCPRequest(
+            project="ovnis", capability="intelligence-query", action="query",
+            params={
+                "storage_root": str(store), "aggregate_dir": str(aggregate),
+                "mode": "STRUCTURED", "stream": "entities", "filters": {"entity_type": "recipient"},
+            },
+        )
+    )
+    assert result.data["abstention"]["status"] == "ANSWERED"
+    assert [obj["object_id"] for obj in result.data["objects"]] == [entity_id]
+
+
+def test_intelligence_query_abstains_without_active_snapshot(router, tmp_path):
+    router.register_adapter(IntelligenceQueryAdapter())
+    result = router.route(
+        MCPRequest(
+            project="ovnis", capability="intelligence-query", action="get_object",
+            params={"storage_root": str(tmp_path / "empty-store"), "object_id": "ent_" + "a" * 32},
+        )
+    )
+    assert result.data["abstention"]["status"] == "SNAPSHOT_INCOMPLETE"
+
+
+def test_intelligence_query_requires_storage_root(router):
+    router.register_adapter(IntelligenceQueryAdapter())
+    with pytest.raises(ValueError, match="storage_root"):
+        router.route(
+            MCPRequest(
+                project="ovnis", capability="intelligence-query", action="get_object",
+                params={"object_id": "ent_" + "a" * 32},
+            )
+        )
+
+
 # --- governance unchanged -------------------------------------------------
 
 def test_core_capability_still_gated_by_manifest(router):
@@ -276,5 +363,18 @@ def test_core_capability_still_gated_by_manifest(router):
             MCPRequest(
                 project="centinelas", capability="geospatial", action="distance",
                 params={"a": SAN_JUAN, "b": PONCE},
+            )
+        )
+
+
+def test_intelligence_query_gated_by_manifest(router):
+    # centinelas does not declare 'intelligence-query' -> policy blocks it even
+    # though an adapter is registered, mirroring the geospatial case above.
+    router.register_adapter(IntelligenceQueryAdapter())
+    with pytest.raises(PolicyViolation, match="does not declare"):
+        router.route(
+            MCPRequest(
+                project="centinelas", capability="intelligence-query", action="get_object",
+                params={"storage_root": "/nonexistent", "object_id": "ent_x"},
             )
         )
