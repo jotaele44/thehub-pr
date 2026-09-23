@@ -8,6 +8,22 @@
       "files": [
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-09-22",
+      "summary": "Governance determination for moneysweep-pr #585 drift: source_truth count change (total_sources 164→167) is metadata-only; no export contract schema changed; disposition COMPATIBLE under PR #218 baseline. producer_receipt_refs.json advanced to post-#585 HEAD (105ab0e). Reconciliation receipt to follow in moneysweep-pr.",
+      "files": [
+        "governance/producer_receipt_refs.json",
+        "governance/change_log.json"
+      ],
+      "producer_drift_reconciliation": {
+        "repo": "moneysweep-pr",
+        "cause_pr": 585,
+        "cause_commit": "e2ed593",
+        "change": "source_truth count update total_sources 164→167; automatable_total 115→119; automatable_ready 115→119; queued_excluded_total 49→48",
+        "determination": "COMPATIBLE",
+        "rationale": "source_truth fields are producer-local metadata; federation export contract schema and generation federation-spatial-index/1 unchanged; all contracts listed in moneysweep-pr receipt remain valid"
+      }
     }
   ]
 }
