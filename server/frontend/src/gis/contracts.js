@@ -3,6 +3,14 @@ export const GIS_SCHEMA_VERSION = '1.0.0';
 export const RENDER_MODES = Object.freeze(['2d', '3d']);
 export const LAYER_KINDS = Object.freeze(['vector', 'raster', 'terrain', '3d-tiles', 'tile']);
 
+function normalizeLayerDisplayState(input = {}) {
+  if (typeof input.visible !== 'boolean') throw new Error('layer visible must be boolean');
+  const opacity = Number(input.opacity);
+  if (!Number.isFinite(opacity)) throw new Error('layer opacity must be finite');
+  if (opacity < 0 || opacity > 1) throw new Error('layer opacity must be within [0,1]');
+  return Object.freeze({ ...input, visible: input.visible, opacity });
+}
+
 const CANONICAL_EQUIVALENCE_FIELDS = Object.freeze([
   'view.center',
   'view.groundResolutionM',
@@ -68,11 +76,12 @@ export function createCanonicalMapState(input = {}) {
   const activeLayerIds = uniqueStableIds(input.activeLayerIds, 'activeLayerId');
   const selectedFeatureIds = uniqueStableIds(input.selectedFeatureIds, 'selectedFeatureId');
 
-  const layerState = { ...(input.layerState || {}) };
-  for (const layerId of Object.keys(layerState)) {
+  const layerState = {};
+  for (const [layerId, state] of Object.entries(input.layerState || {})) {
     if (!activeLayerIds.includes(layerId)) {
       throw new Error(`layerState references inactive layerId: ${layerId}`);
     }
+    layerState[layerId] = normalizeLayerDisplayState(state);
   }
 
   return Object.freeze({
