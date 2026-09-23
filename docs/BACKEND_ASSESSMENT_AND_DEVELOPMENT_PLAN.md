@@ -117,7 +117,7 @@ dependency.
    quality work rather than a one-time deliverable.
 5. **Harden the MCP runtime** (`src/hub/mcp_runtime/`, `mcp_api.py`) — Effort: **M**.
    Currently mounted behind a bare try/except that silently logs and continues on failure;
-   OAuth tests (`test_mcp_oauth_networked.py`) suggest network-dependent, possibly-flaky
+   OAuth tests (`test_mcp_oauth_injected.py`) suggest network-dependent, possibly-flaky
    auth flows that need real hardening.
 
 ## Quick wins (sequenced after/alongside the above, not skipped)
