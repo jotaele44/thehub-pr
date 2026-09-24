@@ -1,0 +1,69 @@
+{
+  "schema": "federation_max_audit/v1",
+  "audit_date_utc": "2026-09-24",
+  "active_vector": "V1 federation contract integrity and executability",
+  "vector_status": "EXHAUSTED_CLOSED",
+  "mode": "read_only_non_destructive_scratch_copies",
+  "report": "docs/FEDERATION_MAX_AUDIT_2026-09-24.md",
+  "baseline_main_sha": {
+    "thehub-pr": "30962e8",
+    "moneysweep-pr": "4b17ba7",
+    "spiderweb-pr": "acf026b",
+    "aguayluz-pr": "54fa552",
+    "ovnis-pr": "55b2648",
+    "skywatcher-pr": "3b7d04a",
+    "centinelas-pr": "fe11dc1"
+  },
+  "hub_gates": {
+    "federation_governance_all": "PASS",
+    "federation_governance_certify": "PASS",
+    "federation_spatial_contract": "CLOSED",
+    "federation_lockstep_ci": {"sources": 7, "pass": 7, "bindings": 12, "residue": 0},
+    "federation_reconcile_remote_receipts": "PASS",
+    "jp_flood_receipt_freshness": "CURRENT_EQUIVALENT",
+    "verify_audit": {"passed": 8, "failed": 0},
+    "validate_skills": {"checks": 10, "errors": 0},
+    "offline_package_contract_strict": "PASS",
+    "offline_package_contract_max": "PASS",
+    "hub_pytest": {"passed": 1260, "skipped": 10, "failed": 0},
+    "ruff": "clean",
+    "mypy": "clean",
+    "validate_federation_raw_checkouts": {"ready": 0, "of": 6},
+    "validate_federation_after_exports": {"ready": 3, "of": 6, "ready_ids": ["spiderweb-pr", "aguayluz-pr", "ovnis-pr"]}
+  },
+  "producers": {
+    "moneysweep-pr": {"tests": {"passed": 2957, "failed": 1, "skipped": 24}, "export_canonical": "ok", "export_mode": "test", "rows": 4781, "synthetic_rows": 0, "declared_live": false, "ci_main_red": ["Tests", "Contract Sweeper CI", "GUI capability parity"]},
+    "spiderweb-pr": {"tests": {"passed": 1812, "failed": 0, "skipped": 54}, "export_canonical": "ok", "export_mode": "test", "rows": 30, "synthetic_rows": 30, "declared_live": true, "production_status": "PRODUCTION", "ci_main_red": [], "gui_parity_gate": false},
+    "aguayluz-pr": {"tests": {"passed": 1223, "failed": 0}, "export_canonical": "ok", "export_mode": "test", "rows": 155395, "synthetic_rows": 7, "declared_live": true, "ci_main_red": ["GUI capability parity"]},
+    "ovnis-pr": {"tests": {"passed": 125, "failed": 0}, "export_canonical": "ok", "export_mode": "production", "rows": 2069, "synthetic_rows": 0, "declared_live": true, "ci_main_red": ["GUI capability parity"]},
+    "skywatcher-pr": {"tests": {"passed": 1542, "failed": 0, "skipped": 34}, "setup_smoke": "PASS", "export_canonical": "ok", "export_mode": "test", "rows": 16, "synthetic_rows": 16, "declared_live": false, "ci_main_red": ["GUI capability parity"]},
+    "centinelas-pr": {"tests_declared_setup": "COLLECTION_ERROR", "tests_ci_deps": {"passed": 341, "failed": 0}, "export_canonical": "FAIL_STALE_LEDGER", "ledger_age_hours": 699.9, "max_age_hours": 168.0, "test_mode_package": "VALID", "declared_live": true, "ci_main_red": ["GUI capability parity"]}
+  },
+  "findings": [
+    {"id": "F1", "severity": "P0", "confidence": 0.97, "tiers": ["T1", "T2"], "repos": ["aguayluz-pr", "ovnis-pr", "skywatcher-pr", "centinelas-pr", "moneysweep-pr", "spiderweb-pr"], "summary": "GUI-capability-parity red on 5/6 producer mains since 2026-09-22 14:26-14:34Z; 3 unregistered ProgramTimeline.jsx controls per repo; moneysweep +314 analysis surfaces; spiderweb has no parity gate."},
+    {"id": "F2", "severity": "P0", "confidence": 0.99, "tiers": ["T1", "T2"], "repos": ["moneysweep-pr"], "summary": "Committed prebuilt dashboard bundle stale after f3aaaad/5500f16; Tests and Contract Sweeper CI red on main."},
+    {"id": "F3", "severity": "P0", "confidence": 0.98, "tiers": ["T1", "T2"], "repos": ["centinelas-pr", "thehub-pr"], "summary": "Declared ready_for_live but export_canonical fails: live ledger 699.9h old vs 168h max; no workflow refreshes it."},
+    {"id": "F4", "severity": "P0", "confidence": 0.95, "tiers": ["T1", "T2"], "repos": ["spiderweb-pr"], "summary": "Declared PRODUCTION/live but export_canonical runs --mode test and emits 30/30 synthetic rows; real production path exists but is unwired."},
+    {"id": "F5", "severity": "P1", "confidence": 0.90, "tiers": ["T1", "T2"], "repos": ["thehub-pr"], "summary": "No synthetic-row gate for live-declared producers; validate-federation marks a 100% synthetic package ready; aggregate merges 51 synthetic rows."},
+    {"id": "F6", "severity": "P1", "confidence": 0.97, "tiers": ["T2"], "repos": ["skywatcher-pr"], "summary": "Stale vendored federation_entity schema requires location lat/lon; consumer rejects 84/207 (40.6%) hub-valid moneysweep entities."},
+    {"id": "F7", "severity": "P1", "confidence": 0.97, "tiers": ["T2"], "repos": ["centinelas-pr"], "summary": "Hub-callable setup omits server deps; declared test_suite fails collection (2 errors)."},
+    {"id": "F8", "severity": "P1", "confidence": 0.93, "tiers": ["T1", "T2"], "repos": ["thehub-pr"], "summary": "federation-audit scanner JSX regex truncates at '=>'; 14/14 sampled TARGET_MISSING/UI_NO_OP are false positives; strict-scan resolved 0/1123; 7/7 manifest pins stale."},
+    {"id": "F9", "severity": "P1", "confidence": 0.95, "tiers": ["T1", "T2"], "repos": ["thehub-pr"], "summary": "Committed data/gui_parity_status.json (2026-08-21) reports passed=true for 3 producers that currently fail."},
+    {"id": "F10", "severity": "P2", "confidence": 0.95, "tiers": ["T2"], "repos": ["ovnis-pr"], "summary": "Dormant pr_grid_cell schema rejects 54,000/98,304 (54.9%) of the canonical grid it ships."},
+    {"id": "F11", "severity": "P2", "confidence": 0.85, "tiers": ["T1", "T2"], "repos": ["spiderweb-pr"], "summary": "Producer-local schema dialect shipped under hub canonical filenames."},
+    {"id": "F12", "severity": "P2", "confidence": 0.90, "tiers": ["T1"], "repos": ["spiderweb-pr", "thehub-pr"], "summary": "Shared-package pin f2b8176 lags hub; prii_desktop +33-line doctor hook unconsumed; other packages docs-only drift."},
+    {"id": "F13", "severity": "P2", "confidence": 0.90, "tiers": ["T2"], "repos": ["thehub-pr"], "summary": "1043 candidate correlation edges; 915 (87.7%) touch synthetic entities; 126 real-real edges are NAME_ONLY; 0 adjudicated."},
+    {"id": "F14", "severity": "P2", "confidence": 0.99, "tiers": ["T1"], "repos": ["all"], "summary": "71 open PRs (54 Dependabot) including majors eslint 10 (6 repos) and vitest 5 (4 repos)."}
+  ],
+  "blind_spots": [
+    "no live-network ingestion",
+    "federation_completion_gate.py not run (authenticated GitHub API)",
+    "runtime-certify, Playwright GUI harness, startup_completion_audit not run",
+    "frontend npm suites not run locally",
+    "shallow clones: 5/7 federation-audit pin distances unmeasurable",
+    "moneysweep parity delta grouped from first 100 of 314 items",
+    "moneysweep Tests (3.13) attribution inferred (0.90)"
+  ],
+  "lead_queue": ["L1 aguayluz-ovnis name co-location (spatial join required)", "L2 moneysweep municipality-only locations", "L3 centinelas zero relationships", "L4 overlap with ovnis-pr#157 / centinelas-pr#158", "L5 G0-G6 runtime certification"],
+  "foia_leads": []
+}
