@@ -62,8 +62,8 @@ succeed.
 Mutating routes are guarded by `require_write_access` in `server/backend/main.py`:
 
 - `PRII_WRITE_TOKEN` **set** → every mutating request needs `Authorization: Bearer <token>`
-- `PRII_WRITE_TOKEN` **unset** → writes are served to local-network clients
-  (loopback, RFC1918 private, link-local) and refused for public addresses
+- `PRII_WRITE_TOKEN` **unset** → every mutating request is refused (`503`,
+  fail-closed) — there is no exception for local-network callers
 
 Reads are never affected.
 

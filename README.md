@@ -147,12 +147,11 @@ writes) are guarded:
 | `PRII_WRITE_TOKEN` | Behaviour |
 |---|---|
 | set | every mutating request needs `Authorization: Bearer <token>` |
-| unset | writes served to local-network clients (loopback, RFC1918 private, link-local); **public addresses refused** |
+| unset | every mutating request is refused (`503`, fail-closed) — no exception for local-network callers |
 
-Reads are never affected. The private-range allowance is deliberate — under
-`docker compose up` the container sees the Docker bridge address, not `127.0.0.1`,
-so a loopback-only rule would refuse every write from the shipped UI. **Set the token
-before exposing this server beyond a trusted network.** Caveat: with the token set the
+Reads are never affected. **Set the token before writes are needed** — without it, there is
+no fallback that lets any caller (including loopback or the Docker bridge address under
+`docker compose up`) through. Caveat: with the token set the
 browser UI cannot currently supply it (see `docs/MATURITY_AUDIT.md`), so token mode
 suits API/CLI callers today.
 
