@@ -40,7 +40,7 @@
     "centinelas-pr": {"tests_declared_setup": "COLLECTION_ERROR", "tests_ci_deps": {"passed": 341, "failed": 0}, "export_canonical": "FAIL_STALE_LEDGER", "ledger_age_hours": 699.9, "max_age_hours": 168.0, "test_mode_package": "VALID", "declared_live": true, "ci_main_red": ["GUI capability parity"]}
   },
   "findings": [
-    {"id": "F1", "severity": "P0", "confidence": 0.97, "tiers": ["T1", "T2"], "repos": ["aguayluz-pr", "ovnis-pr", "skywatcher-pr", "centinelas-pr", "moneysweep-pr", "spiderweb-pr"], "summary": "GUI-capability-parity red on 5/6 producer mains since 2026-09-22 14:26-14:34Z; 3 unregistered ProgramTimeline.jsx controls per repo; moneysweep +314 analysis surfaces; spiderweb has no parity gate."},
+    {"id": "F1", "severity": "P0", "confidence": 0.97, "tiers": ["T1", "T2"], "repos": ["aguayluz-pr", "ovnis-pr", "skywatcher-pr", "centinelas-pr", "moneysweep-pr", "spiderweb-pr"], "summary": "GUI-capability-parity red on 5/6 producer mains since 2026-09-22 14:26-14:34Z; 3 unregistered ProgramTimeline.jsx controls per repo (moneysweep included, per its CI entrypoint; corrected from +314, see F15); spiderweb has no parity gate."},
     {"id": "F2", "severity": "P0", "confidence": 0.99, "tiers": ["T1", "T2"], "repos": ["moneysweep-pr"], "summary": "Committed prebuilt dashboard bundle stale after f3aaaad/5500f16; Tests and Contract Sweeper CI red on main."},
     {"id": "F3", "severity": "P0", "confidence": 0.98, "tiers": ["T1", "T2"], "repos": ["centinelas-pr", "thehub-pr"], "summary": "Declared ready_for_live but export_canonical fails: live ledger 699.9h old vs 168h max; no workflow refreshes it."},
     {"id": "F4", "severity": "P0", "confidence": 0.95, "tiers": ["T1", "T2"], "repos": ["spiderweb-pr"], "summary": "Declared PRODUCTION/live but export_canonical runs --mode test and emits 30/30 synthetic rows; real production path exists but is unwired."},
@@ -53,15 +53,26 @@
     {"id": "F11", "severity": "P2", "confidence": 0.85, "tiers": ["T1", "T2"], "repos": ["spiderweb-pr"], "summary": "Producer-local schema dialect shipped under hub canonical filenames."},
     {"id": "F12", "severity": "P2", "confidence": 0.90, "tiers": ["T1"], "repos": ["spiderweb-pr", "thehub-pr"], "summary": "Shared-package pin f2b8176 lags hub; prii_desktop +33-line doctor hook unconsumed; other packages docs-only drift."},
     {"id": "F13", "severity": "P2", "confidence": 0.90, "tiers": ["T2"], "repos": ["thehub-pr"], "summary": "1043 candidate correlation edges; 915 (87.7%) touch synthetic entities; 126 real-real edges are NAME_ONLY; 0 adjudicated."},
-    {"id": "F14", "severity": "P2", "confidence": 0.99, "tiers": ["T1"], "repos": ["all"], "summary": "71 open PRs (54 Dependabot) including majors eslint 10 (6 repos) and vitest 5 (4 repos)."}
+    {"id": "F14", "severity": "P2", "confidence": 0.99, "tiers": ["T1"], "repos": ["all"], "summary": "71 open PRs (54 Dependabot) including majors eslint 10 (6 repos) and vitest 5 (4 repos)."},
+    {"id": "F15", "severity": "P2", "confidence": 0.97, "tiers": ["T1", "T2"], "repos": ["thehub-pr"], "summary": "scripts/build_gui_parity_status.py runs each producer's base scripts/check_gui_parity.py and ignores repo CI entrypoints such as moneysweep's .federation/check_gui_parity_with_extensions.py (18 extension fragments), reporting 314 new surfaces where CI saw 3.", "added": "2026-09-24 correction"}
   ],
+  "corrections": [
+    {"date": "2026-09-24", "finding": "F1", "was": "moneysweep +314 analysis surfaces", "now": "moneysweep has the same 3 ProgramTimeline.jsx controls under its CI entrypoint", "cause": "hub rollup ran the base checker (F15)"}
+  ],
+  "remediation_status": {
+    "F1": {"aguayluz-pr": "fixed on main bd9e717 (#295)", "skywatcher-pr": "fixed on main 89f6b02 (#318)", "moneysweep-pr": "fixed on main ff708bc (#614)", "ovnis-pr": "PR jotaele44/ovnis-pr#159", "centinelas-pr": "PR jotaele44/centinelas-pr#160"},
+    "F2": {"moneysweep-pr": "fixed on main ff708bc (#614)"},
+    "F3": {"centinelas-pr": "PR jotaele44/centinelas-pr#160"},
+    "F4": {"spiderweb-pr": "PR jotaele44/spiderweb-pr#392"},
+    "F7": {"centinelas-pr": "PR jotaele44/centinelas-pr#160"}
+  },
   "blind_spots": [
     "no live-network ingestion",
     "federation_completion_gate.py not run (authenticated GitHub API)",
     "runtime-certify, Playwright GUI harness, startup_completion_audit not run",
     "frontend npm suites not run locally",
     "shallow clones: 5/7 federation-audit pin distances unmeasurable",
-    "moneysweep parity delta grouped from first 100 of 314 items",
+    "moneysweep parity delta originally measured with the base checker (corrected; see F15)",
     "moneysweep Tests (3.13) attribution inferred (0.90)"
   ],
   "lead_queue": ["L1 aguayluz-ovnis name co-location (spatial join required)", "L2 moneysweep municipality-only locations", "L3 centinelas zero relationships", "L4 overlap with ovnis-pr#157 / centinelas-pr#158", "L5 G0-G6 runtime certification"],

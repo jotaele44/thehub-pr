@@ -4,6 +4,7 @@
 **Vector status:** Closed. All five exhaustion steps are done: structural analysis, evidence expansion, contradiction testing, confidence scoring and blind-spot identification.
 **Mode:** Read-only and non-destructive. Every producer command ran on scratch copies of the checkouts, never on the checkouts themselves. No live network ingestion was triggered.
 **Machine-readable receipt:** [`reports/federation_max_audit_20260924.json`](../reports/federation_max_audit_20260924.json)
+**Corrections and post-publication status:** see [§9](#9-corrections-and-post-publication-status-2026-09-24).
 
 ### Audited baseline (`origin/main`)
 
@@ -73,7 +74,7 @@ The confidence score is the probability that the finding is real and correctly a
 
 **F1. GUI-capability-parity is red on 5 of 6 producer mains** (confidence 0.97; T1+T2)
 - aguayluz, ovnis, skywatcher and centinelas each have exactly **3 new unpaired controls**, all in `ProgramTimeline.jsx`: `GUI_NOT_BACKEND_WIRED: new unpaired candidate`.
-- moneysweep has **314 new** unpaired surfaces. This is not the timeline. It is accumulated `analysis_module` and `analysis_symbol` surfaces in recent `scripts/` additions, for example `finalize_guide_financial_freeze.py` and `build_source_drop_manifest.py`.
+- moneysweep has the **same 3** `ProgramTimeline.jsx` controls. *(Corrected 2026-09-24; see §9. This bullet originally said "314 new unpaired surfaces" of accumulated `analysis_module`/`analysis_symbol` debt. That figure came from the hub rollup running the base checker (F15). moneysweep's CI runs `.federation/check_gui_parity_with_extensions.py`, which merges 18 extension fragments, and with those fragments the delta is 3.)*
 - spiderweb has **no GUI-parity gate at all** (`no_gui_parity_gate`), so the same component landed there without any check.
 - CI evidence:
   - aguayluz run 35862093684 (`daf1f3e`)
@@ -159,6 +160,12 @@ The confidence score is the probability that the finding is real and correctly a
 - 71 PRs are open across the 7 repos. 54 are from Dependabot and 17 are human-authored.
 - The unmerged majors include eslint 10 (6 repos) and vitest 5 (4 repos), plus maplibre-gl 6, recharts 3 and react-router-dom 7.
 
+**F15. The hub GUI-parity rollup ignores each repo's own parity entrypoint** (confidence 0.97; T1+T2; added 2026-09-24 as a correction, see §9)
+- `scripts/build_gui_parity_status.py:82` always runs the producer's base `scripts/check_gui_parity.py`.
+- moneysweep's CI runs `.federation/check_gui_parity_with_extensions.py` instead. That wrapper appends the capabilities in `.federation/gui-capabilities.extensions/*.json` (18 fragments) before evaluating.
+- The rollup therefore reported moneysweep at 314 new unpaired surfaces when CI saw 3. The same skew feeds `data/gui_parity_status.json` (F9).
+- Fix: have the rollup prefer the repo's CI entrypoint (the wrapper when present), or read the command from the repo's `gui-capability-parity.yml`.
+
 ---
 
 ## 4. Producer matrix (T2: executed on scratch copies)
@@ -203,7 +210,7 @@ Declared-versus-observed **consistency**:
 - **`runtime-certify` (Docker shadow runtime, G0–G6), the Playwright GUI harness and `startup_completion_audit.py` were not run.** Docker and browser runs are out of scope for a non-destructive static-plus-suite audit. Isolated setup-then-test runs stand in for startup evidence.
 - **Frontend npm suites and lint were not run locally.** Their status is taken from CI.
 - **Shallow clones.** For 5 of the 7 federation-audit manifest pins, the distance to HEAD cannot be measured.
-- **moneysweep parity delta.** The checker printed only the first 100 of the 314 new surfaces, so the grouping in F1 is sampled.
+- **moneysweep parity delta.** *(Corrected; see §9.)* The original run used the base checker, which ignores moneysweep's extension fragments, and reported 314 new surfaces. The CI entrypoint `.federation/check_gui_parity_with_extensions.py` reports 3.
 - **moneysweep `Tests (3.13)` failure.** The log tail held only post-job cleanup. Attribution to F2 is inferred from identical pass/fail counts in `Contract Sweeper CI` plus the local reproduction (confidence 0.90).
 - **Setup fidelity.**
   - moneysweep was installed with `requirements-dev.txt` in addition to the declared `requirements.txt`, and `run_all.py --only-setup` was run separately (PASS).
@@ -214,7 +221,7 @@ Declared-versus-observed **consistency**:
 ## 7. Remediation order
 
 1. **moneysweep:** run `python3 scripts/build_prebuilt_dashboard.py --build` and commit the regenerated `desktop/prebuilt-dashboard/`. That returns `Tests` and `Contract Sweeper CI` to green (F2).
-2. **aguayluz, ovnis, skywatcher and centinelas:** register the 3 `ProgramTimeline.jsx` controls in each repo's GUI-parity manifest, or wire them. Triage the moneysweep 314-item analysis-surface delta. Add a parity gate to spiderweb (F1).
+2. **moneysweep, aguayluz, ovnis, skywatcher and centinelas:** register the 3 `ProgramTimeline.jsx` controls in each repo's GUI-parity manifest, or wire them. Add a parity gate to spiderweb (F1).
 3. **centinelas:** add a scheduled refresh of `data/signals/live_signals.jsonl`, or downgrade `ready_for_live` in both `federation.json` and `registry/producers.yaml` until one exists. Also add the server dependencies to the hub-callable `setup` (F3, F7).
 4. **spiderweb:** point `export_canonical` at the real-stream production path, or downgrade the declared live/production status (F4).
 5. **thehub:** make `validate-federation` fail any producer that declares live status but ships synthetic rows, and filter or flag synthetic rows in `aggregate`. Regenerate `data/gui_parity_status.json` and the fixture (F5, F9).
@@ -235,3 +242,26 @@ Declared-versus-observed **consistency**:
 | L5 | G0–G6 runtime certification under Docker. | The only route to `EXECUTABLE_CONFIRMED` classifications. | Low |
 
 No FOIA leads were generated by this vector.
+
+---
+
+## 9. Corrections and post-publication status (2026-09-24)
+
+### Correction
+
+- **F1 (moneysweep figure).** The original report said moneysweep carried 314 new unpaired GUI-parity surfaces. That number came from the hub rollup, which runs the base `scripts/check_gui_parity.py`. moneysweep's CI runs `.federation/check_gui_parity_with_extensions.py` instead, and that wrapper merges 18 extension fragments. Evaluated through the wrapper on the audited baseline `4b17ba7`, the new delta is **3**: the same `ProgramTimeline.jsx` controls as the other four repos. F1 therefore has one common cause across all five repos. The rollup defect is recorded as **F15**.
+
+### Remediation status
+
+| Finding | Repo | Status | Where |
+|---|---|---|---|
+| F1 | aguayluz-pr | Fixed on `main` | `bd9e717` (#295) added `ProgramTimeline.jsx` to `infrastructure-assets-and-map` |
+| F1 | skywatcher-pr | Fixed on `main` | `89f6b02` (#318) added it to `airspace-intelligence-console` |
+| F1 | moneysweep-pr | Fixed on `main` | `ff708bc` (#614) added it to `public-money-intelligence-dashboard` |
+| F2 | moneysweep-pr | Fixed on `main` | `ff708bc` (#614) regenerated `desktop/prebuilt-dashboard/`; 13 of 13 prebuilt-bundle tests pass |
+| F1 | ovnis-pr | PR open | [jotaele44/ovnis-pr#159](https://github.com/jotaele44/ovnis-pr/pull/159). Timeline plus two backend symbols added on `main` after the audit (`raw_candidates`, `partition_candidates`); ratchet 230 of 230 mapped; E2E 6 of 6 |
+| F1, F3, F7 | centinelas-pr | PR open | [jotaele44/centinelas-pr#160](https://github.com/jotaele44/centinelas-pr/pull/160). Refreshed ledger, daily `signal-ledger-refresh.yml`, self-sufficient `setup`, timeline registered |
+| F4 | spiderweb-pr | PR open | [jotaele44/spiderweb-pr#392](https://github.com/jotaele44/spiderweb-pr/pull/392). `export_canonical` now exports the committed `exports/real` streams in production mode: 874 rows, 0 synthetic, hub VALID |
+| F5–F15 except F7 | — | Open | Not in this remediation round |
+
+Once the centinelas-pr and spiderweb-pr PRs merge, `governance/producer_receipt_refs.json` must be re-pinned to their updated compatibility receipts.
