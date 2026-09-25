@@ -1,0 +1,178 @@
+[
+  {
+    "id_field": "entity_id",
+    "reason": "same_deterministic_id_different_payload",
+    "record_id": "ent_1c54305fd53cd0cdce4f088f098e8cf5",
+    "status": "UNRESOLVED",
+    "stream": "entities",
+    "variants": [
+      {
+        "producer": "aguayluz-pr",
+        "row": {
+          "confidence": 0.95,
+          "created_at": "2026-09-25T00:13:44Z",
+          "entity_id": "ent_1c54305fd53cd0cdce4f088f098e8cf5",
+          "entity_type": "municipality",
+          "extracted_at": "2026-09-25T00:13:44Z",
+          "jurisdiction": "PR",
+          "lineage": {
+            "extraction_method": "deterministic_asset_projection",
+            "producer_phase": "MUNICIPALITY_ENTITY",
+            "producer_script": "scripts/federation_export.py",
+            "source_inputs": [
+              "data/utility_assets.jsonl",
+              "data/service_events.jsonl",
+              "data/aee_incidents.jsonl",
+              "data/luma_live_incidents.jsonl"
+            ]
+          },
+          "name": "Vieques",
+          "normalized_name": "vieques",
+          "source_id": "src_7677bd76495568f8c7cc74b9c4fbaf29",
+          "synthetic": false
+        }
+      },
+      {
+        "producer": "ovnis-pr",
+        "row": {
+          "confidence": 0.95,
+          "created_at": "2026-06-23",
+          "entity_id": "ent_1c54305fd53cd0cdce4f088f098e8cf5",
+          "entity_type": "municipality",
+          "extracted_at": "2026-09-25T00:13:49Z",
+          "jurisdiction": "PR",
+          "lineage": {
+            "extraction_method": "deterministic_case_projection",
+            "producer_phase": "MUNICIPALITY_ENTITY",
+            "producer_script": "scripts/federation_export.py",
+            "source_inputs": [
+              "data/master/master_cases.jsonl"
+            ]
+          },
+          "name": "vieques",
+          "normalized_name": "vieques",
+          "source_id": "src_b30368e7984d5002c4940894993a28e3",
+          "synthetic": false
+        }
+      }
+    ]
+  },
+  {
+    "id_field": "entity_id",
+    "reason": "same_deterministic_id_different_payload",
+    "record_id": "ent_66377f6cefc1830ffea126b9e714f43d",
+    "status": "UNRESOLVED",
+    "stream": "entities",
+    "variants": [
+      {
+        "producer": "aguayluz-pr",
+        "row": {
+          "confidence": 0.95,
+          "created_at": "2026-09-25T00:13:44Z",
+          "entity_id": "ent_66377f6cefc1830ffea126b9e714f43d",
+          "entity_type": "municipality",
+          "extracted_at": "2026-09-25T00:13:44Z",
+          "jurisdiction": "PR",
+          "lineage": {
+            "extraction_method": "deterministic_asset_projection",
+            "producer_phase": "MUNICIPALITY_ENTITY",
+            "producer_script": "scripts/federation_export.py",
+            "source_inputs": [
+              "data/utility_assets.jsonl",
+              "data/service_events.jsonl",
+              "data/aee_incidents.jsonl",
+              "data/luma_live_incidents.jsonl"
+            ]
+          },
+          "name": "Aguadilla",
+          "normalized_name": "aguadilla",
+          "source_id": "src_4e1120169446b2daa448aeae29bd1a2c",
+          "synthetic": false
+        }
+      },
+      {
+        "producer": "skywatcher-pr",
+        "row": {
+          "confidence": 0.95,
+          "created_at": "2026-05-20T10:15:00Z",
+          "entity_id": "ent_66377f6cefc1830ffea126b9e714f43d",
+          "entity_type": "municipality",
+          "extracted_at": "2026-09-25T00:13:51Z",
+          "jurisdiction": "PR",
+          "lineage": {
+            "extraction_method": "deterministic_observation_projection",
+            "producer_phase": "MUNICIPALITY_ENTITY",
+            "producer_script": "scripts/federation_export.py",
+            "source_inputs": [
+              "observations.csv",
+              "sources.json"
+            ]
+          },
+          "name": "Aguadilla",
+          "normalized_name": "aguadilla",
+          "source_id": "src_56d53b687ef26c75b75ba2b547c2e87d",
+          "synthetic": true
+        }
+      }
+    ]
+  },
+  {
+    "id_field": "entity_id",
+    "reason": "same_deterministic_id_different_payload",
+    "record_id": "ent_80a6374f9866233edd568f5c8dfeb66d",
+    "status": "UNRESOLVED",
+    "stream": "entities",
+    "variants": [
+      {
+        "producer": "aguayluz-pr",
+        "row": {
+          "confidence": 0.95,
+          "created_at": "2026-09-25T00:13:44Z",
+          "entity_id": "ent_80a6374f9866233edd568f5c8dfeb66d",
+          "entity_type": "municipality",
+          "extracted_at": "2026-09-25T00:13:44Z",
+          "jurisdiction": "PR",
+          "lineage": {
+            "extraction_method": "deterministic_asset_projection",
+            "producer_phase": "MUNICIPALITY_ENTITY",
+            "producer_script": "scripts/federation_export.py",
+            "source_inputs": [
+              "data/utility_assets.jsonl",
+              "data/service_events.jsonl",
+              "data/aee_incidents.jsonl",
+              "data/luma_live_incidents.jsonl"
+            ]
+          },
+          "name": "San Juan",
+          "normalized_name": "san_juan",
+          "source_id": "src_7677bd76495568f8c7cc74b9c4fbaf29",
+          "synthetic": false
+        }
+      },
+      {
+        "producer": "skywatcher-pr",
+        "row": {
+          "confidence": 0.95,
+          "created_at": "2026-05-20T10:00:00Z",
+          "entity_id": "ent_80a6374f9866233edd568f5c8dfeb66d",
+          "entity_type": "municipality",
+          "extracted_at": "2026-09-25T00:13:51Z",
+          "jurisdiction": "PR",
+          "lineage": {
+            "extraction_method": "deterministic_observation_projection",
+            "producer_phase": "MUNICIPALITY_ENTITY",
+            "producer_script": "scripts/federation_export.py",
+            "source_inputs": [
+              "observations.csv",
+              "sources.json"
+            ]
+          },
+          "name": "San Juan",
+          "normalized_name": "san_juan",
+          "source_id": "src_a68dacbf6395fcd6fd65c2c2c219c0f6",
+          "synthetic": true
+        }
+      }
+    ]
+  }
+]
