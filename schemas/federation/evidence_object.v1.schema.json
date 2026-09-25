@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:prii:federation:evidence_object:v1",
+  "title": "FEDERATION_EVIDENCE_OBJECT_V1",
+  "description": "Candidate shared Evidence Object: one inspectable view of a Federation record that keeps data stage, epistemic class, identity, source, temporal, observation and geometry state separate and carries its lineage, contradictions, computations, interpretations and citations. The contract is the shared requirement; repositories need not store identical tables (directive §37). Status: CANDIDATE (not frozen). Canonical owner: thehub-pr. Reference projector: src/hub/evidence_object.py.",
+  "x-contract-id": "federation-evidence-object-v1",
+  "x-status": "CANDIDATE",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contract", "id", "canonical_type", "stream", "producer_repo", "producers", "producer_record_id", "title",
+    "raw_source_ids", "manifestations", "data_stage", "source_state", "source_state_basis",
+    "epistemic_class", "epistemic_class_basis", "identity_state", "identity_scope", "identity_basis",
+    "temporal_state", "temporal_state_basis", "temporal_precision", "temporal_basis",
+    "observation_state", "observation_state_basis", "geometry", "geometry_precision", "geometry_basis",
+    "area_reference", "valid_from", "valid_to", "observed_at", "retrieved_at", "synthetic", "confidence",
+    "lineage", "contradictions", "computations", "interpretations", "citations", "declaration_errors",
+    "audit_metadata"
+  ],
+  "properties": {
+    "contract": {"const": "federation-evidence-object-v1"},
+    "id": {"type": "string", "pattern": "^evo:[a-z_]+:.+$"},
+    "canonical_type": {"type": "string", "minLength": 1},
+    "stream": {"enum": ["sources", "entities", "relationships", "funding_awards", "transactions", "observations", "alerts", "correlations"]},
+    "producer_repo": {"type": "string", "minLength": 1},
+    "producers": {"type": "array", "items": {"type": "string"}},
+    "producer_record_id": {"type": "string", "minLength": 1},
+    "title": {"type": "string"},
+    "raw_source_ids": {"type": "array", "items": {"type": "string"}},
+    "manifestations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["producer_repo", "stream", "record_id"],
+        "properties": {
+          "producer_repo": {"type": "string"},
+          "stream": {"type": "string"},
+          "record_id": {"type": "string"}
+        }
+      }
+    },
+    "data_stage": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/data_stage"},
+    "source_state": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/source_state"},
+    "source_state_basis": {"type": "string"},
+    "epistemic_class": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/epistemic_class"},
+    "epistemic_class_basis": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/epistemic_class_basis"},
+    "identity_state": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/identity_state"},
+    "identity_scope": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/identity_scope"},
+    "identity_basis": {"type": "string"},
+    "temporal_state": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/temporal_state"},
+    "temporal_state_basis": {"type": "string"},
+    "temporal_precision": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/temporal_precision"},
+    "temporal_basis": {"type": "string"},
+    "observation_state": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/observation_state"},
+    "observation_state_basis": {"type": "string"},
+    "geometry": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["type", "coordinates"],
+          "properties": {
+            "type": {"const": "Point"},
+            "coordinates": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 3}
+          }
+        }
+      ]
+    },
+    "geometry_precision": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/geometry_precision"},
+    "geometry_basis": {"type": "string"},
+    "area_reference": {"type": ["string", "null"]},
+    "valid_from": {"type": ["string", "null"]},
+    "valid_to": {"type": ["string", "null"]},
+    "observed_at": {"type": ["string", "null"]},
+    "retrieved_at": {"type": ["string", "null"]},
+    "synthetic": {"type": "boolean"},
+    "confidence": {"type": ["number", "null"], "description": "Producer confidence, carried separately from every evidence-state axis."},
+    "lineage": {"$ref": "urn:prii:federation:evidence_lineage:v1"},
+    "contradictions": {"type": "array", "items": {"$ref": "#/$defs/contradiction"}},
+    "computations": {"type": "array", "items": {"$ref": "#/$defs/computation"}},
+    "interpretations": {"type": "array", "items": {"$ref": "#/$defs/interpretation"}},
+    "citations": {"type": "array", "items": {"$ref": "#/$defs/citation"}},
+    "declaration_errors": {"type": "array", "items": {"type": "string"}},
+    "audit_metadata": {
+      "type": "object",
+      "required": ["projector", "contract_status", "projected_at", "row_sha256"],
+      "properties": {
+        "projector": {"type": "string"},
+        "contract_status": {"const": "CANDIDATE"},
+        "projected_at": {"type": "string"},
+        "row_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  },
+  "$defs": {
+    "contradiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contradiction_id", "claim_a", "source_a", "claim_b", "source_b", "status", "adjudication", "rationale"],
+      "properties": {
+        "contradiction_id": {"type": "string", "minLength": 1},
+        "claim_a": {"type": "string"},
+        "source_a": {"type": ["string", "null"]},
+        "claim_b": {"type": "string"},
+        "source_b": {"type": ["string", "null"]},
+        "status": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/contradiction_state"},
+        "adjudication": {"type": ["string", "null"]},
+        "rationale": {"type": ["string", "null"]}
+      }
+    },
+    "computation": {
+      "type": "object",
+      "required": ["method", "producer"],
+      "properties": {
+        "method": {"type": "string"},
+        "producer": {"type": "string"},
+        "algorithm": {"type": ["string", "null"]},
+        "inputs": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "interpretation": {
+      "type": "object",
+      "required": ["basis"],
+      "properties": {"basis": {"type": "string", "minLength": 1}, "author": {"type": ["string", "null"]}}
+    },
+    "citation": {
+      "type": "object",
+      "required": ["source_id"],
+      "properties": {
+        "source_id": {"type": "string"},
+        "title": {"type": ["string", "null"]},
+        "url": {"type": ["string", "null"]},
+        "source_state": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/source_state"}
+      }
+    }
+  }
+}
