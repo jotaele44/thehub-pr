@@ -192,3 +192,13 @@ without the CLI.
 ## Status docs
 
 See [docs/FEDERATION_STATUS.md](docs/FEDERATION_STATUS.md) for gap-closure status and [ARCHITECTURE.md](ARCHITECTURE.md) for topology, node roles, and producer registration protocol.
+
+<!-- PROJECT-OPERATING-CONTRACT:START -->
+## Current development and certification contract
+
+TheHub is the federation control plane, validation authority, evidence explorer, package ingester, cross-producer correlation layer, and reproducible reporting surface. Producers retain domain authority; TheHub must never replace producer facts with normalization guesses.
+
+**Federation rules:** every package/revision keeps producer ID, exact source revision when verifiable, schema/contract version, record counts, checksums, generated/ingested times, validation state, provenance, and supersession lineage. Correlation is neither canonical identity nor causation. Cross-repo bindings preserve producer IDs and evidence. Readiness is computed from explicit code/runtime/source/data/package/hosted-product gates, not repository presence or package count.
+
+**Current vector:** close persisted materialization, authenticated role E2E where required, final desktop rendered evidence, hosting/publish blockers, producer-consumer receipts, and downstream release freeze. Federation certification requires frozen producer inputs, explicit inclusion/exclusion, validated IDs, closed package and ingest arithmetic, contradiction/supersession preservation, positive/negative regressions, reproducible outputs, and zero material unresolved residue within the declared federation scope.
+<!-- PROJECT-OPERATING-CONTRACT:END -->
