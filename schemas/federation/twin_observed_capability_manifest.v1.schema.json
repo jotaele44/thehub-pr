@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:prii:federation:twin_observed_capability_manifest:v1",
+  "title": "TWIN_OBSERVED_CAPABILITY_MANIFEST_V1",
+  "description": "Every element observed in the Twin reference application, each with one explicit Federation disposition. The observed denominator is closed at 223 by hub.twin_manifest; Federation-derived extensions live in a separate manifest and are never counted here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_id", "schema_version", "reference_application", "owner", "census_source", "evidence_status_rules", "delivery_state_rules", "live_bundle_corroboration", "unrecorded_bundle_modules", "capabilities", "reconciliation"],
+  "properties": {
+    "manifest_id": {"const": "TWIN_OBSERVED_CAPABILITY_MANIFEST_V1"},
+    "schema_version": {"const": "twin_observed_capability_manifest_v1"},
+    "reference_application": {"const": "twin.parapsychlab.io"},
+    "owner": {"const": "thehub-pr"},
+    "census_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "description", "claim_boundary", "evidence_tier"],
+      "properties": {
+        "kind": {"const": "USER_SUPPLIED_FRAME_CENSUS"},
+        "description": {"type": "string", "minLength": 1},
+        "claim_boundary": {"type": "string", "minLength": 1},
+        "evidence_tier": {"enum": ["T1", "T2", "T3", "T4"]}
+      }
+    },
+    "evidence_status_rules": {"type": "object", "additionalProperties": {"type": "string"}},
+    "delivery_state_rules": {"type": "object", "additionalProperties": {"type": "string"}},
+    "live_bundle_corroboration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["captured_at", "origin", "evidence_tier", "rule", "files"],
+      "properties": {
+        "captured_at": {"type": "string", "format": "date-time"},
+        "origin": {"type": "string"},
+        "evidence_tier": {"enum": ["T1", "T2", "T3", "T4"]},
+        "rule": {"type": "string"},
+        "files": {"type": "object", "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+      }
+    },
+    "unrecorded_bundle_modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["file", "observed_labels", "interpretation", "evidence_status", "counted_in_denominator"],
+        "properties": {
+          "file": {"type": "string"},
+          "observed_labels": {"type": "array", "items": {"type": "string"}},
+          "interpretation": {"type": "string"},
+          "evidence_status": {"const": "NOT_OBSERVED"},
+          "counted_in_denominator": {"const": false}
+        }
+      }
+    },
+    "capabilities": {"type": "array", "items": {"$ref": "#/$defs/capability"}},
+    "reconciliation": {"type": "object"}
+  },
+  "$defs": {
+    "repo": {"enum": ["thehub-pr", "ovnis-pr", "spiderweb-pr", "skywatcher-pr", "aguayluz-pr", "moneysweep-pr"]},
+    "gui_home": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repo", "route", "status"],
+      "properties": {
+        "repo": {"const": "thehub-pr"},
+        "route": {"type": "string", "pattern": "^/"},
+        "status": {"enum": ["EXISTS", "PLANNED"]},
+        "view": {"type": "string", "minLength": 1}
+      }
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_id", "census_number", "reference", "family", "element", "twin_behavior", "evidence_status", "canonical_repo", "producer", "consumers", "existing_equivalent", "implementation_status", "canonical_gui_home", "producer_diagnostic_gui", "phase", "delivery_state", "tests", "notes", "live_bundle_corroboration"],
+      "properties": {
+        "capability_id": {"type": "string", "pattern": "^TWIN-[0-9]{3}$"},
+        "census_number": {"type": "integer", "minimum": 1},
+        "reference": {"const": "TWIN"},
+        "family": {"type": "string", "minLength": 1},
+        "element": {"type": "string", "minLength": 1},
+        "twin_behavior": {"description": "The census 'function/behaviour' column where the census supplied one.", "type": ["string", "null"]},
+        "evidence_status": {"enum": ["RECORDED", "LIVE_VERIFIED", "INFERRED_FROM_LABEL"]},
+        "canonical_repo": {"$ref": "#/$defs/repo"},
+        "producer": {"$ref": "#/$defs/repo"},
+        "consumers": {"type": "array", "items": {"$ref": "#/$defs/repo"}, "uniqueItems": true},
+        "existing_equivalent": {"type": ["string", "null"]},
+        "implementation_status": {"enum": ["EXISTING", "EXTEND", "NEW", "NOT_APPLICABLE", "BLOCKED"]},
+        "canonical_gui_home": {"$ref": "#/$defs/gui_home"},
+        "producer_diagnostic_gui": {"type": ["string", "null"]},
+        "phase": {"type": "integer", "minimum": 1, "maximum": 10},
+        "delivery_state": {"enum": ["ALREADY_PRESENT", "SCHEDULED_THIS_RUN", "PARTIAL_THIS_RUN", "IMPLEMENTED_THIS_RUN", "DEFERRED", "BLOCKED", "NOT_APPLICABLE"]},
+        "tests": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "notes": {"type": ["string", "null"]},
+        "rationale": {"type": "string", "minLength": 1},
+        "blocker": {"type": "string", "minLength": 1},
+        "search_terms_without_equivalent": {"type": "array", "items": {"type": "string"}},
+        "live_bundle_corroboration": {
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["file", "label"],
+          "properties": {"file": {"type": "string"}, "label": {"type": "string"}}
+        }
+      }
+    }
+  }
+}
