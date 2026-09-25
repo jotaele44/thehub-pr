@@ -1,0 +1,80 @@
+{
+  "schema_version": "prii.gui-capability/v1",
+  "repository": "jotaele44/thehub-pr",
+  "policy": {
+    "mode": "ratchet",
+    "baseline": ".federation/gui-parity-baseline.json",
+    "require_discoverable_gui": true,
+    "require_e2e": true,
+    "terminal_free_user_path": true
+  },
+  "discovery": {
+    "backend_roots": [
+      "server/backend"
+    ],
+    "production_roots": [
+      "src/hub",
+      "src/control_plane",
+      "src/evidence_engine",
+      "src/intelligence_engine"
+    ],
+    "analysis_roots": [
+      "scripts"
+    ],
+    "frontend_roots": [
+      "server/frontend/src"
+    ],
+    "frontend_capability_roots": [
+      "server/frontend/src/pages"
+    ],
+    "frontend_api_roots": [
+      "server/frontend/src/api"
+    ],
+    "route_files": [
+      "server/frontend/src/App.jsx"
+    ],
+    "navigation_files": [
+      "server/frontend/src/lib/nav.js",
+      "server/frontend/src/components/layout/Sidebar.jsx",
+      "server/frontend/src/components/layout/MobileNav.jsx"
+    ],
+    "implicit_routes": [],
+    "exclude": [
+      "**/tests/**",
+      "**/test/**",
+      "**/*.test.*",
+      "**/*.spec.*",
+      "**/components/ui/**",
+      "scripts/check_gui_parity.py"
+    ]
+  },
+  "capabilities": [
+    {
+      "id": "twin-capability-census-validator",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "CI/governance validator for the Twin observed and Federation-derived capability manifests (directive \u00a735 exception 1: internal build/developer utility). It checks committed governance data; it is not an operator workflow.",
+      "analysis": {
+        "files": [
+          "scripts/validate_twin_manifests.py",
+          "src/hub/twin_manifest.py"
+        ],
+        "symbols": [
+          "scripts/validate_twin_manifests.py:main",
+          "src/hub/twin_manifest.py:check_repo",
+          "src/hub/twin_manifest.py:validate_observed",
+          "src/hub/twin_manifest.py:validate_derived",
+          "src/hub/twin_manifest.py:reconcile_observed",
+          "src/hub/twin_manifest.py:reconcile_derived"
+        ]
+      },
+      "tests": {
+        "contract": [
+          "tests/test_twin_capability_manifests.py"
+        ]
+      }
+    }
+  ],
+  "exceptions": []
+}
