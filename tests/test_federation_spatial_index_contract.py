@@ -168,6 +168,16 @@ def test_snapshot_reports_provisional_certification_honestly() -> None:
     assert TRANSFORM_SNAPSHOT["certification_state"] == "PROVISIONAL"
     assert TRANSFORM_SNAPSHOT["documented_bounds"]["status"] == "DOCUMENTED_UNVERIFIED"
     assert TRANSFORM_SNAPSHOT["parameter_provenance"] == "FITTED"
+    assert TRANSFORM_SNAPSHOT["provenance_evidence"]["authoritative_parameters_recovered"] is False
+    assert TRANSFORM_SNAPSHOT["provenance_evidence"]["independent_spike_state"] == "FAIL_KILL_CRITERIA"
+
+
+def test_provisional_snapshot_forbids_exact_cell_location_claims() -> None:
+    policy = TRANSFORM_SNAPSHOT["uncertainty_policy"]
+    assert policy["exact_cell_claims_permitted"] is False
+    assert policy["cell_set_required"] is True
+    assert policy["discovery_radius_km"] > 0
+    assert policy["radius_semantics"] == "CONSERVATIVE_DISCOVERY_ENVELOPE_NOT_CONFIDENCE_INTERVAL"
 
 
 def test_hub_mirrors_manifests_but_not_geometry_bytes() -> None:
