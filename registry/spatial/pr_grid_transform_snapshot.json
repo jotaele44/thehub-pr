@@ -23,7 +23,7 @@
       ],
       "metrics": {
         "anisotropy": 0.5214285714285707,
-        "cell_count": 794.0,
+        "cell_count": 794,
         "implied_lat_span_deg": 0.2965625000000003,
         "implied_lon_span_deg": 1.7937499999999886,
         "lat_span_error": 0.5315175632041544,
@@ -45,6 +45,20 @@
   "grid_version": "pr_grid_full_cell_index_saturated_v1",
   "mirrored_from": "spiderweb-pr",
   "model": "plate_carree_wgs84_to_scale",
-  "note": "Read-only snapshot. Only the geometry authority may publish canonical geometry. Consumers must honour certification_state: while PROVISIONAL, no cell-to-source binding may be promoted and no Cell_ID may be treated as a certified location.",
-  "parameter_provenance": "FITTED"
+  "note": "Read-only control-plane snapshot. Only Spiderweb may publish canonical geometry. While PROVISIONAL, coordinate-derived membership must preserve the full producer Cell_Set; no single Cell_ID or Anchor_Cell_ID is a certified location.",
+  "parameter_provenance": "FITTED",
+  "producer_change": "jotaele44/spiderweb-pr#393",
+  "provenance_evidence": {
+    "authoritative_parameters_recovered": false,
+    "bounded_exhaustion": "evidence/federation/grid_transform_provenance_exhaustion_2026-09-27.json",
+    "independent_spike": "evidence/federation/grid_transform_independent_spike_2026-09-27.json",
+    "independent_spike_state": "FAIL_KILL_CRITERIA"
+  },
+  "uncertainty_policy": {
+    "exact_cell_claims_permitted": false,
+    "cell_set_required": true,
+    "discovery_radius_km": 22.4996762572509,
+    "radius_basis": "FITTED_CONTROL_P90_DISCOVERY_ENVELOPE",
+    "radius_semantics": "CONSERVATIVE_DISCOVERY_ENVELOPE_NOT_CONFIDENCE_INTERVAL"
+  }
 }
