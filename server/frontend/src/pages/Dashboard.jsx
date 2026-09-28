@@ -19,7 +19,7 @@ import { LayoutDashboard, FileStack, BookOpen, ListChecks, ShieldCheck, GitBranc
 import { Link } from "react-router-dom";
 
 const PROGRAM_TIMELINE = [
-  { id:"hub-receipts", phase:"NOW", title:"LOCKSTEP receipts", detail:"Collect producer receipts and current manifests without collapsing producer authority.", category:"Federation", href:"/history" },
+  { id:"hub-receipts", phase:"NOW", title:"LOCKSTEP receipts", detail:"Collect producer receipts and current manifests without collapsing producer authority.", category:"Federation", href:"/activity" },
   { id:"hub-freshness", phase:"NEXT", title:"Producer freshness", detail:"Verify current producer heads, freshness windows, and source manifestation lineage.", category:"Provenance", href:"/programs" },
   { id:"hub-contradictions", phase:"NEXT", title:"Contradiction adjudication", detail:"Preserve conflicting observations and close the narrowest authoritative adjudication path.", category:"Evidence", href:"/cases" },
   { id:"hub-pipeline", phase:"QUEUED", title:"Federation pipeline closure", detail:"Recompute buildable and certification denominators after producer-side gates close.", category:"Pipeline", href:"/tasks" },
