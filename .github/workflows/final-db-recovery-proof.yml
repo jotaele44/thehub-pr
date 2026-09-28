@@ -1,0 +1,56 @@
+name: Final DB recovery proof
+
+on:
+  push:
+    branches: [chatgpt/federation-db-credential-freeze-20260928]
+    paths:
+      - .github/workflows/final-db-recovery-proof.yml
+      - registry/final-closure/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sqlite-backup-restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: pip install -e ".[dev]" httpx -r server/backend/requirements.txt
+      - name: Targeted backup and restore regressions
+        run: |
+          pytest -q \
+            tests/test_federation_transactions.py::test_sqlite_failure_after_commit_restores_from_the_backup \
+            tests/test_federation_operations_e2e.py
+      - name: Record scoped receipt
+        run: |
+          mkdir -p artifacts/final-closure
+          python - <<'PY'
+          import hashlib, json, pathlib
+          paths=[
+            "server/backend/federation_manager_transactions.py",
+            "tests/test_federation_transactions.py",
+            "tests/test_federation_operations_e2e.py",
+          ]
+          files=[]
+          for p in paths:
+            b=pathlib.Path(p).read_bytes()
+            files.append({"path":p,"bytes":len(b),"sha256":hashlib.sha256(b).hexdigest()})
+          out={
+            "schema":"thehub-sqlite-backup-restore-proof/v1",
+            "state":"PASS_IF_JOB_GREEN",
+            "scope":"GitHub backend managed SQLite only",
+            "floot_postgres_in_scope":False,
+            "files":files,
+          }
+          pathlib.Path("artifacts/final-closure/thehub-sqlite-backup-restore-proof.json").write_text(json.dumps(out,indent=2)+"\n")
+          PY
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: thehub-sqlite-backup-restore-proof
+          path: artifacts/final-closure/thehub-sqlite-backup-restore-proof.json
