@@ -1,0 +1,90 @@
+{
+  "schema_version": "federation_record_cell_binding_v0_2_migration_receipt/1.0",
+  "date_utc": "2026-09-27",
+  "authority": {
+    "repository": "jotaele44/spiderweb-pr",
+    "commit": "bb8463c8d8cf4b54486674ee9b665ce3d2502e8b",
+    "grid_sha256": "17733f3f18c8a644e31c1eb25fb27b73b4bf353c6de57d5203c4311e05d64483",
+    "independent_control_sha256": "92b167ed014bd938d6b5d95bdb7187f45e4c3483a544e1649170155a9c5bd082",
+    "certification_state": "PROVISIONAL",
+    "independent_reconstruction_state": "FAIL_KILL_CRITERIA",
+    "authoritative_parameters_recovered": false
+  },
+  "canonical_schema": {
+    "contract": "record_cell_binding@2",
+    "git_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+    "source_path": "spiderweb-pr/schemas/record_cell_binding.v0.2.schema.json",
+    "byte_identity_state": "PASS_ALL_MIRRORS_SAME_GIT_BLOB"
+  },
+  "consumers": [
+    {
+      "repository": "moneysweep-pr",
+      "head": "19a4815e7e2d228bac0f24a6ba22854a1a3a76fb",
+      "registry_blob_sha": "9cbb7de8dc124c978680c1f48f66eaa20535fd43",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "compatibility_receipt_blob_sha": "1b95d2c186614c11d5df52ece88e6649cbe3ff3a"
+    },
+    {
+      "repository": "aguayluz-pr",
+      "head": "3f9cf81e77ef0dec7d8cda81f8d8ded18109219a",
+      "registry_blob_sha": "f3e1b3d16cd47fe31214aed232d67a3a4adc9a98",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "compatibility_receipt_blob_sha": "c566ad5efa86fb6f9ed4721b45e7b67de0afd10d"
+    },
+    {
+      "repository": "skywatcher-pr",
+      "head": "211b39725452c0ec5b61600a1de3943fbf5279d8",
+      "registry_blob_sha": "2f2095a2d1964d21aa0d0cf9e18ba424a9f9d7ba",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "compatibility_receipt_blob_sha": "4865b9fed791a5ee8e028ffde0cf93d80e0be274"
+    },
+    {
+      "repository": "ovnis-pr",
+      "head": "ecfe25114b9a83ac72916c37716b7e38443bffe2",
+      "registry_blob_sha": "d625c50fefb609c5ace3028f1e031848bb0964fd",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "compatibility_receipt_blob_sha": "08fcb6c0c8f5de5eea452fa5eaa5acf79f332cbe"
+    },
+    {
+      "repository": "centinelas-pr",
+      "head": "d662949441b2130483dcc2ef31ba69446cdd772b",
+      "registry_blob_sha": "bcb31f8578b6b7019b413b81ff6f27dc41680b74",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "compatibility_receipt_blob_sha": "d17546c1b485ff485f52331436ff61add23cad29"
+    },
+    {
+      "repository": "thehub-pr",
+      "head_before_receipt": "5c0809782aa008563626787f1a3d42a018df7bc7",
+      "transform_snapshot_blob_sha": "53548c3e889fa40fb41779b0e06c810ea3642abc",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "generation_blob_sha": "fa846edc2fde9f4b93144a88e7c228fff7272355"
+    }
+  ],
+  "contract_artifact_regression": {
+    "denominator": 6,
+    "passed": 6,
+    "failed": 0,
+    "checks": [
+      "contract_v2",
+      "PROVISIONAL retained",
+      "exact Cell_ID forbidden",
+      "Cell_Set required",
+      "full candidate set preserved",
+      "CANDIDATE_NOT_IDENTITY retained",
+      "discovery envelope non-probabilistic",
+      "failed independent spike bound"
+    ],
+    "state": "PASS"
+  },
+  "full_repository_test_execution": {
+    "state": "AUDIT_ONLY",
+    "reason": "No combined CI status checks were published for the direct-push migration heads. Contract artifacts and negative/positive gates were validated directly, but repository-wide pytest/CI execution is not represented by this receipt."
+  },
+  "federation_generation": {
+    "state": "CLOSED",
+    "blocking_repositories": [],
+    "control_plane": "thehub-pr",
+    "geometry_authority": "spiderweb-pr"
+  },
+  "promotion_rule": "GRID TRANSFORM VERIFIED remains forbidden unless future authoritative evidence closes all material transform residue. Until then PROVISIONAL + uncertainty Cell_Set semantics are binding."
+}
