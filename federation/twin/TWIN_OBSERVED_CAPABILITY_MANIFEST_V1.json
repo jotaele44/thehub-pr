@@ -100,7 +100,9 @@
       "producer_diagnostic_gui": null,
       "phase": 1,
       "delivery_state": "ALREADY_PRESENT",
-      "tests": [],
+      "tests": [
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
       "notes": null,
       "live_bundle_corroboration": null
     },
@@ -584,7 +586,9 @@
       "producer_diagnostic_gui": null,
       "phase": 1,
       "delivery_state": "ALREADY_PRESENT",
-      "tests": [],
+      "tests": [
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
       "notes": null,
       "live_bundle_corroboration": null
     },
@@ -610,8 +614,10 @@
       "producer_diagnostic_gui": null,
       "phase": 1,
       "delivery_state": "ALREADY_PRESENT",
-      "tests": [],
-      "notes": null,
+      "tests": [
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 1 found (Playwright, tablet 768px) that AppLayout's fixed notification bell covered the mobile menu trigger, so the responsive rail could not be opened by pointer/touch; fixed in MobileNav.jsx and covered by the shell parity E2E at desktop and tablet widths.",
       "live_bundle_corroboration": null
     },
     {

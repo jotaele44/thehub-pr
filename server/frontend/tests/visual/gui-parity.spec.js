@@ -25,14 +25,15 @@ test.describe('federation shell', () => {
   test('primary navigation rail is present and marks the active module', async ({ page }) => {
     await mockApi(page);
     await page.goto('/sources', { waitUntil: 'networkidle' });
-    const nav = page.getByRole('navigation', { name: 'Primary' }).first();
+    // Below the lg breakpoint the rail collapses into the responsive mobile menu.
+    const menu = page.getByRole('button', { name: 'Open navigation menu' });
+    if (await menu.isVisible()) await menu.click();
+    const nav = page.locator('nav[aria-label="Primary"]:visible').first();
     await expect(nav).toBeVisible();
     const active = nav.getByRole('link', { name: 'Sources' });
     await expect(active).toHaveClass(/bg-sidebar-accent/);
   });
 });
-
-
 
 test.describe('provenance inspector', () => {
   test('is reachable from a producer workspace record and renders the evidence object', async ({ page }) => {
