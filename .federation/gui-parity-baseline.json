@@ -1,5 +1,5 @@
 {
-  "candidate_count": 1174,
+  "candidate_count": 1175,
   "candidates": [
     {
       "id": "analysis_module:scripts/adjudicate_htr_census.py",
@@ -1142,7 +1142,7 @@
     {
       "id": "analysis_symbol:scripts/federation_spatial_contract.py:compatibility_receipt",
       "kind": "analysis_symbol",
-      "line": 65,
+      "line": 66,
       "path": "scripts/federation_spatial_contract.py",
       "signal": "ANALYSIS_NOT_GUI_RENDERED",
       "symbol": "compatibility_receipt"
@@ -1150,7 +1150,7 @@
     {
       "id": "analysis_symbol:scripts/federation_spatial_contract.py:determine",
       "kind": "analysis_symbol",
-      "line": 73,
+      "line": 74,
       "path": "scripts/federation_spatial_contract.py",
       "signal": "ANALYSIS_NOT_GUI_RENDERED",
       "symbol": "determine"
@@ -1158,7 +1158,7 @@
     {
       "id": "analysis_symbol:scripts/federation_spatial_contract.py:main",
       "kind": "analysis_symbol",
-      "line": 128,
+      "line": 130,
       "path": "scripts/federation_spatial_contract.py",
       "signal": "ANALYSIS_NOT_GUI_RENDERED",
       "symbol": "main"
@@ -3275,7 +3275,7 @@
       "detail": "button#24455789f11f",
       "id": "gui_control:server/frontend/src/components/ProgramTimeline.jsx:button#24455789f11f",
       "kind": "gui_control",
-      "line": 41,
+      "line": 43,
       "path": "server/frontend/src/components/ProgramTimeline.jsx",
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
@@ -3283,7 +3283,7 @@
       "detail": "button#d1a223462e45",
       "id": "gui_control:server/frontend/src/components/ProgramTimeline.jsx:button#d1a223462e45",
       "kind": "gui_control",
-      "line": 43,
+      "line": 45,
       "path": "server/frontend/src/components/ProgramTimeline.jsx",
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
@@ -3291,7 +3291,7 @@
       "detail": "input#f0f71e9142cd",
       "id": "gui_control:server/frontend/src/components/ProgramTimeline.jsx:input#f0f71e9142cd",
       "kind": "gui_control",
-      "line": 49,
+      "line": 51,
       "path": "server/frontend/src/components/ProgramTimeline.jsx",
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
@@ -8830,10 +8830,18 @@
     {
       "id": "python_symbol:src/hub/spatial.py:validate_cell_profile",
       "kind": "python_symbol",
-      "line": 224,
+      "line": 284,
       "path": "src/hub/spatial.py",
       "signal": "BACKEND_NOT_GUI_SURFACED",
       "symbol": "validate_cell_profile"
+    },
+    {
+      "id": "python_symbol:src/hub/spatial.py:validate_record_cell_binding_v0_2",
+      "kind": "python_symbol",
+      "line": 224,
+      "path": "src/hub/spatial.py",
+      "signal": "BACKEND_NOT_GUI_SURFACED",
+      "symbol": "validate_record_cell_binding_v0_2"
     },
     {
       "id": "python_symbol:src/hub/spatial.py:validate_spatial_feature",
@@ -8956,13 +8964,13 @@
       "symbol": "ActiveSnapshotReader"
     }
   ],
-  "generated_at": "2026-09-25T15:38:20+00:00",
+  "generated_at": "2026-09-28T03:01:42+00:00",
   "manifest_sha256": "a5d4edabfc95b788b3bad6705c8d2af88681ac5c38239cce8c0ec1784ce153c9",
   "repository": "jotaele44/thehub-pr",
   "schema_version": "prii.gui-parity-baseline/v1",
   "signal_counts": {
     "ANALYSIS_NOT_GUI_RENDERED": 337,
-    "BACKEND_NOT_GUI_SURFACED": 573,
+    "BACKEND_NOT_GUI_SURFACED": 574,
     "DEAD_CONTROL": 5,
     "GUI_NOT_BACKEND_WIRED": 222,
     "GUI_WORKFLOW_UNREACHABLE": 1,
