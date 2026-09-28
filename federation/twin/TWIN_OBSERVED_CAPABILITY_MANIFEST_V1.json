@@ -666,9 +666,16 @@
       },
       "producer_diagnostic_gui": null,
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
-      "tests": [],
-      "notes": "Evidence Object carries `synthetic`; UNCLASSIFIED sentinel prevents silent class assignment. Audit F5 (no synthetic-row gate for producers declaring live) remains open.",
+      "delivery_state": "PARTIAL_THIS_RUN",
+      "tests": [
+        "tests/test_epistemic_state.py",
+        "tests/test_evidence_object.py",
+        "tests/test_evidence_api.py",
+        "server/frontend/src/lib/evidenceState.test.js",
+        "server/frontend/src/components/evidence/ProvenanceInspector.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Evidence Object carries `synthetic`; UNCLASSIFIED sentinel prevents silent class assignment. Audit F5 (no synthetic-row gate for producers declaring live) remains open. Run 1 (PR-1): synthetic flag and UNCLASSIFIED sentinel on every Evidence Object. Remaining in run 1: search excludes synthetic rows by default (Phase 3).",
       "live_bundle_corroboration": null
     },
     {
@@ -693,13 +700,20 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/evidence/:collection/:id",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": null,
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
-      "tests": [],
-      "notes": "Closest existing vocabularies (claim_ledger.v1 FACT/INFERENCE/HYPOTHESIS; design-system epistemic states) are a different axis and are crosswalked, not replaced.",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
+      "tests": [
+        "tests/test_epistemic_state.py",
+        "tests/test_evidence_object.py",
+        "tests/test_evidence_api.py",
+        "server/frontend/src/lib/evidenceState.test.js",
+        "server/frontend/src/components/evidence/ProvenanceInspector.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Closest existing vocabularies (claim_ledger.v1 FACT/INFERENCE/HYPOTHESIS; design-system epistemic states) are a different axis and are crosswalked, not replaced. Implemented as FEDERATION_EPISTEMIC_STATE_CONTRACT_V1 (candidate); producer declarations populate it from Wave 2, until then rows render UNCLASSIFIED.",
       "search_terms_without_equivalent": [
         "search",
         "command palette",
@@ -737,12 +751,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/evidence/:collection/:id",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": null,
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
-      "tests": [],
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
+      "tests": [
+        "tests/test_epistemic_state.py",
+        "tests/test_evidence_object.py",
+        "tests/test_evidence_api.py",
+        "server/frontend/src/lib/evidenceState.test.js",
+        "server/frontend/src/components/evidence/ProvenanceInspector.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
       "notes": "Federation rendering pairs colour with text label and icon (INTELLIGENCE_UI_ARCHITECTURE_V1: never colour-only).",
       "search_terms_without_equivalent": [
         "search",
@@ -843,12 +864,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/evidence/:collection/:id",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": null,
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
-      "tests": [],
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
+      "tests": [
+        "tests/test_epistemic_state.py",
+        "tests/test_evidence_object.py",
+        "tests/test_evidence_api.py",
+        "server/frontend/src/lib/evidenceState.test.js",
+        "server/frontend/src/components/evidence/ProvenanceInspector.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
       "notes": null,
       "search_terms_without_equivalent": [
         "search",
@@ -2675,14 +2703,20 @@
       "implementation_status": "NEW",
       "canonical_gui_home": {
         "repo": "thehub-pr",
-        "route": "/gis",
-        "status": "PLANNED",
-        "view": "interpretive-layers"
+        "route": "/evidence/:collection/:id",
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": null,
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
-      "tests": [],
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
+      "tests": [
+        "tests/test_epistemic_state.py",
+        "tests/test_evidence_object.py",
+        "tests/test_evidence_api.py",
+        "server/frontend/src/lib/evidenceState.test.js",
+        "server/frontend/src/components/evidence/ProvenanceInspector.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
       "notes": null,
       "search_terms_without_equivalent": [
         "search",
@@ -7917,8 +7951,10 @@
       "ALREADY_PRESENT": 14,
       "BLOCKED": 4,
       "DEFERRED": 179,
+      "IMPLEMENTED_THIS_RUN": 4,
       "NOT_APPLICABLE": 5,
-      "SCHEDULED_THIS_RUN": 21
+      "PARTIAL_THIS_RUN": 1,
+      "SCHEDULED_THIS_RUN": 16
     },
     "census_closed": true
   }

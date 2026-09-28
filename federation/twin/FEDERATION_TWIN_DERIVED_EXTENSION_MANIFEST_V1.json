@@ -19,7 +19,7 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
       "aliases": [],
       "notes": null
     },
@@ -34,7 +34,7 @@
       "existing_equivalent": "thehub-pr schemas/common/lineage.schema.json; schemas/contracts/federation_provenance.v1.schema.json",
       "implementation_status": "EXTEND",
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
       "aliases": [],
       "notes": null
     },
@@ -49,7 +49,7 @@
       "existing_equivalent": "thehub-pr server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx (Evidence inspector)",
       "implementation_status": "EXTEND",
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
       "aliases": [],
       "notes": null
     },
@@ -64,7 +64,7 @@
       "existing_equivalent": "thehub-pr docs/INTELLIGENCE_UI_ARCHITECTURE_V1.md six axes; thehub-pr server/frontend/src/lib/intelligenceAdapters.js forensicAxes()",
       "implementation_status": "EXTEND",
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
       "aliases": [],
       "notes": null
     },
@@ -94,7 +94,7 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
       "aliases": [],
       "notes": null
     },
@@ -141,7 +141,7 @@
       "existing_equivalent": "thehub-pr schemas/federation_relationship.schema.json match_basis/explanation; src/hub/correlation_ledger.py",
       "implementation_status": "EXTEND",
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
       "aliases": [],
       "notes": null
     },
@@ -156,7 +156,7 @@
       "existing_equivalent": "thehub-pr schemas/contracts/provenance.v1.schema.json temporal{}",
       "implementation_status": "EXTEND",
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
       "aliases": [],
       "notes": null
     },
@@ -1124,16 +1124,16 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 2,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
       "aliases": [],
       "notes": null
     }
   ],
   "reconciliation": {
     "FEDERATION_DERIVED_TOTAL": 74,
-    "DERIVED_IMPLEMENTED": 0,
+    "DERIVED_IMPLEMENTED": 8,
     "DERIVED_PARTIAL": 3,
-    "DERIVED_SCHEDULED": 11,
+    "DERIVED_SCHEDULED": 3,
     "DERIVED_ALREADY_PRESENT": 1,
     "DERIVED_BLOCKED": 3,
     "DERIVED_DEFERRED": 56,
