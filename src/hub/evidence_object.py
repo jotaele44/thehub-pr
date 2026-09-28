@@ -116,8 +116,7 @@ def project_evidence_object(
     producer = producers[0] if producers else (HUB_PRODUCER if hub_computed else "unknown")
 
     source_state, source_basis = (
-        ("SOURCE_BOUND", "is itself the source record") if stream == "sources" and ep.has_locator(row)
-        else ("SOURCE_REPORTED", "source record without a retrievable locator") if stream == "sources"
+        ep.source_binding_basis(row, "this source record") if stream == "sources"
         else ep.source_state_for(row, sources)
     )
     klass, klass_basis = ep.epistemic_class_for(row, hub_computed=hub_computed, errors=errors)
@@ -137,8 +136,10 @@ def project_evidence_object(
     for source_id in raw_source_ids:
         source = sources.get(source_id) or {}
         state, _ = ep.source_state_for({"source_id": source_id}, sources)
-        citations.append({"source_id": source_id, "title": source.get("source_name"),
-                          "url": source.get("source_url"), "source_state": state})
+        text = str(source.get("source_url") or "").strip()
+        url = ep.retrievable_locator(source)
+        citations.append({"source_id": source_id, "title": source.get("source_name"), "url": url,
+                          "citation_text": text if text and text != url else None, "source_state": state})
 
     computations: List[Dict[str, Any]] = []
     if hub_computed:

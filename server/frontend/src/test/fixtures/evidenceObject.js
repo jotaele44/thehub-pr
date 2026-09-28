@@ -55,7 +55,7 @@ export const OVNIS_YEAR_ONLY_CASE = Object.freeze({
   ],
   computations: [],
   interpretations: [],
-  citations: [{ source_id: 'src_1', title: 'FOIA release', url: 'https://example.gov/foia/1', source_state: 'SOURCE_BOUND' }],
+  citations: [{ source_id: 'src_1', title: 'FOIA release', url: 'https://example.gov/foia/1', citation_text: null, source_state: 'SOURCE_BOUND' }],
   declaration_errors: [],
   audit_metadata: { projector: 'hub.evidence_object.project_evidence_object', contract_status: 'CANDIDATE', projected_at: '2026-09-25T12:00:00+00:00', row_sha256: 'a'.repeat(64) },
 });

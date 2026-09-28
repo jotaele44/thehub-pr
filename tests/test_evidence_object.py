@@ -77,8 +77,8 @@ def test_source_lineage_resolves_to_documented_edge():
     assert obj["source_state"] == "SOURCE_BOUND"
     documents = [e for e in obj["lineage"]["edges"] if e["relationship_type"] == "DOCUMENTS"]
     assert documents and documents[0]["edge_state"] == "DOCUMENTED"
-    assert obj["citations"] == [{"source_id": "src_1", "title": "FOIA release",
-                                 "url": "https://example.gov/foia/1", "source_state": "SOURCE_BOUND"}]
+    assert obj["citations"] == [{"source_id": "src_1", "title": "FOIA release", "url": "https://example.gov/foia/1",
+                                 "citation_text": None, "source_state": "SOURCE_BOUND"}]
 
 
 def test_producer_declared_state_flows_through():
@@ -193,6 +193,15 @@ def test_source_row_without_locator():
     obj = project_evidence_object("sources", {"source_id": "s", "source_type": "none"}, now=NOW)
     assert obj["source_state"] == "SOURCE_REPORTED"
     assert obj["canonical_type"] == "source:none"
+
+
+def test_citation_text_is_never_rendered_as_a_locator():
+    sources = {"src_t": {"source_id": "src_t", "source_name": "Inexplicata", "source_url": "Inexplicata/Scott Corrales/Freixedo"}}
+    obj = project_evidence_object("observations", _obs(source_id="src_t"), now=NOW, sources_index=sources)
+    assert obj["source_state"] == "SOURCE_REPORTED"
+    assert obj["citations"][0]["url"] is None
+    assert obj["citations"][0]["citation_text"] == "Inexplicata/Scott Corrales/Freixedo"
+    assert validate_evidence_object(obj) == []
 
 
 # ── lineage edges ─────────────────────────────────────────────────────────────

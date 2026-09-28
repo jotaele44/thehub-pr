@@ -35,7 +35,7 @@ sentinel. Every value also carries a `*_basis` string that says why it holds.
 Notes on individual axes:
 
 - **Identity:** federation IDs never replace producer IDs (ADR 0009).
-- **Source state:** a cited source that the Hub cannot resolve is SOURCE_REPORTED, not SOURCE_MISSING. The Hub index can be partial, so failing to resolve a source does not show the source is missing.
+- **Source state:** SOURCE_BOUND requires the resolved source record to carry a retrievable locator (an http(s) URL, a DOI, or an archive locator) or a SHA-256 content hash. Free-text citations and producer-internal reference ids are SOURCE_REPORTED; the text is shown as citation text, never as a link. A cited source that the Hub cannot resolve is also SOURCE_REPORTED, not SOURCE_MISSING: the Hub index can be partial, so failing to resolve a source does not show the source is missing. In the committed aggregate, 107 of 400 source records are bound (98 OVNIS URLs, 9 AguaYLuz content hashes).
 - **Temporal state:** LIVE and STALE require a declared `expected_cadence_seconds`.
 - **Temporal precision:** YEAR_ONLY is added to the directive's list so that year-only records are not collapsed into another class.
 

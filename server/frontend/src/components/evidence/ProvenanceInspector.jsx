@@ -139,8 +139,13 @@ export default function ProvenanceInspector({ evidence }) {
               <li key={citation.source_id}>
                 <IdCode>{citation.source_id}</IdCode> — {citation.title || 'untitled source'}{' '}
                 <span className="text-xs text-muted-foreground">({citation.source_state})</span>
-                {citation.url ? (
+                {/^https?:\/\//i.test(citation.url || '') ? (
                   <div><a className="break-all text-xs text-primary underline" href={citation.url} target="_blank" rel="noopener noreferrer">{citation.url}</a></div>
+                ) : citation.url ? (
+                  <div className="break-all text-xs text-muted-foreground">Locator: {citation.url}</div>
+                ) : null}
+                {citation.citation_text ? (
+                  <div className="text-xs text-muted-foreground">Citation text (not a retrievable locator): {citation.citation_text}</div>
                 ) : null}
               </li>
             ))}

@@ -129,7 +129,8 @@
       "properties": {
         "source_id": {"type": "string"},
         "title": {"type": ["string", "null"]},
-        "url": {"type": ["string", "null"]},
+        "url": {"type": ["string", "null"], "description": "A retrievable locator (http(s), DOI resolver or archive locator) only; never free text."},
+        "citation_text": {"type": ["string", "null"], "description": "Citation text the producer supplied in place of a locator."},
         "source_state": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/source_state"}
       }
     }

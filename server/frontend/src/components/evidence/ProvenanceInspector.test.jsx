@@ -37,6 +37,17 @@ describe('ProvenanceInspector', () => {
     expect(screen.getByText('No source is cited by this record.')).toBeInTheDocument();
   });
 
+  it('shows citation text as text, never as a link', () => {
+    const evidence = {
+      ...OVNIS_YEAR_ONLY_CASE,
+      source_state: 'SOURCE_REPORTED',
+      citations: [{ source_id: 'src_t', title: 'Inexplicata', url: null, citation_text: 'Inexplicata/Scott Corrales/Freixedo', source_state: 'SOURCE_REPORTED' }],
+    };
+    render(<ProvenanceInspector evidence={evidence} />);
+    expect(screen.getByText(/Citation text \(not a retrievable locator\)/)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Inexplicata/ })).toBeNull();
+  });
+
   it('flags synthetic rows and rejected producer declarations', () => {
     const evidence = { ...OVNIS_YEAR_ONLY_CASE, synthetic: true, declaration_errors: ["epistemic_class: 'FACT' is not a valid value"] };
     const { container } = render(<ProvenanceInspector evidence={evidence} />);

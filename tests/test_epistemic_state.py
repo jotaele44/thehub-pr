@@ -300,3 +300,28 @@ def test_documented_contract_edge_requires_bound_source():
 def test_producer_proximity_edge_is_not_documented():
     row = {"relationship_type": "near", "match_basis": "spatial_proximity"}
     assert ep.edge_state_for(row, hub_computed=False, source_state="SOURCE_BOUND")[0] == "CANDIDATE"
+
+
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        ({"source_url": "https://example.gov/doc"}, "SOURCE_BOUND"),
+        ({"source_url": "doi:10.1234/abc.5"}, "SOURCE_BOUND"),
+        ({"archive_locator": "archive/1974/case-12.pdf"}, "SOURCE_BOUND"),
+        ({"source_ref": "a" * 64}, "SOURCE_BOUND"),
+        ({"source_url": "Inexplicata/Scott Corrales/Freixedo"}, "SOURCE_REPORTED"),
+        ({"source_ref": "CENT-SRC-RSS-THE-DRIVE-WAR-ZONE"}, "SOURCE_REPORTED"),
+        ({"source_ref": "none", "source_url": ""}, "SOURCE_REPORTED"),
+    ],
+)
+def test_only_retrievable_or_hash_bound_sources_are_bound(source, expected):
+    state, basis = ep.source_state_for({"source_id": "s"}, {"s": source})
+    assert state == expected, basis
+
+
+def test_retrievable_locator_never_returns_free_text():
+    assert ep.retrievable_locator({"source_url": "Inexplicata/Scott Corrales"}) is None
+    assert ep.retrievable_locator({"source_url": "10.1234/abc"}) == "https://doi.org/10.1234/abc"
+    assert ep.retrievable_locator({"source_url": "DOI: 10.1234/abc"}) == "https://doi.org/10.1234/abc"
+    assert ep.content_hash({"sha256": "B" * 64}) == "b" * 64
+    assert ep.content_hash({"source_ref": "not-a-hash"}) is None

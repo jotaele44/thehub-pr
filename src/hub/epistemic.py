@@ -82,6 +82,9 @@ DATE_PRECISION_MAP: Mapping[str, str] = {
 # Source rows whose type/ref says there is no document behind them.
 _NO_SOURCE_TOKENS = frozenset({"", "none", "null", "unknown", "n/a", "na"})
 _BLOCKED_SOURCE_STATUSES = frozenset({"blocked", "unavailable"})
+_URL_RE = re.compile(r"^https?://\S+$", re.IGNORECASE)
+_DOI_RE = re.compile(r"^(doi:\s*)?10\.\d{4,9}/\S+$", re.IGNORECASE)
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 # Relationship bases that can never, alone, make an edge DOCUMENTED or COMPUTED
 # (entity_resolution.v1 forbidden reason codes + hub weak correlation bases).
@@ -304,12 +307,48 @@ def temporal_state_at(row: Mapping[str, Any], now: datetime) -> Basis:
 # ── source ────────────────────────────────────────────────────────────────────
 
 
-def has_locator(source: Mapping[str, Any]) -> bool:
-    for key in ("source_url", "source_ref", "archive_locator", "url"):
+def retrievable_locator(source: Mapping[str, Any]) -> Optional[str]:
+    """An http(s) URL, DOI (as a resolver URL) or archive locator for ``source``, else None.
+
+    Free-text citations and producer-internal reference ids are not locators.
+    """
+    for key in ("source_url", "url"):
+        value = str(source.get(key) or "").strip()
+        if _URL_RE.match(value):
+            return value
+        if _DOI_RE.match(value):
+            return "https://doi.org/" + re.sub(r"^doi:\s*", "", value, flags=re.IGNORECASE)
+    archive = str(source.get("archive_locator") or "").strip()
+    if archive and archive.lower() not in _NO_SOURCE_TOKENS:
+        return archive
+    return None
+
+
+def content_hash(source: Mapping[str, Any]) -> Optional[str]:
+    """A SHA-256 content hash binding ``source`` to exact bytes, else None."""
+    for key in ("sha256", "content_sha256", "source_sha256", "source_ref"):
         value = str(source.get(key) or "").strip().lower()
-        if value and value not in _NO_SOURCE_TOKENS:
-            return True
-    return False
+        if _SHA256_RE.match(value):
+            return value
+    return None
+
+
+def has_locator(source: Mapping[str, Any]) -> bool:
+    """True when ``source`` is retrievable (URL/DOI/archive) or hash-bound to exact bytes."""
+    return retrievable_locator(source) is not None or content_hash(source) is not None
+
+
+def source_binding_basis(source: Mapping[str, Any], label: str) -> Basis:
+    """(SOURCE_BOUND | SOURCE_REPORTED, basis) for a resolved source record."""
+    if retrievable_locator(source):
+        return "SOURCE_BOUND", f"{label} resolves with a retrievable locator"
+    if content_hash(source):
+        return "SOURCE_BOUND", f"{label} resolves with a SHA-256 content hash"
+    for key in ("source_url", "source_ref", "url"):
+        value = str(source.get(key) or "").strip()
+        if value and value.lower() not in _NO_SOURCE_TOKENS:
+            return "SOURCE_REPORTED", f"{label} carries only {key} {value[:80]!r}, not a retrievable locator or content hash"
+    return "SOURCE_REPORTED", f"{label} has no retrievable locator or content hash"
 
 
 def source_state_for(row: Mapping[str, Any], sources_index: Mapping[str, Mapping[str, Any]]) -> Basis:
@@ -320,7 +359,8 @@ def source_state_for(row: Mapping[str, Any], sources_index: Mapping[str, Mapping
     """
     ref = row.get("source_id") or row.get("evidence_source_id")
     if not ref:
-        if has_locator(row):
+        cited = any(str(row.get(k) or "").strip().lower() not in _NO_SOURCE_TOKENS for k in ("source_url", "source_ref", "url"))
+        if cited:
             return "SOURCE_REPORTED", "row carries a citation but no source record id"
         return "SOURCE_MISSING", "no source reference"
     source = sources_index.get(str(ref))
@@ -328,9 +368,7 @@ def source_state_for(row: Mapping[str, Any], sources_index: Mapping[str, Mapping
         return "SOURCE_REPORTED", f"source {ref} cited but not resolvable in the Hub index"
     if str(source.get("status") or "").lower() in _BLOCKED_SOURCE_STATUSES:
         return "SOURCE_BLOCKED", f"source {ref} status={source.get('status')}"
-    if has_locator(source):
-        return "SOURCE_BOUND", f"source {ref} resolves with a locator"
-    return "SOURCE_REPORTED", f"source {ref} resolves but has no retrievable locator"
+    return source_binding_basis(source, f"source {ref}")
 
 
 # ── observation ───────────────────────────────────────────────────────────────
