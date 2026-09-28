@@ -34,6 +34,25 @@ if not any(getattr(route, "path", None) == _PROXY_PATH for route in _core.app.ro
 if not any(getattr(route, "path", None) == _PROXY_PATH for route in _core.app.routes):
     raise RuntimeError("GIS proxy route failed to mount on canonical FastAPI app")
 
+# Evidence Object API (provenance inspector), mounted the same additive way.
+from server.backend.evidence_api import router as _evidence_router  # noqa: E402
+
+# The router's APIRoutes are already fully prefixed; extending the route table
+# directly keeps them visible (FastAPI may wrap include_router lazily).
+_existing_paths = {getattr(route, "path", None) for route in _core.app.router.routes}
+_core.app.router.routes.extend(
+    route for route in _evidence_router.routes if getattr(route, "path", None) not in _existing_paths
+)
+
+# When a built frontend exists the core registers its SPA catch-all at import,
+# so routers appended above would sit behind it and every request to them would
+# be answered by the catch-all's /api 404. Keep the catch-all last.
+_SPA_PATH = "/{full_path:path}"
+_spa_routes = [route for route in _core.app.router.routes if getattr(route, "path", None) == _SPA_PATH]
+for _route in _spa_routes:
+    _core.app.router.routes.remove(_route)
+    _core.app.router.routes.append(_route)
+
 # `server.backend.main` must be the *same module object* as the preserved core.
 # Existing tests and application code monkeypatch globals such as DB_PATH on
 # this import path; a `from ... import *` wrapper would silently split globals.

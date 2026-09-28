@@ -74,6 +74,91 @@
           "tests/test_twin_capability_manifests.py"
         ]
       }
+    },
+    {
+      "id": "evidence-provenance-inspector",
+      "classification": "analysis",
+      "status": "active",
+      "requires_terminal": false,
+      "twin_refs": [
+        "TWIN-018",
+        "TWIN-019",
+        "TWIN-020",
+        "TWIN-023",
+        "TWIN-074"
+      ],
+      "backend": {
+        "files": [
+          "server/backend/evidence_api.py",
+          "src/hub/epistemic.py",
+          "src/hub/evidence_lineage.py",
+          "src/hub/evidence_object.py"
+        ],
+        "endpoints": [
+          "GET /{collection}/{record_id}"
+        ],
+        "symbols": [
+          "server/backend/evidence_api.py:evidence_for",
+          "server/backend/evidence_api.py:get_evidence_object",
+          "src/hub/epistemic.py:as_mapping",
+          "src/hub/epistemic.py:data_stage_for",
+          "src/hub/epistemic.py:declared",
+          "src/hub/epistemic.py:edge_state_for",
+          "src/hub/epistemic.py:epistemic_class_for",
+          "src/hub/epistemic.py:geometry_for",
+          "src/hub/epistemic.py:has_locator",
+          "src/hub/epistemic.py:identity_for",
+          "src/hub/epistemic.py:observation_state_for",
+          "src/hub/epistemic.py:parse_instant",
+          "src/hub/epistemic.py:pick",
+          "src/hub/epistemic.py:source_state_for",
+          "src/hub/epistemic.py:temporal_for",
+          "src/hub/epistemic.py:temporal_state_at",
+          "src/hub/epistemic.py:truncate_to_precision",
+          "src/hub/evidence_lineage.py:build_lineage",
+          "src/hub/evidence_lineage.py:validate_edge",
+          "src/hub/evidence_lineage.py:validate_lineage",
+          "src/hub/evidence_object.py:evidence_id",
+          "src/hub/evidence_object.py:project_evidence_object",
+          "src/hub/evidence_object.py:row_sha256",
+          "src/hub/evidence_object.py:validate_evidence_object"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/evidence/:collection/:id"
+        ],
+        "e2e_routes": [
+          "/evidence/:collection/:id"
+        ],
+        "components": [
+          "server/frontend/src/pages/EvidenceInspector.jsx",
+          "server/frontend/src/components/evidence/ProvenanceInspector.jsx",
+          "server/frontend/src/components/evidence/EvidenceStateStrip.jsx",
+          "server/frontend/src/lib/evidenceState.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx",
+          "server/frontend/src/components/shared/RecordSheet.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_evidence_api.py"
+        ],
+        "contract": [
+          "tests/test_epistemic_state.py",
+          "tests/test_evidence_object.py"
+        ],
+        "unit": [
+          "server/frontend/src/lib/evidenceState.test.js",
+          "server/frontend/src/components/evidence/ProvenanceInspector.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
     }
   ],
   "exceptions": []

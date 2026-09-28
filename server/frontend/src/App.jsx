@@ -48,6 +48,7 @@ const AppCenter = lazy(() => import('@/pages/AppCenter'));
 const Operations = lazy(() => import('@/pages/Operations'));
 const GISWorkspace = lazy(() => import('@/pages/GISWorkspace'));
 const OperatorSettings = lazy(() => import('@/pages/OperatorSettings'));
+const EvidenceInspector = lazy(() => import('@/pages/EvidenceInspector'));
 
 const AppRoutes = () => {
   const { isLoadingPublicSettings, appPublicSettings } = useAuth();
@@ -108,6 +109,7 @@ const AppRoutes = () => {
             <Route path="/dictionary" element={<Dictionary />} />
             <Route path="/manifest" element={<Manifest />} />
             <Route path="/gis" element={<GISWorkspace />} />
+            <Route path="/evidence/:collection/:id" element={<EvidenceInspector />} />
             <Route path="/spiderweb" element={<Spiderweb />} />
             <Route path="/ovnis" element={<Ovnis />} />
             <Route path="/aguayluz" element={<AguaYLuz />} />
