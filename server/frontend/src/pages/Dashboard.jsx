@@ -47,7 +47,7 @@ export default function Dashboard() {
       />
 
       <div className="mb-6">
-        <ProgramTimeline items={PROGRAM_TIMELINE} />
+        <ProgramTimeline producerId="thehub-pr" items={PROGRAM_TIMELINE} />
       </div>
 
       <div className="mb-6">
