@@ -18,7 +18,9 @@ export default function MobileNav() {
         <img src={brandMark} alt="" aria-hidden="true" className="h-7 w-7 rounded-lg" />
         <span className="text-sm font-semibold tracking-tight">INTSYS-PR</span>
       </div>
-      <div className="flex items-center gap-1">
+      {/* pr-12 keeps these controls clear of AppLayout's fixed notification bell
+          (top-3 right-3, z-50), which otherwise covers the menu trigger. */}
+      <div className="flex items-center gap-1 pr-12">
         <ThemeToggle />
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>

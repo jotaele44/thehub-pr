@@ -222,6 +222,11 @@ const notifications = {
     request('/notifications/preferences', { method: 'PUT', body: { prefs, targets } }),
 };
 
+// Evidence Object API (provenance inspector). Read-only; see server/backend/evidence_api.py.
+const evidence = {
+  get: (collection, recordId) => request(`/evidence/${encode(collection)}/${encode(recordId)}`),
+};
+
 export const federation = {
   app: { id: appParams.appId, programId: appParams.programId },
   auth,
@@ -234,5 +239,6 @@ export const federation = {
   asServiceRole: { entities, connectors },
   system,
   projectSigns,
+  evidence,
   request,
 };

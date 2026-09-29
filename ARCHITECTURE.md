@@ -76,6 +76,35 @@ already-published exports. `ready_for_hub_live_execution` (running the producer'
 `hub_callable_commands` against live sources) is a stricter gate, typically blocked until manual
 sources are materialized and runtime keys are supplied.
 
+## Evidence Object and epistemic state (candidate)
+
+Any canonical stream row can be viewed as a `FEDERATION_EVIDENCE_OBJECT_V1`. The view keeps these
+axes independent of one another:
+
+- data stage;
+- epistemic class: MEASURED, COMPUTED, CURATED or INTERPRETIVE;
+- identity state;
+- source state;
+- temporal state and temporal precision;
+- observation semantics;
+- geometry precision.
+
+Every Evidence Object also carries its lineage, contradictions, citations and a row SHA-256.
+Three contracts define it. All three are **CANDIDATE** and are not yet pinned in
+`schemas/FROZEN.sha256`:
+
+- `schemas/federation/epistemic_state.v1.schema.json`
+- `schemas/federation/evidence_object.v1.schema.json`
+- `schemas/federation/evidence_lineage.v1.schema.json`
+
+`hub.evidence_object.project_evidence_object` builds the view as a read-only projection, and
+`GET /api/evidence/{collection}/{record_id}` serves it. It is rendered at
+`/evidence/:collection/:id`.
+
+Producers can declare state by attaching an additive `evidence_state` object to a row. Anything a
+producer does not declare fails closed and is never guessed. See
+[`docs/federation/EVIDENCE_OBJECT_V1.md`](docs/federation/EVIDENCE_OBJECT_V1.md).
+
 ## Governance
 
 Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,

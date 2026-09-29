@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:prii:federation:twin_derived_extension_manifest:v1",
+  "title": "FEDERATION_TWIN_DERIVED_EXTENSION_MANIFEST_V1",
+  "description": "Federation-native extensions inspired by the Twin reference. Every entry is FEDERATION_DERIVED and is never promoted into the observed Twin denominator.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_id", "schema_version", "owner", "rule", "enumeration_sources", "capabilities", "reconciliation"],
+  "properties": {
+    "manifest_id": {"const": "FEDERATION_TWIN_DERIVED_EXTENSION_MANIFEST_V1"},
+    "schema_version": {"const": "federation_twin_derived_extension_manifest_v1"},
+    "owner": {"const": "thehub-pr"},
+    "rule": {"type": "string", "minLength": 1},
+    "enumeration_sources": {"type": "object", "additionalProperties": {"type": "string"}},
+    "capabilities": {"type": "array", "items": {"$ref": "#/$defs/capability"}},
+    "reconciliation": {"type": "object"}
+  },
+  "$defs": {
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capability_id", "origin", "enumeration_source", "name", "purpose", "directive_ref", "canonical_repo", "existing_equivalent", "implementation_status", "phase", "delivery_state", "aliases", "notes"],
+      "properties": {
+        "capability_id": {"type": "string", "pattern": "^FDX-[0-9]{3}$"},
+        "origin": {"const": "FEDERATION_DERIVED"},
+        "enumeration_source": {"enum": ["USER_ENUMERATED", "DIRECTIVE_ONLY"]},
+        "name": {"type": "string", "minLength": 1},
+        "purpose": {"type": "string", "minLength": 1},
+        "directive_ref": {"type": ["string", "null"]},
+        "canonical_repo": {"enum": ["thehub-pr", "ovnis-pr", "spiderweb-pr", "skywatcher-pr", "aguayluz-pr", "moneysweep-pr"]},
+        "existing_equivalent": {"type": ["string", "null"]},
+        "implementation_status": {"enum": ["EXISTING", "EXTEND", "NEW", "NOT_APPLICABLE", "BLOCKED"]},
+        "phase": {"type": "integer", "minimum": 1, "maximum": 10},
+        "delivery_state": {"enum": ["ALREADY_PRESENT", "SCHEDULED_THIS_RUN", "PARTIAL_THIS_RUN", "IMPLEMENTED_THIS_RUN", "DEFERRED", "BLOCKED", "NOT_APPLICABLE"]},
+        "aliases": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "notes": {"type": ["string", "null"]},
+        "rationale": {"type": "string", "minLength": 1},
+        "blocker": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
