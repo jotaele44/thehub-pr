@@ -253,3 +253,14 @@ def test_empty_or_multi_category_package_is_rejected():
     package = _package()
     package["categories"].append(dict(package["categories"][0]))
     assert "categories.scopeCardinality" in consumer._validate_package(package)
+
+def test_main_reasserts_spa_catchall_after_leaderboard_mount():
+    main_path = Path(__file__).resolve().parents[1] / "server" / "backend" / "main.py"
+    source = main_path.read_text(encoding="utf-8")
+    mount_marker = 'raise RuntimeError("MoneySweep leaderboard consumer route failed to mount on canonical FastAPI app")'
+    ordering_marker = "Leaderboard routes are mounted after the core SPA catch-all"
+    alias_marker = "sys.modules[__name__] = _core"
+    assert mount_marker in source
+    assert ordering_marker in source
+    assert source.index(mount_marker) < source.index(ordering_marker) < source.index(alias_marker)
+
