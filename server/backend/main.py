@@ -14,8 +14,10 @@ import sys
 
 from server.backend import main_core as _core
 from server.backend.gis_proxy import router as _gis_proxy_router
+from server.backend.moneysweep_leaderboards import router as _moneysweep_leaderboards_router
 
 _PROXY_PATH = "/api/gis/proxy"
+_LEADERBOARD_STATUS_PATH = "/api/moneysweep/leaderboards/status"
 
 # Mount the extension before aliasing this module to the byte-preserved core. Use
 # the app router's concrete route list as the final source of truth and verify the
@@ -33,6 +35,20 @@ if not any(getattr(route, "path", None) == _PROXY_PATH for route in _core.app.ro
     )
 if not any(getattr(route, "path", None) == _PROXY_PATH for route in _core.app.routes):
     raise RuntimeError("GIS proxy route failed to mount on canonical FastAPI app")
+
+# MoneySweep certified leaderboard consumer. Mount it before the SPA catch-all and
+# verify the concrete route table so package/import ordering cannot hide it.
+if not any(getattr(route, "path", None) == _LEADERBOARD_STATUS_PATH for route in _core.app.routes):
+    _core.app.include_router(_moneysweep_leaderboards_router)
+if not any(getattr(route, "path", None) == _LEADERBOARD_STATUS_PATH for route in _core.app.routes):
+    existing = {getattr(route, "path", None) for route in _core.app.routes}
+    _core.app.router.routes.extend(
+        route
+        for route in _moneysweep_leaderboards_router.routes
+        if getattr(route, "path", None) not in existing
+    )
+if not any(getattr(route, "path", None) == _LEADERBOARD_STATUS_PATH for route in _core.app.routes):
+    raise RuntimeError("MoneySweep leaderboard consumer route failed to mount on canonical FastAPI app")
 
 # Evidence Object API (provenance inspector), mounted the same additive way.
 from server.backend.evidence_api import router as _evidence_router  # noqa: E402
