@@ -127,6 +127,7 @@ def test_missing_package_fails_closed(tmp_path: Path):
 
 def test_untrusted_receipt_release_scope_and_package_fail_closed(tmp_path: Path, monkeypatch):
     path = tmp_path / "leaderboard_package.json"
+    monkeypatch.setattr(consumer, "DEFAULT_TRUST", tmp_path / "missing-trust.json")
     _write_package(path)
     for name in (
         "PRII_MONEYSWEEP_LEADERBOARD_RECEIPT_SHA256",
@@ -264,3 +265,25 @@ def test_main_reasserts_spa_catchall_after_leaderboard_mount():
     assert ordering_marker in source
     assert source.index(mount_marker) < source.index(ordering_marker) < source.index(alias_marker)
 
+
+
+def test_consumer_owned_trust_manifest_allows_exact_package(tmp_path: Path, monkeypatch):
+    path = tmp_path / "leaderboard_package.json"
+    package = _write_package(path)
+    for name in consumer._TRUST_FIELDS:
+        monkeypatch.delenv(name, raising=False)
+    trust = {
+        "schemaVersion": "thehub.moneysweep-leaderboard-trust/v1",
+        "state": "FROZEN",
+        "producer": "moneysweep-pr",
+        "scopeId": consumer.EXPECTED_SCOPE,
+        "receiptSha256": package["certification"]["receiptSha256"],
+        "releaseManifestSha256": package["certification"]["releaseManifestSha256"],
+        "scopeSha256": package["certification"]["scopeSha256"],
+        "packageSha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+    }
+    trust_path = tmp_path / "leaderboard_trust.json"
+    trust_path.write_text(json.dumps(trust, sort_keys=True), encoding="utf-8")
+    monkeypatch.setattr(consumer, "DEFAULT_TRUST", trust_path)
+    loaded = consumer._load_package(path)
+    assert loaded["consumerPackageSha256"] == trust["packageSha256"]
