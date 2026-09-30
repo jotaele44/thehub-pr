@@ -54,7 +54,7 @@
       "classification": "internal",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "CI/governance validator for the Twin observed and Federation-derived capability manifests (directive \u00a735 exception 1: internal build/developer utility). It checks committed governance data; it is not an operator workflow.",
+      "rationale": "CI/governance validator for the Twin observed and Federation-derived capability manifests (directive §35 exception 1: internal build/developer utility). It checks committed governance data; it is not an operator workflow.",
       "analysis": {
         "files": [
           "scripts/validate_twin_manifests.py",
@@ -157,6 +157,53 @@
         "unit": [
           "server/frontend/src/lib/evidenceState.test.js",
           "server/frontend/src/components/evidence/ProvenanceInspector.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "moneysweep-certified-debt-leaderboard",
+      "classification": "analysis",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Read-only federation product surface for the exact MoneySweep-certified debt_issuance package. TheHub does not recompute producer totals, ranks, identity, source semantics, or geometry and remains fail-closed until exact producer hashes are trusted.",
+      "backend": {
+        "files": [
+          "server/backend/moneysweep_leaderboards.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /api/moneysweep/leaderboards/status",
+          "GET /api/moneysweep/leaderboards/top"
+        ],
+        "symbols": [
+          "server/backend/moneysweep_leaderboards.py:status",
+          "server/backend/moneysweep_leaderboards.py:top"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/moneysweep"
+        ],
+        "e2e_routes": [
+          "/moneysweep"
+        ],
+        "components": [
+          "server/frontend/src/pages/MoneySweep.jsx",
+          "server/frontend/src/components/feed/MoneySweepLeaderboardsTab.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/MoneySweep.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_moneysweep_leaderboard_consumer.py"
+        ],
+        "contract": [
+          "tests/test_moneysweep_leaderboard_crossrepo.py"
         ],
         "e2e": [
           "server/frontend/tests/visual/gui-parity.spec.js"

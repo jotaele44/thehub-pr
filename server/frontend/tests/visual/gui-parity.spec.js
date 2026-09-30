@@ -59,3 +59,65 @@ test.describe('provenance inspector', () => {
     await expect(page.locator('[data-evidence-axis]')).toHaveCount(0);
   });
 });
+
+
+test.describe('MoneySweep certified leaderboard consumer', () => {
+  test('is discoverable from MoneySweep and preserves certified producer rows', async ({ page }) => {
+    const packageHash = 'a'.repeat(64);
+    await mockApi(page, {
+      '/moneysweep/leaderboards/status': {
+        state: 'PASS',
+        producerCommit: 'b'.repeat(40),
+        rankingContractVersion: 'moneysweep.leaderboard/v1.1',
+        ontologyContractVersion: 'moneysweep.financial-category-ontology/v1.1',
+        scopeId: 'moneysweep.leaderboard.production-v1',
+        categoryCount: 1,
+        consumerPackageSha256: packageHash,
+      },
+      '/moneysweep/leaderboards/top': {
+        categoryId: 'debt_issuance',
+        metricType: 'DEBT_ISSUED_PAR',
+        rows: [
+          {
+            entityId: 'entity_5204a3d8f84bbfcd',
+            entityDisplayName: 'Puerto Rico Sales Tax Financing Corporation',
+            entityResolutionState: 'CANONICAL_V1_ENTITY_ID',
+            currency: 'USD',
+            metricValue: 16314000000,
+            rank: 1,
+          },
+        ],
+        consumerState: 'PASS',
+        producerCommit: 'b'.repeat(40),
+        scopeId: 'moneysweep.leaderboard.production-v1',
+        consumerPackageSha256: packageHash,
+      },
+    });
+
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Leaderboards' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Certified Public Debt Issuance' })).toBeVisible();
+    await expect(page.getByText('Puerto Rico Sales Tax Financing Corporation')).toBeVisible();
+    await expect(page.getByText('entity_5204a3d8f84bbfcd')).toBeVisible();
+    await expect(page.getByText('CANONICAL_V1_ENTITY_ID')).toBeVisible();
+    await expect(page.getByText(/Package SHA-256:/)).toBeVisible();
+  });
+
+  test('shows fail-closed producer status instead of synthetic ranking rows', async ({ page }) => {
+    await mockApi(page, {
+      '/moneysweep/leaderboards/status': {
+        state: 'BLOCKED',
+        reason: 'certified MoneySweep leaderboard package is not mounted',
+      },
+    });
+
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Leaderboards' }).click();
+
+    await expect(page.getByRole('heading', { name: 'Financial Leaderboards' })).toBeVisible();
+    await expect(page.getByText('BLOCKED')).toBeVisible();
+    await expect(page.getByText(/fail-closed until MoneySweep supplies/)).toBeVisible();
+    await expect(page.getByRole('table')).toHaveCount(0);
+  });
+});
