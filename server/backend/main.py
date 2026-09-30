@@ -68,6 +68,14 @@ if not any(getattr(route, "path", None) == _LEADERBOARD_STATUS_PATH for route in
 if not any(getattr(route, "path", None) == _LEADERBOARD_STATUS_PATH for route in _core.app.routes):
     raise RuntimeError("MoneySweep leaderboard consumer route failed to mount on canonical FastAPI app")
 
+# Leaderboard routes are mounted after the core SPA catch-all was originally
+# moved. Re-assert the ordering invariant so /api/moneysweep/leaderboards/*
+# cannot be intercepted by the SPA fallback.
+_spa_routes = [route for route in _core.app.router.routes if getattr(route, "path", None) == _SPA_PATH]
+for _route in _spa_routes:
+    _core.app.router.routes.remove(_route)
+    _core.app.router.routes.append(_route)
+
 # `server.backend.main` must be the *same module object* as the preserved core.
 # Existing tests and application code monkeypatch globals such as DB_PATH on
 # this import path; a `from ... import *` wrapper would silently split globals.
