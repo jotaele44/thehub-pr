@@ -1,0 +1,60 @@
+name: OVNIS Lockstep protection one-shot
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/ovnis-lockstep-protection.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  protect:
+    if: github.event.pull_request.head.ref == 'ops/ovnis-lockstep-required-check'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require operator SYNC_PAT
+        env:
+          SYNC_PAT: ${{ secrets.SYNC_PAT }}
+        run: |
+          if [ -z "$SYNC_PAT" ]; then
+            echo "::error::SYNC_PAT is not configured; refusing to fall back to GITHUB_TOKEN."
+            exit 2
+          fi
+
+      - name: Enable OVNIS main protection and required Lockstep check
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_PAT }}
+        run: |
+          gh api --method PUT             repos/jotaele44/ovnis-pr/branches/main/protection             --input - <<'JSON'
+          {
+            "required_status_checks": {
+              "strict": true,
+              "contexts": ["federation-lockstep"]
+            },
+            "enforce_admins": true,
+            "required_pull_request_reviews": null,
+            "restrictions": null,
+            "required_linear_history": false,
+            "allow_force_pushes": false,
+            "allow_deletions": false,
+            "block_creations": false,
+            "required_conversation_resolution": false,
+            "lock_branch": false,
+            "allow_fork_syncing": false
+          }
+          JSON
+
+      - name: Verify exact protection state
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_PAT }}
+        run: |
+          state="$(gh api repos/jotaele44/ovnis-pr/branches/main/protection)"
+          echo "$state" | jq -e '
+            .required_status_checks.strict == true
+            and (.required_status_checks.contexts | index("federation-lockstep") != null)
+            and .enforce_admins.enabled == true
+            and .allow_force_pushes.enabled == false
+            and .allow_deletions.enabled == false
+          '
