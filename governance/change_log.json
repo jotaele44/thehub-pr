@@ -24,6 +24,17 @@
         "determination": "COMPATIBLE",
         "rationale": "source_truth fields are producer-local metadata; federation export contract schema and generation federation-spatial-index/1 unchanged; all contracts listed in moneysweep-pr receipt remain valid"
       }
+    },
+    {
+      "date": "2026-09-29",
+      "summary": "Introduced the change-coupled documentation gate (ADR 0010, extending ADR 0004 section Documentation drift): a shared tools/check_docs_sync.py rendered from federation-templates/baseline/, a docs-sync workflow, a Claude Code Stop hook, CLAUDE.md, and this repo's .federation/docs-sync.json. Template, tooling and workflow change only: no governed contract, schema or dependency edge changed, so no compatibility disposition is required. PROVISIONAL until docs-sync is a required status check on main.",
+      "files": [
+        "docs/adr/0010-change-coupled-documentation-gate.md",
+        "federation-templates/baseline/check_docs_sync.py",
+        "federation-templates/targets.yaml",
+        ".federation/docs-sync.json",
+        "governance/change_log.json"
+      ]
     }
   ]
 }

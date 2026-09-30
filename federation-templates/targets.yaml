@@ -105,6 +105,27 @@ targets:
     output: .pre-commit-config.yaml
     repos: *precommit
 
+  # Documentation stays true (ADR 0004 §Documentation drift, generalized). The
+  # checker, its workflow, the agent-time Stop hook and the standing instruction
+  # are the *rule*, so they are byte-identical everywhere. What differs per repo is
+  # .federation/docs-sync.json (which docs cover which paths) and it is
+  # deliberately NOT templated. The pre-commit hook, the CONTRIBUTING section and
+  # the PR-template line ride in the existing baseline files above; moneysweep-pr
+  # and spiderweb-pr keep their own copies of those and carry the same additions
+  # by hand.
+  - template: baseline/check_docs_sync.py
+    output: tools/check_docs_sync.py
+    repos: *all
+  - template: baseline/docs-sync.yml
+    output: .github/workflows/docs-sync.yml
+    repos: *all
+  - template: baseline/claude-settings.json
+    output: .claude/settings.json
+    repos: *all
+  - template: baseline/CLAUDE.md
+    output: CLAUDE.md
+    repos: *all
+
   # Every producer ships a FastAPI backend at server/backend/main.py, and three
   # of them had no test importing it — an import-time break shipped green. The
   # test is byte-identical everywhere because /health is the only route all six
