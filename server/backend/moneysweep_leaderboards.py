@@ -3,8 +3,10 @@
 TheHub is a consumer only. It never recomputes MoneySweep rankings and never
 upgrades producer evidence. A package becomes readable only when its embedded
 producer contract is PASS, its production scope and provenance are exact, and
-its receipt/release/scope/package hashes are explicitly trusted by runtime
-configuration.
+its receipt/release/scope/package hashes are explicitly trusted by TheHub.
+Trust may be supplied by runtime environment allowlists or by the consumer-owned
+frozen trust manifest committed in this repository; the producer cannot write
+or self-authorize that consumer trust surface.
 """
 from __future__ import annotations
 
@@ -18,6 +20,7 @@ from fastapi import APIRouter, HTTPException, Query
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_PACKAGE = REPO_ROOT / "data" / "aggregate" / "moneysweep" / "leaderboard_package.json"
+DEFAULT_TRUST = REPO_ROOT / "data" / "aggregate" / "moneysweep" / "leaderboard_trust.json"
 EXPECTED_SCHEMA = "moneysweep.leaderboard-export-package/v1"
 EXPECTED_RANKING = "moneysweep.leaderboard/v1.1"
 EXPECTED_ONTOLOGY = "moneysweep.financial-category-ontology/v1.1"
@@ -29,9 +32,39 @@ EXPECTED_CERT_RUNTIME = "moneysweep.leaderboard-certification-runtime/v1"
 router = APIRouter(prefix="/api/moneysweep/leaderboards", tags=["moneysweep-leaderboards"])
 
 
+_TRUST_FIELDS = {
+    "PRII_MONEYSWEEP_LEADERBOARD_RECEIPT_SHA256": "receiptSha256",
+    "PRII_MONEYSWEEP_LEADERBOARD_RELEASE_SHA256": "releaseManifestSha256",
+    "PRII_MONEYSWEEP_LEADERBOARD_SCOPE_SHA256": "scopeSha256",
+    "PRII_MONEYSWEEP_LEADERBOARD_PACKAGE_SHA256": "packageSha256",
+}
+
+
+def _manifest_trusted_hashes(name: str) -> set[str]:
+    field = _TRUST_FIELDS.get(name)
+    if field is None or not DEFAULT_TRUST.exists():
+        return set()
+    try:
+        document = json.loads(DEFAULT_TRUST.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return set()
+    if document.get("schemaVersion") != "thehub.moneysweep-leaderboard-trust/v1":
+        return set()
+    if document.get("state") != "FROZEN":
+        return set()
+    if document.get("producer") != "moneysweep-pr":
+        return set()
+    if document.get("scopeId") != EXPECTED_SCOPE:
+        return set()
+    digest = str(document.get(field) or "").lower()
+    return {digest} if _is_sha256(digest) else set()
+
+
 def _trusted_hashes(name: str) -> set[str]:
     raw = os.environ.get(name, "")
-    return {item.strip().lower() for item in raw.split(",") if item.strip()}
+    trusted = {item.strip().lower() for item in raw.split(",") if item.strip()}
+    trusted.update(_manifest_trusted_hashes(name))
+    return trusted
 
 
 def _is_sha256(value: object) -> bool:
