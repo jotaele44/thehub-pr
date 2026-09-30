@@ -14,6 +14,7 @@ import sys
 
 from server.backend import main_core as _core
 from server.backend.gis_proxy import router as _gis_proxy_router
+from server.backend.moneysweep_leaderboards import router as _moneysweep_leaderboards_router
 
 _PROXY_PATH = "/api/gis/proxy"
 
@@ -48,6 +49,28 @@ _core.app.router.routes.extend(
 # so routers appended above would sit behind it and every request to them would
 # be answered by the catch-all's /api 404. Keep the catch-all last.
 _SPA_PATH = "/{full_path:path}"
+_spa_routes = [route for route in _core.app.router.routes if getattr(route, "path", None) == _SPA_PATH]
+for _route in _spa_routes:
+    _core.app.router.routes.remove(_route)
+    _core.app.router.routes.append(_route)
+
+_LEADERBOARD_STATUS_PATH = "/api/moneysweep/leaderboards/status"
+
+if not any(getattr(route, "path", None) == _LEADERBOARD_STATUS_PATH for route in _core.app.routes):
+    _core.app.include_router(_moneysweep_leaderboards_router)
+if not any(getattr(route, "path", None) == _LEADERBOARD_STATUS_PATH for route in _core.app.routes):
+    existing = {getattr(route, "path", None) for route in _core.app.routes}
+    _core.app.router.routes.extend(
+        route
+        for route in _moneysweep_leaderboards_router.routes
+        if getattr(route, "path", None) not in existing
+    )
+if not any(getattr(route, "path", None) == _LEADERBOARD_STATUS_PATH for route in _core.app.routes):
+    raise RuntimeError("MoneySweep leaderboard consumer route failed to mount on canonical FastAPI app")
+
+# Leaderboard routes are mounted after the core SPA catch-all was originally
+# moved. Re-assert the ordering invariant so /api/moneysweep/leaderboards/*
+# cannot be intercepted by the SPA fallback.
 _spa_routes = [route for route in _core.app.router.routes if getattr(route, "path", None) == _SPA_PATH]
 for _route in _spa_routes:
     _core.app.router.routes.remove(_route)
