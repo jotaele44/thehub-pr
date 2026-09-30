@@ -29,10 +29,21 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def _producer_artifact(root: Path, env_name: str, relative: str) -> Path:
+    configured = os.environ.get(env_name, "").strip()
+    if configured:
+        return Path(configured).expanduser().resolve()
+    return root / relative
+
+
 def test_consumer_contract_matches_money_sweep_export_schema_and_scope():
     root = _producer_root()
     schema_path = root / "schemas" / "leaderboard_export_package.schema.json"
-    scope_path = root / "data" / "manifests" / "leaderboards" / "leaderboard_certification_scope_v1.json"
+    scope_path = _producer_artifact(
+        root,
+        "PRII_MONEYSWEEP_LEADERBOARD_STAGED_SCOPE",
+        "data/manifests/leaderboards/leaderboard_certification_scope_v1.json",
+    )
     _require_or_skip(schema_path)
     _require_or_skip(scope_path)
     schema = json.loads(schema_path.read_text(encoding="utf-8"))
@@ -59,9 +70,21 @@ def test_consumer_contract_matches_money_sweep_export_schema_and_scope():
 
 def test_current_money_sweep_release_and_receipt_fail_closed_together():
     root = _producer_root()
-    release_path = root / "data" / "manifests" / "leaderboards" / "leaderboard_release_contract_v1.json"
-    receipt_path = root / "data" / "manifests" / "leaderboards" / "MONEYSWEEP_LEADERBOARD_CERTIFICATION.json"
-    scope_path = root / "data" / "manifests" / "leaderboards" / "leaderboard_certification_scope_v1.json"
+    release_path = _producer_artifact(
+        root,
+        "PRII_MONEYSWEEP_LEADERBOARD_STAGED_RELEASE",
+        "data/manifests/leaderboards/leaderboard_release_contract_v1.json",
+    )
+    receipt_path = _producer_artifact(
+        root,
+        "PRII_MONEYSWEEP_LEADERBOARD_STAGED_RECEIPT",
+        "data/manifests/leaderboards/MONEYSWEEP_LEADERBOARD_CERTIFICATION.json",
+    )
+    scope_path = _producer_artifact(
+        root,
+        "PRII_MONEYSWEEP_LEADERBOARD_STAGED_SCOPE",
+        "data/manifests/leaderboards/leaderboard_certification_scope_v1.json",
+    )
     _require_or_skip(release_path)
     _require_or_skip(receipt_path)
     _require_or_skip(scope_path)
@@ -86,10 +109,26 @@ def test_current_money_sweep_release_and_receipt_fail_closed_together():
 
 def test_exact_producer_package_replay_when_materialized(tmp_path: Path, monkeypatch):
     root = _producer_root()
-    package_path = root / "data" / "exports" / "leaderboards" / "leaderboard_package.json"
-    receipt_path = root / "data" / "manifests" / "leaderboards" / "MONEYSWEEP_LEADERBOARD_CERTIFICATION.json"
-    release_path = root / "data" / "manifests" / "leaderboards" / "leaderboard_release_contract_v1.json"
-    scope_path = root / "data" / "manifests" / "leaderboards" / "leaderboard_certification_scope_v1.json"
+    package_path = _producer_artifact(
+        root,
+        "PRII_MONEYSWEEP_LEADERBOARD_STAGED_PACKAGE",
+        "data/exports/leaderboards/leaderboard_package.json",
+    )
+    receipt_path = _producer_artifact(
+        root,
+        "PRII_MONEYSWEEP_LEADERBOARD_STAGED_RECEIPT",
+        "data/manifests/leaderboards/MONEYSWEEP_LEADERBOARD_CERTIFICATION.json",
+    )
+    release_path = _producer_artifact(
+        root,
+        "PRII_MONEYSWEEP_LEADERBOARD_STAGED_RELEASE",
+        "data/manifests/leaderboards/leaderboard_release_contract_v1.json",
+    )
+    scope_path = _producer_artifact(
+        root,
+        "PRII_MONEYSWEEP_LEADERBOARD_STAGED_SCOPE",
+        "data/manifests/leaderboards/leaderboard_certification_scope_v1.json",
+    )
     for path in (package_path, receipt_path, release_path, scope_path):
         _require_or_skip(path)
 
@@ -119,11 +158,45 @@ def test_strict_crossrepo_mode_requires_all_producer_contract_files():
     required = [
         root / "schemas" / "leaderboard_export_package.schema.json",
         root / "scripts" / "leaderboard_release_provenance.py",
-        root / "data" / "manifests" / "leaderboards" / "leaderboard_release_contract_v1.json",
-        root / "data" / "manifests" / "leaderboards" / "MONEYSWEEP_LEADERBOARD_CERTIFICATION.json",
-        root / "data" / "manifests" / "leaderboards" / "leaderboard_certification_scope_v1.json",
+        _producer_artifact(
+            root,
+            "PRII_MONEYSWEEP_LEADERBOARD_STAGED_RELEASE",
+            "data/manifests/leaderboards/leaderboard_release_contract_v1.json",
+        ),
+        _producer_artifact(
+            root,
+            "PRII_MONEYSWEEP_LEADERBOARD_STAGED_RECEIPT",
+            "data/manifests/leaderboards/MONEYSWEEP_LEADERBOARD_CERTIFICATION.json",
+        ),
+        _producer_artifact(
+            root,
+            "PRII_MONEYSWEEP_LEADERBOARD_STAGED_SCOPE",
+            "data/manifests/leaderboards/leaderboard_certification_scope_v1.json",
+        ),
         root / "data" / "manifests" / "leaderboards" / "debt_history_source_refs_v1.json",
-        root / "data" / "exports" / "leaderboards" / "leaderboard_package.json",
+        _producer_artifact(
+            root,
+            "PRII_MONEYSWEEP_LEADERBOARD_STAGED_PACKAGE",
+            "data/exports/leaderboards/leaderboard_package.json",
+        ),
     ]
     missing = [str(path) for path in required if not path.exists()]
     assert not missing, f"missing required MoneySweep leaderboard producer contract files: {missing}"
+
+
+
+def test_staged_producer_artifact_overrides_are_explicit(tmp_path: Path, monkeypatch):
+    root = tmp_path / "producer"
+    staged = tmp_path / "stage" / "receipt.json"
+    monkeypatch.setenv("PRII_MONEYSWEEP_LEADERBOARD_STAGED_RECEIPT", str(staged))
+    assert _producer_artifact(
+        root,
+        "PRII_MONEYSWEEP_LEADERBOARD_STAGED_RECEIPT",
+        "data/manifests/leaderboards/MONEYSWEEP_LEADERBOARD_CERTIFICATION.json",
+    ) == staged.resolve()
+    monkeypatch.delenv("PRII_MONEYSWEEP_LEADERBOARD_STAGED_RECEIPT")
+    assert _producer_artifact(
+        root,
+        "PRII_MONEYSWEEP_LEADERBOARD_STAGED_RECEIPT",
+        "data/manifests/leaderboards/MONEYSWEEP_LEADERBOARD_CERTIFICATION.json",
+    ) == root / "data/manifests/leaderboards/MONEYSWEEP_LEADERBOARD_CERTIFICATION.json"
