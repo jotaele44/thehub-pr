@@ -112,6 +112,11 @@ and documentation-drift gates are defined under `governance/` and enforced by
 `.github/workflows/federation-governance.yml`. Undeclared dependencies and unresolved impacted-repo
 compatibility fail closed.
 
+Every repository also runs the shared `docs-sync` gate (`tools/check_docs_sync.py`, configured per
+repository by `.federation/docs-sync.json`): a change to paths a document covers must update that
+document, and no change may leave a document pointing at a path that no longer exists. The checker
+is rendered from `federation-templates/baseline/`; ADR 0010 records the decision.
+
 ## Decision records
 
 Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
@@ -122,3 +127,6 @@ Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
 - [ADR 0004 — Federation governance layer](docs/adr/0004-federation-governance-layer.md):
   make cross-repo dependencies, contract compatibility, impact disposition, and documentation
   synchronization machine-enforced merge gates.
+- [ADR 0010 — Change-coupled documentation gate](docs/adr/0010-change-coupled-documentation-gate.md):
+  generalize ADR 0004's documentation-drift rule into one shared checker that requires a document
+  to change with the paths it covers and forbids new dangling references.
