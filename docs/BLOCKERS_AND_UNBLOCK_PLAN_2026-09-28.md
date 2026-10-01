@@ -4,6 +4,16 @@
 
 **Post-audit update (2026-09-28 20:35Z):** between 02:54Z and 03:32Z the owner pushed the record_cell_binding v0.2 series straight to `main` in thehub and the producers. X-05 is rewritten because all six Cell_Set PRs now conflict with `main`, and X-10 is added because `main` lint is red in four producers.
 
+**Resolution update (2026-10-01):**
+
+- **X-05 is resolved.** The six superseded Cell_Set PRs (moneysweep #623, aguayluz #299, skywatcher #328, centinelas #161, ovnis #160 and thehub #314) were closed on 2026-09-28 at 20:38Z.
+- **X-10 is resolved.** The one-line ruff fix merged on `main` on 2026-09-28 in centinelas #162 (`f279922`), aguayluz #300 (`f1a346d`), skywatcher #329 (`9702ca6`) and ovnis #161 (`f61790c`), after moneysweep #625.
+- **Found after the audit: the shared `pip-audit` workflow passed without auditing anything** in aguayluz, skywatcher and spiderweb.
+  - `uv export` emitted hashes. pip then aborted on the federation's unhashable `name @ git+…` packages, and `continue-on-error` reported the job green.
+  - As a result, spiderweb's plan, which lists pip-audit among its green checks, recorded a false pass.
+  - The template is fixed in thehub #323 (`f646398`). centinelas #165, ovnis #166, skywatcher #333 and spiderweb #397 re-render it, and aguayluz follows after its maplibre-gl 6 PR.
+  - A scan that cannot run now fails the job, while findings stay report-only.
+
 This document lists every blocker the repositories, their CI, and their GitHub issues and pull requests recorded as of the audit date, then gives an ordered plan to clear them. It changes no code, gate, ledger, pin, or status file. It has two parts:
 
 - **Part A** covers blockers that span the federation (`X-nn`). Producer documents point here for them.
