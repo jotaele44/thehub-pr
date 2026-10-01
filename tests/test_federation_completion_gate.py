@@ -210,6 +210,8 @@ def test_max_prs_marks_non_certifying_truncated_partial(monkeypatch, tmp_path):
             return {"sha": SHA}
         if "/pulls?state=open" in url:
             return _two_open_prs()
+        if url.endswith("/pulls/7"):
+            return {"mergeable_state": "clean"}
         if "/check-runs" in url:
             return {"check_runs": []}
         if "/compare/" in url:
@@ -292,3 +294,73 @@ def test_resume_retries_only_audit_exception_with_frozen_inputs(monkeypatch, tmp
     assert ledger["resume_source_sha256"] == hashlib.sha256(prior_path.read_bytes()).hexdigest()
     assert ledger["resumed_rows"] == ["owner/repo#7"]
     assert ledger["rows"][0]["state"] == "MERGE_READY"
+
+
+def test_base_drift_alone_no_longer_forces_rebase_required(monkeypatch, tmp_path):
+    """main moves many times a day; a PR merely behind it, with no real conflict and
+    green current-merge-result CI, must resolve MERGE_READY, not REBASE_REQUIRED."""
+    config = _write_config(tmp_path)
+    out = tmp_path / "ledger.json"
+    drifted_pr = _one_open_pr()[0]  # base.sha == SHA, but observed main below is "f"*40
+
+    def request_json(url, token, *, method="GET", body=None):
+        if url.endswith("/commits/main"):
+            return {"sha": "f" * 40}
+        if "/pulls?state=open" in url:
+            return [drifted_pr]
+        if url.endswith("/pulls/7"):
+            return {"mergeable_state": "clean"}
+        if "/check-runs" in url:
+            return {"check_runs": [{"name": "ci", "status": "completed", "conclusion": "success"}]}
+        if "/compare/" in url:
+            return {"merge_base_commit": {"sha": SHA}, "files": []}
+        if "/pulls/7/files" in url:
+            return []
+        raise AssertionError(url)
+
+    monkeypatch.setenv("GITHUB_TOKEN", "token")
+    monkeypatch.setattr(gate, "request_json", request_json)
+    monkeypatch.setattr(gate, "unresolved_threads", lambda *args: 0)
+    monkeypatch.setattr(sys, "argv", [
+        "federation_completion_gate.py", "--config", str(config), "--out", str(out),
+    ])
+
+    assert gate.main() == 0
+    ledger = json.loads(out.read_text())
+    assert ledger["rows"][0]["state"] == "MERGE_READY"
+    assert any(r.startswith("BASE_DRIFT:") for r in ledger["rows"][0]["reasons"])
+
+
+def test_rebase_required_still_fires_on_a_real_merge_conflict(monkeypatch, tmp_path):
+    """A PR GitHub itself reports as unmergeable (dirty) must still fail closed as
+    REBASE_REQUIRED, regardless of base-SHA drift."""
+    config = _write_config(tmp_path)
+    out = tmp_path / "ledger.json"
+    conflicted_pr = _one_open_pr()[0]
+
+    def request_json(url, token, *, method="GET", body=None):
+        if url.endswith("/commits/main"):
+            return {"sha": "f" * 40}
+        if "/pulls?state=open" in url:
+            return [conflicted_pr]
+        if url.endswith("/pulls/7"):
+            return {"mergeable_state": "dirty"}
+        if "/check-runs" in url:
+            return {"check_runs": [{"name": "ci", "status": "completed", "conclusion": "success"}]}
+        if "/compare/" in url:
+            return {"merge_base_commit": {"sha": SHA}, "files": []}
+        if "/pulls/7/files" in url:
+            return []
+        raise AssertionError(url)
+
+    monkeypatch.setenv("GITHUB_TOKEN", "token")
+    monkeypatch.setattr(gate, "request_json", request_json)
+    monkeypatch.setattr(gate, "unresolved_threads", lambda *args: 0)
+    monkeypatch.setattr(sys, "argv", [
+        "federation_completion_gate.py", "--config", str(config), "--out", str(out),
+    ])
+
+    assert gate.main() == 0
+    ledger = json.loads(out.read_text())
+    assert ledger["rows"][0]["state"] == "REBASE_REQUIRED"
+    assert "REAL_MERGE_CONFLICT" in ledger["rows"][0]["reasons"]

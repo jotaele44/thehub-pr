@@ -238,10 +238,23 @@ def classify(repo_full: str, pr: dict[str, Any], observed_main_sha: str, token: 
         if overlap:
             reasons.append(f"CURRENT_MAIN_PATH_OVERLAP:{len(overlap)}")
 
+    # Base-SHA drift alone is not evidence of a real problem: main here advances many
+    # times a day (scheduled refreshes, bot commits), so a PR's recorded base is almost
+    # always behind the live tip regardless of whether it would still merge cleanly.
+    # GitHub's own mergeable_state is the authoritative signal for an actual conflict.
+    mergeable_state: str | None = None
+    if base_ref == "main":
+        pr_detail = request_json(f"{API}/repos/{owner}/{repo}/pulls/{number}", token)
+        mergeable_state = pr_detail.get("mergeable_state")
+        if mergeable_state == "dirty":
+            reasons.append("REAL_MERGE_CONFLICT")
+        elif mergeable_state in (None, "unknown"):
+            reasons.append("MERGEABLE_UNKNOWN")
+
     if state == "UNRESOLVED":
         if base_ref != "main":
             state = "STACKED"
-        elif base_sha != observed_main_sha:
+        elif mergeable_state == "dirty":
             state = "REBASE_REQUIRED"
         elif pr.get("draft"):
             state = "BLOCKED"
