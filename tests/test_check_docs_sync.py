@@ -667,6 +667,23 @@ def test_hook_stops_nagging_after_a_few_rounds_and_leaves_it_to_ci(tmp_path, cap
     assert hook(monkeypatch, capsys, repo, session_id="s2")[1]["decision"] == "block"
 
 
+def test_hook_counts_from_zero_when_its_state_file_is_unusable(tmp_path, capsys, monkeypatch):
+    repo, _ = make_repo(tmp_path)
+    repo.write("server/routes.py", "x = 1\n")
+    state = repo.root / ".git" / mod.HOOK_STATE_FILE
+    assert hook(monkeypatch, capsys, repo, session_id="s1")[1]["decision"] == "block"
+    good = json.loads(state.read_text(encoding="utf-8"))
+
+    # Whatever is in the file, the hook must neither crash nor wave the change through.
+    wrong_counts = (json.dumps({**good, "blocks": "many"}), json.dumps({**good, "blocks": None}))
+    for unusable in ("{not json", "[1, 2]", *wrong_counts):
+        state.write_text(unusable, encoding="utf-8")
+        code, decision = hook(monkeypatch, capsys, repo, session_id="s1")
+        assert code == 0 and decision["decision"] == "block", unusable
+        # ...and it has started a fresh count rather than inheriting garbage.
+        assert json.loads(state.read_text(encoding="utf-8"))["blocks"] == 1
+
+
 def test_hook_is_silent_where_it_has_nothing_to_enforce(tmp_path, capsys, monkeypatch):
     plain = tmp_path / "plain"
     plain.mkdir()

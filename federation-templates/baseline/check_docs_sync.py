@@ -867,11 +867,12 @@ def _hook_blocks_so_far(state_path: Path | None, session: str, key: str) -> int:
         return 0
     try:
         state = json.loads(state_path.read_text(encoding="utf-8"))
-        if state.get("session") == session and state.get("key") == key:
-            return int(state.get("blocks", 0))
-    except (OSError, ValueError, AttributeError):
-        pass
-    return 0
+        same_round = state.get("session") == session and state.get("key") == key
+        return int(state.get("blocks", 0)) if same_round else 0
+    except (OSError, ValueError, TypeError, AttributeError):
+        # No state yet, or a file that is not ours: this is the first block of a
+        # round. Starting over is safe because CI, not this hook, is the authority.
+        return 0
 
 
 def run_agent_hook(root_arg: str | None, manifest_rel: str, stdin_text: str) -> int:
