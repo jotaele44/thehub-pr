@@ -270,7 +270,7 @@ def test_resume_retries_only_audit_exception_with_frozen_inputs(monkeypatch, tmp
 
     def request_json(url, token, *, method="GET", body=None):
         if url.endswith("/pulls/7"):
-            return _one_open_pr()[0]
+            return {**_one_open_pr()[0], "mergeable_state": "clean"}
         if "/check-runs" in url:
             return {"check_runs": [{"name": "test", "status": "completed", "conclusion": "success"}]}
         if "/compare/" in url:
@@ -364,3 +364,83 @@ def test_rebase_required_still_fires_on_a_real_merge_conflict(monkeypatch, tmp_p
     ledger = json.loads(out.read_text())
     assert ledger["rows"][0]["state"] == "REBASE_REQUIRED"
     assert "REAL_MERGE_CONFLICT" in ledger["rows"][0]["reasons"]
+
+
+def test_unknown_mergeability_fails_closed_after_retry_budget(monkeypatch, tmp_path):
+    """GitHub returns mergeable_state "unknown" while it computes the real answer, even
+    for genuinely conflicted PRs. If it is still unknown after the retry budget, the PR
+    must NOT fall through to MERGE_READY just because its merge-result CI is green."""
+    config = _write_config(tmp_path)
+    out = tmp_path / "ledger.json"
+    pr = _one_open_pr()[0]
+    pulls_calls = 0
+
+    def request_json(url, token, *, method="GET", body=None):
+        nonlocal pulls_calls
+        if url.endswith("/commits/main"):
+            return {"sha": "f" * 40}
+        if "/pulls?state=open" in url:
+            return [pr]
+        if url.endswith("/pulls/7"):
+            pulls_calls += 1
+            return {"mergeable_state": "unknown"}
+        if "/check-runs" in url:
+            return {"check_runs": [{"name": "ci", "status": "completed", "conclusion": "success"}]}
+        if "/compare/" in url:
+            return {"merge_base_commit": {"sha": SHA}, "files": []}
+        if "/pulls/7/files" in url:
+            return []
+        raise AssertionError(url)
+
+    monkeypatch.setenv("GITHUB_TOKEN", "token")
+    monkeypatch.setattr(gate, "request_json", request_json)
+    monkeypatch.setattr(gate, "unresolved_threads", lambda *args: 0)
+    monkeypatch.setattr(gate.time, "sleep", lambda _: None)
+    monkeypatch.setattr(sys, "argv", [
+        "federation_completion_gate.py", "--config", str(config), "--out", str(out),
+    ])
+
+    assert gate.main() == 0
+    ledger = json.loads(out.read_text())
+    assert ledger["rows"][0]["state"] == "BLOCKED"
+    assert "MERGEABLE_UNKNOWN_AFTER_RETRY" in ledger["rows"][0]["reasons"]
+    assert pulls_calls == gate.MERGEABLE_POLL_ATTEMPTS
+
+
+def test_unknown_mergeability_resolves_once_a_definitive_answer_arrives(monkeypatch, tmp_path):
+    """If polling gets a definitive mergeable_state before the retry budget is spent,
+    classify() uses that answer rather than giving up early."""
+    config = _write_config(tmp_path)
+    out = tmp_path / "ledger.json"
+    pr = _one_open_pr()[0]
+    pulls_calls = 0
+
+    def request_json(url, token, *, method="GET", body=None):
+        nonlocal pulls_calls
+        if url.endswith("/commits/main"):
+            return {"sha": "f" * 40}
+        if "/pulls?state=open" in url:
+            return [pr]
+        if url.endswith("/pulls/7"):
+            pulls_calls += 1
+            return {"mergeable_state": "unknown" if pulls_calls == 1 else "clean"}
+        if "/check-runs" in url:
+            return {"check_runs": [{"name": "ci", "status": "completed", "conclusion": "success"}]}
+        if "/compare/" in url:
+            return {"merge_base_commit": {"sha": SHA}, "files": []}
+        if "/pulls/7/files" in url:
+            return []
+        raise AssertionError(url)
+
+    monkeypatch.setenv("GITHUB_TOKEN", "token")
+    monkeypatch.setattr(gate, "request_json", request_json)
+    monkeypatch.setattr(gate, "unresolved_threads", lambda *args: 0)
+    monkeypatch.setattr(gate.time, "sleep", lambda _: None)
+    monkeypatch.setattr(sys, "argv", [
+        "federation_completion_gate.py", "--config", str(config), "--out", str(out),
+    ])
+
+    assert gate.main() == 0
+    ledger = json.loads(out.read_text())
+    assert ledger["rows"][0]["state"] == "MERGE_READY"
+    assert pulls_calls == 2
