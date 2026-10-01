@@ -186,6 +186,26 @@ def main_overlap(owner: str, repo: str, base_ref: str, head_sha: str, number: in
     return sorted(changed_paths(owner, repo, number, token) & main_paths)
 
 
+MERGEABLE_POLL_ATTEMPTS = 3
+MERGEABLE_POLL_DELAY_SECONDS = 2
+
+
+def resolve_mergeable_state(owner: str, repo: str, number: int, token: str) -> str | None:
+    # GitHub computes mergeable_state asynchronously; a fresh or just-updated PR commonly
+    # reads "unknown" for a few seconds, including genuinely conflicted ones. Poll a bounded
+    # number of times for a definitive answer; the caller must treat a still-unknown result
+    # as "not cleared," never as "no conflict."
+    state: str | None = None
+    for attempt in range(MERGEABLE_POLL_ATTEMPTS):
+        pr_detail = request_json(f"{API}/repos/{owner}/{repo}/pulls/{number}", token)
+        state = pr_detail.get("mergeable_state")
+        if state not in (None, "unknown"):
+            return state
+        if attempt < MERGEABLE_POLL_ATTEMPTS - 1:
+            time.sleep(MERGEABLE_POLL_DELAY_SECONDS)
+    return state
+
+
 def classify(repo_full: str, pr: dict[str, Any], observed_main_sha: str, token: str) -> Disposition:
     owner, repo = repo_full.split("/", 1)
     number = int(pr["number"])
@@ -238,11 +258,27 @@ def classify(repo_full: str, pr: dict[str, Any], observed_main_sha: str, token: 
         if overlap:
             reasons.append(f"CURRENT_MAIN_PATH_OVERLAP:{len(overlap)}")
 
+    # Base-SHA drift alone is not evidence of a real problem: main here advances many
+    # times a day (scheduled refreshes, bot commits), so a PR's recorded base is almost
+    # always behind the live tip regardless of whether it would still merge cleanly.
+    # GitHub's own mergeable_state is the authoritative signal for an actual conflict.
+    mergeable_state: str | None = None
+    if base_ref == "main":
+        mergeable_state = resolve_mergeable_state(owner, repo, number, token)
+        if mergeable_state == "dirty":
+            reasons.append("REAL_MERGE_CONFLICT")
+        elif mergeable_state in (None, "unknown"):
+            reasons.append("MERGEABLE_UNKNOWN_AFTER_RETRY")
+
     if state == "UNRESOLVED":
         if base_ref != "main":
             state = "STACKED"
-        elif base_sha != observed_main_sha:
+        elif mergeable_state == "dirty":
             state = "REBASE_REQUIRED"
+        elif mergeable_state in (None, "unknown"):
+            # Fail closed: never presume MERGE_READY without a definitive mergeability
+            # answer from GitHub, even if the merge-result CI happens to read green.
+            state = "BLOCKED"
         elif pr.get("draft"):
             state = "BLOCKED"
         elif not merge_sha or merge_total == 0 or merge_bad or threads:
