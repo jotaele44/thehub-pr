@@ -1,5 +1,5 @@
 {
-  "candidate_count": 1175,
+  "candidate_count": 1176,
   "candidates": [
     {
       "id": "analysis_module:scripts/adjudicate_htr_census.py",
@@ -730,6 +730,14 @@
       "path": "scripts/federation_completion_gate.py",
       "signal": "ANALYSIS_NOT_GUI_RENDERED",
       "symbol": "request_json"
+    },
+    {
+      "id": "analysis_symbol:scripts/federation_completion_gate.py:resolve_mergeable_state",
+      "kind": "analysis_symbol",
+      "line": 193,
+      "path": "scripts/federation_completion_gate.py",
+      "signal": "ANALYSIS_NOT_GUI_RENDERED",
+      "symbol": "resolve_mergeable_state"
     },
     {
       "id": "analysis_symbol:scripts/federation_completion_gate.py:resume_audit",
@@ -8969,7 +8977,7 @@
   "repository": "jotaele44/thehub-pr",
   "schema_version": "prii.gui-parity-baseline/v1",
   "signal_counts": {
-    "ANALYSIS_NOT_GUI_RENDERED": 337,
+    "ANALYSIS_NOT_GUI_RENDERED": 338,
     "BACKEND_NOT_GUI_SURFACED": 574,
     "DEAD_CONTROL": 5,
     "GUI_NOT_BACKEND_WIRED": 222,
