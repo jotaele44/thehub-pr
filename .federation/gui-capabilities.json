@@ -162,6 +162,26 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "federation-completion-gate",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "CI merge-readiness gate for federation PRs (directive §35 exception 1: internal build/developer utility). It reads GitHub check-run and mergeability state; it is not an operator workflow.",
+      "analysis": {
+        "files": [
+          "scripts/federation_completion_gate.py"
+        ],
+        "symbols": [
+          "scripts/federation_completion_gate.py:resolve_mergeable_state"
+        ]
+      },
+      "tests": {
+        "unit": [
+          "tests/test_federation_completion_gate.py"
+        ]
+      }
     }
   ],
   "exceptions": []
