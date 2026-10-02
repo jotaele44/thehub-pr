@@ -31,7 +31,7 @@
         "existing_equivalent": {"type": ["string", "null"]},
         "implementation_status": {"enum": ["EXISTING", "EXTEND", "NEW", "NOT_APPLICABLE", "BLOCKED"]},
         "phase": {"type": "integer", "minimum": 1, "maximum": 10},
-        "delivery_state": {"enum": ["ALREADY_PRESENT", "SCHEDULED_THIS_RUN", "PARTIAL_THIS_RUN", "IMPLEMENTED_THIS_RUN", "DEFERRED", "BLOCKED", "NOT_APPLICABLE"]},
+        "delivery_state": {"enum": ["ALREADY_PRESENT", "SCHEDULED_THIS_RUN", "PARTIAL_THIS_RUN", "IMPLEMENTED_THIS_RUN", "SCHEDULED_RUN_2", "PARTIAL_RUN_2", "IMPLEMENTED_RUN_2", "DEFERRED", "BLOCKED", "NOT_APPLICABLE"]},
         "aliases": {"type": "array", "items": {"type": "string", "minLength": 1}},
         "notes": {"type": ["string", "null"]},
         "rationale": {"type": "string", "minLength": 1},

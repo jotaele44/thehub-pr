@@ -150,13 +150,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "OVNIS has no chronological event view; hub timeline component exists.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "OVNIS has no chronological event view; hub timeline component exists. Run 2 (Phase 4): \"Timeline\" in the Overview navigation group opens /timeline.",
       "live_bundle_corroboration": {
         "file": "assets/index-D1Tgc0Rg.js",
         "label": "TIMELINE"
@@ -6613,13 +6618,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /timeline orders the OVNIS case observations the Hub store holds.",
       "live_bundle_corroboration": {
         "file": "assets/index-D1Tgc0Rg.js",
         "label": "EVENT TIMELINE"
@@ -6643,13 +6653,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): chronological ledger keyed on the case's own date_local, at its recorded precision; undated cases are listed last and counted.",
       "live_bundle_corroboration": null
     },
     {
@@ -6670,13 +6685,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): oldest first sorts on the period start; on the same start a coarser record (year) precedes a finer one (date).",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -6708,13 +6728,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): newest first reverses dated events; undated cases stay last.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -6746,13 +6771,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): the control ships and reports NO_FINDINGS_RECORDED until OVNIS publishes findings through its research ledger (P4-B2); no case is shown as a finding.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -6822,13 +6852,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): category filter over OVNIS object_type; the UAP label is OVNIS's own.",
       "live_bundle_corroboration": null
     },
     {
@@ -6913,13 +6948,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Federation-native label 'Mutilation'.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Federation-native label 'Mutilation'. Run 2 (Phase 4): the filter shows OVNIS's own 'Mutilation' category; the Twin 'Cattle' label is not copied.",
       "live_bundle_corroboration": null
     },
     {
@@ -7052,13 +7092,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): events in the Hub's store, matches, undated and synthetic-excluded counts, and per-category totals.",
       "live_bundle_corroboration": null
     },
     {
@@ -7079,13 +7124,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): the summary reports the count of OVNIS findings recorded (0 until P4-B2).",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -7117,13 +7167,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): vertical timeline grouped by era (decade of the recorded year).",
       "live_bundle_corroboration": null
     },
     {
@@ -7144,13 +7199,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Date-only / month / year-only events must never acquire invented precision.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Date-only / month / year-only events must never acquire invented precision. Run 2 (Phase 4): the date is shown exactly as recorded with its precision in words (year only / month / date / date and time); no precision is invented.",
       "live_bundle_corroboration": null
     },
     {
@@ -7171,13 +7231,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): category badge from object_type; environment kept on the event.",
       "live_bundle_corroboration": null
     },
     {
@@ -7198,13 +7263,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py",
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): OVNIS has no title field; the title is the source's own location text, falling back to the case id.",
       "live_bundle_corroboration": null
     },
     {
@@ -7225,13 +7295,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/timeline",
-        "status": "PLANNED"
+        "status": "EXISTS"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
       "delivery_state": "ALREADY_PRESENT",
-      "tests": [],
-      "notes": null,
+      "tests": [
+        "server/frontend/src/pages/Timeline.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "tests/test_event_timeline.py",
+        "tests/test_timeline_api.py"
+      ],
+      "notes": "Run 2 (Phase 4): the ledger description is exported (ovnis-pr #171) and rendered as the event narrative on /timeline; a case with none says so.",
       "live_bundle_corroboration": null
     },
     {
@@ -8038,7 +8113,8 @@
     "by_delivery_state": {
       "ALREADY_PRESENT": 14,
       "BLOCKED": 4,
-      "DEFERRED": 179,
+      "DEFERRED": 165,
+      "IMPLEMENTED_RUN_2": 14,
       "IMPLEMENTED_THIS_RUN": 16,
       "NOT_APPLICABLE": 5,
       "PARTIAL_THIS_RUN": 5

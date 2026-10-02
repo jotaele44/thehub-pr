@@ -31,14 +31,23 @@ IN_SCOPE_REPOS = frozenset(
 # delivery_state values that claim work inside run 1 (Phases 1-3).
 RUN1_DELIVERY_STATES = frozenset({"SCHEDULED_THIS_RUN", "PARTIAL_THIS_RUN", "IMPLEMENTED_THIS_RUN"})
 RUN1_PHASES = frozenset({1, 2, 3})
+# Run 2 (Phase 4, OVNIS). Each run's states may only be claimed by rows of that
+# run's phases, so a later run never rewrites what an earlier run delivered.
+RUN2_DELIVERY_STATES = frozenset({"SCHEDULED_RUN_2", "PARTIAL_RUN_2", "IMPLEMENTED_RUN_2"})
+RUN2_PHASES = frozenset({4})
+RUN_PHASES: Mapping[str, frozenset] = {
+    **{state: RUN1_PHASES for state in RUN1_DELIVERY_STATES},
+    **{state: RUN2_PHASES for state in RUN2_DELIVERY_STATES},
+}
+IMPLEMENTED_STATES = frozenset({"IMPLEMENTED_THIS_RUN", "IMPLEMENTED_RUN_2"})
 
 # implementation_status -> the delivery_state values it may carry.
 _ALLOWED_DELIVERY: Mapping[str, frozenset] = {
     "EXISTING": frozenset({"ALREADY_PRESENT"}),
     "NOT_APPLICABLE": frozenset({"NOT_APPLICABLE"}),
     "BLOCKED": frozenset({"BLOCKED"}),
-    "EXTEND": RUN1_DELIVERY_STATES | {"DEFERRED"},
-    "NEW": RUN1_DELIVERY_STATES | {"DEFERRED"},
+    "EXTEND": RUN1_DELIVERY_STATES | RUN2_DELIVERY_STATES | {"DEFERRED"},
+    "NEW": RUN1_DELIVERY_STATES | RUN2_DELIVERY_STATES | {"DEFERRED"},
 }
 
 OBSERVED_RELPATH = Path("federation/twin/TWIN_OBSERVED_CAPABILITY_MANIFEST_V1.json")
@@ -80,8 +89,10 @@ def _disposition_errors(row: Mapping[str, Any], label: str) -> List[str]:
         errors.append(f"{label}: BLOCKED requires a blocker")
     if status in ("EXISTING", "EXTEND") and not str(row.get("existing_equivalent") or "").strip():
         errors.append(f"{label}: {status} requires an existing_equivalent path")
-    if delivery in RUN1_DELIVERY_STATES and row.get("phase") not in RUN1_PHASES:
-        errors.append(f"{label}: delivery_state {delivery!r} claims run-1 work but phase is {row.get('phase')!r}")
+    run_phases = RUN_PHASES.get(str(delivery))
+    if run_phases is not None and row.get("phase") not in run_phases:
+        run = "run-1" if delivery in RUN1_DELIVERY_STATES else "run-2"
+        errors.append(f"{label}: delivery_state {delivery!r} claims {run} work but phase is {row.get('phase')!r}")
     return errors
 
 
@@ -118,8 +129,8 @@ def validate_observed(doc: Mapping[str, Any], schema: Optional[Mapping[str, Any]
             errors.append(f"{label}: producer must equal canonical_repo (exactly one canonical owner)")
         if row.get("implementation_status") == "NEW" and "search_terms_without_equivalent" not in row:
             errors.append(f"{label}: NEW requires search_terms_without_equivalent")
-        if row.get("delivery_state") == "IMPLEMENTED_THIS_RUN" and not row.get("tests"):
-            errors.append(f"{label}: IMPLEMENTED_THIS_RUN requires tests")
+        if row.get("delivery_state") in IMPLEMENTED_STATES and not row.get("tests"):
+            errors.append(f"{label}: {row.get('delivery_state')} requires tests")
         errors.extend(_disposition_errors(row, label))
     for module in doc.get("unrecorded_bundle_modules") or []:
         if module.get("counted_in_denominator") is not False or module.get("evidence_status") != "NOT_OBSERVED":
@@ -205,6 +216,9 @@ def reconcile_derived(doc: Mapping[str, Any]) -> Dict[str, Any]:
         "DERIVED_ALREADY_PRESENT": delivery["ALREADY_PRESENT"],
         "DERIVED_BLOCKED": delivery["BLOCKED"],
         "DERIVED_DEFERRED": delivery["DEFERRED"],
+        "DERIVED_IMPLEMENTED_RUN_2": delivery["IMPLEMENTED_RUN_2"],
+        "DERIVED_PARTIAL_RUN_2": delivery["PARTIAL_RUN_2"],
+        "DERIVED_SCHEDULED_RUN_2": delivery["SCHEDULED_RUN_2"],
         "by_implementation_status": _counts(rows, "implementation_status"),
         "by_canonical_repo": _counts(rows, "canonical_repo"),
         "by_phase": _counts(rows, "phase"),
