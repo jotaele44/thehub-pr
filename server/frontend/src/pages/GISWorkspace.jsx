@@ -1,8 +1,10 @@
 import React, { useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Database, Globe2, HardDrive, Image as ImageIcon, Layers, Map as MapIcon, RefreshCw, ShieldCheck, Upload } from 'lucide-react';
 import { ingestGeoJSONFile } from '@/gis/ingestGeoJSON';
 import { acquireOnlineSource, acquireRasterAsset } from '@/gis/acquisitionFacade';
 import { compareRendererEquivalence, createCanonicalMapState, switchRenderMode } from '@/gis/contracts';
+import { initialMapState } from '@/gis/deepLinkView';
 import { buildRasterPreview } from '@/gis/rasterPreview';
 import RendererSurface from '@/gis/renderers/RendererSurface';
 import { GEOSPATIAL_PROVIDERS, GIS_RUNTIME_RESPONSIBILITIES, ONLINE_SOURCE_CATALOG, listOnlineSourceDefinitions } from '@/gis/sourceRegistry';
@@ -33,7 +35,9 @@ export default function GISWorkspace() {
   const [renderNotice, setRenderNotice] = useState(null);
   const [rasterPreview, setRasterPreview] = useState(null);
   const [basemapId, setBasemapId] = useState('cartoDark');
-  const [mapState, setMapState] = useState(INITIAL_STATE);
+  const [searchParams] = useSearchParams();
+  const [deepLink] = useState(() => initialMapState(searchParams, INITIAL_STATE));
+  const [mapState, setMapState] = useState(deepLink.state);
   const [lastEquivalence, setLastEquivalence] = useState(null);
   const [acquisitionMode, setAcquisitionMode] = useState('device');
   const [onlineProviderId, setOnlineProviderId] = useState(DEFAULT_PROVIDER_ID);
@@ -169,6 +173,7 @@ export default function GISWorkspace() {
         <div>
           <div className="flex items-center gap-2"><Layers className="h-5 w-5" /><h1 className="text-xl font-semibold">Federation GIS Workspace</h1></div>
           <p className="mt-1 text-sm text-muted-foreground">Device or authoritative online acquisition → RAW/query/snapshot provenance → renderer-independent canonical state.</p>
+          {deepLink.notice ? <p role="status" className="mt-1 text-xs text-muted-foreground" data-map-deep-link>{deepLink.notice}</p> : null}
         </div>
         <div className="rounded-lg border border-border bg-card px-3 py-2 text-xs">
           <div className="flex items-center gap-1.5 font-medium"><ShieldCheck className="h-3.5 w-3.5" />Renderer state</div>
