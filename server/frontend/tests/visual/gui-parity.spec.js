@@ -228,3 +228,49 @@ test.describe('entity page', () => {
     await expect(page.getByRole('alert')).toContainText('The Hub holds no entity ent_missing');
   });
 });
+
+const TIMELINE_EVENT = {
+  evidence_id: 'evo:observations:obs_1', observation_id: 'obs_1', entity_id: 'ent_1', case_id: 'PRUAP-0001',
+  title: 'Offshore', category: 'USO', environment: 'underwater', date: '1927-10-06', time: null,
+  temporal_precision: 'DATE_ONLY', era: '1920s', narrative: 'Shipping barge crew reported a submerged blue light.',
+  place: { municipality: null, location_name: 'Offshore' }, evidence_tier: 'T3', source_id: 'src_1',
+  source: { source_id: 'src_1', name: 'Dartmouth Alumni Magazine', url: 'https://example.org/article', evidence_href: '/evidence/Sources/src_1' },
+  producers: ['ovnis-pr'], synthetic: false, findings: [],
+  evidence_href: '/evidence/Observations/obs_1', entity_href: '/entity/ent_1',
+};
+const TIMELINE_RESPONSE = {
+  contract: 'federation-event-timeline-v1', producer: 'ovnis-pr', producer_status: 'AVAILABLE', sort: 'oldest',
+  categories: [{ category: 'UAP', count: 1 }, { category: 'USO', count: 1 }], selected_categories: [],
+  findings_only: false, include_synthetic: false, loaded_events: 2, excluded_synthetic: 0, matched: 2, undated: 0,
+  findings_total: 0, findings_status: 'NO_FINDINGS_RECORDED',
+  events: [TIMELINE_EVENT, {
+    ...TIMELINE_EVENT, evidence_id: 'evo:observations:obs_2', observation_id: 'obs_2', entity_id: 'ent_2', case_id: null,
+    title: 'Cabo Rojo', category: 'UAP', date: '1967', temporal_precision: 'YEAR_ONLY', era: '1960s',
+    evidence_href: '/evidence/Observations/obs_2', entity_href: '/entity/ent_2',
+  }],
+  next_cursor: null,
+};
+
+test.describe('event timeline', () => {
+  test('is reachable from navigation and keeps each date at its recorded precision', async ({ page }) => {
+    await mockApi(page, { '/timeline': TIMELINE_RESPONSE });
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'Timeline', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Event Timeline' })).toBeVisible();
+    await expect(page.locator('[data-timeline-summary]')).toContainText("2 events in this Hub's store");
+    const yearOnly = page.locator('[data-timeline-event="obs_2"]');
+    await expect(yearOnly.locator('time')).toHaveText('1967');
+    await expect(yearOnly.locator('[data-temporal-precision]')).toHaveText('year only');
+    await expect(page.locator('[data-timeline-event="obs_1"]').getByRole('link', { name: 'Provenance', exact: true }))
+      .toHaveAttribute('href', '/evidence/Observations/obs_1');
+    await page.getByRole('button', { name: 'Newest first' }).click();
+    await expect(page).toHaveURL(/\/timeline\?sort=newest$/);
+  });
+
+  test('findings-only mode says no findings are recorded', async ({ page }) => {
+    await mockApi(page, { '/timeline': { ...TIMELINE_RESPONSE, findings_only: true, events: [], matched: 0 } });
+    await page.goto('/timeline?findings=1', { waitUntil: 'networkidle' });
+    await expect(page.locator('[data-findings-status="NO_FINDINGS_RECORDED"]')).toBeVisible();
+    await expect(page.locator('[data-timeline-event]')).toHaveCount(0);
+  });
+});

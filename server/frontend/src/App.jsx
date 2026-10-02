@@ -51,6 +51,7 @@ const OperatorSettings = lazy(() => import('@/pages/OperatorSettings'));
 const EvidenceInspector = lazy(() => import('@/pages/EvidenceInspector'));
 const SearchPage = lazy(() => import('@/pages/Search'));
 const EntityPage = lazy(() => import('@/pages/EntityPage'));
+const TimelinePage = lazy(() => import('@/pages/Timeline'));
 
 const AppRoutes = () => {
   const { isLoadingPublicSettings, appPublicSettings } = useAuth();
@@ -114,6 +115,7 @@ const AppRoutes = () => {
             <Route path="/evidence/:collection/:id" element={<EvidenceInspector />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/entity/:id" element={<EntityPage />} />
+            <Route path="/timeline" element={<TimelinePage />} />
             <Route path="/spiderweb" element={<Spiderweb />} />
             <Route path="/ovnis" element={<Ovnis />} />
             <Route path="/aguayluz" element={<AguaYLuz />} />

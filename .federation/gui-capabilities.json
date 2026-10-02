@@ -354,6 +354,59 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "ovnis-event-timeline",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Event timeline over the OVNIS case corpus (TWIN-003, TWIN-180..200; directive section 13): chronological ledger with oldest/newest sort, category filters and totals, a findings-only mode that reports NO_FINDINGS_RECORDED until OVNIS publishes findings, dates at their recorded precision, source-bounded places, and every event linked to its source, Evidence Object and case composition.",
+      "backend": {
+        "files": [
+          "server/backend/timeline_api.py",
+          "src/hub/event_timeline.py",
+          "server/backend/main.py"
+        ],
+        "symbols": [
+          "server/backend/timeline_api.py:timeline",
+          "src/hub/event_timeline.py:TimelineEvent",
+          "src/hub/event_timeline.py:build_timeline",
+          "src/hub/event_timeline.py:era",
+          "src/hub/event_timeline.py:is_timeline_row",
+          "src/hub/event_timeline.py:parse_cursor",
+          "src/hub/event_timeline.py:recorded_date"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/timeline"
+        ],
+        "e2e_routes": [
+          "/timeline"
+        ],
+        "components": [
+          "server/frontend/src/pages/Timeline.jsx",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/lib/commands.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_timeline_api.py"
+        ],
+        "contract": [
+          "tests/test_event_timeline.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/Timeline.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
     }
   ],
   "exceptions": []
