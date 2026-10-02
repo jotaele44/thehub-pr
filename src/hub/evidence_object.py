@@ -73,6 +73,11 @@ def _first(row: Mapping[str, Any], fields: tuple) -> Optional[str]:
     return None
 
 
+def record_title(row: Mapping[str, Any], fallback: str) -> str:
+    """Human label for a stream row: its first populated name/title field."""
+    return _first(row, _TITLE_FIELDS) or fallback
+
+
 def _contradictions(row: Mapping[str, Any], errors: List[str]) -> List[Dict[str, Any]]:
     """Pass through well-formed producer contradictions; report (never repair) malformed ones."""
     out: List[Dict[str, Any]] = []
@@ -161,7 +166,7 @@ def project_evidence_object(
         "producer_repo": producer,
         "producers": producers or [producer],
         "producer_record_id": record_id,
-        "title": _first(row, _TITLE_FIELDS) or record_id,
+        "title": record_title(row, record_id),
         "raw_source_ids": raw_source_ids,
         "manifestations": [{"producer_repo": p, "stream": stream, "record_id": record_id} for p in (producers or [producer])],
         "data_stage": stage,
