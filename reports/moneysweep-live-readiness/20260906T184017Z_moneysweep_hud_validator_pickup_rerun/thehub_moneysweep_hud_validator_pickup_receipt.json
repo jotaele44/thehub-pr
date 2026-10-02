@@ -1,0 +1,21 @@
+{
+  "by_blocker": {
+    "declared_not_live": 2,
+    "missing_export_package": 4
+  },
+  "certification_boundary": "not all-seven certification",
+  "gates": {
+    "aggregate": "PASS_WITH_MISSING_PACKAGE_WARNINGS",
+    "focused_tests": "PASS_19",
+    "validate_federation": "PASS_EXECUTION_WITH_READY_COUNT_0",
+    "validate_package": "PASS"
+  },
+  "lumen_status": "LUMEN_UNAVAILABLE_OR_UNHEALTHY; bounded local inspection used",
+  "moneysweep_head": "fca326476f9811553888c4cc02a1fff20cc303fe",
+  "moneysweep_origin_main": "fca326476f9811553888c4cc02a1fff20cc303fe",
+  "ready_count": 0,
+  "receipt_type": "thehub_moneysweep_hud_validator_pickup",
+  "result_state": "PROVISIONAL_PICKUP_PASS_WITH_DECLARED_BLOCKERS",
+  "run_id": "20260906T184017Z_moneysweep_hud_validator_pickup_rerun",
+  "thehub_head_at_gate": "94e000b5e0f21a5d1acaed42e79e73523c86ab56"
+}

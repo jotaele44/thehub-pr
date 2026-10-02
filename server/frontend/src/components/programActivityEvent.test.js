@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { PROGRAM_ACTIVITY_EVENT_VERSION as V, appendProgramActivityEvent, declaredEvents, mergeProgramActivity, readLiveProgramActivity, verifyCanonicalRoutes } from "./programActivityEvent";
 
-const declared=[{id:"fn",phase:"NOW",title:"Declared",detail:"d",category:"c",href:"/ok"}];
+const declared=[{id:"fn",phase:"NOW",title:"Declared",detail:"d",category:"c",href:"/activity"}];
 const event=(overrides={})=>({
   schema:V,eventId:"evt-1",producerId:"app",functionId:"fn",eventType:"RUNTIME_STATE",
   title:"Live",detail:"d",category:"c",state:"NOW",priority:0,scheduledAt:null,
-  observedAt:"2026-09-26T12:00:00.000Z",canonicalRoute:"/ok",
+  observedAt:"2026-09-26T12:00:00.000Z",canonicalRoute:"/activity",
   provenance:{sourceId:"src-1",sourceType:"AUTHORITATIVE_RUNTIME"},source:"LIVE",...overrides,
 });
 
@@ -32,7 +32,8 @@ describe("PROGRAM_ACTIVITY_EVENT/v1",()=>{
     expect(mergeProgramActivity("app",declared,[event()],Date.parse("2026-10-10T12:00:00Z"))[0].state).toBe("UNRESOLVED");
     let raw=JSON.stringify([event({canonicalRoute:"https://bad.example"})]); const storage={getItem:()=>raw};
     expect(readLiveProgramActivity("app",storage)).toEqual([]);
-    expect(verifyCanonicalRoutes([event(),event({eventId:"evt-2",canonicalRoute:"/missing"})],["/ok"])).toEqual([{eventId:"evt-2",route:"/missing"}]);
+    expect(verifyCanonicalRoutes([event(),event({eventId:"evt-2",canonicalRoute:"/missing"})],["/activity"])).toEqual([{eventId:"evt-2",route:"/missing"}]);
+    expect(readLiveProgramActivity("app",{getItem:()=>JSON.stringify([event({canonicalRoute:"/missing"})])})).toEqual([]);
     expect(mergeProgramActivity("app",[],[],0)).toEqual([]);
   });
 });

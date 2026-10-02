@@ -1,0 +1,15 @@
+.header { min-height:64px; display:grid; grid-template-columns:minmax(250px,1fr) auto minmax(250px,1fr); align-items:center; gap:var(--zip-spacing-4); padding:0 var(--zip-spacing-6); background:var(--zip-sidebar); color:var(--zip-sidebar-foreground); border-bottom:1px solid color-mix(in srgb,var(--zip-sidebar-foreground) 14%,transparent); position:sticky; top:0; z-index:20; }
+.brandBlock { display:flex; align-items:center; gap:var(--zip-spacing-3); min-width:0; color:inherit; text-decoration:none; }
+.mark { width:34px; height:34px; display:grid; place-items:center; border:1px solid color-mix(in srgb,var(--zip-sidebar-foreground) 42%,transparent); background:color-mix(in srgb,var(--zip-sidebar-foreground) 6%,transparent); }
+.brand { font-weight:700; letter-spacing:.12em; font-size:.92rem; line-height:1; }
+.brandSub { font-family:var(--zip-font-family-monospace); font-size:.63rem; opacity:.62; letter-spacing:.07em; margin-top:5px; white-space:nowrap; }
+.nav { display:flex; align-items:center; gap:2px; }
+.navLink { padding:.55rem .7rem; color:color-mix(in srgb,var(--zip-sidebar-foreground) 72%,transparent); text-decoration:none; font-size:.75rem; border-bottom:2px solid transparent; transition:color var(--zip-animation-duration-fast),background var(--zip-animation-duration-fast),border-color var(--zip-animation-duration-fast); }
+.navLink:hover { color:var(--zip-sidebar-foreground); background:color-mix(in srgb,var(--zip-sidebar-foreground) 6%,transparent); }
+.active { color:var(--zip-sidebar-foreground); background:color-mix(in srgb,var(--zip-sidebar-foreground) 10%,transparent); border-bottom-color:var(--zip-accent); }
+.headerTools { justify-self:end; display:flex; gap:var(--zip-spacing-3); align-items:center; }
+.snapshot { font-family:var(--zip-font-family-monospace); font-size:.62rem; opacity:.62; }.snapshot span{opacity:.9}
+@media(max-width:1100px){.header{grid-template-columns:1fr auto}.nav{order:3;grid-column:1/-1;padding-bottom:8px;justify-content:center;overflow-x:auto}.headerTools{justify-self:end}}
+@media(max-width:720px){.header{padding:10px var(--zip-spacing-3)}.brandSub,.snapshot{display:none}.nav{justify-content:flex-start}.navLink{white-space:nowrap}}
+/* Reserve the fixed notification control hit area at every breakpoint. */
+.header { padding-right: 64px; }

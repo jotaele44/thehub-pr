@@ -1,0 +1,396 @@
+{
+  "artifact_sha256": {
+    "remote_completion_ledger": "e84d952d1656de6f48c8a898229b91c2f7ac951d8e8ba9fe5105acb8dd66bffe",
+    "startup_completion_ledger": "9257ae24c844d510cbce5f5cbb77e69b8bfc76b7fe95a39096b6b47a29df4196"
+  },
+  "artifacts": {
+    "remote_completion_ledger": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260905T152023Z/remote-completion-ledger.json",
+    "startup_completion_ledger": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260905T152023Z/startup/startup_completion_audit.json",
+    "summary": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260905T152023Z/summary.json"
+  },
+  "certification": "AUDIT_ONLY",
+  "commands": [
+    {
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
+        "/Users/jotaele/fed-repos/thehub-pr/scripts/federation_completion_gate.py",
+        "--config",
+        "/Users/jotaele/fed-repos/thehub-pr/federation/completion-gate.json",
+        "--out",
+        "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260905T152023Z/remote-completion-ledger.json",
+        "--fail-on-actionable"
+      ],
+      "exit_code": 3,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260905T152023Z/logs/remote-completion-gate.log",
+      "name": "remote-completion-gate"
+    },
+    {
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
+        "/Users/jotaele/fed-repos/thehub-pr/scripts/startup_completion_audit.py",
+        "--root",
+        "/Users/jotaele/fed-repos",
+        "--out",
+        "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260905T152023Z/startup",
+        "--timeout",
+        "120"
+      ],
+      "exit_code": 0,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260905T152023Z/logs/startup-completion-audit.log",
+      "name": "startup-completion-audit"
+    }
+  ],
+  "generated_utc": "2026-09-05T15:27:29Z",
+  "remote_gate": {
+    "actionable_counts": {
+      "REBASE_REQUIRED": 7
+    },
+    "audit_truncated": false,
+    "by_repo": {
+      "jotaele44/aguayluz-pr": {
+        "BLOCKED": 7,
+        "REBASE_REQUIRED": 1
+      },
+      "jotaele44/moneysweep-pr": {
+        "BLOCKED": 4
+      },
+      "jotaele44/ovnis-pr": {
+        "BLOCKED": 1
+      },
+      "jotaele44/skywatcher-pr": {
+        "BLOCKED": 1,
+        "REBASE_REQUIRED": 2
+      },
+      "jotaele44/spiderweb-pr": {
+        "BLOCKED": 4
+      },
+      "jotaele44/thehub-pr": {
+        "BLOCKED": 6,
+        "REBASE_REQUIRED": 4
+      }
+    },
+    "certification": "FAIL_ACTIONABLE_RESIDUE",
+    "counts": {
+      "BLOCKED": 23,
+      "REBASE_REQUIRED": 7
+    },
+    "errors": [],
+    "open_pr_denominator": 30,
+    "open_pr_denominator_complete": true
+  },
+  "repo_snapshots_after_fetch": [
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 0,
+      "dirty_status": [],
+      "head_sha": "3678271a03e36375dc3e9f2fb4da0b6b655622bd",
+      "origin_main_sha": "3678271a03e36375dc3e9f2fb4da0b6b655622bd",
+      "path": "/Users/jotaele/fed-repos/aguayluz-pr",
+      "remote_url": "https://github.com/jotaele44/aguayluz-pr.git",
+      "repo_id": "aguayluz-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 0,
+      "dirty_status": [],
+      "head_sha": "caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+      "origin_main_sha": "caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+      "path": "/Users/jotaele/fed-repos/centinelas-pr",
+      "remote_url": "https://github.com/jotaele44/centinelas-pr.git",
+      "repo_id": "centinelas-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 0,
+      "dirty_status": [],
+      "head_sha": "74b10245f925bfd9b9ea07b2ce986981d5d65525",
+      "origin_main_sha": "74b10245f925bfd9b9ea07b2ce986981d5d65525",
+      "path": "/Users/jotaele/fed-repos/moneysweep-pr",
+      "remote_url": "https://github.com/jotaele44/moneysweep-pr.git",
+      "repo_id": "moneysweep-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 5,
+      "dirty_status": [
+        "M dashboard/src/lib/snapshot.json",
+        " M scripts/build_snapshot.py",
+        " M server/backend/main.py",
+        "A  server/backend/payloads.py",
+        "A  tests/test_build_snapshot.py"
+      ],
+      "head_sha": "68b87366207cb3fe249814ee6611a03b18d67a6b",
+      "origin_main_sha": "68b87366207cb3fe249814ee6611a03b18d67a6b",
+      "path": "/Users/jotaele/fed-repos/ovnis-pr-actual",
+      "remote_url": "https://github.com/jotaele44/ovnis-pr.git",
+      "repo_id": "ovnis-pr-actual"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 0,
+      "dirty_status": [],
+      "head_sha": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "origin_main_sha": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "path": "/Users/jotaele/fed-repos/skywatcher-pr",
+      "remote_url": "https://github.com/jotaele44/skywatcher-pr.git",
+      "repo_id": "skywatcher-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 0,
+      "dirty_status": [],
+      "head_sha": "f46546ef24c7dc2164b3f203d1af57e7d2570219",
+      "origin_main_sha": "f46546ef24c7dc2164b3f203d1af57e7d2570219",
+      "path": "/Users/jotaele/fed-repos/spiderweb-pr",
+      "remote_url": "https://github.com/jotaele44/spiderweb-pr.git",
+      "repo_id": "spiderweb-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 5,
+      "dirty_status": [
+        "M scripts/startup_completion_audit.py",
+        " M tests/test_startup_completion_audit.py",
+        "?? reports/federation-completion/",
+        "?? scripts/federation_completion_runner.py",
+        "?? tests/test_federation_completion_runner.py"
+      ],
+      "head_sha": "94e000b5e0f21a5d1acaed42e79e73523c86ab56",
+      "origin_main_sha": "94e000b5e0f21a5d1acaed42e79e73523c86ab56",
+      "path": "/Users/jotaele/fed-repos/thehub-pr",
+      "remote_url": "https://github.com/jotaele44/thehub-pr.git",
+      "repo_id": "thehub-pr"
+    }
+  ],
+  "repo_snapshots_before_fetch": [
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 0,
+      "dirty_status": [],
+      "head_sha": "3678271a03e36375dc3e9f2fb4da0b6b655622bd",
+      "origin_main_sha": "3678271a03e36375dc3e9f2fb4da0b6b655622bd",
+      "path": "/Users/jotaele/fed-repos/aguayluz-pr",
+      "remote_url": "https://github.com/jotaele44/aguayluz-pr.git",
+      "repo_id": "aguayluz-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 0,
+      "dirty_status": [],
+      "head_sha": "caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+      "origin_main_sha": "caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+      "path": "/Users/jotaele/fed-repos/centinelas-pr",
+      "remote_url": "https://github.com/jotaele44/centinelas-pr.git",
+      "repo_id": "centinelas-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 0,
+      "dirty_status": [],
+      "head_sha": "74b10245f925bfd9b9ea07b2ce986981d5d65525",
+      "origin_main_sha": "74b10245f925bfd9b9ea07b2ce986981d5d65525",
+      "path": "/Users/jotaele/fed-repos/moneysweep-pr",
+      "remote_url": "https://github.com/jotaele44/moneysweep-pr.git",
+      "repo_id": "moneysweep-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 5,
+      "dirty_status": [
+        "M dashboard/src/lib/snapshot.json",
+        " M scripts/build_snapshot.py",
+        " M server/backend/main.py",
+        "A  server/backend/payloads.py",
+        "A  tests/test_build_snapshot.py"
+      ],
+      "head_sha": "68b87366207cb3fe249814ee6611a03b18d67a6b",
+      "origin_main_sha": "68b87366207cb3fe249814ee6611a03b18d67a6b",
+      "path": "/Users/jotaele/fed-repos/ovnis-pr-actual",
+      "remote_url": "https://github.com/jotaele44/ovnis-pr.git",
+      "repo_id": "ovnis-pr-actual"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 0,
+      "dirty_status": [],
+      "head_sha": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "origin_main_sha": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "path": "/Users/jotaele/fed-repos/skywatcher-pr",
+      "remote_url": "https://github.com/jotaele44/skywatcher-pr.git",
+      "repo_id": "skywatcher-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 0,
+      "dirty_status": [],
+      "head_sha": "f46546ef24c7dc2164b3f203d1af57e7d2570219",
+      "origin_main_sha": "f46546ef24c7dc2164b3f203d1af57e7d2570219",
+      "path": "/Users/jotaele/fed-repos/spiderweb-pr",
+      "remote_url": "https://github.com/jotaele44/spiderweb-pr.git",
+      "repo_id": "spiderweb-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 5,
+      "dirty_status": [
+        "M scripts/startup_completion_audit.py",
+        " M tests/test_startup_completion_audit.py",
+        "?? reports/federation-completion/",
+        "?? scripts/federation_completion_runner.py",
+        "?? tests/test_federation_completion_runner.py"
+      ],
+      "head_sha": "94e000b5e0f21a5d1acaed42e79e73523c86ab56",
+      "origin_main_sha": "94e000b5e0f21a5d1acaed42e79e73523c86ab56",
+      "path": "/Users/jotaele/fed-repos/thehub-pr",
+      "remote_url": "https://github.com/jotaele44/thehub-pr.git",
+      "repo_id": "thehub-pr"
+    }
+  ],
+  "root": "/Users/jotaele/fed-repos",
+  "run_id": "20260905T152023Z",
+  "schema_version": "federation_completion_runner.v1",
+  "startup_audit": {
+    "arithmetic": {
+      "classified": 7,
+      "closed": true,
+      "counts": {
+        "BLOCKED": 3,
+        "FAIL": 4
+      },
+      "total": 7
+    },
+    "product_arithmetic": {
+      "classified": 7,
+      "closed": true,
+      "counts": {
+        "BLOCKED_FOR_PRODUCT_COMPLETION": 7
+      },
+      "total": 7
+    },
+    "product_completion_certification": "PROVISIONAL",
+    "repositories": [
+      {
+        "product_completion_blockers": [
+          "startup_setup_state:FAIL"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "PRODUCTION_REAL_DATA_PARTIAL",
+        "ready_for_hub_live_execution": true,
+        "repo_id": "aguayluz-pr",
+        "startup_setup_blockers": [
+          "test_suite:FAIL"
+        ],
+        "startup_setup_state": "FAIL"
+      },
+      {
+        "product_completion_blockers": [
+          "startup_setup_state:FAIL"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "PRODUCTION",
+        "ready_for_hub_live_execution": true,
+        "repo_id": "centinelas-pr",
+        "startup_setup_blockers": [
+          "export_canonical:FAIL"
+        ],
+        "startup_setup_state": "FAIL"
+      },
+      {
+        "product_completion_blockers": [
+          "startup_setup_state:FAIL",
+          "manual-source Tranche B remains partial/unresolved for hud_drgr_authorized; prasa, pr_cabilderos, and oficina_contralor were source-drop staged or parsed and materialized in reports/live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/",
+          "cor3 live endpoints return no data (portal likely requires JavaScript rendering); manual CSV export fallback documented",
+          "PR-gov scraper-needed queue: 13 of 15 sources promoted to api_producer; 2 true stubs remain (hacienda_sut_ivu, pr_act_154_excise)",
+          "PROPUBLICA_API_KEY not supplied (nonprofits adapter)",
+          "source-count wording must stay reconciled to reports/materialization_readiness.json truth",
+          "MANIFEST_READY_FOR_HUB_LIVE_EXECUTION_FALSE"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "NON_PRODUCTION_DIAGNOSTIC",
+        "ready_for_hub_live_execution": false,
+        "repo_id": "moneysweep-pr",
+        "startup_setup_blockers": [
+          "test_suite:BLOCKED"
+        ],
+        "startup_setup_state": "FAIL"
+      },
+      {
+        "product_completion_blockers": [
+          "startup_setup_state:BLOCKED"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "PRODUCTION",
+        "ready_for_hub_live_execution": true,
+        "repo_id": "ovnis-pr",
+        "startup_setup_blockers": [
+          "setup:setup skipped by audit policy; use --run-setup to execute"
+        ],
+        "startup_setup_state": "BLOCKED"
+      },
+      {
+        "product_completion_blockers": [
+          "startup_setup_state:BLOCKED",
+          "scaled bounded non-synthetic bbox/icon proof package exists (3 reviewed visible-icon screenshots with approximate capture geometry), but full live observation export remains blocked pending media identity reconciliation and completed capture-geometry review",
+          "canonical export adapter (scripts/federation_export.py) projects observations->entities/sources/relationships; production live readiness remains blocked until the reviewed non-synthetic corpus is materially complete and unresolved media identities are adjudicated",
+          "external imagery acquisition and production model execution are pending migration to TheHub under ADR 0006; the existing local imagery MCP and direct-provider vision path are deprecated but retained until parity, dual-run, rollback, GUI and retirement gates pass",
+          "FR24 ingest pipeline is now in-tree (fr24/); ILAP intake still requires FlightRadar24 screenshot/track inputs supplied locally (external data gap)",
+          "MANIFEST_READY_FOR_HUB_LIVE_EXECUTION_FALSE"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "NON_PRODUCTION_DIAGNOSTIC",
+        "ready_for_hub_live_execution": false,
+        "repo_id": "skywatcher-pr",
+        "startup_setup_blockers": [
+          "setup:setup skipped by audit policy; use --run-setup to execute"
+        ],
+        "startup_setup_state": "BLOCKED"
+      },
+      {
+        "product_completion_blockers": [
+          "startup_setup_state:FAIL"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "PRODUCTION",
+        "ready_for_hub_live_execution": true,
+        "repo_id": "spiderweb-pr",
+        "startup_setup_blockers": [
+          "test_suite:FAIL"
+        ],
+        "startup_setup_state": "FAIL"
+      },
+      {
+        "product_completion_blockers": [
+          "startup_setup_state:BLOCKED"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": null,
+        "ready_for_hub_live_execution": null,
+        "repo_id": "thehub-pr",
+        "startup_setup_blockers": [
+          "setup:setup skipped by audit policy; use --run-setup to execute"
+        ],
+        "startup_setup_state": "BLOCKED"
+      }
+    ],
+    "startup_setup_certification": "PROVISIONAL"
+  },
+  "tooling": {
+    "lumen": "UNAVAILABLE_NOT_EXPOSED",
+    "mode": "remote_pr_gate_plus_startup_product_audit",
+    "python_shim_dir": "/var/folders/0p/s67bd63s0cbdzz4rtd6_sm2m0000gn/T/federation-python-shim-sn3dzwqh"
+  }
+}

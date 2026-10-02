@@ -563,6 +563,10 @@ DIAGNOSTIC_STUB_REASONS: dict[str, str] = {
         "Binary file storage is not provisioned in diagnostic mode; this hub "
         "build retains no upload backend."
     ),
+    "integrations": (
+        "External integration services are not provisioned in diagnostic mode; "
+        "configure a provider backend before using this feature."
+    ),
 }
 
 
@@ -600,10 +604,10 @@ async def agents_stub(path: str, request: Request):
 
 @app.api_route("/api/integrations/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
 async def integrations_stub(path: str, request: Request):
-    return {"message": f"Integration {path!r} not configured"}
+    return _diagnostic_stub("integrations", integration=path)
 
 
-@app.post("/api/files/upload")
+@app.post("/api/files/upload", dependencies=_WRITE_GUARD)
 async def files_upload() -> dict[str, Any]:
     return _diagnostic_stub("files", file_id=str(uuid.uuid4()))
 
@@ -664,7 +668,12 @@ async def project_signs_generate(request: Request):
 try:
     from server.backend.mcp_api import build_mcp_api, create_default_hub_router
 
-    app.include_router(build_mcp_api(create_default_hub_router()))
+    app.include_router(
+        build_mcp_api(
+            create_default_hub_router(),
+            write_authorizer=require_write_access,
+        )
+    )
 except Exception as _mcp_exc:  # pragma: no cover - defensive mount guard
     import logging as _logging
 

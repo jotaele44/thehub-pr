@@ -31,6 +31,9 @@ export default function Sources() {
     { key: "retrieved_date", label: "Retrieved Date", type: "date" },
     { key: "url", label: "URL", full: true },
     { key: "archive_ref", label: "Archive Ref" },
+    { key: "source_hash", label: "Source Hash" },
+    { key: "source_commit", label: "Source Commit" },
+    { key: "review_status", label: "Review Status" },
     { key: "reliability", label: "Reliability", type: "select", options: ["Low", "Medium", "High", "Unknown"], required: true },
     { key: "verification_status", label: "Verification", type: "select", options: ["Unreviewed", "Verified", "Disputed", "Rejected"], required: true },
     { key: "sensitivity", label: "Sensitivity", type: "select", options: ["Public", "Internal", "Restricted"], required: true },
@@ -58,6 +61,7 @@ export default function Sources() {
     { key: "evidence_tier", label: "Tier", render: (r) => <StatusChip map={TIER} value={r.evidence_tier} /> },
     { key: "reliability", label: "Reliability", render: (r) => <StatusChip map={REVIEW_STATUS} value={r.reliability} /> },
     { key: "verification_status", label: "Verification", render: (r) => <StatusChip map={VERIFICATION} value={r.verification_status} /> },
+    { key: "source_hash", label: "Hash", render: (r) => <IdCode>{r.source_hash || "—"}</IdCode> },
     { key: "url", label: "Link", sortable: false, render: (r) => r.url ? <a href={r.url} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-status-info-fg inline-flex"><ExternalLink className="h-4 w-4" /></a> : <span className="text-muted-foreground">—</span> },
   ];
 

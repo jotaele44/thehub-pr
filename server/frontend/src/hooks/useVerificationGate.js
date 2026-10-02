@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { federation } from "@/api/federationClient";
 import { useEntityData } from "@/hooks/useEntityData";
+import { requireReviewerEmail } from "@/lib/reviewerIdentity";
 
 // Statuses that still require an analyst verification decision before promotion.
 const PENDING = ["New", "Updated", "NeedsReview"];
@@ -29,8 +29,7 @@ export function useVerificationGate() {
 
   // Mark an item Verified — stamps reviewer + timestamp so the gate is auditable.
   async function verify(item, note) {
-    let reviewer = null;
-    try { reviewer = (await federation.auth.me())?.email || null; } catch { reviewer = null; }
+    const reviewer = await requireReviewerEmail();
     await update(item.id, {
       sync_status: "Verified",
       verified_by: reviewer,

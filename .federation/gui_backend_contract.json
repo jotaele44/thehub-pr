@@ -1,0 +1,2465 @@
+{
+  "schema_version": "federation.gui-backend-contract/1.0",
+  "repository": "Jotaele44/thehub-pr",
+  "source_commit": "2631a14ba6832c2dccfd09406d90a404eb9d99be",
+  "policy": {
+    "require_zero_material_residue": true,
+    "dimensions": [
+      "executability",
+      "semantic",
+      "state",
+      "auth",
+      "data",
+      "provenance",
+      "device",
+      "identity",
+      "geometry",
+      "authority"
+    ]
+  },
+  "discovery": {
+    "backend_roots": [
+      "server/backend",
+      "desktop",
+      "src/hub"
+    ],
+    "frontend_roots": [
+      "server/frontend/src"
+    ],
+    "route_files": [
+      "server/frontend/src/App.jsx"
+    ],
+    "navigation_files": [
+      "server/frontend/src/App.jsx",
+      "server/frontend/src/lib/nav.js",
+      "server/frontend/src/components/layout/Sidebar.jsx",
+      "server/frontend/src/components/layout/MobileNav.jsx"
+    ],
+    "existing_gui_capability_manifests": []
+  },
+  "authority": {
+    "semantic_authority": "federation-control-and-cross-domain-orchestration-only",
+    "mutation_authority": "federation-control-plane-only",
+    "identity_authority": "federation-linkage-and-discovery-not-domain-identity",
+    "geometry_authority": "none-consumer-of-spiderweb",
+    "provenance_authority": "federation-receipts-and-cross-domain-query-provenance"
+  },
+  "auth": {
+    "mutating_route_policy": "require_guard_or_explicit_public",
+    "guard_patterns": [
+      "_WRITE_GUARD",
+      "_authorize",
+      "_require_loopback",
+      "require_session",
+      "Depends\\(",
+      "require_admin",
+      "require_write",
+      "dependencies\\s*="
+    ],
+    "explicit_public_mutations": [],
+    "read_only_post_routes": [
+      {
+        "route": "POST /api/entities/{entity_name}/filter",
+        "rationale": "This endpoint only filters in-memory entity rows and returns the matching data; it does not perform writes.",
+        "evidence": [
+          "server/backend/main_core.py:484-495"
+        ]
+      }
+    ]
+  },
+  "provenance": {
+    "required_fields_when_available": [],
+    "frontend_evidence_files": [
+      "server/frontend/src/pages/Sources.jsx",
+      "server/frontend/src/pages/Manifest.jsx",
+      "server/frontend/src/pages/RecentActivity.jsx"
+    ]
+  },
+  "devices": {
+    "desktop": true,
+    "mobile_web": true,
+    "native_ios": false,
+    "native_evidence_files": [],
+    "intentional_restrictions": []
+  },
+  "backend_only_allowlist": [
+    {
+      "pattern": "GET /launcher",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "desktop/app_server.py:22"
+      ]
+    },
+    {
+      "pattern": "GET /api/local/federation",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "desktop/launcher_api.py:144"
+      ]
+    },
+    {
+      "pattern": "GET /api/local/federation/icon/{repo}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "desktop/launcher_api.py:149"
+      ]
+    },
+    {
+      "pattern": "POST /api/local/launch/{repo}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "desktop/launcher_api.py:161"
+      ]
+    },
+    {
+      "pattern": "GET /{full_path:path}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "packages/prii_desktop/src/prii_desktop/appserver.py:165"
+      ]
+    },
+    {
+      "pattern": "POST /api/federation-manager/session",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:198"
+      ]
+    },
+    {
+      "pattern": "GET /api/federation-manager/apps",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:215"
+      ]
+    },
+    {
+      "pattern": "GET /api/federation-manager/apps/{app_id}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:221"
+      ]
+    },
+    {
+      "pattern": "GET /api/federation-manager/operations",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:233"
+      ]
+    },
+    {
+      "pattern": "GET /api/federation-manager/operations/accounting",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:268"
+      ]
+    },
+    {
+      "pattern": "GET /api/federation-manager/apps/{app_id}/prerequisites",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:297"
+      ]
+    },
+    {
+      "pattern": "POST /api/federation-manager/operations/{operation_id}/plan",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:307"
+      ]
+    },
+    {
+      "pattern": "POST /api/federation-manager/operations/{operation_id}/run",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:324"
+      ]
+    },
+    {
+      "pattern": "POST /api/federation-manager/runs/{run_id}/cancel",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:367"
+      ]
+    },
+    {
+      "pattern": "GET /api/federation-manager/runs/{run_id}/receipt",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:376"
+      ]
+    },
+    {
+      "pattern": "GET /api/federation-manager/receipts",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:386"
+      ]
+    },
+    {
+      "pattern": "GET /api/federation-manager/gates",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:407"
+      ]
+    },
+    {
+      "pattern": "POST /api/federation-manager/secrets",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:426"
+      ]
+    },
+    {
+      "pattern": "POST /api/federation-manager/secrets/presence",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:438"
+      ]
+    },
+    {
+      "pattern": "DELETE /api/federation-manager/secrets/{app_id}/{secret_id}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:447"
+      ]
+    },
+    {
+      "pattern": "POST /api/federation-manager/files/slots",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:463"
+      ]
+    },
+    {
+      "pattern": "DELETE /api/federation-manager/files/slots/{file_token}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:487"
+      ]
+    },
+    {
+      "pattern": "POST /api/federation-manager/runs/{run_id}/log-ticket",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:506"
+      ]
+    },
+    {
+      "pattern": "GET /api/federation-manager/runs/{run_id}/logs/{ticket}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:524"
+      ]
+    },
+    {
+      "pattern": "GET /api/federation-manager/runs/{run_id}/logs",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_api.py:565"
+      ]
+    },
+    {
+      "pattern": "GET /repositories",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/federation_manager_repository_api.py:60"
+      ]
+    },
+    {
+      "pattern": "GET /api/gis/proxy",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/gis_proxy.py:138"
+      ]
+    },
+    {
+      "pattern": "GET /health",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:267"
+      ]
+    },
+    {
+      "pattern": "GET /api/health",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:275"
+      ]
+    },
+    {
+      "pattern": "GET /api/apps/public-settings",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:280"
+      ]
+    },
+    {
+      "pattern": "GET /api/admin-companion/capabilities",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:297"
+      ]
+    },
+    {
+      "pattern": "GET /api/auth/me",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:320"
+      ]
+    },
+    {
+      "pattern": "GET /api/notifications",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:348"
+      ]
+    },
+    {
+      "pattern": "POST /api/notifications/ack",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:363"
+      ]
+    },
+    {
+      "pattern": "GET /api/notifications/preferences",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:374"
+      ]
+    },
+    {
+      "pattern": "PUT /api/notifications/preferences",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:382"
+      ]
+    },
+    {
+      "pattern": "GET /api/entities/{entity_name}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:398"
+      ]
+    },
+    {
+      "pattern": "POST /api/entities/{entity_name}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:420"
+      ]
+    },
+    {
+      "pattern": "GET /api/entities/{entity_name}/{entity_id}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:450"
+      ]
+    },
+    {
+      "pattern": "PATCH /api/entities/{entity_name}/{entity_id}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:462"
+      ]
+    },
+    {
+      "pattern": "DELETE /api/entities/{entity_name}/{entity_id}",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:485"
+      ]
+    },
+    {
+      "pattern": "POST /api/entities/{entity_name}/filter",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:496"
+      ]
+    },
+    {
+      "pattern": "POST /api/entities/{entity_name}/bulk",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:529"
+      ]
+    },
+    {
+      "pattern": "POST /api/files/upload",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:618"
+      ]
+    },
+    {
+      "pattern": "GET /api/connectors/{name}/connection",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:623"
+      ]
+    },
+    {
+      "pattern": "GET /api/project-signs",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:630"
+      ]
+    },
+    {
+      "pattern": "GET /api/project-signs/{project_id}/html",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:636"
+      ]
+    },
+    {
+      "pattern": "POST /api/project-signs/generate",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/main_core.py:644"
+      ]
+    },
+    {
+      "pattern": "GET /healthz",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/mcp_api.py:90"
+      ]
+    },
+    {
+      "pattern": "GET /readyz",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/mcp_api.py:94"
+      ]
+    },
+    {
+      "pattern": "GET /mcp/metrics",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/mcp_api.py:103"
+      ]
+    },
+    {
+      "pattern": "GET /mcp/capabilities",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/mcp_api.py:112"
+      ]
+    },
+    {
+      "pattern": "POST /mcp/route",
+      "classification": "INTERNAL",
+      "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
+      "evidence": [
+        "server/backend/mcp_api.py:133"
+      ]
+    }
+  ],
+  "gui_only_allowlist": [
+    {
+      "pattern": "server/frontend/src/components/ErrorBoundary.jsx:41:this.setState( )} style= }> Try again",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/ErrorBoundary.jsx:41"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/lib/PageNotFound.jsx:61:window.location.href = '/'} className=\"inline-flex items-center px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:b",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/lib/PageNotFound.jsx:61"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:28:exportCrossoversCsv(filtered)} disabled= > Export CSV",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:28"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/AppCenter.jsx:178:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/AppCenter.jsx:178"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/AppCenter.jsx:181:Validate",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/AppCenter.jsx:181"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/AppCenter.jsx:182:setExpanded((value) => !value)} > Technical details",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/AppCenter.jsx:182"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/AppCenter.jsx:245:Install all recommended",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/AppCenter.jsx:245"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace.jsx:184:switchMode('2d')}> 2D MapLibre",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:184"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace.jsx:185:switchMode('3d')}> 3D Cesium",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:185"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace.jsx:193:setAcquisitionMode('device')}> Device",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:193"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace.jsx:194:setAcquisitionMode('online')}> Online",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:194"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace.jsx:205:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:205"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace.jsx:214:onAcquireAsset(candidate)}> Acquire + preview",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:214"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ResearchAssistant.jsx:210:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/ResearchAssistant.jsx:210"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ResetPassword.jsx:44:Request a new link",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/ResetPassword.jsx:44"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ResetPassword.jsx:101:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/ResetPassword.jsx:101"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Operations.jsx:30:!disabled && onSelect(operation)} disabled= aria-disabled= data-operation-id= className= > \u00b7 writes )}",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.jsx:30"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Operations.jsx:330:Dry run",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.jsx:330"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Operations.jsx:333:Run",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.jsx:333"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ModuleReadiness.jsx:74:setDialogOpen(true)}> New Issue",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/ModuleReadiness.jsx:74"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ModuleReadiness.jsx:91:Load",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/ModuleReadiness.jsx:91"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Integrations.jsx:60:New Integration",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Integrations.jsx:60"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ForgotPassword.jsx:34:Back to log in",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/ForgotPassword.jsx:34"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ForgotPassword.jsx:62:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/ForgotPassword.jsx:62"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Cases.jsx:73:} > PDF",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Cases.jsx:73"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Cases.jsx:90:New Case",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Cases.jsx:90"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/OperatorSettings.jsx:100:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/OperatorSettings.jsx:100"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/OperatorSettings.jsx:153:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/OperatorSettings.jsx:153"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/OperatorSettings.jsx:185:check(connector)} disabled= > Check",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/OperatorSettings.jsx:185"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/OperatorSettings.jsx:336:Try again",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/OperatorSettings.jsx:336"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/OperatorSettings.jsx:419:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/OperatorSettings.jsx:419"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ProjectSigns.jsx:64:onPreview(sign)}> Preview",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/ProjectSigns.jsx:64"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ProjectSigns.jsx:67:Download",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/ProjectSigns.jsx:67"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ProjectSigns.jsx:118:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/ProjectSigns.jsx:118"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Dashboard.jsx:67:Review gates",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Dashboard.jsx:67"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Login.jsx:43:Create one",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Login.jsx:43"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Login.jsx:49:Continue with Google",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Login.jsx:49"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Login.jsx:94:Forgot password?",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Login.jsx:94"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Login.jsx:112:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Login.jsx:112"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Hub.jsx:21:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Hub.jsx:21"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Sources.jsx:65:e.stopPropagation()} className=\"text-status-info-fg inline-flex\">",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Sources.jsx:65"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Sources.jsx:74:New Source",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Sources.jsx:74"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Dictionary.jsx:69:New Term",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Dictionary.jsx:69"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Programs.jsx:66:New Program",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Programs.jsx:66"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Gates.jsx:62:New Gate",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Gates.jsx:62"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Tasks.jsx:115:New Task",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Tasks.jsx:115"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Register.jsx:103:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Register.jsx:103"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Register.jsx:119:Resend",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Register.jsx:119"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Register.jsx:135:Log in",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Register.jsx:135"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Register.jsx:141:Continue with Google",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Register.jsx:141"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Register.jsx:215:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Register.jsx:215"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/RecentActivity.jsx:256:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/RecentActivity.jsx:256"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Manifest.jsx:63:New Manifest",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/pages/Manifest.jsx:63"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/MessageBubble.jsx:25:setOpen((o) => !o)} className= >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/MessageBubble.jsx:25"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/MemoryPanel.jsx:25:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/MemoryPanel.jsx:25"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/MemoryPanel.jsx:36:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/MemoryPanel.jsx:36"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/ModuleChat.jsx:145:setShowMemory((s) => !s)} className= > Memory",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/ModuleChat.jsx:145"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/ModuleChat.jsx:155:Clear",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/ModuleChat.jsx:155"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/ModuleChat.jsx:213:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/ModuleChat.jsx:213"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/ResearchFindingCard.jsx:29:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/ResearchFindingCard.jsx:29"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/OperatorChat.jsx:90:New session",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/OperatorChat.jsx:90"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/OperatorChat.jsx:117:setFiles((arr) => arr.filter((_, idx) => idx !== i))}>",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/OperatorChat.jsx:117"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/OperatorChat.jsx:127:fileInputRef.current?.click()} disabled= title=\"Attach files for the operator to read\" >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/OperatorChat.jsx:127"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/OperatorChat.jsx:144:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/research/OperatorChat.jsx:144"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/ui/toast.jsx:64:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/ui/toast.jsx:64"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/tasks/ViewToggle.jsx:19:onChange(v.key)} className= >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/tasks/ViewToggle.jsx:19"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/tasks/DeadlineWarningBanner.jsx:20:onSelect?.(t)} className=\"flex items-center justify-between gap-2 text-left rounded-lg border border-status-danger/25 bg-card/60 px-3 py-2 hover:bg-card transit",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/tasks/DeadlineWarningBanner.jsx:20"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/tasks/TaskFilterBar.jsx:35:Clear",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/tasks/TaskFilterBar.jsx:35"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:44:onSelect(id)} aria-pressed= className= `} > : null} : null}",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:44"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:228:setTimeWindow(value)} className= `} >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:228"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/layout/Sidebar.jsx:11:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/layout/Sidebar.jsx:11"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/layout/MobileNav.jsx:25:Open navigation menu",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/layout/MobileNav.jsx:25"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/layout/MobileNav.jsx:35:setOpen(false)} className= >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/layout/MobileNav.jsx:35"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/cases/BriefTemplateDialog.jsx:34:setSelected(t.id)} className= `} >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/cases/BriefTemplateDialog.jsx:34"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/cases/BriefTemplateDialog.jsx:53:onOpenChange(false)}>Cancel",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/cases/BriefTemplateDialog.jsx:53"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/cases/BriefTemplateDialog.jsx:54:Generate PDF",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/cases/BriefTemplateDialog.jsx:54"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/shared/ThemeToggle.jsx:12:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/shared/ThemeToggle.jsx:12"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/shared/EntityLedger.jsx:46:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/shared/EntityLedger.jsx:46"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/shared/SearchableTable.jsx:47:toggleSort(col.key)} className=\"inline-flex items-center gap-1 hover:text-foreground transition-colors\">",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/shared/SearchableTable.jsx:47"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/shared/RecordSheet.jsx:66:onOpenChange(false)} disabled= >Cancel",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/shared/RecordSheet.jsx:66"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/shared/RecordSheet.jsx:67:Save",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/shared/RecordSheet.jsx:67"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/exports/LedgerExportRow.jsx:43:CSV",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/exports/LedgerExportRow.jsx:43"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/exports/LedgerExportRow.jsx:47:GeoJSON",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/exports/LedgerExportRow.jsx:47"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/CaseEvidenceTimeline.jsx:70:setFilter(f.key)} > } }",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/CaseEvidenceTimeline.jsx:70"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/CaseEvidenceTimeline.jsx:116:Source",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/CaseEvidenceTimeline.jsx:116"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/VerificationGatePanel.jsx:67:verify(it)}> Verify",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/VerificationGatePanel.jsx:67"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/VerificationGatePanel.jsx:70:reject(it)}> Flag",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/VerificationGatePanel.jsx:70"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/VerificationGatePanel.jsx:74:Source",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/VerificationGatePanel.jsx:74"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/TaskRollup.jsx:22:Open",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/TaskRollup.jsx:22"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/TaskRollup.jsx:67:Task control plane",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/TaskRollup.jsx:67"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/TaskRollup.jsx:73:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/TaskRollup.jsx:73"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/TaskRollup.jsx:94:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/TaskRollup.jsx:94"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/ModuleGrid.jsx:14:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/ModuleGrid.jsx:14"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/manager/SecretPresencePanel.jsx:51:)); }} > Store",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/manager/SecretPresencePanel.jsx:51"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/manager/SecretPresencePanel.jsx:65:onDelete?.(entry.secret_id)} >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/manager/SecretPresencePanel.jsx:65"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/manager/RunConsole.jsx:70:Cancel",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/manager/RunConsole.jsx:70"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/manager/RunConsole.jsx:153:Dismiss",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/manager/RunConsole.jsx:153"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/manager/RepositoryDataHealthPanel.jsx:86:operation && !disabled && onSelect(operation)} >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/manager/RepositoryDataHealthPanel.jsx:86"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/manager/OperationForm.jsx:47:onPickFile?.(slot)} >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/manager/OperationForm.jsx:47"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/crossover/CrossoverCard.jsx:73:}",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/crossover/CrossoverCard.jsx:73"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/crossover/CrossoverFilters.jsx:72:Reset",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/crossover/CrossoverFilters.jsx:72"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/github/NewIssueDialog.jsx:36:onOpenChange(false)} disabled= >Cancel",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/github/NewIssueDialog.jsx:36"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/github/NewIssueDialog.jsx:37:Create Issue",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/github/NewIssueDialog.jsx:37"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/github/IssueRow.jsx:27:onToggle(item)}>",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/github/IssueRow.jsx:27"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/github/IssueRow.jsx:31:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/github/IssueRow.jsx:31"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/StagingQueue.jsx:40:onSetStatus(it, \"Verified\")}> Verify",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/feed/StagingQueue.jsx:40"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/StagingQueue.jsx:44:onSetStatus(it, \"Promoted\")} > Promote",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/feed/StagingQueue.jsx:44"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/StagingQueue.jsx:53:onSetStatus(it, \"NeedsReview\")}> Review",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/feed/StagingQueue.jsx:53"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/StagingQueue.jsx:56:onSetStatus(it, \"Deferred\")}> Defer",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/feed/StagingQueue.jsx:56"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/StagingQueue.jsx:60:Source",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/feed/StagingQueue.jsx:60"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/LiveIndicator.jsx:54:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/feed/LiveIndicator.jsx:54"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/SourceHealthPanel.jsx:50:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/feed/SourceHealthPanel.jsx:50"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/AguaYLuzFeedTab.jsx:90:setOpen(true)}> Add Service Event",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/feed/AguaYLuzFeedTab.jsx:90"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/MoneySweepFeedTab.jsx:83:Refetch USAspending",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/feed/MoneySweepFeedTab.jsx:83"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/MoneySweepFeedTab.jsx:129:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/feed/MoneySweepFeedTab.jsx:129"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/notifications/NotificationBell.jsx:20:`} > )}",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/notifications/NotificationBell.jsx:20"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/index.jsx:57:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "federation-design/packages/react/src/index.jsx:57"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/index.jsx:74:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "federation-design/packages/react/src/index.jsx:74"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/gis/index.jsx:7:unlabeled-control",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "federation-design/packages/react/src/gis/index.jsx:7"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/gis/index.jsx:35:}>",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "federation-design/packages/react/src/gis/index.jsx:35"
+      ]
+    },
+    {
+      "pattern": "federation-design/fixture-lab/src/main.jsx:87:Keyboard target",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
+      "evidence": [
+        "federation-design/fixture-lab/src/main.jsx:87"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/ErrorBoundary\\.jsx:41:this\\.setState\\(\\ \\)\\}\\ style=\\ \\}>\\ Try\\ again",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/ErrorBoundary.jsx:41"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/FederationCrossoverWorkspace\\.jsx:28:exportCrossoversCsv\\(filtered\\)\\}\\ disabled=\\ >\\ Export\\ CSV",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:28"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/AppCenter\\.jsx:182:setExpanded\\(\\(value\\)\\ =>\\ !value\\)\\}\\ >\\ Technical\\ details",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/AppCenter.jsx:182"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace\\.jsx:184:switchMode\\('2d'\\)\\}>\\ 2D\\ MapLibre",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:184"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace\\.jsx:185:switchMode\\('3d'\\)\\}>\\ 3D\\ Cesium",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:185"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace\\.jsx:193:setAcquisitionMode\\('device'\\)\\}>\\ Device",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:193"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace\\.jsx:194:setAcquisitionMode\\('online'\\)\\}>\\ Online",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:194"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/GISWorkspace\\.jsx:214:onAcquireAsset\\(candidate\\)\\}>\\ Acquire\\ \\+\\ preview",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:214"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Operations\\.jsx:30:!disabled\\ \\&\\&\\ onSelect\\(operation\\)\\}\\ disabled=\\ aria\\-disabled=\\ data\\-operation\\-id=\\ className=\\ >\\ \u00b7\\ writes\\ \\)\\}",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.jsx:30"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ModuleReadiness\\.jsx:74:setDialogOpen\\(true\\)\\}>\\ New\\ Issue",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/ModuleReadiness.jsx:74"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/OperatorSettings\\.jsx:185:check\\(connector\\)\\}\\ disabled=\\ >\\ Check",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/OperatorSettings.jsx:185"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/ProjectSigns\\.jsx:64:onPreview\\(sign\\)\\}>\\ Preview",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/ProjectSigns.jsx:64"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Sources\\.jsx:65:e\\.stopPropagation\\(\\)\\}\\ className=\"text\\-status\\-info\\-fg\\ inline\\-flex\">",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/pages/Sources.jsx:65"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/MessageBubble\\.jsx:25:setOpen\\(\\(o\\)\\ =>\\ !o\\)\\}\\ className=\\ >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/research/MessageBubble.jsx:25"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/ModuleChat\\.jsx:145:setShowMemory\\(\\(s\\)\\ =>\\ !s\\)\\}\\ className=\\ >\\ Memory",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/research/ModuleChat.jsx:145"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/OperatorChat\\.jsx:117:setFiles\\(\\(arr\\)\\ =>\\ arr\\.filter\\(\\(_,\\ idx\\)\\ =>\\ idx\\ !==\\ i\\)\\)\\}>",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/research/OperatorChat.jsx:117"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/OperatorChat\\.jsx:127:fileInputRef\\.current\\?\\.click\\(\\)\\}\\ disabled=\\ title=\"Attach\\ files\\ for\\ the\\ operator\\ to\\ read\"\\ >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/research/OperatorChat.jsx:127"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/tasks/ViewToggle\\.jsx:19:onChange\\(v\\.key\\)\\}\\ className=\\ >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/tasks/ViewToggle.jsx:19"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/tasks/DeadlineWarningBanner\\.jsx:20:onSelect\\?\\.\\(t\\)\\}\\ className=\"flex\\ items\\-center\\ justify\\-between\\ gap\\-2\\ text\\-left\\ rounded\\-lg\\ border\\ border\\-status\\-danger/25\\ bg\\-card/60\\ px\\-3\\ py\\-2\\ hover:bg\\-card\\ transit",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/tasks/DeadlineWarningBanner.jsx:20"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/intelligence/IntelligenceWorkspace\\.jsx:44:onSelect\\(id\\)\\}\\ aria\\-pressed=\\ className=\\ `\\}\\ >\\ :\\ null\\}\\ :\\ null\\}",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:44"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/intelligence/IntelligenceWorkspace\\.jsx:228:setTimeWindow\\(value\\)\\}\\ className=\\ `\\}\\ >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:228"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/layout/MobileNav\\.jsx:35:setOpen\\(false\\)\\}\\ className=\\ >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/layout/MobileNav.jsx:35"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/cases/BriefTemplateDialog\\.jsx:34:setSelected\\(t\\.id\\)\\}\\ className=\\ `\\}\\ >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/cases/BriefTemplateDialog.jsx:34"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/cases/BriefTemplateDialog\\.jsx:53:onOpenChange\\(false\\)\\}>Cancel",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/cases/BriefTemplateDialog.jsx:53"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/shared/SearchableTable\\.jsx:47:toggleSort\\(col\\.key\\)\\}\\ className=\"inline\\-flex\\ items\\-center\\ gap\\-1\\ hover:text\\-foreground\\ transition\\-colors\">",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/shared/SearchableTable.jsx:47"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/shared/RecordSheet\\.jsx:66:onOpenChange\\(false\\)\\}\\ disabled=\\ >Cancel",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/shared/RecordSheet.jsx:66"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/CaseEvidenceTimeline\\.jsx:70:setFilter\\(f\\.key\\)\\}\\ >\\ \\}\\ \\}",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/CaseEvidenceTimeline.jsx:70"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/VerificationGatePanel\\.jsx:67:verify\\(it\\)\\}>\\ Verify",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/VerificationGatePanel.jsx:67"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/dashboard/VerificationGatePanel\\.jsx:70:reject\\(it\\)\\}>\\ Flag",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/VerificationGatePanel.jsx:70"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/manager/SecretPresencePanel\\.jsx:51:\\)\\);\\ \\}\\}\\ >\\ Store",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/manager/SecretPresencePanel.jsx:51"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/manager/SecretPresencePanel\\.jsx:65:onDelete\\?\\.\\(entry\\.secret_id\\)\\}\\ >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/manager/SecretPresencePanel.jsx:65"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/manager/RepositoryDataHealthPanel\\.jsx:86:operation\\ \\&\\&\\ !disabled\\ \\&\\&\\ onSelect\\(operation\\)\\}\\ >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/manager/RepositoryDataHealthPanel.jsx:86"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/manager/OperationForm\\.jsx:47:onPickFile\\?\\.\\(slot\\)\\}\\ >",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/manager/OperationForm.jsx:47"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/github/NewIssueDialog\\.jsx:36:onOpenChange\\(false\\)\\}\\ disabled=\\ >Cancel",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/github/NewIssueDialog.jsx:36"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/github/IssueRow\\.jsx:27:onToggle\\(item\\)\\}>",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/github/IssueRow.jsx:27"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/StagingQueue\\.jsx:40:onSetStatus\\(it,\\ \"Verified\"\\)\\}>\\ Verify",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/feed/StagingQueue.jsx:40"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/StagingQueue\\.jsx:44:onSetStatus\\(it,\\ \"Promoted\"\\)\\}\\ >\\ Promote",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/feed/StagingQueue.jsx:44"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/StagingQueue\\.jsx:53:onSetStatus\\(it,\\ \"NeedsReview\"\\)\\}>\\ Review",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/feed/StagingQueue.jsx:53"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/StagingQueue\\.jsx:56:onSetStatus\\(it,\\ \"Deferred\"\\)\\}>\\ Defer",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/feed/StagingQueue.jsx:56"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/feed/AguaYLuzFeedTab\\.jsx:90:setOpen\\(true\\)\\}>\\ Add\\ Service\\ Event",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/feed/AguaYLuzFeedTab.jsx:90"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/notifications/NotificationBell\\.jsx:20:`\\}\\ >\\ \\)\\}",
+      "classification": "PRESENTATION_ONLY",
+      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
+      "evidence": [
+        "server/frontend/src/components/notifications/NotificationBell.jsx:20"
+      ]
+    }
+  ],
+  "state_claims": [
+    {
+      "claim_id": "thehub-pr-claim-001",
+      "frontend_pattern": ").catch(() => ({ id: appParams.appId, public_settings: { requires_auth: Boolean(appParams.requireAuth) }, })), }; // Pro",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/api/federationClient.js:196"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-002",
+      "frontend_pattern": "; // Parent + 5 child modules, all confirmed connected to the INTSYS-PR / thehub-pr transition layer. const ROWS = [ { n",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/audit/ModuleParityList.jsx:4"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-003",
+      "frontend_pattern": "confirmed",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/CaseEvidenceTimeline.jsx:13"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-004",
+      "frontend_pattern": "Confirmed",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/CaseEvidenceTimeline.jsx:13"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-005",
+      "frontend_pattern": "No sources match the current case and filter.",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/dashboard/CaseEvidenceTimeline.jsx:95"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-006",
+      "frontend_pattern": "; // One exportable ledger: shows live record count + CSV / GeoJSON actions. export default function LedgerExportRow({ l",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/exports/LedgerExportRow.jsx:7"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-007",
+      "frontend_pattern": "; const s = Math.max(0, Math.floor((Date.now() - ts) / 1000)); if (s < 60) return `${s}s ago`; const m = Math.floor(s / ",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/feed/LiveIndicator.jsx:7"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-008",
+      "frontend_pattern": "Live",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/feed/LiveIndicator.jsx:38"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-009",
+      "frontend_pattern": ">Live Feed</TabsTrigger> <TabsTrigger value=",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/feed/MoneySweepFeedTab.jsx:97"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-010",
+      "frontend_pattern": "/>Loaded-row denominator: {filtered.metrics.sourceCount} = {filtered.metrics.visibleCount} visible + {filtered.metrics.e",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:251"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-011",
+      "frontend_pattern": ">Hub query failed for at least one workspace collection. Results are incomplete and cannot be certified.</div> ) : null}",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:257"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-012",
+      "frontend_pattern": ">No records match the current filters.</div> )} </div> </section> <section className=",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:276"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-013",
+      "frontend_pattern": "macOS Keychain provider certified.",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/manager/GateStatusPanel.test.jsx:37"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-014",
+      "frontend_pattern": "); expect(profile).toHaveTextContent(/federation_vector/); expect(profile).toHaveTextContent(/4 blocked not certified/);",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/manager/GateStatusPanel.test.jsx:57"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-015",
+      "frontend_pattern": "aria-live=",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/manager/RunConsole.jsx:79"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-016",
+      "frontend_pattern": "} disabled={busy} onChange={(event) => setDrafts((current) => ({ ...current, [entry.secret_id]: event.target.value })) }",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/manager/SecretPresencePanel.jsx:45"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-017",
+      "frontend_pattern": "disabled={busy || !drafts[entry.secret_id]} onClick={() => { onSet?.(entry.secret_id, drafts[entry.secret_id]); // Drop ",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/manager/SecretPresencePanel.jsx:53"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-018",
+      "frontend_pattern": "; // Per-module (per-child) LLM chat session. Each module keeps its own // independent, persisted conversation scoped to",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/research/ModuleChat.jsx:9"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-019",
+      "frontend_pattern": ", 1).catch(() => []), ]); if (active) { setMessages(rows || []); setMemory((mem || [])[0] || null); } })(); return () =>",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/research/ModuleChat.jsx:30"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-020",
+      "frontend_pattern": "; // Live chat surface for the INTSYS-PR Research Operator agent. The agent can // research leads, read analyst-uploaded",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/research/OperatorChat.jsx:9"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-021",
+      "frontend_pattern": "}, }); setConversation(conv); setMessages(conv.messages || []); unsub = federation.agents.subscribeToConversation(conv.i",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/research/OperatorChat.jsx:30"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-022",
+      "frontend_pattern": "onClick={() => fileInputRef.current?.click()} disabled={uploading} title=",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/research/OperatorChat.jsx:130"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-023",
+      "frontend_pattern": "; subtitle.textContent = point.subtitle; root.appendChild(subtitle); } return root; } export default function MapLibrePo",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/shared/MapLibrePointMap.jsx:68"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-024",
+      "frontend_pattern": ", async () => { const municipios = await loadMunicipiosGeoJSON().catch(() => null); if (municipios && !map.isStyleLoaded",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/shared/MapLibrePointMap.jsx:93"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-025",
+      "frontend_pattern": "No tasks match the current filters.",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/tasks/views/FlatTableView.jsx:32"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-026",
+      "frontend_pattern": ">No tasks match the current filters for this module.</p> ) : ( <div className=",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/tasks/views/GroupedView.jsx:22"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-027",
+      "frontend_pattern": ">No tasks match the current filters.</p>; } return ( <div className=",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/components/tasks/views/UrgencyView.jsx:20"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-028",
+      "frontend_pattern": "})).toThrow(/whole-asset/); const certified = certifyCogFromValidatorReceipt(structure, { status:",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/cogCertification.test.js:23"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-029",
+      "frontend_pattern": ".repeat(64), }); expect(certified.status).toBe(",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/cogCertification.test.js:28"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-030",
+      "frontend_pattern": "; const live = runLive ? describe : describe.skip; async function boundedFetch(url, init = {}) { const controller = new ",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/liveProviders.test.js:5"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-031",
+      "frontend_pattern": "}; live(",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/liveProviders.test.js:18"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-032",
+      "frontend_pattern": "Census current Puerto Rico state layer closes to exactly one feature",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/liveProviders.test.js:49"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-033",
+      "frontend_pattern": "Census current Puerto Rico municipios close to exactly 78 county-equivalent features",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/liveProviders.test.js:55"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-034",
+      "frontend_pattern": ") { throw new Error(`raster pixel geometry is not certified for direct WGS84 placement: ${inspection?.status ||",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/rasterCertification.js:60"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-035",
+      "frontend_pattern": "); expect(result.pixelGeometryCertified).toBe(false); expect(() => assertRasterGeometryReadyForDirectWgs84Placement(resu",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/rasterCertification.test.js:27"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-036",
+      "frontend_pattern": "implements WFS hits denominator + GeoJSON page path on the live-certified municipios layer",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/remoteAcquisition.test.js:70"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-037",
+      "frontend_pattern": "accepts an authoritative Landsat collection binding as COG evidence",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/remoteAcquisition.test.js:106"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-038",
+      "frontend_pattern": ") ? base : `${base}/`}cesium/`; } function canvasHeight(viewer) { return Math.max(1, viewer?.scene?.canvas?.clientHeight",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/renderers/CesiumRenderer.jsx:17"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-039",
+      "frontend_pattern": "], credit: basemap.attribution || undefined, }); viewer.imageryLayers.addImageryProvider(provider); } async function rep",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/renderers/CesiumRenderer.jsx:53"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-040",
+      "frontend_pattern": "); const provider = await SingleTileImageryProvider.fromUrl(preview.imageUrl, { rectangle: Rectangle.fromDegrees(west, s",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/renderers/CesiumRenderer.jsx:71"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-041",
+      "frontend_pattern": "); }; viewer.camera.moveEnd.addEventListener(publishView); viewerRef.current = viewer; replaceGeoJson(viewer, layer?.geo",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/renderers/CesiumRenderer.jsx:108"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-042",
+      "frontend_pattern": ": 1 }, }); } function mapView(map) { const center = map.getCenter(); return mapLibreViewToCanonical({ center: [center.ln",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/renderers/MapLibreRenderer.jsx:54"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-043",
+      "frontend_pattern": "); const publishView = () => { if (applyingCanonicalRef.current || !onCanonicalViewChange) return; onCanonicalViewChange",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/renderers/MapLibreRenderer.jsx:91"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-044",
+      "frontend_pattern": ", () => addGeoJsonLayer(map, layer?.geojson || null)); mapRef.current = map; return () => { map.off(",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/renderers/MapLibreRenderer.jsx:97"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-045",
+      "frontend_pattern": ", publishView); map.remove(); mapRef.current = null; }; }, []); useEffect(() => { const map = mapRef.current; if (!map) ",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/renderers/MapLibreRenderer.jsx:100"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-046",
+      "frontend_pattern": ", apply); }, [layer?.manifest?.layerId, layer?.geojson]); useEffect(() => { const map = mapRef.current; if (!map) return",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/renderers/MapLibreRenderer.jsx:119"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-047",
+      "frontend_pattern": ", () => addGeoJsonLayer(map, layer?.geojson || null)); }, [basemap.url]); useEffect(() => { const map = mapRef.current; ",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/renderers/MapLibreRenderer.jsx:126"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-048",
+      "frontend_pattern": "Barrios 2015 \u00b7 table bound, WFS path not live-certified",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/sourceRegistry.js:51"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-049",
+      "frontend_pattern": "binds Census Puerto Rico current-vintage layers to an explicit jurisdiction filter",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/gis/sourceRegistry.test.js:40"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-050",
+      "frontend_pattern": "; // Generic list + CRUD hook for a single entity. // Pass options.refetchInterval (ms) to enable auto-refresh / live po",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/hooks/useEntityData.js:2"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-051",
+      "frontend_pattern": "; // Shared live-feed data layer for MoneySweep-PR and AguaYLuz-PR. // Scopes feed items, sources, and runs to one modul",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/hooks/useLiveFeed.js:3"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-052",
+      "frontend_pattern": "Polls the digest on the same cadence as the // live feed; the backend ranks critical-first. `ack()` advances the last-se",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/hooks/useNotifications.js:4"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-053",
+      "frontend_pattern": "Graph nodes have no authoritative event-time field in the current Hub contract. Bounded time windows retain undated node",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/lib/intelligenceAdapters.js:62"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-054",
+      "frontend_pattern": "Infrastructure assets are persistent objects in the current Hub contract. Bounded time windows retain undated assets rat",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/lib/intelligenceAdapters.js:118"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-055",
+      "frontend_pattern": "reports/moneysweep-live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/thehub_moneysweep_prasa_contract_cl",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/lib/ios-readiness.js:21"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-056",
+      "frontend_pattern": "../moneysweep-pr/reports/live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/moneysweep_prasa_contract_clo",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/lib/ios-readiness.js:23"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-057",
+      "frontend_pattern": "; // Promote a verified live-feed item into its module",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/lib/promote-feed.js:1"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-058",
+      "frontend_pattern": ") { const current = normalizeTaskStatus(status); if (role ===",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/lib/task-utils.js:234"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-059",
+      "frontend_pattern": "); root.dataset.theme = theme; } export function ThemeProvider({ children }) { const [theme, setTheme] = useState(resolv",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/lib/theme.jsx:28"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-060",
+      "frontend_pattern": "No alerts from aguayluz-pr in the current aggregate. Run the Hub aggregate/ingest against an AguaYLuz federation export ",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/AguaYLuz.jsx:147"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-061",
+      "frontend_pattern": "No continuity risks in the current aggregate. Risks are derived from AguaYLuz-PR water\u2194power dependencies and asset-anch",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/AguaYLuz.jsx:155"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-062",
+      "frontend_pattern": "Compare anomaly-flagged cases from two modules side-by-side where they share a municipality or region. Overlaps are lead",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/AnomalyOverlap.jsx:34"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-063",
+      "frontend_pattern": ">Device or authoritative online acquisition \u2192 RAW/query/snapshot provenance \u2192 renderer-independent canonical state.</p> ",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/GISWorkspace.jsx:171"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-064",
+      "frontend_pattern": "current-password",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/Login.jsx:103"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-065",
+      "frontend_pattern": "); }); return () => { active = false; unsubscribe.current?.(); }; }, [api]); const fields = useMemo(() => (selected ? fo",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.jsx:94"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-066",
+      "frontend_pattern": "}); try { const document = await api.run(selected.operationId, { parameters: cleanValues(fields, values), fileTokens: to",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.jsx:148"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-067",
+      "frontend_pattern": ") return undefined; unsubscribe.current = subscribe(run.runId, { onLine: (line) => setLines((current) => [...current, li",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.jsx:176"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-068",
+      "frontend_pattern": "} onChange={(name, value) => setValues((current) => ({ ...current, [name]: value })) } onPickFile={(slot) => setError( `",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.jsx:297"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-069",
+      "frontend_pattern": "Repository acquisition is an R3 lifecycle operation; gate G09 is not certified.",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.test.jsx:70"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-070",
+      "frontend_pattern": "macOS Keychain certified",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.test.jsx:113"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-071",
+      "frontend_pattern": "); expect(screen.getByText(/gate G09 is not certified/)).toBeInTheDocument(); const button = screen.getByText(",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/Operations.test.jsx:188"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-072",
+      "frontend_pattern": "}`} </SectionState> )} </form> </CardContent> </Card> ); } function ConnectionsPanel({ api }) { const [states, setStates",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/OperatorSettings.jsx:109"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-073",
+      "frontend_pattern": ">Check the live connection contract for operator-facing services.</CardDescription> </div> <Button type=",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/OperatorSettings.jsx:151"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-074",
+      "frontend_pattern": "); } finally { setLoading(false); } }, [api]); useEffect(() => { load(); }, [load]); const globalPreference = normalizeP",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/OperatorSettings.jsx:272"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-075",
+      "frontend_pattern": "s landing page. Surfaces recent risk activity across the // federation, grouped by the program (module) each signal belo",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/RecentActivity.jsx:15"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-076",
+      "frontend_pattern": "No risk activity matches the current severity / time-window filters.",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/RecentActivity.jsx:241"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-077",
+      "frontend_pattern": ": `the ${scope} module`; const prompt = `You are a research analyst supporting INTSYS-PR, an investigative federation fo",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/ResearchAssistant.jsx:88"
+      ]
+    },
+    {
+      "claim_id": "thehub-pr-claim-078",
+      "frontend_pattern": "s current export is synthetic-only \u2014 real events populate once it ships a live FR24 capture.",
+      "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
+      "evidence": [
+        "server/frontend/src/pages/Skywatcher.jsx:80"
+      ]
+    }
+  ],
+  "runtime_evidence": {
+    "data": {
+      "state": "PASS",
+      "evidence": [
+        "data/gui_parity_status.json"
+      ]
+    },
+    "identity": {
+      "state": "PASS",
+      "evidence": [
+        "data/gui_parity_status.json"
+      ]
+    },
+    "geometry": {
+      "state": "PASS",
+      "evidence": [
+        "data/gui_parity_status.json"
+      ]
+    },
+    "device": {
+      "state": "PASS",
+      "evidence": [
+        "data/gui_parity_status.json"
+      ]
+    }
+  },
+  "certification": {
+    "state": "PASS",
+    "material_residue": []
+  }
+}

@@ -2,7 +2,8 @@ export const PROGRAM_ACTIVITY_EVENT_VERSION = "PROGRAM_ACTIVITY_EVENT/v1";
 
 const STORAGE_PREFIX = "federation.programActivity.v1.";
 const PRIORITY = { NOW: 0, NEXT: 1, QUEUED: 2, BLOCKED: 3 };
-const validRoute = (value) => !value || (/^\/(?!\/)/.test(value) && !value.includes("://"));
+const PROGRAM_ACTIVITY_ROUTE_PATHS = new Set(["/activity", "/programs", "/cases", "/tasks", "/gates"]);
+const validRoute = (value) => !value || PROGRAM_ACTIVITY_ROUTE_PATHS.has(value);
 const validIso = (value) => value == null || (typeof value === "string" && Number.isFinite(Date.parse(value)));
 
 function canonical(value) {

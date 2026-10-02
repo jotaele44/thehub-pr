@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { federation, setWriteToken } from './federationClient';
+import { federation, requireImplementedResponse, setWriteToken } from './federationClient';
 
 const appParams = vi.hoisted(() => ({
   token: null,
@@ -15,14 +15,24 @@ const jsonResponse = (body = {}) => new Response(JSON.stringify(body), {
 
 describe('federationClient request contracts', () => {
   beforeEach(() => {
-    const values = new Map();
+    const localValues = new Map();
+    const sessionValues = new Map();
     Object.defineProperty(window, 'localStorage', {
       configurable: true,
       value: {
-        clear: () => values.clear(),
-        getItem: (key) => values.get(key) ?? null,
-        removeItem: (key) => values.delete(key),
-        setItem: (key, value) => values.set(key, String(value)),
+        clear: () => localValues.clear(),
+        getItem: (key) => localValues.get(key) ?? null,
+        removeItem: (key) => localValues.delete(key),
+        setItem: (key, value) => localValues.set(key, String(value)),
+      },
+    });
+    Object.defineProperty(window, 'sessionStorage', {
+      configurable: true,
+      value: {
+        clear: () => sessionValues.clear(),
+        getItem: (key) => sessionValues.get(key) ?? null,
+        removeItem: (key) => sessionValues.delete(key),
+        setItem: (key, value) => sessionValues.set(key, String(value)),
       },
     });
     appParams.token = null;
@@ -50,6 +60,28 @@ describe('federationClient request contracts', () => {
       headers: { Authorization: 'Bearer explicit-token' },
     });
     expect(fetch.mock.calls[1][1].headers.get('Authorization')).toBe('Bearer explicit-token');
+  });
+
+  it('keeps administrative write tokens in session storage, not persistent local storage', async () => {
+    setWriteToken('session-write-token');
+
+    expect(window.sessionStorage.getItem('federation_write_token')).toBe('session-write-token');
+    expect(window.localStorage.getItem('federation_write_token')).toBeNull();
+
+    await federation.request('/write');
+
+    expect(fetch.mock.calls[0][1].headers.get('Authorization')).toBe(
+      `Bearer ${window.sessionStorage.getItem('federation_write_token')}`,
+    );
+  });
+
+  it('does not reuse a bootstrap write token after the operator clears it', async () => {
+    appParams.writeToken = 'bootstrap-token';
+    setWriteToken(null);
+
+    await federation.request('/after-clear');
+
+    expect(fetch.mock.calls[0][1].headers.has('Authorization')).toBe(false);
   });
 
   it('sends preference writes and uploads using their HTTP contracts', async () => {
@@ -81,5 +113,15 @@ describe('federationClient request contracts', () => {
 
     await expect(federation.notifications.setPreferences({}, {}))
       .rejects.toThrow('Missing or invalid write token');
+  });
+
+  it('rejects diagnostic stubs instead of treating them as successful results', () => {
+    expect(() => requireImplementedResponse({
+      status: 'not_implemented',
+      reason: 'Provider is not configured.',
+    }, 'Research')).toThrow('Provider is not configured.');
+    expect(() => requireImplementedResponse({ implemented: false }, 'Research'))
+      .toThrow('Research is not available in this deployment.');
+    expect(requireImplementedResponse({ findings: [] }, 'Research')).toEqual({ findings: [] });
   });
 });

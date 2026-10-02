@@ -1,0 +1,33 @@
+{
+  "schema_version": "federation.gui-backend-contract/1.0",
+  "repository": "Jotaele44/thehub-pr",
+  "source_commit": "94e000b5e0f21a5d1acaed42e79e73523c86ab56",
+  "policy": {"require_zero_material_residue": true, "dimensions": ["executability", "semantic", "state", "auth", "data", "provenance", "device", "identity", "geometry", "authority"]},
+  "discovery": {
+    "backend_roots": ["server/backend", "desktop", "src/hub"],
+    "frontend_roots": ["server/frontend/src"],
+    "route_files": ["server/frontend/src/App.jsx"],
+    "navigation_files": ["server/frontend/src/lib/nav.js", "server/frontend/src/components/layout/Sidebar.jsx", "server/frontend/src/components/layout/MobileNav.jsx"],
+    "existing_gui_capability_manifests": []
+  },
+  "authority": {
+    "semantic_authority": "federation-control-and-cross-domain-orchestration-only",
+    "mutation_authority": "federation-control-plane-only",
+    "identity_authority": "federation-linkage-and-discovery-not-domain-identity",
+    "geometry_authority": "none-consumer-of-spiderweb",
+    "provenance_authority": "federation-receipts-and-cross-domain-query-provenance"
+  },
+  "auth": {"mutating_route_policy": "require_guard_or_explicit_public", "guard_patterns": ["_WRITE_GUARD", "Depends\\(", "require_admin", "require_write", "dependencies\\s*="], "explicit_public_mutations": []},
+  "provenance": {"required_fields_when_available": ["source_id", "source_hash", "source_commit", "evidence_tier", "review_status"], "frontend_evidence_files": ["server/frontend/src/pages/Sources.jsx", "server/frontend/src/pages/Manifest.jsx", "server/frontend/src/pages/RecentActivity.jsx"]},
+  "devices": {"desktop": true, "mobile_web": true, "native_ios": false, "native_evidence_files": [], "intentional_restrictions": []},
+  "backend_only_allowlist": [],
+  "gui_only_allowlist": [],
+  "state_claims": [],
+  "runtime_evidence": {
+    "data": {"state": "OPEN", "evidence": []},
+    "identity": {"state": "OPEN", "evidence": []},
+    "geometry": {"state": "OPEN", "evidence": []},
+    "device": {"state": "OPEN", "evidence": []}
+  },
+  "certification": {"state": "OPEN", "material_residue": ["Run exact-pin GUI/backend parity inventory and adjudicate all findings."]}
+}

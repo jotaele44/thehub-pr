@@ -40,7 +40,7 @@ workspace, transition/parity auditing, CSV/GeoJSON export, and an LLM research a
 (`server/backend/main.py`), SQLite-backed generic entity store (`/api/entities/{Entity}` CRUD),
 with `PRII_WRITE_TOKEN`-gated writes and a documented **diagnostic mode** (no auth configured,
 `/api/auth/me` always 401s, unimplemented subsystems — GitHub functions, LLM invoke, agents, file
-storage — return a stable `status:"not_implemented"` stub instead of erroring).
+storage, and integrations — return a stable `status:"not_implemented"` stub instead of erroring).
 
 **Entry points.**
 - **Dev URL:** `npm run dev` (Vite) — defaults to `:5173`; this audit ran it on `:5183` to avoid a
@@ -85,10 +85,12 @@ storage — return a stable `status:"not_implemented"` stub instead of erroring)
 crashes) across two Playwright passes. Two pages showed a benign `401` console entry from
 `GET /api/auth/me` (Tasks, Research Assistant) — this is the documented diagnostic-mode behavior
 (no auth configured, so `/auth/me` always 401s; the app's own code catches it and falls back to
-an anonymous/default state), not a bug. Research Assistant's Operator Chat additionally logged an
-`EventSource … MIME type … not "text/event-stream"` warning, because the diagnostic-mode `/agents`
-stub returns a plain JSON body rather than opening a real SSE stream — again expected, and the UI
-degrades gracefully (empty chat, no crash). No other console errors were observed anywhere.
+an anonymous/default state), not a bug. The original Operator Chat crawl also logged an `EventSource
+… MIME type … not "text/event-stream"` warning from the diagnostic `/agents` stub. A follow-up
+hardening change now rejects that stub before subscribing, reports the missing agent backend, and
+keeps message/file controls disabled; unavailable LLM calls likewise surface an error instead of
+rendering stub data as an empty result or assistant reply. Real LLM, agent, and file services remain
+external prerequisites in this diagnostic build.
 
 ---
 
@@ -346,18 +348,18 @@ Module Readiness, Manifest) under one URL, syncing the active tab to `?tab=`.
 | Chat: language select | dropdown | Español/English/Bilingüe | `setLanguage` | static | |
 | Chat: "Web search" switch | switch | "Web search" | `setWebGrounded` — toggles `add_context_from_internet` on the next LLM call | static | |
 | Chat: per-module sub-tab | tab (×6) | Hub / Spiderweb / Ovnis / AguaYLuz / MoneySweep / Skywatcher | `setChatModule` — each renders its own persisted `ModuleChat` session | static | |
-| ModuleChat: message textarea + send | textarea + button | message input / send icon | `send()` → creates a `ResearchChat` row, calls `federation.integrations.Core.InvokeLLM`, records the assistant reply | static-only: requires a live LLM provider | Diagnostic-mode stub returns `not_implemented`; `ModuleChat` renders the stringified stub as the "assistant" reply rather than crashing |
+| ModuleChat: message textarea + send | textarea + button | message input / send icon | `send()` calls `InvokeLLM`, then persists the user/assistant pair only after a real provider response | blocked: requires a live LLM provider | Diagnostic stub produces a visible error; it is not saved as an assistant reply and the input is preserved |
 | ModuleChat "Clear" | button (conditional) | "Clear" | deletes every `ResearchChat` row for the session | static | |
-| ModuleChat "Memory"/"Distill"/"Refresh" | button | "Memory", then "Distill"/"Refresh" | opens `MemoryPanel`; `distillMemory()` calls `InvokeLLM` again to summarize the transcript into a `ResearchMemory` row | static-only: requires a live LLM provider | |
+| ModuleChat "Memory"/"Distill"/"Refresh" | button | "Memory", then "Distill"/"Refresh" | opens `MemoryPanel`; `distillMemory()` calls `InvokeLLM` to summarize the transcript into a `ResearchMemory` row | blocked: requires a live LLM provider | Diagnostic stub shows an error and is not saved as memory |
 | MemoryPanel close | button (icon) | X | `onClose` | static | |
-| OperatorChat: file attach | button + hidden file input | paperclip icon | `onPickFiles` → `Core.UploadFile` per file, then attaches as `file_urls` on the next message | static-only: requires file-storage backend | |
+| OperatorChat: file attach | button + hidden file input | paperclip icon | `onPickFiles` → `Core.UploadFile` per file, then attaches as `file_urls` on the next message | blocked: requires file-storage backend | Diagnostic stub shows an error; no unusable file URL is queued |
 | OperatorChat: attached-file remove | button (per file) | X | removes from the pending `files` array | static | |
-| OperatorChat: message textarea + send | textarea + button | message input / send icon | `send()` → `federation.agents.addMessage` on a live SSE-subscribed conversation | live | Textarea filled and Run clicked in the Structured tab (see below); Operator tab loaded and rendered its "governed actions" empty state without crashing, despite the diagnostic-mode agents stub's SSE MIME-type warning |
-| OperatorChat "New session" | button | "New session" | `startNew()` → `federation.agents.createConversation` again | static | |
+| OperatorChat: message textarea + send | textarea + button | message input / send icon | `send()` → `federation.agents.addMessage` on an SSE-subscribed conversation | blocked: requires an agent backend | A diagnostic conversation is rejected before subscribing; message input and send remain disabled with the provider reason visible |
+| OperatorChat "New session" | button | "New session" | `startNew()` → `federation.agents.createConversation` again | blocked: requires an agent backend | Failure is shown without creating a compatibility-only conversation |
 | Structured: query textarea | textarea | prompt placeholder | `setQuery` | live | Filled with a test query |
 | Structured: module scope select | dropdown | module scope picker | `setScope` | static | |
 | Structured: language select | dropdown | Español/English/Bilingüe | `setLanguage` | static | |
-| Structured: "Run Research" button | button | "Run Research" | `run()` → `Core.InvokeLLM` with a structured JSON schema | live | Clicked; diagnostic stub responded, page rendered "No leads returned" empty state, no console error beyond the expected 401 |
+| Structured: "Run Research" button | button | "Run Research" | `run()` → `Core.InvokeLLM` with a structured JSON schema | blocked: requires a live LLM provider | Diagnostic stub is surfaced as an error instead of a false "No leads returned" result |
 
 ### Dictionary (`/dictionary`)
 
@@ -628,7 +630,7 @@ components/ui/`, not from `@pr-federation/react`.
 | Live-verified (that specific control clicked/exercised against the running app in this pass) | **45** dashboard rows + `launcher.html`'s static shell load = **~46** |
 | Static-only (read from source only; either not exercised in this pass, or explicitly needs an external service/backend mode this repo doesn't ship here) | **154** dashboard rows (of which 19 are Login/Register/Forgot/Reset controls that need `requires_auth=true` and a real auth backend just to be reachable) + `launcher.html`'s 4 dynamic rows (need its own `/api/local/*` backend, not the plain API server this audit ran) + all 19 Design System rows (library code, not a running screen) |
 | Pages that loaded live with **zero page/render errors** | **27 / 27** routed pages reachable in this repo's default (diagnostic-mode, `requires_auth=false`) configuration |
-| Broken / dead controls found | **None.** Every clicked control behaved as its source predicted, including every diagnostic-mode stub (GitHub functions, LLM invoke, agents/SSE) — each degrades to an empty/graceful state rather than crashing or hanging the UI |
+| External-service controls | LLM research, agent chat, and file attachments require provider backends absent from this diagnostic build; the UI now surfaces that blocker and does not fabricate assistant output, conversations, or file references |
 | Minor findings (not broken, worth a maintainer's attention) | 1) `src/components/shared/MapView.jsx` exists but is **not imported anywhere** in the app — `MultiMarkerMap.jsx` is the map component actually used on every module's Map View tab; MapView.jsx appears to be dead code. 2) `MoneySweepFeedTab`'s "Refetch USAspending" toast reads the diagnostic-stub response's `d.items_fetched`/`d.items_new`, which are `undefined` on that stub (no `.data` wrapper), so the success toast would literally read "Fetched undefined · undefined new" rather than a clean message — cosmetic, and only reachable without a live USASpending integration configured. |
 
 **Branch-name note (flagged for the operator, not a GUI finding):** the requested branch name

@@ -1,0 +1,29 @@
+{
+  "collisions": {
+    "by_stream": {},
+    "count": 0
+  },
+  "errors": {
+    "moneysweep-pr": [],
+    "skywatcher-pr": []
+  },
+  "producers": {
+    "moneysweep-pr": {
+      "entities": 207,
+      "relationships": 66,
+      "sources": 4508
+    },
+    "skywatcher-pr": {
+      "entities": 6,
+      "observations": 3,
+      "relationships": 3,
+      "sources": 3
+    }
+  },
+  "streams": {
+    "entities": 213,
+    "observations": 3,
+    "relationships": 69,
+    "sources": 4511
+  }
+}

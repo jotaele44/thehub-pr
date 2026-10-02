@@ -1,0 +1,48 @@
+{
+  "schema_version": "federation.gui-backend-parity-pins/1.0",
+  "generated_at": "2026-09-06T14:32:00Z",
+  "repositories": [
+    {
+      "id": "thehub-pr",
+      "repository": "Jotaele44/thehub-pr",
+      "commit": "2631a14ba6832c2dccfd09406d90a404eb9d99be",
+      "workspace_directory": "thehub-pr"
+    },
+    {
+      "id": "spiderweb-pr",
+      "repository": "Jotaele44/spiderweb-pr",
+      "commit": "85089a888391eb494ad6b047831684cd6b301162",
+      "workspace_directory": "spiderweb-pr"
+    },
+    {
+      "id": "skywatcher-pr",
+      "repository": "Jotaele44/skywatcher-pr",
+      "commit": "8d31aeb2d4141c0547be3d99b3a1a878beda5094",
+      "workspace_directory": "skywatcher-pr"
+    },
+    {
+      "id": "ovnis-pr",
+      "repository": "Jotaele44/ovnis-pr",
+      "commit": "310594693a4c3436a46665173ef5a03751e3ff6c",
+      "workspace_directory": "ovnis-pr"
+    },
+    {
+      "id": "aguayluz-pr",
+      "repository": "Jotaele44/aguayluz-pr",
+      "commit": "19e545d856eca00b5b0bf9c7b72f5506b8e29046",
+      "workspace_directory": "aguayluz-pr"
+    },
+    {
+      "id": "centinelas-pr",
+      "repository": "Jotaele44/centinelas-pr",
+      "commit": "660ff350c02c73a654b863bf4cf7dbde689ddc7b",
+      "workspace_directory": "centinelas-pr"
+    },
+    {
+      "id": "moneysweep-pr",
+      "repository": "Jotaele44/moneysweep-pr",
+      "commit": "7b467ff99a98fa0ea600d9b6b5b62b6b666baa76",
+      "workspace_directory": "moneysweep-pr"
+    }
+  ]
+}

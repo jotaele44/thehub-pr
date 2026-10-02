@@ -42,7 +42,7 @@ VITE_FEDERATION_MODE=diagnostic
 | `GET /api/notifications` | yes |
 | `POST /api/notifications/ack`, `PUT /api/notifications/preferences` | yes — **write-guarded** |
 | `POST /api/functions/:name/invoke` | yes |
-| `/api/agents/*`, `/api/integrations/*` | yes |
+| `/api/agents/*`, `/api/integrations/*` | yes — explicit `status: "not_implemented"` diagnostic response; no agent or provider execution |
 | `POST /api/files/upload` | yes, returns a diagnostic stub |
 | `GET /api/connectors/:name/connection` | yes, hardcoded `not_connected` |
 | `POST /api/auth/login` | **no — 404** |
@@ -78,8 +78,11 @@ look identical until a write 401s. Only the boolean is exposed, never the token.
 ### Supplying the token from the browser
 
 Load the app with `?write_token=<PRII_WRITE_TOKEN>`. The value is stripped from
-the URL, stored under `federation_write_token`, and sent as
-`Authorization: Bearer` on every request that has no session token.
+the URL, stored under `federation_write_token` in tab-scoped session storage,
+and sent as `Authorization: Bearer` on every request that has no session token.
+It is removed when the tab session ends and is not written to persistent local
+storage. Scripts running in the app's origin can still access it, so only use
+this option on a trusted device.
 `?clear_write_token=true` removes it.
 
 It is a **separate slot from the access token, and has to be.** In diagnostic mode

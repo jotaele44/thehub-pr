@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { federation } from "@/api/federationClient";
+import { federation, requireImplementedResponse } from "@/api/federationClient";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -14,6 +14,7 @@ export default function ModuleChat({ module, scopeLine, webGrounded, langInstruc
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [me, setMe] = useState(null);
   const [memory, setMemory] = useState(null);
   const [showMemory, setShowMemory] = useState(false);
@@ -44,15 +45,9 @@ export default function ModuleChat({ module, scopeLine, webGrounded, langInstruc
   const send = async () => {
     const text = input.trim();
     if (!text || loading) return;
-    setInput("");
     setLoading(true);
-
-    const userMsg = await federation.entities.ResearchChat.create({
-      module, role: "user", content: text, session_owner: me?.email || "",
-    });
-    setMessages((m) => [...m, userMsg]);
-
-    const history = [...messages, userMsg]
+    setError(null);
+    const history = [...messages, { role: "user", content: text }]
       .map((x) => `${x.role === "user" ? "Analyst" : "Assistant"}: ${x.content}`)
       .join("\n\n");
 
@@ -70,17 +65,36 @@ Reply to the analyst's latest message.
 
 LANGUAGE: ${langInstruction}`;
 
-    const res = await federation.integrations.Core.InvokeLLM({
-      prompt,
-      add_context_from_internet: !!webGrounded,
-      ...(webGrounded ? { model: "gemini_3_flash" } : {}),
-    }).catch((e) => `Error: ${e.message || "request failed"}`);
-
-    const assistantMsg = await federation.entities.ResearchChat.create({
-      module, role: "assistant", content: String(res), session_owner: me?.email || "", web_grounded: !!webGrounded,
-    });
-    setMessages((m) => [...m, assistantMsg]);
-    setLoading(false);
+    try {
+      const res = requireImplementedResponse(
+        await federation.integrations.Core.InvokeLLM({
+          prompt,
+          add_context_from_internet: !!webGrounded,
+          ...(webGrounded ? { model: "gemini_3_flash" } : {}),
+        }),
+        "Module research chat",
+      );
+      if (res === null || res === undefined) {
+        throw new Error("The research provider returned no response.");
+      }
+      const assistantContent = typeof res === "string" ? res : JSON.stringify(res);
+      const userMsg = await federation.entities.ResearchChat.create({
+        module, role: "user", content: text, session_owner: me?.email || "",
+      });
+      const assistantMsg = await federation.entities.ResearchChat.create({
+        module,
+        role: "assistant",
+        content: assistantContent,
+        session_owner: me?.email || "",
+        web_grounded: !!webGrounded,
+      });
+      setMessages((m) => [...m, userMsg, assistantMsg]);
+      setInput("");
+    } catch (e) {
+      setError(e.message || "Research chat failed.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearSession = async () => {
@@ -94,6 +108,7 @@ LANGUAGE: ${langInstruction}`;
     if (distilling || messages.length === 0) return;
     setShowMemory(true);
     setDistilling(true);
+    setError(null);
 
     const transcript = messages
       .map((x) => `${x.role === "user" ? "Analyst" : "Assistant"}: ${x.content}`)
@@ -116,21 +131,30 @@ LANGUAGE: ${langInstruction}
 Transcript:
 ${transcript}`;
 
-    const res = await federation.integrations.Core.InvokeLLM({ prompt }).catch((e) => `Error: ${e.message || "request failed"}`);
-
-    const payload = {
-      module,
-      session_owner: me?.email || "",
-      content: String(res),
-      message_count: messages.length,
-      distilled_at: new Date().toISOString(),
-    };
-
-    const saved = memory?.id
-      ? await federation.entities.ResearchMemory.update(memory.id, payload)
-      : await federation.entities.ResearchMemory.create(payload);
-    setMemory(saved);
-    setDistilling(false);
+    try {
+      const res = requireImplementedResponse(
+        await federation.integrations.Core.InvokeLLM({ prompt }),
+        "Research memory",
+      );
+      if (res === null || res === undefined) {
+        throw new Error("The research provider returned no response.");
+      }
+      const payload = {
+        module,
+        session_owner: me?.email || "",
+        content: typeof res === "string" ? res : JSON.stringify(res),
+        message_count: messages.length,
+        distilled_at: new Date().toISOString(),
+      };
+      const saved = memory?.id
+        ? await federation.entities.ResearchMemory.update(memory.id, payload)
+        : await federation.entities.ResearchMemory.create(payload);
+      setMemory(saved);
+    } catch (e) {
+      setError(e.message || "Could not summarize this session.");
+    } finally {
+      setDistilling(false);
+    }
   };
 
   return (
@@ -168,6 +192,12 @@ ${transcript}`;
             onClose={() => setShowMemory(false)}
             disabled={messages.length === 0}
           />
+        </div>
+      )}
+
+      {error && (
+        <div role="alert" className="mx-4 mt-3 rounded-md border border-status-danger/30 bg-status-danger/5 px-3 py-2 text-sm text-status-danger-fg">
+          {error}
         </div>
       )}
 

@@ -3,6 +3,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import os
 import re
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -11,13 +12,31 @@ from pathlib import Path
 from .classifier import classify_trace
 from .models import Evidence, Trace
 
-IGNORED_DIRS = {".git", "node_modules", "dist", "build", ".venv", "venv", "__pycache__", ".pytest_cache"}
+IGNORED_DIRS = {
+    ".git",
+    "node_modules",
+    "dist",
+    "build",
+    ".venv",
+    "venv",
+    "__pycache__",
+    ".pytest_cache",
+    "test",
+    "tests",
+    "__tests__",
+}
 SOURCE_SUFFIXES = {".py", ".js", ".jsx", ".ts", ".tsx", ".vue"}
+TEST_SOURCE_DIRS = {"test", "tests", "__tests__"}
+TEST_SOURCE_NAME = re.compile(r"(?:^test_|_test(?=\.|$)|\.(?:test|spec)\.)", re.I)
 ROUTE_DECORATOR = re.compile(r"(?:app|router)\.(get|post|put|patch|delete|options|head)\(\s*[\"']([^\"']+)")
-JSX_CONTROL = re.compile(r"<(button|Button|a|Link)\b([^>]*)>(.*?)</\1>", re.I | re.S)
-ON_EVENT = re.compile(r"on(?:Click|Submit|Change|Select)\s*=\s*\{([^}]+)\}")
+JSX_CONTROL_START = re.compile(r"<(button|Button|a|Link|input|select|textarea)\b", re.I)
+JSX_EVENT_NAME = re.compile(r"\bon[A-Z][A-Za-z0-9_$]*\s*=")
 FUNC_ARROW = re.compile(
     r"(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?\([^)]*\)\s*=>\s*\{(.*?)\};", re.S
+)
+FUNC_CALLBACK = re.compile(
+    r"(?:const|let)\s+([A-Za-z_$][\w$]*)\s*=\s*useCallback\(\s*"
+    r"(?:async\s*)?\([^)]*\)\s*=>\s*\{(.*?)\}\s*,", re.S
 )
 FUNC_DECL = re.compile(r"(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{(.*?)\n\}", re.S)
 NETWORK_CALL = re.compile(
@@ -39,18 +58,35 @@ class ApiRoute:
     line: int
 
 
+@dataclass(frozen=True)
+class JSXControl:
+    tag: str
+    attributes: str
+    body: str
+    start: int
+
+
 def stable_id(*parts: str) -> str:
     return hashlib.sha256("\x1f".join(parts).encode()).hexdigest()[:24]
 
 
+def is_test_source(path: Path) -> bool:
+    return (
+        any(part.lower() in TEST_SOURCE_DIRS for part in path.parts[:-1])
+        or TEST_SOURCE_NAME.search(path.name) is not None
+    )
+
+
 def iter_sources(root: Path) -> Iterable[Path]:
-    for path in root.rglob("*"):
-        if (
-            path.is_file()
-            and path.suffix.lower() in SOURCE_SUFFIXES
-            and not any(p in IGNORED_DIRS for p in path.parts)
-        ):
-            yield path
+    for current, directories, files in os.walk(root):
+        directories[:] = sorted(directory for directory in directories if directory not in IGNORED_DIRS)
+        for filename in sorted(files):
+            path = Path(current) / filename
+            if (
+                path.suffix.lower() in SOURCE_SUFFIXES
+                and not is_test_source(path.relative_to(root))
+            ):
+                yield path
 
 
 def _python_routes(source: str, rel: str) -> list[ApiRoute]:
@@ -86,6 +122,139 @@ def _python_routes(source: str, rel: str) -> list[ApiRoute]:
     return routes
 
 
+def _balanced_brace_end(source: str, start: int) -> int | None:
+    depth = 0
+    quote: str | None = None
+    escaped = False
+    index = start
+    while index < len(source):
+        char = source[index]
+        if quote is None and source[index : index + 2] == "//":
+            newline = source.find("\n", index + 2)
+            if newline < 0:
+                return None
+            index = newline + 1
+            continue
+        if quote is None and source[index : index + 2] == "/*":
+            comment_end = source.find("*/", index + 2)
+            if comment_end < 0:
+                return None
+            index = comment_end + 2
+            continue
+        if quote:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            index += 1
+            continue
+        if char in {"'", '"', "`"}:
+            quote = char
+        elif char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return index
+        index += 1
+    return None
+
+
+def _jsx_open_end(source: str, start: int) -> int | None:
+    depth = 0
+    quote: str | None = None
+    escaped = False
+    for index in range(start, len(source)):
+        char = source[index]
+        if quote:
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                quote = None
+            continue
+        if char in {"'", '"', "`"}:
+            quote = char
+        elif char == "{":
+            depth += 1
+        elif char == "}":
+            depth = max(0, depth - 1)
+        elif char == ">" and depth == 0:
+            return index
+    return None
+
+
+def iter_jsx_controls(source: str) -> Iterable[JSXControl]:
+    for opening in JSX_CONTROL_START.finditer(source):
+        tag = opening.group(1)
+        tag_end = _jsx_open_end(source, opening.end())
+        if tag_end is None:
+            continue
+        attributes = source[opening.end() : tag_end]
+        if source[tag_end - 1 : tag_end] == "/":
+            if tag.lower() == "input" and JSX_EVENT_NAME.search(attributes):
+                yield JSXControl(tag=tag, attributes=attributes, body="", start=opening.start())
+            continue
+        closing = re.search(rf"</\s*{re.escape(tag)}\s*>", source[tag_end + 1 :], re.I)
+        if closing is None:
+            continue
+        body_start = tag_end + 1
+        body_end = body_start + closing.start()
+        yield JSXControl(
+            tag=tag,
+            attributes=attributes,
+            body=source[body_start:body_end],
+            start=opening.start(),
+        )
+
+
+def jsx_expression_attribute(attributes: str, name: re.Pattern[str] | str) -> str | None:
+    pattern = name if isinstance(name, re.Pattern) else re.compile(rf"\b{re.escape(name)}\s*=")
+    match = pattern.search(attributes)
+    if match is None:
+        return None
+    start = match.end()
+    while start < len(attributes) and attributes[start].isspace():
+        start += 1
+    if start >= len(attributes) or attributes[start] != "{":
+        return None
+    end = _balanced_brace_end(attributes, start)
+    return attributes[start + 1 : end].strip() if end is not None else None
+
+
+def jsx_navigation_attribute(attributes: str) -> tuple[str, bool] | None:
+    match = re.search(r"\b(?:to|href)\s*=", attributes)
+    if match is None:
+        return None
+    start = match.end()
+    while start < len(attributes) and attributes[start].isspace():
+        start += 1
+    if start < len(attributes) and attributes[start] in {"'", '"'}:
+        quote = attributes[start]
+        end = start + 1
+        escaped = False
+        while end < len(attributes):
+            char = attributes[end]
+            if escaped:
+                escaped = False
+            elif char == "\\":
+                escaped = True
+            elif char == quote:
+                return attributes[start + 1 : end], False
+            end += 1
+        return None
+    if start < len(attributes) and attributes[start] == "{":
+        expression_end = _balanced_brace_end(attributes, start)
+        if expression_end is not None:
+            expression = attributes[start + 1 : expression_end].strip()
+            literal = re.fullmatch(r"""(['"])(.*?)\1""", expression, re.S)
+            return (literal.group(2), False) if literal else (expression, True)
+    return None
+
+
 def _fallback_routes(source: str, rel: str) -> list[ApiRoute]:
     return [
         ApiRoute(m.upper(), p, rel, source[: match.start()].count("\n") + 1)
@@ -96,6 +265,7 @@ def _fallback_routes(source: str, rel: str) -> list[ApiRoute]:
 
 def _handlers(source: str) -> dict[str, str]:
     result = {name: body for name, body in FUNC_ARROW.findall(source)}
+    result.update({name: body for name, body in FUNC_CALLBACK.findall(source)})
     result.update({name: body for name, body in FUNC_DECL.findall(source)})
     return result
 
@@ -344,13 +514,16 @@ def scan_repository(root: Path, repo: dict) -> list[Trace]:
         if Path(rel).suffix not in {".js", ".jsx", ".ts", ".tsx", ".vue"}:
             continue
         handlers = _handlers(source)
-        for control in JSX_CONTROL.finditer(source):
-            tag = control.group(1).lower()
-            attrs, body = control.group(2), control.group(3)
-            event = ON_EVENT.search(attrs)
+        for control in iter_jsx_controls(source):
+            tag = control.tag.lower()
+            attrs, body = control.attributes, control.body
+            event_expr = jsx_expression_attribute(attrs, JSX_EVENT_NAME)
             label = _label(body, attrs)
-            line = source[: control.start()].count("\n") + 1
-            obs: dict[str, object] = {"handler_bound": bool(event), "side_effect_intercepted": False}
+            line = source[: control.start].count("\n") + 1
+            obs: dict[str, object] = {
+                "handler_bound": bool(event_expr),
+                "side_effect_intercepted": False,
+            }
             nodes = [
                 {
                     "node_id": stable_id(rel, str(line), "control"),
@@ -359,28 +532,25 @@ def scan_repository(root: Path, repo: dict) -> list[Trace]:
                     "source": rel,
                 }
             ]
-            if not event:
-                navigation = re.search(
-                    r"(?:href|to)\s*=\s*(?:[\"']([^\"']+)[\"']|\{[\"']([^\"']+)[\"']\})", attrs
-                )
+            if not event_expr:
+                navigation = jsx_navigation_attribute(attrs)
                 is_submit = bool(re.search(r"type\s*=\s*[\"']submit[\"']", attrs, re.I))
                 if tag in {"a", "link"} and navigation:
-                    target = navigation.group(1) or navigation.group(2)
-                    obs.update(
-                        {
-                            "handler_bound": True,
-                            "handler_resolved": True,
-                            "intent_observed": True,
-                            "boundary_reached": True,
-                            "contract_matched": True,
-                            "static_contract_resolved": True,
-                        }
-                    )
+                    target, dynamic = navigation
+                    obs.update({"handler_bound": True, "handler_resolved": True, "intent_observed": True})
+                    if not dynamic:
+                        obs.update(
+                            {
+                                "boundary_reached": True,
+                                "contract_matched": True,
+                                "static_contract_resolved": True,
+                            }
+                        )
                     nodes.append(
                         {
                             "node_id": stable_id(rel, target, "navigation"),
                             "kind": "navigation-target",
-                            "status": "declared",
+                            "status": "dynamic" if dynamic else "declared",
                             "source": rel,
                         }
                     )
@@ -396,11 +566,25 @@ def scan_repository(root: Path, repo: dict) -> list[Trace]:
                     )
                 traces.append(_repo_trace(repo, rel, line, label, obs, nodes))
                 continue
-            expr = event.group(1).strip()
+            expr = event_expr
             handler_name_match = re.match(r"([A-Za-z_$][\w$]*)$", expr)
             handler_name = handler_name_match.group(1) if handler_name_match else None
             body_text = expr if handler_name is None else handlers.get(handler_name, expr)
-            resolved = handler_name is None or handler_name in handlers
+            resolved = (
+                handler_name is None
+                or handler_name in handlers
+                or bool(
+                    handler_name
+                    and (
+                        re.fullmatch(
+                            r"(?:on|set|toggle|reset|handle|scroll|clear|submit|download|notify|retry)"
+                            r"[A-Z]?[A-Za-z0-9_$]*",
+                            handler_name,
+                        )
+                        or handler_name in {"clear", "submit"}
+                    )
+                )
+            )
             obs["handler_resolved"] = resolved
             nodes.append(
                 {
@@ -457,6 +641,8 @@ def scan_repository(root: Path, repo: dict) -> list[Trace]:
                     c
                     for c in calls
                     if c in symbols
+                    or re.fullmatch(r"set[A-Z][A-Za-z0-9_$]*", c)
+                    or re.fullmatch(r"on[A-Z][A-Za-z0-9_$]*", c)
                     or re.search(rf"\b(?:function|const|let|class)\s+{re.escape(c)}\b", all_source)
                 ]
                 obs["intent_observed"] = bool(calls)

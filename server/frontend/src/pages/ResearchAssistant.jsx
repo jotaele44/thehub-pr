@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { federation } from "@/api/federationClient";
+import { federation, requireImplementedResponse } from "@/api/federationClient";
 import PageHeader from "@/components/shared/PageHeader";
 import ResearchFindingCard from "@/components/research/ResearchFindingCard";
 import EmptyState from "@/components/shared/EmptyState";
@@ -101,17 +101,18 @@ Rules:
 LANGUAGE: ${langInstruction}`;
 
     try {
-      const res = await federation.integrations.Core.InvokeLLM({
+      const res = requireImplementedResponse(await federation.integrations.Core.InvokeLLM({
         prompt,
         add_context_from_internet: true,
         model: "gemini_3_flash",
         response_json_schema: RESPONSE_SCHEMA,
-      });
+      }), "Structured research");
       setResult(res);
     } catch (e) {
       setError(e.message || "Research query failed.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const findings = result?.findings || [];
@@ -120,7 +121,7 @@ LANGUAGE: ${langInstruction}`;
     <div>
       <PageHeader
         title="Research Assistant"
-        description="Internet-grounded LLM research. Results are returned as source-backed leads with evidence tiers and confidence — for analyst review, not as conclusions."
+        description="A configured LLM provider is required for internet-grounded research. Results are source-backed leads for analyst review, not conclusions."
         icon={Sparkles}
       />
 
@@ -133,7 +134,7 @@ LANGUAGE: ${langInstruction}`;
 
         <TabsContent value="operator">
           <p className="text-sm text-muted-foreground mb-4">
-            The Research Operator can research leads, read files you attach, search the connected Google Drive, normalize terms, and log or promote cases, sources, tasks and gates under federation governance.
+            This workflow requires configured agent and file-storage backends. Diagnostic deployments report these services as unavailable instead of creating a simulated conversation.
           </p>
           <OperatorChat />
         </TabsContent>
@@ -215,7 +216,7 @@ LANGUAGE: ${langInstruction}`;
       </Card>
 
       {error && (
-        <Card className="p-4 mb-6 border-status-danger/30 flex items-start gap-2">
+        <Card role="alert" className="p-4 mb-6 border-status-danger/30 flex items-start gap-2">
           <AlertTriangle className="h-4 w-4 text-status-danger-fg mt-0.5 shrink-0" />
           <p className="text-sm text-status-danger-fg">{error}</p>
         </Card>

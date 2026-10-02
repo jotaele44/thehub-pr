@@ -22,9 +22,16 @@ from server.backend.main import app  # noqa: E402
 
 
 @pytest.fixture()
-def client():
+def client(monkeypatch):
+    import server.backend.main as backend_main
+
+    monkeypatch.setattr(backend_main, "_WRITE_TOKEN", "diagnostic-token")
     with TestClient(app) as c:
         yield c
+
+
+def auth() -> dict[str, str]:
+    return {"Authorization": "Bearer diagnostic-token"}
 
 
 def _assert_diagnostic_contract(body: dict, feature: str) -> None:
@@ -63,8 +70,16 @@ def test_agents_list_returns_empty_collection(client):
     assert resp.json() == []
 
 
+def test_integrations_return_explicit_diagnostic_contract(client):
+    response = client.post("/api/integrations/llm/invoke", json={"prompt": "test"})
+    assert response.status_code == 200
+    _assert_diagnostic_contract(response.json(), "integrations")
+    assert response.json()["integration"] == "llm/invoke"
+
+
 def test_file_upload_returns_diagnostic_contract(client):
-    resp = client.post("/api/files/upload")
+    assert client.post("/api/files/upload").status_code == 401
+    resp = client.post("/api/files/upload", headers=auth())
     assert resp.status_code == 200
     body = resp.json()
     _assert_diagnostic_contract(body, "files")
@@ -76,5 +91,6 @@ def test_diagnostic_reasons_are_distinct_and_documented(client):
     """Each stubbed subsystem must document a distinct reason."""
     fn = client.post("/api/functions/x/invoke", json={}).json()["reason"]
     ag = client.post("/api/agents/conversations", json={}).json()["reason"]
-    fs = client.post("/api/files/upload").json()["reason"]
-    assert len({fn, ag, fs}) == 3
+    fs = client.post("/api/files/upload", headers=auth()).json()["reason"]
+    integrations = client.post("/api/integrations/llm/invoke", json={}).json()["reason"]
+    assert len({fn, ag, fs, integrations}) == 4

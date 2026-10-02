@@ -1,0 +1,63 @@
+name: GUI backend parity local contract
+
+on:
+  pull_request:
+    paths:
+      - ".federation/gui_backend_contract.json"
+      - ".federation/gui-capabilities.json"
+      - "server/backend/**"
+      - "server/frontend/**"
+      - "desktop/**"
+      - "src/**"
+      - ".github/workflows/gui-backend-parity-local.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate exact audited-source boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, re, subprocess
+          from pathlib import Path
+          path = Path('.federation/gui_backend_contract.json')
+          data = json.loads(path.read_text())
+          assert data['schema_version'] == 'federation.gui-backend-contract/1.0'
+          assert data['policy']['require_zero_material_residue'] is True
+          source = data['source_commit']
+          assert re.fullmatch(r'[0-9a-f]{40}', source)
+          subprocess.run(['git','cat-file','-e',source + '^{commit}'], check=True)
+          subprocess.run(['git','merge-base','--is-ancestor',source,'HEAD'], check=True)
+          watched = [*data['discovery']['backend_roots'], *data['discovery']['frontend_roots'], *data['discovery']['route_files'], *data['discovery']['navigation_files'], *data['discovery'].get('existing_gui_capability_manifests', [])]
+          changed = subprocess.check_output(['git','diff','--name-only',source + '..HEAD'], text=True).splitlines()
+          def covered(name):
+              for raw in watched:
+                  raw = raw.rstrip('/')
+                  if name == raw or name.startswith(raw + '/'):
+                      return True
+              return False
+          stale = sorted(name for name in changed if covered(name))
+          if stale:
+              raise SystemExit('gui_backend_contract source_commit predates audited source changes: ' + ', '.join(stale))
+          assert set(data['runtime_evidence']) == {'data','identity','geometry','device'}
+          print('local contract boundary: PASS')
+          PY
+      - name: Run repository GUI capability parity when available
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -f scripts/check_gui_parity.py ]; then
+            python scripts/check_gui_parity.py --check
+          else
+            echo 'No repository gui-capabilities checker; federation strict scanner is authoritative for executability.'
+          fi

@@ -27,7 +27,7 @@ from .bridge import write_manifest
 from .correlate import correlate
 from .federation_analytics_v2 import build_federation_analytics_v2_payload
 from .federation_status import validate_federation
-from .fetch import fetch_all
+from .fetch import FetchError, fetch_all
 from .graph_report import graph_report
 from .ingest import ingest_aggregate
 from .maintenance import build_rollup
@@ -183,7 +183,11 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.cmd == "fetch":
         reg = load_registry(args.registry)
-        results = fetch_all(reg, args.root, run_export=args.run)
+        try:
+            results = fetch_all(reg, args.root, run_export=args.run)
+        except FetchError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 1
         for r in results:
             print(f"{r['program_id']:16} {r['action']:8} export={'yes' if r['exported'] else 'no '}  {r['base']}")
         print(

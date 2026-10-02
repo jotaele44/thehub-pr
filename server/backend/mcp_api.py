@@ -11,9 +11,9 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any, Dict
+from typing import Any, Callable, Dict, Optional
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
 from hub.mcp_runtime import (
@@ -43,6 +43,11 @@ class RouteRequest(BaseModel):
     action: str
     params: Dict[str, Any] = {}
     is_write: bool = False
+
+
+def _require_loopback(request: Request) -> None:
+    if request.client and request.client.host not in {"127.0.0.1", "::1", "localhost"}:
+        raise HTTPException(status_code=403, detail="MCP route is loopback-only")
 
 
 def _log_provenance(record: Dict[str, Any]) -> None:
@@ -78,7 +83,11 @@ def create_default_hub_router() -> Router:
     return router
 
 
-def build_mcp_api(router: Router) -> APIRouter:
+def build_mcp_api(
+    router: Router,
+    *,
+    write_authorizer: Optional[Callable[[Request], None]] = None,
+) -> APIRouter:
     """Build an APIRouter over an already-wired hub Router."""
     api = APIRouter()
 
@@ -126,16 +135,24 @@ def build_mcp_api(router: Router) -> APIRouter:
         return {"capabilities": caps, "projects": projects}
 
     @api.post("/mcp/route")
-    def route(body: RouteRequest) -> Dict[str, Any]:
-        request = MCPRequest(
+    def route(body: RouteRequest, request: Request) -> Dict[str, Any]:
+        _require_loopback(request)
+        mcp_request = MCPRequest(
             project=body.project,
             capability=body.capability,
             action=body.action,
             params=dict(body.params),
             is_write=body.is_write,
         )
+        if router.is_write_request(mcp_request):
+            if write_authorizer is None:
+                raise HTTPException(
+                    status_code=503,
+                    detail="MCP write authorization is not configured",
+                )
+            write_authorizer(request)
         try:
-            result = router.route(request)
+            result = router.route(mcp_request)
         except PolicyViolation as exc:
             raise HTTPException(status_code=403, detail=str(exc))
         except PermissionError as exc:

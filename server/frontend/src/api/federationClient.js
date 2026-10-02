@@ -17,13 +17,25 @@ const WRITE_TOKEN_STORAGE_KEY = 'federation_write_token';
 // write token stored alongside it would be discarded before the first request.
 export const getWriteToken = () => {
   if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem(WRITE_TOKEN_STORAGE_KEY) || null;
+  return window.sessionStorage.getItem(WRITE_TOKEN_STORAGE_KEY) || null;
 };
 
 export const setWriteToken = (token) => {
-  if (typeof window === 'undefined') return;
-  if (token) window.localStorage.setItem(WRITE_TOKEN_STORAGE_KEY, token);
-  else window.localStorage.removeItem(WRITE_TOKEN_STORAGE_KEY);
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(WRITE_TOKEN_STORAGE_KEY);
+    if (token) window.sessionStorage.setItem(WRITE_TOKEN_STORAGE_KEY, token);
+    else window.sessionStorage.removeItem(WRITE_TOKEN_STORAGE_KEY);
+  }
+  appParams.writeToken = token || null;
+};
+
+export const requireImplementedResponse = (result, feature) => {
+  if (result?.status === 'not_implemented' || result?.implemented === false) {
+    throw new Error(
+      result.reason || result.message || `${feature} is not available in this deployment.`,
+    );
+  }
+  return result;
 };
 
 const setStoredToken = (token) => {
@@ -63,7 +75,7 @@ async function request(path, options = {}) {
   // Write token last: it only applies once no session token is in play, which is
   // exactly the diagnostic-mode case the write guard exists for.
   const token = options.token ?? appParams.token ?? getStoredToken()
-    ?? appParams.writeToken ?? getWriteToken();
+    ?? getWriteToken() ?? appParams.writeToken;
   const headers = new Headers(options.headers || {});
 
   if (!(options.body instanceof FormData) && !headers.has('Content-Type')) {
