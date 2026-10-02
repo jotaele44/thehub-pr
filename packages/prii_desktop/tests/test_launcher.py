@@ -113,3 +113,136 @@ def test_stale_pid_clears_lock(tmp_path):
     )
     assert launch.running_instance_base(lock) is None
     assert not lock.exists()
+
+
+# --- visible startup failures (regression: setup stuck on "Saving…" forever) ---
+
+
+class _FakeWindow:
+    def __init__(self):
+        self.pages = []
+        self.loaded_url = None
+
+    def load_html(self, page):
+        self.pages.append(page)
+
+    def load_url(self, url):
+        self.loaded_url = url
+
+
+def _desktop_config(tmp_path):
+    from prii_desktop import DesktopConfig
+
+    dist = tmp_path / "dist"
+    dist.mkdir()
+    (dist / "index.html").write_text("<html><body></body></html>")
+    return DesktopConfig(
+        app_title="Demo <App>",
+        app_import="demo:app",
+        repo_root=tmp_path,
+        dist_dir=dist,
+        app_id="Demo",
+        state_dir=tmp_path / "state",
+    )
+
+
+def _configured(tmp_path):
+    from prii_desktop.setup_center import SetupBridge, configure
+
+    config = _desktop_config(tmp_path)
+    configure(config, tmp_path / "workspace")
+    return config, SetupBridge(config)
+
+
+def test_start_app_shows_error_page_when_backend_import_raises(tmp_path, monkeypatch):
+    config, bridge = _configured(tmp_path)
+    lock = tmp_path / "state" / ".running"
+
+    def boom(_config, _port):
+        raise ImportError("No module named 'duckdb' <script>")
+
+    monkeypatch.setattr(launch, "start_server", boom)
+    window = _FakeWindow()
+    launch.start_app(config, lock, bridge, window, [], {})
+
+    assert len(window.pages) == 2
+    assert "Starting" in window.pages[0]  # splash precedes the slow work
+    error = window.pages[1]
+    assert "could not start" in error
+    assert "Try Again" in error and "api.retry()" in error
+    assert "ImportError: No module named" in error
+    assert "<script>" not in error and "&lt;script&gt;" in error  # escaped
+    assert "Demo &lt;App&gt;" in error
+    assert window.loaded_url is None
+    assert not lock.exists()
+    log_text = (tmp_path / "state" / "logs" / "launcher.log").read_text()
+    assert "ImportError" in log_text and "Traceback" in log_text
+
+
+def test_start_app_reports_unsaved_setup_instead_of_returning_silently(tmp_path):
+    from prii_desktop.setup_center import SetupBridge
+
+    config = _desktop_config(tmp_path)  # never configured
+    window = _FakeWindow()
+    launch.start_app(
+        config, tmp_path / ".running", SetupBridge(config), window, [], {}
+    )
+    assert "Setup could not be saved" in window.pages[-1]
+    assert window.loaded_url is None
+
+
+def test_start_app_loads_url_when_backend_is_healthy(tmp_path, monkeypatch):
+    config, bridge = _configured(tmp_path)
+    started = {}
+
+    class Server:
+        startup_error = None
+        thread = None
+
+    monkeypatch.setattr(
+        launch, "start_server", lambda _c, port: started.update(port=port) or Server()
+    )
+    monkeypatch.setattr(launch, "wait_healthy", lambda *_a, **_k: None)
+    window = _FakeWindow()
+    runtime = {}
+    launch.start_app(config, tmp_path / ".running", bridge, window, [], runtime)
+
+    assert window.loaded_url == f"http://127.0.0.1:{started['port']}"
+    assert "server" in runtime
+    assert len(window.pages) == 1  # splash only, no error page
+
+
+def test_wait_healthy_fails_fast_with_server_startup_error():
+    class Server:
+        startup_error = RuntimeError("port in use")
+        thread = None
+
+    port = _closed_port()
+    started = __import__("time").monotonic()
+    with pytest.raises(SystemExit, match="RuntimeError: port in use"):
+        launch.wait_healthy(f"http://127.0.0.1:{port}/health", timeout=30, server=Server())
+    assert __import__("time").monotonic() - started < 5
+
+
+def test_wait_healthy_fails_fast_when_server_thread_died():
+    import threading
+
+    thread = threading.Thread(target=lambda: None)
+    thread.start()
+    thread.join()
+
+    class Server:
+        startup_error = None
+
+    server = Server()
+    server.thread = thread
+    with pytest.raises(SystemExit, match="exited before becoming healthy"):
+        launch.wait_healthy(
+            f"http://127.0.0.1:{_closed_port()}/health", timeout=30, server=server
+        )
+
+
+def _closed_port():
+    with socket.socket() as sock:
+        sock.bind(("127.0.0.1", 0))
+        return sock.getsockname()[1]

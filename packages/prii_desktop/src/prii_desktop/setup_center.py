@@ -423,8 +423,14 @@ def render_setup_html(config: DesktopConfig) -> str:
   }});
   $("save").addEventListener("click", async () => {{
     setBusy(true, "Saving configuration and starting the app…");
-    try {{ await api().apply($("workspace").value); }}
-    catch (error) {{ setBusy(false, String(error)); }}
+    try {{
+      await api().apply($("workspace").value);
+      // A successful start replaces this page. If it is still here, the app
+      // is slow or stuck: say so and hand the controls back instead of hanging.
+      setTimeout(() => setBusy(false,
+        "Starting is taking longer than expected. You can wait, run " +
+        "Diagnostics, or press Save again to retry."), 60000);
+    }} catch (error) {{ setBusy(false, String(error)); }}
   }});
   $("back").addEventListener("click", () => api().return_to_app());
   window.addEventListener("pywebviewready", refresh);
@@ -507,6 +513,13 @@ class SetupBridge:
         if self._app_url is not None and self._restart_app is not None:
             self._restart_app()
         return result
+
+    def retry(self) -> bool:
+        """Restart the app after a failed start (error-screen "Try Again")."""
+        if self._restart_app is None:
+            return False
+        self._restart_app()
+        return True
 
     def open_setup(self) -> bool:
         if self._window is None:
