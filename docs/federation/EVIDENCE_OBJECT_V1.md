@@ -117,9 +117,14 @@ If a value is invalid or contradicts another value, the Hub ignores it, lists it
 - **API:** `GET /api/evidence/{collection}/{record_id}`. `collection` is a Hub store
   collection: `Sources`, `Entities`, `Relationships`, `Observations`, `Alerts` or
   `Correlations`. A record the Hub does not hold returns 404.
-- **GUI:** the route `/evidence/:collection/:id`. It is linked from the producer-workspace
-  Evidence inspector and from record sheets, but only for rows projected from a canonical
-  producer stream.
+- **GUI:** the route `/evidence/:collection/:id`. It is linked from four places, but only
+  for rows projected from a canonical producer stream:
+  - the producer-workspace Evidence inspector;
+  - record sheets;
+  - every search result;
+  - the entity page ([`SEARCH_AND_ENTITY_V1.md`](SEARCH_AND_ENTITY_V1.md)).
+
+  An entity's Evidence Object links on to its composition at `/entity/:id`.
 
 ## Tests
 

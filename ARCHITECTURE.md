@@ -105,6 +105,22 @@ Producers can declare state by attaching an additive `evidence_state` object to 
 producer does not declare fails closed and is never guessed. See
 [`docs/federation/EVIDENCE_OBJECT_V1.md`](docs/federation/EVIDENCE_OBJECT_V1.md).
 
+### Search and entity composition (candidate)
+
+`GET /api/search` (`hub.federated_search`) is a lexical index over the entities, sources,
+observations and alerts the Hub store already holds:
+
+- every query word must match;
+- synthetic rows are excluded by default and counted;
+- each producer is reported `AVAILABLE` or `NO_DATA`.
+
+`GET /api/entity/{record_id}` (`hub.entity_composition`, contract
+`FEDERATION_ENTITY_COMPOSITION_V1`) composes one entity from the rows linked to it. It
+reports identity exactly as recorded and runs no matching.
+
+Both are rendered at `/search` and `/entity/:id`, and the command palette (Ctrl/Cmd+K) reaches
+them. See [`docs/federation/SEARCH_AND_ENTITY_V1.md`](docs/federation/SEARCH_AND_ENTITY_V1.md).
+
 ## Governance
 
 Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,

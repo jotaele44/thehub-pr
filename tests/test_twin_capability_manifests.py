@@ -183,7 +183,7 @@ def test_run1_claim_outside_run1_phase_fails(observed):
 
 def test_implemented_without_tests_fails(observed):
     doc = copy.deepcopy(observed)
-    row = next(r for r in doc["capabilities"] if r["delivery_state"] == "SCHEDULED_THIS_RUN")
+    row = next(r for r in doc["capabilities"] if r["delivery_state"] in tm.RUN1_DELIVERY_STATES)
     row["delivery_state"] = "IMPLEMENTED_THIS_RUN"
     row["tests"] = []
     assert any("requires tests" in e for e in tm.validate_observed(doc))

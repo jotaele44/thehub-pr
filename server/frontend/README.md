@@ -31,6 +31,9 @@ VITE_FEDERATION_MODE=diagnostic
 | `GET /api/apps/public-settings` | yes — reports `requires_auth: false`, `mode: diagnostic` |
 | `GET /api/auth/me` | yes, but always **401** in diagnostic mode |
 | `GET /api/entities/:entity` | yes |
+| `GET /api/evidence/:collection/:id` | yes — Evidence Object and lineage; 404 for a record the Hub does not hold |
+| `GET /api/search` | yes — federated search (`q`, `type`, `include_synthetic`, `limit`, `cursor`); 422 on a bad parameter |
+| `GET /api/entity/:id` | yes — entity composition; 404 for an entity the Hub does not hold |
 | `POST /api/entities/:entity/filter` | yes (a read, despite the verb) |
 | `POST /api/entities/:entity` | yes — **write-guarded** |
 | `PATCH /api/entities/:entity/:id` | yes — **write-guarded** |
