@@ -727,7 +727,7 @@
         "server/frontend/src/components/evidence/ProvenanceInspector.test.jsx",
         "server/frontend/tests/visual/gui-parity.spec.js"
       ],
-      "notes": "Closest existing vocabularies (claim_ledger.v1 FACT/INFERENCE/HYPOTHESIS; design-system epistemic states) are a different axis and are crosswalked, not replaced. Implemented as FEDERATION_EPISTEMIC_STATE_CONTRACT_V1 (candidate); producer declarations populate it from Wave 2, until then rows render UNCLASSIFIED.",
+      "notes": "Closest existing vocabularies (claim_ledger.v1 FACT/INFERENCE/HYPOTHESIS; design-system epistemic states) are a different axis and are crosswalked, not replaced. Implemented as FEDERATION_EPISTEMIC_STATE_CONTRACT_V1 (candidate); Producer declarations are merged in ovnis-pr #167, spiderweb-pr #398, skywatcher-pr #336 and aguayluz-pr #315. moneysweep-pr's source-recovery pause lock blocks it from declaring, so its rows stay UNCLASSIFIED. The committed aggregate predates the declarations, so Hub rows show them only after the next aggregate refresh.",
       "search_terms_without_equivalent": [
         "search",
         "command palette",
