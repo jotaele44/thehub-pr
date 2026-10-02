@@ -73,3 +73,11 @@ closed only when all of the following hold:
 
 A closed census does **not** mean all 223 capabilities are implemented. It
 means each one has an explicit disposition backed by evidence.
+
+## Run 1 record
+
+[`TWIN_RUN1_RECONCILIATION.md`](TWIN_RUN1_RECONCILIATION.md) is the closing record for run 1 (Phases 1–3). It lists the delivery counts, every pull request and merged SHA, and the producer verification. It also records:
+
+- MoneySweep's BLOCKED status;
+- why the evidence contracts remain CANDIDATE;
+- the leads logged for later phases.
