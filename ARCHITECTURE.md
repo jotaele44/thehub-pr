@@ -121,6 +121,10 @@ reports identity exactly as recorded and runs no matching.
 Both are rendered at `/search` and `/entity/:id`, and the command palette (Ctrl/Cmd+K) reaches
 them. See [`docs/federation/SEARCH_AND_ENTITY_V1.md`](docs/federation/SEARCH_AND_ENTITY_V1.md).
 
+`GET /api/timeline` (`hub.event_timeline`) orders the OVNIS case observations the store holds,
+keeping each date at its recorded precision and each place as the source gives it. It is
+rendered at `/timeline`. See [`docs/federation/EVENT_TIMELINE_V1.md`](docs/federation/EVENT_TIMELINE_V1.md).
+
 ## Governance
 
 Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,
