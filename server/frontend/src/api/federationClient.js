@@ -227,6 +227,21 @@ const evidence = {
   get: (collection, recordId) => request(`/evidence/${encode(collection)}/${encode(recordId)}`),
 };
 
+// Federated search over the canonical streams the Hub ingests. Read-only; see
+// server/backend/search_api.py. `cursor` is the opaque value the previous page returned.
+const search = {
+  query: ({ q = '', type = 'ALL', includeSynthetic = false, limit = 25, cursor } = {}) => {
+    const params = new URLSearchParams({ q, type, include_synthetic: String(includeSynthetic), limit: String(limit) });
+    if (cursor) params.set('cursor', cursor);
+    return request(`/search?${params.toString()}`);
+  },
+};
+
+// Entity composition (FEDERATION_ENTITY_COMPOSITION_V1). Read-only; see server/backend/entity_api.py.
+const composition = {
+  get: (recordId) => request(`/entity/${encode(recordId)}`),
+};
+
 export const federation = {
   app: { id: appParams.appId, programId: appParams.programId },
   auth,
@@ -240,5 +255,7 @@ export const federation = {
   system,
   projectSigns,
   evidence,
+  search,
+  composition,
   request,
 };

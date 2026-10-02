@@ -126,9 +126,9 @@
       "existing_equivalent": "thehub-pr src/hub/identity_registry.py; src/hub/identity_adjudication.py; schemas/contracts/entity_resolution.v1.schema.json",
       "implementation_status": "EXTEND",
       "phase": 3,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "PARTIAL_THIS_RUN",
       "aliases": [],
-      "notes": "Run 1 surfaces existing registry state; no new matching algorithm (audit F13: 0 correlations meet the identity standard)."
+      "notes": "Run 1 (PR-2): /entity/:id reports identity exactly as recorded. registry_status is NOT_CONFIGURED because the registry (src/hub/identity_registry.py) has no store wired into the server; compose_entity accepts a registry membership view when one is. No new matching algorithm (audit F13: 0 correlations meet the identity standard)."
     },
     {
       "capability_id": "FDX-009",
@@ -776,9 +776,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 3,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
       "aliases": [],
-      "notes": null
+      "notes": "Run 1 (PR-2): /entity/:id composes identity, relationships with their edge state, linked observations and alerts, and per-producer sections from rows the Hub already holds (FEDERATION_ENTITY_COMPOSITION_V1, candidate)."
     },
     {
       "capability_id": "FDX-052",
@@ -836,9 +836,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 3,
-      "delivery_state": "SCHEDULED_THIS_RUN",
+      "delivery_state": "IMPLEMENTED_THIS_RUN",
       "aliases": [],
-      "notes": null
+      "notes": "Run 1 (PR-2): navigation derived from NAV_GROUPS, plus search, open entity, open evidence and jump-to-coordinates commands. Set time, toggle layer, open timeline and open report wait for their phases."
     },
     {
       "capability_id": "FDX-056",
@@ -853,7 +853,7 @@
       "phase": 3,
       "delivery_state": "PARTIAL_THIS_RUN",
       "aliases": [],
-      "notes": "Run 1: entity, evidence (event/source/finding), search and map position. Timeline window, AOI, layers, report and session follow their phases."
+      "notes": "Run 1: entity (/entity/:id), evidence (/evidence/:collection/:id), search (/search?q&type&synthetic&cursor) and map position (/gis?lat&lon&z). Timeline window, AOI, layers, report and session follow their phases."
     },
     {
       "capability_id": "FDX-057",
@@ -1131,9 +1131,9 @@
   ],
   "reconciliation": {
     "FEDERATION_DERIVED_TOTAL": 74,
-    "DERIVED_IMPLEMENTED": 8,
-    "DERIVED_PARTIAL": 3,
-    "DERIVED_SCHEDULED": 3,
+    "DERIVED_IMPLEMENTED": 10,
+    "DERIVED_PARTIAL": 4,
+    "DERIVED_SCHEDULED": 0,
     "DERIVED_ALREADY_PRESENT": 1,
     "DERIVED_BLOCKED": 3,
     "DERIVED_DEFERRED": 56,

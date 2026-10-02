@@ -123,6 +123,7 @@
           "src/hub/evidence_lineage.py:validate_lineage",
           "src/hub/evidence_object.py:evidence_id",
           "src/hub/evidence_object.py:project_evidence_object",
+          "src/hub/evidence_object.py:record_title",
           "src/hub/evidence_object.py:row_sha256",
           "src/hub/evidence_object.py:validate_evidence_object"
         ]
@@ -157,6 +158,197 @@
         "unit": [
           "server/frontend/src/lib/evidenceState.test.js",
           "server/frontend/src/components/evidence/ProvenanceInspector.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "moneysweep-certified-debt-leaderboard",
+      "classification": "analysis",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Read-only federation product surface for the exact MoneySweep-certified debt_issuance package. TheHub does not recompute producer totals, ranks, identity, source semantics, or geometry and remains fail-closed until exact producer hashes are trusted.",
+      "backend": {
+        "files": [
+          "server/backend/moneysweep_leaderboards.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /status",
+          "GET /top"
+        ],
+        "symbols": [
+          "server/backend/moneysweep_leaderboards.py:status",
+          "server/backend/moneysweep_leaderboards.py:top"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/moneysweep"
+        ],
+        "e2e_routes": [
+          "/moneysweep"
+        ],
+        "components": [
+          "server/frontend/src/pages/MoneySweep.jsx",
+          "server/frontend/src/components/feed/MoneySweepLeaderboardsTab.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/MoneySweep.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_moneysweep_leaderboard_consumer.py"
+        ],
+        "contract": [
+          "tests/test_moneysweep_leaderboard_crossrepo.py"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "federated-search",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "One read-only search across the canonical streams every producer exports into the Hub (TWIN-012, TWIN-082..096): multiword AND, accent-folded, synthetic rows excluded and counted, FINDING declared empty until a producer emits findings, every result deep-linked to its Evidence Object.",
+      "backend": {
+        "files": [
+          "server/backend/search_api.py",
+          "src/hub/federated_search.py",
+          "server/backend/main.py"
+        ],
+        "symbols": [
+          "server/backend/search_api.py:current_index",
+          "server/backend/search_api.py:search",
+          "src/hub/federated_search.py:FederatedSearchIndex",
+          "src/hub/federated_search.py:SearchDoc",
+          "src/hub/federated_search.py:fold",
+          "src/hub/federated_search.py:parse_cursor",
+          "src/hub/federated_search.py:result_kind",
+          "src/hub/federated_search.py:words"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/search"
+        ],
+        "e2e_routes": [
+          "/search"
+        ],
+        "components": [
+          "server/frontend/src/pages/Search.jsx",
+          "server/frontend/src/lib/deepLinks.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/lib/commands.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_search_entity_api.py"
+        ],
+        "contract": [
+          "tests/test_federated_search.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/Search.test.jsx",
+          "server/frontend/src/lib/deepLinks.test.js"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "entity-composition",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Global entity page (FDX-051): one producer entity with the relationships, observations, alerts and sources the Hub store already links to it. Identity is reported as recorded (FDX-008: the registry is not wired, so nothing is merged); proximity correlations stay CANDIDATE.",
+      "backend": {
+        "files": [
+          "server/backend/entity_api.py",
+          "src/hub/entity_composition.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /{record_id}"
+        ],
+        "symbols": [
+          "server/backend/entity_api.py:composition_for",
+          "server/backend/entity_api.py:get_entity_composition",
+          "src/hub/entity_composition.py:compose_entity",
+          "src/hub/entity_composition.py:validate_entity_composition"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/entity/:id"
+        ],
+        "e2e_routes": [
+          "/entity/:id"
+        ],
+        "components": [
+          "server/frontend/src/pages/EntityPage.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/Search.jsx",
+          "server/frontend/src/pages/EvidenceInspector.jsx",
+          "server/frontend/src/lib/commands.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_search_entity_api.py"
+        ],
+        "contract": [
+          "tests/test_entity_composition.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/EntityPage.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "command-palette-and-map-deep-links",
+      "classification": "client_only",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Ctrl/Cmd+K command palette (TWIN-095, FDX-055) and URL deep links (FDX-056). Every command is a client-side navigation derived from NAV_GROUPS or a parsed query (search, Collection/id, ent_ id, lat/lon); the palette performs no writes. /gis?lat&lon&z centres the canonical map view or reports an invalid link.",
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/command/CommandPalette.jsx",
+          "server/frontend/src/lib/commands.js",
+          "server/frontend/src/hooks/useGlobalShortcut.js",
+          "server/frontend/src/gis/deepLinkView.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/components/layout/Sidebar.jsx",
+          "server/frontend/src/components/layout/AppLayout.jsx"
+        ]
+      },
+      "tests": {
+        "unit": [
+          "server/frontend/src/components/command/CommandPalette.test.jsx",
+          "server/frontend/src/lib/commands.test.js",
+          "server/frontend/src/lib/deepLinks.test.js"
         ],
         "e2e": [
           "server/frontend/tests/visual/gui-parity.spec.js"

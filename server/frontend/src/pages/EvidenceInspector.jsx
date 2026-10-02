@@ -1,10 +1,11 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ScanSearch } from 'lucide-react';
 import { federation } from '@/api/federationClient';
 import PageHeader from '@/components/shared/PageHeader';
 import ProvenanceInspector from '@/components/evidence/ProvenanceInspector';
+import { entityHref } from '@/lib/deepLinks';
 
 // Deep-linkable provenance inspector: /evidence/:collection/:id renders the
 // FEDERATION_EVIDENCE_OBJECT_V1 view of one Hub store record.
@@ -36,6 +37,9 @@ export default function EvidenceInspector() {
           <h2 className="mb-1 text-lg font-semibold text-foreground">{data.title}</h2>
           <p className="mb-4 text-xs text-muted-foreground">
             {data.canonical_type} · {data.producer_repo} · <span className="font-mono-id">{data.id}</span>
+            {data.stream === 'entities' ? (
+              <> · <Link className="text-primary underline" to={entityHref(data.producer_record_id)}>Entity composition</Link></>
+            ) : null}
           </p>
           <ProvenanceInspector evidence={data} />
         </>
