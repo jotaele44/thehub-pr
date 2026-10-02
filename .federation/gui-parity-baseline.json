@@ -1,5 +1,5 @@
 {
-  "candidate_count": 1176,
+  "candidate_count": 1181,
   "candidates": [
     {
       "id": "analysis_module:scripts/adjudicate_htr_census.py",
@@ -3696,10 +3696,10 @@
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
     {
-      "detail": "button#324fa68ebffd",
-      "id": "gui_control:server/frontend/src/components/research/OperatorChat.jsx:button#324fa68ebffd",
+      "detail": "button#11521a741aa3",
+      "id": "gui_control:server/frontend/src/components/research/OperatorChat.jsx:button#11521a741aa3",
       "kind": "gui_control",
-      "line": 144,
+      "line": 203,
       "path": "server/frontend/src/components/research/OperatorChat.jsx",
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
@@ -4216,6 +4216,14 @@
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
     {
+      "detail": "button#50d81387c8c9",
+      "id": "gui_control:server/frontend/src/pages/OperatorSettings.jsx:button#50d81387c8c9",
+      "kind": "gui_control",
+      "line": 109,
+      "path": "server/frontend/src/pages/OperatorSettings.jsx",
+      "signal": "GUI_NOT_BACKEND_WIRED"
+    },
+    {
       "detail": "button#c6f1641a00ed",
       "id": "gui_control:server/frontend/src/pages/OperatorSettings.jsx:button#c6f1641a00ed",
       "kind": "gui_control",
@@ -4236,6 +4244,22 @@
       "id": "gui_control:server/frontend/src/pages/OperatorSettings.jsx:button#e8dcd370cb1e",
       "kind": "gui_control",
       "line": 185,
+      "path": "server/frontend/src/pages/OperatorSettings.jsx",
+      "signal": "GUI_NOT_BACKEND_WIRED"
+    },
+    {
+      "detail": "button#f35442e036a6",
+      "id": "gui_control:server/frontend/src/pages/OperatorSettings.jsx:button#f35442e036a6",
+      "kind": "gui_control",
+      "line": 110,
+      "path": "server/frontend/src/pages/OperatorSettings.jsx",
+      "signal": "GUI_NOT_BACKEND_WIRED"
+    },
+    {
+      "detail": "form#645e4a6df9ee",
+      "id": "gui_control:server/frontend/src/pages/OperatorSettings.jsx:form#645e4a6df9ee",
+      "kind": "gui_control",
+      "line": 92,
       "path": "server/frontend/src/pages/OperatorSettings.jsx",
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
@@ -4268,6 +4292,14 @@
       "id": "gui_control:server/frontend/src/pages/OperatorSettings.jsx:input#7d7db9059cc7",
       "kind": "gui_control",
       "line": 393,
+      "path": "server/frontend/src/pages/OperatorSettings.jsx",
+      "signal": "GUI_NOT_BACKEND_WIRED"
+    },
+    {
+      "detail": "input#a387306ea30a",
+      "id": "gui_control:server/frontend/src/pages/OperatorSettings.jsx:input#a387306ea30a",
+      "kind": "gui_control",
+      "line": 95,
       "path": "server/frontend/src/pages/OperatorSettings.jsx",
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
@@ -7988,6 +8020,14 @@
       "symbol": "validate_federation"
     },
     {
+      "id": "python_symbol:src/hub/fetch.py:FetchError",
+      "kind": "python_symbol",
+      "line": 58,
+      "path": "src/hub/fetch.py",
+      "signal": "BACKEND_NOT_GUI_SURFACED",
+      "symbol": "FetchError"
+    },
+    {
       "id": "python_symbol:src/hub/fetch.py:clone_or_pull",
       "kind": "python_symbol",
       "line": 63,
@@ -8978,9 +9018,9 @@
   "schema_version": "prii.gui-parity-baseline/v1",
   "signal_counts": {
     "ANALYSIS_NOT_GUI_RENDERED": 338,
-    "BACKEND_NOT_GUI_SURFACED": 574,
+    "BACKEND_NOT_GUI_SURFACED": 575,
     "DEAD_CONTROL": 5,
-    "GUI_NOT_BACKEND_WIRED": 222,
+    "GUI_NOT_BACKEND_WIRED": 226,
     "GUI_WORKFLOW_UNREACHABLE": 1,
     "PRODUCTION_PLACEHOLDER_OR_MOCK": 2,
     "TERMINAL_REQUIRED": 34
