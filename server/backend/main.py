@@ -35,16 +35,17 @@ if not any(getattr(route, "path", None) == _PROXY_PATH for route in _core.app.ro
 if not any(getattr(route, "path", None) == _PROXY_PATH for route in _core.app.routes):
     raise RuntimeError("GIS proxy route failed to mount on canonical FastAPI app")
 
-# Evidence Object (provenance inspector), federated search and entity composition
-# APIs, mounted the same additive way.
+# Evidence Object (provenance inspector), federated search, entity composition
+# and event timeline APIs, mounted the same additive way.
 from server.backend.entity_api import router as _entity_router  # noqa: E402
 from server.backend.evidence_api import router as _evidence_router  # noqa: E402
 from server.backend.search_api import router as _search_router  # noqa: E402
+from server.backend.timeline_api import router as _timeline_router  # noqa: E402
 
 # The routers' APIRoutes are already fully prefixed; extending the route table
 # directly keeps them visible (FastAPI may wrap include_router lazily).
 _existing_paths = {getattr(route, "path", None) for route in _core.app.router.routes}
-for _extension_router in (_evidence_router, _search_router, _entity_router):
+for _extension_router in (_evidence_router, _search_router, _entity_router, _timeline_router):
     _core.app.router.routes.extend(
         route for route in _extension_router.routes if getattr(route, "path", None) not in _existing_paths
     )
