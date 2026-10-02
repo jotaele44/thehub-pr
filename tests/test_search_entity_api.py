@@ -29,12 +29,27 @@ def client(tmp_path, monkeypatch):
         yield test_client
 
 
+def _rows(stream: str) -> list:
+    return [json.loads(line) for line in (AGGREGATE / f"{stream}.jsonl").read_text(encoding="utf-8").splitlines()]
+
+
 def _entity(predicate) -> dict:
-    for line in (AGGREGATE / "entities.jsonl").read_text(encoding="utf-8").splitlines():
-        row = json.loads(line)
+    for row in _rows("entities"):
         if predicate(row):
             return row
     raise AssertionError("no matching entity")
+
+
+def _composable_ovnis_case() -> dict:
+    """An OVNIS case the committed sample holds with both an edge and a linked record.
+
+    The fixture is a bounded sample re-drawn on every refresh, so the anchor is
+    chosen from the data rather than pinned to one record's name.
+    """
+    named = {e for r in _rows("relationships") for e in (r.get("source_entity_id"), r.get("target_entity_id"))}
+    linked = {o.get("entity_id") for o in _rows("observations")}
+    return _entity(lambda r: "ovnis-pr" in (r.get("_producers") or []) and r["entity_id"] in named
+                   and r["entity_id"] in linked)
 
 
 def test_search_folds_accents_and_links_to_provenance(client):
@@ -80,7 +95,7 @@ def test_search_index_follows_store_writes(client):
 
 
 def test_entity_composition_resolves_edges_and_linked_records(client):
-    anchor = _entity(lambda r: r.get("name") == "Offshore" and "ovnis-pr" in (r.get("_producers") or []))
+    anchor = _composable_ovnis_case()
     response = client.get(f"/api/entity/{anchor['entity_id']}")
     assert response.status_code == 200
     body = response.json()
