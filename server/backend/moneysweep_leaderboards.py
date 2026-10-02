@@ -257,10 +257,10 @@ def _validate_package(document: dict[str, Any]) -> list[str]:
             entity_id = str(row.get("entityId") or "")
             display = str(row.get("entityDisplayName") or "")
             currency = str(row.get("currency") or "")
-            key = (entity_id, currency)
-            if not entity_id or key in seen_entities:
+            entity_key = (entity_id, currency)
+            if not entity_id or entity_key in seen_entities:
                 errors.append(f"{prefix}.entityUniqueness")
-            seen_entities.add(key)
+            seen_entities.add(entity_key)
             if not display:
                 errors.append(f"{prefix}.entityDisplayName")
             if currency != "USD":
