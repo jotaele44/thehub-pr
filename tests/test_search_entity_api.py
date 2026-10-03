@@ -74,7 +74,7 @@ def test_search_excludes_synthetic_by_default(client):
 def test_search_empty_finding_and_validation(client):
     assert client.get("/api/search").json()["query_status"] == "EMPTY_QUERY"
     finding = client.get("/api/search", params={"q": "san juan", "type": "finding"}).json()
-    assert finding["type_status"] == "NO_PRODUCER_EMITS_FINDINGS" and finding["results"] == []
+    assert finding["type_status"] == "NO_FINDINGS_RECORDED" and finding["results"] == []
     assert client.get("/api/search", params={"q": "x", "type": "tweet"}).status_code == 422
     assert client.get("/api/search", params={"q": "x", "cursor": "abc"}).status_code == 422
     assert client.get("/api/search", params={"q": "x", "limit": 0}).status_code == 422
