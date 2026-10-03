@@ -40,7 +40,7 @@ KINDS: Mapping[str, Tuple[str, str]] = {
     "reports": ("case_report", "ovnis_report_id"),
 }
 ENTITY_TYPES: Tuple[str, ...] = tuple(entity_type for entity_type, _ in KINDS.values())
-_KIND_OF_TYPE = {entity_type: kind for kind, (entity_type, _) in KINDS.items()}
+_KIND_OF_TYPE = dict(zip(ENTITY_TYPES, KINDS))
 FALSIFICATION_CHECKS: Tuple[str, ...] = (
     "identity_errors", "duplicate_manifestations", "ordinary_explanations", "background_prevalence",
     "missing_data", "source_dependence", "temporal_mismatch", "geometry_uncertainty", "contradictions",
