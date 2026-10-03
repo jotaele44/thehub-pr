@@ -92,4 +92,4 @@ Run 2 delivers Phase 4. Its records are marked `IMPLEMENTED_RUN_2`, `PARTIAL_RUN
 | Event timeline (`/timeline`) | [`EVENT_TIMELINE_V1.md`](EVENT_TIMELINE_V1.md) |
 | Research Hub (`/research`), case reconstruction (`/research/case/:caseId`), and the `/ovnis` reports workspace and show log | [`RESEARCH_HUB_V1.md`](RESEARCH_HUB_V1.md) |
 
-OVNIS owns the research record. Its ledgers, validator, duplicate candidates and case reports are documented in `ovnis-pr` `docs/RESEARCH_LEDGERS.md`.
+OVNIS owns the research record. Its ledgers, validator, duplicate candidates and case reports are documented in the [ovnis-pr research-ledger doc](https://github.com/jotaele44/ovnis-pr/blob/main/docs/RESEARCH_LEDGERS.md).

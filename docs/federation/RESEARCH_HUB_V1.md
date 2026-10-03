@@ -2,7 +2,7 @@
 
 TheHub renders the OVNIS research record at `/research`, `/research/case/:caseId` and the
 `/ovnis` Reports and Show Log tabs. OVNIS owns that record: curators write it into the research
-ledgers in `ovnis-pr`, whose `docs/RESEARCH_LEDGERS.md` describes the ledgers, their rules and how
+ledgers in `ovnis-pr`, whose [research-ledger doc](https://github.com/jotaele44/ovnis-pr/blob/main/docs/RESEARCH_LEDGERS.md) describes the ledgers, their rules and how
 they are exported. The Hub only reads the typed `entities` rows the export carries. Nothing is
 generated, inferred or matched on this side.
 
@@ -96,4 +96,4 @@ hold it.
 | `server/frontend/src/components/research/ResearchRecords.jsx` and `OvnisResearchTabs.jsx` | Shared views and the `/ovnis` tabs |
 | `tests/test_research_composition.py`, `tests/test_research_api.py` | Backend tests |
 | `server/frontend/src/pages/ResearchHub.test.jsx`, `CaseReconstruction.test.jsx` | Unit tests |
-| The `research hub` block in `tests/visual/gui-parity.spec.js` | E2E tests |
+| The `research hub` block in `server/frontend/tests/visual/gui-parity.spec.js` | E2E tests |
