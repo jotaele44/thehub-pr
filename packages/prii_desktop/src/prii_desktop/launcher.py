@@ -22,12 +22,14 @@ Flags (from ``sys.argv``):
 from __future__ import annotations
 
 import contextlib
+import html
 import json
 import os
 import socket
 import sys
 import threading
 import time
+import traceback
 import urllib.request
 from pathlib import Path
 
@@ -182,12 +184,27 @@ def start_server(config: DesktopConfig, port: int):
         log_level="warning",
     )
     server = uvicorn.Server(uvicorn_config)
-    threading.Thread(target=server.run, name="uvicorn", daemon=True).start()
+    server.startup_error = None
+
+    def run() -> None:
+        try:
+            server.run()
+        except (Exception, SystemExit) as exc:  # surfaced by wait_healthy
+            server.startup_error = exc
+
+    thread = threading.Thread(target=run, name="uvicorn", daemon=True)
+    server.thread = thread
+    thread.start()
     return server
 
 
-def wait_healthy(url: str, timeout: float = 30.0) -> None:
-    """Wait for a healthy backend or terminate the current launch path."""
+def wait_healthy(url: str, timeout: float = 30.0, server=None) -> None:
+    """Wait for a healthy backend or terminate the current launch path.
+
+    When ``server`` (from :func:`start_server`) is given, a crashed or exited
+    server thread fails immediately with its real cause instead of polling out
+    the whole timeout.
+    """
     deadline = time.monotonic() + timeout
     last_error: Exception | None = None
     while time.monotonic() < deadline:
@@ -197,6 +214,15 @@ def wait_healthy(url: str, timeout: float = 30.0) -> None:
                     return
         except Exception as exc:  # noqa: BLE001 - retried until deadline
             last_error = exc
+        startup_error = getattr(server, "startup_error", None)
+        if startup_error is not None:
+            raise SystemExit(
+                f"Backend stopped during startup: "
+                f"{type(startup_error).__name__}: {startup_error}"
+            )
+        thread = getattr(server, "thread", None)
+        if thread is not None and not thread.is_alive():
+            raise SystemExit(f"Backend exited before becoming healthy at {url}")
         time.sleep(0.2)
     raise SystemExit(f"Backend did not become healthy at {url}: {last_error}")
 
@@ -228,17 +254,100 @@ def _splash_html(message: str, accent: str = "#818cf8") -> str:
     return page.replace("#818cf8", accent)
 
 
-def _error_html(message: str, detail: str, accent: str = "#2563eb") -> str:
-    return _page(
-        f"<h1>{message} could not start</h1>"
-        "<p>The local service did not become ready. Open Setup &amp; Diagnostics "
-        "to check the installation and repair generated configuration.</p>"
-        f'<button style="min-height:44px;border:0;border-radius:8px;padding:10px 16px;'
-        f'background:{accent};color:#fff;font:600 14px inherit;cursor:pointer" '
-        'onclick="window.pywebview.api.open_setup()">'
-        "Open Setup &amp; Diagnostics</button>"
-        f'<p style="color:#64748b">{detail}</p>'
+def _error_html(
+    message: str,
+    detail: str,
+    accent: str = "#2563eb",
+    log_path: Path | None = None,
+) -> str:
+    button = (
+        "min-height:44px;border:0;border-radius:8px;padding:10px 16px;"
+        f"background:{accent};color:#fff;font:600 14px inherit;cursor:pointer;"
+        "margin:0 4px"
     )
+    log_note = (
+        f'<p style="color:#64748b">Details were saved to '
+        f"<code>{html.escape(str(log_path))}</code></p>"
+        if log_path is not None
+        else ""
+    )
+    return _page(
+        f"<h1>{html.escape(message)} could not start</h1>"
+        "<p>The local service did not become ready. Try again, or open Setup "
+        "&amp; Diagnostics to check the installation and repair generated "
+        "configuration.</p>"
+        "<div>"
+        f'<button style="{button}" onclick="window.pywebview.api.retry()">'
+        "Try Again</button>"
+        f'<button style="{button}" onclick="window.pywebview.api.open_setup()">'
+        "Open Setup &amp; Diagnostics</button></div>"
+        f'<p style="color:#64748b">{html.escape(detail)}</p>{log_note}'
+    )
+
+
+def _record_failure(config: DesktopConfig, failure: str) -> Path | None:
+    """Append a launch failure to the per-user launcher log (best effort)."""
+    try:
+        logs = application_support_dir(config) / "logs"
+        logs.mkdir(parents=True, exist_ok=True)
+        path = logs / "launcher.log"
+        stamp = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+        with path.open("a", encoding="utf-8") as stream:
+            stream.write(f"[{stamp}] {failure}\n")
+        return path
+    except OSError:
+        return None
+
+
+def start_app(
+    config: DesktopConfig,
+    lock_file: Path,
+    bridge: SetupBridge,
+    window,
+    argv: list[str],
+    runtime: dict[str, object],
+) -> None:
+    """Start the backend and load it, always leaving the window in a visible state.
+
+    The splash is shown before any slow work (importing the producer backend can
+    take a while), and every failure -- including an exception raised while the
+    backend is imported -- replaces the page with an error screen. Nothing in
+    here may fail silently: this runs on a webview worker thread where an
+    uncaught exception would leave the previous page frozen on screen.
+    """
+    window.load_html(_splash_html(config.app_title, config.brand_accent))
+    try:
+        if not setup_complete(config):
+            raise SystemExit(
+                "Setup could not be saved. Check that the workspace folder is writable."
+            )
+        apply_environment(config)
+        port = free_port()
+        base = f"http://127.0.0.1:{port}"
+        url = display_url(base, argv)
+        bridge.set_app_url(url)
+        write_lock(lock_file, base, base + config.health_path)
+        server = start_server(config, port)
+        runtime["server"] = server
+        wait_healthy(base + config.health_path, server=server)
+        window.load_url(url)
+    except (SystemExit, Exception) as exc:
+        clear_lock(lock_file)
+        detail = (
+            str(exc)
+            if isinstance(exc, SystemExit)
+            else f"{type(exc).__name__}: {exc}"
+        )
+        log(f"backend failed to start: {detail}")
+        log_path = _record_failure(config, traceback.format_exc())
+        window.load_html(
+            _error_html(
+                config.app_title,
+                detail,
+                config.brand_accent_strong,
+                log_path=log_path,
+            )
+        )
 
 
 def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None:
@@ -280,31 +389,9 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
     def on_ready() -> None:
         if show_setup:
             bridge.completed.wait()
-            if window_closed.is_set() or not setup_complete(config):
+            if window_closed.is_set():
                 return
-
-        apply_environment(config)
-        port = free_port()
-        base = f"http://127.0.0.1:{port}"
-        url = display_url(base, argv)
-        bridge.set_app_url(url)
-        write_lock(lock_file, base, base + config.health_path)
-        server = start_server(config, port)
-        runtime["server"] = server
-        window.load_html(_splash_html(config.app_title, config.brand_accent))
-        try:
-            wait_healthy(base + config.health_path)
-            window.load_url(url)
-        except (SystemExit, Exception) as exc:
-            clear_lock(lock_file)
-            log(f"backend failed to start: {exc}")
-            window.load_html(
-                _error_html(
-                    config.app_title,
-                    str(exc),
-                    config.brand_accent_strong,
-                )
-            )
+        start_app(config, lock_file, bridge, window, argv, runtime)
 
     webview.start(on_ready)
     server = runtime.get("server")
