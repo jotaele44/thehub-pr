@@ -22,6 +22,11 @@ function SearchResult({ result }) {
         {result.synthetic ? (
           <span className={cn(chip, SYNTHETIC_TONE)}>Synthetic / test row</span>
         ) : null}
+        {result.finding_status ? (
+          <span className={cn(chip, 'border-border text-foreground')} data-finding-status={result.finding_status}>
+            Finding status: {result.finding_status}
+          </span>
+        ) : null}
         <span className="text-xs text-muted-foreground">{result.type}</span>
       </div>
       <h2 className="mt-2 text-base font-semibold text-foreground">
@@ -143,9 +148,9 @@ export default function Search() {
                 {data.query_status === 'EMPTY_QUERY' ? ' · type a query to search' : ` · ${data.total} result${data.total === 1 ? '' : 's'}`}
                 {data.excluded_synthetic ? ` · ${data.excluded_synthetic} synthetic excluded` : ''}
               </p>
-              {data.type_status === 'NO_PRODUCER_EMITS_FINDINGS' ? (
+              {data.type_status === 'NO_FINDINGS_RECORDED' ? (
                 <p role="note" className="mt-3 rounded-xl border border-border bg-card p-4 text-sm" data-type-status={data.type_status}>
-                  No producer publishes findings yet, so this filter has nothing to search. It is not an empty result.
+                  No findings are recorded in the OVNIS research ledger yet, so this filter has nothing to search. It is not an empty result.
                 </p>
               ) : null}
               {data.query_status === 'OK' && data.total === 0 && data.type_status === 'OK' ? (

@@ -176,10 +176,10 @@ test.describe('federated search', () => {
     await expect(page.locator('[data-producer-status="NO_DATA"]')).toContainText('moneysweep-pr');
   });
 
-  test('a finding search says no producer emits findings', async ({ page }) => {
-    await mockApi(page, { '/search': { ...SEARCH_RESPONSE, type: 'FINDING', type_status: 'NO_PRODUCER_EMITS_FINDINGS', results: [], total: 0, matched: 0, excluded_synthetic: 0 } });
+  test('a finding search says no finding is recorded', async ({ page }) => {
+    await mockApi(page, { '/search': { ...SEARCH_RESPONSE, type: 'FINDING', type_status: 'NO_FINDINGS_RECORDED', results: [], total: 0, matched: 0, excluded_synthetic: 0 } });
     await page.goto('/search?q=laguna&type=FINDING', { waitUntil: 'networkidle' });
-    await expect(page.locator('[data-type-status="NO_PRODUCER_EMITS_FINDINGS"]')).toBeVisible();
+    await expect(page.locator('[data-type-status="NO_FINDINGS_RECORDED"]')).toBeVisible();
     await expect(page.locator('[data-search-result]')).toHaveCount(0);
   });
 });
@@ -272,5 +272,76 @@ test.describe('event timeline', () => {
     await page.goto('/timeline?findings=1', { waitUntil: 'networkidle' });
     await expect(page.locator('[data-findings-status="NO_FINDINGS_RECORDED"]')).toBeVisible();
     await expect(page.locator('[data-timeline-event]')).toHaveCount(0);
+  });
+});
+
+const RESEARCH_KINDS = ['topics', 'findings', 'hypotheses', 'contradictions', 'adjudications', 'queue', 'episodes', 'reports'];
+const RESEARCH_OVERVIEW = {
+  contract: 'federation-research-v1', producer: 'ovnis-pr', producer_status: 'AVAILABLE', include_synthetic: false, topics: [],
+  kinds: {
+    ...Object.fromEntries(RESEARCH_KINDS.map((k) => [k, { total: 0, kind_status: 'NONE_RECORDED', status_counts: {} }])),
+    adjudications: { total: 1, kind_status: 'RECORDED', status_counts: { CANDIDATE: 1 }, computed_candidates: 1, curated_decisions: 0 },
+    reports: { total: 1, kind_status: 'RECORDED', status_counts: { NONE: 1 } },
+  },
+};
+const RESEARCH_PAIR = {
+  kind: 'adjudications', record_id: 'ADJ-C-1', entity_id: 'ent_p', status: 'CANDIDATE', origin: 'COMPUTED', epistemic_class: 'COMPUTED',
+  case_ids: ['PRUAP-0001', 'PRUAP-0002'], producers: ['ovnis-pr'], synthetic: false,
+  attributes: { case_a: 'PRUAP-0001', case_b: 'PRUAP-0002', status: 'CANDIDATE', origin: 'COMPUTED',
+                signals: { date_relation: 'COMPATIBLE_PRECISION', place_basis: 'MUNICIPALITY', narrative_similarity: 0.3, same_source: false } },
+};
+const RESEARCH_REPORT = {
+  kind: 'reports', record_id: 'RPT-PRUAP-0001', case_ids: ['PRUAP-0001'], attributes: { report: {
+    report_id: 'RPT-PRUAP-0001', case_id: 'PRUAP-0001', case: { date_local: '1972', temporal_precision: 'YEAR_ONLY', location_name: 'Aguadilla coast', object_type: 'UAP' },
+    evidence_ids: { entity: 'evo:entities:ent_c', observation: 'evo:observations:obs_c', source: 'evo:sources:src_c' },
+    linked: { manifestation_candidates: ['ADJ-C-1'] }, unresolved: [{ kind: 'UNADJUDICATED_DUPLICATE_CANDIDATE', detail: 'may record the same event as PRUAP-0002; not yet reviewed', ref: 'ADJ-C-1' }],
+    receipt: { run_id: 'run_e2e', report_sha256: 'a'.repeat(64), snapshot_id: `sha256:${'b'.repeat(64)}`, created_at: '2026-10-03T00:00:00Z' } } },
+};
+const RESEARCH_CASE = {
+  contract: 'federation-research-v1',
+  case: { case_id: 'PRUAP-0001', entity_id: 'ent_c', title: 'Aguadilla coast', category: 'UAP', date: '1972', time: null,
+          temporal_precision: 'YEAR_ONLY', place: { municipality: null, location_name: 'Aguadilla coast' }, evidence_tier: 'T3',
+          narrative: 'Lights over the water.', entity_href: '/entity/ent_c', evidence_href: '/evidence/Entities/ent_c' },
+  source: null, report_status: 'HELD', report: RESEARCH_REPORT.attributes.report, unresolved: RESEARCH_REPORT.attributes.report.unresolved,
+  findings: [], hypotheses: [], contradictions: [], queue: [], episodes: [],
+  adjudications: [{ ...RESEARCH_PAIR, reviewed: false, other_case: { case_id: 'PRUAP-0002', held: false } }],
+};
+function researchPage(kind, records) {
+  return { contract: 'federation-research-v1', kind, kind_status: records.length ? 'RECORDED' : 'NONE_RECORDED',
+           total: records.length, matched: records.length, records, next_cursor: null };
+}
+const RESEARCH_HANDLERS = {
+  '/research/case/PRUAP-0001': RESEARCH_CASE,
+  '/research/records/adjudications': researchPage('adjudications', [RESEARCH_PAIR]),
+  '/research/records/reports': researchPage('reports', [RESEARCH_REPORT]),
+  '/research/records/': researchPage('topics', []),
+  '/research?': RESEARCH_OVERVIEW,
+};
+
+test.describe('research hub', () => {
+  test('is reachable from navigation, says empty ledgers are empty, and keeps computed pairs as candidates', async ({ page }) => {
+    await mockApi(page, RESEARCH_HANDLERS);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'Research', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Research Hub' })).toBeVisible();
+    await expect(page.locator('[data-empty-ledger]')).toContainText('No topics are recorded in the OVNIS research ledger yet');
+    await page.getByRole('tab', { name: 'Duplicate candidates' }).click();
+    await expect(page).toHaveURL(/\/research\?tab=candidates$/);
+    const pair = page.locator('[data-research-record="ADJ-C-1"]');
+    await expect(pair.locator('[data-record-status="CANDIDATE"]')).toContainText('computed, not reviewed');
+    await pair.getByRole('link', { name: 'PRUAP-0001' }).click();
+    await expect(page).toHaveURL(/\/research\/case\/PRUAP-0001$/);
+    await expect(page.getByRole('heading', { name: 'Case PRUAP-0001' })).toBeVisible();
+    await expect(page.locator('[data-case-record] [data-temporal-precision]')).toHaveText('(year only)');
+    await expect(page.locator('[data-report-receipt]')).toContainText('run_e2e');
+  });
+
+  test('the OVNIS reports workspace deep-links each report to its case', async ({ page }) => {
+    await mockApi(page, RESEARCH_HANDLERS);
+    await page.goto('/ovnis?tab=reports', { waitUntil: 'networkidle' });
+    const row = page.locator('[data-report-row="PRUAP-0001"]');
+    await expect(row).toContainText('1972');
+    await row.getByRole('link', { name: 'Open report' }).click();
+    await expect(page).toHaveURL(/\/research\/case\/PRUAP-0001$/);
   });
 });

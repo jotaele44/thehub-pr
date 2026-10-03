@@ -78,10 +78,21 @@ describe('Search page', () => {
     await waitFor(() => expect(screen.getByTestId('where')).toHaveTextContent('synthetic=1'));
   });
 
-  it('says FINDING has no producer instead of showing an empty result', async () => {
-    federation.search.query.mockResolvedValue(response({ type: 'FINDING', type_status: 'NO_PRODUCER_EMITS_FINDINGS', results: [], total: 0, matched: 0, excluded_synthetic: 0 }));
+  it('says no finding is recorded instead of showing an empty result', async () => {
+    federation.search.query.mockResolvedValue(response({ type: 'FINDING', type_status: 'NO_FINDINGS_RECORDED', results: [], total: 0, matched: 0, excluded_synthetic: 0 }));
     renderAt('/search?q=laguna&type=finding');
-    expect(await screen.findByText(/No producer publishes findings yet/)).toBeInTheDocument();
+    expect(await screen.findByText(/No findings are recorded in the OVNIS research ledger yet/)).toBeInTheDocument();
+  });
+
+  it('shows a finding with the status its producer recorded', async () => {
+    federation.search.query.mockResolvedValue(response({ type: 'FINDING', total: 1, matched: 1, excluded_synthetic: 0, results: [
+      { evidence_id: 'evo:entities:f1', stream: 'entities', collection: 'Entities', record_id: 'f1', kind: 'FINDING',
+        title: 'Two reports cite one newspaper', type: 'finding', producers: ['ovnis-pr'], synthetic: false,
+        declared_epistemic_class: 'CURATED', source_ids: [], evidence_href: '/evidence/Entities/f1', entity_href: '/entity/f1',
+        finding_status: 'CANDIDATE' },
+    ] }));
+    renderAt('/search?q=newspaper&type=finding');
+    expect(await screen.findByText('Finding status: CANDIDATE')).toBeInTheDocument();
   });
 
   it('paginates through the URL cursor', async () => {
