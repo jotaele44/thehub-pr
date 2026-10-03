@@ -35,6 +35,16 @@
         ".federation/docs-sync.json",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-10-03",
+      "summary": "Fixed a false positive in the shared documentation gate's reference check (thehub-pr ADR 0010, rule R2): a reference written as path:symbol, such as `scripts/build.py:_helper` or `server/app.py:App.run`, was read as a path containing a colon and reported as missing. A trailing :symbol is now treated as a locator, like :42 and ::node already were, so the path before it is checked as usual and a symbol in a file that does not exist is still reported as a missing path. Changed in federation-templates/baseline/check_docs_sync.py and re-rendered into this repo; producers pick it up by re-pinning PRII_TEMPLATE_REF. Tooling change only: no contract, schema or dependency edge changed.",
+      "files": [
+        "federation-templates/baseline/check_docs_sync.py",
+        "tools/check_docs_sync.py",
+        "tests/test_check_docs_sync.py",
+        "governance/change_log.json"
+      ]
     }
   ]
 }

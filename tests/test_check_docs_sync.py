@@ -210,7 +210,7 @@ def test_extract_refs_keeps_claims_and_drops_noise():
         "[mail](mailto:a@b.c), ![img](assets/logo.png), [out](../outside.md) and\n"
         "[enc](docs/my%20file.md#frag).\n"
         "Paths: `server/app.py`, `docs/`, `./scripts/run.sh`, `tests/test_x.py::test_y`,\n"
-        "`src/mod.py:42`.\n"
+        "`src/mod.py:42`, `src/mod.py:10-20`, `src/mod.py:_helper`, `src/mod.py:Klass.method`.\n"
         "Not paths: `README.md`, `ci.yml`, `server/*.py`, `@scope/pkg`,\n"
         "`sibling-repo/docs/x.md`, `--out=data/x`.\n"
         "Command: `python scripts/run.sh --flag docs/other.md`\n"
@@ -429,6 +429,22 @@ def test_a_new_dangling_reference_fails_and_only_that_one_is_reported(tmp_path, 
     assert code == 1
     assert "'config/typo.toml', which does not exist" in out
     assert "config/missing.toml" not in out
+
+
+def test_a_symbol_locator_neither_hides_a_missing_path_nor_invents_one(tmp_path, capsys):
+    repo, base = make_repo(tmp_path)
+    # `server/app.py` exists, so naming symbols inside it is a valid reference.
+    repo.write("docs/guide.md", GUIDE + "Entry: `server/app.py:main`, `server/app.py:App.run`.\n")
+    repo.commit("name symbols that exist")
+    assert run(capsys, repo, "--base", base)[0] == 0
+
+    # A symbol in a file that does not exist is still a missing path, reported as the path.
+    repo.write("docs/guide.md", GUIDE + "Gone: `server/gone.py:main`.\n")
+    repo.commit("name a file that does not exist")
+    code, out = run(capsys, repo, "--base", base)
+    assert code == 1
+    assert "'server/gone.py', which does not exist" in out
+    assert "server/gone.py:main" not in out
 
 
 def test_deleting_a_documented_file_forces_the_doc_edit(tmp_path, capsys):
