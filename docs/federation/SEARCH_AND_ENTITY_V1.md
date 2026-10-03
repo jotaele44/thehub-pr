@@ -39,7 +39,7 @@ An unknown type, or a limit or cursor out of range, returns 422.
 | `SOURCE` | Source rows, including OVNIS `source_document` rows |
 | `READING` | Observations whose producer declares `epistemic_class: MEASURED` |
 | `TIMELINE` | Alerts, and observations not declared `MEASURED` |
-| `FINDING` | No producer publishes findings yet. The response says `type_status: NO_PRODUCER_EMITS_FINDINGS` instead of returning an empty list |
+| `FINDING` | Entity rows a producer exports with `entity_type: finding` (the OVNIS research ledger). Each result carries its `finding_status`, because a finding is not an established fact. While the store holds no finding, the response says `type_status: NO_FINDINGS_RECORDED` instead of returning an empty list |
 
 `READING` returns no rows from the committed aggregate. That aggregate predates the
 producers' `evidence_state` declarations, and it fills once the aggregate is refreshed.

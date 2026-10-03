@@ -407,6 +407,77 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "ovnis-research-hub",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Research Hub over the OVNIS research record (TWIN-004, TWIN-164..175, TWIN-013/222/223, TWIN-009/208..210/218/221; FDX-013..017): topic cards with finding and distinct-source counts, hypotheses with their nine falsification checks, contradictions with both claims verbatim, the read-only duplicate-candidate queue (computed pairs stay unreviewed CANDIDATEs), the research queue, the per-case reconstruction with its report and receipt, and the OVNIS reports workspace and show log. Empty ledgers say NONE_RECORDED; the LLM research assistant keeps its own tab.",
+      "backend": {
+        "files": [
+          "server/backend/research_api.py",
+          "src/hub/research_composition.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /case/{case_id}",
+          "GET /records/{kind}"
+        ],
+        "symbols": [
+          "server/backend/research_api.py:research_case",
+          "server/backend/research_api.py:research_overview",
+          "server/backend/research_api.py:research_records",
+          "server/backend/research_api.py:research_rows",
+          "src/hub/research_composition.py:case_reconstruction",
+          "src/hub/research_composition.py:case_summary",
+          "src/hub/research_composition.py:cases_named",
+          "src/hub/research_composition.py:finding_links",
+          "src/hub/research_composition.py:is_research_row",
+          "src/hub/research_composition.py:kind_of",
+          "src/hub/research_composition.py:overview",
+          "src/hub/research_composition.py:record",
+          "src/hub/research_composition.py:record_id",
+          "src/hub/research_composition.py:records",
+          "src/hub/research_composition.py:topic_cards"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/research",
+          "/research/case/:caseId"
+        ],
+        "e2e_routes": [
+          "/research",
+          "/research/case/:caseId"
+        ],
+        "components": [
+          "server/frontend/src/pages/ResearchHub.jsx",
+          "server/frontend/src/pages/CaseReconstruction.jsx",
+          "server/frontend/src/components/research/ResearchRecords.jsx",
+          "server/frontend/src/components/research/OvnisResearchTabs.jsx",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/lib/commands.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_research_api.py"
+        ],
+        "contract": [
+          "tests/test_research_composition.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/ResearchHub.test.jsx",
+          "server/frontend/src/pages/CaseReconstruction.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
     }
   ],
   "exceptions": []

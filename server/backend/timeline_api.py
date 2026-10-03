@@ -1,10 +1,12 @@
 """Event timeline API: ``GET /api/timeline``.
 
 Read-only. Orders the OVNIS case observations the Hub store already holds
-(``hub.event_timeline``). For the events on the requested page it adds the cited
-source's name and URL, and falls back to the case entity for the case id and
-narrative when an older export carried them only there. No other producer
-database is read and nothing is inferred.
+(``hub.event_timeline``). Findings attach through the OVNIS research-ledger
+finding rows that name a case (``hub.research_composition.finding_links``). For
+the events on the requested page it adds the cited source's name and URL, and
+falls back to the case entity for the case id and narrative when an older export
+carried them only there. No other producer database is read and nothing is
+inferred.
 """
 
 from __future__ import annotations
@@ -14,6 +16,7 @@ from typing import Any, Dict, List, Optional
 from fastapi import APIRouter, HTTPException, Query
 
 from hub import epistemic as ep
+from hub import research_composition as rc
 from hub.event_timeline import DEFAULT_LIMIT, MAX_LIMIT, OBSERVATION_TYPE, build_timeline, parse_cursor
 from hub.ingest import STREAM_TO_COLLECTION
 from server.backend.entity_api import _query
@@ -31,6 +34,16 @@ def _case_observations() -> List[Dict[str, Any]]:
         "AND json_extract(data, '$.observation_type') = ?",
         (_OBSERVATIONS, OBSERVATION_TYPE),
     )]
+
+
+def _finding_links(observations: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+    case_entities = {str(ep.as_mapping(row.get("attributes")).get("case_id")): str(row.get("entity_id"))
+                     for row in observations if ep.as_mapping(row.get("attributes")).get("case_id")}
+    findings = [row for _, row in _query(
+        "SELECT entity_type, data FROM entities WHERE entity_type = ? AND json_extract(data, '$.entity_type') = ?",
+        (_ENTITIES, rc.KINDS["findings"][0]),
+    )]
+    return rc.finding_links(findings, case_entities)
 
 
 def _enrich(events: List[Dict[str, Any]]) -> None:
@@ -60,10 +73,12 @@ def timeline(
     limit: int = Query(DEFAULT_LIMIT, ge=1, le=MAX_LIMIT),
     cursor: Optional[str] = Query(None, max_length=12),
 ) -> Dict[str, Any]:
+    observations = _case_observations()
     try:
         result = build_timeline(
-            _case_observations(), sort=sort, categories=tuple(category or ()), findings_only=findings_only,
-            include_synthetic=include_synthetic, limit=limit, offset=parse_cursor(cursor),
+            observations, sort=sort, categories=tuple(category or ()), findings_only=findings_only,
+            include_synthetic=include_synthetic, finding_links=_finding_links(observations), limit=limit,
+            offset=parse_cursor(cursor),
         )
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error

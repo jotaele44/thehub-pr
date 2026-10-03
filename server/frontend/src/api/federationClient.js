@@ -266,6 +266,21 @@ const timeline = {
   },
 };
 
+// OVNIS research records (topics, findings, hypotheses, contradictions,
+// adjudications, queue, episodes, reports). Read-only; see server/backend/research_api.py.
+const research = {
+  overview: ({ includeSynthetic = false } = {}) =>
+    request(`/research?${new URLSearchParams({ include_synthetic: String(includeSynthetic) }).toString()}`),
+  records: (kind, { status, origin, includeSynthetic = false, limit = 50, cursor } = {}) => {
+    const params = new URLSearchParams({ include_synthetic: String(includeSynthetic), limit: String(limit) });
+    if (status) params.set('status', status);
+    if (origin) params.set('origin', origin);
+    if (cursor) params.set('cursor', cursor);
+    return request(`/research/records/${encode(kind)}?${params.toString()}`);
+  },
+  caseRecord: (caseId) => request(`/research/case/${encode(caseId)}`),
+};
+
 export const federation = {
   app: { id: appParams.appId, programId: appParams.programId },
   auth,
@@ -282,5 +297,6 @@ export const federation = {
   search,
   composition,
   timeline,
+  research,
   request,
 };

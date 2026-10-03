@@ -15,10 +15,10 @@
   },
   "producers": {
     "aguayluz-pr": {
-      "alerts": 4395,
-      "entities": 46222,
+      "alerts": 4397,
+      "entities": 46224,
       "relationships": 65178,
-      "sources": 38991
+      "sources": 38993
     },
     "centinelas-pr": {
       "entities": 100,
@@ -31,10 +31,10 @@
       "sources": 4508
     },
     "ovnis-pr": {
-      "entities": 758,
+      "entities": 1266,
       "observations": 470,
-      "relationships": 563,
-      "sources": 278
+      "relationships": 1147,
+      "sources": 280
     },
     "skywatcher-pr": {
       "alerts": 2,
@@ -50,10 +50,10 @@
     }
   },
   "streams": {
-    "alerts": 4397,
-    "entities": 47714,
+    "alerts": 4399,
+    "entities": 48224,
     "observations": 572,
-    "relationships": 66185,
-    "sources": 43838
+    "relationships": 66769,
+    "sources": 43842
   }
 }

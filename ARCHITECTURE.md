@@ -125,6 +125,16 @@ them. See [`docs/federation/SEARCH_AND_ENTITY_V1.md`](docs/federation/SEARCH_AND
 keeping each date at its recorded precision and each place as the source gives it. It is
 rendered at `/timeline`. See [`docs/federation/EVENT_TIMELINE_V1.md`](docs/federation/EVENT_TIMELINE_V1.md).
 
+`GET /api/research` (`hub.research_composition`, contract `federation-research-v1`) serves the
+research record OVNIS curates and exports as typed entity rows:
+
+- topics, findings, hypotheses with their falsification checks, and contradictions;
+- duplicate-case adjudications, the research queue, media episodes and per-case reports.
+
+Empty ledgers report `NONE_RECORDED`, and a computed duplicate pair stays an unreviewed
+CANDIDATE. The record is rendered at `/research`, `/research/case/:caseId` and the `/ovnis`
+Reports and Show Log tabs. See [`docs/federation/RESEARCH_HUB_V1.md`](docs/federation/RESEARCH_HUB_V1.md).
+
 ## Governance
 
 Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,

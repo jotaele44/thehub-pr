@@ -3,7 +3,8 @@
 Positive: multiword AND, accent/case folding, prefix terms, cross-producer
 results with provenance links, typed filters, bounded pagination.
 Negative: an empty query returns nothing, synthetic rows are excluded and
-counted, FINDING is an explicit empty type, unknown types and cursors fail.
+counted, FINDING is an explicit empty type while no finding is recorded, and a
+finding keeps its own status; unknown types and cursors fail.
 """
 
 from __future__ import annotations
@@ -111,10 +112,24 @@ def test_empty_query_returns_nothing(index):
         assert body["results"] == [] and body["total"] == 0
 
 
-def test_finding_is_explicitly_empty(index):
+def test_finding_is_explicitly_empty_while_none_is_recorded(index):
     body = index.search("cartagena", kind="FINDING")
-    assert body["type_status"] == "NO_PRODUCER_EMITS_FINDINGS"
+    assert body["type_status"] == "NO_FINDINGS_RECORDED"
     assert body["results"] == []
+
+
+def test_finding_rows_are_searched_and_keep_their_status():
+    index = FederatedSearchIndex.build([
+        _row("entities", "f1", name="Cartagena lagoon reports cite one newspaper", entity_type="finding",
+             attributes={"status": "CANDIDATE", "statement": "x"}),
+        _row("entities", "e2", name="Laguna Cartagena", entity_type="wetland", _producers=["spiderweb-pr"]),
+    ])
+    body = index.search("cartagena", kind="FINDING")
+    assert body["type_status"] == "OK"
+    assert [r["record_id"] for r in body["results"]] == ["f1"]
+    assert body["results"][0]["kind"] == "FINDING" and body["results"][0]["finding_status"] == "CANDIDATE"
+    entity = index.search("cartagena", kind="ENTITY")["results"]
+    assert [r["record_id"] for r in entity] == ["e2"] and entity[0]["finding_status"] is None
 
 
 def test_pagination_is_bounded_and_complete(index):

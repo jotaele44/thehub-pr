@@ -13,12 +13,14 @@ Query semantics (TWIN-084, TWIN-090; filters TWIN-085..089):
 * results are bounded and paginated with an opaque offset cursor.
 
 Result kinds follow the stream a row came from: ``SOURCE`` (sources),
-``ENTITY`` (entities), ``TIMELINE`` (alerts, and observations not declared
-MEASURED) and ``READING`` (observations whose producer declares them
-MEASURED). No producer emits findings yet, so ``FINDING`` is a declared,
-always-empty type with an explicit ``type_status`` rather than a silently
-missing one. Relationships are edges, not search subjects; the entity
-composition surfaces them.
+``ENTITY`` (entities), ``FINDING`` (entities a producer exports with
+``entity_type: finding``, i.e. OVNIS research-ledger findings), ``TIMELINE``
+(alerts, and observations not declared MEASURED) and ``READING`` (observations
+whose producer declares them MEASURED). While the store holds no finding rows,
+a ``FINDING`` search answers ``type_status: NO_FINDINGS_RECORDED`` rather than
+an empty result that reads like a search with no hits. A finding result keeps
+its own status: a finding is not an established fact. Relationships are edges,
+not search subjects; the entity composition surfaces them.
 """
 
 from __future__ import annotations
@@ -67,7 +69,7 @@ def result_kind(stream: str, row: Mapping[str, Any]) -> str:
     if stream == "sources":
         return "SOURCE"
     if stream == "entities":
-        return "ENTITY"
+        return "FINDING" if row.get("entity_type") == "finding" else "ENTITY"
     if stream == "observations" and ep.declared(row).get("epistemic_class") == "MEASURED":
         return "READING"
     return "TIMELINE"
@@ -186,12 +188,13 @@ class FederatedSearchIndex:
             "next_cursor": None,
             "producers": self.producer_availability(),
         }
-        if kind == "FINDING":
-            response["type_status"] = "NO_PRODUCER_EMITS_FINDINGS"
+        no_findings = kind == "FINDING" and not any(doc.kind == "FINDING" for doc in self.docs)
+        if no_findings:
+            response["type_status"] = "NO_FINDINGS_RECORDED"
         if not terms:
             response["query_status"] = "EMPTY_QUERY"
             return response
-        if kind == "FINDING":
+        if no_findings:
             return response
 
         candidates: Optional[Set[int]] = None
@@ -239,6 +242,8 @@ def _result(doc: SearchDoc) -> Dict[str, Any]:
         "source_ids": source_ids,
         "evidence_href": f"/evidence/{doc.collection}/{doc.record_id}",
         "entity_href": f"/entity/{doc.record_id}" if doc.stream == "entities" else None,
+        # A finding keeps the status its producer recorded; ACCEPTED is not "fact".
+        "finding_status": ep.as_mapping(row.get("attributes")).get("status") if doc.kind == "FINDING" else None,
     }
 
 

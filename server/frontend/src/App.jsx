@@ -42,7 +42,8 @@ const ControlLedgers = lazy(() => import('@/pages/ControlLedgers'));
 const Hub = lazy(() => import('@/pages/Hub'));
 const ProjectSigns = lazy(() => import('@/pages/ProjectSigns'));
 const RecentActivity = lazy(() => import('@/pages/RecentActivity'));
-const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
+const ResearchHub = lazy(() => import('@/pages/ResearchHub'));
+const CaseReconstruction = lazy(() => import('@/pages/CaseReconstruction'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
 const AppCenter = lazy(() => import('@/pages/AppCenter'));
 const Operations = lazy(() => import('@/pages/Operations'));
@@ -108,7 +109,8 @@ const AppRoutes = () => {
             <Route path="/control" element={<ControlLedgers />} />
             <Route path="/hub" element={<Hub />} />
             <Route path="/project-signs" element={<ProjectSigns />} />
-            <Route path="/research" element={<ResearchAssistant />} />
+            <Route path="/research" element={<ResearchHub />} />
+            <Route path="/research/case/:caseId" element={<CaseReconstruction />} />
             <Route path="/dictionary" element={<Dictionary />} />
             <Route path="/manifest" element={<Manifest />} />
             <Route path="/gis" element={<GISWorkspace />} />

@@ -75,6 +75,9 @@ function TimelineEvent({ event }) {
         ) : <span className="text-muted-foreground">Source not held by the Hub</span>}
         <Link className="text-primary underline" to={event.evidence_href}>Provenance</Link>
         {event.entity_href ? <Link className="text-primary underline" to={event.entity_href}>Case composition</Link> : null}
+        {event.case_id ? (
+          <Link className="text-primary underline" to={`/research/case/${encodeURIComponent(event.case_id)}`}>Case reconstruction</Link>
+        ) : null}
       </div>
     </li>
   );

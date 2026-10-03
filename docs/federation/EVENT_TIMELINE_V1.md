@@ -36,9 +36,12 @@ An unknown sort, a bad cursor or a limit out of range returns 422.
   back to the case id.
 - **Narrative.** The case's ledger `description`, exported by ovnis-pr. A case without one
   says so.
-- **Findings.** `findings_only` keeps only cases that an OVNIS finding names. Until OVNIS
-  publishes findings through its research ledger, `findings_status` is
-  `NO_FINDINGS_RECORDED` and the mode shows nothing. It never treats a case as a finding.
+- **Findings.** `findings_only` keeps only cases that an OVNIS finding names. The API links
+  findings to cases through the finding rows OVNIS exports from its research ledger
+  (`hub.research_composition.finding_links`), and each event lists those findings with their
+  own status. While no finding is recorded, `findings_status` is `NO_FINDINGS_RECORDED` and the
+  mode shows nothing. It never treats a case as a finding. Each event also links to its case
+  reconstruction at `/research/case/:caseId` (see `RESEARCH_HUB_V1.md`).
 - **Counts.** The response reports what is loaded, never guessed:
 
   | Field | Meaning |

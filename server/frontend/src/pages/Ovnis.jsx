@@ -1,17 +1,28 @@
 import React from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
 import StatusChip from "@/components/shared/StatusChip";
 import IdCode from "@/components/shared/IdCode";
 import { Radar } from "lucide-react";
+import { ReportsWorkspace, ShowLog } from "@/components/research/OvnisResearchTabs";
 import { MODULES } from "@/lib/federation";
 import { CONFIDENCE, REVIEW_STATUS, VERIFICATION, GENERIC_STATUS } from "@/lib/chips";
 
 const MODULE = MODULES.find((m) => m.name === "Ovnis-PR");
+const OVNIS_TABS = ["patterns", "witness", "reports", "showlog"];
 const PATTERN_TYPES = ["Light", "Object", "Formation", "Maneuver", "Sound", "Electromagnetic", "RepeatedLocation", "TimeCluster", "Other"];
 
 export default function Ovnis() {
+  // The tab is URL state, so /ovnis?tab=reports deep-links the reports workspace.
+  const [params, setParams] = useSearchParams();
+  const tab = OVNIS_TABS.includes(params.get("tab")) ? params.get("tab") : "patterns";
+  const selectTab = (value) => {
+    const next = new URLSearchParams(params);
+    next.set("tab", value);
+    setParams(next);
+  };
   const patternFields = [
     { key: "pattern_id", label: "Pattern ID", required: true },
     { key: "linked_case_id", label: "Linked Case ID", required: true },
@@ -51,10 +62,12 @@ export default function Ovnis() {
       <div className="mb-4 rounded-lg border border-border bg-card px-4 py-2.5 text-xs text-muted-foreground">
         Witness data is stored as sanitized summaries only — no raw private testimony. Default tier T3.
       </div>
-      <Tabs defaultValue="patterns">
+      <Tabs value={tab} onValueChange={selectTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="patterns">Pattern Observations</TabsTrigger>
           <TabsTrigger value="witness">Witness Reports</TabsTrigger>
+          <TabsTrigger value="reports">Reports</TabsTrigger>
+          <TabsTrigger value="showlog">Show Log</TabsTrigger>
         </TabsList>
         <TabsContent value="patterns">
           <EntityLedger entityName="PatternObservations" fields={patternFields} columns={patternColumns}
@@ -69,6 +82,12 @@ export default function Ovnis() {
             addLabel="New Report" emptyTitle="No witness reports"
             emptyDescription="Witness records are sanitized out of the canonical federation export — data pending richer Ovnis-PR intake."
             searchPlaceholder="Search reports…" />
+        </TabsContent>
+        <TabsContent value="reports">
+          <ReportsWorkspace />
+        </TabsContent>
+        <TabsContent value="showlog">
+          <ShowLog />
         </TabsContent>
       </Tabs>
     </div>
