@@ -201,9 +201,9 @@
       "existing_equivalent": "ovnis-pr scripts/fedmil_review_queue.py; dashboard CandidateReview.jsx",
       "implementation_status": "EXTEND",
       "phase": 4,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 4): ovnis-pr research_queue ledger (#172) rendered in the /research Queue tab. No items are derived from gap_note, whose meaning is undeclared. Tests: tests/test_research_api.py, ResearchHub.test.jsx."
     },
     {
       "capability_id": "FDX-014",
@@ -216,9 +216,9 @@
       "existing_equivalent": "ovnis-pr data/fedmil_context/assessments.jsonl (FEDMIL classifications)",
       "implementation_status": "EXTEND",
       "phase": 4,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 4): ovnis-pr hypothesis ledger (#172) rendered in the /research Hypotheses tab. Tests: tests/test_research_composition.py, ResearchHub.test.jsx."
     },
     {
       "capability_id": "FDX-015",
@@ -231,9 +231,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 4,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 4): the nine §41 falsification checks are carried by every hypothesis, and ovnis-pr validates that SUPPORTED needs all checks run and none FAILED. The checklist is shown in the Hypotheses tab and the case reconstruction. Tests: ResearchHub.test.jsx, CaseReconstruction.test.jsx."
     },
     {
       "capability_id": "FDX-016",
@@ -246,9 +246,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 4,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 4): /research/case/:caseId (GET /api/research/case/{case_id}) arranges the case, its source, its report and every research record naming it. Nothing is inferred. Tests: tests/test_research_composition.py, tests/test_research_api.py, CaseReconstruction.test.jsx."
     },
     {
       "capability_id": "FDX-017",
@@ -261,9 +261,9 @@
       "existing_equivalent": "ovnis-pr scripts/dedupe_candidates.py (report-only); export duplicate_of relationships",
       "implementation_status": "EXTEND",
       "phase": 4,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 4): ovnis-pr dedupe_candidates.py --master-pairs computes CANDIDATE pairs (38 at 3a3c498). A curated adjudication records SAME_EVENT, DISTINCT or UNRESOLVABLE with a reviewer and rationale. /research Duplicate candidates is a read-only queue. Tests: tests/test_research_api.py, ResearchHub.test.jsx."
     },
     {
       "capability_id": "FDX-018",
@@ -276,9 +276,9 @@
       "existing_equivalent": "ovnis-pr export reported_by relationships",
       "implementation_status": "EXTEND",
       "phase": 4,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "PARTIAL_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 4): the case reconstruction shows each case's cited source and the sources its findings and contradictions cite. A witness/source graph view is not built."
     },
     {
       "capability_id": "FDX-019",
@@ -293,7 +293,7 @@
       "phase": 4,
       "delivery_state": "DEFERRED",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2: deferred. Temporal playback needs a time-slider over the event timeline and is left for a later phase; dates already keep their recorded precision at /timeline."
     },
     {
       "capability_id": "FDX-020",
@@ -308,7 +308,7 @@
       "phase": 4,
       "delivery_state": "DEFERRED",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2: deferred. A comparable-case finder would rank cases by similarity, so it needs its own contract stating that similarity never decides identity, as the duplicate-candidate queue does."
     },
     {
       "capability_id": "FDX-021",
@@ -1051,7 +1051,7 @@
       "phase": 4,
       "delivery_state": "DEFERRED",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2: deferred. Temporal persistence classes (§45) need a classification contract and source-dependence analysis first."
     },
     {
       "capability_id": "FDX-070",
@@ -1136,9 +1136,9 @@
     "DERIVED_SCHEDULED": 0,
     "DERIVED_ALREADY_PRESENT": 1,
     "DERIVED_BLOCKED": 3,
-    "DERIVED_DEFERRED": 56,
-    "DERIVED_IMPLEMENTED_RUN_2": 0,
-    "DERIVED_PARTIAL_RUN_2": 0,
+    "DERIVED_DEFERRED": 50,
+    "DERIVED_IMPLEMENTED_RUN_2": 5,
+    "DERIVED_PARTIAL_RUN_2": 1,
     "DERIVED_SCHEDULED_RUN_2": 0,
     "by_implementation_status": {
       "BLOCKED": 3,

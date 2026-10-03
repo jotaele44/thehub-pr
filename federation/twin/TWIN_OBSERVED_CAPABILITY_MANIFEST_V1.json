@@ -185,14 +185,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/research",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "research-hub"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Existing /research is an LLM chat (ResearchAssistant.jsx) whose provider is not configured; not equivalent.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). Research workspace with Topics, Hypotheses, Contradictions, Duplicate candidates, Queue and the LLM Assistant tabs. The ledgers are committed empty, so the view states NONE_RECORDED until curators record research; nothing is generated.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -362,14 +367,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/ovnis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "show-log"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /ovnis?tab=showlog lists media_episode records with their primary sources. The ledger is committed empty and states NONE_RECORDED until a curator records an episode.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -522,14 +532,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/ovnis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "reports"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "spiderweb-pr src/export/evidenceBrief.ts is a DEMO brief, not an OVNIS report generator.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /ovnis?tab=reports lists the deterministic per-case reports ovnis-pr generates (scripts/generate_case_report.py, #172), each opening its case reconstruction with the report, its unresolved items and its reproducibility receipt.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -2220,15 +2235,21 @@
       "implementation_status": "NEW",
       "canonical_gui_home": {
         "repo": "thehub-pr",
-        "route": "/sources",
-        "status": "PLANNED",
+        "route": "/research",
+        "status": "EXISTS",
         "view": "archive"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Findings are a distinct stage from case records (FINDING ≠ ESTABLISHED FACT).",
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "tests/test_federated_search.py"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). Findings are a distinct stage from case records (FINDING ≠ ESTABLISHED FACT): they are listed under /research and searchable as FINDING with their own status. Readings are not delivered: OVNIS records no instrument readings.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -2295,7 +2316,7 @@
       "phase": 4,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": "Generalised as a reading/document ledger; Twin's fan-transcribed show readings are not copied.",
+      "notes": "Generalised as a reading/document ledger; Twin's fan-transcribed show readings are not copied. Run 2: still deferred, because OVNIS records no instrument readings; a reading log belongs with a producer that emits MEASURED observations.",
       "live_bundle_corroboration": null
     },
     {
@@ -3806,7 +3827,7 @@
       "phase": 4,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": "Ordinary deviations must not be labelled anomalies without a separately defined analytical contract (directive §8).",
+      "notes": "Run 2: deferred. Anomaly Watch needs a separately defined analytical contract before anything is computed.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -5068,7 +5089,7 @@
       "phase": 4,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2: deferred to Phase 5. /gis has no OVNIS layer, and an OVNIS map layer needs a declared coordinate derivation; ovnis-pr deliberately declares no geometry_precision.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -5391,7 +5412,7 @@
       "phase": 4,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": "Category labels come from Federation data, not Twin labels.",
+      "notes": "Run 2: deferred to Phase 5. /gis has no OVNIS layer, and an OVNIS map layer needs a declared coordinate derivation; ovnis-pr deliberately declares no geometry_precision.",
       "live_bundle_corroboration": null
     },
     {
@@ -5485,7 +5506,7 @@
       "phase": 4,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": "Federation-native label is 'Mutilation' from OVNIS data; the Twin 'Cattle' label is not copied.",
+      "notes": "Run 2: deferred to Phase 5. /gis has no OVNIS layer, and an OVNIS map layer needs a declared coordinate derivation; ovnis-pr deliberately declares no geometry_precision. The category maps to OVNIS's Mutilation object type when the layer exists.",
       "live_bundle_corroboration": null
     },
     {
@@ -6059,14 +6080,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/research",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "research-hub"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). The Research Hub page. The ledgers are committed empty, so the view states NONE_RECORDED until curators record research; nothing is generated.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -6098,14 +6124,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/research",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "research-hub"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). Topic cards from research_topic rows. The ledgers are committed empty, so the view states NONE_RECORDED until curators record research; nothing is generated.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -6137,14 +6168,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/research",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "research-hub"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). Findings show their cited case or registry sources with locators; ACCEPTED requires a source and a review (validated in ovnis-pr) and is labelled 'not an established fact'. The ledgers are committed empty, so the view states NONE_RECORDED until curators record research; nothing is generated.",
       "live_bundle_corroboration": null
     },
     {
@@ -6163,14 +6199,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/research",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "research-hub"
       },
       "producer_diagnostic_gui": null,
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Counts must use source-dependency detection, not raw copy counts.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). Topic cards count distinct cited sources; repeated citations of one source count once (§44). The ledgers are committed empty, so the view states NONE_RECORDED until curators record research; nothing is generated.",
       "search_terms_without_equivalent": [
         "search",
         "command palette",
@@ -6204,14 +6245,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/research",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "research-hub"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). Topic cards show their finding count and per-status counts. The ledgers are committed empty, so the view states NONE_RECORDED until curators record research; nothing is generated.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -6243,14 +6289,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/research",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "research-hub"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). Topic tags from the research_topic record. The ledgers are committed empty, so the view states NONE_RECORDED until curators record research; nothing is generated.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -6282,14 +6333,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/research",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "research-hub"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). A topic card expands to its findings and their sources. The ledgers are committed empty, so the view states NONE_RECORDED until curators record research; nothing is generated.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -6348,14 +6404,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/research",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "research-hub"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). 'View findings' on each topic card; findings are also searchable as the FINDING type. The ledgers are committed empty, so the view states NONE_RECORDED until curators record research; nothing is generated.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -6441,14 +6502,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/research",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "research-hub"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Only the topic-card pattern transfers; Skinwalker 'Mesa' content is not copied.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/ResearchHub.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /research renders the OVNIS research ledger exported by ovnis-pr (#172). The topic-card pattern is generic; Twin's Skinwalker Mesa content is not copied. The ledgers are committed empty, so the view states NONE_RECORDED until curators record research; nothing is generated.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -7571,15 +7637,20 @@
       "implementation_status": "NEW",
       "canonical_gui_home": {
         "repo": "thehub-pr",
-        "route": "/sources",
-        "status": "PLANNED",
+        "route": "/ovnis",
+        "status": "EXISTS",
         "view": "broadcast"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): episodes carry series, season and episode, shown in the /ovnis Show Log tab.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -7610,15 +7681,20 @@
       "implementation_status": "NEW",
       "canonical_gui_home": {
         "repo": "thehub-pr",
-        "route": "/sources",
-        "status": "PLANNED",
+        "route": "/ovnis",
+        "status": "EXISTS",
         "view": "broadcast"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): the episode title, shown in the /ovnis Show Log tab.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -7649,15 +7725,20 @@
       "implementation_status": "NEW",
       "canonical_gui_home": {
         "repo": "thehub-pr",
-        "route": "/sources",
-        "status": "PLANNED",
+        "route": "/ovnis",
+        "status": "EXISTS",
         "view": "broadcast"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): episodes link to the cases and findings they discuss; each case link opens its reconstruction.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -7886,14 +7967,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/ovnis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "show-log"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): the Show Log is the /ovnis Show Log tab, backed by OVNIS media_episode records.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -7980,14 +8066,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/ovnis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "show-log"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): the episode ledger is OVNIS data/research/media_episodes.jsonl, rendered at /ovnis?tab=showlog.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -8019,14 +8110,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/ovnis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "reports"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): the reports workspace is the /ovnis Reports tab.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -8058,14 +8154,19 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/ovnis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "reports"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_research_composition.py",
+        "tests/test_research_api.py",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 4): /ovnis?tab=reports is a deep link, and each report opens /research/case/:caseId.",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -8113,10 +8214,11 @@
     "by_delivery_state": {
       "ALREADY_PRESENT": 14,
       "BLOCKED": 4,
-      "DEFERRED": 165,
-      "IMPLEMENTED_RUN_2": 14,
+      "DEFERRED": 145,
+      "IMPLEMENTED_RUN_2": 33,
       "IMPLEMENTED_THIS_RUN": 16,
       "NOT_APPLICABLE": 5,
+      "PARTIAL_RUN_2": 1,
       "PARTIAL_THIS_RUN": 5
     },
     "census_closed": true

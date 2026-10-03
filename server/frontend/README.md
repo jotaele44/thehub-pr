@@ -35,6 +35,9 @@ VITE_FEDERATION_MODE=diagnostic
 | `GET /api/search` | yes — federated search (`q`, `type`, `include_synthetic`, `limit`, `cursor`); 422 on a bad parameter |
 | `GET /api/entity/:id` | yes — entity composition; 404 for an entity the Hub does not hold |
 | `GET /api/timeline` | yes — OVNIS event timeline (`sort`, `category`, `findings_only`, `include_synthetic`, `limit`, `cursor`); 422 on a bad parameter |
+| `GET /api/research` | yes — OVNIS research overview (per-kind totals, topic cards) |
+| `GET /api/research/records/:kind` | yes — one research kind, paged (`status`, `origin`, `include_synthetic`, `limit`, `cursor`); 422 for an unknown kind |
+| `GET /api/research/case/:caseId` | yes — case reconstruction; 404 for a case the Hub does not hold |
 | `POST /api/entities/:entity/filter` | yes (a read, despite the verb) |
 | `POST /api/entities/:entity` | yes — **write-guarded** |
 | `PATCH /api/entities/:entity/:id` | yes — **write-guarded** |

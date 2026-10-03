@@ -82,3 +82,14 @@ means each one has an explicit disposition backed by evidence.
 - MoneySweep's BLOCKED status;
 - why the evidence contracts remain CANDIDATE;
 - the leads logged for later phases.
+
+## Run 2 (Phase 4, OVNIS)
+
+Run 2 delivers Phase 4. Its records are marked `IMPLEMENTED_RUN_2`, `PARTIAL_RUN_2` or a reasoned `DEFERRED`.
+
+| Delivery | Document |
+|---|---|
+| Event timeline (`/timeline`) | [`EVENT_TIMELINE_V1.md`](EVENT_TIMELINE_V1.md) |
+| Research Hub (`/research`), case reconstruction (`/research/case/:caseId`), and the `/ovnis` reports workspace and show log | [`RESEARCH_HUB_V1.md`](RESEARCH_HUB_V1.md) |
+
+OVNIS owns the research record. Its ledgers, validator, duplicate candidates and case reports are documented in `ovnis-pr` `docs/RESEARCH_LEDGERS.md`.
