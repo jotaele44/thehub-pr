@@ -221,7 +221,11 @@ def test_centinelas_desktop_requirements_support_plain_pip_install(tmp_path):
     assert f"prii-maintenance @ {archive}" in requirements
     assert f"prii-export-utils @ {archive}" in requirements
     assert "git+https://github.com/jotaele44/thehub-pr" not in requirements
-    assert requirements.count("f2b81769924689b4d959554928810b1d7b7ef3d6.zip") == 3
+    # prii-desktop is pinned to the commit carrying the visible-startup-failure fix;
+    # the other two shared packages stay on their original immutable pin.
+    assert f"prii-desktop @ {archive}1313c77aec1a0742c1abb444026284a825af4177.zip" in requirements
+    assert requirements.count("1313c77aec1a0742c1abb444026284a825af4177.zip") == 1
+    assert requirements.count("f2b81769924689b4d959554928810b1d7b7ef3d6.zip") == 2
 
 
 def test_every_producer_declares_an_app_title():
