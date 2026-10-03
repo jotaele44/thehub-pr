@@ -254,6 +254,18 @@ const composition = {
   get: (recordId) => request(`/entity/${encode(recordId)}`),
 };
 
+// Event timeline over the OVNIS case corpus. Read-only; see server/backend/timeline_api.py.
+const timeline = {
+  query: ({ sort = 'oldest', categories = [], findingsOnly = false, includeSynthetic = false, limit = 50, cursor } = {}) => {
+    const params = new URLSearchParams({
+      sort, findings_only: String(findingsOnly), include_synthetic: String(includeSynthetic), limit: String(limit),
+    });
+    categories.forEach((category) => params.append('category', category));
+    if (cursor) params.set('cursor', cursor);
+    return request(`/timeline?${params.toString()}`);
+  },
+};
+
 export const federation = {
   app: { id: appParams.appId, programId: appParams.programId },
   auth,
@@ -269,5 +281,6 @@ export const federation = {
   evidence,
   search,
   composition,
+  timeline,
   request,
 };

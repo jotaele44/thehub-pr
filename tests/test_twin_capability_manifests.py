@@ -292,3 +292,31 @@ def test_non_object_rows_and_mismatched_ids_fail(observed, derived):
     ddoc = copy.deepcopy(derived)
     ddoc["capabilities"].append(7)
     assert "derived: every capability must be an object" in tm.validate_derived(ddoc)
+
+
+def _phase_row(doc, phase):
+    return next(r for r in doc["capabilities"] if r["phase"] == phase and r["implementation_status"] in ("NEW", "EXTEND"))
+
+
+def test_run_2_states_are_valid_only_on_phase_4_rows(observed):
+    doc = copy.deepcopy(observed)
+    row = _phase_row(doc, 4)
+    row["delivery_state"], row["tests"] = "IMPLEMENTED_RUN_2", ["tests/test_event_timeline.py"]
+    assert tm.validate_observed(doc) == []
+    row = _phase_row(doc, 3)
+    row["delivery_state"] = "PARTIAL_RUN_2"
+    assert any("claims run-2 work" in e for e in tm.validate_observed(doc))
+
+
+def test_run_1_states_cannot_be_claimed_by_phase_4_rows(observed):
+    doc = copy.deepcopy(observed)
+    row = _phase_row(doc, 4)
+    row["delivery_state"], row["tests"] = "IMPLEMENTED_THIS_RUN", ["tests/test_event_timeline.py"]
+    assert any("claims run-1 work" in e for e in tm.validate_observed(doc))
+
+
+def test_implemented_run_2_without_tests_fails(observed):
+    doc = copy.deepcopy(observed)
+    row = _phase_row(doc, 4)
+    row["delivery_state"], row["tests"] = "IMPLEMENTED_RUN_2", []
+    assert any("IMPLEMENTED_RUN_2 requires tests" in e for e in tm.validate_observed(doc))

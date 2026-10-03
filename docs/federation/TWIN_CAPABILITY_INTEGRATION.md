@@ -43,7 +43,8 @@ password-gated visitor analytics module, are listed under
 `delivery_state` values:
 
 - `ALREADY_PRESENT`
-- `SCHEDULED_THIS_RUN`, `PARTIAL_THIS_RUN` and `IMPLEMENTED_THIS_RUN`. These three are only valid for Phases 1–3.
+- `SCHEDULED_THIS_RUN`, `PARTIAL_THIS_RUN` and `IMPLEMENTED_THIS_RUN`. These three record run 1 and are only valid for Phases 1–3.
+- `SCHEDULED_RUN_2`, `PARTIAL_RUN_2` and `IMPLEMENTED_RUN_2`. These record run 2 and are only valid for Phase 4 (OVNIS). A later run never rewrites what an earlier run recorded.
 - `DEFERRED`
 - `BLOCKED`
 - `NOT_APPLICABLE`
