@@ -2,23 +2,23 @@
   "cap_per_stream": 400,
   "collections": {
     "Alerts": 400,
-    "ContinuityRisks": 69,
+    "ContinuityRisks": 56,
     "Contracts": 3,
-    "Correlations": 37,
-    "CrossoverLinks": 18,
-    "Entities": 812,
+    "Correlations": 34,
+    "CrossoverLinks": 16,
+    "Entities": 825,
     "FederationSummary": 1,
     "GovernanceAlerts": 400,
     "GraphEdges": 400,
-    "GraphNodes": 812,
-    "InfrastructureAssets": 183,
-    "LiveFeedItems": 135,
+    "GraphNodes": 825,
+    "InfrastructureAssets": 143,
+    "LiveFeedItems": 134,
     "Observations": 400,
-    "PatternObservations": 128,
-    "PublicMatters": 28,
+    "PatternObservations": 165,
+    "PublicMatters": 23,
     "Relationships": 400,
     "Sources": 400,
-    "UnifiedCases": 128,
+    "UnifiedCases": 165,
     "UnifiedSources": 400,
     "Vendors": 14
   },
@@ -26,24 +26,24 @@
   "note": "Built by scripts/build_hub_fixture.py from the real aggregate/correlate/ingest pipeline. Records are genuine but truncated: 'sampled' is what this fixture holds, 'actual' is what a full run produced. Counts shown in the UI against this fixture are not federation totals. Streams are sampled round-robin across (producer, record type); 'closure_added' counts entities re-admitted beyond the cap because a surviving relationship or alert refers to them, without which cross-stream projections would drop those rows.",
   "streams": {
     "alerts": {
-      "actual": 4397,
+      "actual": 4399,
       "sampled": 400
     },
     "entities": {
-      "actual": 47714,
-      "closure_added": 412,
-      "sampled": 812
+      "actual": 48224,
+      "closure_added": 425,
+      "sampled": 825
     },
     "observations": {
       "actual": 572,
       "sampled": 400
     },
     "relationships": {
-      "actual": 66185,
+      "actual": 66769,
       "sampled": 400
     },
     "sources": {
-      "actual": 43838,
+      "actual": 43842,
       "sampled": 400
     }
   }
