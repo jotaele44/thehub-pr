@@ -197,3 +197,13 @@ def test_running_app_setup_saves_and_requests_restart(tmp_path):
 def test_recommended_workspace_is_stable(tmp_path):
     config = _config(tmp_path)
     assert default_workspace_dir(config) == tmp_path / "support" / "Workspace"
+
+
+def test_bridge_retry_requests_restart_only_when_available(tmp_path):
+    config = _config(tmp_path)
+    assert SetupBridge(config).retry() is False
+    calls = []
+    bridge = SetupBridge(config, restart_app=lambda: calls.append(1))
+    restarted = bridge.retry()
+    assert restarted is True
+    assert calls == [1]
