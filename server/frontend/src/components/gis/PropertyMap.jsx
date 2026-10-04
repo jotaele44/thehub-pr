@@ -22,6 +22,8 @@ import { cn } from '@/lib/utils';
 const PropertyMapCanvas = lazy(() => import('@/components/gis/PropertyMapCanvas'));
 
 const RADII = [250, 500, 1000, 2000, 5000];
+// Without a map link the Property Map opens fitted to Puerto Rico, Vieques and Culebra.
+const PUERTO_RICO_EXTENT = Object.freeze([-67.3, 17.85, -65.2, 18.55]);
 const DEFAULT_GROUP = 'ovnis-pr|observations|uap_case';
 const LIST_LIMIT = 100;
 const NEARBY_LIMIT = 25;
@@ -30,9 +32,11 @@ const panel = 'space-y-2 rounded-xl border border-border bg-card p-4 text-sm';
 const control = 'min-h-[44px] rounded-md border border-border bg-background px-2 text-sm';
 const button = 'min-h-[44px] rounded-md border border-border px-3 text-sm font-medium hover:bg-muted disabled:opacity-50';
 
-function PrecisionMarker({ marker, color = '#e5e7eb' }) {
+// Drawn on the map's dark backdrop so the legend and list show each marker as the map does.
+function PrecisionMarker({ marker, color = '#cbd5e1' }) {
   return (
     <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" className="shrink-0">
+      <rect width="18" height="18" rx="3" fill="#1e293b" />
       {marker === 'solid' ? <circle cx="9" cy="9" r="5" fill={color} stroke="#ffffff" strokeWidth="1" /> : null}
       {marker === 'ringed' ? <circle cx="9" cy="9" r="5" fill={color} fillOpacity="0.55" stroke="#ffffff" strokeWidth="3" /> : null}
       {marker === 'hollow' ? <circle cx="9" cy="9" r="6" fill="none" stroke={color} strokeWidth="2" /> : null}
@@ -334,6 +338,10 @@ function LocationIntel({ point, radiusM, onRadiusChange, onSubmitPoint, municipi
 }
 
 export default function PropertyMap({ initialView, initialPoint = null }) {
+  const [origin] = useState(() => (initialPoint ? initialView : {
+    center: [(PUERTO_RICO_EXTENT[0] + PUERTO_RICO_EXTENT[2]) / 2, (PUERTO_RICO_EXTENT[1] + PUERTO_RICO_EXTENT[3]) / 2],
+    bounds: PUERTO_RICO_EXTENT,
+  }));
   const [basemapId, setBasemapId] = useState('cartoDark');
   const [includeSynthetic, setIncludeSynthetic] = useState(false);
   const [aoiText, setAoiText] = useState('');
@@ -468,13 +476,14 @@ export default function PropertyMap({ initialView, initialPoint = null }) {
         </aside>
         <div className="space-y-4">
           <div className="text-xs text-muted-foreground" data-map-origin>
-            Map origin {initialView.center[1].toFixed(4)}, {initialView.center[0].toFixed(4)} · zoom {initialView.zoom.toFixed(1)}
+            Map origin {origin.center[1].toFixed(4)}, {origin.center[0].toFixed(4)}
+            {origin.bounds ? ' · fitted to Puerto Rico, Vieques and Culebra' : ` · zoom ${origin.zoom.toFixed(1)} from the map link`}
           </div>
           <div className="relative h-[560px] overflow-hidden rounded-xl border border-border bg-card">
             <Suspense fallback={<div className="flex h-full items-center justify-center text-sm text-muted-foreground">Loading the map…</div>}>
               <PropertyMapCanvas
                 key={basemapId}
-                basemap={basemap} initialView={initialView} features={shown} paint={paint}
+                basemap={basemap} initialView={origin} features={shown} paint={paint}
                 outline={boundaries ? join.outline : null} selectedId={selectedId}
                 intelPoint={intelPoint} radiusM={radiusM} focusPoint={focusPoint}
                 onSelectFeature={(id) => selectFeature(id)} onPickPoint={pickPoint}
@@ -507,7 +516,8 @@ export default function PropertyMap({ initialView, initialPoint = null }) {
                         <span className="min-w-0 flex-1">
                           <span className="block truncate font-medium">{props.title}</span>
                           <span className="block text-muted-foreground">
-                            {props.category} · {precisionStyle(props.geometry_precision)?.label}{props.synthetic ? ' · synthetic' : ''}
+                            {props.category} · {precisionStyle(props.geometry_precision)?.label}
+                            {props.municipality ? ` · ${props.municipality}` : ''}{props.synthetic ? ' · synthetic' : ''}
                           </span>
                         </span>
                       </button>

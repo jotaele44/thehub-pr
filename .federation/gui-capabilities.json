@@ -552,7 +552,8 @@
           "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
           "server/frontend/src/gis/propertyMap.js",
           "server/frontend/src/gis/basemaps.js",
-          "server/frontend/src/api/federationClient.js"
+          "server/frontend/src/api/federationClient.js",
+          "server/frontend/src/gis/maplibre.js"
         ],
         "discoverability": [
           "server/frontend/src/pages/GISWorkspace.jsx",
@@ -568,7 +569,8 @@
         ],
         "unit": [
           "server/frontend/src/gis/propertyMap.test.js",
-          "server/frontend/src/components/gis/PropertyMap.test.jsx"
+          "server/frontend/src/components/gis/PropertyMap.test.jsx",
+          "server/frontend/src/gis/maplibre.test.js"
         ],
         "e2e": [
           "server/frontend/tests/visual/gui-parity.spec.js"

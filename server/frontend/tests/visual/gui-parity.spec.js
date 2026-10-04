@@ -417,6 +417,9 @@ test.describe('property map', () => {
     const canvas = page.getByTestId('property-map-canvas');
     await expect(canvas).toHaveAttribute('data-map-ready', 'true', { timeout: 30000 });
     await expect(canvas).toHaveAttribute('data-feature-count', '3');
+    // MapLibre's worker must actually draw them (the built app once shipped without it).
+    await expect(canvas).toHaveAttribute('data-drawn-count', '3', { timeout: 30000 });
+    await expect(page.locator('[data-map-origin]')).toContainText('fitted to Puerto Rico, Vieques and Culebra');
 
     const area = page.locator('[data-area-references]');
     await expect(area.locator('[data-area-reference-counter]')).toHaveText('2 of 6 record no municipality and are not mapped; 4 record a place value.');
@@ -439,6 +442,7 @@ test.describe('property map', () => {
     await mockMapProviders(page);
     await page.goto('/gis?view=property-map&lat=18.1&lon=-65.4');
     await expect(page.locator('[data-intel-point]')).toHaveText('18.10000, -65.40000 (WGS84)');
+    await expect(page.locator('[data-map-origin]')).toContainText('18.1000, -65.4000 · zoom 12.0 from the map link');
     await expect(page.locator('[data-intel-municipio]')).toHaveText('Not determined: the municipio boundary layer is not loaded.');
     await expect(page.locator('[data-intel-total]')).toContainText('1 mapped record within 1.00 km');
   });

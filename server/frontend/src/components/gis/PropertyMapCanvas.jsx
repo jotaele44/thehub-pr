@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import * as maplibregl from 'maplibre-gl';
+import { maplibregl } from '@/gis/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { circlePolygon, featureCollection } from '@/gis/propertyMap';
 
@@ -68,6 +68,7 @@ export default function PropertyMapCanvas({
   const mapRef = useRef(null);
   const handlers = useRef({ onSelectFeature, onPickPoint });
   const [ready, setReady] = useState(false);
+  const [drawn, setDrawn] = useState(0);
   handlers.current = { onSelectFeature, onPickPoint };
 
   useEffect(() => {
@@ -75,8 +76,9 @@ export default function PropertyMapCanvas({
     const map = new maplibregl.Map({
       container: containerRef.current,
       style: baseStyle(basemap),
-      center: initialView.center,
-      zoom: initialView.zoom,
+      ...(initialView.bounds
+        ? { bounds: initialView.bounds, fitBoundsOptions: { padding: 24 } }
+        : { center: initialView.center, zoom: initialView.zoom }),
       attributionControl: true,
     });
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
@@ -84,6 +86,11 @@ export default function PropertyMapCanvas({
     map.on('load', () => {
       addLayers(map);
       setReady(true);
+    });
+    // What MapLibre actually drew, not what it was handed: a failed worker or a
+    // rejected style draws nothing while the data still looks loaded.
+    map.on('idle', () => {
+      if (map.getLayer(FEATURES)) setDrawn(map.queryRenderedFeatures({ layers: [FEATURES] }).length);
     });
     map.on('click', (event) => {
       const hit = map.getLayer(FEATURES) ? map.queryRenderedFeatures(event.point, { layers: [FEATURES] })[0] : null;
@@ -128,6 +135,7 @@ export default function PropertyMapCanvas({
       data-testid="property-map-canvas"
       data-map-ready={ready ? 'true' : 'false'}
       data-feature-count={features.length}
+      data-drawn-count={drawn}
       role="region"
       aria-label="Property Map. Every mapped record is also listed under Mapped records."
       className="h-full w-full"

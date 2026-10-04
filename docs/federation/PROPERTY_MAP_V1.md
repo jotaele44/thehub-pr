@@ -57,6 +57,9 @@ alert's `module`), never labels from a reference application.
 | `REPRESENTATIVE_POINT` | hollow ring | a stand-in such as a municipio centroid; the record is not at this point |
 | `AREA_REFERENCE` | dashed outline of the municipio | names an area; no point is placed |
 
+Without a map link the map opens fitted to Puerto Rico, Vieques and Culebra. A
+`/gis?view=property-map&lat=…&lon=…&z=…` link opens at that point instead.
+
 Category colours are assigned from the categories in view, in sorted order (Okabe-Ito first).
 Colour never carries meaning on its own: the legend names every category and precision, and every
 mapped record also appears in the accessible "Mapped records" list. Location Intel states, for each
@@ -128,6 +131,22 @@ Basemaps (`server/frontend/src/gis/basemaps.js`):
   over the CARTO base, and the panel says so.
 
 The frontend sets no Content-Security-Policy, so no tile host needs allow-listing.
+
+## MapLibre worker
+
+MapLibre GL 6 locates its web worker relative to its own module URL. A Vite bundle rewrites that
+URL, so before this change the built app requested `/assets/maplibre-gl-worker.mjs`, a file that
+was never emitted. The worker never started and no GeoJSON layer rendered in the built app; the
+Vite dev server was unaffected. This applied to every MapLibre map in TheHub, not only this one.
+
+The fix is in two files:
+
+- `server/frontend/src/gis/maplibre.js` bundles the worker with Vite (`?worker&url`, ES format set
+  in `server/frontend/vite.config.js`) and passes its URL to `setWorkerUrl`.
+- Every map imports MapLibre through that module.
+
+The canvas reports `data-drawn-count`: what MapLibre actually drew in view, not what it was given.
+The E2E asserts that count, so a missing worker fails the test.
 
 ## Not built in this view
 

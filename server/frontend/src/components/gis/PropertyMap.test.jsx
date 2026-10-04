@@ -20,13 +20,13 @@ vi.mock('@/components/gis/PropertyMapCanvas', () => ({
   ),
 }));
 
-function feature(id, category, producer, precision, lon, lat, title) {
+function feature(id, category, producer, precision, lon, lat, title, municipality = null) {
   const [, stream, recordId] = id.split(':');
   const collection = stream === 'alerts' ? 'Alerts' : 'Entities';
   return {
     type: 'Feature', id, geometry: { type: 'Point', coordinates: [lon, lat] },
     properties: { evidence_id: id, stream, collection, record_id: recordId, title, category, object_type: null, producer,
-      producers: [producer], geometry_precision: precision, geometry_basis: null, municipality: null, synthetic: false,
+      producers: [producer], geometry_precision: precision, geometry_basis: null, municipality, synthetic: false,
       evidence_href: `/evidence/${collection}/${recordId}`, entity_href: stream === 'entities' ? `/entity/${recordId}` : null },
   };
 }
@@ -35,7 +35,7 @@ const FEATURES = {
   contract: 'federation-spatial-features-v1', type: 'FeatureCollection', bbox_filter: null, include_synthetic: false,
   loaded: 10, matched: 3, truncated: false, outside_bbox: 0, excluded_synthetic: 1,
   features: [
-    feature('evo:alerts:alrt_c', 'CONTAMINATION', 'aguayluz-pr', 'REPRESENTATIVE_POINT', -66.1, 18.4, 'Boil water notice'),
+    feature('evo:alerts:alrt_c', 'CONTAMINATION', 'aguayluz-pr', 'REPRESENTATIVE_POINT', -66.1, 18.4, 'Boil water notice', 'Corozal'),
     feature('evo:entities:ent_m', 'mineral_occurrence', 'spiderweb-pr', 'OBSERVED_POINT', -66.5, 18.2, 'Manganese occurrence'),
     feature('evo:entities:ent_s', 'sensor_site', 'skywatcher-pr', 'INTERPRETED_POINT', -65.4, 18.1, 'Receiver site'),
   ],
@@ -98,6 +98,12 @@ describe('Property Map', () => {
     expect(within(categories).getAllByRole('checkbox').map((box) => box.parentElement.textContent)).toEqual([
       'CONTAMINATION1 · aguayluz-pr', 'mineral_occurrence1 · spiderweb-pr', 'sensor_site1 · skywatcher-pr']);
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it('labels each listed record with its category, precision and recorded municipality', async () => {
+    renderMap();
+    const item = await screen.findByRole('button', { name: /Boil water notice/ });
+    expect(item).toHaveTextContent('CONTAMINATION · Representative point · Corozal');
   });
 
   it('hides a category from the map and the record list', async () => {
