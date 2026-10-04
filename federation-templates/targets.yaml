@@ -49,6 +49,10 @@ _needs_license: &needs_license
 # tests, and its backend is the one the producers' shells were modelled on.
 _producers: &producers
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr]
+# V2 grid consumers that are also producer repositories. Spiderweb is excluded:
+# it owns the geometry contract rather than consuming a reference-only pin.
+_grid_v2_producer_consumers: &grid_v2_producer_consumers
+  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr]
 # The five producers whose frontends are React/JSX and already carry this exact
 # eslint config byte-for-byte. spiderweb-pr is excluded because its frontend is
 # TypeScript — no src/pages/, no Layout.jsx, zero .jsx files — so this config's
@@ -85,6 +89,16 @@ targets:
   - template: schemas/federation_export_manifest.schema.json
     output: schemas/federation_export_manifest.schema.json
     repos: *all
+
+  # PR_GRID_GEOGRAPHIC_V2 consumer runtime. One implementation, two output
+  # locations: producer-consumers keep it beside their pin; TheHub imports the
+  # same bytes as a package module. Spiderweb remains the geometry authority.
+  - template: spatial/pr_grid_v2_runtime.py
+    output: federation/spatial/pr_grid_v2_runtime.py
+    repos: *grid_v2_producer_consumers
+  - template: spatial/pr_grid_v2_runtime.py
+    output: src/hub/grid_v2.py
+    repos: [thehub-pr]
 
   # Engineering baseline — supply-chain and dependency hygiene that every repo
   # in the federation needs identically. Single-sourced here so a fix lands once
