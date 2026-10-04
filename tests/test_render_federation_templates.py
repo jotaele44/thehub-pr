@@ -478,3 +478,25 @@ def test_docs_sync_files_render_into_a_fresh_repo(tmp_path):
     # Byte-identical everywhere: the rule must not vary by repo.
     template = (_TEMPLATES / "baseline" / "check_docs_sync.py").read_bytes()
     assert (tmp_path / "tools" / "check_docs_sync.py").read_bytes() == template
+
+
+def test_pr_grid_v2_runtime_respects_geometry_authority_boundary():
+    targets = [
+        target
+        for target in _targets()
+        if target["template"] == "spatial/pr_grid_v2_runtime.py"
+    ]
+    assert len(targets) == 2
+
+    by_output = {target["output"]: set(target["repos"]) for target in targets}
+    assert by_output["federation/spatial/pr_grid_v2_runtime.py"] == {
+        "aguayluz-pr",
+        "centinelas-pr",
+        "moneysweep-pr",
+        "ovnis-pr",
+        "skywatcher-pr",
+    }
+    assert by_output["src/hub/grid_v2.py"] == {"thehub-pr"}
+
+    recipients = set().union(*by_output.values())
+    assert "spiderweb-pr" not in recipients
