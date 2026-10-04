@@ -80,7 +80,7 @@ hold it.
 | Item | Why |
 |---|---|
 | Live research swarm, web-search dispatch and real-time sourced findings (TWIN-171, 173, 174) | BLOCKED: there is no authorized research provider |
-| OVNIS map counters and categories on `/gis` (TWIN-134, 145, 148) | DEFERRED to Phase 5. An OVNIS map layer needs a declared coordinate derivation, and OVNIS deliberately declares no `geometry_precision` |
+| OVNIS map counters and categories on `/gis` (TWIN-134, 145, 148) | Not built in Phase 4. An OVNIS map layer needs a declared coordinate derivation, and OVNIS deliberately declares no `geometry_precision`. Phase 5 delivered them at municipality level only (PARTIAL), with no OVNIS points: see [`PROPERTY_MAP_V1.md`](PROPERTY_MAP_V1.md) |
 | Anomaly Watch (TWIN-102) | DEFERRED until an analytical contract defines it |
 | Witness/source graph (FDX-018) | PARTIAL: the case reconstruction shows source links, not a graph |
 | Temporal playback (FDX-019), comparable-case finder (FDX-020) and temporal persistence classes (FDX-069) | DEFERRED, with reasons in the manifest |

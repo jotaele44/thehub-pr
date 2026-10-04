@@ -180,6 +180,17 @@ describe('Property Map', () => {
     expect(container.querySelector('[data-aoi-area]')).toHaveTextContent('acres');
   });
 
+  it('offers a public-domain imagery basemap and states its attribution and coverage', async () => {
+    const { container } = renderMap();
+    await screen.findByText('Boil water notice');
+    expect(container.querySelector('[data-layer-provenance]')).toHaveTextContent('CARTO Dark · © OpenStreetMap, © CARTO');
+    fireEvent.change(screen.getByLabelText('Basemap'), { target: { value: 'usgsImagery' } });
+    const provenance = container.querySelector('[data-layer-provenance]');
+    expect(provenance).toHaveTextContent('USGS orthoimagery · USDA, USGS The National Map: Orthoimagery');
+    expect(provenance).toHaveTextContent('from zoom 11; below that the CARTO base shows');
+    expect(provenance).toHaveTextContent('No elevation model is used in this view.');
+  });
+
   it('says when the Hub cannot return features', async () => {
     federation.spatial.features.mockRejectedValue(new Error('HTTP 500'));
     renderMap();

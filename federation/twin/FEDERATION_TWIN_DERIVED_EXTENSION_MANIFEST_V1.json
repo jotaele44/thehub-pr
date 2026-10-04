@@ -321,9 +321,9 @@
       "existing_equivalent": "spiderweb-pr components/Inspector.tsx",
       "implementation_status": "EXTEND",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5): Selecting a mapped record shows its category, producer, declared precision and basis, coordinates and recorded municipality, with links to its Evidence Object and entity page. Tests: tests/test_spatial_features.py, tests/test_spatial_api.py, propertyMap.test.js, PropertyMap.test.jsx, gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-022",
@@ -336,9 +336,9 @@
       "existing_equivalent": "spiderweb-pr configs/layer_catalog.yaml; schemas/federation_spatial_layer_v1.schema.json",
       "implementation_status": "EXTEND",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5): The Property Map's layer provenance panel names, for each layer, its producer or provider, contract or certification, CRS, retrieval time and SHA-256 snapshot and query-receipt hashes (boundaries), and the basemap's attribution and coverage. Tests: tests/test_spatial_features.py, tests/test_spatial_api.py, propertyMap.test.js, PropertyMap.test.jsx, gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-023",
@@ -411,9 +411,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "PARTIAL_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5): Each point is styled by its declared precision class (observed solid, interpreted ringed, representative hollow) and area references are outlined, never placed. No producer declares a numeric positional error, so no uncertainty radius is drawn. Tests: tests/test_spatial_features.py, tests/test_spatial_api.py, propertyMap.test.js, PropertyMap.test.jsx, gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-028",
@@ -1136,9 +1136,9 @@
     "DERIVED_SCHEDULED": 0,
     "DERIVED_ALREADY_PRESENT": 1,
     "DERIVED_BLOCKED": 3,
-    "DERIVED_DEFERRED": 50,
-    "DERIVED_IMPLEMENTED_RUN_2": 5,
-    "DERIVED_PARTIAL_RUN_2": 1,
+    "DERIVED_DEFERRED": 47,
+    "DERIVED_IMPLEMENTED_RUN_2": 7,
+    "DERIVED_PARTIAL_RUN_2": 2,
     "DERIVED_SCHEDULED_RUN_2": 0,
     "by_implementation_status": {
       "BLOCKED": 3,

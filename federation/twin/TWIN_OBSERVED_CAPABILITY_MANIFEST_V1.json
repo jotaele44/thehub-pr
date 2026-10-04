@@ -268,9 +268,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): /gis?view=property-map draws Hub-held records where their producer declared a point precision, styled by that precision; every loaded row is accounted for (drawn, not drawn, synthetic excluded, outside the AOI).",
       "live_bundle_corroboration": {
         "file": "assets/index-D1Tgc0Rg.js",
         "label": "MAP"
@@ -3719,13 +3725,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/live",
-        "status": "PLANNED"
+        "status": "EXISTS",
+        "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): The Property Map shows the map origin, and Location Intel shows the picked point's WGS84 coordinates and its municipio. There is no live cursor-coordinate readout.",
       "live_bundle_corroboration": null
     },
     {
@@ -5023,14 +5034,20 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): /gis?view=property-map (GET /api/spatial/features, GET /api/spatial/intel); the workbench stays the default /gis view.",
       "live_bundle_corroboration": {
         "file": "assets/Map-iZc0VAQO.js",
         "label": "PROPERTY MAP"
@@ -5054,14 +5071,17 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx"
+      ],
+      "notes": "Run 2 (Phase 5): USGS The National Map orthoimagery (public domain, no key), drawn from zoom 11 over the CARTO base: its tile cache has no Puerto Rico tiles at zoom 9-10 (HTTP 404, checked 2026-10-03). The provenance panel states this.",
       "live_bundle_corroboration": null
     },
     {
@@ -5082,14 +5102,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Run 2: deferred to Phase 5. /gis has no OVNIS layer, and an OVNIS map layer needs a declared coordinate derivation; ovnis-pr deliberately declares no geometry_precision.",
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): Municipality level only, per the 2026-10-03 decision: no OVNIS points. The Property Map counts cases that record no municipality and outlines the rest on TIGERweb municipios by exact folded name; every other recorded value is listed as recorded. In the committed store 65 of 298 OVNIS case observations record a place value and only 2 (\"vieques\") name a municipio; the rest are regions. No finding records exist (the OVNIS findings ledger is empty).",
       "search_terms_without_equivalent": [
         "topic",
         "finding",
@@ -5147,14 +5171,20 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): Markers are Hub-held records with a declared point precision. No finding record carries geometry (the OVNIS findings ledger is empty), so no finding is placed.",
       "live_bundle_corroboration": null
     },
     {
@@ -5175,14 +5205,20 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): Marker colour follows the record type each producer exported (entity_type, observation_type or alert module), assigned in sorted order from the store; marker shape follows declared precision.",
       "live_bundle_corroboration": null
     },
     {
@@ -5203,14 +5239,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
       "delivery_state": "ALREADY_PRESENT",
-      "tests": [],
-      "notes": null,
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): TheHub's Property Map also selects a record from the map or the record list and shows its precision, basis and provenance links.",
       "live_bundle_corroboration": null
     },
     {
@@ -5231,14 +5271,20 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): Location Intel lists the Hub records within a chosen radius, nearest first, with each one's precision and distance basis, the municipio (point in polygon on the loaded TIGERweb layer) and the radius area.",
       "live_bundle_corroboration": {
         "file": "assets/Map-iZc0VAQO.js",
         "label": "LOCATION INTEL"
@@ -5262,14 +5308,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): Selecting a record, clicking the map, typing coordinates or opening /gis?view=property-map&lat&lon runs Location Intel at that point.",
       "live_bundle_corroboration": null
     },
     {
@@ -5290,14 +5340,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): The Property Map shows its origin (centre and zoom), which a /gis?lat&lon&z link sets.",
       "live_bundle_corroboration": null
     },
     {
@@ -5318,14 +5372,17 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx"
+      ],
+      "notes": "Run 2 (Phase 5): The AOI (bbox) and the Location Intel radius report their area in acres, hectares and km² on the reference sphere.",
       "live_bundle_corroboration": null
     },
     {
@@ -5346,14 +5403,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): Municipio by point in polygon on TIGERweb municipios 2025, or \"not determined\" when the layer is not loaded, or \"outside every municipio\". Barrio boundaries are not live-certified in the source registry, so no barrio is named.",
       "live_bundle_corroboration": null
     },
     {
@@ -5381,7 +5442,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5): the Property Map uses no elevation model and says so; DEM provenance is delivered with terrain in the Digital Twin view (P5-B).",
       "live_bundle_corroboration": {
         "file": "assets/Map-iZc0VAQO.js",
         "label": "DEM: "
@@ -5405,14 +5466,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Run 2: deferred to Phase 5. /gis has no OVNIS layer, and an OVNIS map layer needs a declared coordinate derivation; ovnis-pr deliberately declares no geometry_precision.",
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): Municipality level only: the OVNIS object_type values as recorded (UAP, USO, Lights...) filter the municipio counts. In the committed store the 2 cases that name a municipio are UAP 1 and Geophysical 1 (Vieques).",
       "live_bundle_corroboration": null
     },
     {
@@ -5440,7 +5505,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5): deferred to P5-C (interpretive layers): no producer exports an underground category or subsurface geometry yet.",
       "live_bundle_corroboration": null
     },
     {
@@ -5499,14 +5564,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "ovnis-pr dashboard/ (diagnostic, ADR 0001)",
       "phase": 4,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Run 2: deferred to Phase 5. /gis has no OVNIS layer, and an OVNIS map layer needs a declared coordinate derivation; ovnis-pr deliberately declares no geometry_precision. The category maps to OVNIS's Mutilation object type when the layer exists.",
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): Municipality level only: OVNIS's Mutilation object_type is a filter on the municipio counts. In the committed store both Mutilation cases record no place value, so none is outlined; the counter says so.",
       "live_bundle_corroboration": null
     },
     {
@@ -5527,14 +5596,18 @@
       "canonical_gui_home": {
         "repo": "thehub-pr",
         "route": "/gis",
-        "status": "PLANNED",
+        "status": "EXISTS",
         "view": "property-map"
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/propertyMap.test.js",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5): The category legend names each category with its producers and count and toggles it; a precision legend explains each marker style.",
       "live_bundle_corroboration": {
         "file": "assets/Map-iZc0VAQO.js",
         "label": "CATEGORY LEGEND"
@@ -8214,11 +8287,11 @@
     "by_delivery_state": {
       "ALREADY_PRESENT": 14,
       "BLOCKED": 4,
-      "DEFERRED": 145,
-      "IMPLEMENTED_RUN_2": 33,
+      "DEFERRED": 130,
+      "IMPLEMENTED_RUN_2": 43,
       "IMPLEMENTED_THIS_RUN": 16,
       "NOT_APPLICABLE": 5,
-      "PARTIAL_RUN_2": 1,
+      "PARTIAL_RUN_2": 6,
       "PARTIAL_THIS_RUN": 5
     },
     "census_closed": true

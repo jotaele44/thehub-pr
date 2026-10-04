@@ -31,10 +31,11 @@ IN_SCOPE_REPOS = frozenset(
 # delivery_state values that claim work inside run 1 (Phases 1-3).
 RUN1_DELIVERY_STATES = frozenset({"SCHEDULED_THIS_RUN", "PARTIAL_THIS_RUN", "IMPLEMENTED_THIS_RUN"})
 RUN1_PHASES = frozenset({1, 2, 3})
-# Run 2 (Phase 4, OVNIS). Each run's states may only be claimed by rows of that
-# run's phases, so a later run never rewrites what an earlier run delivered.
+# Run 2 (Phase 4, OVNIS; Phase 5, Spiderweb). Each run's states may only be
+# claimed by rows of that run's phases, so a later run never rewrites what an
+# earlier run delivered.
 RUN2_DELIVERY_STATES = frozenset({"SCHEDULED_RUN_2", "PARTIAL_RUN_2", "IMPLEMENTED_RUN_2"})
-RUN2_PHASES = frozenset({4})
+RUN2_PHASES = frozenset({4, 5})
 RUN_PHASES: Mapping[str, frozenset] = {
     **{state: RUN1_PHASES for state in RUN1_DELIVERY_STATES},
     **{state: RUN2_PHASES for state in RUN2_DELIVERY_STATES},
