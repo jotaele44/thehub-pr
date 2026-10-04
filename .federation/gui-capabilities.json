@@ -50,11 +50,39 @@
   },
   "capabilities": [
     {
+      "id": "pr-grid-v2-runtime-contract",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Fail-closed federation contract utility for validating PR_GRID_GEOGRAPHIC_V2 consumer pins and stamping immutable grid identity. It is an internal runtime/governance primitive, not a standalone operator workflow; user-facing grid identity is surfaced through the consuming Cell_Profile/API responses rather than through a separate validator GUI.",
+      "analysis": {
+        "files": [
+          "scripts/validate_pr_grid_v2_federation.py",
+          "src/hub/grid_v2.py"
+        ],
+        "symbols": [
+          "scripts/validate_pr_grid_v2_federation.py:main",
+          "src/hub/grid_v2.py:GridV2Pin",
+          "src/hub/grid_v2.py:GridV2PinError",
+          "src/hub/grid_v2.py:grid_identity",
+          "src/hub/grid_v2.py:load_pin",
+          "src/hub/grid_v2.py:validate_level",
+          "src/hub/grid_v2.py:validate_pin_payload",
+          "src/hub/grid_v2.py:validate_pin_set"
+        ]
+      },
+      "tests": {
+        "contract": [
+          "tests/test_grid_v2_runtime.py"
+        ]
+      }
+    },
+    {
       "id": "twin-capability-census-validator",
       "classification": "internal",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "CI/governance validator for the Twin observed and Federation-derived capability manifests (directive \u00a735 exception 1: internal build/developer utility). It checks committed governance data; it is not an operator workflow.",
+      "rationale": "CI/governance validator for the Twin observed and Federation-derived capability manifests (directive §35 exception 1: internal build/developer utility). It checks committed governance data; it is not an operator workflow.",
       "analysis": {
         "files": [
           "scripts/validate_twin_manifests.py",
