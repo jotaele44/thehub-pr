@@ -135,6 +135,13 @@ Empty ledgers report `NONE_RECORDED`, and a computed duplicate pair stays an unr
 CANDIDATE. The record is rendered at `/research`, `/research/case/:caseId` and the `/ovnis`
 Reports and Show Log tabs. See [`docs/federation/RESEARCH_HUB_V1.md`](docs/federation/RESEARCH_HUB_V1.md).
 
+`GET /api/spatial/features` and `GET /api/spatial/intel` (`hub.spatial_features`, contract
+`federation-spatial-features-v1`) place Hub-held records on the Property Map
+(`/gis?view=property-map`). A record is drawn only where its producer declared a point
+precision, and it is styled by that precision. Every other record is counted, and a recorded
+municipality is passed through as recorded and outlined on its municipio by exact name. Nothing
+is geocoded. See [`docs/federation/PROPERTY_MAP_V1.md`](docs/federation/PROPERTY_MAP_V1.md).
+
 ## Governance
 
 Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,

@@ -281,6 +281,22 @@ const research = {
   caseRecord: (caseId) => request(`/research/case/${encode(caseId)}`),
 };
 
+// Property Map spatial features and Location Intel. Read-only; see server/backend/spatial_api.py.
+const spatial = {
+  features: ({ bbox, includeSynthetic = false, limit = 5000 } = {}) => {
+    const params = new URLSearchParams({ include_synthetic: String(includeSynthetic), limit: String(limit) });
+    if (bbox) params.set('bbox', bbox.join(','));
+    return request(`/spatial/features?${params.toString()}`);
+  },
+  intel: ({ lat, lon, radiusM = 1000, municipality, includeSynthetic = false }) => {
+    const params = new URLSearchParams({
+      lat: String(lat), lon: String(lon), radius_m: String(radiusM), include_synthetic: String(includeSynthetic),
+    });
+    if (municipality) params.set('municipality', municipality);
+    return request(`/spatial/intel?${params.toString()}`);
+  },
+};
+
 export const federation = {
   app: { id: appParams.appId, programId: appParams.programId },
   auth,
@@ -298,5 +314,6 @@ export const federation = {
   composition,
   timeline,
   research,
+  spatial,
   request,
 };

@@ -506,6 +506,76 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "property-map-location-intel",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Property Map at /gis?view=property-map (TWIN-006/132..149, FDX-021/022/027; Phase 5, P5-A): Hub-held records drawn only where their producer declared a point precision and styled by it (observed solid, interpreted ringed, representative hollow), data-derived category legend, AOI area, Location Intel (records within a radius, municipio by point in polygon), the selected record with provenance links, municipality-level records outlined on TIGERweb municipios by exact folded name (OVNIS cases, municipality only) with every other recorded value listed, and a layer provenance inspector. Every loaded row is accounted for; nothing is geocoded.",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /features",
+          "GET /intel"
+        ],
+        "symbols": [
+          "server/backend/spatial_api.py:location_intel",
+          "server/backend/spatial_api.py:spatial_features",
+          "server/backend/spatial_api.py:spatial_rows",
+          "src/hub/spatial_features.py:build_features",
+          "src/hub/spatial_features.py:category",
+          "src/hub/spatial_features.py:coordinates",
+          "src/hub/spatial_features.py:distance_m",
+          "src/hub/spatial_features.py:feature",
+          "src/hub/spatial_features.py:municipality",
+          "src/hub/spatial_features.py:nearby",
+          "src/hub/spatial_features.py:object_type",
+          "src/hub/spatial_features.py:parse_bbox",
+          "src/hub/spatial_features.py:producer"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/components/gis/PropertyMap.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/gis/propertyMap.js",
+          "server/frontend/src/gis/basemaps.js",
+          "server/frontend/src/api/federationClient.js",
+          "server/frontend/src/gis/maplibre.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/propertyMap.test.js",
+          "server/frontend/src/components/gis/PropertyMap.test.jsx",
+          "server/frontend/src/gis/maplibre.test.js"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
     }
   ],
   "exceptions": []

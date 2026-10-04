@@ -67,6 +67,8 @@ export default defineConfig({
     },
   },
   plugins: OFFLINE ? [react(), viteSingleFile(), cesiumRuntimeAssets()] : [react(), cesiumRuntimeAssets()],
+  // MapLibre creates its worker as a module worker (see src/gis/maplibre.js).
+  worker: { format: 'es' },
   build: OFFLINE
     ? { outDir: 'export-standalone', emptyOutDir: true }
     : {},
