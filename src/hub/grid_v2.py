@@ -10,7 +10,7 @@ import json
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Mapping, Optional, Tuple
+from typing import Any, Dict, Mapping, Optional, Tuple, Union
 
 PIN_SCHEMA_VERSION = "pr_grid_geographic_v2_consumer_pin/1.0"
 GRID_ID = "PR_GRID_GEOGRAPHIC_V2"
@@ -80,7 +80,7 @@ def validate_pin_payload(
     required_level: Optional[str] = None,
 ) -> list:
     """Return validation errors; an empty list is the only compatible state."""
-    errors = []
+    errors: list[str] = []
 
     _expect_equal(errors, payload, "schema_version", PIN_SCHEMA_VERSION)
     _expect_equal(errors, payload, "geometry_authority", GEOMETRY_AUTHORITY)
@@ -172,7 +172,7 @@ def validate_pin_payload(
 
 
 def load_pin(
-    path: object,
+    path: Union[str, Path],
     *,
     expected_consumer: Optional[str] = None,
     required_level: Optional[str] = None,
@@ -225,7 +225,7 @@ def grid_identity(pin: GridV2Pin, *, level: Optional[str] = None) -> Dict[str, s
     }
 
 
-def validate_pin_set(pin_paths: Mapping[str, object]) -> Dict[str, GridV2Pin]:
+def validate_pin_set(\n    pin_paths: Mapping[str, Union[str, Path]]\n) -> Dict[str, GridV2Pin]:
     """Validate the complete six-consumer denominator against one authority."""
     supplied = set(pin_paths)
     if supplied != set(EXPECTED_CONSUMERS):
