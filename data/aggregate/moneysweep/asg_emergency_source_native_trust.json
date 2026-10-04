@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "thehub.moneysweep-asg-leaderboard-trust/v1",
+  "state": "FROZEN",
+  "producer": "moneysweep-pr",
+  "scopeId": "moneysweep.leaderboard.asg-emergency-source-native-v1",
+  "producerCommit": "e963f4258a78c9b30427df7a7e9b4edf83f00692",
+  "receiptSha256": "08eb30bfcc4033640ed215e2ee36f5fec4e93c4d3265f9728f7b262aa67c26ff",
+  "releaseManifestSha256": "15387cce4c12e905d9ed67caad189fd63a3a17c405eaeb8d98205f37f7e91a85",
+  "scopeSha256": "9b22125120a8a0592050f58b766272f3a25bf0e8308e82cf1df452487682710c",
+  "packageSha256": "6ecdad09a48cdbd4ae1076138a9b5017a5be82608b489871a50ce0d599680337",
+  "certificationRuntimeSha256": "6e510878dc60f80599a4ae5ff2bfcc48102462526066305f519ed3e9ef0dd960",
+  "sourceVersion": {
+    "type": "LIVE_PORTAL_MATERIALIZATION",
+    "sourceId": "asg_emergency_purchases",
+    "authoritativeUniverseTotal": 1431,
+    "sourceSha256": "6c615470f7a658789fd6d46c569c6e603f068732781723fb13087982726db969",
+    "rawBundleSha256": "10eadc6520408f5b4ef1679788b8e760e9a01a68d92c67bcee636d8e0b35c6d2"
+  }
+}
