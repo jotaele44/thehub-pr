@@ -225,7 +225,9 @@ def grid_identity(pin: GridV2Pin, *, level: Optional[str] = None) -> Dict[str, s
     }
 
 
-def validate_pin_set(\n    pin_paths: Mapping[str, Union[str, Path]]\n) -> Dict[str, GridV2Pin]:
+def validate_pin_set(
+    pin_paths: Mapping[str, Union[str, Path]]
+) -> Dict[str, GridV2Pin]:
     """Validate the complete six-consumer denominator against one authority."""
     supplied = set(pin_paths)
     if supplied != set(EXPECTED_CONSUMERS):
