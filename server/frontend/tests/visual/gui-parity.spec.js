@@ -398,7 +398,7 @@ function municipioPage() {
 }
 
 async function mockMapProviders(page) {
-  await page.route(/basemaps\.cartocdn\.com|tile\.openstreetmap\.org|basemap\.nationalmap\.gov/, (route) => route.fulfill({ status: 204 }));
+  await page.route(/^https:\/\/(?:a\.basemaps\.cartocdn\.com|tile\.openstreetmap\.org|basemap\.nationalmap\.gov)\//, (route) => route.fulfill({ status: 204 }));
   await page.route('https://tigerweb.geo.census.gov/**', (route) => {
     const body = route.request().url().includes('returnCountOnly') ? { count: 78 } : municipioPage();
     return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
