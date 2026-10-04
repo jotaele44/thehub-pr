@@ -1,0 +1,135 @@
+"""Certification tests for the shared PR grid V2 runtime pin reader."""
+from __future__ import annotations
+
+import copy
+import json
+from pathlib import Path
+
+import pytest
+
+from hub.grid_v2 import (
+    AUTHORITY_COMMIT,
+    BINDING_SCHEMA_SHA256,
+    CELL_SCHEMA_SHA256,
+    CRS,
+    EXPECTED_DEFAULT_LEVELS,
+    GRID_ID,
+    GRID_MANIFEST_SHA256,
+    GRID_VERSION,
+    MASK_SCHEMA_SHA256,
+    GridV2PinError,
+    grid_identity,
+    load_pin,
+    validate_pin_set,
+)
+
+ROOT = Path(__file__).resolve().parents[1]
+PIN_PATH = ROOT / "federation/spatial/pr_grid_geographic_v2.pin.json"
+TEMPLATE_PATH = ROOT / "federation-templates/spatial/pr_grid_v2_runtime.py"
+RUNTIME_PATH = ROOT / "src/hub/grid_v2.py"
+
+
+def _pin_payload():
+    return json.loads(PIN_PATH.read_text(encoding="utf-8"))
+
+
+def _write_pin(tmp_path, payload, name="pin.json"):
+    path = tmp_path / name
+    path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    return path
+
+
+def test_runtime_module_is_byte_identical_to_canonical_template():
+    assert RUNTIME_PATH.read_bytes() == TEMPLATE_PATH.read_bytes()
+
+
+def test_real_thehub_pin_loads_and_emits_identity():
+    pin = load_pin(PIN_PATH, expected_consumer="thehub-pr", required_level="L1")
+    identity = grid_identity(pin)
+    assert identity == {
+        "Grid_ID": GRID_ID,
+        "Grid_Version": GRID_VERSION,
+        "Grid_Level": "L1",
+        "CRS": CRS,
+        "Grid_Manifest_SHA256": GRID_MANIFEST_SHA256,
+        "Cell_Schema_SHA256": CELL_SCHEMA_SHA256,
+        "Binding_Schema_SHA256": BINDING_SCHEMA_SHA256,
+        "Mask_Schema_SHA256": MASK_SCHEMA_SHA256,
+        "Geometry_Authority": "spiderweb-pr",
+        "Authority_Commit": AUTHORITY_COMMIT,
+    }
+
+
+@pytest.mark.parametrize(
+    ("field", "bad_value", "message"),
+    [
+        ("grid_id", "PR_GRID_LOGICAL_V1", "grid_id"),
+        ("grid_version", "2.0.0", "grid_version"),
+        ("grid_manifest_sha256", "0" * 64, "grid_manifest_sha256"),
+        ("cell_schema_sha256", "0" * 64, "cell_schema_sha256"),
+    ],
+)
+def test_contract_identity_mismatch_fails_closed(tmp_path, field, bad_value, message):
+    payload = _pin_payload()
+    payload[field] = bad_value
+    with pytest.raises(GridV2PinError, match=message):
+        load_pin(
+            _write_pin(tmp_path, payload),
+            expected_consumer="thehub-pr",
+        )
+
+
+def test_unsupported_level_fails_closed():
+    with pytest.raises(GridV2PinError, match="unsupported grid level"):
+        load_pin(
+            PIN_PATH,
+            expected_consumer="thehub-pr",
+            required_level="L4",
+        )
+
+
+def test_hash_shape_failure_fails_closed(tmp_path):
+    payload = _pin_payload()
+    payload["binding_schema_sha256"] = "not-a-sha"
+    with pytest.raises(GridV2PinError, match="binding_schema_sha256"):
+        load_pin(_write_pin(tmp_path, payload), expected_consumer="thehub-pr")
+
+
+def test_complete_six_consumer_denominator_validates(tmp_path):
+    base = _pin_payload()
+    paths = {}
+    for consumer, default_level in EXPECTED_DEFAULT_LEVELS.items():
+        payload = copy.deepcopy(base)
+        payload["consumer"] = consumer
+        payload["default_level"] = default_level
+        paths[consumer] = _write_pin(
+            tmp_path,
+            payload,
+            name=consumer + ".json",
+        )
+
+    validated = validate_pin_set(paths)
+    assert set(validated) == set(EXPECTED_DEFAULT_LEVELS)
+    assert {
+        pin.payload["grid_manifest_sha256"]
+        for pin in validated.values()
+    } == {GRID_MANIFEST_SHA256}
+
+
+def test_missing_consumer_is_a_denominator_failure(tmp_path):
+    base = _pin_payload()
+    paths = {}
+    for consumer, default_level in EXPECTED_DEFAULT_LEVELS.items():
+        if consumer == "ovnis-pr":
+            continue
+        payload = copy.deepcopy(base)
+        payload["consumer"] = consumer
+        payload["default_level"] = default_level
+        paths[consumer] = _write_pin(
+            tmp_path,
+            payload,
+            name=consumer + ".json",
+        )
+
+    with pytest.raises(GridV2PinError, match="denominator mismatch"):
+        validate_pin_set(paths)
