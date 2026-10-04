@@ -345,3 +345,101 @@ test.describe('research hub', () => {
     await expect(page).toHaveURL(/\/research\/case\/PRUAP-0001$/);
   });
 });
+
+function spatialFeature(stream, recordId, category, producer, precision, lon, lat, title) {
+  const collection = stream === 'alerts' ? 'Alerts' : 'Entities';
+  return {
+    type: 'Feature', id: `evo:${stream}:${recordId}`, geometry: { type: 'Point', coordinates: [lon, lat] },
+    properties: { evidence_id: `evo:${stream}:${recordId}`, stream, collection, record_id: recordId, title, category, object_type: null,
+      producer, producers: [producer], geometry_precision: precision, geometry_basis: null, municipality: null, synthetic: false,
+      evidence_href: `/evidence/${collection}/${recordId}`, entity_href: stream === 'entities' ? `/entity/${recordId}` : null },
+  };
+}
+const SPATIAL_FEATURES = {
+  contract: 'federation-spatial-features-v1', type: 'FeatureCollection', bbox_filter: null, include_synthetic: false,
+  loaded: 10, matched: 3, truncated: false, outside_bbox: 0, excluded_synthetic: 1,
+  features: [
+    spatialFeature('alerts', 'alrt_c', 'CONTAMINATION', 'aguayluz-pr', 'REPRESENTATIVE_POINT', -66.1, 18.4, 'Boil water notice'),
+    spatialFeature('entities', 'ent_m', 'mineral_occurrence', 'spiderweb-pr', 'OBSERVED_POINT', -66.5, 18.2, 'Manganese occurrence'),
+    spatialFeature('entities', 'ent_s', 'sensor_site', 'skywatcher-pr', 'INTERPRETED_POINT', -65.4, 18.1, 'Receiver site'),
+  ],
+  categories: [
+    { producer: 'aguayluz-pr', stream: 'alerts', category: 'CONTAMINATION', count: 1 },
+    { producer: 'skywatcher-pr', stream: 'entities', category: 'sensor_site', count: 1 },
+    { producer: 'spiderweb-pr', stream: 'entities', category: 'mineral_occurrence', count: 1 },
+  ],
+  precision_counts: { INTERPRETED_POINT: 1, OBSERVED_POINT: 1, REPRESENTATIVE_POINT: 1 },
+  coordinates_without_point_precision: { 'ovnis-pr': 5 },
+  not_drawn: [{ producer: 'ovnis-pr', stream: 'observations', category: 'uap_case', count: 6,
+    coordinates_without_point_precision: 5, municipality_recorded: 4, object_type_counts: { Mutilation: 2, UAP: 4 } }],
+  area_references: [
+    { producer: 'ovnis-pr', stream: 'observations', category: 'uap_case', municipality_as_recorded: 'southwest', count: 2, object_type_counts: { UAP: 2 } },
+    { producer: 'ovnis-pr', stream: 'observations', category: 'uap_case', municipality_as_recorded: 'vieques', count: 2, object_type_counts: { Mutilation: 1, UAP: 1 } },
+  ],
+};
+const SPATIAL_INTEL = {
+  contract: 'federation-spatial-features-v1', point: { lat: 18.4, lon: -66.1 }, radius_m: 1000, nearby_total: 1,
+  nearby: [{ ...SPATIAL_FEATURES.features[0].properties, distance_m: 0, distance_basis: 'distance to a representative point, not to the feature itself' }],
+  nearby_truncated: false, category_counts: { CONTAMINATION: 1 }, municipality: null, municipality_area_references: [],
+  distance_basis: 'great-circle distance to each mapped point',
+};
+
+// TIGERweb municipios 2025 (count gate: 78). Vieques is real-shaped; the rest are
+// small offshore squares so the gate and identity checks see a full layer.
+function municipioPage() {
+  const square = (minLon, minLat, size) => [[[minLon, minLat], [minLon + size, minLat], [minLon + size, minLat + size], [minLon, minLat + size], [minLon, minLat]]];
+  const features = [{ type: 'Feature', properties: { OBJECTID: 1, NAME: 'Vieques Municipio', BASENAME: 'Vieques', GEOID: '72147' },
+    geometry: { type: 'Polygon', coordinates: square(-65.6, 18.05, 0.15) } }];
+  for (let i = 2; i <= 78; i += 1) {
+    features.push({ type: 'Feature', properties: { OBJECTID: i, NAME: `Municipio ${i} Municipio`, BASENAME: `Municipio ${i}` },
+      geometry: { type: 'Polygon', coordinates: square(-68 + i * 0.01, 17.0, 0.005) } });
+  }
+  return { type: 'FeatureCollection', features };
+}
+
+async function mockMapProviders(page) {
+  await page.route(/basemaps\.cartocdn\.com|tile\.openstreetmap\.org|basemap\.nationalmap\.gov/, (route) => route.fulfill({ status: 204 }));
+  await page.route('https://tigerweb.geo.census.gov/**', (route) => {
+    const body = route.request().url().includes('returnCountOnly') ? { count: 78 } : municipioPage();
+    return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
+  });
+}
+
+test.describe('property map', () => {
+  test('is reachable from the GIS workspace, draws by declared precision and outlines only municipios', async ({ page }) => {
+    await mockApi(page, { '/spatial/intel': SPATIAL_INTEL, '/spatial/features': SPATIAL_FEATURES });
+    await mockMapProviders(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'GIS Workspace', exact: true }).click();
+    await page.getByRole('button', { name: 'Property Map', exact: true }).click();
+    await expect(page).toHaveURL(/\/gis\?view=property-map$/);
+    await expect(page.locator('[data-property-map-summary]')).toContainText('3 of 10 loaded records drawn · 6 not drawn · 1 synthetic excluded');
+    const canvas = page.getByTestId('property-map-canvas');
+    await expect(canvas).toHaveAttribute('data-map-ready', 'true', { timeout: 30000 });
+    await expect(canvas).toHaveAttribute('data-feature-count', '3');
+
+    const area = page.locator('[data-area-references]');
+    await expect(area.locator('[data-area-reference-counter]')).toHaveText('2 of 6 record no municipality and are not mapped; 4 record a place value.');
+    await area.getByRole('button', { name: 'Load municipio boundaries (TIGERweb 2025)' }).click();
+    await expect(area.locator('[data-outlined-municipio="Vieques"]')).toContainText('Vieques: 2 (recorded as vieques)');
+    await expect(area.locator('[data-unmatched-values]')).toContainText('“southwest”: 2');
+    await expect(page.locator('[data-boundary-provenance]')).toContainText(/Snapshot SHA-256 [0-9a-f]{64}/);
+
+    await page.getByRole('button', { name: /Boil water notice/ }).click();
+    await expect(page.locator('[data-selected-precision="REPRESENTATIVE_POINT"]')).toContainText('Representative point');
+    await expect(page.locator('[data-intel-total]')).toContainText('1 mapped record within 1.00 km');
+    await expect(page.locator('[data-intel-row="evo:alerts:alrt_c"]')).toContainText('not to the feature itself');
+
+    await canvas.click({ position: { x: 40, y: 40 } });
+    await expect(page.locator('[data-intel-point]')).toBeVisible();
+  });
+
+  test('a map deep link starts Location Intel at the linked point', async ({ page }) => {
+    await mockApi(page, { '/spatial/intel': SPATIAL_INTEL, '/spatial/features': SPATIAL_FEATURES });
+    await mockMapProviders(page);
+    await page.goto('/gis?view=property-map&lat=18.1&lon=-65.4');
+    await expect(page.locator('[data-intel-point]')).toHaveText('18.10000, -65.40000 (WGS84)');
+    await expect(page.locator('[data-intel-municipio]')).toHaveText('Not determined: the municipio boundary layer is not loaded.');
+    await expect(page.locator('[data-intel-total]')).toContainText('1 mapped record within 1.00 km');
+  });
+});
