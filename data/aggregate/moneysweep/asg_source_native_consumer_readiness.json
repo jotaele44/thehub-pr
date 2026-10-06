@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "thehub.moneysweep-asg-consumer-readiness/v1",
+  "state": "WAITING_ON_PRODUCER_PACKAGE",
+  "producer": "moneysweep-pr",
+  "scopeId": "moneysweep.leaderboard.asg-source-native-v1",
+  "rankingContractVersion": "moneysweep.leaderboard/v1.1",
+  "ontologyContractVersion": "moneysweep.financial-category-ontology/v1.2",
+  "categoryId": "asg_emergency_purchase_source_native",
+  "metricType": "ASG_EMERGENCY_PURCHASE_COST",
+  "identityState": "SOURCE_NATIVE_ASG_LICITADOR_ID",
+  "expectedAccounting": {
+    "inputRecords": 1431,
+    "outOfScopeRecords": 1410,
+    "retainedRecords": 21,
+    "excludedRecords": 0,
+    "unresolvedRecords": 0,
+    "inScopeRecords": 21,
+    "arithmeticClosed": true,
+    "candidateCount": 10
+  },
+  "consumerAuthority": "READ_ONLY_NO_RANK_RECOMPUTATION",
+  "packagePath": "data/aggregate/moneysweep/asg_source_native_leaderboard_package.json",
+  "trustPath": "data/aggregate/moneysweep/asg_source_native_leaderboard_trust.json",
+  "packageMounted": false,
+  "trustFrozen": false,
+  "promotionAuthorized": false,
+  "blockingResidue": [
+    {
+      "id": "PRODUCER_CERTIFIED_PACKAGE",
+      "state": "OPEN",
+      "reason": "MoneySweep has not yet emitted the exact PASS ASG package because its exact repository-runtime snapshot/certification execution remains open."
+    },
+    {
+      "id": "EXACT_FOUR_HASH_TRUST",
+      "state": "WAITING_ON_PRODUCER_PACKAGE",
+      "reason": "Receipt, release, scope and package SHA-256 values are not available until producer certification/package emission closes."
+    }
+  ],
+  "rules": {
+    "debtTrustDoesNotAuthorizeASG": true,
+    "nameOnlyIdentityRejected": true,
+    "canonicalEntityPromotionRejected": true,
+    "sourceOrderingMustBeNumerocontrol": true,
+    "fullSourceAccountingMustMatch": true,
+    "producerRowsMustNotBeRecomputed": true,
+    "spiderwebRemainsGeometryAuthority": true
+  }
+}
