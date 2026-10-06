@@ -61,15 +61,26 @@ function addLayers(map) {
   });
 }
 
+function sameView(a, b) {
+  return Math.abs(a.center[0] - b.center[0]) < 1e-7 && Math.abs(a.center[1] - b.center[1]) < 1e-7
+    && Math.abs(a.zoom - b.zoom) < 1e-4 && Math.abs((a.bearing || 0) - (b.bearing || 0)) < 1e-3;
+}
+
+// Optional `view`/`onViewChange` make the camera controlled, so several panels
+// can follow one shared view (Digital Twin); a view this map just published is
+// never re-applied to it.
 export default function PropertyMapCanvas({
   basemap, initialView, features, paint, outline, selectedId, intelPoint, radiusM, focusPoint, onSelectFeature, onPickPoint,
+  view, onViewChange, testId = 'property-map-canvas',
+  label = 'Property Map. Every mapped record is also listed under Mapped records.',
 }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
-  const handlers = useRef({ onSelectFeature, onPickPoint });
+  const applyingRef = useRef(false);
+  const handlers = useRef({ onSelectFeature, onPickPoint, onViewChange });
   const [ready, setReady] = useState(false);
   const [drawn, setDrawn] = useState(0);
-  handlers.current = { onSelectFeature, onPickPoint };
+  handlers.current = { onSelectFeature, onPickPoint, onViewChange };
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return undefined;
@@ -94,8 +105,13 @@ export default function PropertyMapCanvas({
     });
     map.on('click', (event) => {
       const hit = map.getLayer(FEATURES) ? map.queryRenderedFeatures(event.point, { layers: [FEATURES] })[0] : null;
-      if (hit?.properties?.evidence_id) handlers.current.onSelectFeature(hit.properties.evidence_id);
-      else handlers.current.onPickPoint({ lon: event.lngLat.lng, lat: event.lngLat.lat });
+      if (hit?.properties?.evidence_id) handlers.current.onSelectFeature?.(hit.properties.evidence_id);
+      else handlers.current.onPickPoint?.({ lon: event.lngLat.lng, lat: event.lngLat.lat });
+    });
+    map.on('moveend', () => {
+      if (applyingRef.current || !handlers.current.onViewChange) return;
+      const center = map.getCenter();
+      handlers.current.onViewChange({ center: [center.lng, center.lat], zoom: map.getZoom(), bearing: map.getBearing() });
     });
     map.on('mouseenter', FEATURES, () => { map.getCanvas().style.cursor = 'pointer'; });
     map.on('mouseleave', FEATURES, () => { map.getCanvas().style.cursor = ''; });
@@ -129,15 +145,26 @@ export default function PropertyMapCanvas({
     if (ready && focusPoint) mapRef.current?.easeTo({ center: [focusPoint.lon, focusPoint.lat] });
   }, [ready, focusPoint]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map || !view) return;
+    const center = map.getCenter();
+    if (sameView(view, { center: [center.lng, center.lat], zoom: map.getZoom(), bearing: map.getBearing() })) return;
+    applyingRef.current = true;
+    // jumpTo fires moveend synchronously, so the reset is registered first.
+    map.once('moveend', () => { applyingRef.current = false; });
+    map.jumpTo({ center: view.center, zoom: view.zoom, bearing: view.bearing || 0 });
+  }, [ready, view]);
+
   return (
     <div
       ref={containerRef}
-      data-testid="property-map-canvas"
+      data-testid={testId}
       data-map-ready={ready ? 'true' : 'false'}
       data-feature-count={features.length}
       data-drawn-count={drawn}
       role="region"
-      aria-label="Property Map. Every mapped record is also listed under Mapped records."
+      aria-label={label}
       className="h-full w-full"
     />
   );

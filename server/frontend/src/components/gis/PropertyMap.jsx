@@ -33,7 +33,7 @@ const control = 'min-h-[44px] rounded-md border border-border bg-background px-2
 const button = 'min-h-[44px] rounded-md border border-border px-3 text-sm font-medium hover:bg-muted disabled:opacity-50';
 
 // Drawn on the map's dark backdrop so the legend and list show each marker as the map does.
-function PrecisionMarker({ marker, color = '#cbd5e1' }) {
+export function PrecisionMarker({ marker, color = '#cbd5e1' }) {
   return (
     <svg aria-hidden="true" width="18" height="18" viewBox="0 0 18 18" className="shrink-0">
       <rect width="18" height="18" rx="3" fill="#1e293b" />
@@ -230,7 +230,7 @@ function LayerProvenance({ data, basemap, boundary }) {
   );
 }
 
-function SelectedRecord({ feature }) {
+export function SelectedRecord({ feature }) {
   if (!feature) return null;
   const props = feature.properties;
   const style = precisionStyle(props.geometry_precision);

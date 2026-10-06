@@ -1,14 +1,17 @@
 import React from 'react';
 
-// `/gis?view=property-map` opens the Property Map (Phase 5); the workbench stays
-// the default view, so existing /gis links keep working.
+// `/gis?view=property-map` opens the Property Map and `/gis?view=digital-twin` the
+// Digital Twin (Phase 5); the workbench stays the default view, so existing /gis
+// links keep working.
 export const GIS_VIEWS = Object.freeze([
   Object.freeze({ id: 'workbench', label: 'Workbench' }),
   Object.freeze({ id: 'property-map', label: 'Property Map' }),
+  Object.freeze({ id: 'digital-twin', label: 'Digital Twin' }),
 ]);
 
 export function gisViewFrom(searchParams) {
-  return searchParams.get('view') === 'property-map' ? 'property-map' : 'workbench';
+  const view = searchParams.get('view');
+  return GIS_VIEWS.some((item) => item.id === view) ? view : 'workbench';
 }
 
 export default function GisViewSwitch({ view, setSearchParams }) {
@@ -21,6 +24,7 @@ export default function GisViewSwitch({ view, setSearchParams }) {
           onClick={() => setSearchParams((previous) => {
             const next = new URLSearchParams(previous);
             if (item.id === 'workbench') next.delete('view'); else next.set('view', item.id);
+            next.delete('panel');
             return next;
           })}
         >{item.label}</button>

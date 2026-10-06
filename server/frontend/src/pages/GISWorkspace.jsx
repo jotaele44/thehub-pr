@@ -7,6 +7,7 @@ import { BASEMAPS } from '@/gis/basemaps';
 import { compareRendererEquivalence, createCanonicalMapState, switchRenderMode } from '@/gis/contracts';
 import { initialMapState } from '@/gis/deepLinkView';
 import GisViewSwitch, { gisViewFrom } from '@/components/gis/GisViewSwitch';
+import DigitalTwin from '@/components/gis/DigitalTwin';
 import PropertyMap from '@/components/gis/PropertyMap';
 import { buildRasterPreview } from '@/gis/rasterPreview';
 import RendererSurface from '@/gis/renderers/RendererSurface';
@@ -178,7 +179,7 @@ export default function GISWorkspace() {
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2"><Layers className="h-5 w-5" /><h1 className="text-xl font-semibold">Federation GIS Workspace</h1></div>
-          <p className="mt-1 text-sm text-muted-foreground">{view === 'property-map' ? 'Hub-held records on the map, by declared precision, with Location Intel and layer provenance.' : 'Device or authoritative online acquisition → RAW/query/snapshot provenance → renderer-independent canonical state.'}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{view === 'digital-twin' ? 'Hub-held records over uniform-datum terrain, in synchronized panels with temporal playback and export.' : view === 'property-map' ? 'Hub-held records on the map, by declared precision, with Location Intel and layer provenance.' : 'Device or authoritative online acquisition → RAW/query/snapshot provenance → renderer-independent canonical state.'}</p>
           {deepLink.notice ? <p role="status" className="mt-1 text-xs text-muted-foreground" data-map-deep-link>{deepLink.notice}</p> : null}
         </div>
         <div className="rounded-lg border border-border bg-card px-3 py-2 text-xs">
@@ -189,9 +190,11 @@ export default function GISWorkspace() {
 
       <GisViewSwitch view={view} setSearchParams={setSearchParams} />
 
+      {view === 'digital-twin' ? <DigitalTwin /> : null}
       {view === 'property-map' ? (
         <PropertyMap initialView={canonicalViewToMapLibre(mapState.view)} initialPoint={linkedPoint} />
-      ) : (
+      ) : null}
+      {view === 'workbench' ? (
       <section className="grid gap-4 xl:grid-cols-[390px_minmax(0,1fr)]">
         <aside className="space-y-4 rounded-xl border border-border bg-card p-4">
           <div>
@@ -237,7 +240,7 @@ export default function GISWorkspace() {
           {rasterPreview ? <div className="pointer-events-none absolute bottom-3 left-3 max-w-[70%] rounded bg-background/90 px-2 py-1 text-[10px] text-muted-foreground">Raster visualization is a bounded STAC-footprint rectification preview; full-file byte identity and pixel-level reprojection remain OPEN.</div> : null}
         </div>
       </section>
-      )}
+      ) : null}
     </div>
   );
 }

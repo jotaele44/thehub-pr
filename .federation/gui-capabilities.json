@@ -576,6 +576,68 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "digital-twin",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Digital Twin at /gis?view=digital-twin (TWIN-005/057/058/144/150..163, FDX-023/030/031; Phase 5, P5-B): four panels on one shared camera and selection (Cesium perspective over uniform-datum NOAA CUDEM m9525 terrain, PRVD02, bound only because the 3D source gate certifies it; MapLibre ortho; USGS orthoimagery; details), each maximizable through ?panel= and fullscreen. Time playback over each record's span at its recorded precision (undated records counted, never placed in time), findings and live/current toggles whose counters say why a zero is a zero, the selected record's CUDEM elevation with its datum and source tile, DEM and imagery provenance, and GeoJSON and USD (.usda) exports of exactly what is shown with export provenance (not certified).",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:time_span",
+          "src/hub/spatial_features.py:build_features",
+          "src/hub/spatial_features.py:feature"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/DigitalTwin.jsx",
+          "server/frontend/src/components/gis/DigitalTwinPerspective.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/digitalTwin.js",
+          "server/frontend/src/gis/cudem.js",
+          "server/frontend/src/gis/cudemTerrainProvider.js",
+          "server/frontend/src/gis/advanced3dSourceRegistry.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/digitalTwin.test.js",
+          "server/frontend/src/gis/cudem.test.js",
+          "server/frontend/src/gis/cudemTerrainProvider.test.js",
+          "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
+          "server/frontend/src/components/gis/DigitalTwin.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
     }
   ],
   "exceptions": []
