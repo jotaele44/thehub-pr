@@ -92,5 +92,6 @@ Run 2 delivers Phase 4 (OVNIS) and Phase 5 (Spiderweb). Its records are marked `
 | Event timeline (`/timeline`) | [`EVENT_TIMELINE_V1.md`](EVENT_TIMELINE_V1.md) |
 | Research Hub (`/research`), case reconstruction (`/research/case/:caseId`), and the `/ovnis` reports workspace and show log | [`RESEARCH_HUB_V1.md`](RESEARCH_HUB_V1.md) |
 | Property Map (`/gis?view=property-map`): precision-styled records, Location Intel, municipality-level OVNIS cases and layer provenance (Phase 5, P5-A) | [`PROPERTY_MAP_V1.md`](PROPERTY_MAP_V1.md) |
+| Digital Twin (`/gis?view=digital-twin`): four synchronized panels over uniform-datum NOAA CUDEM terrain, DEM and imagery provenance, temporal playback, honest finding and live counters, and GeoJSON/USD export (Phase 5, P5-B) | [`DIGITAL_TWIN_V1.md`](DIGITAL_TWIN_V1.md) |
 
 OVNIS owns the research record. Its ledgers, validator, duplicate candidates and case reports are documented in the [ovnis-pr research-ledger doc](https://github.com/jotaele44/ovnis-pr/blob/main/docs/RESEARCH_LEDGERS.md).

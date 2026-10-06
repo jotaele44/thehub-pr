@@ -38,7 +38,7 @@ VITE_FEDERATION_MODE=diagnostic
 | `GET /api/research` | yes — OVNIS research overview (per-kind totals, topic cards) |
 | `GET /api/research/records/:kind` | yes — one research kind, paged (`status`, `origin`, `include_synthetic`, `limit`, `cursor`); 422 for an unknown kind |
 | `GET /api/research/case/:caseId` | yes — case reconstruction; 404 for a case the Hub does not hold |
-| `GET /api/spatial/features` | yes — Property Map features by declared precision, plus an account of records not drawn (`bbox`, `category`, `producer`, `include_synthetic`, `limit`); 422 on a bad `bbox` |
+| `GET /api/spatial/features` | yes — Property Map and Digital Twin features by declared precision, each with its time at the recorded precision (`time_start`, `time_end`, `time_basis`, `temporal_state`), plus an account of records not drawn and the collection's `time_extent`, `undated` and `read_at` (`bbox`, `category`, `producer`, `include_synthetic`, `limit`); 422 on a bad `bbox` |
 | `GET /api/spatial/intel` | yes — Location Intel: records within `radius_m` of `lat`,`lon`, nearest first, and records naming `municipality`; 422 on a bad parameter |
 | `POST /api/entities/:entity/filter` | yes (a read, despite the verb) |
 | `POST /api/entities/:entity` | yes — **write-guarded** |

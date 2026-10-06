@@ -1,7 +1,8 @@
 # Property Map v1 (candidate)
 
 TheHub's Property Map is the `property-map` view of the GIS workspace, opened at
-`/gis?view=property-map`. It places the records the Hub store holds on a map, but only where a
+`/gis?view=property-map`. The workspace's view switch has three views: the workbench (the default),
+the Property Map and the Digital Twin ([`DIGITAL_TWIN_V1.md`](DIGITAL_TWIN_V1.md)). It places the records the Hub store holds on a map, but only where a
 producer declared how the position was obtained. It answers "what does the Hub hold here" through
 Location Intel. Each layer states its provenance.
 
@@ -121,7 +122,7 @@ The provenance panel names each layer.
 | Hub records | Contract and counts |
 | Basemap | Provider, attribution and coverage note. A basemap is display context, never an evidence layer |
 | Municipio boundaries | Provider and authority, registry certification, this acquisition's gate status, CRS, retrieval time, and the SHA-256 snapshot and query-receipt hashes |
-| Elevation | "No elevation model is used in this view." Terrain and its DEM provenance arrive with the Digital Twin view |
+| Elevation | "No elevation model is used in this view." Terrain and its DEM provenance are in the Digital Twin view |
 
 Basemaps (`server/frontend/src/gis/basemaps.js`):
 
@@ -148,6 +149,10 @@ The fix is in two files:
 The canvas reports `data-drawn-count`: what MapLibre actually drew in view, not what it was given.
 The E2E asserts that count, so a missing worker fails the test.
 
+`server/frontend/src/components/gis/PropertyMapCanvas.jsx` also takes an optional controlled
+`view` and `onViewChange`. The Digital Twin uses them so its two map panels follow one shared
+camera. A view the canvas has just applied is not published back.
+
 ## Not built in this view
 
 - **Findings on the map.** No finding record carries geometry; the OVNIS findings ledger is empty.
@@ -155,7 +160,7 @@ The E2E asserts that count, so a missing worker fails the test.
   is drawn. Precision classes are styled instead.
 - **A live cursor-coordinate readout.**
 - **Barrio names.** The barrio boundary source is not live-certified in the registry.
-- **Elevation, terrain and the 3D view.** These are Phase 5, P5-B.
+- **Elevation, terrain and the 3D view.** These are in the Digital Twin view (Phase 5, P5-B).
 - **Interpretive and subsurface layers, and AOI comparison.** These are Phase 5, P5-C.
 
 ## Tests

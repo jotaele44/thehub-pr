@@ -47,6 +47,16 @@ def test_features_are_declared_points_only(client):
     assert body["loaded"] == body["matched"] + body["excluded_synthetic"] + body["outside_bbox"] + not_drawn
 
 
+def test_features_carry_time_at_recorded_precision(client):
+    body = client.get("/api/spatial/features").json()
+    dated = [f["properties"] for f in body["features"] if f["properties"]["time_start"]]
+    assert body["undated"] == body["matched"] - len(dated) > 0
+    assert body["time_extent"]["start"] == min(p["time_start"] for p in dated)
+    assert all(p["time_start"] <= p["time_end"] for p in dated)
+    # No producer in the committed store declares a live cadence, so nothing is LIVE.
+    assert not any(f["properties"]["temporal_state"] == "LIVE" for f in body["features"])
+
+
 def test_ovnis_references_are_passed_through_as_recorded(client):
     body = client.get("/api/spatial/features").json()
     refs = [r for r in body["area_references"] if r["producer"] == "ovnis-pr"]

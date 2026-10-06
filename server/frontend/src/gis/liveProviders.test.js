@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { acquireOnlineSource, acquireRasterAsset } from './acquisitionFacade';
 import { getOnlineSourceDefinition } from './sourceRegistry';
+import { CUDEM_PR, CUDEM_TILES, elevationAt, openTile, tileBounds } from './cudem';
 
 const runLive = process.env.GIS_LIVE_PROVIDER_TESTS === '1';
 const live = runLive ? describe : describe.skip;
@@ -90,5 +91,29 @@ live('live authoritative GIS providers', () => {
     expect(result.certification.status).toBe('PASS');
     expect(result.candidates.length).toBeGreaterThan(0);
     console.log('GIS_LIVE_DISCOVERY', JSON.stringify({ sourceId: 'noaa-pr-naip-2021-2023-stac', candidates: result.candidates.length, snapshotSha256: result.snapshotSha256 }));
+  }, 120000);
+
+  it('NOAA CUDEM Puerto Rico (m9525) is a uniform-datum cloud-optimized DEM the browser can read', async () => {
+    // GNIS 1609905, Cerro de Punta summit (Puerto Rico's highest point).
+    const summit = { lat: 18.172281, lon: -66.5916862 };
+    const tile = CUDEM_TILES.find((item) => item.bbox[0] <= summit.lon && summit.lon <= item.bbox[2]
+      && item.bbox[1] <= summit.lat && summit.lat <= item.bbox[3]);
+    const tiff = await openTile(tile.url);
+    const first = await tiff.getImage();
+    expect(await tiff.getImageCount()).toBe(5); // full resolution + 4 overviews
+    expect(first.getTileWidth()).toBe(512);
+    expect(Number(first.getGDALNoData())).toBe(CUDEM_PR.nodata);
+    // The tile name is its north-west corner (the tiepoint sits half a pixel out).
+    const [west, , , north] = tileBounds(tile.name);
+    const [originX, originY] = first.getOrigin();
+    expect(Math.abs(originX - west)).toBeLessThan(0.001);
+    expect(Math.abs(originY - north)).toBeLessThan(0.001);
+    const peak = await elevationAt(summit.lon, summit.lat);
+    expect(peak.metres).toBeGreaterThan(1000);
+    expect(peak.metres).toBeLessThan(1400);
+    // Offshore north-west of Puerto Rico the topobathy surface is below the datum.
+    const offshore = await elevationAt(-66.9, 18.6);
+    expect(offshore.metres).toBeLessThan(0);
+    console.log('GIS_LIVE_DEM', JSON.stringify({ sourceId: CUDEM_PR.sourceId, summit: peak, offshore }));
   }, 120000);
 });

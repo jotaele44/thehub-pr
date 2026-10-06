@@ -12,9 +12,13 @@ bbox are refused.
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 import pytest
 
 from hub import spatial_features as sf
+
+NOW = datetime(2026, 10, 4, 12, 0, tzinfo=timezone.utc)
 
 
 def _entity(record_id, lat=None, lon=None, precision=None, *, producer="aguayluz-pr", entity_type="utility_asset",
@@ -137,3 +141,62 @@ def test_nearby_orders_by_distance_and_respects_radius():
     assert [p["record_id"] for p in within] == ["near", "mid"]
     assert 10 < within[0]["distance_m"] < 12 and 550 < within[1]["distance_m"] < 560
     assert sf.parse_bbox(None) is None
+
+
+def _observation(record_id, *, precision=None, **fields):
+    row = {"observation_id": record_id, "observation_type": "uap_case", "_producers": ["ovnis-pr"],
+           "location": {"lat": 18.2, "lon": -66.5},
+           "evidence_state": {"geometry_precision": "OBSERVED_POINT", **({"temporal_precision": precision} if precision else {})},
+           **fields}
+    return ("observations", "Observations", row)
+
+
+def test_each_date_spans_its_declared_precision():
+    rows = [
+        _observation("obs_year", precision="YEAR_ONLY", date_local="1952",
+                     observed_at="1952-01-01T00:00:00-04:00"),
+        _observation("obs_month", precision="MONTH_YEAR", date_local="1972-03"),
+        _observation("obs_day", precision="DATE_ONLY", date_local="2001-02-03"),
+        _observation("obs_instant", precision="EXACT_TIMESTAMP", observed_at="2019-10-01T04:00:00Z"),
+        _observation("obs_undated"),
+    ]
+    props = {f["properties"]["record_id"]: f["properties"] for f in sf.build_features(rows, now=NOW)["features"]}
+    year = props["obs_year"]
+    # A year-only case stays a whole year: the producer's padded timestamp is not an instant.
+    assert (year["observed_at"], year["time_start"], year["time_end"]) == (
+        "1952", "1952-01-01T00:00:00.000Z", "1952-12-31T23:59:59.999Z")
+    assert year["time_basis"].startswith("whole year")
+    assert (props["obs_month"]["time_start"], props["obs_month"]["time_end"]) == (
+        "1972-03-01T00:00:00.000Z", "1972-03-31T23:59:59.999Z")
+    assert props["obs_day"]["time_end"] == "2001-02-03T23:59:59.999Z"
+    assert props["obs_instant"]["time_start"] == props["obs_instant"]["time_end"] == "2019-10-01T04:00:00.000Z"
+    assert props["obs_undated"]["time_start"] is None and props["obs_undated"]["time_basis"] == "undated"
+
+
+def test_validity_window_extent_and_undated_count():
+    rows = [
+        ("alerts", "Alerts", {"alert_id": "alrt_1", "module": "CONTAMINATION", "_producers": ["aguayluz-pr"],
+                              "location": {"lat": 18.1, "lon": -66.1}, "start_at": "2019-10-01T00:00:00Z",
+                              "end_at": "2019-12-31T00:00:00Z",
+                              "evidence_state": {"geometry_precision": "REPRESENTATIVE_POINT"}}),
+        _observation("obs_undated"),
+    ]
+    body = sf.build_features(rows, now=NOW)
+    alert = next(f["properties"] for f in body["features"] if f["properties"]["record_id"] == "alrt_1")
+    assert (alert["valid_from"], alert["valid_to"]) == ("2019-10-01T00:00:00Z", "2019-12-31T00:00:00Z")
+    assert alert["time_basis"] == "validity window as recorded"
+    assert alert["temporal_state"] == "HISTORICAL"  # the window closed before NOW
+    assert body["time_extent"] == {"start": "2019-10-01T00:00:00.000Z", "end": "2019-12-31T00:00:00.000Z"}
+    assert body["undated"] == 1 and body["read_at"] == "2026-10-04T12:00:00.000Z"
+
+
+def test_live_needs_a_declared_cadence():
+    live = _observation("obs_live", precision="EXACT_TIMESTAMP", observed_at="2026-10-04T11:59:00Z")
+    live[2]["evidence_state"].update({"expected_cadence_seconds": 300, "live_feed": True})
+    undeclared = _observation("obs_recent", precision="EXACT_TIMESTAMP", observed_at="2026-10-04T11:59:00Z")
+    props = {f["properties"]["record_id"]: f["properties"]
+             for f in sf.build_features([live, undeclared], now=NOW)["features"]}
+    assert props["obs_live"]["temporal_state"] == "LIVE"
+    # Recent but without a declared cadence: never called live.
+    assert props["obs_recent"]["temporal_state"] == "HISTORICAL"
+    assert sf.build_features([], now=NOW)["time_extent"] is None

@@ -447,3 +447,83 @@ test.describe('property map', () => {
     await expect(page.locator('[data-intel-total]')).toContainText('1 mapped record within 1.00 km');
   });
 });
+
+// Digital Twin: CUDEM tiles are synthesized per requested tile name (bounds from
+// the name, like the real NOAA tiles) and served the way NOAA's S3 bucket serves
+// them (206 for one byte range, CORS open, Content-Range not exposed), so the
+// real reader, terrain provider and elevation readout run without the network.
+const TWIN_FEATURES = {
+  ...SPATIAL_FEATURES,
+  undated: 1,
+  time_extent: { start: '2001-02-03T00:00:00.000Z', end: '2019-12-31T00:00:00.000Z' },
+  features: [
+    { ...SPATIAL_FEATURES.features[0], properties: { ...SPATIAL_FEATURES.features[0].properties, time_start: '2019-10-01T00:00:00.000Z', time_end: '2019-12-31T00:00:00.000Z', temporal_state: 'HISTORICAL' } },
+    { ...SPATIAL_FEATURES.features[1], properties: { ...SPATIAL_FEATURES.features[1].properties, time_start: null, time_end: null, temporal_state: 'UNKNOWN' } },
+    { ...SPATIAL_FEATURES.features[2], properties: { ...SPATIAL_FEATURES.features[2].properties, time_start: '2001-02-03T00:00:00.000Z', time_end: '2001-02-03T23:59:59.999Z', temporal_state: 'HISTORICAL' } },
+  ],
+};
+
+async function mockCudem(page) {
+  const { writeArrayBuffer } = await import('geotiff');
+  const { tileBounds } = await import('../../src/gis/cudem.js');
+  await page.route('https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/**', (route) => {
+    const name = route.request().url().split('/').pop();
+    const [west, south, east, north] = tileBounds(name);
+    const pixels = 64;
+    const values = new Float32Array(pixels * pixels).map((_, index) => 100 + Math.floor(index / pixels) * 10);
+    const file = Buffer.from(writeArrayBuffer(values, {
+      width: pixels, height: pixels, BitsPerSample: [32], SampleFormat: [3],
+      ModelPixelScale: [(east - west) / pixels, (north - south) / pixels, 0],
+      ModelTiepoint: [0, 0, 0, west, north, 0], GeographicTypeGeoKey: 4269,
+    }));
+    const range = /^bytes=(\d+)-(\d+)$/.exec(route.request().headers().range || '');
+    if (!range) return route.fulfill({ status: 200, contentType: 'image/tiff', headers: { 'Access-Control-Allow-Origin': '*' }, body: file });
+    const start = Number(range[1]);
+    const end = Math.min(Number(range[2]), file.length - 1);
+    return route.fulfill({
+      status: 206, contentType: 'image/tiff', body: file.subarray(start, end + 1),
+      headers: { 'Access-Control-Allow-Origin': '*', 'Content-Range': `bytes ${start}-${end}/${file.length}` },
+    });
+  });
+}
+
+test.describe('digital twin', () => {
+  test('is reachable from the GIS workspace, binds uniform-datum terrain and keeps panels in step', async ({ page }) => {
+    // Cesium (lazy-loaded, software WebGL in CI) plus three other panels exceed the 30 s default.
+    test.setTimeout(120000);
+    await mockApi(page, { '/spatial/features': TWIN_FEATURES });
+    await mockMapProviders(page);
+    await mockCudem(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'GIS Workspace', exact: true }).click();
+    await page.getByRole('button', { name: 'Digital Twin', exact: true }).click();
+    await expect(page).toHaveURL(/\/gis\?view=digital-twin$/);
+
+    const perspective = page.getByTestId('digital-twin-perspective');
+    await expect(perspective).toHaveAttribute('data-ready', 'true', { timeout: 30000 });
+    await expect(perspective).toHaveAttribute('data-terrain', 'noaa-ncei-cudem-pr-ninth-m9525');
+    await expect(page.getByTestId('digital-twin-ortho')).toHaveAttribute('data-map-ready', 'true', { timeout: 30000 });
+    await expect(page.getByTestId('digital-twin-ortho')).toHaveAttribute('data-drawn-count', /^[1-9]/, { timeout: 30000 });
+    await expect(page.locator('[data-dt-findings-status]')).toContainText('No finding carries geometry');
+    await expect(page.locator('[data-dt-live-status]')).toContainText('No producer declares a live cadence');
+    await expect(page.locator('[data-dt-terrain-status]')).toContainText('bound (uniform vertical datum)');
+
+    await page.locator('[data-dt-record="evo:entities:ent_m"]').click();
+    await expect(page.locator('[data-dt-elevation]')).toContainText(/m PRVD02 · CUDEM m9525/, { timeout: 30000 });
+    await expect(page.locator('[data-dt-terrain-tiles]')).toContainText('ncei19_', { timeout: 30000 });
+
+    await page.getByRole('slider', { name: 'Time' }).fill(String(Date.parse('2005-01-01T00:00:00Z')));
+    await expect(page.locator('[data-dt-counts]')).toContainText('2 shown · 1 outside the time window · 1 undated');
+
+    await page.getByRole('button', { name: 'Maximize Perspective' }).click();
+    await expect(page).toHaveURL(/\/gis\?view=digital-twin&panel=perspective$/);
+    await expect(page.locator('[data-dt-panel="ortho"]')).toBeHidden();
+    await page.getByRole('button', { name: 'Restore Perspective' }).click();
+    await expect(page.locator('[data-dt-panel="ortho"]')).toBeVisible();
+
+    const [geojson] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Export GeoJSON' }).click()]);
+    expect(geojson.suggestedFilename()).toBe('digital-twin.geojson');
+    const [usd] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Export USD' }).click()]);
+    expect(usd.suggestedFilename()).toBe('digital-twin.usda');
+  });
+});
