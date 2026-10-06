@@ -107,6 +107,12 @@ Cesium 1.144 with no ion token. It is lazy-loaded.
 - **Records.** Records are clamped to the ground and styled by declared precision, in the same
   classes as the Property Map. Picking a record selects it.
 - **Rendering.** Cesium renders only when something changes (`requestRenderMode`).
+- **Cesium's runtime files.** Cesium fetches its workers, assets and widget CSS by URL from
+  `/cesium/`, which the build copies into `dist/cesium`. The Hub's backend
+  (`server/backend/main_core.py`, `_mount_static_dirs`) serves that directory as files beside
+  `assets/`. Before this change those requests got the SPA shell, so no 3D view, including the
+  workbench's, could start when the backend served the build. The Vite preview used by the E2E
+  served them correctly, which is why only the live check found it.
 
 ## Panels and synchronization
 
