@@ -15,6 +15,7 @@ import sys
 from server.backend import main_core as _core
 from server.backend.gis_proxy import router as _gis_proxy_router
 from server.backend.moneysweep_leaderboards import router as _moneysweep_leaderboards_router
+from server.backend.moneysweep_asg_leaderboards import router as _moneysweep_asg_leaderboards_router
 
 _PROXY_PATH = "/api/gis/proxy"
 
@@ -75,6 +76,20 @@ if not any(getattr(route, "path", None) == _LEADERBOARD_STATUS_PATH for route in
     )
 if not any(getattr(route, "path", None) == _LEADERBOARD_STATUS_PATH for route in _core.app.routes):
     raise RuntimeError("MoneySweep leaderboard consumer route failed to mount on canonical FastAPI app")
+
+_ASG_LEADERBOARD_STATUS_PATH = "/api/moneysweep/asg-leaderboards/status"
+
+if not any(getattr(route, "path", None) == _ASG_LEADERBOARD_STATUS_PATH for route in _core.app.routes):
+    _core.app.include_router(_moneysweep_asg_leaderboards_router)
+if not any(getattr(route, "path", None) == _ASG_LEADERBOARD_STATUS_PATH for route in _core.app.routes):
+    existing = {getattr(route, "path", None) for route in _core.app.routes}
+    _core.app.router.routes.extend(
+        route
+        for route in _moneysweep_asg_leaderboards_router.routes
+        if getattr(route, "path", None) not in existing
+    )
+if not any(getattr(route, "path", None) == _ASG_LEADERBOARD_STATUS_PATH for route in _core.app.routes):
+    raise RuntimeError("MoneySweep ASG leaderboard consumer route failed to mount on canonical FastAPI app")
 
 # Leaderboard routes are mounted after the core SPA catch-all was originally
 # moved. Re-assert the ordering invariant so /api/moneysweep/leaderboards/*
