@@ -29,22 +29,24 @@ jobs:
           cp .recovery/thehub-successor-v1/hubProducerReceipts.spec.tsx "$ROOT/helpers/hubProducerReceipts.spec.tsx"
           cp .recovery/thehub-successor-v1/hubAuthorityConstitution.tsx "$ROOT/helpers/hubAuthorityConstitution.tsx"
           cp .recovery/thehub-successor-v1/hubAuthorityConstitution.spec.tsx "$ROOT/helpers/hubAuthorityConstitution.spec.tsx"
+          cp .recovery/thehub-successor-v1/federationRecoveryParity.tsx "$ROOT/helpers/federationRecoveryParity.tsx"
+          cp .recovery/thehub-successor-v1/federationRecoveryParity.spec.tsx "$ROOT/helpers/federationRecoveryParity.spec.tsx"
           cd "$ROOT"
-          sha256sum helpers/hubProducerReceipts.tsx helpers/hubProducerReceipts.spec.tsx helpers/hubAuthorityConstitution.tsx helpers/hubAuthorityConstitution.spec.tsx > successor-v1-overlay-hashes.txt
+          sha256sum helpers/hubProducerReceipts.tsx helpers/hubProducerReceipts.spec.tsx helpers/hubAuthorityConstitution.tsx helpers/hubAuthorityConstitution.spec.tsx helpers/federationRecoveryParity.tsx helpers/federationRecoveryParity.spec.tsx > successor-v1-overlay-hashes.txt
       - name: Execute successor v1 regression
         shell: bash
         run: |
           set -euo pipefail
           cd "$RUNNER_TEMP/recovered"
           mapfile -t exec_specs < <(awk -F '\t' '$2=="EXECUTABLE" || $2=="RECONSTRUCTED_SEMANTIC_SUPERSESSION"{print $1}' recovery-spec-classification.tsv)
-          exec_specs+=(helpers/hubProducerReceipts.spec.tsx helpers/hubAuthorityConstitution.spec.tsx)
+          exec_specs+=(helpers/hubProducerReceipts.spec.tsx helpers/hubAuthorityConstitution.spec.tsx helpers/federationRecoveryParity.spec.tsx)
           set +e
           npx vitest run --config recovery.vitest.config.mts --reporter=verbose "${exec_specs[@]}" 2>&1 | tee successor-v1-vitest.log
           status=${PIPESTATUS[0]}
           set -e
           echo "$status" > successor-v1-test-exit.txt
           test "$status" = "0"
-          grep -q "145 passed" successor-v1-vitest.log
+          grep -q "153 passed" successor-v1-vitest.log
       - name: Production build
         shell: bash
         run: |
@@ -63,7 +65,12 @@ jobs:
           {
             echo "schema=thehub-recovery-successor/v1"
             echo "baseline_tests=128"
-            echo "successor_v1_tests=145"
+            echo "successor_v1_tests=153"
+            echo "cross_cutting_contract_parity=AUTH_ACL_DB_SCHEMA_SOURCE_PASS"
+            echo "historical_db_rows=UNAVAILABLE_NO_DUMP_PRESERVED"
+            echo "rendered_all_apps=OPEN"
+            echo "authoritative_acquisition=OPEN"
+            echo "infrastructure_migration=BLOCKED"
             echo "producer_receipts=EXACT_FINGERPRINT_HEAD_SCHEMA_REQUIRED"
             echo "synthesized_pass=DENY"
             echo "implicit_authority_transfer=DENY"
