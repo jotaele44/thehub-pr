@@ -4,7 +4,7 @@ Status: **IDENTITY_FROZEN**. No project has been renamed. Public branding is BLO
 
 Artifacts live in `federation/rename/v1/`:
 `rename_manifest.json` (FEDERATION_PROJECT_RENAME_MANIFEST_V1), `project_identity_registry.json`,
-`alias_registry.json` (old → new only), `pre_rename_snapshot.json` (R0 freeze, per-repo HEAD/tree/GitHub repo id),
+`alias_registry.json` (old → new only), `pre_rename_snapshot.json` (R0 freeze, per-repo HEAD/tree/GitHub repo id), `baseline_static.json` (STATIC_ONLY test counts; real denominators still OPEN),
 `reference_inventory.json` (layer-classified old-name references; per-occurrence disposition still UNRESOLVED),
 `output_hashes.json`.
 
