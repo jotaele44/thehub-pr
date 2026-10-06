@@ -1,0 +1,46 @@
+{
+  "candidateCount": 10,
+  "consumerCodeCommit": "ee9c1619dfa22cd619ee3cfc6903c8427850830f",
+  "consumerPackageSha256": "6ecdad09a48cdbd4ae1076138a9b5017a5be82608b489871a50ce0d599680337",
+  "execution": {
+    "deterministicContractReplay": {
+      "checksExecuted": 13,
+      "checksPassed": 13,
+      "state": "PASS"
+    },
+    "githubActions": {
+      "assertsPass": false,
+      "state": "WAIVED_BY_USER"
+    },
+    "repositoryPytest": {
+      "assertsPass": false,
+      "state": "NOT_EXECUTED"
+    }
+  },
+  "packagePath": "data/aggregate/moneysweep/asg_emergency_source_native_package.json",
+  "producerCommit": "e963f4258a78c9b30427df7a7e9b4edf83f00692",
+  "schemaVersion": "thehub.moneysweep-asg-leaderboard-replay/v1",
+  "scopeId": "moneysweep.leaderboard.asg-emergency-source-native-v1",
+  "state": "PASS",
+  "trust": {
+    "packageTrusted": true,
+    "receiptTrusted": true,
+    "releaseTrusted": true,
+    "scopeTrusted": true
+  },
+  "trustManifestPath": "data/aggregate/moneysweep/asg_emergency_source_native_trust.json",
+  "validation": {
+    "accounting": "1431 = 1410 out-of-scope identity rows + 21 retained source-native rows",
+    "canonicalEntityPromotionDenied": true,
+    "candidateCount": 10,
+    "competitionRanking": true,
+    "controlNumberCardinality": 21,
+    "consumerDoesNotRecompute": true,
+    "metricTotal": 4423664.82,
+    "mountedBytesExact": true,
+    "sourceOrdering": "-numerocontrol",
+    "sourceNativeIdentityOnly": true,
+    "uiCanonicalHome": "MoneySweep Leaderboards",
+    "uiScopeBoundaryVisible": true
+  }
+}
