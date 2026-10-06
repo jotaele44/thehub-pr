@@ -259,3 +259,16 @@ def test_debt_trust_environment_does_not_authorize_asg(tmp_path: Path, monkeypat
     assert exc.value.detail["state"] == "BLOCKED"
     assert exc.value.detail["receiptTrusted"] is False
     assert exc.value.detail["packageTrusted"] is False
+
+
+def test_asg_route_is_mounted_before_spa_fallback():
+    main_path = Path(__file__).resolve().parents[1] / "server" / "backend" / "main.py"
+    source = main_path.read_text(encoding="utf-8")
+    import_marker = "from server.backend.moneysweep_asg_leaderboards import router as _moneysweep_asg_leaderboards_router"
+    mount_marker = 'raise RuntimeError("MoneySweep ASG leaderboard consumer route failed to mount on canonical FastAPI app")'
+    ordering_marker = "both debt and ASG consumer routes"
+    alias_marker = "sys.modules[__name__] = _core"
+    assert import_marker in source
+    assert mount_marker in source
+    assert ordering_marker in source
+    assert source.index(mount_marker) < source.index(ordering_marker) < source.index(alias_marker)
