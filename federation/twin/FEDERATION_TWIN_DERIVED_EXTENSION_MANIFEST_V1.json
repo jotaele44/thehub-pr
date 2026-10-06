@@ -351,9 +351,9 @@
       "existing_equivalent": "spiderweb-pr components/Timeline.tsx (cursor not wired to map)",
       "implementation_status": "EXTEND",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-B): A time slider over the store's time extent with a window (everything up to the cursor, one year, 30 days). Each record spans its recorded precision (a year-only date covers the whole year); records outside the window and undated records are counted, and undated ones are never placed in time. Tests: digitalTwin.test.js, DigitalTwin.test.jsx, gui-parity.spec.js, tests/test_spatial_features.py, tests/test_spatial_api.py."
     },
     {
       "capability_id": "FDX-024",
@@ -458,9 +458,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-B): Play steps the time cursor through the extent and stops at its end; every panel, the counters and both exports follow it. Tests: digitalTwin.test.js, DigitalTwin.test.jsx, gui-parity.spec.js, tests/test_spatial_features.py, tests/test_spatial_api.py."
     },
     {
       "capability_id": "FDX-031",
@@ -473,9 +473,9 @@
       "existing_equivalent": "spiderweb-pr src/spatial/runtime/SpatialRuntime.ts (2D/3D toggle)",
       "implementation_status": "EXTEND",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-B): Selecting a record in any panel or in the record list selects it in every panel and in the Details panel. Tests: digitalTwin.test.js, DigitalTwin.test.jsx, gui-parity.spec.js, tests/test_spatial_features.py, tests/test_spatial_api.py."
     },
     {
       "capability_id": "FDX-032",
@@ -1136,8 +1136,8 @@
     "DERIVED_SCHEDULED": 0,
     "DERIVED_ALREADY_PRESENT": 1,
     "DERIVED_BLOCKED": 3,
-    "DERIVED_DEFERRED": 47,
-    "DERIVED_IMPLEMENTED_RUN_2": 7,
+    "DERIVED_DEFERRED": 44,
+    "DERIVED_IMPLEMENTED_RUN_2": 10,
     "DERIVED_PARTIAL_RUN_2": 2,
     "DERIVED_SCHEDULED_RUN_2": 0,
     "by_implementation_status": {

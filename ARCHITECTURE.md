@@ -142,6 +142,14 @@ precision, and it is styled by that precision. Every other record is counted, an
 municipality is passed through as recorded and outlined on its municipio by exact name. Nothing
 is geocoded. See [`docs/federation/PROPERTY_MAP_V1.md`](docs/federation/PROPERTY_MAP_V1.md).
 
+The same features carry each record's time at the precision its producer recorded (`time_start`
+and `time_end`, with `time_basis` and `temporal_state`). The Digital Twin (`/gis?view=digital-twin`)
+draws them in four synchronized panels over NOAA CUDEM terrain. CUDEM is bound only because its one
+declared vertical datum (PRVD02) passes the fail-closed 3D source gate. The view adds temporal
+playback and exports exactly what is shown as GeoJSON and USD. The browser reads the terrain
+directly from NOAA's cloud-optimized GeoTIFFs. See
+[`docs/federation/DIGITAL_TWIN_V1.md`](docs/federation/DIGITAL_TWIN_V1.md).
+
 ## Governance
 
 Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,
