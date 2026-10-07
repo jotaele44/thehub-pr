@@ -13,6 +13,9 @@ byte-identical (`norm`/`sha256`) or behaviorally identical (`fid`; the
 algorithm was already the same everywhere, just written as a one-liner in
 some repos and a two-liner in others) across all five target repos.
 
+`sha256(path)` reads in 1 MiB chunks, keeping hashing memory bounded for large
+exports. Digest bytes and identifiers remain compatible with existing packages.
+
 Everything else in `federation_export.py` — `_lineage`, `write_package`,
 `build_streams`, `STREAM_SCHEMA`, `PRODUCER`, `CONTRACT_VERSION` — stays
 vendored per-producer. `_lineage` has two incompatible call signatures across

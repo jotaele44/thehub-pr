@@ -37,3 +37,21 @@ def test_sha256_changes_with_content(tmp_path):
     p1.write_bytes(b"one")
     p2.write_bytes(b"two")
     assert sha256(p1) != sha256(p2)
+
+
+def test_sha256_streams_multiple_chunks_without_read_bytes(tmp_path, monkeypatch):
+    from pathlib import Path
+
+    payload = b"artifact" * 400_000
+    artifact = tmp_path / "large.jsonl"
+    artifact.write_bytes(payload)
+    def forbidden_read_bytes(self):
+        raise AssertionError("artifact hashing must use bounded memory")
+    monkeypatch.setattr(Path, "read_bytes", forbidden_read_bytes)
+    assert sha256(artifact) == hashlib.sha256(payload).hexdigest()
+
+
+def test_sha256_empty_file(tmp_path):
+    artifact = tmp_path / "empty.jsonl"
+    artifact.touch()
+    assert sha256(artifact) == hashlib.sha256(b"").hexdigest()

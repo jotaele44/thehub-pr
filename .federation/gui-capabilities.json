@@ -197,11 +197,12 @@
       "classification": "analysis",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "Read-only federation product surface for the exact MoneySweep-certified debt_issuance package. TheHub does not recompute producer totals, ranks, identity, source semantics, or geometry and remains fail-closed until exact producer hashes are trusted.",
+      "rationale": "Read-only federation product surface for exact MoneySweep-certified debt issuance and ASG emergency purchase packages. TheHub does not recompute producer totals, ranks, identity, source semantics, or geometry and remains fail-closed until exact producer hashes are trusted. ASG rankings retain their explicit Licitador ID scope and excluded-row warnings.",
       "backend": {
         "files": [
           "server/backend/moneysweep_leaderboards.py",
-          "server/backend/main.py"
+          "server/backend/main.py",
+          "server/backend/moneysweep_asg_leaderboards.py"
         ],
         "endpoints": [
           "GET /status",
@@ -209,7 +210,9 @@
         ],
         "symbols": [
           "server/backend/moneysweep_leaderboards.py:status",
-          "server/backend/moneysweep_leaderboards.py:top"
+          "server/backend/moneysweep_leaderboards.py:top",
+          "server/backend/moneysweep_asg_leaderboards.py:status",
+          "server/backend/moneysweep_asg_leaderboards.py:top"
         ]
       },
       "frontend": {
@@ -232,7 +235,8 @@
           "tests/test_moneysweep_leaderboard_consumer.py"
         ],
         "contract": [
-          "tests/test_moneysweep_leaderboard_crossrepo.py"
+          "tests/test_moneysweep_leaderboard_crossrepo.py",
+          "tests/test_moneysweep_asg_leaderboard_consumer.py"
         ],
         "e2e": [
           "server/frontend/tests/visual/gui-parity.spec.js"
