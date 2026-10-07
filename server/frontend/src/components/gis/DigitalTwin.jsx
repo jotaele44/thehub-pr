@@ -12,6 +12,7 @@ import {
   panelFrom, timeBounds, timeWindow, usdaExport,
 } from '@/gis/digitalTwin';
 import { categoryColors, featurePaint, precisionStyle } from '@/gis/propertyMap';
+import { downloadText } from '@/lib/download';
 import { cn } from '@/lib/utils';
 
 // Digital Twin (TWIN-005/150..163, FDX-023/030/031; directive §11). One shared
@@ -30,17 +31,6 @@ const control = 'min-h-[36px] rounded-md border border-border bg-background px-2
 
 function dateText(ms) {
   return Number.isFinite(ms) ? new Date(ms).toISOString().slice(0, 10) : '—';
-}
-
-function download(filename, text, type) {
-  const url = URL.createObjectURL(new Blob([text], { type }));
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
 }
 
 function Panel({ id, label, maximized, onMaximize, children }) {
@@ -309,8 +299,8 @@ export default function DigitalTwin() {
               </label>
             </div>
           ) : <span className="text-muted-foreground">No mapped record is dated, so there is no time to play.</span>}
-          <button type="button" className={button} onClick={() => download('digital-twin.geojson', JSON.stringify(geojsonExport(timed.visible, exportContext()), null, 2), 'application/geo+json')}>Export GeoJSON</button>
-          <button type="button" className={button} onClick={() => download('digital-twin.usda', usdaExport(timed.visible, { ...exportContext(), origin: { lon: view.center[0], lat: view.center[1] } }), 'model/vnd.usda')}>Export USD</button>
+          <button type="button" className={button} onClick={() => downloadText('digital-twin.geojson', JSON.stringify(geojsonExport(timed.visible, exportContext()), null, 2), 'application/geo+json')}>Export GeoJSON</button>
+          <button type="button" className={button} onClick={() => downloadText('digital-twin.usda', usdaExport(timed.visible, { ...exportContext(), origin: { lon: view.center[0], lat: view.center[1] } }), 'model/vnd.usda')}>Export USD</button>
         </section>
       ) : null}
       <div className="grid gap-3 lg:grid-cols-2" data-dt-layout={maximized || 'grid'}>

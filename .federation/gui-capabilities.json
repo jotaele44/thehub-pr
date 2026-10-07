@@ -640,6 +640,65 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "interpretive-layers",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Subsurface and interpretive layers at /gis?view=interpretive-layers (TWIN-075/076/077/146, FDX-024; Phase 5, P5-C): documented geometry (SIGE karst, aquifer and watershed outlines loaded through the source registry with their gates, counts and hashes, or the provider's failure verbatim; Hub-held USGS mineral occurrences) kept apart from a MODELLED — not observed geometry group that holds only records whose producer declared the INTERPRETIVE class (none today, and it says why), with separate styling that tests keep distinct; and a CUDEM terrain profile along a drawn line with its datum (PRVD02), no-data samples kept as gaps, the documented layers it crosses, a statement that nothing is drawn below the surface (no subsurface model is supplied) and a CSV download. The Hub store's sampling basis is stated.",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:store_basis",
+          "src/hub/spatial_features.py:feature"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/InterpretiveLayers.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/interpretive.js",
+          "server/frontend/src/gis/storeBasis.js",
+          "server/frontend/src/gis/cudem.js",
+          "server/frontend/src/gis/acquisitionFacade.js",
+          "server/frontend/src/lib/download.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/interpretive.test.js",
+          "server/frontend/src/gis/storeBasis.test.js",
+          "server/frontend/src/components/gis/InterpretiveLayers.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
     }
   ],
   "exceptions": []

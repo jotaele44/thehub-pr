@@ -16,6 +16,10 @@ kept honest rather than drawn:
 * a REPRESENTATIVE_POINT stays representative (for example a municipio centroid)
   and is labelled as such; it is never promoted.
 
+Each point also carries the ``epistemic_class`` and ``data_stage`` its producer
+declared (None when undeclared), so a view can keep a modelled (INTERPRETIVE)
+record out of the layers that show documented geometry.
+
 Each point also carries its time as recorded: ``observed_at`` at its declared
 precision, any validity window (``valid_from``/``valid_to``), the span that
 precision covers (``time_start``/``time_end``: a year-only date spans its whole
@@ -171,6 +175,12 @@ def _time_properties(row: Mapping[str, Any], now: datetime) -> Dict[str, Any]:
     }
 
 
+def _declared_text(declared: Mapping[str, Any], key: str) -> Optional[str]:
+    """What the producer declared, verbatim, or None. Never a crosswalk or a guess."""
+    value = declared.get(key)
+    return value if isinstance(value, str) and value else None
+
+
 def feature(stream: str, collection: str, row: Mapping[str, Any],
             now: Optional[datetime] = None) -> Optional[Dict[str, Any]]:
     """A GeoJSON point feature for a row with declared point precision, else None."""
@@ -196,6 +206,8 @@ def feature(stream: str, collection: str, row: Mapping[str, Any],
             "producers": list(row.get("_producers") or []),
             "geometry_precision": precision,
             "geometry_basis": declared.get("coordinate_method") or declared.get("geometry_precision_basis"),
+            "declared_epistemic_class": _declared_text(declared, "epistemic_class"),
+            "declared_data_stage": _declared_text(declared, "data_stage"),
             "municipality": municipality(row),
             "synthetic": bool(row.get("synthetic", False)),
             "evidence_href": f"/evidence/{collection}/{record_id}",

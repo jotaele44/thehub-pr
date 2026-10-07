@@ -191,6 +191,21 @@ def test_validity_window_extent_and_undated_count():
     assert body["undated"] == 1 and body["read_at"] == "2026-10-04T12:00:00.000Z"
 
 
+def test_features_carry_the_class_and_stage_their_producer_declared():
+    modelled = _entity("ent_model", 18.2, -66.5, "INTERPRETED_POINT")
+    modelled[2]["evidence_state"].update({"epistemic_class": "INTERPRETIVE", "data_stage": "INTERPRETATION",
+                                          "interpretation_basis": "model of a reported void"})
+    documented = _entity("ent_doc", 18.3, -66.4, "OBSERVED_POINT")
+    documented[2]["evidence_state"].update({"epistemic_class": "CURATED", "data_stage": "CANONICAL"})
+    undeclared = _entity("ent_none", 18.4, -66.3, "OBSERVED_POINT")
+    props = {f["properties"]["record_id"]: f["properties"]
+             for f in sf.build_features([modelled, documented, undeclared], now=NOW)["features"]}
+    assert (props["ent_model"]["declared_epistemic_class"], props["ent_model"]["declared_data_stage"]) == ("INTERPRETIVE", "INTERPRETATION")
+    assert (props["ent_doc"]["declared_epistemic_class"], props["ent_doc"]["declared_data_stage"]) == ("CURATED", "CANONICAL")
+    # Only what the producer declared: nothing is crosswalked or guessed here.
+    assert (props["ent_none"]["declared_epistemic_class"], props["ent_none"]["declared_data_stage"]) == (None, None)
+
+
 def test_store_basis_reports_a_bounded_sample_from_the_build_record(tmp_path):
     (tmp_path / "fixture.json").write_text(json.dumps({
         "kind": "bounded-sample", "cap_per_stream": 400, "note": "Records are genuine but truncated.",

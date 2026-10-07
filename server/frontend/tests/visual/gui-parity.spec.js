@@ -502,6 +502,60 @@ async function mockGeoid(page) {
   await page.route('https://cdn.proj.org/us_noaa_g2018p0.tif', (route) => serveRanges(route, file));
 }
 
+// SIGE's karst layer (sumideros): a count query, then GeoJSON pages, as the registry's acquisition gates expect.
+async function mockSige(page) {
+  await page.route('https://sige.pr.gov/**', (route) => {
+    const body = route.request().url().includes('returnCountOnly')
+      ? { count: 1 }
+      : {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature', properties: { OBJECTID: 1, NOMBRE: 'Sumidero de prueba' },
+          geometry: { type: 'Polygon', coordinates: [[[-66.3, 18.1], [-66.2, 18.1], [-66.2, 18.3], [-66.3, 18.3], [-66.3, 18.1]]] },
+        }],
+      };
+    return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
+  });
+}
+
+test.describe('interpretive layers', () => {
+  test('keeps documented and modelled geometry apart and reads a terrain profile with its datum and gaps', async ({ page }) => {
+    test.setTimeout(90000);
+    await mockApi(page, { '/spatial/features': SPATIAL_FEATURES });
+    await mockMapProviders(page);
+    await mockCudem(page);
+    await mockSige(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'GIS Workspace', exact: true }).click();
+    await page.getByRole('button', { name: 'Subsurface & interpretive', exact: true }).click();
+    await expect(page).toHaveURL(/\/gis\?view=interpretive-layers$/);
+    await expect(page.getByTestId('interpretive-map')).toHaveAttribute('data-map-ready', 'true', { timeout: 30000 });
+
+    const modelled = page.locator('[data-group="modelled"]');
+    await expect(modelled).toContainText('MODELLED — not observed geometry');
+    await expect(modelled.locator('[data-modelled-count]')).toHaveText('0');
+    await expect(modelled).toContainText('No producer exports a modelled or interpretive layer');
+    await expect(page.locator('[data-hub-documented]')).toContainText('1 Hub-held documented record');
+
+    const karst = page.locator('[data-layer="pr-sige-sumideros"]');
+    await karst.getByRole('button', { name: 'Load Sumideros' }).click();
+    await expect(karst.locator('[data-layer-provenance]')).toContainText(/1 feature .* snapshot SHA-256 [0-9a-f]{12}/);
+
+    // West to east across the island and out to sea: CUDEM ends at -65.25, so the east is a gap, not zero.
+    await page.getByLabel('Start (lat, lon)').fill('18.2, -66.5');
+    await page.getByLabel('End (lat, lon)').fill('18.2, -64.0');
+    await page.getByRole('button', { name: 'Draw profile' }).click();
+    const stats = page.locator('[data-profile-stats]');
+    await expect(stats).toContainText(/100 samples · [1-9]\d* with a CUDEM height · [1-9]\d* without/, { timeout: 30000 });
+    await expect(page.locator('[data-profile-datum]')).toContainText('PRVD02');
+    await expect(page.locator('svg[data-profile-chart] path')).toHaveAttribute('d', /^M/);
+    await expect(page.locator('[data-profile-crossings]')).toContainText('Sumideros');
+    await expect(page.locator('[data-profile-subsurface]')).toContainText('No subsurface model supplied');
+    const [csv] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download CSV' }).click()]);
+    expect(csv.suggestedFilename()).toBe('terrain-profile.csv');
+  });
+});
+
 test.describe('digital twin', () => {
   test('is reachable from the GIS workspace, binds uniform-datum terrain and keeps panels in step', async ({ page }) => {
     // Cesium (lazy-loaded, software WebGL in CI) plus three other panels exceed the 30 s default.
