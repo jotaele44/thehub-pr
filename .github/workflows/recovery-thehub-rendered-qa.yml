@@ -25,12 +25,12 @@ jobs:
           set -euo pipefail
           bash .recovery/thehub-exact/run.sh
           ROOT="$RUNNER_TEMP/recovered"
-cp .recovery/thehub-successor-v1/hubProducerReceipts.tsx "$ROOT/helpers/hubProducerReceipts.tsx"
-cp .recovery/thehub-successor-v1/hubProducerReceipts.spec.tsx "$ROOT/helpers/hubProducerReceipts.spec.tsx"
-cp .recovery/thehub-successor-v1/hubAuthorityConstitution.tsx "$ROOT/helpers/hubAuthorityConstitution.tsx"
-cp .recovery/thehub-successor-v1/hubAuthorityConstitution.spec.tsx "$ROOT/helpers/hubAuthorityConstitution.spec.tsx"
-cp .recovery/thehub-successor-v1/federationRecoveryParity.tsx "$ROOT/helpers/federationRecoveryParity.tsx"
-cp .recovery/thehub-successor-v1/federationRecoveryParity.spec.tsx "$ROOT/helpers/federationRecoveryParity.spec.tsx"
+          cp .recovery/thehub-successor-v1/hubProducerReceipts.tsx "$ROOT/helpers/hubProducerReceipts.tsx"
+          cp .recovery/thehub-successor-v1/hubProducerReceipts.spec.tsx "$ROOT/helpers/hubProducerReceipts.spec.tsx"
+          cp .recovery/thehub-successor-v1/hubAuthorityConstitution.tsx "$ROOT/helpers/hubAuthorityConstitution.tsx"
+          cp .recovery/thehub-successor-v1/hubAuthorityConstitution.spec.tsx "$ROOT/helpers/hubAuthorityConstitution.spec.tsx"
+          cp .recovery/thehub-successor-v1/federationRecoveryParity.tsx "$ROOT/helpers/federationRecoveryParity.tsx"
+          cp .recovery/thehub-successor-v1/federationRecoveryParity.spec.tsx "$ROOT/helpers/federationRecoveryParity.spec.tsx"
           cd "$RUNNER_TEMP/recovered"
           npx vite build
           NPM_CONFIG_LEGACY_PEER_DEPS=true npm install --save-dev --no-audit --no-fund --ignore-scripts playwright@1.55.0
