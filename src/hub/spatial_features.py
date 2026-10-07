@@ -22,6 +22,11 @@ precision covers (``time_start``/``time_end``: a year-only date spans its whole
 year) and its ``temporal_state`` at read time. Undated records carry no span and
 are counted, never placed in time.
 
+The served store may be a bounded sample (``data/fixture.json``): ``store_basis``
+reports what the build recorded beside it, so counts and densities computed over
+the store are never read as Puerto Rico totals. A store with no such record is
+"not recorded", which is not the same as complete.
+
 Categories are the record types the producers exported (``entity_type``,
 ``observation_type`` or the alert's ``module``/``alert_type``), so the map's
 symbology comes from Federation data, not from any reference application. A
@@ -31,9 +36,11 @@ is passed through as recorded and counted alongside.
 
 from __future__ import annotations
 
+import json
 from calendar import monthrange
 from datetime import datetime, timedelta, timezone
 from math import asin, cos, radians, sin, sqrt
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from . import epistemic as ep
@@ -217,6 +224,44 @@ def parse_bbox(text: Optional[str]) -> Optional[Tuple[float, float, float, float
     if len(values) != 4 or not (-180 <= values[0] < values[2] <= 180 and -90 <= values[1] < values[3] <= 90):
         raise ValueError("bbox must be minLon,minLat,maxLon,maxLat within WGS84 bounds")
     return values  # type: ignore[return-value]
+
+
+STORE_RECORD = "fixture.json"
+_STREAM_COUNTS = ("sampled", "actual", "closure_added")
+
+
+def store_basis(directory: "Path | str") -> Dict[str, Any]:
+    """How the served store was built, from the record the build wrote beside it.
+
+    ``kind`` is what the build declared (``bounded-sample`` for the committed
+    fixture), ``not_recorded`` when no record sits beside the store, or
+    ``unreadable`` when the record cannot be read. Nothing is inferred: an
+    absent record is never reported as a complete store.
+    """
+    path = Path(directory) / STORE_RECORD
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {"kind": "not_recorded", "basis": f"no {STORE_RECORD} beside the store"}
+    except (OSError, ValueError) as error:
+        return {"kind": "unreadable", "basis": f"{STORE_RECORD} could not be read: {error.__class__.__name__}"}
+    kind = raw.get("kind") if isinstance(raw, dict) else None
+    if not isinstance(kind, str) or not kind:
+        return {"kind": "unreadable", "basis": f"{STORE_RECORD} declares no kind"}
+    streams: Dict[str, Dict[str, int]] = {}
+    declared = raw.get("streams")
+    for name, counts in (declared.items() if isinstance(declared, dict) else ()):
+        if (isinstance(counts, dict) and isinstance(counts.get("sampled"), int)
+                and isinstance(counts.get("actual"), int)):
+            streams[str(name)] = {key: counts[key] for key in _STREAM_COUNTS if isinstance(counts.get(key), int)}
+    cap = raw.get("cap_per_stream")
+    note = raw.get("note")
+    return {
+        "kind": kind,
+        "cap_per_stream": cap if isinstance(cap, int) else None,
+        "streams": dict(sorted(streams.items())),
+        "note": note if isinstance(note, str) else None,
+    }
 
 
 def build_features(
