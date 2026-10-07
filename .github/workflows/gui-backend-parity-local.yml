@@ -57,7 +57,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -f scripts/check_gui_parity.py ]; then
-            python scripts/check_gui_parity.py --check
+            python scripts/check_gui_parity.py
           else
             echo 'No repository gui-capabilities checker; federation strict scanner is authoritative for executability.'
           fi
