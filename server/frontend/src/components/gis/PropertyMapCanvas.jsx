@@ -152,10 +152,15 @@ export default function PropertyMapCanvas({
   useEffect(() => {
     if (!ready || !mapRef.current) return;
     const map = mapRef.current;
-    map.setPaintProperty(`${OUTLINE}-fill`, 'fill-color', outlineStyle.color);
-    map.setPaintProperty(`${OUTLINE}-line`, 'line-color', outlineStyle.color);
-    map.setPaintProperty(`${OUTLINE}-line`, 'line-dasharray', outlineStyle.dashed ? [3, 2] : [1, 0]);
-  }, [ready, outlineStyle.color, outlineStyle.dashed]);
+    // One colour, or a colour per value of a feature property (for example study and control AOIs).
+    const { color, dashed, byProperty } = outlineStyle;
+    const paint = byProperty
+      ? ['match', ['get', byProperty.name], ...Object.entries(byProperty.colors).flat(), color]
+      : color;
+    map.setPaintProperty(`${OUTLINE}-fill`, 'fill-color', paint);
+    map.setPaintProperty(`${OUTLINE}-line`, 'line-color', paint);
+    map.setPaintProperty(`${OUTLINE}-line`, 'line-dasharray', dashed ? [3, 2] : [1, 0]);
+  }, [ready, outlineStyle]);
 
   useEffect(() => {
     if (ready) mapRef.current?.getSource(PROFILE).setData(profile || featureCollection([]));

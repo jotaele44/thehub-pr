@@ -699,6 +699,64 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "aoi-comparison",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "AOI comparison with negative controls at /gis?view=aoi-comparison (FDX-028/029; directive §32 and §46; Phase 5, P5-C): a study area (a bounding box or a TIGERweb municipio by recorded name) against one or more control areas that must be disjoint from it and from each other, by records per km² per (producer, stream, category), counting only points whose producer declared a placed position (stand-ins inside an AOI are counted apart as membership not determined; nothing is geocoded). Rate ratio with an exact conditional binomial test and a Clopper-Pearson interval, no ratio below five combined records, the number of comparisons stated (p-values unadjusted), every result labelled BACKGROUND COMPARISON — not a finding, the Hub store's sampling basis (a bounded sample, from the build record) stated before and after the results, and a JSON receipt (NOT_CERTIFIED) with the AOIs, area method, store and method.",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:store_basis"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/AoiComparison.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/aoiComparison.js",
+          "server/frontend/src/gis/propertyMap.js",
+          "server/frontend/src/gis/storeBasis.js",
+          "server/frontend/src/gis/acquisitionFacade.js",
+          "server/frontend/src/lib/download.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/aoiComparison.test.js",
+          "server/frontend/src/gis/storeBasis.test.js",
+          "server/frontend/src/components/gis/AoiComparison.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
     }
   ],
   "exceptions": []

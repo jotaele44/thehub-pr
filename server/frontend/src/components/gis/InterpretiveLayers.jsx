@@ -25,6 +25,7 @@ const PropertyMapCanvas = lazy(() => import('@/components/gis/PropertyMapCanvas'
 const PUERTO_RICO_EXTENT = Object.freeze([-67.3, 17.85, -65.2, 18.55]);
 const INITIAL_VIEW = Object.freeze({ bounds: [[PUERTO_RICO_EXTENT[0], PUERTO_RICO_EXTENT[1]], [PUERTO_RICO_EXTENT[2], PUERTO_RICO_EXTENT[3]]] });
 const PROFILE_SAMPLES = 100;
+const DOCUMENTED_OUTLINE = Object.freeze({ color: GROUP_STYLES.documented.color, dashed: false });
 const READ_BATCH = 20;
 const DATUM = 'PRVD02';
 const button = 'min-h-[44px] rounded-md border border-border px-3 text-sm font-medium hover:bg-muted disabled:opacity-50';
@@ -232,7 +233,7 @@ export default function InterpretiveLayers() {
                 <PropertyMapCanvas
                   testId="interpretive-map" label="Map of documented layers and the profile line. Layers are also listed beside the map."
                   basemap={PROPERTY_MAP_BASEMAPS.cartoDark} initialView={INITIAL_VIEW} features={hubFeatures} paint={paint}
-                  outline={outline} outlineStyle={{ color: GROUP_STYLES.documented.color, dashed: false }} profile={profile.line}
+                  outline={outline} outlineStyle={DOCUMENTED_OUTLINE} profile={profile.line}
                   selectedId={null} intelPoint={null} radiusM={0} focusPoint={null} onSelectFeature={() => {}} onPickPoint={pick}
                 />
               </Suspense>

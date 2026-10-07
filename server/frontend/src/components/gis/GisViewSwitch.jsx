@@ -1,14 +1,15 @@
 import React from 'react';
 
 // `/gis?view=property-map` opens the Property Map, `/gis?view=digital-twin` the
-// Digital Twin and `/gis?view=interpretive-layers` the subsurface and interpretive
-// layers (Phase 5); the workbench stays the default view, so existing /gis links
-// keep working.
+// Digital Twin, `/gis?view=interpretive-layers` the subsurface and interpretive
+// layers and `/gis?view=aoi-comparison` the negative-control comparison (Phase 5);
+// the workbench stays the default view, so existing /gis links keep working.
 export const GIS_VIEWS = Object.freeze([
   Object.freeze({ id: 'workbench', label: 'Workbench' }),
   Object.freeze({ id: 'property-map', label: 'Property Map' }),
   Object.freeze({ id: 'digital-twin', label: 'Digital Twin' }),
   Object.freeze({ id: 'interpretive-layers', label: 'Subsurface & interpretive' }),
+  Object.freeze({ id: 'aoi-comparison', label: 'AOI comparison' }),
 ]);
 
 export function gisViewFrom(searchParams) {

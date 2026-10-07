@@ -518,6 +518,62 @@ async function mockSige(page) {
   });
 }
 
+// Nine records of one category: six inside the study box, three inside the control box.
+const AOI_FEATURES = {
+  contract: 'federation-spatial-features-v1', type: 'FeatureCollection', loaded: 9, matched: 9, truncated: false, excluded_synthetic: 0, outside_bbox: 0,
+  features: [
+    ...Array.from({ length: 6 }, (_, i) => [`s${i}`, -66.55 + i * 0.02]),
+    ...Array.from({ length: 3 }, (_, i) => [`c${i}`, -65.95 + i * 0.05]),
+  ].map(([id, lon]) => ({
+    type: 'Feature', id: `evo:entities:${id}`, geometry: { type: 'Point', coordinates: [lon, 18.2] },
+    properties: {
+      evidence_id: `evo:entities:${id}`, title: id, category: 'utility_asset', stream: 'entities', producer: 'aguayluz-pr', producers: ['aguayluz-pr'],
+      geometry_precision: 'OBSERVED_POINT', geometry_basis: null, municipality: null, object_type: null, synthetic: false,
+      evidence_href: `/evidence/Entities/${id}`, entity_href: null, time_start: null, time_end: null, temporal_state: 'UNKNOWN',
+    },
+  })),
+  categories: [{ producer: 'aguayluz-pr', stream: 'entities', category: 'utility_asset', count: 9 }], precision_counts: { OBSERVED_POINT: 9 },
+  coordinates_without_point_precision: {}, not_drawn: [], area_references: [], time_extent: null, undated: 9,
+  store: { kind: 'bounded-sample', cap_per_stream: 400, streams: { entities: { sampled: 825, actual: 48224, closure_added: 425 } } },
+};
+
+test.describe('aoi comparison', () => {
+  test('compares a study box with a control box as background, over a stated sample, and refuses overlap', async ({ page }) => {
+    test.setTimeout(90000);
+    await mockApi(page, { '/spatial/features': AOI_FEATURES });
+    await mockMapProviders(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'GIS Workspace', exact: true }).click();
+    await page.getByRole('button', { name: 'AOI comparison', exact: true }).click();
+    await expect(page).toHaveURL(/\/gis\?view=aoi-comparison$/);
+    await expect(page.getByTestId('aoi-map')).toHaveAttribute('data-map-ready', 'true', { timeout: 30000 });
+    await expect(page.locator('[data-store-basis]')).toContainText('bounded sample (at most 400 records per stream): entities 825 of 48224');
+
+    await page.getByLabel('Study AOI bounding box').fill('-66.6,18.1,-66.4,18.3');
+    await page.getByLabel('Control 1 bounding box').fill('-66.5,18.1,-65.8,18.3');
+    await page.getByRole('button', { name: 'Compare' }).click();
+    await expect(page.getByRole('alert')).toContainText('overlaps the study AOI');
+
+    await page.getByLabel('Control 1 bounding box').fill('-66.0,18.1,-65.8,18.3');
+    await page.getByRole('button', { name: 'Compare' }).click();
+    await expect(page.locator('[data-not-a-finding]')).toHaveText('BACKGROUND COMPARISON — not a finding');
+    const row = page.locator('[data-comparison-row="aguayluz-pr|entities|utility_asset"]');
+    await expect(row.locator('[data-study-count]')).toHaveText('6');
+    await expect(row.locator('[data-control-count]')).toHaveText('3');
+    await expect(row.locator('[data-ratio]')).toContainText(/^\d+\.\d{2} \(95% CI/);
+    await expect(row.locator('[data-p]')).toHaveText(/^\d\.\d{3}$/);
+    await expect(page.locator('[data-multiplicity]')).toContainText('not adjusted for multiple comparisons');
+    await expect(page.locator('[data-aoi-summary]')).toContainText('spherical polygon area');
+
+    const [receipt] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download receipt (JSON)' }).click()]);
+    expect(receipt.suggestedFilename()).toBe('aoi-comparison.json');
+    const { readFile } = await import('node:fs/promises');
+    const body = JSON.parse(await readFile(await receipt.path(), 'utf8'));
+    expect(body).toMatchObject({ contract: 'aoi-comparison-v1', certification: 'NOT_CERTIFIED', store: { sample: true } });
+    expect(body.rows[0]).toMatchObject({ study_count: 6, control_count: 3 });
+  });
+});
+
 test.describe('interpretive layers', () => {
   test('keeps documented and modelled geometry apart and reads a terrain profile with its datum and gaps', async ({ page }) => {
     test.setTimeout(90000);
