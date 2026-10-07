@@ -119,6 +119,85 @@ test.describe('MoneySweep certified leaderboard consumer', () => {
     await expect(page.getByText(/fail-closed until MoneySweep supplies/)).toBeVisible();
     await expect(page.getByRole('table')).toHaveCount(0);
   });
+
+
+  for (const width of [393, 430]) {
+    test(`renders ASG source-native plane without overflow at ${width}px`, async ({ page }, testInfo) => {
+      test.skip(testInfo.project.name !== 'desktop');
+      await page.setViewportSize({ width, height: 900 });
+      const packageHash = 'a'.repeat(64);
+      await mockApi(page, {
+        '/moneysweep/leaderboards/status': {
+          state: 'PASS',
+          producerCommit: 'b'.repeat(40),
+          rankingContractVersion: 'moneysweep.leaderboard/v1.1',
+          ontologyContractVersion: 'moneysweep.financial-category-ontology/v1.1',
+          scopeId: 'moneysweep.leaderboard.production-v1',
+          categoryCount: 1,
+          consumerPackageSha256: packageHash,
+        },
+        '/moneysweep/leaderboards/top': {
+          categoryId: 'debt_issuance',
+          metricType: 'DEBT_ISSUED_PAR',
+          rows: [{
+            entityId: 'entity_debt',
+            entityDisplayName: 'Debt fixture',
+            entityResolutionState: 'CANONICAL_V1_ENTITY_ID',
+            currency: 'USD',
+            metricValue: 100,
+            rank: 1,
+          }],
+          consumerState: 'PASS',
+        },
+        '/moneysweep/asg-leaderboards/status': {
+          state: 'PASS',
+          producerCommit: 'c'.repeat(40),
+          scopeId: 'moneysweep.leaderboard.asg-emergency-source-native-v1',
+          categoryId: 'asg_emergency_purchase_source_native',
+          candidateCount: 10,
+          inputRecords: 1431,
+          outOfScopeRecords: 1410,
+          retainedRecords: 21,
+          consumerPackageSha256: packageHash,
+        },
+        '/moneysweep/asg-leaderboards/top': {
+          categoryId: 'asg_emergency_purchase_source_native',
+          metricType: 'ASG_EMERGENCY_PURCHASE_COST',
+          rows: [{
+            entityId: 'asg_licitador_id:23388',
+            entityDisplayName: 'Sonnell Truck Center LLC',
+            entityResolutionState: 'SOURCE_NATIVE_ASG_LICITADOR_ID',
+            canonicalEntityId: null,
+            currency: 'USD',
+            metricValue: 1744085,
+            rank: 1,
+            recordCount: 1,
+            controlNumbers: ['26-ASG-AAA-0028'],
+          }],
+          consumerState: 'PASS',
+          scopeBoundary: 'Ranks only ASG emergency-purchase rows with explicit source-native ASG Licitador IDs. It does not represent all ASG emergency purchases.',
+        },
+      });
+
+      await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+      await page.getByRole('tab', { name: 'Leaderboards' }).click();
+      await page.getByRole('tab', { name: 'ASG emergency purchases' }).click();
+
+      await expect(page.getByRole('heading', { name: 'ASG Emergency Purchases — Source-Native IDs' })).toBeVisible();
+      await expect(page.getByText('Sonnell Truck Center LLC')).toBeVisible();
+      await expect(page.getByText('asg_licitador_id:23388')).toBeVisible();
+      await expect(page.getByText('SOURCE_NATIVE_ASG_LICITADOR_ID')).toBeVisible();
+      await expect(page.getByText(/1431 records = 1410 explicit identity exclusions \+ 21 retained source-native rows/)).toBeVisible();
+      await expect(page.getByText(/does not represent all ASG emergency purchases/)).toBeVisible();
+      await expect(page.getByText(/Package SHA-256:/)).toBeVisible();
+
+      const overflow = await page.evaluate(() => ({
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+      }));
+      expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth);
+    });
+  }
 });
 
 const SEARCH_RESPONSE = {
