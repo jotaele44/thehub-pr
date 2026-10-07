@@ -240,6 +240,50 @@
       }
     },
     {
+      "id": "moneysweep-certified-asg-emergency-leaderboard",
+      "classification": "analysis",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Read-only federation product surface for the exact MoneySweep-certified ASG emergency-purchase source-native-ID package. TheHub validates producer accounting, source ordering, identity namespace, ranks and trust hashes, but never recomputes rankings or resolves name-only vendors. The surface is intentionally colocated inside the canonical MoneySweep Leaderboards GUI.",
+      "backend": {
+        "files": [
+          "server/backend/moneysweep_asg_leaderboards.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /status",
+          "GET /top"
+        ],
+        "symbols": [
+          "server/backend/moneysweep_asg_leaderboards.py:status",
+          "server/backend/moneysweep_asg_leaderboards.py:top"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/moneysweep"
+        ],
+        "e2e_routes": [
+          "/moneysweep"
+        ],
+        "components": [
+          "server/frontend/src/pages/MoneySweep.jsx",
+          "server/frontend/src/components/feed/MoneySweepLeaderboardsTab.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/MoneySweep.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_moneysweep_asg_leaderboard_consumer.py"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
       "id": "federated-search",
       "classification": "user",
       "status": "active",
