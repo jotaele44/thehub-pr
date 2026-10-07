@@ -114,7 +114,7 @@ test.describe('MoneySweep certified leaderboard consumer', () => {
     await page.goto('/moneysweep', { waitUntil: 'networkidle' });
     await page.getByRole('tab', { name: 'Leaderboards' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Financial Leaderboards' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Certified Public Debt Issuance' })).toBeVisible();
     await expect(page.getByText('BLOCKED')).toBeVisible();
     await expect(page.getByText(/fail-closed until MoneySweep supplies/)).toBeVisible();
     await expect(page.getByRole('table')).toHaveCount(0);
