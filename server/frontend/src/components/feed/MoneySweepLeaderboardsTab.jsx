@@ -98,7 +98,7 @@ export default function MoneySweepLeaderboardsTab() {
             <State value={status.state} />
           </div>
           <p className="text-sm text-muted-foreground">
-            This plane is fail-closed until TheHub trusts the exact MoneySweep receipt, release, scope, and package SHA-256 values.
+            Product promotion is fail-closed until MoneySweep supplies the scoped certified package and TheHub trusts the exact receipt, release, scope, and package SHA-256 values.
           </p>
           {status.reason && <p className="text-xs text-muted-foreground">{status.reason}</p>}
         </div>
