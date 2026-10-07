@@ -191,11 +191,37 @@ test.describe('MoneySweep certified leaderboard consumer', () => {
       await expect(page.getByText(/does not represent all ASG emergency purchases/)).toBeVisible();
       await expect(page.getByText(/Package SHA-256:/)).toBeVisible();
 
-      const overflow = await page.evaluate(() => ({
-        scrollWidth: document.documentElement.scrollWidth,
-        clientWidth: document.documentElement.clientWidth,
-      }));
-      expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth);
+      const overflow = await page.evaluate(() => {
+        const clientWidth = document.documentElement.clientWidth;
+        const offenders = [...document.querySelectorAll('body *')]
+          .map((element) => {
+            const rect = element.getBoundingClientRect();
+            const style = getComputedStyle(element);
+            return {
+              tag: element.tagName,
+              className: typeof element.className === 'string' ? element.className : '',
+              text: (element.textContent || '').replace(/\\s+/g, ' ').trim().slice(0, 120),
+              left: Math.round(rect.left),
+              right: Math.round(rect.right),
+              width: Math.round(rect.width),
+              scrollWidth: element.scrollWidth,
+              clientWidth: element.clientWidth,
+              overflowX: style.overflowX,
+            };
+          })
+          .filter((item) => item.right > clientWidth + 1 || item.width > clientWidth + 1)
+          .sort((a, b) => b.right - a.right)
+          .slice(0, 15);
+        return {
+          scrollWidth: document.documentElement.scrollWidth,
+          clientWidth,
+          offenders,
+        };
+      });
+      expect(
+        overflow.scrollWidth,
+        `horizontal overflow offenders: ${JSON.stringify(overflow.offenders)}`,
+      ).toBeLessThanOrEqual(overflow.clientWidth);
     });
   }
 });
