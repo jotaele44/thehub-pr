@@ -6,17 +6,23 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { federation } from '@/api/federationClient';
 import { elevationAt } from '@/gis/cudem';
+import { openGeoid } from '@/gis/geoid';
 import DigitalTwin from './DigitalTwin';
 
 vi.mock('@/api/federationClient', () => ({ federation: { spatial: { features: vi.fn() } } }));
 vi.mock('@/gis/cudem', async (importOriginal) => ({ ...(await importOriginal()), elevationAt: vi.fn() }));
+vi.mock('@/gis/geoid', async (importOriginal) => ({ ...(await importOriginal()), openGeoid: vi.fn() }));
+// A 1-degree geoid over lon -69..-64, lat 21..15 holding N = -40 m everywhere.
+const GEOID = Object.freeze({
+  values: new Float32Array(6 * 7).fill(-40), width: 6, height: 7, originLon: 291, originLat: 21, stepLon: 1, stepLat: -1,
+});
 const seen = {};
 // WebGL is not available in jsdom; the stubs expose what each panel is asked to draw.
 vi.mock('@/components/gis/DigitalTwinPerspective', () => ({
   default: (props) => {
     seen.perspective = props;
     return (
-      <div data-testid="perspective" data-count={props.features.length} data-selected={props.selectedId || ''}>
+      <div data-testid="perspective" data-count={props.features.length} data-selected={props.selectedId || ''} data-geoid={props.geoid ? 'applied' : 'not-applied'}>
         <button type="button" onClick={() => props.onTerrainTiles(['ncei19_n18x25_w066x75_2022v2.tif'])}>terrain tiles loaded</button>
         <button type="button" onClick={() => props.onTerrainError(new Error('HTTP 503'))}>terrain failed</button>
         <button type="button" onClick={() => props.onViewChange({ center: [-66.6, 18.17], zoom: 12, bearing: 0 })}>orbit</button>
@@ -59,7 +65,12 @@ function Where() {
 }
 
 // The panels mount before the records arrive; the controls appear with the data.
-const loaded = () => screen.findByRole('button', { name: 'Export GeoJSON' });
+// The 3D panel starts once the geoid decision is settled.
+const dataLoaded = () => screen.findByRole('button', { name: 'Export GeoJSON' });
+const loaded = async () => {
+  await dataLoaded();
+  await screen.findByTestId('perspective');
+};
 
 function renderTwin(url = '/gis?view=digital-twin') {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
@@ -78,6 +89,8 @@ describe('Digital Twin', () => {
     federation.spatial.features.mockResolvedValue(FEATURES);
     elevationAt.mockReset();
     elevationAt.mockResolvedValue({ metres: 1322.7, tile: 'ncei19_n18x25_w066x75_2022v2.tif' });
+    openGeoid.mockReset();
+    openGeoid.mockResolvedValue(GEOID);
   });
   afterEach(() => vi.useRealTimers());
 
@@ -126,6 +139,43 @@ describe('Digital Twin', () => {
     expect(screen.getByTestId('digital-twin-overhead')).toHaveAttribute('data-selected', 'evo:entities:m');
     await waitFor(() => expect(container.querySelector('[data-dt-elevation]')).toHaveTextContent('1322.7 m PRVD02 · CUDEM m9525 1/9″'));
     expect(elevationAt).toHaveBeenCalledWith(-66.59, 18.17);
+  });
+
+  it('applies GEOID18 to the 3D terrain and reports the ellipsoidal height beside the PRVD02 one', async () => {
+    const { container } = renderTwin();
+    await loaded();
+    expect(screen.getByTestId('perspective')).toHaveAttribute('data-geoid', 'applied');
+    expect(container.querySelector('[data-dt-geoid]')).toHaveTextContent('GEOID18 applied');
+    expect(container.querySelector('[data-dt-geoid]')).toHaveTextContent('no correction is applied outside');
+    fireEvent.click(container.querySelector('[data-dt-record="evo:entities:m"]'));
+    await waitFor(() => expect(container.querySelector('[data-dt-ellipsoidal]')).toHaveTextContent(
+      'Geoid N -40.0 m (GEOID18) → 1282.7 m NAD83(2011) ellipsoidal · H + N',
+    ));
+    // The PRVD02 height is still reported as PRVD02, never as the ellipsoidal one.
+    expect(container.querySelector('[data-dt-elevation]')).toHaveTextContent('1322.7 m PRVD02 · CUDEM m9525 1/9″');
+  });
+
+  it('says so, and why, when the geoid is not applied, and never shows an ellipsoidal height then', async () => {
+    openGeoid.mockRejectedValue(new Error('HTTP 503'));
+    const { container } = renderTwin();
+    await loaded();
+    expect(screen.getByTestId('perspective')).toHaveAttribute('data-geoid', 'not-applied');
+    expect(screen.getByRole('alert')).toHaveTextContent('GEOID18 could not be read (HTTP 503)');
+    expect(container.querySelector('[data-dt-geoid]')).toHaveTextContent('offset by the local geoid separation');
+    fireEvent.click(container.querySelector('[data-dt-record="evo:entities:m"]'));
+    await waitFor(() => expect(container.querySelector('[data-dt-elevation]')).toHaveTextContent('1322.7 m PRVD02'));
+    expect(container.querySelector('[data-dt-ellipsoidal]')).toHaveTextContent('Ellipsoidal height is not computed: the geoid is not applied.');
+  });
+
+  it('waits for the geoid before it starts the 3D panel, so terrain is built once', async () => {
+    let release;
+    openGeoid.mockReturnValue(new Promise((resolve) => { release = resolve; }));
+    renderTwin();
+    await dataLoaded();
+    expect(screen.queryByTestId('perspective')).toBeNull();
+    expect(screen.getByText(/Reading the geoid/)).toBeInTheDocument();
+    release(GEOID);
+    expect(await screen.findByTestId('perspective')).toHaveAttribute('data-geoid', 'applied');
   });
 
   it('does not report a height outside CUDEM coverage', async () => {
@@ -178,7 +228,7 @@ describe('Digital Twin', () => {
     const geojson = JSON.parse(await blobs[0].text());
     expect(geojson.features).toHaveLength(3);
     expect(geojson.federation_export).toMatchObject({ contract: 'federation-spatial-features-v1', certification: 'NOT_CERTIFIED',
-      layers: { terrain: 'noaa-ncei-cudem-pr-ninth-m9525' } });
+      layers: { terrain: 'noaa-ncei-cudem-pr-ninth-m9525', geoid: 'noaa-ngs-geoid18-prvi' } });
     const usda = await blobs[1].text();
     expect(usda).toContain('def Points "FederationRecords"');
     expect(usda).toContain('int record_count = 3');

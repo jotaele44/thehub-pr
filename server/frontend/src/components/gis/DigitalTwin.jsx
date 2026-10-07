@@ -6,6 +6,7 @@ import { PrecisionMarker, SelectedRecord } from '@/components/gis/PropertyMap';
 import { terrainSource } from '@/gis/advanced3dSourceRegistry';
 import { BASEMAPS, IMAGERY_BASEMAPS } from '@/gis/basemaps';
 import { CUDEM_PR, covers, elevationAt, formatElevation } from '@/gis/cudem';
+import { GEOID18_PR, GEOID_NOT_APPLIED, formatHeight, geoidBinding, geoidHeight, openGeoid } from '@/gis/geoid';
 import {
   DIGITAL_TWIN_PANELS, TIME_WINDOWS, filterByTime, findingFeatures, findingStatement, geojsonExport, liveCounts, liveStatement,
   panelFrom, timeBounds, timeWindow, usdaExport,
@@ -68,7 +69,9 @@ function Panel({ id, label, maximized, onMaximize, children }) {
   );
 }
 
-function Elevation({ point }) {
+// PRVD02 height from CUDEM, and beside it the ellipsoidal height (H + N) when the
+// geoid is applied. The two are never mixed: each carries its own datum.
+function Elevation({ point, geoid }) {
   const inside = point && covers([point.lon, point.lat, point.lon, point.lat]);
   const query = useQuery({
     queryKey: ['cudem-elevation', point?.lon, point?.lat],
@@ -82,10 +85,47 @@ function Elevation({ point }) {
   else if (query.isError) text = `CUDEM could not be read: ${query.error?.message}`;
   else if (point && query.data === null) text = 'CUDEM has no value here (no height reported).';
   else if (query.data) text = formatElevation(query.data);
-  return <dd data-dt-elevation>{text}</dd>;
+
+  let ellipsoidal = '—';
+  if (point && geoid.status === 'loading') ellipsoidal = 'Reading GEOID18…';
+  else if (point && geoid.status !== 'applied') ellipsoidal = `${GEOID_NOT_APPLIED.ellipsoidal} (${geoid.reason})`;
+  else if (point && query.data) {
+    const n = geoidHeight(geoid.grid, point.lon, point.lat);
+    ellipsoidal = n === null
+      ? `No geoid height here (outside ${GEOID18_PR.model}'s extent); no ellipsoidal height reported.`
+      : `Geoid N ${n.toFixed(1)} m (${GEOID18_PR.model}) → ${formatHeight({ value: query.data.metres + n, datum: 'NAD83(2011) ellipsoidal', source: 'H + N' })}`;
+  }
+  return (
+    <>
+      <dd data-dt-elevation>{text}</dd>
+      <dt className="text-muted-foreground">Ellipsoidal height</dt>
+      <dd data-dt-ellipsoidal>{ellipsoidal}</dd>
+    </>
+  );
 }
 
-function DetailsPanel({ selected, point, visible, onSelect, selectedId, tilesRead, terrainError, terrain, counts, timeRange }) {
+function GeoidStatus({ geoid }) {
+  const [west, south, east, north] = GEOID18_PR.extent;
+  if (geoid.status === 'applied') {
+    return (
+      <p data-dt-geoid>
+        {GEOID18_PR.model} applied: {GEOID18_PR.provider}; {GEOID18_PR.resolution}. 3D heights are H + N, with N bilinear between nodes, on the {GEOID18_PR.ellipsoidalDatum};
+        no correction is applied outside the grid (lon {west} to {east}, lat {south} to {north}). {GEOID18_PR.caveat}
+      </p>
+    );
+  }
+  if (geoid.status === 'loading') return <p data-dt-geoid>Geoid: reading {GEOID18_PR.model}…</p>;
+  if (geoid.status === 'failed') {
+    return (
+      <p data-dt-geoid role="alert" className="text-destructive">
+        {GEOID18_PR.model} could not be read ({geoid.reason}). {GEOID_NOT_APPLIED.caveat}
+      </p>
+    );
+  }
+  return <p data-dt-geoid>Geoid not applied ({geoid.reason}). {GEOID_NOT_APPLIED.caveat}</p>;
+}
+
+function DetailsPanel({ selected, point, visible, onSelect, selectedId, tilesRead, terrainError, terrain, geoid, counts, timeRange }) {
   return (
     <div className="h-full space-y-3 overflow-y-auto p-3 text-xs">
       {selected ? <SelectedRecord feature={selected} /> : <p className="text-muted-foreground">No record selected.</p>}
@@ -93,7 +133,7 @@ function DetailsPanel({ selected, point, visible, onSelect, selectedId, tilesRea
         <dt className="text-muted-foreground">Point</dt>
         <dd>{point ? `${point.lat.toFixed(5)}, ${point.lon.toFixed(5)} (WGS84)` : '—'}</dd>
         <dt className="text-muted-foreground">Elevation</dt>
-        <Elevation point={point} />
+        <Elevation point={point} geoid={geoid} />
         <dt className="text-muted-foreground">Time window</dt>
         <dd data-dt-window>{timeRange ? `${dateText(timeRange[0])} to ${dateText(timeRange[1])}` : 'No dated records'}</dd>
         <dt className="text-muted-foreground">Records</dt>
@@ -123,6 +163,7 @@ function DetailsPanel({ selected, point, visible, onSelect, selectedId, tilesRea
         <p>Vertical datum {CUDEM_PR.verticalDatum}, {CUDEM_PR.verticalUnits}; horizontal {CUDEM_PR.horizontalDatum}; {CUDEM_PR.resolution}.</p>
         <p data-dt-terrain-status>3D binding: {terrain?.status === 'READY_FOR_RUNTIME_BINDING' ? 'bound (uniform vertical datum)' : `not bound (${terrain?.status || 'no source'})`}.</p>
         <ul className="list-disc pl-4 text-muted-foreground">{CUDEM_PR.heightCaveats.map((line) => <li key={line}>{line}</li>)}</ul>
+        <GeoidStatus geoid={geoid} />
         <p data-dt-terrain-tiles>{tilesRead.length ? `CUDEM tiles read: ${tilesRead.join(', ')}` : 'No CUDEM tile read yet in this view.'}</p>
         {terrainError ? <p role="alert" className="text-destructive">Terrain tiles failed to load; the surface is flat there: {terrainError}</p> : null}
       </section>
@@ -148,6 +189,15 @@ export default function DigitalTwin() {
   const [tilesRead, setTilesRead] = useState([]);
   const [terrainError, setTerrainError] = useState(null);
   const [terrain] = useState(() => terrainSource(CUDEM_PR.sourceId));
+  // GEOID18 corrects the 3D heights only when the terrain's datum is the one it relates (geoid.js).
+  const binding = useMemo(() => geoidBinding(terrain), [terrain]);
+  const geoidQuery = useQuery({
+    queryKey: ['geoid18', GEOID18_PR.sourceId], queryFn: () => openGeoid(), enabled: binding.status === 'BOUND', staleTime: Infinity, retry: false,
+  });
+  let geoid = { status: 'loading', grid: null, reason: null };
+  if (binding.status !== 'BOUND') geoid = { status: 'not-bound', grid: null, reason: binding.reason };
+  else if (geoidQuery.isError) geoid = { status: 'failed', grid: null, reason: geoidQuery.error?.message || 'unknown error' };
+  else if (geoidQuery.data) geoid = { status: 'applied', grid: geoidQuery.data, reason: null };
 
   const query = useQuery({ queryKey: ['spatial-features', false, null], queryFn: () => federation.spatial.features({}) });
   const data = query.data;
@@ -196,7 +246,11 @@ export default function DigitalTwin() {
       window: timeRange,
       filters: { show_undated: showUndated, show_findings: showFindings, live_or_current_only: liveOnly },
       counts: { visible: timed.visible.length, outside_time_window: timed.outside, undated: timed.undated, loaded: data?.loaded ?? null },
-      layers: { records: 'Hub store (federation-spatial-features-v1)', terrain: terrain?.status === 'READY_FOR_RUNTIME_BINDING' ? CUDEM_PR.sourceId : null },
+      layers: {
+        records: 'Hub store (federation-spatial-features-v1)',
+        terrain: terrain?.status === 'READY_FOR_RUNTIME_BINDING' ? CUDEM_PR.sourceId : null,
+        geoid: geoid.status === 'applied' ? GEOID18_PR.sourceId : null,
+      },
     };
   }
 
@@ -261,13 +315,17 @@ export default function DigitalTwin() {
       ) : null}
       <div className="grid gap-3 lg:grid-cols-2" data-dt-layout={maximized || 'grid'}>
         <Panel id="perspective" label={DIGITAL_TWIN_PANELS[0].label} maximized={maximized} onMaximize={maximize}>
-          <Suspense fallback={<div className="flex h-full items-center justify-center text-sm text-muted-foreground">Loading the 3D view…</div>}>
-            <DigitalTwinPerspective
-              features={timed.visible} colors={colors} selectedId={selectedId} view={view} onViewChange={setView}
-              onSelectFeature={setSelectedId} onTerrainTiles={addTiles}
-              onTerrainError={(error) => setTerrainError(String(error?.message || error))}
-            />
-          </Suspense>
+          {geoid.status === 'loading' ? (
+            <div role="status" className="flex h-full items-center justify-center text-sm text-muted-foreground">Reading the geoid ({GEOID18_PR.model}) before the terrain is built…</div>
+          ) : (
+            <Suspense fallback={<div className="flex h-full items-center justify-center text-sm text-muted-foreground">Loading the 3D view…</div>}>
+              <DigitalTwinPerspective
+                features={timed.visible} colors={colors} selectedId={selectedId} view={view} onViewChange={setView}
+                geoid={geoid.grid} onSelectFeature={setSelectedId} onTerrainTiles={addTiles}
+                onTerrainError={(error) => setTerrainError(String(error?.message || error))}
+              />
+            </Suspense>
+          )}
         </Panel>
         <Panel id="ortho" label={DIGITAL_TWIN_PANELS[1].label} maximized={maximized} onMaximize={maximize}>
           {mapPanel('digital-twin-ortho', BASEMAPS.cartoDark, 'Top-down map. Every record shown is also listed in the Details panel.')}
@@ -278,7 +336,7 @@ export default function DigitalTwin() {
         <Panel id="details" label={DIGITAL_TWIN_PANELS[3].label} maximized={maximized} onMaximize={maximize}>
           <DetailsPanel
             selected={selected} point={point} visible={timed.visible} onSelect={setSelectedId} selectedId={selectedId}
-            tilesRead={tilesRead} terrainError={terrainError} terrain={terrain}
+            tilesRead={tilesRead} terrainError={terrainError} terrain={terrain} geoid={geoid}
             counts={{ visible: timed.visible.length, outside: timed.outside, undated: timed.undated }} timeRange={timeRange}
           />
         </Panel>

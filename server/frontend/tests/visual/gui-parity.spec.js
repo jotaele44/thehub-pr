@@ -463,6 +463,18 @@ const TWIN_FEATURES = {
   ],
 };
 
+// Serves a file the way NOAA's bucket and the PROJ CDN do: 206 for one byte range, CORS open.
+function serveRanges(route, file) {
+  const range = /^bytes=(\d+)-(\d+)$/.exec(route.request().headers().range || '');
+  if (!range) return route.fulfill({ status: 200, contentType: 'image/tiff', headers: { 'Access-Control-Allow-Origin': '*' }, body: file });
+  const start = Number(range[1]);
+  const end = Math.min(Number(range[2]), file.length - 1);
+  return route.fulfill({
+    status: 206, contentType: 'image/tiff', body: file.subarray(start, end + 1),
+    headers: { 'Access-Control-Allow-Origin': '*', 'Content-Range': `bytes ${start}-${end}/${file.length}` },
+  });
+}
+
 async function mockCudem(page) {
   const { writeArrayBuffer } = await import('geotiff');
   const { tileBounds } = await import('../../src/gis/cudem.js');
@@ -471,20 +483,23 @@ async function mockCudem(page) {
     const [west, south, east, north] = tileBounds(name);
     const pixels = 64;
     const values = new Float32Array(pixels * pixels).map((_, index) => 100 + Math.floor(index / pixels) * 10);
-    const file = Buffer.from(writeArrayBuffer(values, {
+    return serveRanges(route, Buffer.from(writeArrayBuffer(values, {
       width: pixels, height: pixels, BitsPerSample: [32], SampleFormat: [3],
       ModelPixelScale: [(east - west) / pixels, (north - south) / pixels, 0],
       ModelTiepoint: [0, 0, 0, west, north, 0], GeographicTypeGeoKey: 4269,
-    }));
-    const range = /^bytes=(\d+)-(\d+)$/.exec(route.request().headers().range || '');
-    if (!range) return route.fulfill({ status: 200, contentType: 'image/tiff', headers: { 'Access-Control-Allow-Origin': '*' }, body: file });
-    const start = Number(range[1]);
-    const end = Math.min(Number(range[2]), file.length - 1);
-    return route.fulfill({
-      status: 206, contentType: 'image/tiff', body: file.subarray(start, end + 1),
-      headers: { 'Access-Control-Allow-Origin': '*', 'Content-Range': `bytes ${start}-${end}/${file.length}` },
-    });
+    })));
   });
+}
+
+// GEOID18's layout (301 x 361 nodes at 1 arc-minute, longitudes 0-360, PixelIsPoint) holding N = -40 m.
+async function mockGeoid(page) {
+  const { writeArrayBuffer } = await import('geotiff');
+  const file = Buffer.from(writeArrayBuffer(new Float32Array(301 * 361).fill(-40), {
+    width: 301, height: 361, BitsPerSample: [32], SampleFormat: [3],
+    ModelPixelScale: [1 / 60, 1 / 60, 0], ModelTiepoint: [0, 0, 0, 291, 21, 0],
+    GeographicTypeGeoKey: 6318, GTRasterTypeGeoKey: 2,
+  }));
+  await page.route('https://cdn.proj.org/us_noaa_g2018p0.tif', (route) => serveRanges(route, file));
 }
 
 test.describe('digital twin', () => {
@@ -494,6 +509,7 @@ test.describe('digital twin', () => {
     await mockApi(page, { '/spatial/features': TWIN_FEATURES });
     await mockMapProviders(page);
     await mockCudem(page);
+    await mockGeoid(page);
     await page.goto('/sources', { waitUntil: 'networkidle' });
     await (await openPrimaryNav(page)).getByRole('link', { name: 'GIS Workspace', exact: true }).click();
     await page.getByRole('button', { name: 'Digital Twin', exact: true }).click();
@@ -502,14 +518,18 @@ test.describe('digital twin', () => {
     const perspective = page.getByTestId('digital-twin-perspective');
     await expect(perspective).toHaveAttribute('data-ready', 'true', { timeout: 30000 });
     await expect(perspective).toHaveAttribute('data-terrain', 'noaa-ncei-cudem-pr-ninth-m9525');
+    await expect(perspective).toHaveAttribute('data-geoid', 'applied');
     await expect(page.getByTestId('digital-twin-ortho')).toHaveAttribute('data-map-ready', 'true', { timeout: 30000 });
     await expect(page.getByTestId('digital-twin-ortho')).toHaveAttribute('data-drawn-count', /^[1-9]/, { timeout: 30000 });
     await expect(page.locator('[data-dt-findings-status]')).toContainText('No finding carries geometry');
     await expect(page.locator('[data-dt-live-status]')).toContainText('No producer declares a live cadence');
     await expect(page.locator('[data-dt-terrain-status]')).toContainText('bound (uniform vertical datum)');
+    await expect(page.locator('[data-dt-geoid]')).toContainText('GEOID18 applied');
 
     await page.locator('[data-dt-record="evo:entities:ent_m"]').click();
     await expect(page.locator('[data-dt-elevation]')).toContainText(/m PRVD02 · CUDEM m9525/, { timeout: 30000 });
+    // The ellipsoidal height is H + N from the geoid grid read from the CDN (N = -40 m in the mock), with its own datum.
+    await expect(page.locator('[data-dt-ellipsoidal]')).toContainText(/Geoid N -40\.0 m \(GEOID18\) → [\d.]+ m NAD83\(2011\) ellipsoidal · H \+ N/);
     await expect(page.locator('[data-dt-terrain-tiles]')).toContainText('ncei19_', { timeout: 30000 });
 
     await page.getByRole('slider', { name: 'Time' }).fill(String(Date.parse('2005-01-01T00:00:00Z')));

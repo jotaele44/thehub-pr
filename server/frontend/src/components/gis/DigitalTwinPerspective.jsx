@@ -71,7 +71,7 @@ function viewOf(viewer) {
   };
 }
 
-export default function DigitalTwinPerspective({ features, colors, selectedId, view, onViewChange, onSelectFeature, onTerrainTiles, onTerrainError }) {
+export default function DigitalTwinPerspective({ features, colors, selectedId, view, onViewChange, geoid = null, onSelectFeature, onTerrainTiles, onTerrainError }) {
   const containerRef = useRef(null);
   const viewerRef = useRef(null);
   const recordsRef = useRef(null);
@@ -96,6 +96,7 @@ export default function DigitalTwinPerspective({ features, colors, selectedId, v
         ? createCudemTerrainProvider({
           onTiles: (names) => handlers.current.onTerrainTiles?.(names),
           onError: (error) => handlers.current.onTerrainError?.(error),
+          geoid,
         })
         : new EllipsoidTerrainProvider(),
     });
@@ -160,6 +161,7 @@ export default function DigitalTwinPerspective({ features, colors, selectedId, v
       data-testid="digital-twin-perspective"
       data-ready={ready ? 'true' : 'false'}
       data-terrain={terrainBound ? terrain.sourceId : 'ellipsoid'}
+      data-geoid={terrainBound && geoid ? 'applied' : 'not-applied'}
       data-entity-count={features.length}
       role="region"
       aria-label="Perspective view with terrain. Every record shown is also listed in the Details panel."
