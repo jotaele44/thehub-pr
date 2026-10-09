@@ -18,8 +18,11 @@ from hub.grid_v2 import (
     GRID_VERSION,
     MASK_SCHEMA_SHA256,
     GridV2PinError,
+    attach_grid_identity,
+    build_grid_deep_link,
     grid_identity,
     load_pin,
+    validate_cell_id,
     validate_pin_set,
 )
 
@@ -133,3 +136,96 @@ def test_missing_consumer_is_a_denominator_failure(tmp_path):
 
     with pytest.raises(GridV2PinError, match="denominator mismatch"):
         validate_pin_set(paths)
+
+
+@pytest.mark.parametrize(
+    "cell_id",
+    [
+        "PRG2:L0:R066:C0170",
+        "PRG2:L1:R133:C0341",
+        "PRG2:L2:R267:C0683",
+        "PRG2:L3:R535:C1367",
+    ],
+)
+def test_cell_id_accepts_exact_level_bounds(cell_id):
+    assert validate_cell_id(cell_id) == cell_id
+
+
+@pytest.mark.parametrize(
+    "cell_id",
+    [
+        "PRG2:L0:R067:C0000",
+        "PRG2:L0:R000:C0171",
+        "PRG2:L1:R134:C0000",
+        "PRG2:L1:R000:C0342",
+        "PRG2:L2:R268:C0000",
+        "PRG2:L2:R000:C0684",
+        "PRG2:L3:R536:C0000",
+        "PRG2:L3:R000:C1368",
+        "R0_C0",
+        "PRG2:L1:R1:C1",
+    ],
+)
+def test_cell_id_rejects_out_of_range_or_noncanonical(cell_id):
+    with pytest.raises(GridV2PinError):
+        validate_cell_id(cell_id)
+
+
+def test_cell_id_level_mismatch_fails_closed():
+    with pytest.raises(GridV2PinError, match="does not match requested level"):
+        validate_cell_id("PRG2:L2:R000:C0000", level="L1")
+
+
+def test_grid_identity_can_bind_exact_cell():
+    pin = load_pin(PIN_PATH, expected_consumer="thehub-pr")
+    identity = grid_identity(
+        pin,
+        level="L1",
+        cell_id="PRG2:L1:R075:C0234",
+    )
+    assert identity["Cell_ID"] == "PRG2:L1:R075:C0234"
+    assert identity["Grid_Level"] == "L1"
+
+
+def test_attach_grid_identity_preserves_data_state_semantics():
+    pin = load_pin(PIN_PATH, expected_consumer="thehub-pr")
+    payload = {
+        "Record_Count": 0,
+        "Data_State": "ZERO_RECORDS",
+    }
+    stamped = attach_grid_identity(
+        payload,
+        pin,
+        level="L1",
+        cell_id="PRG2:L1:R075:C0234",
+    )
+    assert stamped["Record_Count"] == 0
+    assert stamped["Data_State"] == "ZERO_RECORDS"
+    assert stamped["Grid_Identity"]["Cell_ID"] == "PRG2:L1:R075:C0234"
+
+
+def test_build_grid_deep_link_is_canonical_and_url_safe():
+    pin = load_pin(PIN_PATH, expected_consumer="thehub-pr")
+    path = build_grid_deep_link(
+        pin,
+        level="L1",
+        cell_id="PRG2:L1:R075:C0234",
+        base_path="/hub/",
+        as_of="2026-10-09T12:00:00-04:00",
+    )
+    assert path == (
+        "/hub/grid/PR_GRID_GEOGRAPHIC_V2/2.0.0-rc1/"
+        "L1/PRG2:L1:R075:C0234"
+        "?as_of=2026-10-09T12%3A00%3A00-04%3A00"
+    )
+
+
+def test_deep_link_rejects_blank_as_of():
+    pin = load_pin(PIN_PATH, expected_consumer="thehub-pr")
+    with pytest.raises(GridV2PinError, match="as_of cannot be blank"):
+        build_grid_deep_link(
+            pin,
+            level="L1",
+            cell_id="PRG2:L1:R075:C0234",
+            as_of=" ",
+        )
