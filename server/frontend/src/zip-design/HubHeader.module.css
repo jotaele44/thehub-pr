@@ -13,3 +13,5 @@
 @media(max-width:720px){.header{padding:10px var(--zip-spacing-3)}.brandSub,.snapshot{display:none}.nav{justify-content:flex-start}.navLink{white-space:nowrap}}
 /* Reserve the fixed notification control hit area at every breakpoint. */
 .header { padding-right: 64px; }
+
+@media(max-width:1023px){.header{display:none}}
