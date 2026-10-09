@@ -64,8 +64,11 @@
           "scripts/validate_pr_grid_v2_federation.py:main",
           "src/hub/grid_v2.py:GridV2Pin",
           "src/hub/grid_v2.py:GridV2PinError",
+          "src/hub/grid_v2.py:attach_grid_identity",
+          "src/hub/grid_v2.py:build_grid_deep_link",
           "src/hub/grid_v2.py:grid_identity",
           "src/hub/grid_v2.py:load_pin",
+          "src/hub/grid_v2.py:validate_cell_id",
           "src/hub/grid_v2.py:validate_level",
           "src/hub/grid_v2.py:validate_pin_payload",
           "src/hub/grid_v2.py:validate_pin_set"
