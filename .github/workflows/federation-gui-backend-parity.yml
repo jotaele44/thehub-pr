@@ -30,11 +30,40 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Read exact pins from parity manifest
+        id: pins
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          manifest = json.loads(Path('federation-audit/manifests/gui-backend-parity-pins.json').read_text())
+          keys = {
+              'thehub-pr': 'thehub',
+              'spiderweb-pr': 'spiderweb',
+              'skywatcher-pr': 'skywatcher',
+              'ovnis-pr': 'ovnis',
+              'aguayluz-pr': 'aguayluz',
+              'centinelas-pr': 'centinelas',
+              'moneysweep-pr': 'moneysweep',
+          }
+          repositories = {repo['id']: repo for repo in manifest['repositories']}
+          assert set(repositories) == set(keys), sorted(repositories)
+          with Path(os.environ['GITHUB_OUTPUT']).open('a', encoding='utf-8') as output:
+              for repo_id, key in keys.items():
+                  commit = repositories[repo_id]['commit']
+                  assert len(commit) == 40 and all(char in '0123456789abcdef' for char in commit)
+                  output.write(f'{key}={commit}\n')
+          PY
+
       - name: Checkout TheHub exact local-contract pin
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/thehub-pr
-          ref: 6f037e038442ee6cea76c5f3592ed921adbb6f83
+          ref: ${{ steps.pins.outputs.thehub }}
           path: federation-workspace/thehub-pr
           persist-credentials: false
 
@@ -42,7 +71,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/spiderweb-pr
-          ref: a657d2254edbe3a0103421ed25e3e974227ac2ec
+          ref: ${{ steps.pins.outputs.spiderweb }}
           path: federation-workspace/spiderweb-pr
           persist-credentials: false
 
@@ -50,7 +79,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/skywatcher-pr
-          ref: 20caeb4a9bfd33df8b83f0c6ed13b0c1775bc3b8
+          ref: ${{ steps.pins.outputs.skywatcher }}
           path: federation-workspace/skywatcher-pr
           persist-credentials: false
 
@@ -58,7 +87,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/ovnis-pr
-          ref: 457b6de4128e5348df5d395b530bcb2e9f3249a8
+          ref: ${{ steps.pins.outputs.ovnis }}
           path: federation-workspace/ovnis-pr
           persist-credentials: false
 
@@ -66,7 +95,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/aguayluz-pr
-          ref: 9203124f0e670700b4204040815eef64efb2fb9e
+          ref: ${{ steps.pins.outputs.aguayluz }}
           path: federation-workspace/aguayluz-pr
           persist-credentials: false
 
@@ -74,7 +103,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/centinelas-pr
-          ref: df4d098cd5ee123caa8985f023bfdf0bb5d191d1
+          ref: ${{ steps.pins.outputs.centinelas }}
           path: federation-workspace/centinelas-pr
           persist-credentials: false
 
@@ -82,7 +111,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
         with:
           repository: Jotaele44/moneysweep-pr
-          ref: 312996e9e00cb48582a038ec1ec8878c6373bb11
+          ref: ${{ steps.pins.outputs.moneysweep }}
           path: federation-workspace/moneysweep-pr
           persist-credentials: false
 
