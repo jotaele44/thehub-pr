@@ -298,6 +298,9 @@
           "src/hub/federated_search.py",
           "server/backend/main.py"
         ],
+        "endpoints": [
+          "GET /"
+        ],
         "symbols": [
           "server/backend/search_api.py:current_index",
           "server/backend/search_api.py:search",
@@ -442,6 +445,9 @@
           "src/hub/event_timeline.py",
           "server/backend/main.py"
         ],
+        "endpoints": [
+          "GET /"
+        ],
         "symbols": [
           "server/backend/timeline_api.py:timeline",
           "src/hub/event_timeline.py:TimelineEvent",
@@ -496,6 +502,7 @@
           "server/backend/main.py"
         ],
         "endpoints": [
+          "GET /",
           "GET /case/{case_id}",
           "GET /records/{kind}"
         ],

@@ -3,7 +3,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from federation_audit.parity import _guarded, _risky_claims, audit_repository, certify_federation
+from federation_audit.parity import (
+    _existing_capability_bindings,
+    _guarded,
+    _risky_claims,
+    audit_repository,
+    certify_federation,
+)
 from federation_audit.resolver import build_resolution_index
 
 SHA = "a" * 40
@@ -156,6 +162,72 @@ def test_clean_fixture_can_close_all_static_and_runtime_dimensions(tmp_path: Pat
     )
     assert report["state"] == "PASS", report["findings"]
     assert report["material_residue"] == 0
+
+
+def test_router_local_capability_endpoint_resolves_to_mounted_route(tmp_path: Path):
+    root = tmp_path / "fixture-pr"
+    _fixture(root, fetch_target="/api/items/status")
+    _write(
+        root,
+        "server/app.py",
+        "from fastapi import APIRouter, FastAPI\n"
+        "router = APIRouter(prefix='/api/items')\n"
+        "@router.get('/status')\n"
+        "def items(): return []\n"
+        "app = FastAPI()\n"
+        "app.include_router(router)\n",
+    )
+    manifest_path = root / ".federation/gui-capabilities.json"
+    manifest = json.loads(manifest_path.read_text())
+    manifest["capabilities"][0]["backend"] = {
+        "files": ["server/app.py"],
+        "endpoints": ["GET /status"],
+    }
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    report = audit_repository(
+        root, _repo(), _contract(), contract_source="repository", authority_matrix=MATRIX
+    )
+
+    assert report["state"] == "PASS", report["findings"]
+    assert report["inventory"]["reviewed_backend_bindings"] == 1
+
+
+def test_ambiguous_router_local_capability_endpoint_fails_closed(tmp_path: Path):
+    root = tmp_path / "fixture-pr"
+    for name, prefix in (("one", "/api/one"), ("two", "/api/two")):
+        _write(
+            root,
+            f"server/{name}.py",
+            "from fastapi import APIRouter\n"
+            f"router = APIRouter(prefix='{prefix}')\n"
+            "@router.get('/status')\n"
+            "def status(): return {}\n",
+        )
+    contract = _contract()
+    manifest_path = root / ".federation/gui-capabilities.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(
+        json.dumps({
+            "capabilities": [{
+                "id": "ambiguous",
+                "status": "active",
+                "backend": {
+                    "files": ["server/one.py", "server/two.py"],
+                    "endpoints": ["GET /status"],
+                },
+                "frontend": {"routes": []},
+            }],
+        }),
+        encoding="utf-8",
+    )
+    routes = build_resolution_index(root).routes
+
+    backend, _gui, gaps = _existing_capability_bindings(root, contract, routes)
+
+    assert backend == set()
+    assert len(gaps) == 1
+    assert "ambiguous-endpoint:GET /status" in gaps[0]
 
 
 def test_gui_target_missing_is_p0(tmp_path: Path):
