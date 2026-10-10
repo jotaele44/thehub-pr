@@ -34,14 +34,6 @@ CANONICAL_RUNTIME = REPO_ROOT / "src/hub/grid_v2.py"
 RUNTIME_CONSUMERS = frozenset(EXPECTED_CONSUMERS - {"thehub-pr"})
 
 
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
-
-
 def _pin_paths(workspace_root: Path) -> dict:
     paths = {}
     for consumer in sorted(EXPECTED_CONSUMERS):
@@ -62,7 +54,7 @@ def _validate_runtime_set(workspace_root: Path) -> tuple[str, dict]:
         canonical_bytes = CANONICAL_RUNTIME.read_bytes()
     except OSError as exc:
         raise GridV2PinError(
-            "cannot read canonical V2 runtime %s: %s" % (CANONICAL_RUNTIME, exc)
+            f"cannot read canonical V2 runtime {CANONICAL_RUNTIME}: {exc}"
         ) from exc
 
     canonical_sha = hashlib.sha256(canonical_bytes).hexdigest()
@@ -73,13 +65,13 @@ def _validate_runtime_set(workspace_root: Path) -> tuple[str, dict]:
             payload = path.read_bytes()
         except OSError as exc:
             raise GridV2PinError(
-                "missing V2 runtime for %s at %s: %s" % (consumer, path, exc)
+                f"missing V2 runtime for {consumer} at {path}: {exc}"
             ) from exc
         digest = hashlib.sha256(payload).hexdigest()
         if payload != canonical_bytes:
             raise GridV2PinError(
-                "V2 runtime drift for %s: expected_sha256=%s observed_sha256=%s"
-                % (consumer, canonical_sha, digest)
+                f"V2 runtime drift for {consumer}: "
+                f"expected_sha256={canonical_sha} observed_sha256={digest}"
             )
         details[consumer] = {
             "runtime_path": str(path),
