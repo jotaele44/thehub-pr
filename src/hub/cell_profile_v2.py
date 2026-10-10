@@ -49,6 +49,22 @@ REPOSITORIES = frozenset(
 _FORBIDDEN_GEOMETRY_FIELDS = frozenset({"geometry", "coordinates", "bbox", "polygon"})
 
 
+def _forbidden_geometry_paths(value: Any, path: str = "") -> list[str]:
+    """Return nested paths that would turn a profile into a geometry carrier."""
+    found: list[str] = []
+    if isinstance(value, Mapping):
+        for key, child in value.items():
+            child_path = f"{path}.{key}" if path else str(key)
+            if str(key).lower() in _FORBIDDEN_GEOMETRY_FIELDS:
+                found.append(child_path)
+            found.extend(_forbidden_geometry_paths(child, child_path))
+    elif isinstance(value, (list, tuple)):
+        for index, child in enumerate(value):
+            child_path = f"{path}[{index}]"
+            found.extend(_forbidden_geometry_paths(child, child_path))
+    return found
+
+
 class CellProfileV2Error(ValueError):
     """Raised when a V2 cell profile violates identity or data-state semantics."""
 
@@ -124,10 +140,18 @@ def build_cell_profile_v2(
         raise CellProfileV2Error("Top_Record_IDs must contain non-empty identifiers only")
 
     summary_payload = dict(summary or {})
-    forbidden = sorted(_FORBIDDEN_GEOMETRY_FIELDS.intersection(summary_payload))
+    category_payload = [dict(value) for value in (categories or [])]
+    completeness_payload = dict(completeness or {})
+    forbidden = _forbidden_geometry_paths(
+        {
+            "Summary": summary_payload,
+            "Categories": category_payload,
+            "Completeness": completeness_payload,
+        }
+    )
     if forbidden:
         raise CellProfileV2Error(
-            "cell profile Summary must not carry canonical geometry: " + ", ".join(forbidden)
+            "cell profile must not carry canonical geometry: " + ", ".join(forbidden)
         )
 
     identity = grid_identity(pin, level=selected_level, cell_id=canonical_cell)
@@ -143,9 +167,9 @@ def build_cell_profile_v2(
         "Record_Count": record_count,
         "Migration_State": migration_state,
         "Summary": summary_payload,
-        "Categories": [dict(value) for value in (categories or [])],
+        "Categories": category_payload,
         "Top_Record_IDs": records,
-        "Completeness": dict(completeness or {}),
+        "Completeness": completeness_payload,
         "Updated_At": updated_at,
         "Geometry_Included": False,
         "Deep_Link": build_grid_deep_link(
