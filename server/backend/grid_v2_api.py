@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 from contextlib import closing
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Mapping, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -130,9 +130,13 @@ def cell_profile(
     grid_version: str,
     level: str,
     cell_id: str,
-    as_of: str | None = Query(None, max_length=128),
+    as_of: Optional[str] = Query(None, max_length=128),
 ) -> dict[str, Any]:
     """Return materialized domain profiles for one canonical V2 cell."""
+    # FastAPI injects Query defaults during HTTP requests, but direct contract tests
+    # call this function as ordinary Python. Normalize the unapplied Query object
+    # to its semantic default so API and direct-call behavior remain identical.
+    effective_as_of = as_of if isinstance(as_of, str) else None
     pin = _pin()
 
     if grid_id != GRID_ID:
@@ -155,7 +159,7 @@ def cell_profile(
             pin,
             level=selected_level,
             cell_id=validated_cell,
-            as_of=as_of,
+            as_of=effective_as_of,
         )
     except GridV2PinError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
