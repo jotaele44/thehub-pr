@@ -65,6 +65,7 @@ jobs:
           repository: Jotaele44/thehub-pr
           ref: ${{ steps.pins.outputs.thehub }}
           path: federation-workspace/thehub-pr
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout Spiderweb exact local-contract pin
@@ -73,6 +74,7 @@ jobs:
           repository: Jotaele44/spiderweb-pr
           ref: ${{ steps.pins.outputs.spiderweb }}
           path: federation-workspace/spiderweb-pr
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout Skywatcher exact local-contract pin
@@ -81,6 +83,7 @@ jobs:
           repository: Jotaele44/skywatcher-pr
           ref: ${{ steps.pins.outputs.skywatcher }}
           path: federation-workspace/skywatcher-pr
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout Ovnis exact local-contract pin
@@ -89,6 +92,7 @@ jobs:
           repository: Jotaele44/ovnis-pr
           ref: ${{ steps.pins.outputs.ovnis }}
           path: federation-workspace/ovnis-pr
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout AguaYLuz exact local-contract pin
@@ -97,6 +101,7 @@ jobs:
           repository: Jotaele44/aguayluz-pr
           ref: ${{ steps.pins.outputs.aguayluz }}
           path: federation-workspace/aguayluz-pr
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout Centinelas exact local-contract pin
@@ -105,6 +110,7 @@ jobs:
           repository: Jotaele44/centinelas-pr
           ref: ${{ steps.pins.outputs.centinelas }}
           path: federation-workspace/centinelas-pr
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Checkout MoneySweep exact local-contract pin
@@ -113,6 +119,7 @@ jobs:
           repository: Jotaele44/moneysweep-pr
           ref: ${{ steps.pins.outputs.moneysweep }}
           path: federation-workspace/moneysweep-pr
+          fetch-depth: 0
           persist-credentials: false
 
       - name: Verify exact pins against parity manifest
@@ -173,7 +180,12 @@ jobs:
           assert len(report['repositories']) == 7
           assert report['summary']['material_residue'] == sum(r['material_residue'] for r in report['repositories'])
           assert all(r.get('contract_source') == 'repository' for r in report['repositories'])
-          assert all(r.get('contract_commit_relation', {}).get('relation') in {'EXACT','ANCESTOR_CLEAN'} for r in report['repositories'])
+          invalid_relations = {
+              r['repository']: r.get('contract_commit_relation', {}).get('relation')
+              for r in report['repositories']
+              if r.get('contract_commit_relation', {}).get('relation') not in {'EXACT', 'ANCESTOR_CLEAN'}
+          }
+          assert not invalid_relations, invalid_relations
           print(json.dumps(report['summary'], sort_keys=True))
           PY
 
