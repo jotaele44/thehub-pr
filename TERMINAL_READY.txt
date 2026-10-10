@@ -1,0 +1,81 @@
+TERMINAL_READY — TheHub PR Grid V2 Cell_Profile API
+
+BUILD SCOPE
+PR_GRID_GEOGRAPHIC_V2 Cell_Profile handoff endpoint.
+Spiderweb remains the geometry authority.
+This build does not infer cell membership and does not create CellProfiles.
+
+MACOS / LINUX
+
+From repository root:
+
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]" httpx -r server/backend/requirements.txt
+
+Run focused certification:
+
+python -m pytest -q tests/test_grid_v2_runtime.py tests/test_grid_v2_api.py
+
+Run full Hub tests:
+
+python -m pytest -q
+
+Start API:
+
+python -m uvicorn server.backend.main:app --host 127.0.0.1 --port 8000
+
+Smoke the canonical handoff route:
+
+curl -fsS "http://127.0.0.1:8000/grid/PR_GRID_GEOGRAPHIC_V2/2.0.0-rc1/L1/PRG2:L1:R075:C0234"
+
+Expected when no CellProfiles are materialized:
+Profile_Availability = NO_DATA
+Profile_Count = 0
+Profiles = []
+Grid_Identity.Grid_ID = PR_GRID_GEOGRAPHIC_V2
+Grid_Identity.Grid_Version = 2.0.0-rc1
+Grid_Identity.Grid_Manifest_SHA256 = 8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4
+
+Fail-closed smoke checks:
+
+curl -sS -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:8000/grid/PR_GRID_LOGICAL_V1/2.0.0-rc1/L1/PRG2:L1:R075:C0234"
+curl -sS -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:8000/grid/PR_GRID_GEOGRAPHIC_V2/2.0.0/L1/PRG2:L1:R075:C0234"
+curl -sS -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:8000/grid/PR_GRID_GEOGRAPHIC_V2/2.0.0-rc1/L4/PRG2:L1:R075:C0234"
+
+Expected HTTP status:
+wrong Grid_ID -> 409
+wrong Grid_Version -> 409
+unsupported level -> 422
+
+GRID CONTRACT PINS
+
+Authority commit:
+0c66e13d14232c0d7cbcbc179b3655904777dc71
+
+Grid manifest SHA256:
+8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4
+
+Cell schema SHA256:
+1c173aee4b21b9baa545b656735155f2236a87c436d467a12132ef53b2592f5d
+
+Binding schema SHA256:
+dabc461e47134b3b150be9aeb23b3d0097563493b33b3187538255e06b16a022
+
+Mask schema SHA256:
+0b31b717d274b19686bf7f47edbabdaec31c86800f2ca7f1e73ffb663600978b
+
+FAILURE HANDLING
+
+Do not treat NO_DATA as ZERO_RECORDS.
+Do not create synthetic CellProfiles to make the endpoint non-empty.
+Do not recompute Cell_ID in TheHub.
+If the local pin or stored Grid_Identity disagrees with the frozen authority hashes, stop and repair the pin/materialization instead of bypassing validation.
+
+WINDOWS POWERSHELL
+
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[dev]" httpx -r server/backend/requirements.txt
+python -m pytest -q tests/test_grid_v2_runtime.py tests/test_grid_v2_api.py
+python -m uvicorn server.backend.main:app --host 127.0.0.1 --port 8000
