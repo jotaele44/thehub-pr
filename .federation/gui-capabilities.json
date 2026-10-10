@@ -81,6 +81,33 @@
       }
     },
     {
+      "id": "pr-grid-v2-cell-profile-api",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Read-only fail-closed V2 Cell_Profile contract/API. It exposes immutable PR_GRID_GEOGRAPHIC_V2 identity and truthful UNKNOWN/UNMIGRATED state before record-binding migration; it is a federation runtime primitive, not a standalone operator workflow. A user-facing cell profile view is deferred until producer V2 bindings are materialized.",
+      "backend": {
+        "files": [
+          "server/backend/grid_v2_api.py",
+          "src/hub/cell_profile_v2.py"
+        ],
+        "endpoints": [
+          "GET /api/grid/{grid_id}/{grid_version}/{level}/{cell_id}/profile"
+        ],
+        "symbols": [
+          "server/backend/grid_v2_api.py:cell_profile_v2",
+          "src/hub/cell_profile_v2.py:CellProfileV2Error",
+          "src/hub/cell_profile_v2.py:build_cell_profile_v2",
+          "src/hub/cell_profile_v2.py:build_unmigrated_hub_profile"
+        ]
+      },
+      "tests": {
+        "contract": [
+          "tests/test_cell_profile_v2.py"
+        ]
+      }
+    },
+    {
       "id": "twin-capability-census-validator",
       "classification": "internal",
       "status": "active",
