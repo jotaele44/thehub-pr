@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "7a57a3d37e4668bb78faac99cd1ddd88226d0078",
+  "source_commit": "1438be5208bf7481888bd3a8fe038a4e30b9f8a9",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -35,7 +35,9 @@
       "server/frontend/src/components/layout/Sidebar.jsx",
       "server/frontend/src/components/layout/MobileNav.jsx"
     ],
-    "existing_gui_capability_manifests": []
+    "existing_gui_capability_manifests": [
+      ".federation/gui-capabilities.json"
+    ]
   },
   "authority": {
     "semantic_authority": "federation-control-and-cross-domain-orchestration-only",
@@ -1803,6 +1805,171 @@
       "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
       "evidence": [
         "server/frontend/src/components/notifications/NotificationBell.jsx:20"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/command/CommandPalette\\.jsx:[0-9]+:Search &amp; commands Ctrl K",
+      "classification": "CLIENT_STATE",
+      "rationale": "The context-bound trigger opens the tested command palette and intentionally performs no backend request.",
+      "evidence": [
+        "server/frontend/src/components/command/CommandPalette.jsx:106",
+        "server/frontend/src/components/command/CommandPalette.test.jsx:52"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/DigitalTwin\\.jsx:[0-9]+:.*Maximize.*",
+      "classification": "CLIENT_STATE",
+      "rationale": "The maximize control updates the tested panel query state and does not represent a backend operation.",
+      "evidence": [
+        "server/frontend/src/components/gis/DigitalTwin.jsx:58",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx:155"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/DigitalTwin\\.jsx:[0-9]+:Fullscreen",
+      "classification": "BROWSER_ACTION",
+      "rationale": "The control calls the browser Fullscreen API on the current panel and has no server-side target.",
+      "evidence": [
+        "server/frontend/src/components/gis/DigitalTwin.jsx:48",
+        "server/frontend/src/components/gis/DigitalTwin.jsx:62"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/GisViewSwitch\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "Each GIS view button updates validated URL search parameters for the current internal route.",
+      "evidence": [
+        "server/frontend/src/components/gis/GisViewSwitch.jsx:21",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx:156"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/PropertyMap\\.jsx:[0-9]+:(?:Provenance|Entity|unlabeled-control)",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "These controls follow evidence and entity deep links supplied by the validated spatial API response.",
+      "evidence": [
+        "server/frontend/src/components/gis/PropertyMap.jsx:251",
+        "server/frontend/src/components/gis/PropertyMap.jsx:317",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx:155"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/intelligence/IntelligenceWorkspace\\.jsx:[0-9]+:Open provenance inspector",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The link opens the canonical evidence route derived from a validated evidence reference.",
+      "evidence": [
+        "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:90",
+        "server/frontend/tests/visual/gui-parity.spec.js:46"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/layout/MobileNav\\.jsx:[0-9]+:Open navigation menu",
+      "classification": "CLIENT_STATE",
+      "rationale": "The Radix Sheet trigger opens tested local navigation state and intentionally has no backend target.",
+      "evidence": [
+        "server/frontend/src/components/layout/MobileNav.jsx:25",
+        "server/frontend/tests/visual/gui-parity.spec.js:29"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/layout/Sidebar\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The reusable sidebar item is a React Router link whose targets come from the tested navigation registry.",
+      "evidence": [
+        "server/frontend/src/components/layout/Sidebar.jsx:12",
+        "server/frontend/src/lib/commands.test.js:9"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/OvnisResearchTabs\\.jsx:[0-9]+:Open report",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The report link navigates to the tested case-reconstruction route using the producer case identifier.",
+      "evidence": [
+        "server/frontend/src/components/research/OvnisResearchTabs.jsx:41",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx:103"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/OvnisResearchTabs\\.jsx:[0-9]+:Primary source",
+      "classification": "EXTERNAL_NAVIGATION",
+      "rationale": "The anchor is emitted only for an explicit HTTP source URL and opens that cited external source.",
+      "evidence": [
+        "server/frontend/src/components/research/OvnisResearchTabs.jsx:66",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx:123"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/ResearchRecords\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The shared case link encodes the source-native case identifier into the case-reconstruction route.",
+      "evidence": [
+        "server/frontend/src/components/research/ResearchRecords.jsx:42",
+        "server/frontend/src/pages/ResearchHub.test.jsx:71"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/shared/RecordSheet\\.jsx:[0-9]+:Open provenance inspector",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The optional link opens the canonical evidence route only when a validated evidence reference exists.",
+      "evidence": [
+        "server/frontend/src/components/shared/RecordSheet.jsx:33",
+        "server/frontend/src/components/shared/RecordSheet.jsx:41"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/CaseReconstruction\\.jsx:[0-9]+:(?:Source provenance|Provenance|Case composition)",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "These links preserve API-supplied evidence and entity identifiers when navigating to canonical Hub routes.",
+      "evidence": [
+        "server/frontend/src/pages/CaseReconstruction.jsx:118",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx:51"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/EntityPage\\.jsx:[0-9]+:(?:unlabeled-control|Inspect|Full provenance)",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "Entity, relationship, and evidence links use API-supplied stable identifiers and tested canonical routes.",
+      "evidence": [
+        "server/frontend/src/pages/EntityPage.jsx:71",
+        "server/frontend/src/pages/EntityPage.jsx:121",
+        "server/frontend/src/pages/EntityPage.test.jsx:61"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/EvidenceInspector\\.jsx:[0-9]+:Entity composition",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The evidence inspector links an entity-stream record to its canonical entity-composition route.",
+      "evidence": [
+        "server/frontend/src/pages/EvidenceInspector.jsx:41",
+        "server/frontend/tests/visual/gui-parity.spec.js:292"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Search\\.jsx:[0-9]+:(?:unlabeled-control|Provenance|Entity composition)",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "Search results retain API-supplied evidence and entity deep links, both covered by route tests.",
+      "evidence": [
+        "server/frontend/src/pages/Search.jsx:33",
+        "server/frontend/src/pages/Search.test.jsx:62"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Timeline\\.jsx:[0-9]+:Source$",
+      "classification": "EXTERNAL_NAVIGATION",
+      "rationale": "The source anchor is emitted only for an explicit HTTP URL and opens the cited external record.",
+      "evidence": [
+        "server/frontend/src/pages/Timeline.jsx:66",
+        "server/frontend/src/pages/Timeline.test.jsx:67"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Timeline\\.jsx:[0-9]+:(?:Source provenance|Provenance|Case composition|Case reconstruction)",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "Timeline links preserve source, evidence, entity, and case identifiers across tested canonical routes.",
+      "evidence": [
+        "server/frontend/src/pages/Timeline.jsx:73",
+        "server/frontend/src/pages/Timeline.test.jsx:68",
+        "server/frontend/src/pages/Timeline.test.jsx:91"
       ]
     }
   ],
