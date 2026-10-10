@@ -85,14 +85,14 @@
       "classification": "internal",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "Read-only fail-closed V2 Cell_Profile contract/API. It exposes immutable PR_GRID_GEOGRAPHIC_V2 identity and truthful UNKNOWN/UNMIGRATED state before record-binding migration; it is a federation runtime primitive, not a standalone operator workflow. A user-facing cell profile view is deferred until producer V2 bindings are materialized.",
+      "rationale": "Read-only fail-closed V2 Cell_Profile contract/API. It exposes immutable PR_GRID_GEOGRAPHIC_V2 identity and truthful UNKNOWN/UNMIGRATED state before record-binding migration; it is a federation runtime primitive, not a standalone operator workflow. A user-facing cell profile view is deferred until producer V2 bindings are materialized. Runtime HTTP prefix is /api/grid; GUI parity keys the router-decorator path without that prefix.",
       "backend": {
         "files": [
           "server/backend/grid_v2_api.py",
           "src/hub/cell_profile_v2.py"
         ],
         "endpoints": [
-          "GET /api/grid/{grid_id}/{grid_version}/{level}/{cell_id}/profile"
+          "GET /{grid_id}/{grid_version}/{level}/{cell_id}/profile"
         ],
         "symbols": [
           "server/backend/grid_v2_api.py:cell_profile_v2",
