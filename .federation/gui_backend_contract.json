@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "1438be5208bf7481888bd3a8fe038a4e30b9f8a9",
+  "source_commit": "1f00c179d403bce89ee10f7cea9838ba31e0860b",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -507,6 +507,14 @@
       "rationale": "Intentional backend surface exposed for local federation operation or read-only service support; it is not a standalone GUI capability.",
       "evidence": [
         "server/backend/mcp_api.py:133"
+      ]
+    },
+    {
+      "pattern": "GET /grid/{grid_id}/{grid_version}/{level}/{cell_id}",
+      "classification": "INTERNAL",
+      "rationale": "Read-only federation grid handoff endpoint. It exposes validated Spiderweb V2 grid identity and explicit materialized CellProfiles; it is not yet a standalone GUI capability.",
+      "evidence": [
+        "server/backend/grid_v2_api.py"
       ]
     }
   ],

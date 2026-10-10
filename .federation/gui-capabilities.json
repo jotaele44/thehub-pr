@@ -692,6 +692,29 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "pr-grid-v2-cell-profile-api",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Read-only federation V2 grid handoff over explicitly materialized CellProfiles. TheHub validates Spiderweb authority identity and preserves NO_DATA versus ZERO_RECORDS; no cell geometry or record-to-cell membership is computed here.",
+      "backend": {
+        "files": [
+          "server/backend/grid_v2_api.py"
+        ],
+        "endpoints": [
+          "GET /{grid_id}/{grid_version}/{level}/{cell_id}"
+        ],
+        "symbols": [
+          "server/backend/grid_v2_api.py:cell_profile"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_grid_v2_api.py"
+        ]
+      }
     }
   ],
   "exceptions": []
