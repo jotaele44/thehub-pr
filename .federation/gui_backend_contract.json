@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "2631a14ba6832c2dccfd09406d90a404eb9d99be",
+  "source_commit": "7a57a3d37e4668bb78faac99cd1ddd88226d0078",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -638,7 +638,7 @@
       ]
     },
     {
-      "pattern": "server/frontend/src/pages/Operations.jsx:30:!disabled && onSelect(operation)} disabled= aria-disabled= data-operation-id= className= > \u00b7 writes )}",
+      "pattern": "server/frontend/src/pages/Operations.jsx:30:!disabled && onSelect(operation)} disabled= aria-disabled= data-operation-id= className= > · writes )}",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
       "evidence": [
@@ -1542,7 +1542,7 @@
       ]
     },
     {
-      "pattern": "server/frontend/src/pages/Operations\\.jsx:30:!disabled\\ \\&\\&\\ onSelect\\(operation\\)\\}\\ disabled=\\ aria\\-disabled=\\ data\\-operation\\-id=\\ className=\\ >\\ \u00b7\\ writes\\ \\)\\}",
+      "pattern": "server/frontend/src/pages/Operations\\.jsx:30:!disabled\\ \\&\\&\\ onSelect\\(operation\\)\\}\\ disabled=\\ aria\\-disabled=\\ data\\-operation\\-id=\\ className=\\ >\\ ·\\ writes\\ \\)\\}",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
       "evidence": [
@@ -2185,7 +2185,7 @@
     },
     {
       "claim_id": "thehub-pr-claim-048",
-      "frontend_pattern": "Barrios 2015 \u00b7 table bound, WFS path not live-certified",
+      "frontend_pattern": "Barrios 2015 · table bound, WFS path not live-certified",
       "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
       "evidence": [
         "server/frontend/src/gis/sourceRegistry.js:51"
@@ -2289,7 +2289,7 @@
     },
     {
       "claim_id": "thehub-pr-claim-061",
-      "frontend_pattern": "No continuity risks in the current aggregate. Risks are derived from AguaYLuz-PR water\u2194power dependencies and asset-anch",
+      "frontend_pattern": "No continuity risks in the current aggregate. Risks are derived from AguaYLuz-PR water↔power dependencies and asset-anch",
       "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
       "evidence": [
         "server/frontend/src/pages/AguaYLuz.jsx:155"
@@ -2305,7 +2305,7 @@
     },
     {
       "claim_id": "thehub-pr-claim-063",
-      "frontend_pattern": ">Device or authoritative online acquisition \u2192 RAW/query/snapshot provenance \u2192 renderer-independent canonical state.</p> ",
+      "frontend_pattern": ">Device or authoritative online acquisition → RAW/query/snapshot provenance → renderer-independent canonical state.</p> ",
       "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
       "evidence": [
         "server/frontend/src/pages/GISWorkspace.jsx:171"
@@ -2425,7 +2425,7 @@
     },
     {
       "claim_id": "thehub-pr-claim-078",
-      "frontend_pattern": "s current export is synthetic-only \u2014 real events populate once it ships a live FR24 capture.",
+      "frontend_pattern": "s current export is synthetic-only — real events populate once it ships a live FR24 capture.",
       "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
       "evidence": [
         "server/frontend/src/pages/Skywatcher.jsx:80"
