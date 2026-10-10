@@ -14,6 +14,7 @@ import sys
 
 from server.backend import main_core as _core
 from server.backend.gis_proxy import router as _gis_proxy_router
+from server.backend.grid_v2_api import router as _grid_v2_router
 from server.backend.moneysweep_leaderboards import router as _moneysweep_leaderboards_router
 from server.backend.moneysweep_asg_leaderboards import router as _moneysweep_asg_leaderboards_router
 
@@ -49,7 +50,7 @@ from server.backend.timeline_api import router as _timeline_router  # noqa: E402
 # directly keeps them visible (FastAPI may wrap include_router lazily).
 _existing_paths = {getattr(route, "path", None) for route in _core.app.router.routes}
 for _extension_router in (_evidence_router, _search_router, _entity_router, _timeline_router, _research_router,
-                         _spatial_router):
+                         _spatial_router, _grid_v2_router):
     _core.app.router.routes.extend(
         route for route in _extension_router.routes if getattr(route, "path", None) not in _existing_paths
     )
