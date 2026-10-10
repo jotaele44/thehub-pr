@@ -179,3 +179,13 @@ def test_api_wrong_grid_identity_fails_closed(grid_id, grid_version):
             as_of=None,
         )
     assert exc.value.status_code == 422
+
+
+def test_v2_cell_profile_route_is_mounted_on_canonical_app():
+    from server.backend import main as backend_main
+
+    paths = {getattr(route, "path", None) for route in backend_main.app.routes}
+    assert (
+        "/api/grid/{grid_id}/{grid_version}/{level}/{cell_id}/profile"
+        in paths
+    )
