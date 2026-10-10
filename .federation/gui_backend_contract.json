@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "5540e30ebdf61616475f1f0168f8e2648de1ca50",
+  "source_commit": "43c7d7436d56f155f7400c32cb9ba28f25eca44b",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
