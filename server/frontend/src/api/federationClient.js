@@ -315,5 +315,6 @@ export const federation = {
   timeline,
   research,
   spatial,
+  usgs: { catalog: ({ signal } = {}) => request('/usgs/catalog?limit=200', { signal }) },
   request,
 };

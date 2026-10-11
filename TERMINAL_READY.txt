@@ -1,0 +1,79 @@
+PRII USGS PUERTO RICO CATALOG — STAGED BUILD
+
+Scope: read-only catalog, repository references, metadata snapshot adapter,
+blocked acquisition receipts, hub GUI, tests and integrity verification.
+174 releases registered; 0 payloads activated. Child/asset/format adapter
+verification remains BLOCKED/OPEN. Production activation: NOT_APPLICABLE to
+this build. Producer readiness is unchanged.
+
+Run from the root of this PR branch. Require Python 3.9+ and Node 22+.
+Installation needs internet. Catalog and integrity inspection are offline.
+
+MAC / LINUX (bash or zsh):
+  python3 -m venv .venv
+  .venv/bin/python -m pip install -e '.[dev,server]'
+  .venv/bin/python scripts/verify_usgs_build.py
+  .venv/bin/python scripts/build_usgs_pr_catalog.py
+  .venv/bin/python scripts/verify_usgs_build.py
+  .venv/bin/python -m pytest -q tests/test_usgs_catalog.py tests/test_research_api.py tests/test_spatial_api.py tests/test_entity_api.py tests/test_evidence_api.py
+  .venv/bin/python scripts/check_gui_parity.py
+  .venv/bin/python tools/check_docs_sync.py --base origin/main
+  npm --prefix server/frontend ci --ignore-scripts --no-audit --no-fund
+  npm --prefix server/frontend test -- src/pages/UsgsCatalog.test.jsx
+  npm --prefix server/frontend run lint
+  npm --prefix server/frontend run build
+  cd server/frontend
+  npx playwright install chromium
+  npm run test:gui-parity -- --grep 'USGS catalog'
+  cd ../..
+
+WINDOWS (PowerShell):
+  py -3 -m venv .venv
+  .\.venv\Scripts\python.exe -m pip install -e ".[dev,server]"
+  .\.venv\Scripts\python.exe scripts/verify_usgs_build.py
+  .\.venv\Scripts\python.exe scripts/build_usgs_pr_catalog.py
+  .\.venv\Scripts\python.exe scripts/verify_usgs_build.py
+  .\.venv\Scripts\python.exe -m pytest -q tests/test_usgs_catalog.py tests/test_research_api.py tests/test_spatial_api.py tests/test_entity_api.py tests/test_evidence_api.py
+  .\.venv\Scripts\python.exe scripts/check_gui_parity.py
+  .\.venv\Scripts\python.exe tools/check_docs_sync.py --base origin/main
+  npm --prefix server/frontend ci --ignore-scripts --no-audit --no-fund
+  npm --prefix server/frontend test -- src/pages/UsgsCatalog.test.jsx
+  npm --prefix server/frontend run lint
+  npm --prefix server/frontend run build
+  Set-Location server/frontend
+  npx playwright install chromium
+  npm run test:gui-parity -- --grep "USGS catalog"
+  Set-Location ../..
+
+OPEN APP (root directory, separate terminal, after build):
+  Mac/Linux: .venv/bin/python -m uvicorn server.backend.main:app --host 127.0.0.1 --port 8000
+  Windows: .\.venv\Scripts\python.exe -m uvicorn server.backend.main:app --host 127.0.0.1 --port 8000
+  Open http://127.0.0.1:8000 and select Records > USGS Catalog.
+  Respect the existing application's authentication configuration.
+
+READ-ONLY SMOKE TEST:
+  Open http://127.0.0.1:8000/api/usgs/catalog?limit=200
+  Expect 174 records; counts include 23 excluded; catalog_state PASS;
+  payload_state BLOCKED; 174 HTTP 403 receipts. Search a title, filter a
+  consumer, inspect provenance, clear filters and recover all 174 records.
+  No Activate button exists.
+
+FROZEN SNAPSHOT REUSE (internal maintenance):
+  Mac/Linux: .venv/bin/python scripts/snapshot_usgs_pr.py --out data/usgs/snapshots/20261011T013000Z
+  Windows: .\.venv\Scripts\python.exe scripts/snapshot_usgs_pr.py --out data/usgs/snapshots/20261011T013000Z
+  Expected exit 2: upstream enumeration BLOCKED. Existing responses are
+  reused and hash-verified, not redownloaded. A new --out directory creates
+  a NEW snapshot. Never replace old evidence merely for version promotion.
+
+FAILURE / CERTIFICATION:
+  Stop on unexpected nonzero exits, hash/count mismatch, duplicate IDs,
+  unknown repositories, malformed metadata or failed tests. Preserve evidence.
+  Missing Chromium/download failure means browser gate BLOCKED.
+  HTTP 403 means transport BLOCKED, never dataset absence.
+  Unit metadata fixtures are not live-source evidence.
+  Payloads stay disabled even when catalog/metadata tests pass.
+  Format adapters, geometry/CRS/Z/M, record counts, PR coverage, versions,
+  usage constraints, consumer review and producer export compatibility must
+  pass against frozen live assets before a separate activation release.
+  macOS/Windows instructions are supplied but not executed on those OSs.
+  See docs/federation/USGS_PR_CATALOG.md for tested scope and remaining gates.

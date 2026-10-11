@@ -1,0 +1,14 @@
+{
+  "url": "https://www.sciencebase.gov/catalog/item/64dfc0efd34e5f6cd553c265?format=json",
+  "retrieval_utc": "2026-10-11T01:25:19.507071+00:00",
+  "http_status": 403,
+  "content_type": "text/html; charset=UTF-8",
+  "error": "HTTP_403",
+  "truncated": false,
+  "bytes": 6212,
+  "sha256": "42f7c1132dd291cb2847d3e7dc8336e1b1fdcc9f419c411e777a5c882009c2da",
+  "state": "BLOCKED",
+  "source_item_id": "64dfc0efd34e5f6cd553c265",
+  "payload_state": "BLOCKED",
+  "enumeration_state": "BLOCKED"
+}

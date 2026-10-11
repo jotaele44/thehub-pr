@@ -1,5 +1,11 @@
 # thehub-pr — PRII Federation Hub
 
+The staged [USGS Puerto Rico catalog](docs/federation/USGS_PR_CATALOG.md) registers
+174 releases with proposed federation consumers and frozen acquisition receipts.
+Open Records → USGS Catalog to search and inspect them. Payload activation is
+blocked pending live asset verification. Root `TERMINAL_READY.txt` supplies
+installation, execution, integrity checks and scoped validation instructions.
+
 `thehub-pr` is the central control-plane and aggregation node for the Puerto Rico Integrated Intelligence (PRII) federation.
 
 The Hub does not own domain data collection. It discovers producer repositories, validates their manifests and export packages, aggregates canonical streams, and derives cross-producer relationships from normalized names, external identifiers, locations, dates, source lineage, and confidence metadata.

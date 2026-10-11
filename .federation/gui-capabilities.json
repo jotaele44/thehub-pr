@@ -85,7 +85,7 @@
       "classification": "internal",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "CI/governance validator for the Twin observed and Federation-derived capability manifests (directive §35 exception 1: internal build/developer utility). It checks committed governance data; it is not an operator workflow.",
+      "rationale": "CI/governance validator for the Twin observed and Federation-derived capability manifests (directive \u00a735 exception 1: internal build/developer utility). It checks committed governance data; it is not an operator workflow.",
       "analysis": {
         "files": [
           "scripts/validate_twin_manifests.py",
@@ -690,6 +690,90 @@
         ],
         "e2e": [
           "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "usgs-pr-release-catalog",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Read-only inventory with raw provenance, transport receipts and proposed consumers. No payload activation or synthetic map layers.",
+      "backend": {
+        "files": [
+          "server/backend/usgs_catalog_api.py",
+          "src/hub/usgs_catalog.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /catalog"
+        ],
+        "symbols": [
+          "server/backend/usgs_catalog_api.py:usgs_catalog",
+          "src/hub/usgs_catalog.py:validate_catalog",
+          "src/hub/usgs_catalog.py:load_catalog",
+          "src/hub/usgs_catalog.py:catalog_page"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/usgs-catalog"
+        ],
+        "e2e_routes": [
+          "/usgs-catalog"
+        ],
+        "components": [
+          "server/frontend/src/pages/UsgsCatalog.jsx",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_usgs_catalog.py"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ],
+        "unit": [
+          "server/frontend/src/pages/UsgsCatalog.test.jsx"
+        ]
+      }
+    },
+    {
+      "id": "usgs-internal-acquisition",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Maintenance-only immutable metadata snapshot job. Cannot download or activate payloads; frozen outcomes are visible in the catalog GUI.",
+      "backend": {
+        "files": [
+          "src/hub/usgs_acquisition.py",
+          "scripts/build_usgs_pr_catalog.py",
+          "scripts/snapshot_usgs_pr.py",
+          "scripts/verify_usgs_build.py"
+        ],
+        "endpoints": [],
+        "symbols": [
+          "src/hub/usgs_acquisition.py:enumerate_item",
+          "src/hub/usgs_acquisition.py:fetch_manifest",
+          "src/hub/usgs_acquisition.py:snapshot_item",
+          "scripts/build_usgs_pr_catalog.py:build",
+          "scripts/build_usgs_pr_catalog.py:read_frozen_xlsx",
+          "scripts/snapshot_usgs_pr.py:main",
+          "scripts/verify_usgs_build.py:main"
+        ]
+      },
+      "frontend": {
+        "routes": [],
+        "components": [],
+        "discoverability": []
+      },
+      "tests": {
+        "backend": [
+          "tests/test_usgs_catalog.py"
         ]
       }
     }
