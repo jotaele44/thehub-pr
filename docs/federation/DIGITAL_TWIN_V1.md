@@ -76,11 +76,34 @@ public S3 bucket; nothing is copied or hosted.
 
 **Height caveats.** Both are stated in the Details panel wherever heights are used:
 
-- Heights are PRVD02, which is gravity-related. The 3D view places them on the WGS84 ellipsoid
-  without a geoid separation, so absolute heights in 3D are offset by the local geoid separation.
-  The elevation readout gives the PRVD02 value itself.
+- Heights are PRVD02, which is gravity-related (orthometric). The elevation readout gives the PRVD02
+  value itself. The 3D view needs ellipsoidal heights, so it adds the NOAA GEOID18 separation; see
+  [Geoid](#geoid) below. Where the geoid is not applied, the Details panel says so and gives the size
+  of the offset.
 - NAD83 positions are used as WGS84 without a horizontal transformation. The two frames differ at
   metre scale.
+
+## Geoid
+
+Cesium places heights on the WGS84 ellipsoid, and CUDEM heights are PRVD02, so the terrain needs the
+geoid height `N` (`h = H + N`). The Digital Twin applies NOAA NGS GEOID18 for Puerto Rico and the
+U.S. Virgin Islands (`server/frontend/src/gis/geoid.js`). `geoidBinding` binds it only to a terrain
+that passed the 3D source gate and whose vertical datum is the geoid's orthometric datum (EPSG:6641).
+The gate itself is unchanged.
+
+- **Order.** The page reads the geoid grid first and mounts the perspective panel afterwards, because
+  Cesium does not re-request tiles it already holds. While it waits the panel reads "Reading the
+  geoid (GEOID18) before the terrain is built…". If the grid cannot be read, the terrain is built
+  without it.
+- **Terrain.** `server/frontend/src/gis/cudemTerrainProvider.js` adds `N` to every sample inside the
+  grid. A cell where CUDEM has no value is drawn at `0 + N`, so the sea sits on the geoid. Outside the
+  grid nothing is added.
+- **Readout.** The selected record shows the PRVD02 height and, beside it, the ellipsoidal height
+  with the separation used, for example "Geoid N -40.0 m (GEOID18) → 1282.7 m NAD83(2011) ellipsoidal ·
+  H + N".
+- **Evidence.** The grid agrees with NGS's own GEOID18 service to within 0.0125 m at six points. The
+  values, the live test and the remaining caveat are in
+  [`SUBSURFACE_AND_CONTROLS_V1.md`](SUBSURFACE_AND_CONTROLS_V1.md).
 
 ## Perspective panel
 
@@ -89,8 +112,8 @@ Cesium 1.144 with no ion token. It is lazy-loaded.
 
 - **Terrain.** `server/frontend/src/gis/cudemTerrainProvider.js` is a
   `CustomHeightmapTerrainProvider` (geographic tiling, 65×65 samples). Below level 7, or outside
-  CUDEM's extent, tiles are flat and nothing is fetched. Cells without data are drawn at 0; they are
-  never reported as heights. A failed read draws a flat tile and raises an alert in the Details
+  CUDEM's extent, tiles are flat and nothing is fetched. Cells without data are drawn at 0, plus the
+  geoid separation where the geoid is applied; they are never reported as heights. A failed read draws a flat tile and raises an alert in the Details
   panel.
 - **Imagery.** The CARTO base sits under USGS The National Map orthoimagery, which is aerial
   photography, not satellite. The orthoimagery layer is attached only from terrain level
@@ -142,9 +165,11 @@ The view is `server/frontend/src/components/gis/DigitalTwin.jsx`, with pure help
 1. The selected record, with its precision, basis and evidence links (`SelectedRecord` from the
    Property Map).
 2. The point.
-3. The selected record's CUDEM elevation, with its datum and the tile that held it. It reads
-   "Outside CUDEM coverage (no height reported)." or "CUDEM has no value here (no height
-   reported)." where those apply.
+3. The selected record's CUDEM elevation, with its datum and the tile that held it, and its
+   ellipsoidal height when the geoid is applied. It reads "Outside CUDEM coverage (no height
+   reported)." or "CUDEM has no value here (no height reported)." where those apply. For a
+   `REPRESENTATIVE_POINT` record the point and the heights are marked as at the stand-in position, not
+   at the record.
 4. The time window and the counts: shown, outside the time window, undated.
 5. The records shown. The list is capped at 50 rows and says so when the cap applies.
 6. DEM provenance: dataset, provider, dates, citation, datums, resolution, binding status, both
@@ -218,8 +243,6 @@ export's own provenance: the contract, `generated_at`, the time window, the filt
 ## Not built
 
 - **The reference's 12-panel grid.** There are four panels, each backed by Federation data.
-- **Geoid correction** (ellipsoidal heights from PRVD02). It is stated as a caveat. Datum work is
-  Phase 5, P5-C (FDX-025).
 - **USGS 3DEP.** The bound DEM is CUDEM, which integrates lidar sources; 3DEP itself is not bound.
 - **Saved or resizable layouts.**
 - **Terrain heights in USD export.**
@@ -231,8 +254,8 @@ export's own provenance: the contract, `generated_at`, the time window, the filt
 | Kind | Files |
 |---|---|
 | Backend | `tests/test_spatial_features.py`, `tests/test_spatial_api.py` |
-| Unit | `server/frontend/src/gis/cudem.test.js`, `server/frontend/src/gis/cudemTerrainProvider.test.js`, `server/frontend/src/gis/advanced3dSourceRegistry.test.js`, `server/frontend/src/gis/digitalTwin.test.js`, `server/frontend/src/components/gis/DigitalTwin.test.jsx` |
-| Live | `server/frontend/src/gis/liveProviders.test.js` (CUDEM, behind `GIS_LIVE_PROVIDER_TESTS=1`) |
+| Unit | `server/frontend/src/gis/cudem.test.js`, `server/frontend/src/gis/geoid.test.js`, `server/frontend/src/gis/cudemTerrainProvider.test.js`, `server/frontend/src/gis/advanced3dSourceRegistry.test.js`, `server/frontend/src/gis/digitalTwin.test.js`, `server/frontend/src/components/gis/DigitalTwin.test.jsx` |
+| Live | `server/frontend/src/gis/liveProviders.test.js` (CUDEM and GEOID18, behind `GIS_LIVE_PROVIDER_TESTS=1`) |
 | E2E | `server/frontend/tests/visual/gui-parity.spec.js` ("digital twin") |
 
 The E2E drives the real Cesium, MapLibre and CUDEM reader against a mocked API. Its CUDEM tiles are

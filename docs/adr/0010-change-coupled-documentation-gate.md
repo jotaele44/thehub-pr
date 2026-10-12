@@ -37,13 +37,13 @@ Seeds are chosen by replaying history. A coupling that fires on routine work is 
 
 ## Merge enforcement
 
-Per ADR 0004, a passing workflow without a required-status rule is `PROVISIONAL`, not a certified merge block. `docs-sync` is `PROVISIONAL` in every repository until `main` requires it. `governance/merge_blocking_status.json` records that on 2026-09-06 five of the seven repositories had no branch protection on `main` at all. Repository settings are outside what a template can set, so a repository administrator must mark `docs-sync` required once per repository.
+Per ADR 0004, a passing workflow without a required-status rule is `PROVISIONAL`, not a certified merge block. `docs-sync` is `PROVISIONAL` in every repository until `main` requires it. `governance/merge_blocking_status.json` records what `main` requires in each repository and where `docs-sync` stands. Repository settings are outside what a template can set, so a repository administrator must mark `docs-sync` required once per repository; `tools/require_docs_sync.py` does that.
 
 ## Rollout
 
 1. `thehub-pr`: templates, `targets.yaml` entries, this repository's manifest, this ADR.
 2. Each producer, after (1) merges: re-render with `--template-ref <merged hub SHA>`, add its own `.federation/docs-sync.json`, and hand-apply the pre-commit, `CONTRIBUTING.md` and PR-template additions where the repository keeps its own copies (`moneysweep-pr`, `spiderweb-pr`).
-3. Mark `docs-sync` required in each repository's ruleset.
+3. Mark `docs-sync` required on `main` in each repository: `tools/require_docs_sync.py --apply`, run by a repository administrator. It appends the check to an existing ruleset or branch protection that already requires checks, otherwise creates a ruleset requiring only `docs-sync`. It skips a repository whose `main` has no `docs-sync` workflow, and holds any repository in its `HELD` table: one where a workflow in regular use pushes commits straight to `main`, which a required check would reject.
 
 ## Consequences
 

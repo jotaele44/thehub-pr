@@ -6,9 +6,10 @@
 // GeoTIFFs on NOAA's public S3 bucket (CORS open, byte ranges), so the browser
 // reads only the windows and overviews it needs; nothing is copied or hosted.
 //
-// Heights are PRVD02 values. Two caveats are stated wherever heights are used:
-// the 3D view places them on the WGS84 ellipsoid without a geoid separation, and
-// NAD83 positions are used as WGS84 without a horizontal transformation.
+// Heights are PRVD02 values (orthometric). Two caveats are stated wherever
+// heights are used: NAD83 positions are used as WGS84 without a horizontal
+// transformation, and the 3D view places PRVD02 heights on the ellipsoid only
+// through the geoid (geoid.js states what applies, or what does not).
 import { fromUrl } from 'geotiff';
 
 const BASE_URL = 'https://noaa-nos-coastal-lidar-pds.s3.amazonaws.com/dem/NCEI_ninth_Topobathy_PuertoRico_9525/';
@@ -32,7 +33,7 @@ export const CUDEM_PR = Object.freeze({
   tileDegrees: 0.25,
   extent: Object.freeze([-68.0, 17.75, -65.25, 18.75]),
   heightCaveats: Object.freeze([
-    'Heights are PRVD02 (gravity-related). The 3D view places them on the WGS84 ellipsoid without a geoid separation, so absolute heights there are offset by the local geoid separation; elevation readouts give the PRVD02 value itself.',
+    'Heights are PRVD02 (gravity-related, orthometric); elevation readouts give the PRVD02 value itself.',
     'NAD83 positions are used as WGS84 without a horizontal transformation (the frames differ at metre scale).',
   ]),
 });

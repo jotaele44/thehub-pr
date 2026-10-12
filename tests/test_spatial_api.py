@@ -47,6 +47,18 @@ def test_features_are_declared_points_only(client):
     assert body["loaded"] == body["matched"] + body["excluded_synthetic"] + body["outside_bbox"] + not_drawn
 
 
+def test_features_state_how_the_served_store_was_built(client, tmp_path):
+    # The test store has no build record beside it: not recorded, never assumed complete.
+    assert client.get("/api/spatial/features").json()["store"]["kind"] == "not_recorded"
+    # With the committed fixture's record, the sample and what a full run produced are both reported.
+    (tmp_path / "fixture.json").write_text((AGGREGATE.parent / "fixture.json").read_text(encoding="utf-8"), encoding="utf-8")
+    store = client.get("/api/spatial/features").json()["store"]
+    assert store["kind"] == "bounded-sample" and store["cap_per_stream"] == 400
+    for stream in ("alerts", "entities", "observations", "relationships", "sources"):
+        assert store["streams"][stream]["sampled"] <= store["streams"][stream]["actual"] or "closure_added" in store["streams"][stream]
+    assert store["streams"]["alerts"]["actual"] > store["streams"]["alerts"]["sampled"]
+
+
 def test_features_carry_time_at_recorded_precision(client):
     body = client.get("/api/spatial/features").json()
     dated = [f["properties"] for f in body["features"] if f["properties"]["time_start"]]
