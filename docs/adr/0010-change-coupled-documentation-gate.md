@@ -56,7 +56,7 @@ Per ADR 0004, a passing workflow without a required-status rule is `PROVISIONAL`
 
 Review of the first rollout found the rule stated more broadly than it was built. It is corrected, and now tested:
 
-- The base manifest's couplings and `mode` still bind a change, so it cannot pass by deleting the coupling it violates or by switching the gate to report-only. Manifest hygiene (decision 3) is judged on the head manifest alone, so retiring a coupling together with its last covered file, or renaming a coupled doc and repointing the coupling, passes once the doc is updated. A doc renamed in the change counts as updated.
+- The base manifest's couplings and `mode` still bind a change, so it cannot pass by deleting the coupling it violates or by switching the gate to report-only. Manifest hygiene (decision 3) is judged on the head manifest alone, so retiring a coupling together with its last covered file, or renaming a coupled doc and repointing the coupling, passes once the doc is updated. A doc renamed in the change counts as updated, and is compared with itself under its old name for the reference ratchet and the dead-glob check.
 - A glob that matches nothing is a violation when the change adds it, and a warning when it was already there. Without a base to compare with (`--validate`, or a base manifest that does not parse) it stays a warning.
 - `exempt_authors` is honoured only when the base manifest already lists the author. Read from the head, it let a pull request exempt itself and switch the whole gate off. Dependabot, the Actions bot and the federation bot stay built in.
 - A `:symbol`, `:42` or `::node` locator is dropped from Markdown link targets as well as from inline code.

@@ -236,6 +236,13 @@ def test_relative_links_resolve_against_the_docs_own_directory():
     assert refs == {"README.md", "docs/other.md"}
 
 
+def test_a_root_level_link_target_with_a_locator_is_skipped_not_guessed_at():
+    # `README.md:42` has the shape of a URI scheme, so it is left alone (no false alarm),
+    # while the same target with a directory in front is unambiguous and is checked.
+    doc = "[a](README.md:42) [b](mailto:a@b.c) [c](skype:echo123) [d](docs/guide.md:42)"
+    assert mod.extract_refs("README.md", doc, {"docs"}) == {"docs/guide.md"}
+
+
 def test_a_locator_on_a_link_target_is_not_part_of_the_path():
     doc = (
         "[a](server/app.py:main) [b](server/app.py:42) [c](tests/test_x.py::test_y#frag) "
@@ -630,6 +637,30 @@ def test_renaming_a_coupled_doc_and_repointing_its_coupling_passes(tmp_path, cap
     repo.commit("add config in the same range")
     code, out = run(capsys, repo, "--base", base)
     assert code == 0, out
+
+
+def test_renaming_a_doc_keeps_its_old_dangling_references_and_dead_globs_old(tmp_path, capsys):
+    # The ratchet compares a renamed doc with itself under its old name, so a stale
+    # reference it already had is not newly broken by the move...
+    repo, _ = make_repo(tmp_path)
+    repo.write("docs/guide.md", GUIDE + "Old: `config/missing.toml`.\n")
+    base = repo.commit("guide already has a stale reference")
+    repo.git("mv", "docs/guide.md", "docs/handbook.md")
+    repo.write("README.md", README.replace("docs/guide.md", "docs/handbook.md"))
+    repo.commit("rename the guide")
+    code, out = run(capsys, repo, "--base", base)
+    assert code == 0, out
+
+    # ...and a dead glob its coupling already had does not become this change's own.
+    old_coupling = {**DEAD, "doc": "docs/guide.md"}
+    repo2, base2 = make_repo(tmp_path / "glob", with_coupling(old_coupling))
+    repo2.git("mv", "docs/guide.md", "docs/handbook.md")
+    repo2.write("README.md", README.replace("docs/guide.md", "docs/handbook.md"))
+    repo2.set_manifest(with_coupling({**old_coupling, "doc": "docs/handbook.md"}))
+    repo2.commit("rename the doc that carries an old dead glob")
+    code, out = run(capsys, repo2, "--base", base2)
+    assert code == 0 and "WARN [manifest] 'nothing/**'" in out
+    assert "this change added it" not in out
 
 
 def test_a_coupling_that_stays_in_the_manifest_still_needs_its_doc_to_exist(tmp_path, capsys):

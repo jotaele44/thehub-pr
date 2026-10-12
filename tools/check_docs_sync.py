@@ -428,6 +428,9 @@ def _strip_markup(text: str) -> str:
 
 
 def _link_ref(doc: str, target: str) -> str | None:
+    # A bare root-level target with a locator (`README.md:42`) has the shape of a URI
+    # scheme (`mailto:`, `skype:echo`), so it is skipped rather than guessed at: a
+    # missed check costs less than a false alarm. With a slash it is unambiguous.
     if not target or target.startswith(("#", "/")) or _SCHEME.match(target):
         return None
     target = _LOCATOR.sub("", unquote(target.split("#", 1)[0].split("?", 1)[0]))
@@ -524,6 +527,13 @@ def evaluate(
                 f"{MIN_REASON_CHARS} characters",
             )
         )
+    # A doc renamed in this change is still the doc the coupling means, and it keeps
+    # the history it had under its old name.
+    moved = {c.old_path: c.path for c in changes if c.event == "rename" and c.old_path}
+    came_from = {new: old for old, new in moved.items()}
+    if known_old is not None:
+        # An old dead glob does not become this change's own because its doc was renamed.
+        known_old = frozenset((moved.get(doc, doc), pattern) for doc, pattern in known_old)
     hygiene = head_manifest if head_manifest is not None else manifest
     _check_manifest(hygiene, base, head, report, known_old=known_old)
 
@@ -531,8 +541,6 @@ def evaluate(
     touched = {
         p for p, ev in events.items() if ev & {"add", "modify", "rename"} and p in head.files
     }
-    # A doc renamed in this change is still the doc the coupling means.
-    moved = {c.old_path: c.path for c in changes if c.event == "rename" and c.old_path}
 
     # R1 co-change ---------------------------------------------------------
     for coupling in manifest.couplings:
@@ -578,8 +586,11 @@ def evaluate(
         ]
         if not broken:
             continue
-        old_text = read_base(doc)
-        old_refs = extract_refs(doc, old_text, top) if old_text is not None else set()
+        # A renamed doc is compared with itself under its old name, so references it
+        # already had (and links resolved from its old directory) are not new.
+        old_doc = came_from.get(doc, doc)
+        old_text = read_base(old_doc)
+        old_refs = extract_refs(old_doc, old_text, top) if old_text is not None else set()
         for ref in broken:
             if ref in old_refs and not base.has(ref):
                 continue  # already dangling before this change: not ours to fix here
