@@ -1,0 +1,103 @@
+name: OVNIS current-head consumer receipt
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ovnis-consumer-receipt-once.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  consume:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OVNIS_SHA: 8793e4a097134db01dbeb75bc80653752f3a96f0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install Hub authority
+        run: pip install -e ".[dev]" -e packages/prii_export_utils
+      - name: Materialize exact OVNIS producer
+        run: |
+          mkdir -p ws
+          git clone https://github.com/jotaele44/ovnis-pr.git ws/ovnis-pr
+          git -C ws/ovnis-pr checkout --detach "$OVNIS_SHA"
+          test "$(git -C ws/ovnis-pr rev-parse HEAD)" = "$OVNIS_SHA"
+      - name: Produce exact OVNIS production package
+        run: |
+          cd ws/ovnis-pr
+          python3 scripts/federation_export.py --mode production
+      - name: Validate exact package with current Hub
+        run: hub validate-package --path "$GITHUB_WORKSPACE/ws/ovnis-pr/exports/federation"
+      - name: Aggregate present producer package
+        run: |
+          mkdir -p receipt-work/aggregate
+          hub aggregate --root ws --out receipt-work/aggregate 2>&1 | tee receipt-work/aggregate.log
+      - name: Correlate through Hub authority
+        run: hub correlate --in receipt-work/aggregate --out receipt-work/aggregate 2>&1 | tee receipt-work/correlate.log
+      - name: Ingest into fresh Hub store
+        run: hub ingest --in receipt-work/aggregate --db receipt-work/hub.db 2>&1 | tee receipt-work/ingest.log
+      - name: Freeze consumer receipt
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root=Path("receipt-work")
+          pkg=Path("ws/ovnis-pr/exports/federation")
+          def sha(p):
+              return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          manifest=json.loads((pkg/"manifest.json").read_text())
+          streams={}
+          for row in manifest["files"]:
+              streams[row["stream"]]={
+                  "filename":row["filename"],
+                  "record_count":row["record_count"],
+                  "sha256":row["sha256"],
+                  "observed_sha256":sha(pkg/row["filename"]),
+              }
+          agg={}
+          for p in sorted((root/"aggregate").glob("*.jsonl")):
+              lines=sum(1 for line in p.open() if line.strip())
+              agg[p.name]={"rows":lines,"sha256":sha(p),"bytes":p.stat().st_size}
+          receipt={
+              "schema":"thehub.ovnis-current-head-consumer-receipt/v1",
+              "hub_commit":os.environ["GITHUB_SHA"],
+              "hub_run_id":os.environ["GITHUB_RUN_ID"],
+              "ovnis_commit":os.environ["OVNIS_SHA"],
+              "consumer_scope":"ISOLATED_CURRENT_HEAD_AUTHORITY_PATH_NOT_PRODUCTION_DEPLOYMENT",
+              "commands":[
+                  "hub validate-package",
+                  "hub aggregate",
+                  "hub correlate",
+                  "hub ingest"
+              ],
+              "producer_package":{
+                  "package_id":manifest["package_id"],
+                  "manifest_sha256":sha(pkg/"manifest.json"),
+                  "streams":streams
+              },
+              "aggregate":agg,
+              "hub_db":{"sha256":sha(root/"hub.db"),"bytes":(root/"hub.db").stat().st_size},
+              "logs":{
+                  "aggregate_sha256":sha(root/"aggregate.log"),
+                  "correlate_sha256":sha(root/"correlate.log"),
+                  "ingest_sha256":sha(root/"ingest.log")
+              },
+              "result":"PASS" 
+          }
+          (root/"consumer-receipt.json").write_text(json.dumps(receipt,indent=2,sort_keys=True)+"\n")
+          print(json.dumps(receipt,indent=2,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ovnis-current-head-consumer-receipt
+          path: receipt-work/
+          if-no-files-found: error
+          retention-days: 30
