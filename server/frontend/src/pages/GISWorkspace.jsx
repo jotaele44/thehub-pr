@@ -8,6 +8,8 @@ import { compareRendererEquivalence, createCanonicalMapState, switchRenderMode }
 import { initialMapState } from '@/gis/deepLinkView';
 import GisViewSwitch, { gisViewFrom } from '@/components/gis/GisViewSwitch';
 import DigitalTwin from '@/components/gis/DigitalTwin';
+import AoiComparison from '@/components/gis/AoiComparison';
+import InterpretiveLayers from '@/components/gis/InterpretiveLayers';
 import PropertyMap from '@/components/gis/PropertyMap';
 import { buildRasterPreview } from '@/gis/rasterPreview';
 import RendererSurface from '@/gis/renderers/RendererSurface';
@@ -179,7 +181,7 @@ export default function GISWorkspace() {
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2"><Layers className="h-5 w-5" /><h1 className="text-xl font-semibold">Federation GIS Workspace</h1></div>
-          <p className="mt-1 text-sm text-muted-foreground">{view === 'digital-twin' ? 'Hub-held records over uniform-datum terrain, in synchronized panels with temporal playback and export.' : view === 'property-map' ? 'Hub-held records on the map, by declared precision, with Location Intel and layer provenance.' : 'Device or authoritative online acquisition → RAW/query/snapshot provenance → renderer-independent canonical state.'}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{view === 'aoi-comparison' ? 'Records per km² in a study area against disjoint control areas, with the store\'s sampling basis stated. A comparison is background, not a finding.' : view === 'interpretive-layers' ? 'Documented geometry and modelled geometry kept apart, with a terrain profile. A model never looks like observed underground geometry.' : view === 'digital-twin' ? 'Hub-held records over uniform-datum terrain, in synchronized panels with temporal playback and export.' : view === 'property-map' ? 'Hub-held records on the map, by declared precision, with Location Intel and layer provenance.' : 'Device or authoritative online acquisition → RAW/query/snapshot provenance → renderer-independent canonical state.'}</p>
           {deepLink.notice ? <p role="status" className="mt-1 text-xs text-muted-foreground" data-map-deep-link>{deepLink.notice}</p> : null}
         </div>
         <div className="rounded-lg border border-border bg-card px-3 py-2 text-xs">
@@ -191,6 +193,8 @@ export default function GISWorkspace() {
       <GisViewSwitch view={view} setSearchParams={setSearchParams} />
 
       {view === 'digital-twin' ? <DigitalTwin /> : null}
+      {view === 'interpretive-layers' ? <InterpretiveLayers /> : null}
+      {view === 'aoi-comparison' ? <AoiComparison /> : null}
       {view === 'property-map' ? (
         <PropertyMap initialView={canonicalViewToMapLibre(mapState.view)} initialPoint={linkedPoint} />
       ) : null}
