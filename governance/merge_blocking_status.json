@@ -1,22 +1,30 @@
 {
   "schema_version":"prii_merge_blocking_status_v1",
   "status":"BLOCKED",
-  "reason":"Branch protection on main was verified via the GitHub API on 2026-09-06: 5 of 7 federation repositories (thehub-pr, aguayluz-pr, ovnis-pr, skywatcher-pr, centinelas-pr) have NO branch protection on main at all. Only moneysweep-pr and spiderweb-pr have main protected. This confirms the prior BLOCKED status with hard evidence instead of an unverified claim.",
+  "reason":"Rulesets and branch protection on main were read via the GitHub API on 2026-10-12. 5 of 7 federation repositories (thehub-pr, aguayluz-pr, ovnis-pr, skywatcher-pr, centinelas-pr) still have nothing protecting main. The two that do, moneysweep-pr and spiderweb-pr, require their own CI checks but none of federation-governance, federation-governance-certify or federation-compatibility, so no federation check is merge-blocking anywhere yet.",
   "branch_protection_audit": {
-    "verified_at_utc": "2026-09-06",
-    "method": "GitHub REST API via `GET /repos/{owner}/{repo}/branches` (main.protected)",
-    "limitation": "This API surface reports only the boolean `protected` flag, not which specific status checks (federation-governance, federation-governance-certify, federation-compatibility) are marked required. Confirming the required-checks list itself needs a branch-protection/ruleset-scoped read this session's tooling does not expose (repo admin settings, not repo contents) — that remains unverified even for the two repos that do show `protected: true`.",
+    "verified_at_utc": "2026-10-12",
+    "method": "GitHub REST API: `GET /repos/{owner}/{repo}/rules/branches/main` (rules from every active ruleset) and `GET /repos/{owner}/{repo}/branches/main/protection/required_status_checks` (classic branch protection)",
     "results": {
-      "thehub-pr": {"protected": false},
-      "moneysweep-pr": {"protected": true},
-      "spiderweb-pr": {"protected": true},
-      "aguayluz-pr": {"protected": false},
-      "ovnis-pr": {"protected": false},
-      "skywatcher-pr": {"protected": false},
-      "centinelas-pr": {"protected": false}
+      "thehub-pr": {"protected": false, "required_checks": []},
+      "moneysweep-pr": {"protected": true, "via": "ruleset main-protection (also requires a pull request with 1 approval)", "strict": true, "required_checks": ["ruff", "mypy", "test (3.13)", "pre-commit", "lock-sync", "diagnostic-smoke", "Compile and pytest", "size-guard", "gitleaks"]},
+      "spiderweb-pr": {"protected": true, "via": "classic branch protection", "strict": false, "required_checks": ["test (3.11)", "test (3.12)", "lint", "release-check"]},
+      "aguayluz-pr": {"protected": false, "required_checks": []},
+      "ovnis-pr": {"protected": false, "required_checks": []},
+      "skywatcher-pr": {"protected": false, "required_checks": []},
+      "centinelas-pr": {"protected": false, "required_checks": []}
     }
   },
   "required_central_checks":["federation-governance","federation-governance-certify"],
   "required_producer_check":"federation-compatibility",
+  "docs_sync_gate": {
+    "adr": "docs/adr/0010-change-coupled-documentation-gate.md",
+    "status": "PROVISIONAL",
+    "required_on_main_in": [],
+    "ready_to_require": ["thehub-pr", "moneysweep-pr", "spiderweb-pr", "ovnis-pr", "skywatcher-pr"],
+    "held": {"aguayluz-pr": "refresh.yml commits scheduled data refreshes straight to main with the Actions token; a required check would reject those pushes because docs-sync only runs on pull requests"},
+    "not_adopted": ["centinelas-pr"],
+    "apply_with": "tools/require_docs_sync.py --apply, run by a repository administrator"
+  },
   "certification_rule":"Do not issue CERTIFIED until required status enforcement is evidenced for main on all seven repositories."
 }

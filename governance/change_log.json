@@ -45,6 +45,19 @@
         "tests/test_check_docs_sync.py",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-10-12",
+      "summary": "Added tools/require_docs_sync.py for ADR 0010 rollout step 3: run by a repository administrator, it marks docs-sync a required status check on main in each federation repo (appending it to an existing ruleset or branch protection, otherwise creating a ruleset that requires only docs-sync), skips a repo with no docs-sync workflow on main, and holds aguayluz-pr, whose refresh.yml pushes straight to main. Re-audited main's rulesets and branch protection across all seven repos, now including each repo's required checks, in governance/merge_blocking_status.json. Tooling and governance-record change only: no contract, schema or dependency edge changed, and no repository setting was changed by this commit.",
+      "files": [
+        "tools/require_docs_sync.py",
+        "tests/test_require_docs_sync.py",
+        "governance/merge_blocking_status.json",
+        "docs/FEDERATION_STATUS.md",
+        "docs/adr/0010-change-coupled-documentation-gate.md",
+        "federation-templates/README.md",
+        "governance/change_log.json"
+      ]
     }
   ]
 }
