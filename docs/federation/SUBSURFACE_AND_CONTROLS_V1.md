@@ -225,8 +225,10 @@ observations 400 of 572, relationships 400 of 66769, sources 400 of 43842.
 - **Findings, anchors and underground topics.** None is recorded (TWIN-176, TWIN-178, TWIN-187). The
   timeline's categories come from data, so one appears when a producer exports it.
 - **PR grid V2 cells as AOIs.** They need cell geometry exported by Spiderweb, and the grid is RC1.
-- **A SIGE-independent karst source.** SIGE's Geología layers returned `502` in the 2026-10-06 CI live
-  runs, so the documented layers can fail to load; the failure is shown, not hidden.
+- **A SIGE-independent karst source.** The documented layers come from SIGE, which can be down: on
+  2026-10-12 its Geología layers (sumideros, cuencas) and its certified Infraestructura layers all
+  returned `502 Bad Gateway` from the same Azure gateway. A failed load is shown verbatim, never as an
+  empty map.
 - **Historical-name resolution** (FDX-070), a gazetteer task.
 - **A geometry-certifier handoff** (FDX-072). No stored row carries a `review_state`, and the
   comparison never upgrades approximate geometry.
