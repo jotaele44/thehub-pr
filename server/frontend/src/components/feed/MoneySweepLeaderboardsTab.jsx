@@ -65,7 +65,7 @@ export default function MoneySweepLeaderboardsTab() {
   const error = errors[plane];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-moneysweep-leaderboards>
       <div className="flex flex-wrap gap-2" role="tablist" aria-label="MoneySweep certified leaderboard plane">
         {Object.entries(PLANES).map(([key, value]) => (
           <button
@@ -74,7 +74,7 @@ export default function MoneySweepLeaderboardsTab() {
             role="tab"
             aria-selected={plane === key}
             onClick={() => setPlane(key)}
-            className={`rounded border px-3 py-1.5 text-sm ${plane === key ? "bg-primary text-primary-foreground" : "bg-card"}`}
+            className={`min-h-11 rounded border px-3 py-1.5 text-sm ${plane === key ? "bg-primary text-primary-foreground" : "bg-card"}`}
           >
             {value.label}
           </button>
