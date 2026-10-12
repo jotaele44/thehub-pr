@@ -83,11 +83,11 @@ export default function MoneySweep() {
       <ModulePageHeader module={MODULE} icon={Banknote} />
       <Tabs defaultValue="feed">
         <TabsList className="mb-4 flex flex-wrap">
-          <TabsTrigger value="feed">Procurement + Funding Feed</TabsTrigger>
-          <TabsTrigger value="leaderboards">Leaderboards</TabsTrigger>
-          <TabsTrigger value="contracts">Contracts</TabsTrigger>
-          <TabsTrigger value="vendors">Vendors</TabsTrigger>
-          <TabsTrigger value="flags">Anomaly Flags</TabsTrigger>
+          <TabsTrigger value="feed" className="min-h-11">Procurement + Funding Feed</TabsTrigger>
+          <TabsTrigger value="leaderboards" className="min-h-11">Leaderboards</TabsTrigger>
+          <TabsTrigger value="contracts" className="min-h-11">Contracts</TabsTrigger>
+          <TabsTrigger value="vendors" className="min-h-11">Vendors</TabsTrigger>
+          <TabsTrigger value="flags" className="min-h-11">Anomaly Flags</TabsTrigger>
         </TabsList>
         <TabsContent value="feed">
           <MoneySweepFeedTab />
