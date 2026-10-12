@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "thehub.moneysweep-full-package-replay/v1",
+  "state": "PENDING_CROSS_REPO_REPLAY",
+  "producer": "moneysweep-pr",
+  "producerCommit": "39482166fe3a4d97d11644c764a48fdd5b695f4c",
+  "producerReleaseLabel": "frozen-mobile-release-2026-10-12-current-head",
+  "producerManifestPath": "data/exports/canonical_v1_federation/manifest.json",
+  "producerManifestSha256": "7069ec625d1bbcabf523e4066eceeb897973c74cb1e7f18e810a7fe8b4aa1fcc",
+  "producerManifestGitBlobSha1": "b5264c4ca2cb6496c35448a8e573fb1b368f3a61",
+  "producerPackageId": "pkg_9642c2a411343e9c0c20891ac84f4f08",
+  "hubWrappedManifestSha256": "38c901648e5a9240b03bfe17b380ca2b46e657b314dfd19ce81c7c40f34ab9bb",
+  "mode": "test",
+  "createdAt": "2026-09-01T02:29:04.944465+00:00",
+  "streams": [
+    {
+      "stream": "sources",
+      "filename": "sources.jsonl",
+      "recordCount": 4508,
+      "sha256": "410d4e046ce95640bb746f0ac54cdb9c0a5066e7b3f4382684101264b1095cd4",
+      "schemaId": "federation_source.schema.json"
+    },
+    {
+      "stream": "entities",
+      "filename": "entities.jsonl",
+      "recordCount": 207,
+      "sha256": "9992675c6a4e76ec4b88ddef290233c208d1b5e0ef12178068b35ef7848bb3d5",
+      "schemaId": "federation_entity.schema.json"
+    },
+    {
+      "stream": "relationships",
+      "filename": "relationships.jsonl",
+      "recordCount": 66,
+      "sha256": "d10a42852d3cea0e2e82a58f7ffbc9f28020841905d2fbdbc560f20263d412bb",
+      "schemaId": "federation_relationship.schema.json"
+    }
+  ],
+  "accounting": {
+    "totalRecords": 4781,
+    "perStreamStableIdsUnique": "PENDING",
+    "rowSchemaValidation": "PENDING",
+    "manifestIntegrity": "PENDING"
+  },
+  "historicalLineage": {
+    "packageIdPreviouslyObservedByTheHub": true,
+    "historicalReceiptPath": "reports/moneysweep-live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/thehub_moneysweep_prasa_contract_closure_pickup_receipt.json",
+    "inheritedCurrentPass": false,
+    "reason": "Historical pickup proves lineage only; this receipt requires replay against the exact current producer commit."
+  },
+  "consumerValidation": {
+    "exactProducerCommit": "PENDING",
+    "exactStreamHashes": "PENDING",
+    "deterministicHubWrapper": "PENDING",
+    "hubSchemaValidation": "PENDING",
+    "zeroValidationErrors": "PENDING"
+  }
+}
