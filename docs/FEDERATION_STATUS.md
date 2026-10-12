@@ -1,11 +1,11 @@
 # PRII Federation — Gap-Closure Status
 
 _Authoritative status of the Puerto Rico Integrated Intelligence (PRII) federation._
-_Last updated: 2026-09-06 (federation-wide gap-closure audit: branch-protection
+_Last updated: 2026-10-12 (branch-protection re-audit with each repo's required checks,
+and `tools/require_docs_sync.py` for marking `docs-sync` required — see Part 10 below).
+Prior update: 2026-09-06 (federation-wide gap-closure audit: branch-protection
 verification across all seven repos, plus thehub-pr's own upgrade-audit Phase
-1+2 closure — see Part 9 below). Prior update: 2026-08-31 (promoted centinelas to live-ready from its
-authoritative producer manifest after a 100-signal real refresh, successful
-production export, and downstream Hub package validation)._
+1+2 closure — see Part 9 below)._
 
 The federation is **artifact-based**: producers emit a discovery manifest
 (`federation.json`) plus a canonical export package (`sources/entities/
@@ -117,6 +117,24 @@ spatial layers).
   FR24 capture), moneysweep-pr (Tranche-B manual exports + API keys), aguayluz
   (per-asset outage granularity) — no code in this pass could close them.
 
+**Part 10 — Branch-protection re-audit and the `docs-sync` required check (2026-10-12):**
+- **Re-audit, now with the required-check lists.** Read every active ruleset and the
+  classic branch protection on `main` across all seven repos, which the Part 9 audit
+  could not do. Nothing protects `main` in `thehub-pr`, `aguayluz-pr`, `ovnis-pr`,
+  `skywatcher-pr` or `centinelas-pr`. `moneysweep-pr` and `spiderweb-pr` require only
+  their own CI jobs; neither requires `federation-compatibility`, so no federation
+  check blocks a merge anywhere. Recorded in `governance/merge_blocking_status.json`;
+  `merge_blocking_status` stays `BLOCKED`.
+- **`docs-sync` ready to require (ADR 0010, rollout step 3).**
+  `tools/require_docs_sync.py --apply` marks it required on `main` per repo: appended to
+  `moneysweep-pr`'s ruleset and `spiderweb-pr`'s branch protection, and a new
+  `main-required-checks` ruleset in `thehub-pr`, `ovnis-pr` and `skywatcher-pr`. It is a
+  repository setting, so a repository administrator runs it; until then the gate stays
+  `PROVISIONAL`. `aguayluz-pr` is held because `refresh.yml` pushes its scheduled data
+  commits straight to `main`, which a required check would reject. `skywatcher-pr`'s
+  `centinelas-handoff.yml` also pushes to `main` but has never been dispatched; it needs
+  the same change before it is first used. `centinelas-pr` has not adopted the gate yet.
+
 ## Blocked gaps — fully specified, waiting on a named external input
 
 Each item below is **code-ready** unless noted; the missing item is named.
@@ -127,6 +145,7 @@ Each item below is **code-ready** unless noted; the missing item is named.
 | Live exec | moneysweep-pr | Tranche-B manual source exports (hud_drgr, prasa, oficina_contralor, pr_cabilderos) + cor3 portal export (JS-rendered; manual CSV fallback) + `PROPUBLICA_API_KEY`. Runtime keys (FEC/SAM/HigherGov/LDA/Data.gov-family via `X_API_KEY`) are now supplied and 8/14 required sources are live-materialized. |
 | Per-asset outage attribution | aguayluz | A finer outage feed; PREPS is island-wide aggregate and third-party outage snapshots remain review-grade until promoted. |
 | ECW photomosaic extents | PRIIS | A GDAL ECW driver/plugin or external ECW→GeoTIFF conversion before remaining mosaics can be ingested. |
+| `docs-sync` required on `main` | thehub, moneysweep, spiderweb, ovnis, skywatcher | A repository administrator runs `tools/require_docs_sync.py --apply`; repository settings are outside what a template or CI can change. `aguayluz-pr` also needs `refresh.yml` to open a pull request instead of pushing to `main`. |
 | Repo deletion | `jotaele44/Aerospace-Intelligence-Tool` | `gh auth refresh -s delete_repo` then `gh repo delete … --yes`. Content preserved in `skywatcher-pr` archive/provenance notes. |
 | Repo deletion | `jorgegonzalez44/Puerto-Rico-Airspace-Intelligence-Tool` | Delete from the **jorgegonzalez44** account after confirming no unsalvaged material remains. |
 
