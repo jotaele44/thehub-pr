@@ -30,10 +30,45 @@ jobs:
           git clone https://github.com/jotaele44/ovnis-pr.git ws/ovnis-pr
           git -C ws/ovnis-pr checkout --detach "$OVNIS_SHA"
           test "$(git -C ws/ovnis-pr rev-parse HEAD)" = "$OVNIS_SHA"
-      - name: Produce exact OVNIS production package
+      - name: Reproduce the frozen OVNIS export clock
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("ws/ovnis-pr/scripts/federation_export.py")
+          text=p.read_text()
+          old='    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")'
+          new='    now = "2026-10-12T22:53:04Z"'
+          if old not in text:
+              raise SystemExit("export clock source not found exactly once")
+          if text.count(old) != 1:
+              raise SystemExit("export clock source cardinality drift")
+          p.write_text(text.replace(old,new))
+          PY
+      - name: Produce byte-identical frozen OVNIS package
         run: |
           cd ws/ovnis-pr
           python3 scripts/federation_export.py --mode production
+      - name: Assert frozen package identity
+        run: |
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path("ws/ovnis-pr/exports/federation")
+          expected={
+            "manifest.json":"2fe039e675f98455f0af441cc33ca169d7ddacef6025285c85b3289cacf6accb",
+            "sources.jsonl":"a22f8ef58b20ee3a398e2dbc93d2c9893517da06d3db7dfaa9f5be795f67aeaf",
+            "entities.jsonl":"bb649d7f2d7193a5d5d8c1f1f76022888358cb4e0fc57080032a844ca92b64a8",
+            "relationships.jsonl":"ab5bf9888c3e6c01e282bd9dbe42dbdbc8c46e45ac653ae7ea8d6fea6ce5be9e",
+            "observations.jsonl":"62845015c2edf6906d0e320a18db8a129af2c2b412933787dcb586784895184c",
+          }
+          for name,want in expected.items():
+              got=hashlib.sha256((root/name).read_bytes()).hexdigest()
+              if got!=want: raise SystemExit(f"{name} hash mismatch: {got} != {want}")
+          manifest=json.loads((root/"manifest.json").read_text())
+          if manifest["package_id"]!="pkg_e9760640d4fa40be998a974186e7c519":
+              raise SystemExit("package_id mismatch: "+manifest["package_id"])
+          print("FROZEN_PACKAGE_IDENTITY_PASS")
+          PY
       - name: Validate exact package with current Hub
         run: hub validate-package "$GITHUB_WORKSPACE/ws/ovnis-pr/exports/federation"
       - name: Aggregate present producer package
