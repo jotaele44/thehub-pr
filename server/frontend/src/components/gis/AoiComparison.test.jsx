@@ -72,6 +72,22 @@ describe('AOI comparison with negative controls', () => {
     expect(await axe(container)).toHaveNoViolations();
   });
 
+  it('shows a very small p as <0.001, never as a bare 0.000', async () => {
+    const lopsided = {
+      ...FEATURES,
+      features: [...Array.from({ length: 40 }, (_, i) => feature(`s${i}`, -0.95 + i * 0.02, 0.5)), feature('c0', 1.5, 0.5)],
+    };
+    const { container } = renderView(lopsided);
+    await loaded();
+    fireEvent.change(study(), { target: { value: '-1,0,0,1' } });
+    fireEvent.change(control(), { target: { value: '1,0,3,1' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Compare' }));
+    expect(await screen.findByText('BACKGROUND COMPARISON — not a finding')).toBeInTheDocument();
+    const row = container.querySelector('[data-comparison-row="aguayluz-pr|entities|utility_asset"]');
+    expect(row.querySelector('[data-study-count]')).toHaveTextContent('40');
+    expect(row.querySelector('[data-p]')).toHaveTextContent('<0.001');
+  });
+
   it('compares a study box with a control box per category, with densities, ratio, interval and exact p', async () => {
     const { container } = renderView();
     await loaded();

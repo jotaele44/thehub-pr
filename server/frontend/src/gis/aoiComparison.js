@@ -89,6 +89,11 @@ function aoi(id, label, kind, geometry, areaM2, source) {
   return Object.freeze({ id, label, kind, geometry, areaM2, areaMethod: AREA_METHOD, source });
 }
 
+// A p-value as shown: three decimals, and never a bare 0.000, which would read as a certainty.
+export function formatP(p) {
+  return p < 0.001 ? '<0.001' : p.toFixed(3);
+}
+
 export function aoiFromBbox(id, label, text) {
   const [west, south, east, north] = parseBboxText(text);
   const geometry = { type: 'Polygon', coordinates: [[[west, south], [east, south], [east, north], [west, north], [west, south]]] };

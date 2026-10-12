@@ -167,7 +167,9 @@ The view is `server/frontend/src/components/gis/DigitalTwin.jsx`, with pure help
 2. The point.
 3. The selected record's CUDEM elevation, with its datum and the tile that held it, and its
    ellipsoidal height when the geoid is applied. It reads "Outside CUDEM coverage (no height
-   reported)." or "CUDEM has no value here (no height reported)." where those apply.
+   reported)." or "CUDEM has no value here (no height reported)." where those apply. For a
+   `REPRESENTATIVE_POINT` record the point and the heights are marked as at the stand-in position, not
+   at the record.
 4. The time window and the counts: shown, outside the time window, undated.
 5. The records shown. The list is capped at 50 rows and says so when the cap applies.
 6. DEM provenance: dataset, provider, dates, citation, datums, resolution, binding status, both

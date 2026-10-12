@@ -53,6 +53,11 @@ with its datum and source. Beside it, the ellipsoidal height with the separation
 "datum not declared" where a datum is missing, and `sharedDatum` refuses to combine heights of
 different datums.
 
+A `REPRESENTATIVE_POINT` record is a stand-in (an alert placed at a municipio centroid, for example),
+so the point it is read at is not where the record is. For such a record the Point, Elevation and
+Ellipsoidal rows say "a stand-in position: the record is not known to be here" and "terrain at the
+stand-in position, not at the record". An observed or interpreted point carries no such note.
+
 **Cross-validation** (T1, 2026-10-07). NGS also serves its own GEOID18 computation at
 `https://geodesy.noaa.gov/api/geoid/ght`, with no key. The bilinear value from the grid was compared
 with it at six points:
@@ -169,6 +174,8 @@ of the combined area, so the study count is binomial.
 - The 95% interval is Clopper-Pearson, transformed to a rate ratio `p/(1−p) · A0/A1`.
 - With no control records the ratio is infinite and says so. P-values are not adjusted for multiple
   comparisons, and the result states how many comparisons were tested.
+- A p-value is shown to three decimals, and a value below 0.001 is shown as `<0.001`, never as a
+  bare 0.000. The receipt carries the exact value.
 
 Reference values the tests pin:
 

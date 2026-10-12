@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { federation } from '@/api/federationClient';
 import { acquireOnlineSource } from '@/gis/acquisitionFacade';
 import {
-  MIN_COMBINED_RECORDS, NOT_A_FINDING, aoiFromBbox, aoiFromMunicipio, compareAois, comparisonReceipt,
+  MIN_COMBINED_RECORDS, NOT_A_FINDING, aoiFromBbox, aoiFromMunicipio, compareAois, comparisonReceipt, formatP,
 } from '@/gis/aoiComparison';
 import { PROPERTY_MAP_BASEMAPS } from '@/gis/basemaps';
 import { MUNICIPIO_BOUNDARY_SOURCE_ID, boundaryName, categoryColors, featureCollection, featurePaint } from '@/gis/propertyMap';
@@ -124,7 +124,7 @@ function Results({ comparison, store, onDownload }) {
                 </td>
                 <td>{row.controls.perKm2.toFixed(4)}</td>
                 <td data-ratio>{formatRatio(row)}</td>
-                <td data-p>{row.p === null ? '—' : row.p.toFixed(3)}</td>
+                <td data-p>{row.p === null ? '—' : formatP(row.p)}</td>
               </tr>
             ))}
           </tbody>

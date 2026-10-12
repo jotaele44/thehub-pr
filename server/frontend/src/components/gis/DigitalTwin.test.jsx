@@ -155,6 +155,23 @@ describe('Digital Twin', () => {
     expect(container.querySelector('[data-dt-elevation]')).toHaveTextContent('1322.7 m PRVD02 · CUDEM m9525 1/9″');
   });
 
+  it('says a stand-in position is not where the record is, on every height read from it', async () => {
+    const { container } = renderTwin();
+    await loaded();
+    // A REPRESENTATIVE_POINT is a stand-in (here an alert placed at a centroid): the terrain read there is not the record's.
+    fireEvent.click(container.querySelector('[data-dt-record="evo:alerts:a"]'));
+    await waitFor(() => expect(container.querySelector('[data-dt-ellipsoidal]')).toHaveTextContent('NAD83(2011) ellipsoidal'));
+    expect(container.querySelector('[data-dt-point]')).toHaveTextContent('a stand-in position: the record is not known to be here');
+    expect(container.querySelector('[data-dt-elevation]')).toHaveTextContent('terrain at the stand-in position, not at the record');
+    expect(container.querySelector('[data-dt-ellipsoidal]')).toHaveTextContent('terrain at the stand-in position, not at the record');
+    // An observed point carries no such qualifier.
+    fireEvent.click(container.querySelector('[data-dt-record="evo:entities:m"]'));
+    await waitFor(() => expect(container.querySelector('[data-dt-elevation]')).toHaveTextContent('1322.7 m PRVD02'));
+    expect(container.querySelector('[data-dt-point]')).not.toHaveTextContent('stand-in');
+    expect(container.querySelector('[data-dt-elevation]')).not.toHaveTextContent('stand-in');
+    expect(container.querySelector('[data-dt-ellipsoidal]')).not.toHaveTextContent('stand-in');
+  });
+
   it('says so, and why, when the geoid is not applied, and never shows an ellipsoidal height then', async () => {
     openGeoid.mockRejectedValue(new Error('HTTP 503'));
     const { container } = renderTwin();

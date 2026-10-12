@@ -59,9 +59,14 @@ function Panel({ id, label, maximized, onMaximize, children }) {
   );
 }
 
+// A REPRESENTATIVE_POINT is a stand-in (a centroid, for example), not where the record is, so a
+// height read there says whose position it is.
+const STAND_IN_POINT = 'a stand-in position: the record is not known to be here';
+const STAND_IN_TERRAIN = ' (terrain at the stand-in position, not at the record)';
+
 // PRVD02 height from CUDEM, and beside it the ellipsoidal height (H + N) when the
 // geoid is applied. The two are never mixed: each carries its own datum.
-function Elevation({ point, geoid }) {
+function Elevation({ point, geoid, standIn }) {
   const inside = point && covers([point.lon, point.lat, point.lon, point.lat]);
   const query = useQuery({
     queryKey: ['cudem-elevation', point?.lon, point?.lat],
@@ -74,7 +79,7 @@ function Elevation({ point, geoid }) {
   else if (query.isLoading) text = 'Reading CUDEM…';
   else if (query.isError) text = `CUDEM could not be read: ${query.error?.message}`;
   else if (point && query.data === null) text = 'CUDEM has no value here (no height reported).';
-  else if (query.data) text = formatElevation(query.data);
+  else if (query.data) text = `${formatElevation(query.data)}${standIn ? STAND_IN_TERRAIN : ''}`;
 
   let ellipsoidal = '—';
   if (point && geoid.status === 'loading') ellipsoidal = 'Reading GEOID18…';
@@ -83,7 +88,7 @@ function Elevation({ point, geoid }) {
     const n = geoidHeight(geoid.grid, point.lon, point.lat);
     ellipsoidal = n === null
       ? `No geoid height here (outside ${GEOID18_PR.model}'s extent); no ellipsoidal height reported.`
-      : `Geoid N ${n.toFixed(1)} m (${GEOID18_PR.model}) → ${formatHeight({ value: query.data.metres + n, datum: 'NAD83(2011) ellipsoidal', source: 'H + N' })}`;
+      : `Geoid N ${n.toFixed(1)} m (${GEOID18_PR.model}) → ${formatHeight({ value: query.data.metres + n, datum: 'NAD83(2011) ellipsoidal', source: 'H + N' })}${standIn ? STAND_IN_TERRAIN : ''}`;
   }
   return (
     <>
@@ -116,14 +121,15 @@ function GeoidStatus({ geoid }) {
 }
 
 function DetailsPanel({ selected, point, visible, onSelect, selectedId, tilesRead, terrainError, terrain, geoid, counts, timeRange }) {
+  const standIn = selected?.properties.geometry_precision === 'REPRESENTATIVE_POINT';
   return (
     <div className="h-full space-y-3 overflow-y-auto p-3 text-xs">
       {selected ? <SelectedRecord feature={selected} /> : <p className="text-muted-foreground">No record selected.</p>}
       <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
         <dt className="text-muted-foreground">Point</dt>
-        <dd>{point ? `${point.lat.toFixed(5)}, ${point.lon.toFixed(5)} (WGS84)` : '—'}</dd>
+        <dd data-dt-point>{point ? `${point.lat.toFixed(5)}, ${point.lon.toFixed(5)} (WGS84)${standIn ? ` · ${STAND_IN_POINT}` : ''}` : '—'}</dd>
         <dt className="text-muted-foreground">Elevation</dt>
-        <Elevation point={point} geoid={geoid} />
+        <Elevation point={point} geoid={geoid} standIn={standIn} />
         <dt className="text-muted-foreground">Time window</dt>
         <dd data-dt-window>{timeRange ? `${dateText(timeRange[0])} to ${dateText(timeRange[1])}` : 'No dated records'}</dd>
         <dt className="text-muted-foreground">Records</dt>

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { bboxAreaM2, polygonAreaM2 } from './propertyMap';
 import {
   MIN_COMBINED_RECORDS, NOT_A_FINDING, aoiFromBbox, aoiFromMunicipio, aoisOverlap, binomialPValue, clopperPearson, compareAois,
-  comparisonReceipt, rateRatioInterval,
+  comparisonReceipt, formatP, rateRatioInterval,
 } from './aoiComparison';
 
 const square = (west, south, east, north) => ({
@@ -201,5 +201,15 @@ describe('comparison against negative controls', () => {
     expect(receipt.rows).toHaveLength(1);
     expect(receipt.rows[0].ratio).toBe('infinite (no control records)');
     expect(JSON.parse(JSON.stringify(receipt)).rows[0].ratio).toBe('infinite (no control records)');
+  });
+});
+
+describe('p-value display', () => {
+  it('prints three decimals and never a bare 0.000, which would read as a certainty', () => {
+    expect(formatP(0.109375)).toBe('0.109');
+    expect(formatP(1)).toBe('1.000');
+    expect(formatP(0.001)).toBe('0.001');
+    expect(formatP(0.0004)).toBe('<0.001');
+    expect(formatP(0)).toBe('<0.001');
   });
 });
