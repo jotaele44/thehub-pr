@@ -22,8 +22,11 @@
     "status": "PROVISIONAL",
     "required_on_main_in": [],
     "ready_to_require": ["thehub-pr", "moneysweep-pr", "spiderweb-pr", "ovnis-pr", "skywatcher-pr"],
-    "held": {"aguayluz-pr": "refresh.yml commits scheduled data refreshes straight to main with the Actions token; a required check would reject those pushes because docs-sync only runs on pull requests"},
-    "not_adopted": ["centinelas-pr"],
+    "held": {
+      "aguayluz-pr": "refresh.yml commits scheduled data refreshes straight to main with the Actions token; a required check would reject those pushes because docs-sync only runs on pull requests",
+      "centinelas-pr": "signal-ledger-refresh.yml, just-security-monitor.yml and el-yunque-access-monitor.yml commit scheduled refreshes straight to main with the Actions token; a required check would reject those pushes because docs-sync only runs on pull requests"
+    },
+    "not_adopted": [],
     "apply_with": "tools/require_docs_sync.py --apply, run by a repository administrator"
   },
   "certification_rule":"Do not issue CERTIFIED until required status enforcement is evidenced for main on all seven repositories."
