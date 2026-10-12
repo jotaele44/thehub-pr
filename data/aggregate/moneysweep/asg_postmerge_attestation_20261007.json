@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "thehub.moneysweep-asg-postmerge-attestation/v1",
+  "observedAt": "2026-10-07",
+  "state": "PASS_WITH_RENDERED_QA_OPEN",
+  "scopeId": "moneysweep.leaderboard.asg-emergency-source-native-v1",
+  "thehubMainAtReplay": "d765bb0bd02adee985bb38a9d8839f291a472a7a",
+  "moneysweepMainObserved": "27351ad021b4951856a9a51a12771b958d55a785",
+  "package": {
+    "sha256": "6ecdad09a48cdbd4ae1076138a9b5017a5be82608b489871a50ce0d599680337",
+    "producerConsumerBytesIdentical": true
+  },
+  "postMergeConsumerReplay": {
+    "state": "PASS",
+    "checksExecuted": 13,
+    "checksPassed": 13,
+    "candidateCount": 10,
+    "retainedRecords": 21,
+    "metricTotal": 4423664.82,
+    "currency": "USD"
+  },
+  "flootRegressionPlane": {
+    "projectId": "25976845-0c8b-412f-bbc7-7f417025ec73",
+    "projectVersion": 1791319643131,
+    "state": "PASS",
+    "specFilesExecuted": 59,
+    "specFilesPassed": 59,
+    "specFilesFailed": 0,
+    "note": "This is the complete current Floot project test denominator and is separate from the exact GitHub ASG consumer replay."
+  },
+  "renderedQa": {
+    "desktop": {
+      "state": "OPEN_RENDERED_BROWSER_NOT_CONNECTED",
+      "viewport": "desktop"
+    },
+    "iphone393": {
+      "state": "OPEN_RENDERED_BROWSER_NOT_CONNECTED",
+      "viewport": "393x852"
+    },
+    "blockingReason": "No Floot editor or preview window was open, so screenshot_preview could not capture the live DOM.",
+    "assertsPass": false
+  },
+  "publishedFlootState": {
+    "published": true,
+    "url": "https://thehub-pr.floot.app",
+    "visibility": "internal",
+    "mobileBuild": "succeeded",
+    "publishedRenderedQaClaimed": false
+  },
+  "authority": {
+    "thehubRecomputesRankings": false,
+    "wholeSourceClaimAuthorized": false,
+    "boundedPromotionAuthorized": true
+  },
+  "githubActions": {
+    "state": "WAIVED_BY_USER",
+    "assertsPass": false
+  },
+  "terminalRule": "Rendered desktop and iPhone evidence must be captured before RENDERED_QA_CERTIFIED can be issued. No other ASG producer/consumer gate is open in this attestation."
+}

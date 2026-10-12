@@ -133,7 +133,15 @@
         "required": ["pattern", "classification", "rationale", "evidence"],
         "properties": {
           "pattern": {"type": "string"},
-          "classification": {"const": "PRESENTATION_ONLY"},
+          "classification": {
+            "enum": [
+              "PRESENTATION_ONLY",
+              "CLIENT_STATE",
+              "INTERNAL_NAVIGATION",
+              "EXTERNAL_NAVIGATION",
+              "BROWSER_ACTION"
+            ]
+          },
           "rationale": {"type": "string", "minLength": 8},
           "evidence": {"type": "array", "minItems": 1, "items": {"type": "string"}}
         },

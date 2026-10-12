@@ -103,6 +103,82 @@ test.describe('MoneySweep certified leaderboard consumer', () => {
     await expect(page.getByText(/Package SHA-256:/)).toBeVisible();
   });
 
+  test('switches to the certified ASG plane and preserves source-native accounting', async ({ page }) => {
+    const packageHash = 'c'.repeat(64);
+    await mockApi(page, {
+      '/moneysweep/leaderboards/status': {
+        state: 'BLOCKED',
+        reason: 'certified debt leaderboard package is not mounted',
+      },
+      '/moneysweep/asg-leaderboards/status': {
+        state: 'PASS',
+        producerCommit: 'd'.repeat(40),
+        rankingContractVersion: 'moneysweep.leaderboard/v1.1',
+        ontologyContractVersion: 'moneysweep.financial-category-ontology/v1.1',
+        scopeId: 'moneysweep.leaderboard.asg-emergency-source-native-v1',
+        inputRecords: 1431,
+        outOfScopeRecords: 1410,
+        retainedRecords: 21,
+        candidateCount: 10,
+        consumerPackageSha256: packageHash,
+      },
+      '/moneysweep/asg-leaderboards/top': {
+        categoryId: 'asg_emergency_purchase_source_native',
+        metricType: 'ASG_EMERGENCY_PURCHASE_COST',
+        rows: [
+          {
+            entityId: 'ASG-12345',
+            entityDisplayName: 'Proveedor con ID nativo',
+            entityResolutionState: 'SOURCE_NATIVE_ID',
+            currency: 'USD',
+            metricValue: 125000,
+            recordCount: 3,
+            rank: 1,
+          },
+        ],
+        consumerState: 'PASS',
+        producerCommit: 'd'.repeat(40),
+        scopeId: 'moneysweep.leaderboard.asg-emergency-source-native-v1',
+        scopeBoundary: 'Only purchases with an explicit ASG Licitador ID are ranked.',
+        consumerPackageSha256: packageHash,
+      },
+    });
+
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Leaderboards' }).click();
+    await page.getByRole('tab', { name: 'ASG emergency purchases' }).click();
+
+    await expect(page.getByRole('heading', { name: 'ASG Emergency Purchases — Source-Native IDs' })).toBeVisible();
+    await expect(page.getByText('Proveedor con ID nativo')).toBeVisible();
+    await expect(page.getByText('ASG-12345')).toBeVisible();
+    await expect(page.getByText('SOURCE_NATIVE_ID')).toBeVisible();
+    await expect(page.getByText('3 retained purchases')).toBeVisible();
+    await expect(page.getByText(/1431 records = 1410 explicit identity exclusions \+ 21 retained source-native rows/)).toBeVisible();
+    await expect(page.getByText(/Package SHA-256:/)).toBeVisible();
+  });
+
+  test('shows the ASG producer blocker without synthesizing ranking rows', async ({ page }) => {
+    await mockApi(page, {
+      '/moneysweep/leaderboards/status': {
+        state: 'BLOCKED',
+        reason: 'certified debt leaderboard package is not mounted',
+      },
+      '/moneysweep/asg-leaderboards/status': {
+        state: 'BLOCKED',
+        reason: 'certified ASG MoneySweep leaderboard package is not mounted',
+      },
+    });
+
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Leaderboards' }).click();
+    await page.getByRole('tab', { name: 'ASG emergency purchases' }).click();
+
+    await expect(page.getByRole('heading', { name: 'ASG Emergency Purchases — Source-Native IDs' })).toBeVisible();
+    await expect(page.getByText('BLOCKED')).toBeVisible();
+    await expect(page.getByText('certified ASG MoneySweep leaderboard package is not mounted')).toBeVisible();
+    await expect(page.getByRole('table')).toHaveCount(0);
+  });
+
   test('shows fail-closed producer status instead of synthetic ranking rows', async ({ page }) => {
     await mockApi(page, {
       '/moneysweep/leaderboards/status': {
@@ -114,9 +190,9 @@ test.describe('MoneySweep certified leaderboard consumer', () => {
     await page.goto('/moneysweep', { waitUntil: 'networkidle' });
     await page.getByRole('tab', { name: 'Leaderboards' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Financial Leaderboards' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Certified Public Debt Issuance' })).toBeVisible();
     await expect(page.getByText('BLOCKED')).toBeVisible();
-    await expect(page.getByText(/fail-closed until MoneySweep supplies/)).toBeVisible();
+    await expect(page.getByText(/fail-closed until TheHub trusts/)).toBeVisible();
     await expect(page.getByRole('table')).toHaveCount(0);
   });
 });
