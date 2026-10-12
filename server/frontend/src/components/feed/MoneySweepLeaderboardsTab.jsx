@@ -106,8 +106,8 @@ export default function MoneySweepLeaderboardsTab() {
 
       {!error && status?.state === "PASS" && (
         <>
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-card p-3">
-            <div>
+          <div className="flex min-w-0 flex-col gap-3 rounded-lg border border-border bg-card p-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0 flex-1">
               <h3 className="font-semibold">{spec.title}</h3>
               <p className="text-xs text-muted-foreground">
                 {spec.measure}. TheHub displays MoneySweep-certified rows without recomputing totals, rank, identity, or geometry.
@@ -121,14 +121,14 @@ export default function MoneySweepLeaderboardsTab() {
               )}
               {status.consumerPackageSha256 && (
                 <p
-                  className="max-w-xl truncate font-mono text-[11px] text-muted-foreground"
+                  className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap font-mono text-[11px] text-muted-foreground"
                   title={status.consumerPackageSha256}
                 >
                   Package SHA-256: {status.consumerPackageSha256}
                 </p>
               )}
             </div>
-            <State value="PASS" />
+            <span className="shrink-0"><State value="PASS" /></span>
           </div>
 
           <div className="overflow-x-auto rounded-lg border border-border bg-card">
