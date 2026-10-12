@@ -35,7 +35,7 @@ jobs:
           cd ws/ovnis-pr
           python3 scripts/federation_export.py --mode production
       - name: Validate exact package with current Hub
-        run: hub validate-package --path "$GITHUB_WORKSPACE/ws/ovnis-pr/exports/federation"
+        run: hub validate-package "$GITHUB_WORKSPACE/ws/ovnis-pr/exports/federation"
       - name: Aggregate present producer package
         run: |
           mkdir -p receipt-work/aggregate
