@@ -1,6 +1,6 @@
 {
   "schemaVersion": "thehub.moneysweep-full-package-replay/v1",
-  "state": "PENDING_CROSS_REPO_REPLAY",
+  "state": "PASS",
   "producer": "moneysweep-pr",
   "producerCommit": "39482166fe3a4d97d11644c764a48fdd5b695f4c",
   "producerReleaseLabel": "frozen-mobile-release-2026-10-12-current-head",
@@ -36,9 +36,9 @@
   ],
   "accounting": {
     "totalRecords": 4781,
-    "perStreamStableIdsUnique": "PENDING",
-    "rowSchemaValidation": "PENDING",
-    "manifestIntegrity": "PENDING"
+    "perStreamStableIdsUnique": true,
+    "rowSchemaValidation": "PASS",
+    "manifestIntegrity": "PASS"
   },
   "historicalLineage": {
     "packageIdPreviouslyObservedByTheHub": true,
@@ -47,10 +47,24 @@
     "reason": "Historical pickup proves lineage only; this receipt requires replay against the exact current producer commit."
   },
   "consumerValidation": {
-    "exactProducerCommit": "PENDING",
-    "exactStreamHashes": "PENDING",
-    "deterministicHubWrapper": "PENDING",
-    "hubSchemaValidation": "PENDING",
-    "zeroValidationErrors": "PENDING"
-  }
+    "exactProducerCommit": "PASS",
+    "exactStreamHashes": "PASS",
+    "deterministicHubWrapper": "PASS",
+    "hubSchemaValidation": "PASS",
+    "zeroValidationErrors": "PASS"
+  },
+  "replayEvidence": {
+    "workflow": "MoneySweep full package replay",
+    "workflowRunId": 38323958645,
+    "workflowRunNumber": 1,
+    "workflowUrl": "https://github.com/jotaele44/thehub-pr/actions/runs/38323958645",
+    "jobId": 115058231868,
+    "validationHead": "e3c7f5642bea4e8e88e4dd55ae8e074555d34554",
+    "test": "tests/test_moneysweep_full_package_current.py",
+    "result": "PASS",
+    "testsPassed": 1,
+    "testsFailed": 0,
+    "durationSeconds": 0.55
+  },
+  "terminalRule": "PASS is valid only while this receipt-bearing PR head replays the exact producer commit and remains green; future producer/package changes require a new receipt."
 }
