@@ -225,15 +225,45 @@ test.describe('MoneySweep certified leaderboard consumer', () => {
             const r = el.getBoundingClientRect();
             return { label: el.textContent?.trim() || '', width: r.width, height: r.height };
           });
+        const intentionalScroller = (element) => {
+          let current = element.parentElement;
+          while (current) {
+            const style = getComputedStyle(current);
+            if ((style.overflowX === 'auto' || style.overflowX === 'scroll') && current.scrollWidth > current.clientWidth + 1) return true;
+            current = current.parentElement;
+          }
+          return false;
+        };
+        const offenders = [...document.querySelectorAll('body *')]
+          .filter((el) => {
+            const r = el.getBoundingClientRect();
+            const style = getComputedStyle(el);
+            return r.width > 0 && r.height > 0 && style.visibility !== 'hidden' && style.display !== 'none'
+              && (r.left < -1 || r.right > root.clientWidth + 1)
+              && !intentionalScroller(el);
+          })
+          .slice(0, 20)
+          .map((el) => {
+            const r = el.getBoundingClientRect();
+            return {
+              tag: el.tagName.toLowerCase(),
+              text: (el.textContent || '').trim().slice(0, 80),
+              className: typeof el.className === 'string' ? el.className.slice(0, 160) : '',
+              left: Math.round(r.left),
+              right: Math.round(r.right),
+              width: Math.round(r.width),
+            };
+          });
         return {
           clientWidth: root.clientWidth,
           scrollWidth: root.scrollWidth,
           overflowPx: Math.max(0, root.scrollWidth - root.clientWidth),
+          offenders,
           tabs,
         };
       });
 
-      expect(geometry.overflowPx, `${viewport.name} document overflow`).toBe(0);
+      expect(geometry.overflowPx, `${viewport.name} document overflow: ${JSON.stringify(geometry.offenders)}`).toBe(0);
       expect(geometry.tabs.length).toBeGreaterThanOrEqual(7);
       for (const tab of geometry.tabs) {
         expect(tab.height, `${viewport.name} tab "${tab.label}" height`).toBeGreaterThanOrEqual(44);
