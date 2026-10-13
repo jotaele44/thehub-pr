@@ -88,7 +88,7 @@ def validate_frozen_pin_denominator(
         blobs = {}
         for consumer in sorted(expected):
             raw = pin_paths[consumer].read_bytes()
-            git_blob = b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw
+            git_blob = b"blob " + str(len(raw)).encode("ascii") + bytes([0]) + raw
             observed = hashlib.sha1(git_blob).hexdigest()
             if (expected[consumer]["Pin_Git_Blob_SHA1"] != observed
                     or expected[consumer]["Default_Level"] != EXPECTED_DEFAULT_LEVELS[consumer]):
