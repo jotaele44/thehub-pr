@@ -32,9 +32,9 @@ jobs:
           for repo in spiderweb-pr aguayluz-pr skywatcher-pr ovnis-pr moneysweep-pr centinelas-pr; do
             git clone --depth 1 --filter=blob:none --sparse "https://github.com/jotaele44/$repo.git" "$root/$repo"
             if [ "$repo" = "spiderweb-pr" ]; then
-              git -C "$root/$repo" sparse-checkout set registry/spatial/v2/pr_grid_geographic_v2.manifest.json registry/spatial/v2/pr_grid_geographic_v2.source.json schemas/pr_grid_geographic_v2_cell.schema.json schemas/pr_grid_geographic_v2_binding.schema.json schemas/pr_grid_geographic_v2_mask.schema.json schemas/pr_grid_geographic_v2_manifest.schema.json
+              git -C "$root/$repo" sparse-checkout set --no-cone registry/spatial/v2/pr_grid_geographic_v2.manifest.json registry/spatial/v2/pr_grid_geographic_v2.source.json schemas/pr_grid_geographic_v2_cell.schema.json schemas/pr_grid_geographic_v2_binding.schema.json schemas/pr_grid_geographic_v2_mask.schema.json schemas/pr_grid_geographic_v2_manifest.schema.json
             else
-              git -C "$root/$repo" sparse-checkout set federation/spatial/pr_grid_geographic_v2.pin.json
+              git -C "$root/$repo" sparse-checkout set --no-cone federation/spatial/pr_grid_geographic_v2.pin.json
             fi
           done
           python scripts/validate_pr_grid_v2_federation.py --workspace-root "$root" --authority-root "$root/spiderweb-pr"
