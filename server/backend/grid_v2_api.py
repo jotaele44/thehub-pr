@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 from fastapi import APIRouter, HTTPException, Query
 
@@ -22,7 +22,7 @@ def cell_profile_v2(
     grid_version: str,
     level: str,
     cell_id: str,
-    as_of: str | None = Query(None, min_length=1, max_length=80),
+    as_of: Optional[str] = Query(None, min_length=1, max_length=80),
 ) -> dict[str, Any]:
     """Return TheHub's truthful V2 profile without inventing pre-migration counts."""
     if grid_id != GRID_ID:
