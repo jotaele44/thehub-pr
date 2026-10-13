@@ -102,6 +102,15 @@ targets:
     output: src/hub/grid_v2.py
     repos: [thehub-pr]
 
+  # V2 profiles are domain-owned. TheHub distributes the same immutable logic,
+  # but never runs producer materialization or accepts geometry.
+  - template: spatial/pr_grid_v2_profiles.py
+    output: federation/spatial/pr_grid_v2_profiles.py
+    repos: *grid_v2_producer_consumers
+  - template: spatial/materialize_pr_grid_v2_profiles.py
+    output: federation/spatial/materialize_pr_grid_v2_profiles.py
+    repos: *grid_v2_producer_consumers
+
   # Engineering baseline — supply-chain and dependency hygiene that every repo
   # in the federation needs identically. Single-sourced here so a fix lands once
   # instead of seven times, and so template-drift.yml keeps it from rotting.
