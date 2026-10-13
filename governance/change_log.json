@@ -58,6 +58,19 @@
         "federation-templates/README.md",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-10-12",
+      "summary": "Hardened the shared documentation gate (thehub-pr ADR 0010) after review of its first rollout. A pull request can no longer exempt itself: exempt_authors counts only when the base manifest already lists the author. Manifest hygiene is judged on the head manifest, so retiring a coupling together with its last covered file, or renaming a coupled doc and repointing the coupling, no longer fails, while the base's couplings and mode still bind the change. A renamed doc counts as updated and keeps its history for the reference ratchet and the dead-glob check. A glob that matches nothing now fails when the change adds it and only warns when it was already there. A path:symbol or :line locator is dropped from Markdown link targets as well as inline code. The CONTRIBUTING.md section now states the coupling's on events, the reference check's scope (root Markdown and docs/**) and the new glob rule, and no longer lists .pre-commit-config.yaml as rendered for repositories that keep their own. Tooling and documentation change only: no contract, schema or dependency edge changed.",
+      "files": [
+        "federation-templates/baseline/check_docs_sync.py",
+        "federation-templates/baseline/CONTRIBUTING.md",
+        "tools/check_docs_sync.py",
+        "CONTRIBUTING.md",
+        "tests/test_check_docs_sync.py",
+        "docs/adr/0010-change-coupled-documentation-gate.md",
+        "governance/change_log.json"
+      ]
     }
   ]
 }
