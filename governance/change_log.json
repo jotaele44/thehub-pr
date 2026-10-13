@@ -71,6 +71,16 @@
         "docs/adr/0010-change-coupled-documentation-gate.md",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-10-12",
+      "summary": "Held centinelas-pr in tools/require_docs_sync.py. It adopted the docs-sync gate (its PR #166) after the tool was written, and signal-ledger-refresh.yml, just-security-monitor.yml and el-yunque-access-monitor.yml push scheduled data commits straight to main, which a required check would reject. Updated the docs_sync_gate record in governance/merge_blocking_status.json and Part 10 of docs/FEDERATION_STATUS.md to match. No repository setting was changed.",
+      "files": [
+        "tools/require_docs_sync.py",
+        "governance/merge_blocking_status.json",
+        "docs/FEDERATION_STATUS.md",
+        "governance/change_log.json"
+      ]
     }
   ]
 }
