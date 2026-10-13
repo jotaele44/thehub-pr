@@ -5,6 +5,7 @@ Absent profile materializations are NO_DATA, not ZERO_RECORDS.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -54,7 +55,16 @@ def cell_handoff(
         if path.stat().st_size > 25_000_000:
             raise HTTPException(503, "profile artifact exceeds bounded read size: " + repo)
         try:
-            for raw in path.read_text(encoding="utf-8").splitlines():
+            receipt_path = path.with_suffix(".receipt.json")
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+            payload = path.read_bytes()
+            if (receipt.get("Output_SHA256") != hashlib.sha256(payload).hexdigest()
+                    or receipt.get("Repository") != repo
+                    or receipt.get("Grid_Identity") != grid_identity(pin, level=level)
+                    or receipt.get("Geometry_Copied") is not False
+                    or receipt.get("State") != "CANDIDATE_NOT_CANONICAL"):
+                raise ValueError("unverified producer profile output receipt")
+            for raw in payload.decode("utf-8").splitlines():
                 if not raw:
                     continue
                 item = json.loads(raw)
@@ -66,8 +76,16 @@ def cell_handoff(
                     raise ValueError("mismatched profile identity")
                 if item.get("Geometry_Included") is not False:
                     raise ValueError("geometry must remain with Spiderweb")
-                if item.get("Data_State") not in ("HAS_RECORDS", "ZERO_RECORDS", "NO_DATA"):
+                state = item.get("Data_State")
+                count = item.get("Record_Count")
+                if state not in ("HAS_RECORDS", "ZERO_RECORDS", "NO_DATA"):
                     raise ValueError("invalid data state")
+                if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+                    raise ValueError("invalid record count")
+                if (state == "HAS_RECORDS") != (count > 0):
+                    raise ValueError("data state contradicts record count")
+                if state == "ZERO_RECORDS" and item.get("Coverage_State") != "VERIFIED":
+                    raise ValueError("zero records requires verified coverage")
                 profiles.append(item)
         except (OSError, ValueError, TypeError) as exc:
             raise HTTPException(503, "profile validation BLOCKED: " + str(exc)) from exc
