@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from hub.grid_v2 import (
-    AUTHORITY_COMMIT, CRS, GRID_ID, GRID_MANIFEST_SHA256, GRID_VERSION,
+    EXPECTED_DEFAULT_LEVELS, AUTHORITY_COMMIT, CRS, GRID_ID, GRID_MANIFEST_SHA256, GRID_VERSION,
     BINDING_SCHEMA_SHA256, CELL_SCHEMA_SHA256, MASK_SCHEMA_SHA256,
     GridV2PinError,
 )
@@ -64,3 +64,37 @@ def validate_authority_root(root: Path) -> dict[str, Any]:
         "Authority_Commit_Object_Verified": False,
         "Verification_State": "SOURCE_BYTES_PASS",
     }
+
+
+def validate_frozen_pin_denominator(
+    pin_paths: dict[str, Path], receipt_path: Path,
+) -> dict[str, Any]:
+    """Verify six exact Git blob identities, not merely equivalent declared fields."""
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+        rows = receipt["Consumers"]
+        expected = {
+            row["Repository"]: row
+            for row in rows
+        }
+        if (len(rows) != 6 or len(expected) != 6
+                or set(expected) != set(EXPECTED_DEFAULT_LEVELS)
+                or set(pin_paths) != set(expected)):
+            raise GridV2PinError("frozen V2 consumer denominator mismatch")
+        if (receipt.get("Expected_Consumer_Count") != 6
+                or receipt.get("Grid_Manifest_SHA256") != GRID_MANIFEST_SHA256
+                or receipt.get("Authority_Commit") != AUTHORITY_COMMIT):
+            raise GridV2PinError("frozen authority identity mismatch")
+        blobs = {}
+        for consumer in sorted(expected):
+            raw = pin_paths[consumer].read_bytes()
+            git_blob = b"blob " + str(len(raw)).encode("ascii") + b"\\0" + raw
+            observed = hashlib.sha1(git_blob).hexdigest()
+            if (expected[consumer]["Pin_Git_Blob_SHA1"] != observed
+                    or expected[consumer]["Default_Level"] != EXPECTED_DEFAULT_LEVELS[consumer]):
+                raise GridV2PinError("frozen consumer pin bytes changed: " + consumer)
+            blobs[consumer] = observed
+        return {"Expected_Consumer_Count": 6, "Verified_Consumer_Count": 6,
+                "Pin_Git_Blob_SHA1": blobs, "State": "FROZEN_DENOMINATOR_PASS"}
+    except (OSError, KeyError, ValueError, TypeError) as exc:
+        raise GridV2PinError(f"frozen pin denominator BLOCKED: {exc}") from exc
