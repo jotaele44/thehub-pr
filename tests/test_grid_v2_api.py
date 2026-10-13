@@ -1,6 +1,7 @@
 """Read-only grid V2 handoff and profile provenance smoke gates."""
 from __future__ import annotations
 
+import hashlib
 import json
 
 import pytest
@@ -38,9 +39,18 @@ def test_domain_profile_is_read_only(monkeypatch, tmp_path):
         "Grid_Identity": identity, "Cell_ID": "PRG2:L1:R075:C0234",
         "Repository": "aguayluz-pr", "Data_State": "ZERO_RECORDS",
         "Geometry_Included": False, "Record_Count": 0,
+        "Coverage_State": "VERIFIED",
     }
     artifact = directory / "L1.jsonl"
     artifact.write_text(json.dumps(row) + "\n")
+    receipt = {
+        "Output_SHA256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+        "Repository": "aguayluz-pr",
+        "Grid_Identity": grid_identity(pin, level="L1"),
+        "Geometry_Copied": False,
+        "State": "CANDIDATE_NOT_CANONICAL",
+    }
+    (directory / "L1.receipt.json").write_text(json.dumps(receipt) + "\n")
     monkeypatch.setenv("PRII_GRID_V2_PROFILE_ROOT", str(tmp_path))
     result = cell_handoff("PR_GRID_GEOGRAPHIC_V2", "2.0.0-rc1", "L1", "PRG2:L1:R075:C0234")
     assert result["Cell_Profile_State"] == "AVAILABLE"
