@@ -157,6 +157,125 @@ test.describe('MoneySweep certified leaderboard consumer', () => {
     await expect(page.getByText(/Package SHA-256:/)).toBeVisible();
   });
 
+  test('renders exact ASG consumer at desktop and iPhone width without overflow or sub-44px tabs', async ({ page }, testInfo) => {
+    const packageHash = '6ecdad09a48cdbd4ae1076138a9b5017a5be82608b489871a50ce0d599680337';
+    await mockApi(page, {
+      '/moneysweep/leaderboards/status': {
+        state: 'BLOCKED',
+        reason: 'certified debt leaderboard package is not mounted',
+      },
+      '/moneysweep/asg-leaderboards/status': {
+        state: 'PASS',
+        producerCommit: 'e963f4258a78c9b30427df7a7e9b4edf83f00692',
+        rankingContractVersion: 'moneysweep.leaderboard/v1.1',
+        ontologyContractVersion: 'moneysweep.financial-category-ontology/v1.1',
+        scopeId: 'moneysweep.leaderboard.asg-emergency-source-native-v1',
+        inputRecords: 1431,
+        outOfScopeRecords: 1410,
+        retainedRecords: 21,
+        candidateCount: 10,
+        consumerPackageSha256: packageHash,
+      },
+      '/moneysweep/asg-leaderboards/top': {
+        categoryId: 'asg_emergency_purchase_source_native',
+        metricType: 'ASG_EMERGENCY_PURCHASE_COST',
+        rows: [{
+          entityId: 'asg_licitador_id:23388',
+          entityDisplayName: 'Sonnell Truck Center LLC',
+          entityResolutionState: 'SOURCE_NATIVE_ASG_LICITADOR_ID',
+          currency: 'USD',
+          metricValue: 1744085,
+          recordCount: 1,
+          rank: 1,
+        }],
+        consumerState: 'PASS',
+        producerCommit: 'e963f4258a78c9b30427df7a7e9b4edf83f00692',
+        scopeId: 'moneysweep.leaderboard.asg-emergency-source-native-v1',
+        scopeBoundary: 'Only purchases with an explicit ASG Licitador ID are ranked.',
+        consumerPackageSha256: packageHash,
+      },
+    });
+
+    for (const viewport of [
+      { name: 'desktop', width: 1280, height: 800 },
+      { name: 'iphone393', width: 393, height: 852 },
+    ]) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+      await page.getByRole('tab', { name: 'Leaderboards' }).click();
+      await page.getByRole('tab', { name: 'ASG emergency purchases' }).click();
+
+      await expect(page.getByRole('heading', { name: 'ASG Emergency Purchases — Source-Native IDs' })).toBeVisible();
+      await expect(page.getByText('Sonnell Truck Center LLC')).toBeVisible();
+      await expect(page.getByText('asg_licitador_id:23388')).toBeVisible();
+      await expect(page.getByText('SOURCE_NATIVE_ASG_LICITADOR_ID')).toBeVisible();
+      await expect(page.getByText('1 retained purchase')).toBeVisible();
+      await expect(page.getByText(/1431 records = 1410 explicit identity exclusions \+ 21 retained source-native rows/)).toBeVisible();
+      await expect(page.getByText(new RegExp(packageHash.slice(0, 24)))).toBeVisible();
+
+      const geometry = await page.evaluate(() => {
+        const root = document.documentElement;
+        const tabs = [...document.querySelectorAll('[role="tab"]')]
+          .filter((el) => {
+            const r = el.getBoundingClientRect();
+            const style = getComputedStyle(el);
+            return r.width > 0 && r.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
+          })
+          .map((el) => {
+            const r = el.getBoundingClientRect();
+            return { label: el.textContent?.trim() || '', width: r.width, height: r.height };
+          });
+        const intentionalScroller = (element) => {
+          let current = element.parentElement;
+          while (current) {
+            const style = getComputedStyle(current);
+            if ((style.overflowX === 'auto' || style.overflowX === 'scroll') && current.scrollWidth > current.clientWidth + 1) return true;
+            current = current.parentElement;
+          }
+          return false;
+        };
+        const offenders = [...document.querySelectorAll('body *')]
+          .filter((el) => {
+            const r = el.getBoundingClientRect();
+            const style = getComputedStyle(el);
+            return r.width > 0 && r.height > 0 && style.visibility !== 'hidden' && style.display !== 'none'
+              && (r.left < -1 || r.right > root.clientWidth + 1)
+              && !intentionalScroller(el);
+          })
+          .slice(0, 20)
+          .map((el) => {
+            const r = el.getBoundingClientRect();
+            return {
+              tag: el.tagName.toLowerCase(),
+              text: (el.textContent || '').trim().slice(0, 80),
+              className: typeof el.className === 'string' ? el.className.slice(0, 160) : '',
+              left: Math.round(r.left),
+              right: Math.round(r.right),
+              width: Math.round(r.width),
+            };
+          });
+        return {
+          clientWidth: root.clientWidth,
+          scrollWidth: root.scrollWidth,
+          overflowPx: Math.max(0, root.scrollWidth - root.clientWidth),
+          offenders,
+          tabs,
+        };
+      });
+
+      expect(geometry.overflowPx, `${viewport.name} document overflow: ${JSON.stringify(geometry.offenders)}`).toBe(0);
+      expect(geometry.tabs.length).toBeGreaterThanOrEqual(7);
+      for (const tab of geometry.tabs) {
+        expect(tab.height, `${viewport.name} tab "${tab.label}" height`).toBeGreaterThanOrEqual(44);
+      }
+
+      await page.screenshot({
+        path: testInfo.outputPath(`moneysweep-asg-${viewport.width}x${viewport.height}.png`),
+        fullPage: true,
+      });
+    }
+  });
+
   test('shows the ASG producer blocker without synthesizing ranking rows', async ({ page }) => {
     await mockApi(page, {
       '/moneysweep/leaderboards/status': {
