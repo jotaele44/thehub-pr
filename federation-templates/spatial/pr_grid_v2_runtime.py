@@ -297,6 +297,72 @@ def build_grid_deep_link(
     return path
 
 
+CELL_PROFILE_SCHEMA_VERSION = "pr-grid-v2-cell-profile/1.0"
+DATA_STATES: tuple[str, ...] = (
+    "NO_DATA",
+    "ZERO_RECORDS",
+    "HAS_DATA",
+    "NOT_APPLICABLE",
+    "UNKNOWN",
+    "STALE",
+)
+
+
+def build_cell_profile(
+    pin: GridV2Pin,
+    *,
+    cell_id: str,
+    level: str | None = None,
+    domain: str,
+    data_state: str = "NO_DATA",
+    record_count: int | None = None,
+    category_count: int | None = None,
+    top_record_ids: tuple[str, ...] | list[str] = (),
+    earliest_record: str | None = None,
+    latest_record: str | None = None,
+    completeness: float | None = None,
+    freshness: str | None = None,
+) -> dict[str, Any]:
+    """Materialize one V2 Cell_Profile without inventing data or geometry."""
+    selected_level = pin.default_level if level is None else validate_level(level)
+    validated_cell = validate_cell_id(cell_id, level=selected_level)
+    if not isinstance(domain, str) or not domain.strip():
+        raise GridV2PinError("domain must be a non-empty string")
+    if data_state not in DATA_STATES:
+        raise GridV2PinError(f"unsupported Data_State {data_state!r}")
+    if record_count is not None and (not isinstance(record_count, int) or record_count < 0):
+        raise GridV2PinError("Record_Count must be null or a non-negative integer")
+    if category_count is not None and (not isinstance(category_count, int) or category_count < 0):
+        raise GridV2PinError("Category_Count must be null or a non-negative integer")
+    if completeness is not None and not (0 <= completeness <= 1):
+        raise GridV2PinError("Completeness must be null or between 0 and 1")
+    if len(top_record_ids) > 25 or any(not isinstance(x, str) or not x for x in top_record_ids):
+        raise GridV2PinError("Top_Record_IDs must contain at most 25 non-empty strings")
+
+    if data_state in {"NO_DATA", "NOT_APPLICABLE", "UNKNOWN"} and record_count is not None:
+        raise GridV2PinError(f"{data_state} requires Record_Count=null")
+    if data_state == "ZERO_RECORDS" and record_count != 0:
+        raise GridV2PinError("ZERO_RECORDS requires Record_Count=0")
+    if data_state == "HAS_DATA" and (record_count is None or record_count <= 0):
+        raise GridV2PinError("HAS_DATA requires Record_Count>0")
+
+    payload: dict[str, Any] = {
+        "Schema_Version": CELL_PROFILE_SCHEMA_VERSION,
+        "Repository": pin.consumer,
+        "Domain": domain.strip(),
+        "Data_State": data_state,
+        "Record_Count": record_count,
+        "Category_Count": category_count,
+        "Top_Record_IDs": list(top_record_ids),
+        "Earliest_Record": earliest_record,
+        "Latest_Record": latest_record,
+        "Completeness": completeness,
+        "Freshness": freshness,
+        "Has_Data": record_count is not None and record_count > 0,
+    }
+    return attach_grid_identity(payload, pin, level=selected_level, cell_id=validated_cell)
+
+
 def validate_pin_set(
     pin_paths: Mapping[str, str | Path],
 ) -> dict[str, GridV2Pin]:
