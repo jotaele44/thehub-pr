@@ -20,6 +20,7 @@ from hub.grid_v2 import (
     GridV2PinError,
     attach_grid_identity,
     build_grid_deep_link,
+    build_cell_profile,
     grid_identity,
     load_pin,
     validate_cell_id,
@@ -228,4 +229,53 @@ def test_deep_link_rejects_blank_as_of():
             level="L1",
             cell_id="PRG2:L1:R075:C0234",
             as_of=" ",
+        )
+
+
+def test_v2_cell_profile_no_data_is_explicit_and_identity_stamped():
+    pin = load_pin(PIN_PATH, expected_consumer="thehub-pr")
+    profile = build_cell_profile(
+        pin,
+        cell_id="PRG2:L1:R075:C0234",
+        domain="federation_summary",
+    )
+    assert profile["Data_State"] == "NO_DATA"
+    assert profile["Record_Count"] is None
+    assert profile["Has_Data"] is False
+    assert profile["Grid_Identity"]["Cell_ID"] == "PRG2:L1:R075:C0234"
+    assert profile["Grid_Identity"]["Grid_Manifest_SHA256"] == GRID_MANIFEST_SHA256
+
+
+def test_v2_cell_profile_zero_is_not_no_data():
+    pin = load_pin(PIN_PATH, expected_consumer="thehub-pr")
+    profile = build_cell_profile(
+        pin,
+        cell_id="PRG2:L1:R000:C0000",
+        domain="federation_summary",
+        data_state="ZERO_RECORDS",
+        record_count=0,
+        category_count=0,
+    )
+    assert profile["Data_State"] == "ZERO_RECORDS"
+    assert profile["Record_Count"] == 0
+    assert profile["Has_Data"] is False
+
+
+def test_v2_cell_profile_rejects_false_zero_and_false_positive():
+    pin = load_pin(PIN_PATH, expected_consumer="thehub-pr")
+    with pytest.raises(GridV2PinError, match="NO_DATA requires"):
+        build_cell_profile(
+            pin,
+            cell_id="PRG2:L1:R000:C0000",
+            domain="federation_summary",
+            data_state="NO_DATA",
+            record_count=0,
+        )
+    with pytest.raises(GridV2PinError, match="HAS_DATA requires"):
+        build_cell_profile(
+            pin,
+            cell_id="PRG2:L1:R000:C0000",
+            domain="federation_summary",
+            data_state="HAS_DATA",
+            record_count=0,
         )
