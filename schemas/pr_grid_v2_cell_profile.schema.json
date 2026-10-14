@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/federation/schemas/pr_grid_v2_cell_profile.schema.json",
+  "title": "PR Grid Geographic V2 Cell Profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "Schema_Version",
+    "Repository",
+    "Domain",
+    "Data_State",
+    "Record_Count",
+    "Category_Count",
+    "Top_Record_IDs",
+    "Earliest_Record",
+    "Latest_Record",
+    "Completeness",
+    "Freshness",
+    "Has_Data",
+    "Grid_Identity"
+  ],
+  "properties": {
+    "Schema_Version": {
+      "const": "pr-grid-v2-cell-profile/1.0"
+    },
+    "Repository": {
+      "type": "string",
+      "enum": [
+        "aguayluz-pr",
+        "skywatcher-pr",
+        "ovnis-pr",
+        "moneysweep-pr",
+        "centinelas-pr",
+        "thehub-pr"
+      ]
+    },
+    "Domain": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Data_State": {
+      "type": "string",
+      "enum": [
+        "NO_DATA",
+        "ZERO_RECORDS",
+        "HAS_DATA",
+        "NOT_APPLICABLE",
+        "UNKNOWN",
+        "STALE"
+      ]
+    },
+    "Record_Count": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "Category_Count": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "Top_Record_IDs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "maxItems": 25
+    },
+    "Earliest_Record": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "Latest_Record": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "Completeness": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "Freshness": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "Has_Data": {
+      "type": "boolean"
+    },
+    "Grid_Identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Grid_ID",
+        "Grid_Version",
+        "Grid_Level",
+        "CRS",
+        "Grid_Manifest_SHA256",
+        "Cell_Schema_SHA256",
+        "Binding_Schema_SHA256",
+        "Mask_Schema_SHA256",
+        "Geometry_Authority",
+        "Authority_Commit",
+        "Cell_ID"
+      ],
+      "properties": {
+        "Grid_ID": {
+          "const": "PR_GRID_GEOGRAPHIC_V2"
+        },
+        "Grid_Version": {
+          "const": "2.0.0-rc1"
+        },
+        "Grid_Level": {
+          "enum": [
+            "L0",
+            "L1",
+            "L2",
+            "L3"
+          ]
+        },
+        "CRS": {
+          "const": "EPSG:6566"
+        },
+        "Grid_Manifest_SHA256": {
+          "const": "8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4"
+        },
+        "Cell_Schema_SHA256": {
+          "const": "1c173aee4b21b9baa545b656735155f2236a87c436d467a12132ef53b2592f5d"
+        },
+        "Binding_Schema_SHA256": {
+          "const": "dabc461e47134b3b150be9aeb23b3d0097563493b33b3187538255e06b16a022"
+        },
+        "Mask_Schema_SHA256": {
+          "const": "0b31b717d274b19686bf7f47edbabdaec31c86800f2ca7f1e73ffb663600978b"
+        },
+        "Geometry_Authority": {
+          "const": "spiderweb-pr"
+        },
+        "Authority_Commit": {
+          "const": "0c66e13d14232c0d7cbcbc179b3655904777dc71"
+        },
+        "Cell_ID": {
+          "type": "string",
+          "pattern": "^PRG2:L[0-3]:R[0-9]{3}:C[0-9]{4}$"
+        }
+      }
+    }
+  }
+}
