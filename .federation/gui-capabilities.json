@@ -54,11 +54,12 @@
       "classification": "internal",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "Fail-closed federation contract utility for validating PR_GRID_GEOGRAPHIC_V2 consumer pins and stamping immutable grid identity. It is an internal runtime/governance primitive, not a standalone operator workflow; user-facing grid identity is surfaced through the consuming Cell_Profile/API responses rather than through a separate validator GUI.",
+      "rationale": "Fail-closed federation contract/runtime for PR_GRID_GEOGRAPHIC_V2 pins, live authority-byte validation, immutable identity stamping, and read-only cell handoff. It is an internal federation primitive; Spiderweb remains sole geometry authority.",
       "analysis": {
         "files": [
           "scripts/validate_pr_grid_v2_federation.py",
-          "src/hub/grid_v2.py"
+          "src/hub/grid_v2.py",
+          "src/hub/grid_v2_authority.py"
         ],
         "symbols": [
           "scripts/validate_pr_grid_v2_federation.py:main",
@@ -71,12 +72,31 @@
           "src/hub/grid_v2.py:validate_cell_id",
           "src/hub/grid_v2.py:validate_level",
           "src/hub/grid_v2.py:validate_pin_payload",
-          "src/hub/grid_v2.py:validate_pin_set"
+          "src/hub/grid_v2.py:validate_pin_set",
+          "src/hub/grid_v2_authority.py:validate_authority_root",
+          "src/hub/grid_v2_authority.py:validate_frozen_pin_denominator"
         ]
       },
       "tests": {
         "contract": [
-          "tests/test_grid_v2_runtime.py"
+          "tests/test_grid_v2_runtime.py",
+          "tests/test_grid_v2_profiles.py"
+        ],
+        "backend": [
+          "tests/test_grid_v2_api.py"
+        ]
+      },
+      "backend": {
+        "files": [
+          "server/backend/grid_v2_api.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /grid/{grid_id}/{grid_version}/{level}/{cell_id}",
+          "GET /api/grid/{grid_id}/{grid_version}/{level}/{cell_id}"
+        ],
+        "symbols": [
+          "server/backend/grid_v2_api.py:cell_handoff"
         ]
       }
     },

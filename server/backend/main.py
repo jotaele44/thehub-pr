@@ -43,13 +43,14 @@ from server.backend.evidence_api import router as _evidence_router  # noqa: E402
 from server.backend.research_api import router as _research_router  # noqa: E402
 from server.backend.search_api import router as _search_router  # noqa: E402
 from server.backend.spatial_api import router as _spatial_router  # noqa: E402
+from server.backend.grid_v2_api import router as _grid_v2_router  # noqa: E402
 from server.backend.timeline_api import router as _timeline_router  # noqa: E402
 
 # The routers' APIRoutes are already fully prefixed; extending the route table
 # directly keeps them visible (FastAPI may wrap include_router lazily).
 _existing_paths = {getattr(route, "path", None) for route in _core.app.router.routes}
 for _extension_router in (_evidence_router, _search_router, _entity_router, _timeline_router, _research_router,
-                         _spatial_router):
+                         _spatial_router, _grid_v2_router):
     _core.app.router.routes.extend(
         route for route in _extension_router.routes if getattr(route, "path", None) not in _existing_paths
     )

@@ -15,6 +15,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
+from hub.grid_v2_authority import validate_authority_root, validate_frozen_pin_denominator  # noqa: E402
 from hub.grid_v2 import (  # noqa: E402
     AUTHORITY_COMMIT,
     EXPECTED_CONSUMERS,
@@ -45,11 +46,17 @@ def main() -> int:
         default=REPO_ROOT.parent,
         help="directory containing sibling federation repositories",
     )
+    parser.add_argument("--authority-root", type=Path, help="Spiderweb checkout; defaults to workspace sibling")
     args = parser.parse_args()
 
     paths = _pin_paths(args.workspace_root.resolve())
     try:
         pins = validate_pin_set(paths)
+        authority_root = args.authority_root or (args.workspace_root / "spiderweb-pr")
+        authority = validate_authority_root(authority_root.resolve())
+        denominator = validate_frozen_pin_denominator(
+            paths, REPO_ROOT / "registry/spatial/v2/consumer_pin_denominator.json"
+        )
     except GridV2PinError as exc:
         print(
             json.dumps(
@@ -71,6 +78,8 @@ def main() -> int:
     payload = {
         "state": "PASS",
         "consumer_count": len(pins),
+        "authority_source_validation": authority,
+        "frozen_denominator": denominator,
         "Grid_ID": GRID_ID,
         "Grid_Version": GRID_VERSION,
         "Authority_Commit": AUTHORITY_COMMIT,
