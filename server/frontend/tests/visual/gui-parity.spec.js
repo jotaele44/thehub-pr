@@ -225,24 +225,51 @@ test.describe('MoneySweep certified leaderboard consumer', () => {
             const r = el.getBoundingClientRect();
             return { label: el.textContent?.trim() || '', width: r.width, height: r.height };
           });
+        const intentionalScroller = (el) => {
+          let node = el;
+          while (node && node !== document.body) {
+            const style = getComputedStyle(node);
+            if ((style.overflowX === 'auto' || style.overflowX === 'scroll') && node.scrollWidth > node.clientWidth + 1) return true;
+            node = node.parentElement;
+          }
+          return false;
+        };
+        const offenders = [...document.querySelectorAll('body *')]
+          .map((el) => ({ el, rect: el.getBoundingClientRect() }))
+          .filter(({ el, rect }) => rect.width > 0 && (rect.right > root.clientWidth + 1 || rect.left < -1) && !intentionalScroller(el))
+          .slice(0, 30)
+          .map(({ el, rect }) => ({
+            tag: el.tagName.toLowerCase(),
+            className: typeof el.className === 'string' ? el.className.slice(0, 180) : '',
+            text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 100),
+            left: Math.round(rect.left),
+            right: Math.round(rect.right),
+            width: Math.round(rect.width),
+            scrollWidth: el.scrollWidth,
+            clientWidth: el.clientWidth,
+          }));
         return {
           clientWidth: root.clientWidth,
           scrollWidth: root.scrollWidth,
           overflowPx: Math.max(0, root.scrollWidth - root.clientWidth),
           tabs,
+          offenders,
         };
       });
-
-      expect(geometry.overflowPx, `${viewport.name} document overflow`).toBe(0);
-      expect(geometry.tabs.length).toBeGreaterThanOrEqual(7);
-      for (const tab of geometry.tabs) {
-        expect(tab.height, `${viewport.name} tab "${tab.label}" height`).toBeGreaterThanOrEqual(44);
-      }
 
       await page.screenshot({
         path: testInfo.outputPath(`moneysweep-asg-${viewport.width}x${viewport.height}.png`),
         fullPage: true,
       });
+
+      expect(
+        geometry.overflowPx,
+        `${viewport.name} document overflow; geometry=${JSON.stringify(geometry)}`,
+      ).toBe(0);
+      expect(geometry.tabs.length).toBeGreaterThanOrEqual(7);
+      for (const tab of geometry.tabs) {
+        expect(tab.height, `${viewport.name} tab "${tab.label}" height`).toBeGreaterThanOrEqual(44);
+      }
     }
   });
 
