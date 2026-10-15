@@ -1,6 +1,6 @@
 {
   "schemaVersion": "thehub.moneysweep-full-package-replay/v1",
-  "state": "PENDING_CROSS_REPO_REPLAY",
+  "state": "PASS",
   "producer": "moneysweep-pr",
   "producerCommit": "5487a75b1417edee25a2acf1b2896c474f3978fd",
   "producerReleaseLabel": "frozen-mobile-release-2026-10-15-current-head",
@@ -36,9 +36,9 @@
   ],
   "accounting": {
     "totalRecords": 4781,
-    "perStreamStableIdsUnique": "PENDING",
-    "rowSchemaValidation": "PENDING",
-    "manifestIntegrity": "PENDING"
+    "perStreamStableIdsUnique": true,
+    "rowSchemaValidation": "PASS",
+    "manifestIntegrity": "PASS"
   },
   "supersession": {
     "priorProducerCommit": "39482166fe3a4d97d11644c764a48fdd5b695f4c",
@@ -48,11 +48,32 @@
     "reason": "Current producer commit changed. Unchanged package bytes preserve lineage but do not inherit current-consumer PASS."
   },
   "consumerValidation": {
-    "exactProducerCommit": "PENDING",
-    "exactStreamHashes": "PENDING",
-    "deterministicHubWrapper": "PENDING",
-    "hubSchemaValidation": "PENDING",
-    "zeroValidationErrors": "PENDING"
+    "exactProducerCommit": "PASS",
+    "exactStreamHashes": "PASS",
+    "deterministicHubWrapper": "PASS",
+    "hubSchemaValidation": "PASS",
+    "zeroValidationErrors": "PASS"
   },
-  "terminalRule": "PASS requires exact replay against this producer commit on the receipt-bearing PR head. Future producer/package changes require a new receipt."
+  "terminalRule": "PASS is valid only while the receipt-bearing PR head replays this exact producer commit successfully and preserves zero-residue GUI-backend governance. Future producer/package changes require a new receipt.",
+  "replayEvidence": {
+    "workflow": "MoneySweep full package replay",
+    "workflowRunId": 38805551667,
+    "workflowRunNumber": 16,
+    "workflowUrl": "https://github.com/jotaele44/thehub-pr/actions/runs/38805551667",
+    "jobId": 116665347421,
+    "validationHead": "454361e440a870bfb2af933e070b1a56fd2ae995",
+    "test": "tests/test_moneysweep_full_package_current.py",
+    "result": "PASS",
+    "testsPassed": 1,
+    "testsFailed": 0,
+    "durationSeconds": 0.56
+  },
+  "guiBackendAudit": {
+    "state": "PASS",
+    "workflowRunId": 38805551410,
+    "jobId": 116665340898,
+    "auditedSourceCommit": "b1004293fd2e2147063c9d84d545d97c7ce08b38",
+    "materialResidue": 0,
+    "findings": 0
+  }
 }
