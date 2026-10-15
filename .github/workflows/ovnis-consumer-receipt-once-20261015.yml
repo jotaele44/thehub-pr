@@ -1,0 +1,132 @@
+name: OVNIS Oct15 current-head consumer receipt
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/ovnis-consumer-receipt-once-20261015.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  consume:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OVNIS_SHA: 70c1f66383acf59d87cf7ec24ee9a46c48022951
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install Hub authority
+        run: pip install -e ".[dev]" -e packages/prii_export_utils
+      - name: Materialize exact OVNIS producer
+        run: |
+          mkdir -p ws
+          git clone https://github.com/jotaele44/ovnis-pr.git ws/ovnis-pr
+          git -C ws/ovnis-pr checkout --detach "$OVNIS_SHA"
+          test "$(git -C ws/ovnis-pr rev-parse HEAD)" = "$OVNIS_SHA"
+      - name: Reproduce frozen OVNIS export clock
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("ws/ovnis-pr/scripts/federation_export.py")
+          text=p.read_text()
+          old='    now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")'
+          new='    now = "2026-10-15T19:45:58Z"'
+          if text.count(old) != 1:
+              raise SystemExit("export clock source cardinality drift")
+          p.write_text(text.replace(old,new))
+          PY
+      - name: Produce byte-identical frozen OVNIS package
+        run: |
+          cd ws/ovnis-pr
+          python3 scripts/federation_export.py --mode production
+      - name: Assert frozen package identity
+        run: |
+          python3 - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          root=Path("ws/ovnis-pr/exports/federation")
+          expected={
+            "manifest.json":"5497cb35f17d1d70a6d84669f5b1ee5845a44db8cfaca378a3680a96f43f543a",
+            "sources.jsonl":"854512d27a5c8a0b79ee093d9301b90c1b35678f6930fa047b47b0013978bfe7",
+            "entities.jsonl":"8ece3530eba370af47f9c4303d034898e80f58443ae8d6f80bf2ea15a044bcbe",
+            "relationships.jsonl":"a2acf0361292fb31fc96b0127c36e845d8dd25d08cc9532e73d7ba45de23bf01",
+            "observations.jsonl":"ced88345634572bb1100827a5134e217daf036ae8ad571a89be5eb645053fc2c",
+          }
+          for name,want in expected.items():
+              got=hashlib.sha256((root/name).read_bytes()).hexdigest()
+              if got!=want: raise SystemExit(f"{name} hash mismatch: {got} != {want}")
+          manifest=json.loads((root/"manifest.json").read_text())
+          if manifest["package_id"]!="pkg_f006c7c911425237eea9bf92bf574780":
+              raise SystemExit("package_id mismatch: "+manifest["package_id"])
+          print("FROZEN_PACKAGE_IDENTITY_PASS")
+          PY
+      - name: Validate exact package with current Hub
+        run: hub validate-package "$GITHUB_WORKSPACE/ws/ovnis-pr/exports/federation"
+      - name: Aggregate present producer package
+        run: |
+          mkdir -p receipt-work/aggregate
+          hub aggregate --root ws --out receipt-work/aggregate 2>&1 | tee receipt-work/aggregate.log
+      - name: Correlate through Hub authority
+        run: hub correlate --in receipt-work/aggregate --out receipt-work/aggregate 2>&1 | tee receipt-work/correlate.log
+      - name: Ingest into fresh Hub store
+        run: hub ingest --in receipt-work/aggregate --db receipt-work/hub.db 2>&1 | tee receipt-work/ingest.log
+      - name: Freeze consumer receipt
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          root=Path("receipt-work")
+          pkg=Path("ws/ovnis-pr/exports/federation")
+          def sha(p):
+              return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+          manifest=json.loads((pkg/"manifest.json").read_text())
+          streams={}
+          for row in manifest["files"]:
+              streams[row["stream"]]={
+                  "filename":row["filename"],
+                  "record_count":row["record_count"],
+                  "sha256":row["sha256"],
+                  "observed_sha256":sha(pkg/row["filename"]),
+              }
+          agg={}
+          for p in sorted((root/"aggregate").glob("*.jsonl")):
+              lines=sum(1 for line in p.open() if line.strip())
+              agg[p.name]={"rows":lines,"sha256":sha(p),"bytes":p.stat().st_size}
+          receipt={
+              "schema":"thehub.ovnis-current-head-consumer-receipt/v1",
+              "recorded_at":"2026-10-15T19:45:58Z",
+              "hub_commit":os.environ["GITHUB_SHA"],
+              "hub_run_id":os.environ["GITHUB_RUN_ID"],
+              "ovnis_commit":os.environ["OVNIS_SHA"],
+              "consumer_scope":"ISOLATED_CURRENT_HEAD_AUTHORITY_PATH_NOT_PRODUCTION_DEPLOYMENT",
+              "commands":["hub validate-package","hub aggregate","hub correlate","hub ingest"],
+              "producer_package":{
+                  "package_id":manifest["package_id"],
+                  "manifest_sha256":sha(pkg/"manifest.json"),
+                  "streams":streams
+              },
+              "aggregate":agg,
+              "hub_db":{"sha256":sha(root/"hub.db"),"bytes":(root/"hub.db").stat().st_size},
+              "logs":{
+                  "aggregate_sha256":sha(root/"aggregate.log"),
+                  "correlate_sha256":sha(root/"correlate.log"),
+                  "ingest_sha256":sha(root/"ingest.log")
+              },
+              "result":"PASS"
+          }
+          (root/"consumer-receipt.json").write_text(json.dumps(receipt,indent=2,sort_keys=True)+"\n")
+          print(json.dumps(receipt,indent=2,sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ovnis-current-head-consumer-receipt-20261015
+          path: receipt-work/
+          if-no-files-found: error
+          retention-days: 30
