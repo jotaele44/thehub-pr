@@ -1,0 +1,52 @@
+name: MoneySweep ASG rendered QA
+
+on:
+  pull_request:
+    paths:
+      - "server/frontend/src/pages/MoneySweep.jsx"
+      - "server/frontend/src/components/feed/MoneySweepLeaderboardsTab.jsx"
+      - "server/frontend/src/zip-design/HubHeader.module.css"
+      - "server/frontend/tests/visual/gui-parity.spec.js"
+      - ".github/workflows/moneysweep-asg-rendered-qa.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rendered-qa:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server/frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: server/frontend/package-lock.json
+      - name: Install
+        run: npm ci --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Render exact MoneySweep ASG consumer
+        run: >
+          npx playwright test tests/visual/gui-parity.spec.js
+          --config=playwright.config.js
+          --project=desktop
+          --grep "renders exact ASG consumer"
+      - name: Upload rendered evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: moneysweep-asg-rendered-qa
+          path: |
+            server/frontend/test-results/
+            server/frontend/playwright-report/
+          if-no-files-found: warn
+          retention-days: 30
