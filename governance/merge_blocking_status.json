@@ -1,17 +1,17 @@
 {
   "schema_version":"prii_merge_blocking_status_v1",
   "status":"BLOCKED",
-  "reason":"Rulesets and branch protection on main were read via the GitHub API on 2026-10-12. 5 of 7 federation repositories (thehub-pr, aguayluz-pr, ovnis-pr, skywatcher-pr, centinelas-pr) still have nothing protecting main. The two that do, moneysweep-pr and spiderweb-pr, require their own CI checks but none of federation-governance, federation-governance-certify or federation-compatibility, so no federation check is merge-blocking anywhere yet.",
+  "reason":"Rulesets and branch protection on main were read via the GitHub API on 2026-10-15. 5 of 7 federation repositories now protect main: thehub-pr, ovnis-pr and skywatcher-pr require only docs-sync, and moneysweep-pr and spiderweb-pr require their own CI checks plus docs-sync. aguayluz-pr and centinelas-pr have nothing protecting main. None requires federation-governance, federation-governance-certify or federation-compatibility, so no federation check is merge-blocking anywhere yet.",
   "branch_protection_audit": {
-    "verified_at_utc": "2026-10-12",
+    "verified_at_utc": "2026-10-15",
     "method": "GitHub REST API: `GET /repos/{owner}/{repo}/rules/branches/main` (rules from every active ruleset) and `GET /repos/{owner}/{repo}/branches/main/protection/required_status_checks` (classic branch protection)",
     "results": {
-      "thehub-pr": {"protected": false, "required_checks": []},
-      "moneysweep-pr": {"protected": true, "via": "ruleset main-protection (also requires a pull request with 1 approval)", "strict": true, "required_checks": ["ruff", "mypy", "test (3.13)", "pre-commit", "lock-sync", "diagnostic-smoke", "Compile and pytest", "size-guard", "gitleaks"]},
-      "spiderweb-pr": {"protected": true, "via": "classic branch protection", "strict": false, "required_checks": ["test (3.11)", "test (3.12)", "lint", "release-check"]},
+      "thehub-pr": {"protected": true, "via": "ruleset main-required-checks (repository-admin bypass)", "strict": false, "required_checks": ["docs-sync"]},
+      "moneysweep-pr": {"protected": true, "via": "ruleset main-protection (also requires a pull request with 1 approval)", "strict": true, "required_checks": ["ruff", "mypy", "test (3.13)", "pre-commit", "lock-sync", "diagnostic-smoke", "Compile and pytest", "size-guard", "gitleaks", "docs-sync"]},
+      "spiderweb-pr": {"protected": true, "via": "classic branch protection", "strict": false, "required_checks": ["test (3.11)", "test (3.12)", "lint", "release-check", "docs-sync"]},
       "aguayluz-pr": {"protected": false, "required_checks": []},
-      "ovnis-pr": {"protected": false, "required_checks": []},
-      "skywatcher-pr": {"protected": false, "required_checks": []},
+      "ovnis-pr": {"protected": true, "via": "ruleset main-required-checks (repository-admin bypass)", "strict": false, "required_checks": ["docs-sync"]},
+      "skywatcher-pr": {"protected": true, "via": "ruleset main-required-checks (repository-admin bypass)", "strict": false, "required_checks": ["docs-sync"]},
       "centinelas-pr": {"protected": false, "required_checks": []}
     }
   },
@@ -19,11 +19,12 @@
   "required_producer_check":"federation-compatibility",
   "docs_sync_gate": {
     "adr": "docs/adr/0010-change-coupled-documentation-gate.md",
-    "status": "PROVISIONAL",
-    "required_on_main_in": [],
-    "ready_to_require": ["thehub-pr", "moneysweep-pr", "spiderweb-pr", "ovnis-pr", "skywatcher-pr"],
+    "status": "REQUIRED in 5 of 7 repositories; PROVISIONAL in aguayluz-pr and centinelas-pr",
+    "required_on_main_in": ["thehub-pr", "moneysweep-pr", "spiderweb-pr", "ovnis-pr", "skywatcher-pr"],
+    "ready_to_require": ["centinelas-pr"],
+    "caution": {"centinelas-pr": "signal-ledger-refresh.yml, just-security-monitor.yml and el-yunque-access-monitor.yml commit scheduled refreshes straight to main with the Actions token; once docs-sync is required there, those pushes will be rejected because docs-sync only runs on pull requests"},
     "held": {"aguayluz-pr": "refresh.yml commits scheduled data refreshes straight to main with the Actions token; a required check would reject those pushes because docs-sync only runs on pull requests"},
-    "not_adopted": ["centinelas-pr"],
+    "not_adopted": [],
     "apply_with": "tools/require_docs_sync.py --apply, run by a repository administrator"
   },
   "certification_rule":"Do not issue CERTIFIED until required status enforcement is evidenced for main on all seven repositories."

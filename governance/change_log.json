@@ -71,6 +71,16 @@
         "docs/adr/0010-change-coupled-documentation-gate.md",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-10-15",
+      "summary": "Reverted #362, so tools/require_docs_sync.py no longer holds centinelas-pr; aguayluz-pr stays held. Recorded the result of the first tools/require_docs_sync.py --apply run: main now requires docs-sync in thehub-pr, ovnis-pr and skywatcher-pr (new main-required-checks ruleset), moneysweep-pr (main-protection ruleset) and spiderweb-pr (branch protection). governance/merge_blocking_status.json carries the 2026-10-15 re-audit and notes that centinelas-pr's scheduled refresh workflows push straight to main, which a required check would reject; docs/FEDERATION_STATUS.md gains Part 11. No repository setting was changed by this commit.",
+      "files": [
+        "tools/require_docs_sync.py",
+        "governance/merge_blocking_status.json",
+        "docs/FEDERATION_STATUS.md",
+        "governance/change_log.json"
+      ]
     }
   ]
 }

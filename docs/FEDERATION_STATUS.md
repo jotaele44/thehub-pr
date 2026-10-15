@@ -1,11 +1,10 @@
 # PRII Federation — Gap-Closure Status
 
 _Authoritative status of the Puerto Rico Integrated Intelligence (PRII) federation._
-_Last updated: 2026-10-12 (branch-protection re-audit with each repo's required checks,
-and `tools/require_docs_sync.py` for marking `docs-sync` required — see Part 10 below).
-Prior update: 2026-09-06 (federation-wide gap-closure audit: branch-protection
-verification across all seven repos, plus thehub-pr's own upgrade-audit Phase
-1+2 closure — see Part 9 below)._
+_Last updated: 2026-10-15 (`docs-sync` is now a required check on `main` in five
+repos — see Part 11 below). Prior update: 2026-10-12 (branch-protection re-audit with
+each repo's required checks, and `tools/require_docs_sync.py` for marking `docs-sync`
+required — see Part 10 below)._
 
 The federation is **artifact-based**: producers emit a discovery manifest
 (`federation.json`) plus a canonical export package (`sources/entities/
@@ -135,6 +134,21 @@ spatial layers).
   `centinelas-handoff.yml` also pushes to `main` but has never been dispatched; it needs
   the same change before it is first used. `centinelas-pr` has not adopted the gate yet.
 
+**Part 11 — `docs-sync` required on `main` in five repos (2026-10-15):**
+- **Applied.** A repository administrator ran `tools/require_docs_sync.py --apply`. `main`
+  now requires `docs-sync` in `thehub-pr`, `ovnis-pr` and `skywatcher-pr` (a new
+  `main-required-checks` ruleset with the repository-admin bypass), in `moneysweep-pr`
+  (added to its `main-protection` ruleset) and in `spiderweb-pr` (added to its branch
+  protection), so the gate is no longer `PROVISIONAL` there. Re-audit recorded in
+  `governance/merge_blocking_status.json`; `merge_blocking_status` stays `BLOCKED`, since
+  no federation check is required anywhere and two repos have nothing protecting `main`.
+- **Still open.** `aguayluz-pr` stays held because `refresh.yml` pushes to `main`.
+  `centinelas-pr` adopted the gate on 2026-10-12 (its PR #166) and is not held: the change
+  that held it (#362) was reverted. Its `signal-ledger-refresh.yml`,
+  `just-security-monitor.yml` and `el-yunque-access-monitor.yml` push scheduled data
+  commits straight to `main`, so the next `--apply` creates a ruleset there and those
+  pushes will then be rejected.
+
 ## Blocked gaps — fully specified, waiting on a named external input
 
 Each item below is **code-ready** unless noted; the missing item is named.
@@ -145,7 +159,7 @@ Each item below is **code-ready** unless noted; the missing item is named.
 | Live exec | moneysweep-pr | Tranche-B manual source exports (hud_drgr, prasa, oficina_contralor, pr_cabilderos) + cor3 portal export (JS-rendered; manual CSV fallback) + `PROPUBLICA_API_KEY`. Runtime keys (FEC/SAM/HigherGov/LDA/Data.gov-family via `X_API_KEY`) are now supplied and 8/14 required sources are live-materialized. |
 | Per-asset outage attribution | aguayluz | A finer outage feed; PREPS is island-wide aggregate and third-party outage snapshots remain review-grade until promoted. |
 | ECW photomosaic extents | PRIIS | A GDAL ECW driver/plugin or external ECW→GeoTIFF conversion before remaining mosaics can be ingested. |
-| `docs-sync` required on `main` | thehub, moneysweep, spiderweb, ovnis, skywatcher | A repository administrator runs `tools/require_docs_sync.py --apply`; repository settings are outside what a template or CI can change. `aguayluz-pr` also needs `refresh.yml` to open a pull request instead of pushing to `main`. |
+| `docs-sync` required on `main` | aguayluz, centinelas | aguayluz: held until `refresh.yml` opens a pull request instead of pushing to `main`. centinelas: `tools/require_docs_sync.py --apply` will require it, after which its scheduled refresh workflows' pushes to `main` will be rejected. Repository settings are outside what a template or CI can change, so an administrator runs the tool. |
 | Repo deletion | `jotaele44/Aerospace-Intelligence-Tool` | `gh auth refresh -s delete_repo` then `gh repo delete … --yes`. Content preserved in `skywatcher-pr` archive/provenance notes. |
 | Repo deletion | `jorgegonzalez44/Puerto-Rico-Airspace-Intelligence-Tool` | Delete from the **jorgegonzalez44** account after confirming no unsalvaged material remains. |
 
