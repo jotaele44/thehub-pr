@@ -130,11 +130,10 @@ spatial layers).
   `moneysweep-pr`'s ruleset and `spiderweb-pr`'s branch protection, and a new
   `main-required-checks` ruleset in `thehub-pr`, `ovnis-pr` and `skywatcher-pr`. It is a
   repository setting, so a repository administrator runs it; until then the gate stays
-  `PROVISIONAL`. `aguayluz-pr` and `centinelas-pr` are held because scheduled workflows
-  push data commits straight to `main` (`refresh.yml` in aguayluz; `signal-ledger-refresh.yml`,
-  `just-security-monitor.yml` and `el-yunque-access-monitor.yml` in centinelas), which a
-  required check would reject. `skywatcher-pr`'s `centinelas-handoff.yml` also pushes to
-  `main` but has never been dispatched; it needs the same change before it is first used.
+  `PROVISIONAL`. `aguayluz-pr` is held because `refresh.yml` pushes its scheduled data
+  commits straight to `main`, which a required check would reject. `skywatcher-pr`'s
+  `centinelas-handoff.yml` also pushes to `main` but has never been dispatched; it needs
+  the same change before it is first used. `centinelas-pr` has not adopted the gate yet.
 
 ## Blocked gaps — fully specified, waiting on a named external input
 
@@ -146,7 +145,7 @@ Each item below is **code-ready** unless noted; the missing item is named.
 | Live exec | moneysweep-pr | Tranche-B manual source exports (hud_drgr, prasa, oficina_contralor, pr_cabilderos) + cor3 portal export (JS-rendered; manual CSV fallback) + `PROPUBLICA_API_KEY`. Runtime keys (FEC/SAM/HigherGov/LDA/Data.gov-family via `X_API_KEY`) are now supplied and 8/14 required sources are live-materialized. |
 | Per-asset outage attribution | aguayluz | A finer outage feed; PREPS is island-wide aggregate and third-party outage snapshots remain review-grade until promoted. |
 | ECW photomosaic extents | PRIIS | A GDAL ECW driver/plugin or external ECW→GeoTIFF conversion before remaining mosaics can be ingested. |
-| `docs-sync` required on `main` | thehub, moneysweep, spiderweb, ovnis, skywatcher | A repository administrator runs `tools/require_docs_sync.py --apply`; repository settings are outside what a template or CI can change. `aguayluz-pr` and `centinelas-pr` also need their scheduled refresh workflows to open a pull request instead of pushing to `main`. |
+| `docs-sync` required on `main` | thehub, moneysweep, spiderweb, ovnis, skywatcher | A repository administrator runs `tools/require_docs_sync.py --apply`; repository settings are outside what a template or CI can change. `aguayluz-pr` also needs `refresh.yml` to open a pull request instead of pushing to `main`. |
 | Repo deletion | `jotaele44/Aerospace-Intelligence-Tool` | `gh auth refresh -s delete_repo` then `gh repo delete … --yes`. Content preserved in `skywatcher-pr` archive/provenance notes. |
 | Repo deletion | `jorgegonzalez44/Puerto-Rico-Airspace-Intelligence-Tool` | Delete from the **jorgegonzalez44** account after confirming no unsalvaged material remains. |
 
