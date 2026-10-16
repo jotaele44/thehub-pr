@@ -1,5 +1,5 @@
 export type ParityState = "PASS" | "NOT_APPLICABLE" | "OPEN";
-export type HistoricalRowsState = "UNAVAILABLE_NO_DUMP" | "NOT_APPLICABLE_NO_SERVER_DB";
+export type HistoricalRowsState = "PASS" | "UNAVAILABLE_NO_DUMP" | "NOT_PROVEN" | "NOT_APPLICABLE_NO_SERVER_DB";
 
 export interface FederationRecoveryParityRow {
   app: "Spiderweb" | "MoneySweep" | "AguaYLuz" | "Skywatcher" | "OVNIS" | "Centinelas" | "TheHub";
@@ -24,15 +24,15 @@ const HEAD = /^[0-9a-f]{40}$/;
 export const FEDERATION_RECOVERY_PARITY_ROWS: FederationRecoveryParityRow[] = [
   {
     app: "Spiderweb",
-    producerRunId: 37538781611,
-    producerHead: "48e0e916ea379a67b751199d4e84f61eb6f39e98",
-    artifactSha256: "2a588ec06c5988611ee25c4c5e10d34dbd6987b044e8d5ebe4d8df529a8c3cd8",
+    producerRunId: 37662519149,
+    producerHead: "8496b394ce692ed355bbb5c510ed3d80d02488f5",
+    artifactSha256: "a963ba1fdd8215cdf6f48728588d2d2edeac36a4077a114cc859748c4869fb05",
     testsPassed: 154,
     auth: "PASS",
     acl: "PASS",
     dbSchema: "PASS",
     dbSchemaTables: 9,
-    historicalRows: "UNAVAILABLE_NO_DUMP",
+    historicalRows: "NOT_PROVEN",
     sourceContract: "PASS",
     authoritativeAcquisition: "OPEN",
     renderedDesktop393430: "PASS",
@@ -40,15 +40,15 @@ export const FEDERATION_RECOVERY_PARITY_ROWS: FederationRecoveryParityRow[] = [
   },
   {
     app: "MoneySweep",
-    producerRunId: 37539577351,
-    producerHead: "d0ef0eef7d2679501e6a99914a763cd015abe540",
-    artifactSha256: "cc45fcbc0da23633ef9c8e26084f7b11ce20b4659603f0ce2a4c3472578c7fab",
+    producerRunId: 38889455287,
+    producerHead: "0aea9fb0807d158ae3abe351adf15697ce1dba0b",
+    artifactSha256: "6cc56f8bbc30d8751e1f7602582826625c3dd89760390933a55804a77b907a8c",
     testsPassed: 90,
     auth: "NOT_APPLICABLE",
     acl: "NOT_APPLICABLE",
     dbSchema: "PASS",
     dbSchemaTables: 5,
-    historicalRows: "UNAVAILABLE_NO_DUMP",
+    historicalRows: "NOT_PROVEN",
     sourceContract: "PASS",
     authoritativeAcquisition: "OPEN",
     renderedDesktop393430: "OPEN",
@@ -64,7 +64,7 @@ export const FEDERATION_RECOVERY_PARITY_ROWS: FederationRecoveryParityRow[] = [
     acl: "PASS",
     dbSchema: "PASS",
     dbSchemaTables: 44,
-    historicalRows: "UNAVAILABLE_NO_DUMP",
+    historicalRows: "NOT_PROVEN",
     sourceContract: "PASS",
     authoritativeAcquisition: "OPEN",
     renderedDesktop393430: "OPEN",
@@ -96,7 +96,7 @@ export const FEDERATION_RECOVERY_PARITY_ROWS: FederationRecoveryParityRow[] = [
     acl: "PASS",
     dbSchema: "PASS",
     dbSchemaTables: 31,
-    historicalRows: "UNAVAILABLE_NO_DUMP",
+    historicalRows: "NOT_PROVEN",
     sourceContract: "PASS",
     authoritativeAcquisition: "OPEN",
     renderedDesktop393430: "OPEN",
@@ -112,7 +112,7 @@ export const FEDERATION_RECOVERY_PARITY_ROWS: FederationRecoveryParityRow[] = [
     acl: "PASS",
     dbSchema: "PASS",
     dbSchemaTables: 22,
-    historicalRows: "UNAVAILABLE_NO_DUMP",
+    historicalRows: "NOT_PROVEN",
     sourceContract: "PASS",
     authoritativeAcquisition: "OPEN",
     renderedDesktop393430: "OPEN",
@@ -128,7 +128,7 @@ export const FEDERATION_RECOVERY_PARITY_ROWS: FederationRecoveryParityRow[] = [
     acl: "PASS",
     dbSchema: "PASS",
     dbSchemaTables: 21,
-    historicalRows: "UNAVAILABLE_NO_DUMP",
+    historicalRows: "NOT_PROVEN",
     sourceContract: "PASS",
     authoritativeAcquisition: "NOT_APPLICABLE",
     renderedDesktop393430: "OPEN",
@@ -160,7 +160,7 @@ export function evaluateFederationRecoveryParity(rows = FEDERATION_RECOVERY_PARI
     if (row.acl === "OPEN") residue.push(`${row.app}:ACL_OPEN`);
     if (row.dbSchema === "OPEN") residue.push(`${row.app}:DB_SCHEMA_OPEN`);
     if (row.sourceContract !== "PASS") residue.push(`${row.app}:SOURCE_CONTRACT_OPEN`);
-    if (row.historicalRows !== "UNAVAILABLE_NO_DUMP" && row.historicalRows !== "NOT_APPLICABLE_NO_SERVER_DB") {
+    if (!["PASS", "UNAVAILABLE_NO_DUMP", "NOT_PROVEN", "NOT_APPLICABLE_NO_SERVER_DB"].includes(row.historicalRows)) {
       residue.push(`${row.app}:INVALID_HISTORICAL_ROWS_STATE`);
     }
     if (row.dbSchema === "PASS" && (!row.dbSchemaTables || row.dbSchemaTables <= 0)) {
@@ -174,7 +174,7 @@ export function evaluateFederationRecoveryParity(rows = FEDERATION_RECOVERY_PARI
   const credentialFreeContractParityClosed = !residue.some(item =>
     /AUTH_OPEN|ACL_OPEN|DB_SCHEMA_OPEN|SOURCE_CONTRACT_OPEN|DENOMINATOR|INVALID_/.test(item),
   );
-  const historicalRowsRecovered = rows.every(row => row.historicalRows !== "UNAVAILABLE_NO_DUMP");
+  const historicalRowsRecovered = rows.every(row => row.historicalRows === "PASS" || row.historicalRows === "NOT_APPLICABLE_NO_SERVER_DB");
   const renderedClosed = rows.every(row => row.renderedDesktop393430 === "PASS");
   const authoritativeAcquisitionClosed = rows.every(row =>
     row.authoritativeAcquisition === "PASS" || row.authoritativeAcquisition === "NOT_APPLICABLE",
