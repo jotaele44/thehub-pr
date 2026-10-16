@@ -886,13 +886,15 @@
       "classification": "internal",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "Maintenance-only immutable metadata snapshot job. Cannot download or activate payloads; frozen outcomes are visible in the catalog GUI.",
+      "rationale": "Internal frozen-root/child/file acquisition with source checksum and capacity gates. It inventories raw payload bytes and structural diagnostics only; it cannot activate scientific data. Outcomes are published in the catalog UI.",
       "backend": {
         "files": [
           "src/hub/usgs_acquisition.py",
           "scripts/build_usgs_pr_catalog.py",
           "scripts/snapshot_usgs_pr.py",
-          "scripts/verify_usgs_build.py"
+          "scripts/verify_usgs_build.py",
+          "src/hub/usgs_assets.py",
+          "scripts/continue_usgs_pr.py"
         ],
         "endpoints": [],
         "symbols": [
@@ -902,7 +904,16 @@
           "scripts/build_usgs_pr_catalog.py:build",
           "scripts/build_usgs_pr_catalog.py:read_frozen_xlsx",
           "scripts/snapshot_usgs_pr.py:main",
-          "scripts/verify_usgs_build.py:main"
+          "scripts/verify_usgs_build.py:main",
+          "src/hub/usgs_assets.py:read_metadata_archive",
+          "src/hub/usgs_assets.py:file_inventory",
+          "src/hub/usgs_assets.py:verify_payload",
+          "src/hub/usgs_assets.py:inspect_payload",
+          "src/hub/usgs_assets.py:inspect_csv",
+          "src/hub/usgs_assets.py:inspect_zip",
+          "src/hub/usgs_assets.py:approved_download_url",
+          "scripts/continue_usgs_pr.py:continue_snapshot",
+          "scripts/continue_usgs_pr.py:main"
         ]
       },
       "frontend": {
@@ -912,7 +923,8 @@
       },
       "tests": {
         "backend": [
-          "tests/test_usgs_catalog.py"
+          "tests/test_usgs_catalog.py",
+          "tests/test_usgs_assets.py"
         ]
       }
     }

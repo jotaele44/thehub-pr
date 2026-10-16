@@ -5,7 +5,8 @@ on:
     branches: [main]
     paths:
       - "src/hub/usgs_*.py"
-      - "scripts/snapshot_usgs_pr.py"
+      - "scripts/continue_usgs_pr.py"
+      - "data/usgs/snapshots/20261016_runner_metadata.zip"
       - "registry/usgs/pr_releases.v1.json"
       - ".github/workflows/usgs-source-evidence.yml"
 
@@ -21,23 +22,23 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
         with:
           python-version: "3.12"
-      - name: Acquire a new bounded metadata snapshot
+      - name: Continue frozen roots with child metadata and bounded payloads
         shell: bash
         run: |
           python - <<'PY'
           import json, os, subprocess, sys
           from pathlib import Path
           out = Path(os.environ['RUNNER_TEMP']) / 'usgs-source-evidence'
-          proc = subprocess.run([sys.executable, 'scripts/snapshot_usgs_pr.py', '--out', str(out), '--workers', '6'])
+          proc = subprocess.run([sys.executable, 'scripts/continue_usgs_pr.py', '--archive', 'data/usgs/snapshots/20261016_runner_metadata.zip', '--sha256', '47488d1d72a2a43b8c2a4d3b44b600d4852ceca99e6796aae334814f95e7f7c8', '--out', str(out)])
           if proc.returncode not in (0, 2):
               raise SystemExit(proc.returncode)
-          summary = json.loads((out / 'summary.json').read_text())
+          summary = json.loads((out / 'inventory.json').read_text())
           (out / 'runner.json').write_text(json.dumps({
               'run_id': os.environ['GITHUB_RUN_ID'], 'head': os.environ['GITHUB_SHA'],
               'acquisition_exit': proc.returncode, 'payloads_activated': 0,
               'meaning': 'Job success records an attempt; it does not certify source or payload readiness.'
           }, indent=2) + '\n')
-          assert summary['attempted'] == 174
+          assert summary['root_count'] == 174
           assert summary['activated'] == 0
           PY
       - name: Preserve metadata bytes and receipts

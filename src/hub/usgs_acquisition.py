@@ -23,7 +23,9 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
         return None  # A redirect requires explicit lineage/host review.
 
 
-def fetch_manifest(url, opener=None):
+def fetch_manifest(url, opener=None, max_bytes=MAX_BYTES):
+    if type(max_bytes) is not int or not 1 <= max_bytes <= MAX_BYTES:
+        raise ValueError("Invalid response byte budget")
     parsed = urllib.parse.urlsplit(url)
     if parsed.scheme != "https" or parsed.hostname != "www.sciencebase.gov" or parsed.username:
         raise ValueError("Unapproved metadata origin")
@@ -35,17 +37,17 @@ def fetch_manifest(url, opener=None):
         with open_url(request, timeout=12) as response:
             status = response.status
             content_type = response.headers.get("Content-Type")
-            raw = response.read(MAX_BYTES + 1)
+            raw = response.read(max_bytes + 1)
     except urllib.error.HTTPError as exc:
         status = exc.code
         content_type = exc.headers.get("Content-Type")
-        raw = exc.read(MAX_BYTES + 1)
+        raw = exc.read(max_bytes + 1)
         error = "HTTP_%s" % status
     except (OSError, TimeoutError) as exc:
         error = type(exc).__name__
-    truncated = len(raw) > MAX_BYTES
+    truncated = len(raw) > max_bytes
     if truncated:
-        raw = raw[:MAX_BYTES]
+        raw = raw[:max_bytes]
         error = "SIZE_CAP_TRUNCATED"
     evidence = {"url": url, "retrieval_utc": started, "http_status": status,
                 "content_type": content_type, "error": error, "truncated": truncated,

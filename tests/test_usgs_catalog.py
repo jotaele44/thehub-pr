@@ -116,6 +116,7 @@ def test_frozen_acquisition_is_visible_and_duplicate_receipts_refused(tmp_path, 
     from fastapi.testclient import TestClient
     from server.backend import usgs_catalog_api
     from server.backend.main import app
+    monkeypatch.setattr(usgs_catalog_api, "METADATA_ARCHIVE", None)
     with TestClient(app) as client:
         body = client.get("/api/usgs/catalog?limit=200").json()
         assert body["acquisition_summary"]["attempted"] == 174
@@ -127,3 +128,16 @@ def test_frozen_acquisition_is_visible_and_duplicate_receipts_refused(tmp_path, 
         altered.write_text(json.dumps(summary))
         monkeypatch.setattr(usgs_catalog_api, "SNAPSHOT", altered)
         assert client.get("/api/usgs/catalog").status_code == 422
+
+
+def test_successful_runner_metadata_is_current_without_payload_promotion():
+    from fastapi.testclient import TestClient
+    from server.backend.main import app
+    with TestClient(app) as client:
+        response = client.get('/api/usgs/catalog?limit=200')
+        assert response.status_code == 200
+        body = response.json()
+        assert body['acquisition_summary']['metadata_states'] == {'PASS':174}
+        assert body['acquisition_summary']['root_file_descriptors'] == 943
+        assert sum(len(r['asset_descriptors_raw']) for r in body['records']) == 943
+        assert all(r['acquisition']['http_status'] == 200 and r['activation_state'] == 'BLOCKED' for r in body['records'])
