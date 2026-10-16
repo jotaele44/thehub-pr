@@ -895,7 +895,9 @@
           "scripts/verify_usgs_build.py",
           "src/hub/usgs_assets.py",
           "scripts/continue_usgs_pr.py",
-          "scripts/stage_usgs_pr.py"
+          "scripts/stage_usgs_pr.py",
+          "src/hub/usgs_exports.py",
+          "scripts/validate_usgs_exports.py"
         ],
         "endpoints": [],
         "symbols": [
@@ -917,7 +919,9 @@
           "scripts/continue_usgs_pr.py:main",
           "src/hub/usgs_assets.py:root_membership",
           "src/hub/usgs_assets.py:doi_identifiers",
-          "src/hub/usgs_assets.py:adapt_native_geojson"
+          "src/hub/usgs_assets.py:adapt_native_geojson",
+          "src/hub/usgs_exports.py:assess_usgs_export",
+          "scripts/validate_usgs_exports.py:main"
         ]
       },
       "frontend": {
@@ -929,7 +933,8 @@
         "backend": [
           "tests/test_usgs_catalog.py",
           "tests/test_usgs_assets.py",
-          "tests/test_usgs_continuation.py"
+          "tests/test_usgs_continuation.py",
+          "tests/test_usgs_exports.py"
         ]
       }
     }

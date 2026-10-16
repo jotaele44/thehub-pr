@@ -28,7 +28,8 @@ jobs:
       - name: Validate frozen evidence and refusal to activate
         run: |
           python scripts/verify_usgs_build.py
-          pytest -q tests/test_usgs_catalog.py tests/test_usgs_assets.py tests/test_usgs_continuation.py
+          python scripts/validate_usgs_exports.py
+          pytest -q tests/test_usgs_catalog.py tests/test_usgs_assets.py tests/test_usgs_continuation.py tests/test_usgs_exports.py
       # Acquisition ran at 38859073401. Ordinary PR synchronization must reuse
       # its frozen evidence, not repeat a 256 MiB crawl to obtain another PASS.
       # This job certifies offline checks only, never scientific readiness.

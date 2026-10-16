@@ -148,6 +148,9 @@ def test_continuation_counts_and_quarantine_are_visible_without_activation():
     from server.backend.main import app
     with TestClient(app) as client:
         body = client.get('/api/usgs/catalog?limit=200').json()
+        export = body['producer_export_summary']
+        assert (export['asset_count'], export['inventory_file_count'], export['features']) == (3,2286,92)
+        assert export['activation_state'] == export['production_export_state'] == 'BLOCKED'
         summary = body['continuation_summary']
         assert (summary['item_count'], summary['file_count']) == (463,2286)
         assert summary['payload_states'] == {'BLOCKED':1611,'PASS':593,'FAIL':82}

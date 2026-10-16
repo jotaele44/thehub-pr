@@ -152,3 +152,65 @@ passes in three Chromium 153 viewport projects. Static GUI parity reports
 1,428 current symbols, 255 mapped, 1,173 unchanged legacy symbols, zero new
 residue; the broader contract audit reports PASS with zero material findings.
 The source audit pin is `a96c7bf64805d784af579410a800dda304bac282`.
+
+## Producer export continuation (2026-10-16)
+
+Spiderweb PR [419](https://github.com/jotaele44/spiderweb-pr/pull/419) owns the
+native reference adapter and declares its explicit diagnostic export command
+in its federation manifest. It uses Spiderweb's existing canonical writer,
+rather than creating another producer implementation in the Hub. The exact
+code pins and executed-file hashes are in
+`registry/usgs/producer_export_code.v1.json`. Original repository manifest
+snapshots remain unchanged; this draft command is not a merged production
+capability.
+
+`data/usgs/producer_inputs/spiderweb-native.v1.json` binds three assets to the
+original inventory, descriptors, source checksum, raw SHA-256, root release IDs
+and actual retrieval UTC. No successful source asset was fetched again.
+`data/usgs/producer_exports/spiderweb-native-v1` is a real **test-mode** canonical
+package: three source records and 92 documentary snapshot observations.
+The Hub canonical validator accepts its schemas and byte/count manifest.
+The independent `src/hub/usgs_exports.py` validator also checks the source
+inventory, typed source keys, content-scoped producer IDs, source references,
+timestamp meaning and entire native feature objects. It does not trust a
+successful producer script or recomputed export hashes as sufficient proof.
+
+Membership reconciliation on `(asset_id, source-key type, raw source key)`:
+intersection 92, A_ONLY 0, B_ONLY 0, union 92, symmetric difference 0. Whole
+features and collection metadata including CRS are preserved by canonical JSON
+comparison; the original compressed GeoJSON still preserves raw bytes. No
+coordinate transformation, canonical location, inferred event date, PR-only
+filter, jurisdiction assignment or hazard claim is emitted. `observed_at`
+means source retrieval. Confidence 0 is explicitly unassessed domain confidence,
+not a contradiction of successful byte verification. Geometry and scientific
+fitness remain unresolved.
+
+`registry/usgs/activation_matrix.v1.json.gz` retains all 2,286 assets: 593 byte
+PASS, 82 FAIL, 1,611 BLOCKED. Three assets have a passed documentary test adapter;
+the remaining adapter states are OPEN. Every production export and activation
+row remains BLOCKED. The 174-release catalog is unchanged. Other producer
+candidate sets remain intact; no historical science release was promoted into
+an early signal, money record, anomaly case or airspace event.
+
+Regenerate validation/gate receipts, without network access:
+
+```sh
+python scripts/validate_usgs_exports.py --write-receipts
+python scripts/verify_usgs_build.py
+```
+
+The API and normal catalog page expose the bounded 3/2,286 test-export scope and
+production blocker. The producer command rejects production mode before writing
+and refuses nonempty output directories. Regression negatives cover duplicate
+and lost rows, changed geometry/CRS/raw attributes, timestamp reinterpretation,
+foreign IDs/source links, forged root membership and promotion flags even when
+package hashes and IDs are recalculated. The producer adds path/size, malformed
+JSON, duplicate fields, non-finite values and typed-key gates.
+
+Current local validation: 1,712 Hub tests pass, 17 skip; 33 producer adapter and
+writer tests pass; 16 dedicated independent export tests pass. Hub mypy checks
+100 source files, changed producer Ruff and Hub Ruff pass. The first producer
+USGS CI job independently validated the frozen fixture export against pinned
+Hub schemas. A documentation reference failure was corrected without changing
+source bytes or weakening checks. Exact release-head CI is tracked separately.
+These results establish the bounded test export, not production certification.

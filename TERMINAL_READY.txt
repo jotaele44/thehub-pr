@@ -28,8 +28,19 @@ python federation/spatial/materialize_pr_grid_v2_profiles.py --pin federation/sp
 Use the consumer's pinned default level. The binding receipt must contain
 Grid_Manifest_SHA256, Binding_Output_SHA256, Binding_Output_Bytes and denominator.
 Only Spiderweb may create record-to-cell spatial bindings. Producer profile input
-contains record metadata, not geometry. V1/provisional/uncertain records remain
-unmigrated until a separate evidence-authorized vector.
+contains record metadata, not geometry.
+
+Exact profile admission is limited to Spiderweb-certified bindings with:
+- Uncertainty_Class=EXACT
+- Binding_Method=COVERS
+- Binding_Method=INTERSECTS_POSITIVE_AREA with positive Overlap_Area_m2 and
+  Cell_Coverage_Fraction in (0,1]
+- Binding_Method=LINE_POSITIVE_LENGTH with positive Length_In_Cell_m
+
+ADMINISTRATIVE_SET, DERIVED_SET, APPROXIMATE, INFERRED, UNKNOWN, and other
+non-exact bindings must fail closed and cannot enter exact Cell_Profile counts.
+V1/provisional/uncertain records remain unmigrated until a separate
+evidence-authorized profile vector.
 ZERO_RECORDS requires verified per-cell coverage evidence; otherwise NO_DATA.
 
 GRID HANDOFF (TheHub FastAPI)
@@ -158,3 +169,31 @@ AUDITED SOURCE: a96c7bf64805d784af579410a800dda304bac282
 Local checks: 85 Python tests (53 integration + 32 comparator), Ruff/mypy,
 2 UI tests, frontend build, 3 catalog browser viewport tests pass.
 Browser is Chromium 153; physical iOS and full scientific gates unverified.
+EXACT-GEOMETRY PROFILE GATE
+python -m pytest -q tests/test_grid_v2_profiles.py
+
+Expected:
+- COVERS exact point rows remain accepted.
+- INTERSECTS_POSITIVE_AREA exact polygon rows are accepted only with positive
+  area and valid positive cell coverage fraction.
+- LINE_POSITIVE_LENGTH exact line rows are accepted only with positive in-cell
+  length.
+- ADMINISTRATIVE_SET and DERIVED_SET remain excluded from exact profiles.
+- Migration_Class=SPIDERWEB_CERTIFIED_EXACT_BINDINGS.
+- Geometry_Included=false for every profile.
+
+USGS REAL PRODUCER TEST EXPORT AND GATE REPLAY
+Existing frozen assets are reused. No source acquisition is required:
+python scripts/validate_usgs_exports.py
+python -m hub validate-package data/usgs/producer_exports/spiderweb-native-v1
+python -m pytest -q tests/test_usgs_exports.py tests/test_usgs_catalog.py tests/test_usgs_assets.py tests/test_usgs_continuation.py
+Expected: 3/2286 asset files; 3 sources and 92 documentary snapshot records.
+Membership: intersection 92; A_ONLY 0; B_ONLY 0; union 92; symmetric difference 0.
+Canonical locations emitted = 0. All 2286 activation rows remain BLOCKED.
+Native coordinates/CRS/attributes remain unmodified; timestamps refer only to
+source retrieval. Confidence is unassessed, not scientific certification.
+The producer-owned adapter is in Spiderweb PR 419. Its --mode production
+refuses before writing. See registry/usgs/producer_export_code.v1.json for
+exact source pins. Do not mix this diagnostic package into live aggregation.
+Windows: use py -3 or the installed virtualenv Python for the commands above.
+The same root TERMINAL_READY.txt remains mandatory in all source/build bundles.

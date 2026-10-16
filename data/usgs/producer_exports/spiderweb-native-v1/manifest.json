@@ -1,0 +1,28 @@
+{
+  "created_at": "2026-10-16T06:08:39.402356+00:00",
+  "export_contract_version": "1.0.0",
+  "extracted_at": "2026-10-16T06:08:39.402356+00:00",
+  "federation": {
+    "hub_parent": "thehub-pr",
+    "producer_repo": "spiderweb-pr"
+  },
+  "files": [
+    {
+      "filename": "sources.jsonl",
+      "record_count": 3,
+      "schema_id": "federation_source.schema.json",
+      "sha256": "325d642035907e3a3116b126e2e1d5cb8480b0dde896258c35bb19e6fac2634c",
+      "stream": "sources"
+    },
+    {
+      "filename": "observations.jsonl",
+      "record_count": 92,
+      "schema_id": "federation_observation.schema.json",
+      "sha256": "38a5105dec4b68c434f5f252b281714c54794f2816e63f68649d0a008115cb3b",
+      "stream": "observations"
+    }
+  ],
+  "mode": "test",
+  "package_id": "pkg_d07f49be59a9f70e154a43859644d5a4",
+  "producer": "spiderweb-pr"
+}

@@ -30,12 +30,13 @@ export default function UsgsCatalog() {
     {data && <>
       <p>{data.counts.included} included releases · {data.counts.excluded} excluded candidates · {data.acquisition_summary?.activated ?? 0} payloads activated</p>
       {data.continuation_summary && <p>{data.continuation_summary.item_count} enumerated items · {data.continuation_summary.file_count} file descriptors · {data.continuation_summary.payload_states.PASS} byte verified · {data.continuation_summary.payload_states.FAIL} quarantined · {data.continuation_summary.payload_states.BLOCKED} blocked. Byte verification does not establish scientific fitness.</p>}
+      {data.producer_export_summary && <p>Spiderweb documentary test export: {data.producer_export_summary.asset_count}/{data.producer_export_summary.inventory_file_count} asset files, {data.producer_export_summary.sources} sources, {data.producer_export_summary.features} native features; validation {data.producer_export_summary.state}. Production export and activation: {data.producer_export_summary.activation_state}.</p>}
       <p>Consumer assignments are review candidates. Payload activation remains blocked until verification passes.</p>
       <details><summary>Scope, provenance, and unresolved issues</summary>
         <p className="break-all">Workbook SHA-256: {data.source.sha256}</p>
         <p>Catalog state: {data.catalog_state}. Payload state: {data.payload_state}.</p>
         {data.issues.map((issue, i) => <p key={i}>{issue.kind}: {issue.detail} ({issue.state})</p>)}
-        <pre className="overflow-auto text-xs">{JSON.stringify({ acquisition: data.acquisition_summary, continuation: data.continuation_summary }, null, 2)}</pre>
+        <pre className="overflow-auto text-xs">{JSON.stringify({ acquisition: data.acquisition_summary, continuation: data.continuation_summary, producerExport: data.producer_export_summary }, null, 2)}</pre>
       </details>
       <div className="flex flex-wrap gap-3">
         <label htmlFor="usgs-release-search">Search releases</label>
