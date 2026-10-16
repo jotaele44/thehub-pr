@@ -112,7 +112,7 @@ export const FEDERATION_RECOVERY_PARITY_ROWS: FederationRecoveryParityRow[] = [
     acl: "PASS",
     dbSchema: "PASS",
     dbSchemaTables: 22,
-    historicalRows: "NOT_PROVEN",
+    historicalRows: "UNAVAILABLE_NO_DUMP",
     sourceContract: "PASS",
     authoritativeAcquisition: "OPEN",
     renderedDesktop393430: "OPEN",
