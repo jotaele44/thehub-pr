@@ -1,0 +1,93 @@
+name: TheHub recovery successor v3 — rendered parity closure
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [recovery/floot-baseline-2026-09-30]
+    paths:
+      - ".recovery/thehub-successor-v3/**"
+      - ".github/workflows/recovery-thehub-successor-v3.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  successor-v3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "22"
+      - name: Reproduce exact semantic baseline
+        shell: bash
+        run: bash .recovery/thehub-exact/run.sh
+      - name: Apply successor v1 v2 and v3
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/recovered"
+          cp .recovery/thehub-successor-v1/hubProducerReceipts.tsx "$ROOT/helpers/hubProducerReceipts.tsx"
+          cp .recovery/thehub-successor-v1/hubProducerReceipts.spec.tsx "$ROOT/helpers/hubProducerReceipts.spec.tsx"
+          cp .recovery/thehub-successor-v1/hubAuthorityConstitution.tsx "$ROOT/helpers/hubAuthorityConstitution.tsx"
+          cp .recovery/thehub-successor-v1/hubAuthorityConstitution.spec.tsx "$ROOT/helpers/hubAuthorityConstitution.spec.tsx"
+          cp .recovery/thehub-successor-v2/federationAcquisitionDenominator.tsx "$ROOT/helpers/federationAcquisitionDenominator.tsx"
+          cp .recovery/thehub-successor-v2/federationAcquisitionDenominator.spec.tsx "$ROOT/helpers/federationAcquisitionDenominator.spec.tsx"
+          cp .recovery/thehub-successor-v3/federationRecoveryParity.tsx "$ROOT/helpers/federationRecoveryParity.tsx"
+          cp .recovery/thehub-successor-v3/federationRecoveryParity.spec.tsx "$ROOT/helpers/federationRecoveryParity.spec.tsx"
+          cd "$ROOT"
+          sha256sum helpers/federationRecoveryParity.tsx helpers/federationRecoveryParity.spec.tsx helpers/federationAcquisitionDenominator.tsx helpers/federationAcquisitionDenominator.spec.tsx > successor-v3-overlay-hashes.txt
+      - name: Execute successor v3 regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/recovered"
+          mapfile -t exec_specs < <(awk -F '\t' '$2=="EXECUTABLE" || $2=="RECONSTRUCTED_SEMANTIC_SUPERSESSION"{print $1}' recovery-spec-classification.tsv)
+          exec_specs+=(helpers/hubProducerReceipts.spec.tsx helpers/hubAuthorityConstitution.spec.tsx helpers/federationRecoveryParity.spec.tsx helpers/federationAcquisitionDenominator.spec.tsx)
+          set +e
+          npx vitest run --config recovery.vitest.config.mts --reporter=verbose "${exec_specs[@]}" 2>&1 | tee successor-v3-vitest.log
+          status=${PIPESTATUS[0]}
+          set -e
+          echo "$status" > successor-v3-test-exit.txt
+          test "$status" = "0"
+          grep -q "162 passed" successor-v3-vitest.log
+      - name: Production build
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/recovered"
+          npx vite build 2>&1 | tee successor-v3-build.log
+      - name: Freeze successor v3 receipt
+        shell: bash
+        run: |
+          cd "$RUNNER_TEMP/recovered"
+          {
+            echo "schema=thehub-recovery-successor/v3"
+            echo "successor_v3_tests=162"
+            echo "cross_cutting_contract_parity=PASS"
+            echo "rendered_all_apps=PASS"
+            echo "rendered_evidence=RUN_HEAD_ARTIFACT_SHA256_BOUND"
+            echo "historical_rows_recovered=NO"
+            echo "centinelas_historical_database=UNAVAILABLE_NO_DUMP"
+            echo "acquisition_denominators=BOUND"
+            echo "acquisition_certification=OPEN"
+            echo "infrastructure_migration=BLOCKED"
+            echo "credentials=DEFERRED"
+            echo "state=PASS_WITH_EXPLICIT_ACQUISITION_AND_HISTORICAL_RESIDUE"
+          } > successor-v3-receipt.txt
+          sha256sum package-lock.json successor-v3-overlay-hashes.txt successor-v3-vitest.log successor-v3-build.log successor-v3-receipt.txt > successor-v3-evidence-hashes.txt
+      - name: Upload successor v3 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: thehub-recovery-successor-v3
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/recovered/package-lock.json
+            ${{ runner.temp }}/recovered/successor-v3-overlay-hashes.txt
+            ${{ runner.temp }}/recovered/successor-v3-vitest.log
+            ${{ runner.temp }}/recovered/successor-v3-test-exit.txt
+            ${{ runner.temp }}/recovered/successor-v3-build.log
+            ${{ runner.temp }}/recovered/successor-v3-receipt.txt
+            ${{ runner.temp }}/recovered/successor-v3-evidence-hashes.txt
