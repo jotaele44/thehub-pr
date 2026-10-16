@@ -1,0 +1,181 @@
+name: PR Grid V2 AguaYLuz NWPS L1 lane
+
+on:
+  pull_request:
+    paths:
+      - "registry/spatial/v2/lanes/aguayluz_nwps_l1.json"
+      - ".github/workflows/grid-v2-aguayluz-nwps-l1.yml"
+  push:
+    branches: [main]
+    paths:
+      - "registry/spatial/v2/lanes/aguayluz_nwps_l1.json"
+      - ".github/workflows/grid-v2-aguayluz-nwps-l1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  materialize-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Read frozen lane pins
+        id: lane
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+          lane = json.loads(Path("registry/spatial/v2/lanes/aguayluz_nwps_l1.json").read_text())
+          assert lane["State"] == "CANDIDATE_EXECUTION"
+          assert lane["Grid_ID"] == "PR_GRID_GEOGRAPHIC_V2"
+          assert lane["Grid_Version"] == "2.0.0-rc1"
+          assert lane["Grid_Level"] == "L1"
+          assert lane["Zero_Records_Permitted"] is False
+          print("producer_commit=" + lane["Producer_Commit"])
+          print("binding_commit=" + lane["Binding_Runtime_Commit"])
+          PY
+
+      - name: Fetch exact producer and authority runtimes
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/grid_v2_lane"
+          mkdir -p "$root"
+          git clone --filter=blob:none --no-checkout https://github.com/jotaele44/aguayluz-pr.git "$root/aguayluz-pr"
+          git -C "$root/aguayluz-pr" fetch --depth 1 origin "${{ steps.lane.outputs.producer_commit }}"
+          git -C "$root/aguayluz-pr" checkout --detach "${{ steps.lane.outputs.producer_commit }}"
+          test "$(git -C "$root/aguayluz-pr" rev-parse HEAD)" = "${{ steps.lane.outputs.producer_commit }}"
+          git clone --filter=blob:none --no-checkout https://github.com/jotaele44/spiderweb-pr.git "$root/spiderweb-pr"
+          git -C "$root/spiderweb-pr" fetch --depth 1 origin "${{ steps.lane.outputs.binding_commit }}"
+          git -C "$root/spiderweb-pr" checkout --detach "${{ steps.lane.outputs.binding_commit }}"
+          test "$(git -C "$root/spiderweb-pr" rev-parse HEAD)" = "${{ steps.lane.outputs.binding_commit }}"
+          echo "LANE_ROOT=$root" >> "$GITHUB_ENV"
+
+      - name: Verify frozen grid authority identity at binding runtime
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          lane = json.loads(Path("registry/spatial/v2/lanes/aguayluz_nwps_l1.json").read_text())
+          manifest = json.loads(
+              (Path(os.environ["LANE_ROOT"]) / "spiderweb-pr/registry/spatial/v2/pr_grid_geographic_v2.manifest.json").read_text()
+          )
+          for key in ("Grid_ID", "Grid_Version", "Grid_Manifest_SHA256", "Cell_Schema_SHA256", "Binding_Schema_SHA256", "Mask_Schema_SHA256"):
+              assert manifest[key] == lane[key], (key, manifest[key], lane[key])
+          print("GRID_AUTHORITY_IDENTITY=PASS")
+          PY
+
+      - name: Install Spiderweb V2 transform dependency
+        run: python -m pip install --disable-pip-version-check -r "$LANE_ROOT/spiderweb-pr/requirements-grid-v2.txt"
+
+      - name: Export exact NWPS source rows
+        shell: bash
+        run: |
+          mkdir -p artifacts/aguayluz-nwps-l1
+          python "$LANE_ROOT/aguayluz-pr/scripts/export_nwps_grid_v2_source_records.py" \
+            --source "$LANE_ROOT/aguayluz-pr/data/nwps_gauge_state.jsonl" \
+            --binding-out artifacts/aguayluz-nwps-l1/source_binding_input.jsonl \
+            --records-out artifacts/aguayluz-nwps-l1/profile_records.jsonl \
+            --receipt-out artifacts/aguayluz-nwps-l1/source_export_receipt.json
+
+      - name: Materialize Spiderweb-authoritative L1 bindings
+        shell: bash
+        run: |
+          python "$LANE_ROOT/spiderweb-pr/scripts/materialize_pr_grid_v2_source_coordinate_bindings.py" \
+            --input artifacts/aguayluz-nwps-l1/source_binding_input.jsonl \
+            --level L1 \
+            --bindings-out artifacts/aguayluz-nwps-l1/L1.bindings.jsonl \
+            --projection-out artifacts/aguayluz-nwps-l1/L1.projection_audit.jsonl \
+            --receipt-out artifacts/aguayluz-nwps-l1/L1.binding_receipt.json
+
+      - name: Materialize AguaYLuz Cell Profiles
+        shell: bash
+        run: |
+          python "$LANE_ROOT/aguayluz-pr/federation/spatial/materialize_pr_grid_v2_profiles.py" \
+            --pin "$LANE_ROOT/aguayluz-pr/federation/spatial/pr_grid_geographic_v2.pin.json" \
+            --records artifacts/aguayluz-nwps-l1/profile_records.jsonl \
+            --bindings artifacts/aguayluz-nwps-l1/L1.bindings.jsonl \
+            --binding-receipt artifacts/aguayluz-nwps-l1/L1.binding_receipt.json \
+            --level L1 \
+            --out artifacts/aguayluz-nwps-l1/L1.profiles.jsonl \
+            --receipt-out artifacts/aguayluz-nwps-l1/L1.profile_receipt.json
+
+      - name: Certify candidate lane receipts
+        shell: bash
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path("artifacts/aguayluz-nwps-l1")
+          lane = json.loads(Path("registry/spatial/v2/lanes/aguayluz_nwps_l1.json").read_text())
+          source = json.loads((root / "source_export_receipt.json").read_text())
+          binding = json.loads((root / "L1.binding_receipt.json").read_text())
+          profile = json.loads((root / "L1.profile_receipt.json").read_text())
+          profiles = [
+              json.loads(line)
+              for line in (root / "L1.profiles.jsonl").read_text().splitlines()
+              if line
+          ]
+
+          assert source["State"] == "PASS"
+          assert source["Coordinate_Evidence_State"] == "VERIFIED_SOURCE_COORDINATE"
+          assert source["Binding_Input_Record_Count"] == source["Profile_Record_Count"]
+          assert binding["Receipt_State"] == "PASS"
+          assert binding["Migration_Provenance_Class"] == "RECOMPUTED_FROM_SOURCE_COORDINATE"
+          assert binding["Coordinate_Evidence_State"] == "VERIFIED_SOURCE_COORDINATE"
+          assert binding["Grid_ID"] == lane["Grid_ID"]
+          assert binding["Grid_Version"] == lane["Grid_Version"]
+          assert binding["Grid_Manifest_SHA256"] == lane["Grid_Manifest_SHA256"]
+          assert binding["Binding_Schema_SHA256"] == lane["Binding_Schema_SHA256"]
+          assert profile["State"] == "CANDIDATE_NOT_CANONICAL"
+          assert profile["Geometry_Copied"] is False
+          assert profile["Migration_Class"] == "RECOMPUTED_FROM_SOURCE_COORDINATE"
+          assert profile["Coverage_Manifest_SHA256"] is None
+          assert set(profile["Data_State_Counts"]) <= {"HAS_RECORDS"}
+          assert all(row["Data_State"] == "HAS_RECORDS" for row in profiles)
+          assert all(row["Coverage_State"] == "UNKNOWN" for row in profiles)
+          assert all(row["Geometry_Included"] is False for row in profiles)
+
+          profile_bytes = (root / "L1.profiles.jsonl").read_bytes()
+          assert profile["Output_SHA256"] == hashlib.sha256(profile_bytes).hexdigest()
+
+          summary = {
+              "Schema_Version": "pr-grid-v2-domain-lane-execution/1.0",
+              "Lane_ID": lane["Lane_ID"],
+              "State": "PASS_CANDIDATE_NOT_CANONICAL",
+              "Producer_Commit": lane["Producer_Commit"],
+              "Grid_Authority_Commit": lane["Grid_Authority_Commit"],
+              "Binding_Runtime_Commit": lane["Binding_Runtime_Commit"],
+              "Source_Export": source,
+              "Binding_Receipt": binding,
+              "Profile_Receipt": profile,
+          }
+          (root / "lane_execution_receipt.json").write_text(
+              json.dumps(summary, indent=2, sort_keys=True) + "\n"
+          )
+          print(json.dumps(summary, indent=2, sort_keys=True))
+          PY
+
+      - name: Freeze artifact hashes
+        shell: bash
+        run: |
+          sha256sum artifacts/aguayluz-nwps-l1/* | sort > artifacts/aguayluz-nwps-l1/SHA256SUMS.txt
+          wc -l artifacts/aguayluz-nwps-l1/*.jsonl > artifacts/aguayluz-nwps-l1/LINE_COUNTS.txt
+
+      - name: Upload candidate lane artifact
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: aguayluz-nwps-grid-v2-l1-candidate
+          path: artifacts/aguayluz-nwps-l1/
+          retention-days: 90
