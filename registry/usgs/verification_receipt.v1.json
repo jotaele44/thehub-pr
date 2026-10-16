@@ -1,0 +1,21 @@
+{
+  "state": "PASS",
+  "scope": "Frozen root/child identity graph and recorded payload byte verdicts, not scientific semantics or production readiness",
+  "source_archive_sha256": "b8fed761b822c9287a6423e9ca9ad4df5d49453e57dffb727d40568873459b72",
+  "root_count": 174,
+  "child_count": 289,
+  "item_count": 463,
+  "file_count": 2286,
+  "payload_states": {
+    "BLOCKED": 1611,
+    "PASS": 593,
+    "FAIL": 82
+  },
+  "checks": {
+    "byte_pass_reverified": 593,
+    "child_metadata_reverified": 289
+  },
+  "activated": 0,
+  "activation_state": "BLOCKED",
+  "production_export_state": "BLOCKED"
+}

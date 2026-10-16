@@ -12,14 +12,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from hub.usgs_acquisition import fetch_manifest, snapshot_item  # noqa: E402
-from hub.usgs_assets import (approved_download_url, file_inventory, inspect_payload,
-                            read_metadata_archive, verify_payload)  # noqa: E402
+from hub.usgs_assets import (  # noqa: E402
+    approved_download_url, file_inventory, inspect_payload,
+                            read_metadata_archive, root_membership, verify_payload)  # noqa: E402
 from hub.usgs_catalog import load_catalog  # noqa: E402
 
 
 def continue_snapshot(archive, expected_hash, out, byte_budget=256 * 1024 * 1024, file_cap=5 * 1024 * 1024):
     summary, items = read_metadata_archive(archive, expected_hash)
-    roots = {r["sciencebase_id"] for r in load_catalog()["releases"]}
+    catalog = load_catalog()
+    roots = {r["sciencebase_id"] for r in catalog["releases"]}
     if set(items) != roots:
         raise ValueError("Root item set differs from catalog")
     out.mkdir(parents=True, exist_ok=True)
@@ -80,25 +82,39 @@ def continue_snapshot(archive, expected_hash, out, byte_budget=256 * 1024 * 1024
                     queue.append(child_id)
             offset += len(children)
             if offset == total:
+                if not total:
+                    problems.append({"item": source_id, "state": "OPEN", "reason": "hasChildren true but query returned zero"})
                 break
             if not children or offset > total:
                 raise ValueError("Child pagination does not close")
     inventory = file_inventory(items)
-    remaining = byte_budget
+    memberships = root_membership(roots, edges)
+    priority = {r['sciencebase_id']: int(r['raw']['Category'][0]) for r in catalog['releases']}
+    for row in inventory:
+        row['root_release_ids'] = memberships.get(row['source_item_id'], [])
+    inventory.sort(key=lambda r: (
+        0 if r['raw_descriptor'].get('originalMetadata') else 1,
+        min((priority[s] for s in r['root_release_ids']), default=4),
+        0 if str(r['raw_descriptor'].get('name', '')).lower().endswith(('.csv', '.geojson')) else 1,
+        r['source_item_id'], r['ordinal']))
     payload_dir = out / "payloads"
     payload_dir.mkdir(exist_ok=True)
+    remaining = byte_budget - sum(p.stat().st_size for p in payload_dir.glob('*.bin'))
+    if remaining < 0:
+        raise ValueError('Frozen payload cache exceeds byte budget')
     for row in inventory:
         descriptor = row["raw_descriptor"]
         size = descriptor.get("size")
         row["semantic_state"] = "OPEN"
-        if size is None or size > file_cap or size > remaining or remaining <= 0:
+        key = row["asset_id"].replace(':', '_')
+        raw_path, receipt_path = payload_dir / (key + ".bin"), payload_dir / (key + ".json")
+        cached = receipt_path.exists()
+        if size is None or size > file_cap or (not cached and (size > remaining or remaining <= 0)):
             row.update(payload_state="BLOCKED", reason="DECLARED_SIZE_OR_CAPACITY_GATE")
             continue
         if not (descriptor.get("checksum") or {}).get("value"):
             row.update(payload_state="BLOCKED", reason="SOURCE_CHECKSUM_UNAVAILABLE")
             continue
-        key = row["asset_id"].replace(':', '_')
-        raw_path, receipt_path = payload_dir / (key + ".bin"), payload_dir / (key + ".json")
         try:
             url = approved_download_url(row["source_item_id"], descriptor)
             if receipt_path.exists():
@@ -110,7 +126,8 @@ def continue_snapshot(archive, expected_hash, out, byte_budget=256 * 1024 * 1024
                 raw, receipt = fetch_manifest(url, max_bytes=min(file_cap, max(1, size), remaining))
                 raw_path.write_bytes(raw)
                 receipt_path.write_text(json.dumps(receipt, indent=2) + "\n")
-            remaining -= len(raw)
+            if not cached:
+                remaining -= len(raw)
             row["transport"] = receipt
             if receipt["state"] != "PASS":
                 row.update(payload_state="BLOCKED", reason="PAYLOAD_TRANSPORT")

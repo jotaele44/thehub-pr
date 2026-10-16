@@ -1,0 +1,1171 @@
+{
+  "contract": "prii.usgs-producer-intake-staging/v1",
+  "program_id": "moneysweep-pr",
+  "repository": "jotaele44/moneysweep-pr",
+  "role": "public_money_intelligence_node",
+  "repository_binding_state": "PASS",
+  "consumer_fitness_state": "OPEN",
+  "producer_contract_blob": "95ef01dd4179c133acd843c7d4858e8fc6a05bd0",
+  "source_archive_sha256": "b8fed761b822c9287a6423e9ca9ad4df5d49453e57dffb727d40568873459b72",
+  "release_ids": [
+    "59692a64e4b0d1f9f05fbd39",
+    "5ba8e9c4e4b08583a5ca0384",
+    "5d4a3c3ee4b01d82ce8dedc6",
+    "607607ffd34e018b3201cb92",
+    "63e3ebc7d34e9fa19a9bb9cb",
+    "649d8a39d34ef77fcb03f8a6",
+    "6619557bd34e7eb9eb7dcaf0",
+    "67f9676fd4be022c3e84f55b",
+    "680ff44dd4be02294053a07a",
+    "6827de79d4be02693eeabe73",
+    "68750de9d4be025f81987bc2"
+  ],
+  "candidate_assets": [
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:0",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:1",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:2",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:3",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:4",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:5",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:6",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:7",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:8",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:9",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "59692a64e4b0d1f9f05fbd39:10",
+      "root_release_ids": [
+        "59692a64e4b0d1f9f05fbd39"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "5bb64dcee4b0fc368e8934e6:0",
+      "root_release_ids": [
+        "5ba8e9c4e4b08583a5ca0384"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5bb64dcee4b0fc368e8934e6:1",
+      "root_release_ids": [
+        "5ba8e9c4e4b08583a5ca0384"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5bb6518be4b0fc368e89397d:0",
+      "root_release_ids": [
+        "5ba8e9c4e4b08583a5ca0384"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5bb6518be4b0fc368e89397d:1",
+      "root_release_ids": [
+        "5ba8e9c4e4b08583a5ca0384"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5bb652aee4b0fc368e8939a2:0",
+      "root_release_ids": [
+        "5ba8e9c4e4b08583a5ca0384"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5bb652aee4b0fc368e8939a2:1",
+      "root_release_ids": [
+        "5ba8e9c4e4b08583a5ca0384"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5bb6536de4b0fc368e8939bc:0",
+      "root_release_ids": [
+        "5ba8e9c4e4b08583a5ca0384"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5bb6536de4b0fc368e8939bc:1",
+      "root_release_ids": [
+        "5ba8e9c4e4b08583a5ca0384"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5d4a3c3ee4b01d82ce8dedc6:0",
+      "root_release_ids": [
+        "5d4a3c3ee4b01d82ce8dedc6"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5d4a3c3ee4b01d82ce8dedc6:1",
+      "root_release_ids": [
+        "5d4a3c3ee4b01d82ce8dedc6"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5d4a3c3ee4b01d82ce8dedc6:2",
+      "root_release_ids": [
+        "5d4a3c3ee4b01d82ce8dedc6"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5d4a3c3ee4b01d82ce8dedc6:3",
+      "root_release_ids": [
+        "5d4a3c3ee4b01d82ce8dedc6"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "5d4a3c3ee4b01d82ce8dedc6:4",
+      "root_release_ids": [
+        "5d4a3c3ee4b01d82ce8dedc6"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "607607ffd34e018b3201cb92:0",
+      "root_release_ids": [
+        "607607ffd34e018b3201cb92"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "607607ffd34e018b3201cb92:1",
+      "root_release_ids": [
+        "607607ffd34e018b3201cb92"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "607607ffd34e018b3201cb92:2",
+      "root_release_ids": [
+        "607607ffd34e018b3201cb92"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "607607ffd34e018b3201cb92:3",
+      "root_release_ids": [
+        "607607ffd34e018b3201cb92"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "607607ffd34e018b3201cb92:4",
+      "root_release_ids": [
+        "607607ffd34e018b3201cb92"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "607607ffd34e018b3201cb92:5",
+      "root_release_ids": [
+        "607607ffd34e018b3201cb92"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "607607ffd34e018b3201cb92:6",
+      "root_release_ids": [
+        "607607ffd34e018b3201cb92"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "607607ffd34e018b3201cb92:7",
+      "root_release_ids": [
+        "607607ffd34e018b3201cb92"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "607607ffd34e018b3201cb92:8",
+      "root_release_ids": [
+        "607607ffd34e018b3201cb92"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "607607ffd34e018b3201cb92:9",
+      "root_release_ids": [
+        "607607ffd34e018b3201cb92"
+      ],
+      "payload_state": "FAIL"
+    },
+    {
+      "asset_id": "63e3ebc7d34e9fa19a9bb9cb:0",
+      "root_release_ids": [
+        "63e3ebc7d34e9fa19a9bb9cb"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "63e3ebc7d34e9fa19a9bb9cb:1",
+      "root_release_ids": [
+        "63e3ebc7d34e9fa19a9bb9cb"
+      ],
+      "payload_state": "FAIL"
+    },
+    {
+      "asset_id": "649d8a39d34ef77fcb03f8a6:0",
+      "root_release_ids": [
+        "649d8a39d34ef77fcb03f8a6"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "649d8a39d34ef77fcb03f8a6:1",
+      "root_release_ids": [
+        "649d8a39d34ef77fcb03f8a6"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "649d8a39d34ef77fcb03f8a6:2",
+      "root_release_ids": [
+        "649d8a39d34ef77fcb03f8a6"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "649d8a39d34ef77fcb03f8a6:3",
+      "root_release_ids": [
+        "649d8a39d34ef77fcb03f8a6"
+      ],
+      "payload_state": "PASS"
+    },
+    {
+      "asset_id": "6619557bd34e7eb9eb7dcaf0:0",
+      "root_release_ids": [
+        "6619557bd34e7eb9eb7dcaf0"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "6619557bd34e7eb9eb7dcaf0:1",
+      "root_release_ids": [
+        "6619557bd34e7eb9eb7dcaf0"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "6619557bd34e7eb9eb7dcaf0:2",
+      "root_release_ids": [
+        "6619557bd34e7eb9eb7dcaf0"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "6619557bd34e7eb9eb7dcaf0:3",
+      "root_release_ids": [
+        "6619557bd34e7eb9eb7dcaf0"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "6619557bd34e7eb9eb7dcaf0:4",
+      "root_release_ids": [
+        "6619557bd34e7eb9eb7dcaf0"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "6619557bd34e7eb9eb7dcaf0:5",
+      "root_release_ids": [
+        "6619557bd34e7eb9eb7dcaf0"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "67f9676fd4be022c3e84f55b:0",
+      "root_release_ids": [
+        "67f9676fd4be022c3e84f55b"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "67f9676fd4be022c3e84f55b:1",
+      "root_release_ids": [
+        "67f9676fd4be022c3e84f55b"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "67f9676fd4be022c3e84f55b:2",
+      "root_release_ids": [
+        "67f9676fd4be022c3e84f55b"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "680ff44dd4be02294053a07a:0",
+      "root_release_ids": [
+        "680ff44dd4be02294053a07a"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "680ff44dd4be02294053a07a:1",
+      "root_release_ids": [
+        "680ff44dd4be02294053a07a"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "680ff44dd4be02294053a07a:2",
+      "root_release_ids": [
+        "680ff44dd4be02294053a07a"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "680ff44dd4be02294053a07a:3",
+      "root_release_ids": [
+        "680ff44dd4be02294053a07a"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "680ff44dd4be02294053a07a:4",
+      "root_release_ids": [
+        "680ff44dd4be02294053a07a"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "680ff44dd4be02294053a07a:5",
+      "root_release_ids": [
+        "680ff44dd4be02294053a07a"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "680ff44dd4be02294053a07a:6",
+      "root_release_ids": [
+        "680ff44dd4be02294053a07a"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "680ff44dd4be02294053a07a:7",
+      "root_release_ids": [
+        "680ff44dd4be02294053a07a"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "6827de79d4be02693eeabe73:0",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "6827de79d4be02693eeabe73:1",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:0",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:1",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:2",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:3",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:4",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:5",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:6",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:7",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:8",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:9",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:10",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:11",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:12",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf1:13",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:0",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:1",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:2",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:3",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:4",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:5",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:6",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:7",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:8",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:9",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:10",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:11",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:12",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf4:13",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:0",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:1",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:2",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:3",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:4",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:5",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:6",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:7",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:8",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:9",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:10",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:11",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:12",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac1d4be0234870fcaf6:13",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:0",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:1",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:2",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:3",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:4",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:5",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:6",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:7",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:8",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:9",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:10",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:11",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:12",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:13",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:14",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcaf8:15",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:0",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:1",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:2",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:3",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:4",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:5",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:6",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:7",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:8",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:9",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:10",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac2d4be0234870fcafa:11",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:0",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:1",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:2",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:3",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:4",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:5",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:6",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:7",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:8",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:9",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:10",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:11",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:12",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:13",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:14",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafc:15",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:0",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:1",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:2",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:3",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:4",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:5",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:6",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:7",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:8",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:9",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:10",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "683e0ac3d4be0234870fcafe:11",
+      "root_release_ids": [
+        "6827de79d4be02693eeabe73"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "68750de9d4be025f81987bc2:0",
+      "root_release_ids": [
+        "68750de9d4be025f81987bc2"
+      ],
+      "payload_state": "BLOCKED"
+    },
+    {
+      "asset_id": "68750de9d4be025f81987bc2:1",
+      "root_release_ids": [
+        "68750de9d4be025f81987bc2"
+      ],
+      "payload_state": "BLOCKED"
+    }
+  ],
+  "payload_states": {
+    "PASS": 22,
+    "FAIL": 2,
+    "BLOCKED": 135
+  },
+  "upstream_readiness_raw": {
+    "ready_for_hub_discovery": true,
+    "ready_for_hub_live_execution": false,
+    "blocking_conditions": [
+      "manual-source Tranche B remains partial/unresolved for hud_drgr_authorized; prasa, pr_cabilderos, and oficina_contralor were source-drop staged or parsed and materialized in reports/live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/",
+      "cor3 live endpoints return no data (portal likely requires JavaScript rendering); manual CSV export fallback documented",
+      "PR-gov scraper-needed queue: 14 of 15 sources promoted to api_producer (most recently hacienda_sut_ivu, scripts/download_hacienda_sut_ivu.py); 1 true stub remains (pr_act_154_excise \u2014 no Hacienda page matching the described excise line has been identified yet, a source-discovery gap, not an environment one)",
+      "PROPUBLICA_API_KEY not supplied (nonprofits adapter)",
+      "source-count wording must stay reconciled to reports/materialization_readiness.json truth"
+    ],
+    "resolved_conditions": [
+      "runtime API keys supplied and 12/16 required sources live-materialized (usaspending_prime/subawards, fsrs, fema_pa_openfema_v2, cor3, hud_cdbg_dr_public, oficina_contralor, emma_bonds, lda, pr_cabilderos, prasa, fec, sam_entities via parent_collapse); validation_gates failed count 20 -> 10"
+    ]
+  },
+  "export_command_reference": "python3 scripts/federation_export.py --mode test",
+  "stage": "REFERENCE_INTAKE_ONLY",
+  "canonical_streams_emitted": false,
+  "production_export_state": "BLOCKED",
+  "activation_state": "BLOCKED",
+  "open_gates": [
+    "consumer_fitness",
+    "schema_and_units",
+    "PR_coverage",
+    "geometry_CRS_Z_M",
+    "version_lineage",
+    "usage_constraints",
+    "producer_adapter_and_contract_validation"
+  ]
+}

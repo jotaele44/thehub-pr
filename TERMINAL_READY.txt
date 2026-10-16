@@ -108,7 +108,9 @@ OPEN APP (root directory, separate terminal, after build):
 READ-ONLY SMOKE TEST:
   Open http://127.0.0.1:8000/api/usgs/catalog?limit=200
   Expect 174 records; counts include 23 excluded; catalog_state PASS;
-  payload_state BLOCKED; 174 HTTP 403 receipts. Search a title, filter a
+  payload_state BLOCKED; 174 root HTTP 200 metadata receipts.
+  Continuation: 463 items, 2286 descriptors; 593 byte PASS, 82 quarantined,
+  1611 blocked; zero activated. Historical HTTP 403 responses remain frozen. Search a title, filter a
   consumer, inspect provenance, clear filters and recover all 174 records.
   No Activate button exists.
 
@@ -131,3 +133,23 @@ FAILURE / CERTIFICATION:
   pass against frozen live assets before a separate activation release.
   macOS/Windows instructions are supplied but not executed on those OSs.
   See docs/federation/USGS_PR_CATALOG.md for tested scope and remaining gates.
+
+2026-10-16 CONTINUATION:
+  Run from repository root after installation above:
+  python scripts/verify_usgs_build.py
+  python -m pytest -q tests/test_usgs_catalog.py tests/test_usgs_assets.py tests/test_usgs_continuation.py
+  python scripts/check_gui_parity.py
+  Optional rebuild with delivered frozen source artifact (no network):
+  python scripts/stage_usgs_pr.py --archive /absolute/path/USGS_PR_Asset_Evidence_20261016.zip
+  Optional new acquisition/verified-cache continuation (network required):
+  python scripts/continue_usgs_pr.py --archive data/usgs/snapshots/20261016_runner_metadata.zip --sha256 47488d1d72a2a43b8c2a4d3b44b600d4852ceca99e6796aae334814f95e7f7c8 --out /absolute/path/new-or-existing-continuation
+  Expected continuation exit 2: activation remains BLOCKED. Never overwrite
+  old snapshot evidence for promotion. Reuse hash-verified cached payloads.
+  Source artifact archive SHA-256:
+  b8fed761b822c9287a6423e9ca9ad4df5d49453e57dffb727d40568873459b72
+  Stage has six reference intake envelopes and three tested native GeoJSON
+  adapters (51/6/35 features). These do not emit canonical producer streams.
+  Repository-role review PASS; dataset-consumer fitness OPEN. Exports BLOCKED.
+  The 82 source checksum disagreements are quarantined, cause UNRESOLVED.
+  Source-declared files total 1,388,684,784,993 bytes; bounded acquisition is
+  256 MiB. 593 byte passes do not imply semantic or spatial readiness.

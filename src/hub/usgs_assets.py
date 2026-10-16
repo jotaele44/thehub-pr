@@ -8,7 +8,7 @@ import json
 import re
 import urllib.parse
 import zipfile
-from collections import Counter
+from collections import Counter, deque
 from pathlib import PurePosixPath
 
 
@@ -59,6 +59,52 @@ def file_inventory(items):
                          "ordinal": ordinal, "raw_descriptor": descriptor,
                          "payload_state": "OPEN", "activation_state": "BLOCKED"})
     return rows
+
+
+def root_membership(roots, edges):
+    graph = {}
+    indegree = {}
+    seen = set()
+    for edge in edges:
+        parent, child = edge['parent'], edge['child']
+        if (parent, child) in seen:
+            raise ValueError('Duplicate child edge')
+        seen.add((parent, child))
+        graph.setdefault(parent, []).append(child)
+        indegree.setdefault(parent, 0)
+        indegree[child] = indegree.get(child, 0) + 1
+    queue = deque(n for n, count in indegree.items() if count == 0)
+    processed = 0
+    while queue:
+        node = queue.popleft()
+        processed += 1
+        for child in graph.get(node, []):
+            indegree[child] -= 1
+            if indegree[child] == 0:
+                queue.append(child)
+    if processed != len(indegree):
+        raise ValueError('Cyclic child graph')
+    memberships = {}
+    for root in sorted(roots):
+        pending, reached = deque([root]), set()
+        while pending:
+            node = pending.popleft()
+            if node in reached:
+                continue
+            reached.add(node)
+            memberships.setdefault(node, []).append(root)
+            pending.extend(graph.get(node, []))
+    return memberships
+
+
+def doi_identifiers(item):
+    """Classify the source type label; preserve identifier bytes separately."""
+    values = []
+    for identifier in item.get('identifiers', []):
+        label, key = identifier.get('type'), identifier.get('key')
+        if isinstance(label, str) and label.casefold() == 'doi' and isinstance(key, str):
+            values.append({'raw': identifier, 'value': key[4:] if key[:4].casefold() == 'doi:' else key})
+    return values
 
 
 def verify_payload(raw, descriptor):
@@ -149,3 +195,26 @@ def approved_download_url(source_id, descriptor):
             or parsed.path != "/catalog/file/get/" + source_id):
         raise ValueError("Unapproved asset URL/ID binding; requires review")
     return url
+
+
+def adapt_native_geojson(raw, descriptor, source_key):
+    """Staged source-native features; no spatial correction or domain promotion."""
+    verification = verify_payload(raw, descriptor)
+    data = json.loads(raw)
+    if data.get('type') != 'FeatureCollection' or not isinstance(data.get('features'), list):
+        raise ValueError('Expected native FeatureCollection')
+    keys = []
+    for feature in data['features']:
+        if not isinstance(feature, dict) or feature.get('type') != 'Feature':
+            raise ValueError('Malformed source feature')
+        key = (feature.get('properties') or {}).get(source_key)
+        if not isinstance(key, (str, int)) or isinstance(key, bool) or key == '':
+            raise ValueError('Missing or invalid source feature key')
+        keys.append(key)
+    if len(set(keys)) != len(keys):
+        raise ValueError('Duplicate source feature key')
+    return {'contract':'prii.usgs-native-feature-staging/v1', 'verification':verification,
+            'source_key':source_key, 'source_keys':keys, 'feature_count':len(keys),
+            'native_feature_collection':data, 'adapter_state':'PASS',
+            'spatial_state':'UNRESOLVED', 'semantic_state':'OPEN',
+            'activation_state':'BLOCKED', 'production_export_state':'BLOCKED'}

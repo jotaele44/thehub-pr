@@ -1,4 +1,5 @@
 """Read-only catalog and acquisition receipts; never exposes payload activation."""
+import gzip
 import json
 import hashlib
 from pathlib import Path
@@ -6,7 +7,9 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Query
 
 from hub.usgs_catalog import CATALOG, catalog_page, load_catalog
-from hub.usgs_assets import read_metadata_archive
+from hub.usgs_assets import read_metadata_archive, root_membership
+
+EVIDENCE_ROOT = Path(__file__).resolve().parents[2]
 
 router = APIRouter(prefix="/api/usgs", tags=["usgs-catalog"])
 SNAPSHOT = Path(__file__).resolve().parents[2] / "data/usgs/snapshots/20261011T013000Z/summary.json"
@@ -36,6 +39,23 @@ def usgs_catalog(query: str = Query("", max_length=200), program: str = Query(No
             result['acquisition_summary']['root_declared_bytes'] = sum(f.get('size') or 0 for i in items.values() for f in i.get('files', []))
             result['acquisition_summary']['archive_sha256'] = METADATA_ARCHIVE_SHA256
             result['acquisition_summary']['historical_snapshot'] = '20261011T013000Z: 174 HTTP 403 observations retained'
+            evidence = json.loads((EVIDENCE_ROOT / 'registry/usgs/continuation_evidence.v1.json').read_text())
+            packed = (EVIDENCE_ROOT / 'data/usgs/continuation_inventory.v1.json.gz').read_bytes()
+            if hashlib.sha256(packed).hexdigest() != evidence['compressed_inventory_sha256']:
+                raise ValueError('Continuation compressed evidence hash mismatch')
+            raw = gzip.decompress(packed)
+            if len(raw) != evidence['inventory_bytes'] or hashlib.sha256(raw).hexdigest() != evidence['inventory_sha256']:
+                raise ValueError('Continuation inventory hash/size mismatch')
+            inventory = json.loads(raw)
+            if inventory['root_archive_sha256'] != METADATA_ARCHIVE_SHA256 or inventory['source_workbook_sha256'] != result['source']['sha256']:
+                raise ValueError('Continuation source binding mismatch')
+            membership = root_membership(expected, inventory['child_edges'])
+            result['continuation_summary'] = {k:v for k,v in inventory.items() if k not in ('assets','child_edges')}
+            for row in result['records']:
+                assets = [a for a in inventory['assets'] if row['sciencebase_id'] in membership.get(a['source_item_id'], [])]
+                row['recursive_asset_summary'] = {state:sum(a['payload_state'] == state for a in assets) for state in ('PASS','FAIL','BLOCKED')}
+                row['quarantined_assets'] = [a for a in assets if a['payload_state'] == 'FAIL']
+
         elif SNAPSHOT.exists():
             snapshot = json.loads(SNAPSHOT.read_text())
             if snapshot["source_workbook_sha256"] != result["source"]["sha256"]:

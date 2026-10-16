@@ -141,3 +141,16 @@ def test_successful_runner_metadata_is_current_without_payload_promotion():
         assert body['acquisition_summary']['root_file_descriptors'] == 943
         assert sum(len(r['asset_descriptors_raw']) for r in body['records']) == 943
         assert all(r['acquisition']['http_status'] == 200 and r['activation_state'] == 'BLOCKED' for r in body['records'])
+
+
+def test_continuation_counts_and_quarantine_are_visible_without_activation():
+    from fastapi.testclient import TestClient
+    from server.backend.main import app
+    with TestClient(app) as client:
+        body = client.get('/api/usgs/catalog?limit=200').json()
+        summary = body['continuation_summary']
+        assert (summary['item_count'], summary['file_count']) == (463,2286)
+        assert summary['payload_states'] == {'BLOCKED':1611,'PASS':593,'FAIL':82}
+        assert summary['activated'] == 0 and summary['activation_state'] == 'BLOCKED'
+        # Membership can be N:N; these quantities count per-root references.
+        assert sum(r['recursive_asset_summary']['FAIL'] for r in body['records']) >= 82

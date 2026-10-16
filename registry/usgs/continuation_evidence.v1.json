@@ -1,0 +1,12 @@
+{
+  "artifact_id": 12028712192,
+  "run_id": 38859073401,
+  "source_code_commit": "bc0715ad0a416b226fa8b35bcdbfb94623f0a11f",
+  "archive_sha256": "b8fed761b822c9287a6423e9ca9ad4df5d49453e57dffb727d40568873459b72",
+  "archive_bytes": 193972102,
+  "inventory_sha256": "6ff461dbb66490571b1940a1dd9fec0d356382b96e20a8d8c7a48aa0f35ca383",
+  "inventory_bytes": 5256486,
+  "activation_state": "BLOCKED",
+  "activated": 0,
+  "compressed_inventory_sha256": "81414627220a181fd90360f39750abdcf91189a56dcd91d408b524d107a103b7"
+}

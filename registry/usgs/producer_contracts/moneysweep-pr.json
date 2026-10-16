@@ -1,0 +1,92 @@
+{
+  "source_url": "https://github.com/jotaele44/moneysweep-pr/blob/main/federation.json",
+  "git_blob_sha": "95ef01dd4179c133acd843c7d4858e8fc6a05bd0",
+  "raw_manifest": {
+    "schema_version": "repo_federation_manifest_v1",
+    "program_id": "moneysweep-pr",
+    "repository_full_name": "jotaele44/moneysweep-pr",
+    "repository_legacy_name": "Contract-Sweeper",
+    "federation_role": "public_money_intelligence_node",
+    "hub_parent": "thehub-pr",
+    "branding": {
+      "icon": "assets/branding/icon.png",
+      "icon_dir": "assets/branding",
+      "accent_color": "#8ec50c"
+    },
+    "jurisdiction": "Puerto Rico",
+    "active_vector": "PREP_TRANCHE_B_MANUAL_SOURCE_INGESTION",
+    "production_status": "NON_PRODUCTION_DIAGNOSTIC",
+    "pause_lock_required": true,
+    "source_truth": {
+      "source_of_truth_file": "reports/materialization_readiness.json",
+      "total_sources": 167,
+      "automatable_total": 119,
+      "automatable_ready": 119,
+      "queued_excluded_total": 48,
+      "queued_excluded": {
+        "manual_export": 42,
+        "scraper_needed": 1,
+        "deferred_stub": 2,
+        "semantic_duplicate": 3,
+        "broken_producer": 0
+      }
+    },
+    "hub_callable_commands": {
+      "setup": "python3 -m pip install -r requirements.txt && python3 run_all.py --only-setup",
+      "strict_preflight": "python3 run_all.py --only-setup --strict-preflight",
+      "full_pipeline": "python3 run_all.py --strict-preflight",
+      "materialization_matrix": "python3 scripts/build_source_recovery_matrix.py",
+      "gap_matrix": "python3 scripts/gap_analysis_builder.py",
+      "test_suite": "python3 -m pytest tests/ -q",
+      "dashboard_export": "python3 scripts/build_dashboard_explorer.py",
+      "foia_letters": "python3 scripts/build_foia_letters.py",
+      "ngo_layer": "python3 scripts/ngo_integration.py",
+      "export_canonical": "python3 scripts/federation_export.py --mode test",
+      "maintenance": "python3 scripts/run_maintenance.py --repo moneysweep-pr --mode audit",
+      "ingest_centinelas": "python3 scripts/ingest_centinelas_signals.py",
+      "build_contract_finance_bundle": "python3 scripts/build_contract_finance_bundle.py --export-dir exports/centinelas_intake"
+    },
+    "canonical_outputs": {
+      "canonical_export_dir": "data/exports/canonical_v1_federation",
+      "current_status": "reports/current_status.json",
+      "materialization_readiness": "reports/materialization_readiness.json",
+      "source_recovery_matrix_csv": "reports/source_recovery_matrix.csv",
+      "source_recovery_matrix_md": "reports/source_recovery_matrix.md",
+      "top_form_gap_matrix": "reports/top_form_gap_matrix.csv",
+      "federation_status_reconciliation": "reports/federation_source_status_reconciliation.json",
+      "readiness_audit": "reports/federation_readiness_audit.md",
+      "dashboard": "exports/dashboard/index.html",
+      "graph_nodes": "exports/graph/nodes.csv",
+      "graph_edges": "exports/graph/edges.csv",
+      "maintenance_report": "reports/maintenance/latest.json"
+    },
+    "manual_ingestion_tranche_b": {
+      "branch": "gpt/manual-source-ingestion-tranche-b",
+      "status": "prepared_not_executed",
+      "scope": [
+        "ACT transition contracts",
+        "ACUDEN transition contracts",
+        "PRASA completed projects",
+        "PRASA FY2024 Consulting Engineer report",
+        "Puerto Rico cabilderos registry",
+        "Federal LDA registrants",
+        "DCAA active contractor listings"
+      ],
+      "promotion_gate": "No manual source is fully_materialized until parser, canonical output, schema validation, and regression tests pass."
+    },
+    "federation_readiness_gate": {
+      "ready_for_hub_discovery": true,
+      "ready_for_hub_live_execution": false,
+      "blocking_conditions": [
+        "manual-source Tranche B remains partial/unresolved for hud_drgr_authorized; prasa, pr_cabilderos, and oficina_contralor were source-drop staged or parsed and materialized in reports/live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/",
+        "cor3 live endpoints return no data (portal likely requires JavaScript rendering); manual CSV export fallback documented",
+        "PR-gov scraper-needed queue: 14 of 15 sources promoted to api_producer (most recently hacienda_sut_ivu, scripts/download_hacienda_sut_ivu.py); 1 true stub remains (pr_act_154_excise — no Hacienda page matching the described excise line has been identified yet, a source-discovery gap, not an environment one)",
+        "PROPUBLICA_API_KEY not supplied (nonprofits adapter)",
+        "source-count wording must stay reconciled to reports/materialization_readiness.json truth"
+      ],
+      "resolved_conditions": [
+        "runtime API keys supplied and 12/16 required sources live-materialized (usaspending_prime/subawards, fsrs, fema_pa_openfema_v2, cor3, hud_cdbg_dr_public, oficina_contralor, emma_bonds, lda, pr_cabilderos, prasa, fec, sam_entities via parent_collapse); validation_gates failed count 20 -> 10"
+      ]
+    }
+  }
+}
