@@ -40,9 +40,9 @@ export const FEDERATION_RECOVERY_PARITY_ROWS: FederationRecoveryParityRow[] = [
   },
   {
     app: "MoneySweep",
-    producerRunId: 38889455287,
-    producerHead: "0aea9fb0807d158ae3abe351adf15697ce1dba0b",
-    artifactSha256: "6cc56f8bbc30d8751e1f7602582826625c3dd89760390933a55804a77b907a8c",
+    producerRunId: 38948159159,
+    producerHead: "646982f0299be5aeb0cd96153f54782ca3ff8dfe",
+    artifactSha256: "e92c7b11602ede553202340cbfcfdf14d0aaf5e4179d4ba840d56db950859b64",
     testsPassed: 90,
     auth: "NOT_APPLICABLE",
     acl: "NOT_APPLICABLE",
@@ -51,8 +51,8 @@ export const FEDERATION_RECOVERY_PARITY_ROWS: FederationRecoveryParityRow[] = [
     historicalRows: "NOT_PROVEN",
     sourceContract: "PASS",
     authoritativeAcquisition: "OPEN",
-    renderedDesktop393430: "OPEN",
-    note: "Recovered API surface is exactly five GET handlers and zero mutation handlers; write auth/ACL is explicitly not applicable.",
+    renderedDesktop393430: "PASS",
+    note: "Recovered API surface is exactly five GET handlers and zero mutation handlers; write auth/ACL is explicitly not applicable; rendered 1440/393/430 QA passed with zero horizontal overflow and zero console errors.",
   },
   {
     app: "AguaYLuz",
