@@ -1,0 +1,4 @@
+NONCANONICAL isolated USGS consumer rehearsal, mode=test. Activation BLOCKED.
+From thehub-pr root: python -m hub validate-package data/usgs/rehearsals/spiderweb-native-v1
+Expected 3 sources and 92 observations, zero collision, native rows conserved plus _producers provenance.
+Do not aggregate this rehearsal package into live producer output.

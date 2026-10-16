@@ -197,3 +197,11 @@ refuses before writing. See registry/usgs/producer_export_code.v1.json for
 exact source pins. Do not mix this diagnostic package into live aggregation.
 Windows: use py -3 or the installed virtualenv Python for the commands above.
 The same root TERMINAL_READY.txt remains mandatory in all source/build bundles.
+
+ISOLATED CONSUMER REHEARSAL
+python -m hub validate-package data/usgs/rehearsals/spiderweb-native-v1
+Expected: VALID; 3 sources and 92 observations; 0 collisions; test mode only.
+The rehearsal is NONCANONICAL and not registered for live consumption.
+Latest local scope: 1712 passed, 17 skipped; coverage 88.83% (floor 88%).
+Audited source: cbaa7d0c25c81b650e3a6354c0cd5631c39cbeb0.
+Historical validation statements above retain their earlier scope.

@@ -1,0 +1,33 @@
+{
+  "contract": "prii.usgs-isolated-consumer-rehearsal/v1",
+  "state": "PASS",
+  "scope": "One test package into an isolated Hub aggregate; no live registry or production aggregate changes",
+  "hub_code_commit": "cbaa7d0c25c81b650e3a6354c0cd5631c39cbeb0",
+  "streams": {
+    "observations": 92,
+    "sources": 3
+  },
+  "collisions": 0,
+  "membership": {
+    "sources": {
+      "intersection": 3,
+      "a_only": 0,
+      "b_only": 0,
+      "union": 3,
+      "symmetric_difference": 0
+    },
+    "observations": {
+      "intersection": 92,
+      "a_only": 0,
+      "b_only": 0,
+      "union": 92,
+      "symmetric_difference": 0
+    }
+  },
+  "source_package_unchanged": true,
+  "production_registry_unchanged": true,
+  "mode": "test",
+  "classification": "NONCANONICAL",
+  "activation_state": "BLOCKED",
+  "activated": 0
+}

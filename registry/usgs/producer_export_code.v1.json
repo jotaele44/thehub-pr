@@ -6,8 +6,8 @@
   "pull_request": "https://github.com/jotaele44/spiderweb-pr/pull/419",
   "mode": "test",
   "scope": "Existing Spiderweb canonical writer plus producer-owned source-native adapter; production and activation BLOCKED",
-  "release_commit": "f1bbf65782a067351757ab060a53fd729555697a",
-  "release_tree": "5a271bbc33584371806b0a0f0be0e8b1b943661d",
+  "release_commit": "4e740940d7c4f38ebbd53512447dd5bcfa15679f",
+  "release_tree": "8daef4be6e9c6bdda4a907d53da471b3ec965d6a",
   "executed_code_sha256": {
     "federation/usgs_native_reference.py": "9365286aae1a383ae4649b724d56e5678af0fbe001a8fbdd0f88cadd85094b63",
     "scripts/export_usgs_native.py": "ef754f1aa895d6ac6476d2eeb0672f632ce39c7b63b5fb85607de9aef03a2f3a",

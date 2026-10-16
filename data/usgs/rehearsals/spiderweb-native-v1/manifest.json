@@ -1,0 +1,27 @@
+{
+  "created_at": "2026-10-16T06:08:37.688890+00:00",
+  "export_contract_version": "1.0.0",
+  "federation": {
+    "hub_parent": "thehub-pr",
+    "producer_repo": "thehub-pr-usgs-isolated-rehearsal"
+  },
+  "files": [
+    {
+      "filename": "sources.jsonl",
+      "record_count": 3,
+      "schema_id": "federation_source.schema.json",
+      "sha256": "a234e0835b6fea946ae631216bfcadc69db558dd2bc48b3cbbce8b38d94fdf68",
+      "stream": "sources"
+    },
+    {
+      "filename": "observations.jsonl",
+      "record_count": 92,
+      "schema_id": "federation_observation.schema.json",
+      "sha256": "b907a7dd4b02c22af00648fb2b9517b91caf7a67a6d45ef0632ee349f60c877c",
+      "stream": "observations"
+    }
+  ],
+  "mode": "test",
+  "package_id": "pkg_640b67ea75a8d7c292db8de158541938",
+  "producer": "thehub-pr-usgs-isolated-rehearsal"
+}

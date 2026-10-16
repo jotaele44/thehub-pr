@@ -214,3 +214,20 @@ USGS CI job independently validated the frozen fixture export against pinned
 Hub schemas. A documentation reference failure was corrected without changing
 source bytes or weakening checks. Exact release-head CI is tracked separately.
 These results establish the bounded test export, not production certification.
+
+An isolated consumer rehearsal now also passes: the existing Hub aggregator
+retains all 3 sources and 92 observations with zero collisions, adding only its
+`_producers` provenance. Whole source rows and memberships are conserved. The
+original test package and production producer registry remain byte-identical.
+Rehearsal outputs under `data/usgs/rehearsals/spiderweb-native-v1` are explicitly
+NONCANONICAL/test-only, and include their own root `TERMINAL_READY.txt`. No live
+consumer activation was performed. The receipt is
+`registry/usgs/consumer_rehearsal.v1.json`.
+
+The full local coverage run passes: 1,712 tests, 17 skipped, 88.83% coverage
+against the unchanged 88% minimum. 18 catalog/adjacent GIS UI tests, lint and
+frontend build pass. The final catalog status regression also passes.
+Producer command compatibility metadata was updated when CI required its
+additive federation-manifest change to carry a compatibility receipt; no gate
+was removed or weakened. The Hub source audit pin now identifies
+`cbaa7d0c25c81b650e3a6354c0cd5631c39cbeb0`.
