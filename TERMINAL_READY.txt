@@ -28,8 +28,19 @@ python federation/spatial/materialize_pr_grid_v2_profiles.py --pin federation/sp
 Use the consumer's pinned default level. The binding receipt must contain
 Grid_Manifest_SHA256, Binding_Output_SHA256, Binding_Output_Bytes and denominator.
 Only Spiderweb may create record-to-cell spatial bindings. Producer profile input
-contains record metadata, not geometry. V1/provisional/uncertain records remain
-unmigrated until a separate evidence-authorized vector.
+contains record metadata, not geometry.
+
+Exact profile admission is limited to Spiderweb-certified bindings with:
+- Uncertainty_Class=EXACT
+- Binding_Method=COVERS
+- Binding_Method=INTERSECTS_POSITIVE_AREA with positive Overlap_Area_m2 and
+  Cell_Coverage_Fraction in (0,1]
+- Binding_Method=LINE_POSITIVE_LENGTH with positive Length_In_Cell_m
+
+ADMINISTRATIVE_SET, DERIVED_SET, APPROXIMATE, INFERRED, UNKNOWN, and other
+non-exact bindings must fail closed and cannot enter exact Cell_Profile counts.
+V1/provisional/uncertain records remain unmigrated until a separate
+evidence-authorized profile vector.
 ZERO_RECORDS requires verified per-cell coverage evidence; otherwise NO_DATA.
 
 GRID HANDOFF (TheHub FastAPI)
@@ -50,3 +61,17 @@ Match the pinned Grid_Manifest_SHA256:
 8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4
 No schema hash may change without reviewed freeze-manifest update.
 Any gate failure BLOCKS certification and consumer activation.
+
+
+EXACT-GEOMETRY PROFILE GATE
+python -m pytest -q tests/test_grid_v2_profiles.py
+
+Expected:
+- COVERS exact point rows remain accepted.
+- INTERSECTS_POSITIVE_AREA exact polygon rows are accepted only with positive
+  area and valid positive cell coverage fraction.
+- LINE_POSITIVE_LENGTH exact line rows are accepted only with positive in-cell
+  length.
+- ADMINISTRATIVE_SET and DERIVED_SET remain excluded from exact profiles.
+- Migration_Class=SPIDERWEB_CERTIFIED_EXACT_BINDINGS.
+- Geometry_Included=false for every profile.
