@@ -33,7 +33,7 @@ describe("Federation recovered cross-cutting parity matrix", () => {
   it("never converts missing historical database dumps into zero-row PASS", () => {
     const result = evaluateFederationRecoveryParity();
     expect(result.historicalRowsRecovered).toBeFalse();
-    expect(FEDERATION_RECOVERY_PARITY_ROWS.filter(row => row.historicalRows === "UNAVAILABLE_NO_DUMP").length).toBe(6);
+    expect(FEDERATION_RECOVERY_PARITY_ROWS.filter(row => row.historicalRows === "UNAVAILABLE_NO_DUMP").map(row => row.app)).toEqual(["Centinelas"]);\n    expect(FEDERATION_RECOVERY_PARITY_ROWS.filter(row => row.historicalRows === "NOT_PROVEN").length).toBe(5);
   });
 
   it("keeps authoritative acquisition separate from source-contract parity", () => {
