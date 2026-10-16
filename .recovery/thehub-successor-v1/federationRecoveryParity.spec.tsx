@@ -46,7 +46,7 @@ describe("Federation recovered cross-cutting parity matrix", () => {
   it("keeps rendered closure open until all seven have desktop 393 and 430 evidence", () => {
     const result = evaluateFederationRecoveryParity();
     expect(result.renderedClosed).toBeFalse();
-    expect(FEDERATION_RECOVERY_PARITY_ROWS.filter(row => row.renderedDesktop393430 === "PASS").map(row => row.app)).toEqual(["Spiderweb"]);
+    expect(FEDERATION_RECOVERY_PARITY_ROWS.filter(row => row.renderedDesktop393430 === "PASS").map(row => row.app)).toEqual(["Spiderweb", "MoneySweep"]);
   });
 
   it("keeps infrastructure migration closed while rendered or acquisition residue remains", () => {
