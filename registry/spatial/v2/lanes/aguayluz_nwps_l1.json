@@ -1,7 +1,7 @@
 {
   "Schema_Version": "pr-grid-v2-domain-lane/1.0",
   "Lane_ID": "AGUAYLUZ_NWPS_L1_V2",
-  "State": "CANDIDATE_EXECUTION",
+  "State": "FROZEN_CANDIDATE_RECEIPT",
   "Producer": "aguayluz-pr",
   "Domain": "water_hydrology",
   "Grid_Level": "L1",
@@ -29,5 +29,45 @@
   "Geometry_Producer": "spiderweb-pr",
   "Consumer_Geometry_Mode": "REFERENCE_ONLY",
   "Expected_Output_State": "CANDIDATE_NOT_CANONICAL",
-  "Promotion_Note": "First execution freezes observed hashes/counts. This lane may emit HAS_RECORDS profiles only; cells without binding evidence remain NO_DATA."
+  "Promotion_Note": "Frozen first execution receipt. Subsequent runs must reproduce exact source/output hashes and denominators. This remains CANDIDATE_NOT_CANONICAL; no coverage manifest means ZERO_RECORDS remains forbidden and unrepresented cells remain NO_DATA.",
+  "Observed": {
+    "Workflow_Run_ID": 38845905858,
+    "Artifact_ID": 12023445909,
+    "Artifact_Digest": "sha256:f9f32ba2a23c53faa551f6107af07ec47f3784ef480457b73daaa4561b376d0f",
+    "Source_SHA256": "45bf01c4739270e917341d065c318dc8c96a27fb07d8bdf807325d630720dd0b",
+    "Source_Bytes": 176640,
+    "Source_Manifestation_ID": "HYDROMET:nwps_gauges:e972f54bc3fab5f3f9472a54ed3dc5d3",
+    "Source_Record_Count": 118,
+    "Source_Binding_Input_SHA256": "22f3652eeb1384bc59ffc535d9a395ed4922c70d8a2730e01718ded1be52cb6b",
+    "Source_Binding_Input_Bytes": 54001,
+    "Profile_Records_SHA256": "ac1184638163f06dd079c149e13d3c787a077bfb8c2f7c4d916829c76e31c3d7",
+    "Profile_Records_Bytes": 44827,
+    "Binding_Row_Count": 118,
+    "Binding_Output_SHA256": "28e7bf992b1cf905208d9365d6da1a205041dac9ab4cbac347642aea88a65608",
+    "Binding_Output_Bytes": 57702,
+    "Projection_Audit_Row_Count": 118,
+    "Projection_Output_SHA256": "fdc03200364152d268df694fd9ddb8119e1716603e701688a4e3a38d2d990871",
+    "Projection_Output_Bytes": 107597,
+    "Binding_State_Counts": {
+      "INTERIOR": 118
+    },
+    "Boundary_Snap_Record_Count": 0,
+    "Profile_Count": 111,
+    "Profile_Output_SHA256": "ec691cbbf976780064182c063968cf674cde330cd9d8f7de5d2548e97e136cb9",
+    "Profile_Output_Bytes": 114305,
+    "Profile_Data_State_Counts": {
+      "HAS_RECORDS": 111
+    },
+    "Profile_Record_Count_Sum": 118,
+    "Profile_Record_Count_Distribution": {
+      "1": 105,
+      "2": 5,
+      "3": 1
+    },
+    "Multi_Record_Cell_Count": 6,
+    "Max_Records_Per_Cell": 3,
+    "Coverage_Manifest_SHA256": null,
+    "Geometry_Copied": false,
+    "Candidate_State": "CANDIDATE_NOT_CANONICAL"
+  }
 }
