@@ -153,3 +153,8 @@ FAILURE / CERTIFICATION:
   The 82 source checksum disagreements are quarantined, cause UNRESOLVED.
   Source-declared files total 1,388,684,784,993 bytes; bounded acquisition is
   256 MiB. 593 byte passes do not imply semantic or spatial readiness.
+
+AUDITED SOURCE: a96c7bf64805d784af579410a800dda304bac282
+Local checks: 85 Python tests (53 integration + 32 comparator), Ruff/mypy,
+2 UI tests, frontend build, 3 catalog browser viewport tests pass.
+Browser is Chromium 153; physical iOS and full scientific gates unverified.

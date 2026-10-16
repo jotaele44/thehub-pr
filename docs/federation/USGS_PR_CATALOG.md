@@ -144,3 +144,11 @@ staging-level copy. Historical build hashes are preserved separately.
 The inherited dual-run comparator also received a local-variable rename to
 resolve five mypy errors across text, set and numeric branches; behavior is
 unchanged and its existing readiness tests were rerun.
+
+Final local checks: 53 USGS/adjacent API tests plus 32 dual-run readiness
+tests pass, mypy passes across 99 source files, repository Ruff passes, two
+catalog UI tests and frontend build pass. Catalog navigation/search/filter
+passes in three Chromium 153 viewport projects. Static GUI parity reports
+1,428 current symbols, 255 mapped, 1,173 unchanged legacy symbols, zero new
+residue; the broader contract audit reports PASS with zero material findings.
+The source audit pin is `a96c7bf64805d784af579410a800dda304bac282`.
