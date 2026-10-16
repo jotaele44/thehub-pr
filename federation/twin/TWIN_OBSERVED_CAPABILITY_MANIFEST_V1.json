@@ -2209,7 +2209,7 @@
         "server/frontend/src/gis/liveProviders.test.js",
         "server/frontend/tests/visual/gui-parity.spec.js"
       ],
-      "notes": "Run 2 (Phase 5, P5-B): The bound DEM is NOAA NCEI CUDEM Puerto Rico 1/9″ topobathy (m9525, 2022), chosen because NOAA's metadata declares one vertical datum across it (PRVD02, EPSG:6641; horizontal NAD83), which the 3D source gate requires. It integrates lidar sources, but USGS 3DEP itself is not bound. Live invariant (2026-10-05): GNIS 1609905 Cerro de Punta summit reads 1322.7 m PRVD02; (-66.9, 18.6) offshore reads -955.1 m.",
+      "notes": "Run 2 (Phase 5, P5-B): The bound DEM is NOAA NCEI CUDEM Puerto Rico 1/9″ topobathy (m9525, 2022), chosen because NOAA's metadata declares one vertical datum across it (PRVD02, EPSG:6641; horizontal NAD83), which the 3D source gate requires. It integrates lidar sources, but USGS 3DEP itself is not bound. Live invariant (2026-10-05): GNIS 1609905 Cerro de Punta summit reads 1322.7 m PRVD02; (-66.9, 18.6) offshore reads -955.1 m. P5-C: the heights are placed on the ellipsoid with GEOID18 (live check 2026-10-07: the bilinear grid is within 0.0125 m of NGS's own service at six points).",
       "live_bundle_corroboration": null
     },
     {
@@ -2824,9 +2824,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/interpretive.test.js",
+        "server/frontend/src/components/gis/InterpretiveLayers.test.jsx",
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-C): The MODELLED — not observed geometry group exists at /gis?view=interpretive-layers and takes only records whose producer declared the INTERPRETIVE class. The committed store holds none (0 of 542 drawable records; the 313 COMPUTED alerts are threshold alerts, not models), and Spiderweb's committed subsurface models are test fixtures, so nothing is modelled and the group says why. The structure is delivered; its content waits on an exported model.",
       "live_bundle_corroboration": null
     },
     {
@@ -2852,9 +2858,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "MODELLED SUBSURFACE GEOMETRY ≠ OBSERVED VOID.",
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/interpretive.test.js",
+        "server/frontend/src/components/gis/InterpretiveLayers.test.jsx",
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-C): MODELLED SUBSURFACE GEOMETRY ≠ OBSERVED VOID. A reported or modelled void would appear only in the MODELLED group, with its own swatch, colour and a paint expression switched on the group for every circle property; tests pin that it cannot inherit the documented style. No producer exports a reported void yet.",
       "live_bundle_corroboration": null
     },
     {
@@ -2880,9 +2892,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/interpretive.test.js",
+        "server/frontend/src/components/gis/InterpretiveLayers.test.jsx",
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-C): A terrain profile along a drawn line: CUDEM heights on one named datum (PRVD02), up to 200 great-circle samples, no-data samples kept as gaps (never zero), the documented layers the line crosses, a CSV download, and the statement \"No subsurface model supplied — nothing is drawn below the surface.\" Depths below the surface need a supplied model with a vertical datum; none is supplied.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -2921,7 +2939,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5, P5-C): No Hub finding or underground record exists to derive a model from (0 finding rows; no record declares the INTERPRETIVE class). A derived model would be MODELLED and would enter through that group once a producer exports it.",
       "live_bundle_corroboration": null
     },
     {
@@ -3025,7 +3043,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5, P5-C): An anchor-derived layer needs recorded anchors and a defined derivation; none is recorded, and the Hub derives nothing. It would be MODELLED, never documented.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -5472,9 +5490,10 @@
         "server/frontend/src/gis/cudem.test.js",
         "server/frontend/src/gis/cudemTerrainProvider.test.js",
         "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
-        "server/frontend/src/gis/liveProviders.test.js"
+        "server/frontend/src/gis/liveProviders.test.js",
+        "server/frontend/src/gis/geoid.test.js"
       ],
-      "notes": "Run 2 (Phase 5, P5-B): The Digital Twin's Details panel names the DEM (dataset, NOAA metadata, citation), its vertical datum PRVD02 (EPSG:6641) and horizontal NAD83, its 1/9″ resolution, the CUDEM tiles that supplied heights, and two height caveats (no geoid model is applied to 3D heights; NAD83 is used as WGS84). The Property Map uses no elevation model and says so.",
+      "notes": "Run 2 (Phase 5, P5-B and P5-C): The Digital Twin's Details panel names the DEM (dataset, NOAA metadata, citation), its vertical datum PRVD02 (EPSG:6641) and horizontal NAD83, its 1/9″ resolution, the CUDEM tiles that supplied heights, and the geoid: NOAA NGS GEOID18 is applied to the 3D heights (h = H + N), or the panel states why it is not. Each elevation readout gives the PRVD02 height and, beside it, the ellipsoidal height with its own datum; NAD83 is used as WGS84 without a transformation (about 1-2 m), stated. The Property Map uses no elevation model and says so.",
       "live_bundle_corroboration": {
         "file": "assets/Map-iZc0VAQO.js",
         "label": "DEM: "
@@ -5535,9 +5554,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Run 2 (Phase 5): deferred to P5-C (interpretive layers): no producer exports an underground category or subsurface geometry yet.",
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/interpretive.test.js",
+        "server/frontend/src/components/gis/InterpretiveLayers.test.jsx",
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-C): Documented karst (SIGE sumideros), aquifer (acuíferos) and watershed (cuencas) layers load on request through the source registry with their gates, counts and hashes, and Hub-held USGS mineral occurrences are drawn at their declared precision. No producer exports an underground category, so no Hub record is categorised underground. sige.pr.gov returned 502 Bad Gateway for these Geologia layers in the live-provider CI runs of 2026-10-06; the view shows the provider's failure verbatim and draws nothing for a layer that did not load.",
       "live_bundle_corroboration": null
     },
     {
@@ -5898,9 +5923,10 @@
         "server/frontend/src/gis/cudem.test.js",
         "server/frontend/src/gis/cudemTerrainProvider.test.js",
         "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
-        "server/frontend/src/gis/liveProviders.test.js"
+        "server/frontend/src/gis/liveProviders.test.js",
+        "server/frontend/src/gis/geoid.test.js"
       ],
-      "notes": "Run 2 (Phase 5, P5-B): CUDEM terrain is bound only because certifyAdvanced3dSource returns READY_FOR_RUNTIME_BINDING for its UNIFORM_BOUND registry entry; the gate is unchanged and mixed-datum sources stay fail-closed. Heights are read in the browser from NOAA's 26 cloud-optimized GeoTIFF tiles by byte range.",
+      "notes": "Run 2 (Phase 5, P5-B): CUDEM terrain is bound only because certifyAdvanced3dSource returns READY_FOR_RUNTIME_BINDING for its UNIFORM_BOUND registry entry; the gate is unchanged and mixed-datum sources stay fail-closed. Heights are read in the browser from NOAA's 26 cloud-optimized GeoTIFF tiles by byte range. P5-C: the terrain is placed on the ellipsoid through NOAA NGS GEOID18 (the PROJ-data mirror), only while the terrain's datum is the geoid's orthometric datum; the sea surface follows the geoid, and outside the grid nothing is extrapolated.",
       "live_bundle_corroboration": null
     },
     {
@@ -6750,7 +6776,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5, P5-C): No Underground Structures topic is recorded: the OVNIS research ledgers are empty. The Research Hub shows topics as curators record them.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -6831,7 +6857,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5, P5-C): No finding supports a subsurface void: the store holds 0 finding rows. Spiderweb's svt_contract states the non-promotion bases a void claim must respect.",
       "live_bundle_corroboration": null
     },
     {
@@ -7153,7 +7179,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5, P5-C): The event timeline's categories come from recorded object types, and no recorded type is an underground category, so there is no filter to offer.",
       "live_bundle_corroboration": null
     },
     {
@@ -8411,11 +8437,11 @@
     "by_delivery_state": {
       "ALREADY_PRESENT": 14,
       "BLOCKED": 4,
-      "DEFERRED": 112,
+      "DEFERRED": 108,
       "IMPLEMENTED_RUN_2": 57,
       "IMPLEMENTED_THIS_RUN": 16,
       "NOT_APPLICABLE": 5,
-      "PARTIAL_RUN_2": 10,
+      "PARTIAL_RUN_2": 14,
       "PARTIAL_THIS_RUN": 5
     },
     "census_closed": true

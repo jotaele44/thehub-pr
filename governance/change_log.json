@@ -45,6 +45,42 @@
         "tests/test_check_docs_sync.py",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-10-12",
+      "summary": "Added tools/require_docs_sync.py for ADR 0010 rollout step 3: run by a repository administrator, it marks docs-sync a required status check on main in each federation repo (appending it to an existing ruleset or branch protection, otherwise creating a ruleset that requires only docs-sync), skips a repo with no docs-sync workflow on main, and holds aguayluz-pr, whose refresh.yml pushes straight to main. Re-audited main's rulesets and branch protection across all seven repos, now including each repo's required checks, in governance/merge_blocking_status.json. Tooling and governance-record change only: no contract, schema or dependency edge changed, and no repository setting was changed by this commit.",
+      "files": [
+        "tools/require_docs_sync.py",
+        "tests/test_require_docs_sync.py",
+        "governance/merge_blocking_status.json",
+        "docs/FEDERATION_STATUS.md",
+        "docs/adr/0010-change-coupled-documentation-gate.md",
+        "federation-templates/README.md",
+        "governance/change_log.json"
+      ]
+    },
+    {
+      "date": "2026-10-12",
+      "summary": "Hardened the shared documentation gate (thehub-pr ADR 0010) after review of its first rollout. A pull request can no longer exempt itself: exempt_authors counts only when the base manifest already lists the author. Manifest hygiene is judged on the head manifest, so retiring a coupling together with its last covered file, or renaming a coupled doc and repointing the coupling, no longer fails, while the base's couplings and mode still bind the change. A renamed doc counts as updated and keeps its history for the reference ratchet and the dead-glob check. A glob that matches nothing now fails when the change adds it and only warns when it was already there. A path:symbol or :line locator is dropped from Markdown link targets as well as inline code. The CONTRIBUTING.md section now states the coupling's on events, the reference check's scope (root Markdown and docs/**) and the new glob rule, and no longer lists .pre-commit-config.yaml as rendered for repositories that keep their own. Tooling and documentation change only: no contract, schema or dependency edge changed.",
+      "files": [
+        "federation-templates/baseline/check_docs_sync.py",
+        "federation-templates/baseline/CONTRIBUTING.md",
+        "tools/check_docs_sync.py",
+        "CONTRIBUTING.md",
+        "tests/test_check_docs_sync.py",
+        "docs/adr/0010-change-coupled-documentation-gate.md",
+        "governance/change_log.json"
+      ]
+    },
+    {
+      "date": "2026-10-12",
+      "summary": "Held centinelas-pr in tools/require_docs_sync.py. It adopted the docs-sync gate (its PR #166) after the tool was written, and signal-ledger-refresh.yml, just-security-monitor.yml and el-yunque-access-monitor.yml push scheduled data commits straight to main, which a required check would reject. Updated the docs_sync_gate record in governance/merge_blocking_status.json and Part 10 of docs/FEDERATION_STATUS.md to match. No repository setting was changed.",
+      "files": [
+        "tools/require_docs_sync.py",
+        "governance/merge_blocking_status.json",
+        "docs/FEDERATION_STATUS.md",
+        "governance/change_log.json"
+      ]
     }
   ]
 }

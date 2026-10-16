@@ -44,7 +44,7 @@ describe('CUDEM manifest', () => {
 
   it('declares one vertical datum and states the height caveats', () => {
     expect(CUDEM_PR.verticalDatum).toMatch(/PRVD02, EPSG:6641/);
-    expect(CUDEM_PR.heightCaveats.join(' ')).toMatch(/geoid separation/);
+    expect(CUDEM_PR.heightCaveats.join(' ')).toMatch(/gravity-related, orthometric/);
     expect(CUDEM_PR.heightCaveats.join(' ')).toMatch(/without a horizontal transformation/);
   });
 

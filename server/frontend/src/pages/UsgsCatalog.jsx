@@ -37,11 +37,13 @@ export default function UsgsCatalog() {
         <pre className="overflow-auto text-xs">{JSON.stringify(data.acquisition_summary, null, 2)}</pre>
       </details>
       <div className="flex flex-wrap gap-3">
-        <label>Search releases<input className="ml-2 rounded border bg-background p-2" value={query} onChange={(e) => setQuery(e.target.value)} /></label>
-        <label>Consumer<select className="ml-2 rounded border bg-background p-2" value={program} onChange={(e) => setProgram(e.target.value)}>
+        <label htmlFor="usgs-release-search">Search releases</label>
+        <input id="usgs-release-search" className="rounded border bg-background p-2" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <label htmlFor="usgs-consumer-filter">Consumer</label>
+        <select id="usgs-consumer-filter" className="rounded border bg-background p-2" value={program} onChange={(e) => setProgram(e.target.value)}>
           <option value="">All consumers</option>
           {data.repositories.map((r) => <option key={r.program_id} value={r.program_id}>{r.program_id}</option>)}
-        </select></label>
+        </select>
       </div>
       <p role="status">{rows.length} releases shown</p>
       <div className="space-y-3">{rows.map((row) => <article key={row.sciencebase_id} className="rounded border p-4 space-y-2">

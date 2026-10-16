@@ -236,6 +236,25 @@ def test_relative_links_resolve_against_the_docs_own_directory():
     assert refs == {"README.md", "docs/other.md"}
 
 
+def test_a_root_level_link_target_with_a_locator_is_skipped_not_guessed_at():
+    # `README.md:42` has the shape of a URI scheme, so it is left alone (no false alarm),
+    # while the same target with a directory in front is unambiguous and is checked.
+    doc = "[a](README.md:42) [b](mailto:a@b.c) [c](skype:echo123) [d](docs/guide.md:42)"
+    assert mod.extract_refs("README.md", doc, {"docs"}) == {"docs/guide.md"}
+
+
+def test_a_locator_on_a_link_target_is_not_part_of_the_path():
+    doc = (
+        "[a](server/app.py:main) [b](server/app.py:42) [c](tests/test_x.py::test_y#frag) "
+        "[d](docs/guide.md) [e](https://example.com:8080/x)"
+    )
+    assert mod.extract_refs("README.md", doc, {"server", "tests", "docs"}) == {
+        "server/app.py",
+        "tests/test_x.py",
+        "docs/guide.md",
+    }
+
+
 def test_manifest_reports_every_problem_at_once():
     text = json.dumps(
         {
@@ -446,6 +465,16 @@ def test_a_symbol_locator_neither_hides_a_missing_path_nor_invents_one(tmp_path,
     assert "'server/gone.py', which does not exist" in out
     assert "server/gone.py:main" not in out
 
+    # The same holds inside a Markdown link target, where the locator used to stick.
+    repo.write(
+        "docs/guide.md", GUIDE + "[entry](../server/app.py:main) [gone](../server/gone.py:12)\n"
+    )
+    repo.commit("name them as link targets")
+    code, out = run(capsys, repo, "--base", base)
+    assert code == 1
+    assert "'server/gone.py', which does not exist" in out
+    assert "server/gone.py:12" not in out and "app.py" not in out
+
 
 def test_deleting_a_documented_file_forces_the_doc_edit(tmp_path, capsys):
     repo, base = make_repo(tmp_path)
@@ -523,6 +552,127 @@ def test_removing_the_last_file_a_glob_matched_is_a_violation_but_a_dead_glob_on
     assert code == 0 and "'nothing/**' (covered by docs/guide.md) matches no files" in out
 
 
+DEAD = {"doc": "docs/guide.md", "covers": ["nothing/**"], "why": "matches nothing yet"}
+
+
+def test_a_dead_glob_this_change_adds_is_a_violation(tmp_path, capsys):
+    repo, base = make_repo(tmp_path)
+    repo.set_manifest(with_coupling(DEAD))
+    repo.commit("add a coupling whose glob matches nothing")
+    code, out = run(capsys, repo, "--base", base)
+    assert code == 1
+    assert "'nothing/**' (covered by docs/guide.md) matches no files, and this change" in out
+    assert "this change added it" in out
+
+    # Adding a pattern to a coupling that already exists is just as much this change's doing.
+    repo2, base2 = make_repo(tmp_path / "grown", with_coupling(DEAD))
+    grown = {**DEAD, "covers": ["nothing/**", "also-nothing/**"]}
+    repo2.set_manifest(with_coupling(grown))
+    repo2.commit("grow the dead coupling")
+    code, out = run(capsys, repo2, "--base", base2)
+    assert code == 1 and "1 violation(s), 1 warning(s)" in out
+    assert "ERROR [manifest] 'also-nothing/**'" in out and "this change added it" in out
+    assert "WARN [manifest] 'nothing/**'" in out  # the old dead glob stays a warning
+
+
+def test_adopting_a_manifest_with_a_dead_glob_fails(tmp_path, capsys):
+    repo, _ = make_repo(tmp_path)
+    repo.git("rm", "-q", ".federation/docs-sync.json")
+    base = repo.commit("no manifest yet")
+    repo.set_manifest(with_coupling(DEAD))
+    repo.commit("adopt the gate")
+    code, out = run(capsys, repo, "--base", base)
+    assert code == 1 and "'nothing/**'" in out and "this change added it" in out
+
+
+def test_without_a_usable_base_a_dead_glob_only_warns(tmp_path, capsys):
+    # --validate has nothing to compare with, and a base manifest that does not parse
+    # must not turn every old dead glob into something the change has to fix.
+    repo, _ = make_repo(tmp_path, with_coupling(DEAD))
+    code, out = run(capsys, repo, "--validate")
+    assert code == 0 and "'nothing/**' (covered by docs/guide.md) matches no files" in out
+
+    repo2, _ = make_repo(tmp_path / "broken")
+    repo2.write(".federation/docs-sync.json", "{not json")
+    base = repo2.commit("a broken manifest")
+    repo2.set_manifest(with_coupling(DEAD))
+    repo2.commit("repair it, dead glob and all")
+    code, out = run(capsys, repo2, "--base", base)
+    assert code == 0 and "matches no files" in out and "this change added it" not in out
+
+
+def test_retiring_a_coupling_with_its_last_covered_file_passes_when_the_doc_is_updated(
+    tmp_path, capsys
+):
+    coupling = {"doc": "docs/guide.md", "covers": ["config/**"], "why": "guide documents config"}
+    repo, base = make_repo(tmp_path, with_coupling(coupling))
+    repo.git("rm", "-q", "config/settings.toml")
+    repo.write("docs/guide.md", "Guide without any config.\n")
+    repo.set_manifest(MANIFEST)  # the coupling is retired in the same change
+    repo.commit("retire the config docs together with their coupling")
+    code, out = run(capsys, repo, "--base", base)
+    assert code == 0, out
+
+    # ...but dropping the coupling does not excuse leaving the doc alone.
+    repo2, base2 = make_repo(tmp_path / "quiet", with_coupling(coupling))
+    repo2.git("rm", "-q", "config/settings.toml")
+    repo2.set_manifest(MANIFEST)
+    repo2.commit("retire the coupling and say nothing to the doc")
+    code, out = run(capsys, repo2, "--base", base2)
+    assert code == 1 and "docs/guide.md was not updated" in out
+
+
+def test_renaming_a_coupled_doc_and_repointing_its_coupling_passes(tmp_path, capsys):
+    coupling = {"doc": "docs/guide.md", "covers": ["config/**"], "why": "guide documents config"}
+    repo, base = make_repo(tmp_path, with_coupling(coupling))
+    repo.git("mv", "docs/guide.md", "docs/handbook.md")
+    repo.write("README.md", README.replace("docs/guide.md", "docs/handbook.md"))
+    repo.set_manifest(with_coupling({**coupling, "doc": "docs/handbook.md"}))
+    repo.commit("rename the guide and repoint its coupling")
+    code, out = run(capsys, repo, "--base", base)
+    assert code == 0, out
+
+    # A covered path changing in the same change is answered by the renamed doc.
+    repo.write("config/extra.toml", "b = 2\n")
+    repo.commit("add config in the same range")
+    code, out = run(capsys, repo, "--base", base)
+    assert code == 0, out
+
+
+def test_renaming_a_doc_keeps_its_old_dangling_references_and_dead_globs_old(tmp_path, capsys):
+    # The ratchet compares a renamed doc with itself under its old name, so a stale
+    # reference it already had is not newly broken by the move...
+    repo, _ = make_repo(tmp_path)
+    repo.write("docs/guide.md", GUIDE + "Old: `config/missing.toml`.\n")
+    base = repo.commit("guide already has a stale reference")
+    repo.git("mv", "docs/guide.md", "docs/handbook.md")
+    repo.write("README.md", README.replace("docs/guide.md", "docs/handbook.md"))
+    repo.commit("rename the guide")
+    code, out = run(capsys, repo, "--base", base)
+    assert code == 0, out
+
+    # ...and a dead glob its coupling already had does not become this change's own.
+    old_coupling = {**DEAD, "doc": "docs/guide.md"}
+    repo2, base2 = make_repo(tmp_path / "glob", with_coupling(old_coupling))
+    repo2.git("mv", "docs/guide.md", "docs/handbook.md")
+    repo2.write("README.md", README.replace("docs/guide.md", "docs/handbook.md"))
+    repo2.set_manifest(with_coupling({**old_coupling, "doc": "docs/handbook.md"}))
+    repo2.commit("rename the doc that carries an old dead glob")
+    code, out = run(capsys, repo2, "--base", base2)
+    assert code == 0 and "WARN [manifest] 'nothing/**'" in out
+    assert "this change added it" not in out
+
+
+def test_a_coupling_that_stays_in_the_manifest_still_needs_its_doc_to_exist(tmp_path, capsys):
+    coupling = {"doc": "docs/guide.md", "covers": ["config/**"], "why": "guide documents config"}
+    repo, base = make_repo(tmp_path, with_coupling(coupling))
+    repo.git("mv", "docs/guide.md", "docs/handbook.md")
+    repo.write("README.md", README.replace("docs/guide.md", "docs/handbook.md"))
+    repo.commit("rename the guide and forget the manifest")
+    code, out = run(capsys, repo, "--base", base)
+    assert code == 1 and "coupling doc 'docs/guide.md' does not exist" in out
+
+
 def test_a_pr_cannot_pass_by_deleting_its_own_coupling(tmp_path, capsys):
     repo, base = make_repo(tmp_path)
     repo.set_manifest({**MANIFEST, "couplings": []})
@@ -555,6 +705,22 @@ def test_automated_authors_are_skipped(tmp_path, capsys):
         code, out = run(capsys, repo, "--base", base, "--author", author)
         assert code == 0 and "skipped" in out
     assert run(capsys, repo, "--base", base, "--author", "a-human")[0] == 1
+
+
+def test_a_pr_cannot_exempt_itself_by_naming_its_own_author(tmp_path, capsys):
+    repo, base = make_repo(tmp_path)
+    repo.set_manifest({**MANIFEST, "exempt_authors": ["mallory"]})
+    _add_route(repo, "add routes and exempt myself")
+    code, out = run(capsys, repo, "--base", base, "--author", "mallory")
+    assert code == 1 and "README.md was not updated" in out and "skipped" not in out
+
+
+def test_an_author_the_base_manifest_already_exempts_is_skipped(tmp_path, capsys):
+    repo, base = make_repo(tmp_path, {**MANIFEST, "exempt_authors": ["release-bot"]})
+    _add_route(repo, "bump something")
+    code, out = run(capsys, repo, "--base", base, "--author", "release-bot")
+    assert code == 0 and "exempt in the base manifest" in out
+    assert run(capsys, repo, "--base", base, "--author", "someone-else")[0] == 1
 
 
 def test_configuration_errors_exit_2_not_1(tmp_path, capsys):

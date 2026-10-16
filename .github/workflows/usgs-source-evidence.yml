@@ -1,0 +1,50 @@
+name: USGS source evidence
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/hub/usgs_*.py"
+      - "scripts/snapshot_usgs_pr.py"
+      - "registry/usgs/pr_releases.v1.json"
+      - ".github/workflows/usgs-source-evidence.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Acquire a new bounded metadata snapshot
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, subprocess, sys
+          from pathlib import Path
+          out = Path(os.environ['RUNNER_TEMP']) / 'usgs-source-evidence'
+          proc = subprocess.run([sys.executable, 'scripts/snapshot_usgs_pr.py', '--out', str(out), '--workers', '6'])
+          if proc.returncode not in (0, 2):
+              raise SystemExit(proc.returncode)
+          summary = json.loads((out / 'summary.json').read_text())
+          (out / 'runner.json').write_text(json.dumps({
+              'run_id': os.environ['GITHUB_RUN_ID'], 'head': os.environ['GITHUB_SHA'],
+              'acquisition_exit': proc.returncode, 'payloads_activated': 0,
+              'meaning': 'Job success records an attempt; it does not certify source or payload readiness.'
+          }, indent=2) + '\n')
+          assert summary['attempted'] == 174
+          assert summary['activated'] == 0
+          PY
+      - name: Preserve metadata bytes and receipts
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: usgs-source-evidence-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/usgs-source-evidence
+          if-no-files-found: error
+          retention-days: 30
