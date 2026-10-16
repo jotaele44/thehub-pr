@@ -67,7 +67,7 @@ jobs:
             echo "baseline_tests=128"
             echo "successor_v1_tests=153"
             echo "cross_cutting_contract_parity=AUTH_ACL_DB_SCHEMA_SOURCE_PASS"
-            echo "historical_db_rows=UNAVAILABLE_NO_DUMP_PRESERVED"
+            echo "historical_db_rows=NOT_PROVEN_GLOBAL_CENTINELAS_UNAVAILABLE_NO_DUMP"
             echo "rendered_all_apps=OPEN"
             echo "authoritative_acquisition=OPEN"
             echo "infrastructure_migration=BLOCKED"
