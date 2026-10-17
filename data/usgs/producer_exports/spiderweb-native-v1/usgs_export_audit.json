@@ -1,0 +1,48 @@
+{
+  "contract": "prii.usgs-native-export-audit/v1",
+  "state": "PASS",
+  "scope": "TEST-MODE documentary export shape and exact native feature conservation only",
+  "input_manifest_sha256": "58bef13ca015e9598276cc6349fb37e6432ddd265cc771e9520a98d061b57f56",
+  "asset_count": 3,
+  "source_count": 3,
+  "feature_count": 92,
+  "coverage": [
+    {
+      "asset_id": "6516c8f9d34e5f8ef156488e:1",
+      "features_in": 51,
+      "features_out": 51,
+      "raw_sha256": "e87e71beb802db72ab763025e0f3a82c9b56721db977abdb653eafab0fffe662",
+      "raw_geometry_transformed": false,
+      "canonical_locations_emitted": 0
+    },
+    {
+      "asset_id": "6516caf3d34e5f8ef1564898:1",
+      "features_in": 6,
+      "features_out": 6,
+      "raw_sha256": "c84b261975627547ca4a6d28b57c83d928b23bd851e2273886a0aafa1929dfa0",
+      "raw_geometry_transformed": false,
+      "canonical_locations_emitted": 0
+    },
+    {
+      "asset_id": "6516cbb8d34e5f8ef156489f:1",
+      "features_in": 35,
+      "features_out": 35,
+      "raw_sha256": "ccf5a830b79abdd7b67b31c34127f82fd3fa5fed17123d50b38205af2e508ebd",
+      "raw_geometry_transformed": false,
+      "canonical_locations_emitted": 0
+    }
+  ],
+  "open_gates": [
+    "consumer_fitness",
+    "PR_coverage",
+    "geometry_CRS_Z_M",
+    "version_lineage",
+    "usage_constraints",
+    "domain_semantics"
+  ],
+  "activation_state": "BLOCKED",
+  "production_export_state": "BLOCKED",
+  "activated": 0,
+  "manifest_sha256": "231e4642a460355e8c3bb0332f9900c9bc6fa97fc4379a48db5cfab64f8efde5",
+  "producer_writer": "scripts/federation_export.py:write_package"
+}

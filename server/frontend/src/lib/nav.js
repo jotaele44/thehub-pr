@@ -54,6 +54,7 @@ export const NAV_GROUPS = [
       { label: "Operations", path: "/operations", icon: TerminalSquare },
       { label: "Cases", path: "/cases", icon: FileStack },
       { label: "Sources", path: "/sources", icon: BookOpen },
+      { label: "USGS Catalog", path: "/usgs-catalog", icon: BookOpen },
       { label: "Tasks", path: "/tasks", icon: ListChecks },
       { label: "Gates", path: "/gates", icon: ShieldCheck },
       { label: "Exports", path: "/exports", icon: Download },

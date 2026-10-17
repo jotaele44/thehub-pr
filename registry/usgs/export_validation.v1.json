@@ -1,0 +1,32 @@
+{
+  "contract": "prii.usgs-export-validation/v1",
+  "state": "PASS",
+  "scope": "Frozen TEST-MODE producer export bytes/schema/identities/native feature conservation",
+  "producer": "spiderweb-pr",
+  "manifest_sha256": "231e4642a460355e8c3bb0332f9900c9bc6fa97fc4379a48db5cfab64f8efde5",
+  "input_manifest_sha256": "58bef13ca015e9598276cc6349fb37e6432ddd265cc771e9520a98d061b57f56",
+  "asset_count": 3,
+  "inventory_file_count": 2286,
+  "sources": 3,
+  "features": 92,
+  "membership": {
+    "intersection": 92,
+    "a_only": 0,
+    "b_only": 0,
+    "union": 92,
+    "symmetric_difference": 0
+  },
+  "canonical_locations_emitted": 0,
+  "activation_state": "BLOCKED",
+  "production_export_state": "BLOCKED",
+  "activated": 0,
+  "open_gates": [
+    "consumer_fitness",
+    "PR_coverage",
+    "geometry_CRS_Z_M",
+    "version_lineage",
+    "usage_constraints",
+    "domain_semantics"
+  ],
+  "reason": "Test package validity does not close domain or production gates"
+}

@@ -1,5 +1,11 @@
 # thehub-pr — PRII Federation Hub
 
+The staged [USGS Puerto Rico catalog](docs/federation/USGS_PR_CATALOG.md) registers
+174 releases with proposed federation consumers and frozen acquisition receipts.
+Open Records → USGS Catalog to search and inspect them. Payload activation is
+blocked pending live asset verification. Root `TERMINAL_READY.txt` supplies
+installation, execution, integrity checks and scoped validation instructions.
+
 `thehub-pr` is the central control-plane and aggregation node for the Puerto Rico Integrated Intelligence (PRII) federation.
 
 The Hub does not own domain data collection. It discovers producer repositories, validates their manifests and export packages, aggregates canonical streams, and derives cross-producer relationships from normalized names, external identifiers, locations, dates, source lineage, and confidence metadata.
@@ -202,3 +208,6 @@ TheHub is the federation control plane, validation authority, evidence explorer,
 
 **Current vector:** close persisted materialization, authenticated role E2E where required, final desktop rendered evidence, hosting/publish blockers, producer-consumer receipts, and downstream release freeze. Federation certification requires frozen producer inputs, explicit inclusion/exclusion, validated IDs, closed package and ingest arithmetic, contradiction/supersession preservation, positive/negative regressions, reproducible outputs, and zero material unresolved residue within the declared federation scope.
 <!-- PROJECT-OPERATING-CONTRACT:END -->
+
+USGS frozen source review now records cross-format conflicts and blocks scientific
+staging and exact-release certification; see [catalog evidence](docs/federation/USGS_PR_CATALOG.md).

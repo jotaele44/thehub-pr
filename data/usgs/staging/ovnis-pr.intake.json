@@ -1,0 +1,36 @@
+{
+  "contract": "prii.usgs-producer-intake-staging/v1",
+  "program_id": "ovnis-pr",
+  "repository": "jotaele44/ovnis-pr",
+  "role": "anomaly_intelligence_node",
+  "repository_binding_state": "PASS",
+  "consumer_fitness_state": "OPEN",
+  "producer_contract_blob": "efcd9a1b3fd20f0e3948351ca1f6757c3bd46e7b",
+  "source_archive_sha256": "b8fed761b822c9287a6423e9ca9ad4df5d49453e57dffb727d40568873459b72",
+  "release_ids": [],
+  "candidate_assets": [],
+  "payload_states": {
+    "PASS": 0,
+    "FAIL": 0,
+    "BLOCKED": 0
+  },
+  "upstream_readiness_raw": {
+    "ready_for_hub_discovery": true,
+    "ready_for_hub_live_execution": true,
+    "blocking_conditions": []
+  },
+  "export_command_reference": "python3 scripts/federation_export.py --mode production",
+  "stage": "REFERENCE_INTAKE_ONLY",
+  "canonical_streams_emitted": false,
+  "production_export_state": "BLOCKED",
+  "activation_state": "BLOCKED",
+  "open_gates": [
+    "consumer_fitness",
+    "schema_and_units",
+    "PR_coverage",
+    "geometry_CRS_Z_M",
+    "version_lineage",
+    "usage_constraints",
+    "producer_adapter_and_contract_validation"
+  ]
+}

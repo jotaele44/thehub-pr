@@ -1,0 +1,19 @@
+{
+  "collisions": {
+    "by_stream": {},
+    "count": 0
+  },
+  "errors": {
+    "spiderweb-pr": []
+  },
+  "producers": {
+    "spiderweb-pr": {
+      "observations": 92,
+      "sources": 3
+    }
+  },
+  "streams": {
+    "observations": 92,
+    "sources": 3
+  }
+}

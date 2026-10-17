@@ -1,6 +1,28 @@
 import { test, expect } from '@playwright/test';
 import { OVNIS_YEAR_ONLY_CASE } from '../../src/test/fixtures/evidenceObject.js';
 
+test.describe('USGS catalog', () => {
+  test('navigation, search, consumer filter and blocked evidence are inspectable', async ({ page }) => {
+    const row = { sciencebase_id: '61ae5641d34eb622f69a7220', raw: { Title: 'PR karst elevation', Category: 'Puerto Rico-specific', Year: '2022', 'ScienceBase URL': 'https://www.sciencebase.gov/catalog/item/61ae5641d34eb622f69a7220' }, consumer_candidates: [{ program_id: 'spiderweb-pr' }], activation_state: 'BLOCKED', acquisition: { state: 'BLOCKED', http_status: 403 } };
+    await mockApi(page, { '/usgs/catalog': { records: [row], counts: { included: 174, excluded: 23 }, repositories: [{ program_id: 'spiderweb-pr' }, { program_id: 'aguayluz-pr' }], source: { sha256: 'a'.repeat(64) }, issues: [{ kind: 'COUNT', detail: 'Discovery count remains open', state: 'OPEN' }], catalog_state: 'PASS', payload_state: 'BLOCKED', acquisition_summary: { activated: 0 } } });
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    const menu = page.getByRole('button', { name: 'Open navigation menu' });
+    if (await menu.isVisible()) await menu.click();
+    await page.locator('nav[aria-label="Primary"]:visible').first().getByRole('link', { name: 'USGS Catalog' }).click();
+    await expect(page.getByRole('heading', { name: 'USGS Puerto Rico catalog' })).toBeVisible();
+    await expect(page.getByText('174 included releases', { exact: false })).toBeVisible();
+    await expect(page.getByText('HTTP: 403', { exact: false })).toBeVisible();
+    await page.getByLabel('Search releases').fill('not present');
+    await expect(page.getByText('No releases match these filters.')).toBeVisible();
+    await page.getByLabel('Search releases').fill('karst');
+    await page.getByLabel('Consumer', { exact: true }).selectOption('aguayluz-pr');
+    await expect(page.getByText('No releases match these filters.')).toBeVisible();
+    await page.getByLabel('Consumer', { exact: true }).selectOption('spiderweb-pr');
+    await page.getByText('Inspect release evidence', { exact: true }).click();
+    await expect(page.getByText('"sciencebase_id":', { exact: false })).toBeVisible();
+  });
+});
+
 // GUI capability parity E2E (see .federation/gui-capabilities.json). Every
 // active capability's e2e_routes must be reachable from visible navigation and
 // render its primary surface against a deterministic, mocked API.
