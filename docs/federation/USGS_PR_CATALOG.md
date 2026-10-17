@@ -231,3 +231,31 @@ Producer command compatibility metadata was updated when CI required its
 additive federation-manifest change to carry a compatibility receipt; no gate
 was removed or weakened. The Hub source audit pin now identifies
 `cbaa7d0c25c81b650e3a6354c0cd5631c39cbeb0`.
+
+
+## Frozen source review and release refusal (2026-10-17)
+
+The producer-owned review compares the frozen NSHM PRVI GeoJSON assets with
+three paired CSVs and the root FGDC XML. No source bytes are reacquired or repaired.
+The XML records access/use constraints as literal `none`; this closes recording
+of those fields only. All three native geometries pass format checks. All three
+cross-format comparisons fail: SiteID EGQ5 versus EQG5, 15 raw numeric CSV X/Y
+versus GeoJSON tuple differences, shortened text, blank/N/A/null differences,
+and FS6 CountryTer HIS versus Offshore remain preserved. CSV CRS/axis semantics
+are unverified; numeric deltas are not physical distances. Two layers extend
+outside the publisher's PRVI bounding box, which is not a PR jurisdiction mask.
+The source's migration/no-data-change annotation is a claim, not byte lineage.
+
+The documentary export and isolated consumer rehearsal retain 3 sources and
+92 observations. Neither closes scientific staging. The activation matrix retains
+all 2,286 files (593 byte PASS, 82 quarantined failures, 1,611 blocked), with zero
+production-eligible or activated files. Source consistency, PR jurisdiction,
+consumer fitness, units, semantics and current-version lineage block certification.
+
+Use `scripts/certify_usgs_release.py` with `--expected-commit` and a new `--out`
+path. It requires the exact clean Git checkout and scoped evidence checksums.
+Exit 2 means expected scientific refusal, even when software identity passes.
+Exit 0 is not issued by this evidence-limited build. An operational exception
+cannot substitute for source adjudication. Full source review is retained in
+`registry/usgs/source_review.v1.json`; an initial superseded derived review is
+preserved separately. No canonical identity or geometry repair was performed.

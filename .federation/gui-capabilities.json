@@ -897,7 +897,9 @@
           "scripts/continue_usgs_pr.py",
           "scripts/stage_usgs_pr.py",
           "src/hub/usgs_exports.py",
-          "scripts/validate_usgs_exports.py"
+          "scripts/validate_usgs_exports.py",
+          "src/hub/usgs_readiness.py",
+          "scripts/certify_usgs_release.py"
         ],
         "endpoints": [],
         "symbols": [
@@ -921,7 +923,9 @@
           "src/hub/usgs_assets.py:doi_identifiers",
           "src/hub/usgs_assets.py:adapt_native_geojson",
           "src/hub/usgs_exports.py:assess_usgs_export",
-          "scripts/validate_usgs_exports.py:main"
+          "scripts/validate_usgs_exports.py:main",
+          "src/hub/usgs_readiness.py:assess_usgs_readiness",
+          "scripts/certify_usgs_release.py:main"
         ]
       },
       "frontend": {
@@ -934,7 +938,8 @@
           "tests/test_usgs_catalog.py",
           "tests/test_usgs_assets.py",
           "tests/test_usgs_continuation.py",
-          "tests/test_usgs_exports.py"
+          "tests/test_usgs_exports.py",
+          "tests/test_usgs_readiness.py"
         ]
       }
     }

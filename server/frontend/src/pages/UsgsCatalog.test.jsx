@@ -9,6 +9,7 @@ const catalog = {
   counts: { included: 174, excluded: 23 }, source: { sha256: 'a'.repeat(64) }, issues: [],
   catalog_state: 'PASS', payload_state: 'BLOCKED', acquisition_summary: { activated: 0 },
   producer_export_summary: { asset_count: 3, inventory_file_count: 2286, sources: 3, features: 92, state: 'PASS', activation_state: 'BLOCKED' },
+  source_review_summary: { review_state: 'FAIL', cross_format_failures: 3, extent_failures: 2, native_geometry_format_pass: 3 },
   repositories: [{ program_id: 'spiderweb-pr' }, { program_id: 'aguayluz-pr' }],
   records: [{ sciencebase_id: 'source1', raw: { Title: 'Karst DEM', Category: 'PR-specific', Year: '2022', 'ScienceBase URL': 'https://www.sciencebase.gov/catalog/item/source1' },
     consumer_candidates: [{ program_id: 'spiderweb-pr' }], activation_state: 'BLOCKED', acquisition: { state: 'BLOCKED', http_status: 403 } }],
@@ -21,6 +22,8 @@ describe('USGS catalog viewer', () => {
     expect(await screen.findByText('Karst DEM')).toBeVisible();
     expect(screen.getByText(/HTTP: 403/)).toBeVisible();
     expect(screen.getByText(/3\/2286 asset files/)).toHaveTextContent('Production export and activation: BLOCKED');
+    expect(screen.getByRole('status', { name: 'Scientific source review' })).toHaveTextContent('Source review: FAIL');
+    expect(screen.getByRole('status', { name: 'Scientific source review' })).toHaveTextContent('exact-release certification: BLOCKED');
     fireEvent.change(screen.getByLabelText('Search releases'), { target: { value: 'absent' } });
     expect(screen.getByText('No releases match these filters.')).toBeVisible();
     fireEvent.change(screen.getByLabelText('Search releases'), { target: { value: '' } });

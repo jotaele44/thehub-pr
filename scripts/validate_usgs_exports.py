@@ -10,6 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 from hub.usgs_exports import assess_usgs_export  # noqa: E402
+from hub.usgs_readiness import assess_usgs_readiness  # noqa: E402
 
 
 def main():
@@ -27,6 +28,8 @@ def main():
     parser.add_argument("--write-receipts", action="store_true")
     args = parser.parse_args()
     report = assess_usgs_export(args.package, args.input_manifest, ROOT)
+    readiness = assess_usgs_readiness(ROOT)
+    reviewed = {a["asset_id"]: a for a in readiness["assets"]}
     if args.write_receipts:
         (ROOT / "registry/usgs/export_validation.v1.json").write_text(
             json.dumps(report, indent=2) + "\n"
@@ -53,7 +56,10 @@ def main():
                     "consumer_fitness": "OPEN",
                     "PR_coverage": "UNRESOLVED",
                     "geometry_CRS_Z_M": "OPEN",
-                    "usage_constraints": "OPEN",
+                    "usage_constraints": "RECORDED_NONE" if asset["asset_id"] in reviewed else "OPEN",
+                    "native_geometry_format": "PASS" if asset["asset_id"] in reviewed else "OPEN",
+                    "cross_format_consistency": "FAIL" if asset["asset_id"] in reviewed else "OPEN",
+                    "source_extent": reviewed[asset["asset_id"]]["declared_bbox_state"] if asset["asset_id"] in reviewed else "OPEN",
                     "version_lineage": "OPEN",
                     "domain_semantics": "OPEN",
                     "production_export": "BLOCKED",
@@ -71,6 +77,9 @@ def main():
             "root_releases": inventory["root_count"],
             "byte_states": dict(Counter(r["byte_state"] for r in rows)),
             "test_export_asset_count": len(exported),
+            "source_review_sha256": readiness["source_review_sha256"],
+            "source_review_state": readiness["review_state"],
+            "cross_format_failed_assets": readiness["cross_format_failures"],
             "production_eligible": 0,
             "activated": 0,
             "activation_state": "BLOCKED",

@@ -208,3 +208,6 @@ TheHub is the federation control plane, validation authority, evidence explorer,
 
 **Current vector:** close persisted materialization, authenticated role E2E where required, final desktop rendered evidence, hosting/publish blockers, producer-consumer receipts, and downstream release freeze. Federation certification requires frozen producer inputs, explicit inclusion/exclusion, validated IDs, closed package and ingest arithmetic, contradiction/supersession preservation, positive/negative regressions, reproducible outputs, and zero material unresolved residue within the declared federation scope.
 <!-- PROJECT-OPERATING-CONTRACT:END -->
+
+USGS frozen source review now records cross-format conflicts and blocks scientific
+staging and exact-release certification; see [catalog evidence](docs/federation/USGS_PR_CATALOG.md).

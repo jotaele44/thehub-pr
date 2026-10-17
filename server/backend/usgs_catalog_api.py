@@ -7,6 +7,7 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Query
 
 from hub.usgs_exports import assess_usgs_export
+from hub.usgs_readiness import assess_usgs_readiness
 from hub.usgs_catalog import CATALOG, catalog_page, load_catalog
 from hub.usgs_assets import read_metadata_archive, root_membership
 
@@ -56,6 +57,8 @@ def usgs_catalog(query: str = Query("", max_length=200), program: str = Query(No
                 EVIDENCE_ROOT/'data/usgs/producer_exports/spiderweb-native-v1',
                 EVIDENCE_ROOT/'data/usgs/producer_inputs/spiderweb-native.v1.json', EVIDENCE_ROOT)
 
+            readiness = assess_usgs_readiness(EVIDENCE_ROOT)
+            result['source_review_summary'] = {k:v for k,v in readiness.items() if k != 'assets'}
             for row in result['records']:
                 assets = [a for a in inventory['assets'] if row['sciencebase_id'] in membership.get(a['source_item_id'], [])]
                 row['recursive_asset_summary'] = {state:sum(a['payload_state'] == state for a in assets) for state in ('PASS','FAIL','BLOCKED')}

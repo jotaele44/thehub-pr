@@ -29,7 +29,14 @@ jobs:
         run: |
           python scripts/verify_usgs_build.py
           python scripts/validate_usgs_exports.py
-          pytest -q tests/test_usgs_catalog.py tests/test_usgs_assets.py tests/test_usgs_continuation.py tests/test_usgs_exports.py
+          pytest -q tests/test_usgs_catalog.py tests/test_usgs_assets.py tests/test_usgs_continuation.py tests/test_usgs_exports.py tests/test_usgs_readiness.py
+      - name: Require exact-release scientific refusal
+        run: |
+          set +e
+          python scripts/certify_usgs_release.py --expected-commit "$(git rev-parse HEAD)" --out "$RUNNER_TEMP/usgs-release-assessment.json"
+          status=$?
+          set -e
+          test "$status" -eq 2
       # Acquisition ran at 38859073401. Ordinary PR synchronization must reuse
       # its frozen evidence, not repeat a 256 MiB crawl to obtain another PASS.
       # This job certifies offline checks only, never scientific readiness.
