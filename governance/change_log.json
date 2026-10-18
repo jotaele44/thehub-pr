@@ -73,8 +73,8 @@
       ]
     },
     {
-      "date": "2026-10-12",
-      "summary": "Held centinelas-pr in tools/require_docs_sync.py. It adopted the docs-sync gate (its PR #166) after the tool was written, and signal-ledger-refresh.yml, just-security-monitor.yml and el-yunque-access-monitor.yml push scheduled data commits straight to main, which a required check would reject. Updated the docs_sync_gate record in governance/merge_blocking_status.json and Part 10 of docs/FEDERATION_STATUS.md to match. No repository setting was changed.",
+      "date": "2026-10-15",
+      "summary": "Reverted #362, so tools/require_docs_sync.py no longer holds centinelas-pr; aguayluz-pr stays held. Recorded the result of the first tools/require_docs_sync.py --apply run: main now requires docs-sync in thehub-pr, ovnis-pr and skywatcher-pr (new main-required-checks ruleset), moneysweep-pr (main-protection ruleset) and spiderweb-pr (branch protection). governance/merge_blocking_status.json carries the 2026-10-15 re-audit and notes that centinelas-pr's scheduled refresh workflows push straight to main, which a required check would reject; docs/FEDERATION_STATUS.md gains Part 11. No repository setting was changed by this commit.",
       "files": [
         "tools/require_docs_sync.py",
         "governance/merge_blocking_status.json",
