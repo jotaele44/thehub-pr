@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { test, expect } from '@playwright/test';
 import { OVNIS_YEAR_ONLY_CASE } from '../../src/test/fixtures/evidenceObject.js';
 
@@ -731,5 +733,93 @@ test.describe('digital twin', () => {
     expect(geojson.suggestedFilename()).toBe('digital-twin.geojson');
     const [usd] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Export USD' }).click()]);
     expect(usd.suggestedFilename()).toBe('digital-twin.usda');
+  });
+});
+
+// The frozen reference values (JPL Horizons) and real NOAA SWPC payloads the Sky tests are held to.
+const readJson = (relative) => JSON.parse(readFileSync(fileURLToPath(new URL(relative, import.meta.url)), 'utf8'));
+const SKY_REFERENCE = readJson('../../src/sky/referenceEphemerides.json');
+const SWPC_SAMPLES = readJson('../../src/sky/fixtures/swpc-samples.json');
+
+// NOAA SWPC answers cross-origin reads; the sandbox browser cannot reach it, so the real payloads frozen in the
+// fixture are served with the same CORS header.
+async function mockSwpc(page, { failSolarWind = false } = {}) {
+  await page.route('https://services.swpc.noaa.gov/**', (route) => {
+    const url = route.request().url();
+    const headers = { 'Access-Control-Allow-Origin': '*' };
+    if (url.endsWith('noaa-planetary-k-index.json')) return route.fulfill({ status: 200, contentType: 'application/json', headers, body: JSON.stringify(SWPC_SAMPLES.kp.payload) });
+    if (url.endsWith('solar-wind-speed.json')) {
+      if (failSolarWind) return route.fulfill({ status: 503, contentType: 'text/plain', headers, body: 'down' });
+      return route.fulfill({ status: 200, contentType: 'application/json', headers, body: JSON.stringify(SWPC_SAMPLES.solar_wind_speed.payload) });
+    }
+    return route.fulfill({ status: 200, contentType: 'application/json', headers, body: JSON.stringify(SWPC_SAMPLES.mag_field.payload) });
+  });
+}
+
+test.describe('sky workspace', () => {
+  test('is reachable from Skywatcher, reads the sky where Horizons puts it, keeps its state in the link, and says when a product is down', async ({ page }) => {
+    test.setTimeout(90000);
+    await page.clock.install({ time: new Date('2026-10-18T20:55:00Z') });
+    await mockApi(page);
+    await mockSwpc(page, { failSolarWind: true });
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'Skywatcher-PR', exact: true }).click();
+    await page.getByRole('tab', { name: 'Sky', exact: true }).click();
+    await expect(page).toHaveURL(/\/skywatcher\?view=sky/);
+    await expect(page.locator('[data-sky-default-observer]')).toContainText('does not ask your browser for your location');
+
+    // A fixed instant, so the readout can be held to the frozen Horizons value for it.
+    await page.getByLabel('Time (UTC)').fill('2026-10-16T00:30:00Z');
+    await page.getByRole('button', { name: 'Set time' }).click();
+    await expect(page.locator('[data-sky-time]')).toContainText('2026-10-16T00:30:00Z');
+    const horizons = SKY_REFERENCE.horizons.cases.find((c) => c.body === 'Sun' && c.observer === 'San Juan' && c.time === '2026-10-16T00:30:00Z');
+    const shown = horizons.airless.alt > -1 ? horizons.refracted.alt : horizons.airless.alt;
+    const altitude = Number.parseFloat((await page.locator('[data-sky-sun] [data-testid="altitude"]').innerText()).replace('−', '-'));
+    expect(Math.abs(altitude - shown)).toBeLessThan(0.06);
+    await expect(page.locator('[data-sky-daylight]')).toContainText(/twilight|Night/);
+    await expect(page.locator('[data-sky-conventions]')).toContainText('astronomy-engine 2.1.19');
+
+    // Every one of the seven bodies is drawn or named as below the horizon.
+    await expect(page.locator('svg[data-sky-chart]')).toBeVisible();
+    const drawn = await page.locator('[data-sky-glyph]').evaluateAll((nodes) => nodes.map((node) => node.getAttribute('data-sky-glyph')));
+    const below = await page.locator('[data-sky-below]').innerText();
+    for (const body of ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn']) expect(drawn.includes(body) || below.includes(body), body).toBe(true);
+
+    // Space weather: the products that answered are shown with their state; the one that failed is unavailable, not zero.
+    const kp = page.locator('[data-sw="kp"]');
+    await expect(kp.locator('[data-testid="sw-value"]')).toHaveText('1.67');
+    await expect(kp.locator('[data-testid="sw-state"]')).toHaveText('LIVE');
+    await expect(page.locator('[data-sw="imf-bz"] [data-testid="sw-value"]')).toHaveText('3');
+    const wind = page.locator('[data-sw="solar-wind-speed"]');
+    await expect(wind.locator('[data-testid="sw-state"]')).toHaveText('FAILED');
+    await expect(wind).toContainText('Unavailable: HTTP 503');
+    await expect(wind.locator('[data-testid="sw-value"]')).toHaveCount(0);
+    await expect(page.locator('[data-sw-note]')).toContainText('not tied to the time above');
+
+    // The time and the observer live in the link.
+    await page.getByRole('button', { name: 'Forward 1 hour' }).click();
+    await expect.poll(() => new URL(page.url()).searchParams.get('t')).toBe('2026-10-16T01:30:00Z');
+    await page.getByLabel('Latitude (°N)').fill('-33.4489');
+    await page.getByLabel('Longitude (°E)').fill('-70.6693');
+    await page.getByLabel('Elevation (m)').fill('520');
+    await page.getByLabel('UTC offset (hours)').fill('-3');
+    await page.getByRole('button', { name: 'Apply observer' }).click();
+    await expect(page.locator('[data-sky-default-observer]')).toHaveCount(0);
+    const link = new URL(page.url());
+    expect(link.searchParams.get('view')).toBe('sky');
+    expect(link.searchParams.get('lat')).toBe('-33.4489');
+    expect(link.searchParams.get('tz')).toBe('-3');
+    const before = await page.locator('[data-sky-sun] [data-testid="altitude"]').innerText();
+    await page.reload({ waitUntil: 'networkidle' });
+    await expect(page.locator('[data-sky-time]')).toContainText('2026-10-16T01:30:00Z');
+    await expect(page.locator('[data-sky-sun] [data-testid="altitude"]')).toHaveText(before);
+  });
+
+  test('refuses an observer it cannot compute for, in words, with no readout', async ({ page }) => {
+    await mockApi(page);
+    await mockSwpc(page);
+    await page.goto('/skywatcher?view=sky&lat=95&lon=-66&t=2026-10-16T00:30:00Z', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('alert').first()).toContainText('Latitude must be between -90 and 90 degrees.');
+    await expect(page.locator('[data-sky-sun]')).toHaveCount(0);
   });
 });

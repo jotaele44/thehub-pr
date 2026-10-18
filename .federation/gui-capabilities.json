@@ -831,6 +831,43 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "sky-workspace",
+      "classification": "client_only",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Sky workspace at /skywatcher?view=sky (directive §9; TWIN-008, 029-033, 047-053, 106, 109, 111-115, 119, 120, 122-131; Phase 6, P6-A). Computed entirely in the browser with astronomy-engine (held in tests to JPL Horizons and USNO values frozen with their tolerances): the Sun, the Moon and the five naked-eye planets for an explicit UTC instant and observer (default San Juan, labelled; never browser geolocation), rise, transit and set at a stated fixed UTC offset, daylight and twilight class, the Moon's phase, and a 2D all-sky chart (TWIN-120 is partial: no 3D dome). Space weather (Kp, solar-wind speed, IMF Bz) is read directly from NOAA SWPC, which answers cross-origin reads, and shown with its time, age and state; a product that cannot be read is unavailable, never zero. The observer and the time live in the URL. No backend, no write, no producer call, no stored data.",
+      "frontend": {
+        "routes": [
+          "/skywatcher"
+        ],
+        "e2e_routes": [
+          "/skywatcher"
+        ],
+        "components": [
+          "server/frontend/src/components/sky/SkyWorkspace.jsx",
+          "server/frontend/src/pages/Skywatcher.jsx",
+          "server/frontend/src/sky/astronomy.js",
+          "server/frontend/src/sky/spaceWeather.js",
+          "server/frontend/src/sky/skyChart.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/Skywatcher.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "unit": [
+          "server/frontend/src/sky/astronomy.test.js",
+          "server/frontend/src/sky/spaceWeather.test.js",
+          "server/frontend/src/sky/skyChart.test.js",
+          "server/frontend/src/components/sky/SkyWorkspace.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
     }
   ],
   "exceptions": []
