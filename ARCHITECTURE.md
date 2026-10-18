@@ -160,6 +160,12 @@ comparison (`/gis?view=aoi-comparison`) tests a study area against disjoint cont
 binomial test and labels the result a background comparison, not a finding. See
 [`docs/federation/SUBSURFACE_AND_CONTROLS_V1.md`](docs/federation/SUBSURFACE_AND_CONTROLS_V1.md).
 
+The Sky workspace (`/skywatcher?view=sky`) computes the Sun, Moon and naked-eye planets for an explicit
+observer and UTC instant in the browser, with astronomy-engine, and reads the latest Kp, solar-wind speed and
+IMF Bz directly from NOAA SWPC. It has no backend endpoint, stores nothing and calls no producer; its
+agreement with JPL Horizons and USNO is measured and frozen in the tests, and a product that cannot be read is
+shown as unavailable, never as zero. See [`docs/federation/SKY_WORKSPACE_V1.md`](docs/federation/SKY_WORKSPACE_V1.md).
+
 ## Governance
 
 Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,

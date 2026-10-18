@@ -343,9 +343,14 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/sky/skyChart.test.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The Sky tab of the Skywatcher page (/skywatcher?view=sky), with the observer and the time in the link. The reference's separate global Sky item is not duplicated: Skywatcher is its home under ADR 0001.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1108,9 +1113,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "skywatcher-pr schemas/sensor_source_v1.schema.json allows sensor type geomagnetic_timeseries but nothing ingests it.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The planetary K-index read directly from NOAA SWPC (3-hourly, CORS-open), shown with its interval time, age, state (LIVE, STALE or FAILED), station count and the NOAA storm scale from Kp 5.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1149,9 +1158,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): NOAA SWPC noaa-planetary-k-index.json: 63 rows over 7.75 days when measured on 2026-10-18; its time tags carry no Z and are read as UTC; malformed rows are dropped and counted, never read as zero.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1190,9 +1203,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Solar wind from the SWPC summary products (one row each). The retired /products/solar-wind/* files return 404, and the 1-minute /json/rtsw series mixes sources (ACE, IMAP, SOLAR1) and is newest-first, so it is not used.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1231,9 +1248,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Solar-wind speed from solar-wind-speed.json: whole km/s, rounded by the provider, shown with its time, age and state; a failed read is unavailable, never zero.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1272,9 +1293,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): IMF Bz (GSM) and total field from solar-wind-mag-field.json: whole nT, rounded by the provider. The direction is stated (southward is the geoeffective one).",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1795,9 +1820,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Sun azimuth and altitude computed in the browser with astronomy-engine 2.1.19 (apparent topocentric), held to JPL Horizons over 84 instants (7 bodies, 3 sites, 4 times): largest difference 0.35 arcmin (Venus), mean 0.09.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1837,9 +1866,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moon azimuth and altitude, apparent topocentric, held to JPL Horizons over 84 instants (7 bodies, 3 sites, 4 times): largest difference 0.35 arcmin (Venus), mean 0.09.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1879,9 +1912,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Positions of Mercury, Venus, Mars, Jupiter and Saturn (the five naked-eye planets), held to JPL Horizons over 84 instants (7 bodies, 3 sites, 4 times): largest difference 0.35 arcmin (Venus), mean 0.09.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1921,9 +1958,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Rise, upper transit, set and civil twilight at a stated fixed UTC offset: 72 Sun and Moon events within 0.50 minute of USNO (which rounds to whole minutes). A day with no rise or set says so; Tromso at the midnight sun and in the polar night is checked against Horizons.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1963,9 +2004,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moon phase: illuminated fraction within 0.43 points of USNO's whole percent, phase name equal to USNO's on 9 site-days, next quarter named with its UTC time (quarter times differ from USNO by up to 1.32 minutes, a lunar-theory difference worth 0.01 degree of lunar motion).",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -2005,9 +2050,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Apparent magnitude of the Moon and the five planets, within 0.13 magnitude of Horizons.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -2047,9 +2096,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The astronomical ephemerides are computed in the browser with astronomy-engine 2.1.19 (MIT, no dependencies, exactly pinned, lazy-loaded), not fetched; their agreement with Horizons and USNO is measured and frozen with the tolerances.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4034,9 +4087,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Geomagnetic Kp KPI: the latest Kp with its state and age and the NOAA storm scale in words (not colour alone).",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4127,9 +4184,14 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/sky/skyChart.test.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Kp sparkline over the span the provider serves (7.75 days, 63 rows when measured), not the reference's ~3.5 days; time is on the x axis so a gap is a gap, with the Kp 5 (G1) line marked.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4206,9 +4268,15 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/sky/skyChart.test.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The Sky workspace: observer and time controls, daylight banner, Sun, Moon and planet cards, an all-sky chart, the conventions in use, and space weather.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4251,9 +4319,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Computed here for an explicit UTC instant; \"Follow the clock\" (opt-in) moves it to now every 30 seconds. Nothing is fetched to compute the sky.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4293,9 +4365,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Sun state: azimuth, altitude (apparent within 1 degree of the horizon or above, geometric below, because refraction has nothing to lift there), twilight times and the daylight class.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4338,9 +4414,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moon state: position, phase, illuminated share, magnitude, next quarter, rise, transit and set.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4380,9 +4460,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Planet state: position, magnitude, elongation, rise and set, above or below the horizon.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4534,9 +4618,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The readout: every value with its convention (conventions block) and the UTC instant it is for.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4576,9 +4664,14 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/sky/skyChart.test.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): A 2D all-sky chart (north up, east left as seen looking up, altitude rings at 30 and 60 degrees, a distinct shape and a label per body, bodies below the horizon listed). There is no 3D dome.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4650,9 +4743,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Daylight banner: Daylight, Civil, Nautical or Astronomical twilight, or Night, from the geometric Sun altitude at -0.833, -6, -12 and -18 degrees; checked against Horizons' Sun altitude at every reference instant.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4692,9 +4789,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Sun altitude with both the displayed and the geometric value. JPL Horizons extends its refraction at -1 degree to every depth (a constant +0.6466 degree), so deeper than 1 degree below the horizon the geometric altitude is shown and held to Horizons' airless value.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4734,9 +4835,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Sunrise at the stated UTC offset and in UTC, within 0.50 minute of USNO.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4776,9 +4881,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Sunset at the stated UTC offset and in UTC, within 0.50 minute of USNO.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4818,9 +4927,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moon illuminated share as a percentage, within 0.43 points of USNO and 0.60 points of Horizons (geocentric against Horizons' topocentric).",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4863,9 +4976,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moon-position status: above or below the horizon with its altitude and azimuth, listed on the chart or under \"below the horizon\".",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4908,9 +5025,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moonrise, upper transit and moonset for the local day, each absent event said to be absent (a lunar day can have no rise or no set).",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4950,9 +5071,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Darkness classification from the geometric Sun altitude (daylight, civil, nautical, astronomical twilight, night), with the cut-offs in the conventions.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4995,9 +5120,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The naked-eye planets section: the five classical planets. Uranus and Neptune are not shown.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -5037,9 +5166,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): One card per planet: above or below the horizon, altitude, azimuth, magnitude, elongation from the Sun, rise and set.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -8437,11 +8570,11 @@
     "by_delivery_state": {
       "ALREADY_PRESENT": 14,
       "BLOCKED": 4,
-      "DEFERRED": 108,
-      "IMPLEMENTED_RUN_2": 57,
+      "DEFERRED": 76,
+      "IMPLEMENTED_RUN_2": 88,
       "IMPLEMENTED_THIS_RUN": 16,
       "NOT_APPLICABLE": 5,
-      "PARTIAL_RUN_2": 14,
+      "PARTIAL_RUN_2": 15,
       "PARTIAL_THIS_RUN": 5
     },
     "census_closed": true
