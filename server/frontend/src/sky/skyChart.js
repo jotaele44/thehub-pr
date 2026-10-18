@@ -30,6 +30,32 @@ const SHAPES = Object.freeze({
   Sun: 'sun', Moon: 'moon', Mercury: 'triangle', Venus: 'diamond', Mars: 'square', Jupiter: 'cross', Saturn: 'ringed',
 });
 
+// Where a body's label sits: to the right of its glyph, nudged up or down when it would run into another label or
+// another body's glyph. Sizes are the chart's own units (an 8-unit font is about 4.6 units per character).
+const LABEL_DX = 9;
+const LABEL_BASELINES = Object.freeze([3, 12, -6, 21, -15, 30]);
+const CHAR_WIDTH = 4.6;
+const GLYPH_HALF = 7;
+export const labelRect = (body) => ({
+  x0: body.x + body.labelDx, x1: body.x + body.labelDx + body.label.length * CHAR_WIDTH, y0: body.y + body.labelDy - 7, y1: body.y + body.labelDy + 2,
+});
+const intersects = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+
+function placeLabels(plotted) {
+  const glyphs = plotted.map((body) => ({ body: body.body, x0: body.x - GLYPH_HALF, x1: body.x + GLYPH_HALF, y0: body.y - GLYPH_HALF, y1: body.y + GLYPH_HALF }));
+  const placed = [];
+  for (const body of plotted) {
+    body.labelDx = LABEL_DX;
+    // The first baseline that clears every label already placed and every other body's glyph; if none does, the last.
+    for (const dy of LABEL_BASELINES) {
+      body.labelDy = dy;
+      const rect = labelRect(body);
+      if (!placed.some((other) => intersects(rect, other)) && !glyphs.some((glyph) => glyph.body !== body.body && intersects(rect, glyph))) break;
+    }
+    placed.push(labelRect(body));
+  }
+}
+
 // Bodies above the horizon with a position on the chart, and the ones below it, listed so nothing vanishes silently.
 export function chartBodies(sky) {
   const plotted = [];
@@ -46,6 +72,7 @@ export function chartBodies(sky) {
       magnitude: item.magnitude, illuminatedFraction: item.illuminatedFraction,
     });
   }
+  placeLabels(plotted);
   return { plotted, below };
 }
 

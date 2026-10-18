@@ -86,11 +86,14 @@ describe('solar wind speed and IMF Bz summaries', () => {
 });
 
 describe('freshness', () => {
-  it('is LIVE through the current 3-hour Kp interval and a late update, and STALE after', () => {
+  it('keeps Kp LIVE while its latest interval is the one in progress or the one just ended, and STALE once an interval has been missed', () => {
+    // The next interval's value appears some time after it begins (on 2026-10-18 the 21:00 row was still missing
+    // at 21:20), so the series is current for two intervals, not one.
     const interval = new Date('2026-10-18T18:00:00Z');
     expect(freshness(interval, new Date('2026-10-18T20:55:00Z'), KP_LIVE_MINUTES).state).toBe('LIVE');
-    expect(freshness(interval, new Date('2026-10-18T21:10:00Z'), KP_LIVE_MINUTES).state).toBe('LIVE');
-    expect(freshness(interval, new Date('2026-10-18T21:16:00Z'), KP_LIVE_MINUTES).state).toBe('STALE');
+    expect(freshness(interval, new Date('2026-10-18T21:21:00Z'), KP_LIVE_MINUTES).state).toBe('LIVE');
+    expect(freshness(interval, new Date('2026-10-19T00:00:00Z'), KP_LIVE_MINUTES).state).toBe('LIVE');
+    expect(freshness(interval, new Date('2026-10-19T00:01:00Z'), KP_LIVE_MINUTES).state).toBe('STALE');
   });
 
   it('is LIVE for a one-minute product within a quarter of an hour, and STALE with its age after', () => {
@@ -159,11 +162,21 @@ describe('loadSpaceWeather', () => {
     expect(result.solarWind.error).toMatch(/Unexpected token/);
   });
 
+  it('says the next 3-hour interval is not published yet once the latest one has ended, without calling Kp stale', async () => {
+    const result = await loadSpaceWeather({ fetchImpl: fetchWith(), now: new Date('2026-10-18T21:21:00Z') });
+    expect(result.kp.state).toBe('LIVE');
+    expect(result.kp.intervalEnd.toISOString()).toBe('2026-10-18T21:00:00.000Z');
+    expect(result.kp.note).toMatch(/next 3-hour interval has not been published yet/i);
+    // While the interval is still in progress there is nothing to add.
+    const inProgress = await loadSpaceWeather({ fetchImpl: fetchWith(), now: new Date('2026-10-18T20:55:00Z') });
+    expect(inProgress.kp.note).not.toMatch(/not been published/i);
+  });
+
   it('marks old readings STALE and still shows them with their age', async () => {
-    const result = await loadSpaceWeather({ fetchImpl: fetchWith(), now: new Date('2026-10-18T23:00:00Z') });
+    const result = await loadSpaceWeather({ fetchImpl: fetchWith(), now: new Date('2026-10-19T01:00:00Z') });
     expect(result.solarWind).toMatchObject({ state: 'STALE', value: 411 });
-    expect(result.solarWind.ageMinutes).toBe(127);
-    expect(result.kp.state).toBe('STALE');
+    expect(result.solarWind.ageMinutes).toBe(247); // 20:53 to 01:00
+    expect(result.kp).toMatchObject({ state: 'STALE', value: 1.67 });
   });
 
   it('aborts a request that hangs, and says so', async () => {

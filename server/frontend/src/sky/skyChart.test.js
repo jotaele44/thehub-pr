@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALTITUDE_RINGS, CARDINALS, CHART_RADIUS, chartBodies, kpSparkline, projectSky } from './skyChart';
+import { ALTITUDE_RINGS, CARDINALS, CHART_RADIUS, chartBodies, kpSparkline, labelRect, projectSky } from './skyChart';
 
 const near = (value, expected) => expect(value).toBeCloseTo(expected, 6);
 
@@ -74,6 +74,47 @@ describe('chartBodies', () => {
     const shapes = new Set(plotted.map((b) => b.shape));
     expect(plotted.length).toBe(3);
     expect(shapes.size).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe('label placement', () => {
+  const crowded = {
+    // The Sun, Mercury and Venus a few degrees apart low in the west, as on 2026-10-18 at San Juan.
+    sun: { body: 'Sun', azimuth: 257.4, altitude: 6.2, aboveHorizon: true },
+    moon: { body: 'Moon', azimuth: 157.8, altitude: 44.7, aboveHorizon: true, illuminatedFraction: 0.52 },
+    planets: [
+      { body: 'Mercury', azimuth: 238.2, altitude: 21.2, aboveHorizon: true, magnitude: 0 },
+      { body: 'Venus', azimuth: 246.4, altitude: 7.5, aboveHorizon: true, magnitude: -4.2 },
+      { body: 'Mars', azimuth: 319, altitude: -42, aboveHorizon: false, magnitude: 1 },
+      { body: 'Jupiter', azimuth: 306, altitude: -37, aboveHorizon: false, magnitude: -1.9 },
+      { body: 'Saturn', azimuth: 89.6, altitude: 3.9, aboveHorizon: true, magnitude: 0.3 },
+    ],
+  };
+  const overlaps = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+
+  it('keeps an isolated body\'s label beside its glyph', () => {
+    const { plotted } = chartBodies({ ...crowded, sun: { ...crowded.sun, azimuth: 10, altitude: 70 }, planets: [] , moon: { ...crowded.moon, aboveHorizon: false, altitude: -5 } });
+    expect(plotted).toHaveLength(1);
+    expect(plotted[0].labelDx).toBe(9);
+    expect(plotted[0].labelDy).toBe(3);
+  });
+
+  it('does not let two labels overlap each other or another body\'s glyph, even when bodies crowd together', () => {
+    const { plotted } = chartBodies(crowded);
+    expect(plotted.length).toBe(5);
+    const labels = plotted.map((body) => ({ body: body.body, ...labelRect(body) }));
+    for (let i = 0; i < labels.length; i += 1) {
+      for (let j = i + 1; j < labels.length; j += 1) expect(overlaps(labels[i], labels[j]), `${labels[i].body} and ${labels[j].body} labels`).toBe(false);
+      for (const other of plotted) {
+        if (other.body === labels[i].body) continue;
+        const glyph = { x0: other.x - 7, x1: other.x + 7, y0: other.y - 7, y1: other.y + 7 };
+        expect(overlaps(labels[i], glyph), `${labels[i].body} label and ${other.body} glyph`).toBe(false);
+      }
+    }
+  });
+
+  it('is deterministic', () => {
+    expect(JSON.stringify(chartBodies(crowded).plotted)).toBe(JSON.stringify(chartBodies(crowded).plotted));
   });
 });
 

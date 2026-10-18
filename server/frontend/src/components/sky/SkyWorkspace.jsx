@@ -112,7 +112,7 @@ function SkyChart({ sky }) {
         {plotted.map((body) => (
           <g key={body.body} data-sky-glyph={body.body} transform={`translate(${body.x.toFixed(2)} ${body.y.toFixed(2)})`} className="text-foreground">
             <Glyph shape={body.shape} />
-            <text x="9" y="3" fontSize="8" fill="currentColor">{body.label}</text>
+            <text x={body.labelDx} y={body.labelDy} fontSize="8" fill="currentColor" className="stroke-background" strokeWidth="3" paintOrder="stroke">{body.label}</text>
           </g>
         ))}
       </svg>
@@ -245,7 +245,7 @@ function Measure({ item, children }) {
           <p className="text-lg font-semibold"><span data-testid="sw-value">{item.id === 'kp' ? item.value.toFixed(2) : item.value}</span> {item.unit === 'Kp' ? '' : item.unit}</p>
           {children}
           <p className="text-xs text-muted-foreground">As of {isoOf(item.observedAt)} UTC{item.precision ? ` · ${item.precision}` : ''}</p>
-          {item.note ? <p className="text-xs text-warning">{item.note}</p> : null}
+          {item.note ? <p className="text-xs text-muted-foreground">{item.note}</p> : null}
         </>
       )}
       <p className="text-xs text-muted-foreground">Source: {item.source.provider}</p>

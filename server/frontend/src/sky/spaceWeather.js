@@ -16,9 +16,12 @@ export const SWPC_ENDPOINTS = Object.freeze({
 });
 
 // Policy, not physics: how old a reading may be and still be called LIVE. A Kp row is stamped with the start of
-// its 3-hour interval, so it stays current for that interval plus a quarter hour for the late update; the summary
-// products are one-minute products.
-export const KP_LIVE_MINUTES = 195;
+// its 3-hour interval, and the next interval's value appears some time after that interval begins (measured on
+// 2026-10-18: the 21:00 row was still missing at 21:20 although the file itself had been rewritten a minute
+// earlier). So the series is current while its latest interval is the one in progress or the one just ended: two
+// intervals from the start of the latest. The summary products are one-minute products.
+export const KP_INTERVAL_MINUTES = 180;
+export const KP_LIVE_MINUTES = 2 * KP_INTERVAL_MINUTES;
 export const SUMMARY_LIVE_MINUTES = 15;
 const FUTURE_SKEW_MINUTES = 5;
 const DEFAULT_TIMEOUT_MS = 10000;
@@ -130,12 +133,14 @@ export async function loadSpaceWeather({ fetchImpl = globalThis.fetch?.bind(glob
   const source = (url) => ({ provider: SWPC_PROVIDER, url });
   const kp = settle('kp', 'Planetary K-index (Kp)', SWPC_ENDPOINTS.kp, kpOutcome, (payload) => {
     const parsed = parseKp(payload);
+    const intervalEnd = new Date(parsed.latest.time.getTime() + KP_INTERVAL_MINUTES * 60000);
+    const note = 'The value for the 3-hour interval that starts at the time shown, from the number of stations shown.';
     return {
       id: 'kp', label: 'Planetary K-index (Kp)', value: parsed.latest.kp, unit: 'Kp', observedAt: parsed.latest.time,
       ...freshness(parsed.latest.time, now, KP_LIVE_MINUTES),
-      scale: geomagneticScale(parsed.latest.kp), stationCount: parsed.latest.stationCount,
+      scale: geomagneticScale(parsed.latest.kp), stationCount: parsed.latest.stationCount, intervalEnd,
       series: parsed.points, spanDays: parsed.spanDays, dropped: parsed.dropped,
-      note: 'The value for the 3-hour interval that starts at the time shown, from the number of stations shown.',
+      note: now >= intervalEnd ? `${note} The next 3-hour interval has not been published yet.` : note,
       source: source(SWPC_ENDPOINTS.kp),
     };
   });

@@ -117,9 +117,12 @@ SOLAR1) with an `active` flag and arrive **newest-first**, so reading the first 
 inactive source.
 
 - **State.** Each product is `LIVE`, `STALE` (with its age) or `FAILED` (with the reason). A Kp row is stamped
-  with the start of its 3-hour interval, so it is `LIVE` for that interval plus 15 minutes (195 minutes); the
-  one-minute summaries are `LIVE` within 15 minutes. These are policy constants, not physics. A reading
-  timestamped more than 5 minutes in the future is `STALE` with a note.
+  with the start of its 3-hour interval, and the next interval's value appears some time after that interval
+  begins: on 2026-10-18 the 21:00 row was still missing at 21:20, although the file had been rewritten a minute
+  earlier. So Kp is `LIVE` while its latest interval is the one in progress or the one just ended (up to 6 hours
+  from that interval's start), and once the interval has ended the card says the next one has not been published
+  yet. It is `STALE` after that. The one-minute summaries are `LIVE` within 15 minutes. These are policy
+  constants, not physics. A reading timestamped more than 5 minutes in the future is `STALE` with a note.
 - **Never zero.** A product that cannot be read (network, HTTP error, timeout after 10 seconds, bad JSON, no
   usable row, a value that is not a number) is `FAILED` with no value. Malformed Kp rows are dropped and counted.
   The three products fail independently.
@@ -135,8 +138,10 @@ inactive source.
 
 The all-sky chart (`svg[data-sky-chart]`) is the sky as seen looking up: north at the top, east at the left, the
 zenith at the centre, the horizon at the rim, rings at 30° and 60° of altitude. Each body has its own shape and a
-label, so meaning never rests on colour alone. Bodies below the horizon are not drawn and are named under the
-chart, so all seven are always accounted for. The chart is a 2D view; there is no 3D dome.
+label, so meaning never rests on colour alone. Labels sit beside their glyphs and are nudged so that no label
+overlaps another label or another body's glyph, even when bodies crowd together (the Sun, Mercury and Venus a few
+degrees apart low in the west is the case that prompted it). Bodies below the horizon are not drawn and are named
+under the chart, so all seven are always accounted for. The chart is a 2D view; there is no 3D dome.
 
 ## Not built
 
