@@ -22,7 +22,7 @@ def evidence(tmp_path):
              "data/usgs/producer_inputs/spiderweb-native.v1.json",
              "data/usgs/continuation_inventory.v1.json.gz",
              "registry/usgs/activation_matrix.v1.json.gz",
-             "registry/usgs/kml_adjudication.v1.json",
+             "registry/usgs/kml_adjudication.v2.json",
              "data/usgs/kml_review_inputs/input.v1.json"]
     for spec_path in paths[1:3]:
         spec = json.loads((ROOT / spec_path).read_text())
@@ -30,6 +30,8 @@ def evidence(tmp_path):
         paths += [e.get("path", e.get("raw_file")) for e in entries]
     kml = json.loads((ROOT / paths[6]).read_text())
     paths += [e["path"] for e in kml["assets"] + kml["supporting_documents"]]
+    paths += ["registry/usgs/nested_file_inventory.v1.json.gz",
+              "data/usgs/snapshots/20261016_all_item_metadata.zip"]
     for name in paths:
         dst = tmp_path / name
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -42,6 +44,10 @@ def test_source_truth_blocks_all_assets_despite_native_format_pass(evidence):
     assert (r["inventory_file_count"], r["activated"], r["production_eligible"]) == (2286, 0, 0)
     assert r["release_manifestation_closure"]["intersection"] == 14
     assert r["release_manifestation_closure"]["symmetric_difference"] == 0
+    assert r["release_manifestation_closure"]["full_file_closure"] == "OPEN"
+    assert r["release_manifestation_closure"]["nested_reference_observations"] == 46
+    assert r["nested_reference_inventory"]["reference_locations"]["facets"] == 850
+    assert r["nested_reference_inventory"]["non_array_files_fields"] == 702
     assert r["kml_adjudication"]["features"] == 92
     assert r["kml_adjudication"]["exact_geometry_objects"] == 36
     assert r["kml_adjudication"]["authority_state"] == "UNRESOLVED"
@@ -57,7 +63,7 @@ def test_unreviewed_rehashed_evidence_cannot_close_gates(evidence, attack):
     spec = json.loads(specpath.read_text())
     report = evidence / "registry/usgs/source_review.v1.json"
     if attack == "fake_kml_pass":
-        path = evidence / "registry/usgs/kml_adjudication.v1.json"
+        path = evidence / "registry/usgs/kml_adjudication.v2.json"
         r = json.loads(path.read_text())
         r.update(certification="PASS", scientific_staging="PASS")
         path.write_text(json.dumps(r))

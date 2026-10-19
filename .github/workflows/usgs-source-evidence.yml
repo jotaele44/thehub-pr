@@ -29,7 +29,7 @@ jobs:
         run: |
           python scripts/verify_usgs_build.py
           python scripts/validate_usgs_exports.py
-          pytest -q tests/test_usgs_catalog.py tests/test_usgs_assets.py tests/test_usgs_continuation.py tests/test_usgs_exports.py tests/test_usgs_readiness.py
+          pytest -q tests/test_usgs_catalog.py tests/test_usgs_assets.py tests/test_usgs_continuation.py tests/test_usgs_exports.py tests/test_usgs_readiness.py tests/test_usgs_nested_inventory.py
       - name: Require exact-release scientific refusal
         run: |
           set +e

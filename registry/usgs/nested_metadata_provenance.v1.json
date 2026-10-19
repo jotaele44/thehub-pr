@@ -1,0 +1,12 @@
+{
+  "contract": "prii.usgs-nested-metadata-provenance/v1",
+  "source_snapshot": "20261016",
+  "assembly_date": "20261019",
+  "root_metadata_archive_sha256": "47488d1d72a2a43b8c2a4d3b44b600d4852ceca99e6796aae334814f95e7f7c8",
+  "child_asset_archive_sha256": "b8fed761b822c9287a6423e9ca9ad4df5d49453e57dffb727d40568873459b72",
+  "derived_metadata_archive_sha256": "5f0c4f3b4782ed9a9c94511a76fdda0b6ac82e9caba8075219cb15f461b4f280",
+  "metadata_members": 463,
+  "raw_member_identity": "BYTE_IDENTICAL to frozen source response members; assembled ZIP is a distinct subset artifact",
+  "acquisition_performed": false,
+  "report_compressed_sha256": "cf13e4a488442c100e647d7ab19f0ea45dffc5822f1c9a571a9243dcc13b03b1"
+}

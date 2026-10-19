@@ -1,3 +1,10 @@
+USGS CURRENT SCOPE NOTICE — 2026-10-19
+2286 legacy top-level references are preserved. New audit additionally records
+850 facet references, 3136 distribution references and 702 non-array files fields.
+6272 reference observations are NOT a unique-asset count. Nested payloads are
+unverified; full file closure and scientific staging/certification remain BLOCKED.
+14/14 below means only one release's legacy top-level references.
+
 TERMINAL_READY — PR Grid V2 Federation Runtime / Domain Profile Contract
 
 STATE
@@ -235,3 +242,9 @@ python scripts/certify_usgs_release.py --expected-commit <FULL_NEW_RELEASE_COMMI
 Expected final exit 2 with software_identity=PASS, dataset certification BLOCKED.
 Use the actual pinned commit in the build manifest; preserve old assessments.
 KML corroboration is AUDIT_ONLY, never majority-vote canonical authority.
+
+OFFLINE NESTED REFERENCE AUDIT
+python -m pytest -q tests/test_usgs_nested_inventory.py tests/test_usgs_readiness.py
+python scripts/inventory_usgs_nested.py --out /absolute/path/new-inventory.json.gz
+Expected script exit 0 for successful audit; metadata state OPEN, not certification.
+No network request or payload acquisition occurs. Keep prior output paths.

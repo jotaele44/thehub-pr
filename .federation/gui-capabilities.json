@@ -899,7 +899,9 @@
           "src/hub/usgs_exports.py",
           "scripts/validate_usgs_exports.py",
           "src/hub/usgs_readiness.py",
-          "scripts/certify_usgs_release.py"
+          "scripts/certify_usgs_release.py",
+          "src/hub/usgs_nested_inventory.py",
+          "scripts/inventory_usgs_nested.py"
         ],
         "endpoints": [],
         "symbols": [
@@ -925,7 +927,9 @@
           "src/hub/usgs_exports.py:assess_usgs_export",
           "scripts/validate_usgs_exports.py:main",
           "src/hub/usgs_readiness.py:assess_usgs_readiness",
-          "scripts/certify_usgs_release.py:main"
+          "scripts/certify_usgs_release.py:main",
+          "src/hub/usgs_nested_inventory.py:inventory_nested_files",
+          "scripts/inventory_usgs_nested.py:main"
         ]
       },
       "frontend": {
@@ -939,7 +943,8 @@
           "tests/test_usgs_assets.py",
           "tests/test_usgs_continuation.py",
           "tests/test_usgs_exports.py",
-          "tests/test_usgs_readiness.py"
+          "tests/test_usgs_readiness.py",
+          "tests/test_usgs_nested_inventory.py"
         ]
       }
     }

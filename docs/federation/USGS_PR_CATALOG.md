@@ -260,9 +260,9 @@ cannot substitute for source adjudication. Full source review is retained in
 `registry/usgs/source_review.v1.json`; an initial superseded derived review is
 preserved separately. No canonical identity or geometry repair was performed.
 
-## Full frozen NSHM manifestation review (2026-10-19)
+## Frozen top-level NSHM review (2026-10-19)
 
-The independent parent/child file-set check now covers 14 declared files for
+The independent parent/child check covers 14 legacy top-level file references for
 root 64a85bf3d34e70357a27ddd5: FGDC XML, three CSV, three GeoJSON, three KML,
 two change logs, a README and bibliography. Intersection=14, A_ONLY=0,
 B_ONLY=0, union=14, symmetric difference=0. This bounded closure excludes
@@ -302,3 +302,27 @@ Scientific staging, activation and exact dataset certification remain BLOCKED.
 The previous iOS companion CI observation is now PASS at d637786; it does not
 certify a new head or physical-device installation. The prior SIGE TLS failure
 remains historical evidence, not a new live-provider observation.
+
+## Nested file enumeration correction (2026-10-19)
+
+The 14/14 closure above is explicitly top-level only. A recursive walk of all
+463 frozen item JSON responses finds 850 facet-file references and 3,136
+distribution-file references beyond the original 2,286 top-level references.
+The 6,272 combined observations are not a certified unique-asset count: mirror
+relationships require adjudication. 702 files fields are empty strings rather
+than arrays; their raw values are retained as UNRESOLVED, never coerced to zero.
+All array descriptors and JSON pointers are preserved in the nested inventory;
+full metadata/file/payload closure remains OPEN. No nested payload was acquired.
+The reviewed NSHM release contributes 16 facet shapefile components and 30
+distribution references. SHP availability is not inferred absent from top-level
+files. Full dataset activation remains BLOCKED for this independent reason.
+
+The new all-item metadata ZIP preserves exact frozen response bytes, assembled
+from the original root snapshot and child evidence archive. Its outer bytes
+are a new subset artifact, not a recompression identity claim. The old inventory,
+checksums, acquisition failures and 593/82/1,611 byte-state counts are unchanged.
+`src/hub/usgs_nested_inventory.py` and `scripts/inventory_usgs_nested.py` implement
+the offline reference audit. Duplicate members, wrong requested/returned IDs,
+baseline descriptor changes and malformed descriptors fail regression checks.
+Repeated descriptors retain separate pointer IDs; they are not deduplicated into
+canonical assets. The catalog evidence inspector exposes the corrected scope.

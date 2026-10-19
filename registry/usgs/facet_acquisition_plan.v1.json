@@ -1,0 +1,669 @@
+{
+  "contract": "prii.usgs-facet-acquisition-plan/v1",
+  "state": "OPEN",
+  "execution": "NOT_EXECUTED",
+  "scope": "16 newly discovered NSHM shapefile components, future distinct snapshot only",
+  "metadata_snapshot": "20261016",
+  "metadata_archive_sha256": "5f0c4f3b4782ed9a9c94511a76fdda0b6ac82e9caba8075219cb15f461b4f280",
+  "byte_budget": 1048576,
+  "declared_bytes": 378473,
+  "targets": [
+    {
+      "reference_id": "6516c9bad34e5f8ef1564892#/facets/0/files/0",
+      "source_item_id": "6516c9bad34e5f8ef1564892",
+      "json_pointer": "/facets/0/files/0",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_EQGeoDB_PRVI_v1.cpg",
+        "title": "",
+        "contentType": "text/plain",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__ee/e0/4a/eee04a31bf9fdd5c6ff0e6c3b2b6c219dcc99cca",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 5,
+        "dateUploaded": "2024-02-05T17:17:46Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "ae3b3df9970b49b6523e608759bc957d",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__ee%2Fe0%2F4a%2Feee04a31bf9fdd5c6ff0e6c3b2b6c219dcc99cca",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__ee%2Fe0%2F4a%2Feee04a31bf9fdd5c6ff0e6c3b2b6c219dcc99cca",
+        "viewUri": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__ee%2Fe0%2F4a%2Feee04a31bf9fdd5c6ff0e6c3b2b6c219dcc99cca&allowOpen=true"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516c9bad34e5f8ef1564892#/facets/0/files/1",
+      "source_item_id": "6516c9bad34e5f8ef1564892",
+      "json_pointer": "/facets/0/files/1",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_EQGeoDB_PRVI_v1.dbf",
+        "title": "",
+        "contentType": "text/plain",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__13/fd/ea/13fdea99d461aa6fc48bc1cf20f8df8e499cfefb",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 340233,
+        "dateUploaded": "2024-02-05T17:17:46Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "262d8504c2cbf8f1efc1dc29b5e90117",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__13%2Ffd%2Fea%2F13fdea99d461aa6fc48bc1cf20f8df8e499cfefb",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__13%2Ffd%2Fea%2F13fdea99d461aa6fc48bc1cf20f8df8e499cfefb",
+        "viewUri": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__13%2Ffd%2Fea%2F13fdea99d461aa6fc48bc1cf20f8df8e499cfefb&allowOpen=true"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516c9bad34e5f8ef1564892#/facets/0/files/2",
+      "source_item_id": "6516c9bad34e5f8ef1564892",
+      "json_pointer": "/facets/0/files/2",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_EQGeoDB_PRVI_v1.prj",
+        "title": "",
+        "contentType": "text/plain",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__ea/56/3c/ea563c64b46d99c7c9f4aced27ca1e29b51048cd",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 145,
+        "dateUploaded": "2024-02-05T17:17:46Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "c742bee3d4edfc2948a2ad08de1790a5",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__ea%2F56%2F3c%2Fea563c64b46d99c7c9f4aced27ca1e29b51048cd",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__ea%2F56%2F3c%2Fea563c64b46d99c7c9f4aced27ca1e29b51048cd",
+        "viewUri": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__ea%2F56%2F3c%2Fea563c64b46d99c7c9f4aced27ca1e29b51048cd&allowOpen=true"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516c9bad34e5f8ef1564892#/facets/0/files/3",
+      "source_item_id": "6516c9bad34e5f8ef1564892",
+      "json_pointer": "/facets/0/files/3",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_EQGeoDB_PRVI_v1.qmd",
+        "title": "",
+        "contentType": "text/plain",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__5c/3e/5e/5c3e5ea1e705e00f715b9501803c2bcf12ee3fac",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 1521,
+        "dateUploaded": "2024-02-05T17:17:46Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "b350dfc94cfc9b9127432c50c2c2e14f",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__5c%2F3e%2F5e%2F5c3e5ea1e705e00f715b9501803c2bcf12ee3fac",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__5c%2F3e%2F5e%2F5c3e5ea1e705e00f715b9501803c2bcf12ee3fac",
+        "viewUri": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__5c%2F3e%2F5e%2F5c3e5ea1e705e00f715b9501803c2bcf12ee3fac&allowOpen=true"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516c9bad34e5f8ef1564892#/facets/0/files/4",
+      "source_item_id": "6516c9bad34e5f8ef1564892",
+      "json_pointer": "/facets/0/files/4",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_EQGeoDB_PRVI_v1.shp",
+        "title": "",
+        "contentType": "x-gis/x-shapefile",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__d8/e6/f7/d8e6f7f044d7bc923f33dbbb61db225d3b6cd26b",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 1528,
+        "dateUploaded": "2024-02-05T17:17:46Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "80079559abaad53a07307f77ff1284ae",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__d8%2Fe6%2Ff7%2Fd8e6f7f044d7bc923f33dbbb61db225d3b6cd26b",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__d8%2Fe6%2Ff7%2Fd8e6f7f044d7bc923f33dbbb61db225d3b6cd26b"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516c9bad34e5f8ef1564892#/facets/0/files/5",
+      "source_item_id": "6516c9bad34e5f8ef1564892",
+      "json_pointer": "/facets/0/files/5",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_EQGeoDB_PRVI_v1.shx",
+        "title": "",
+        "contentType": "x-gis/x-shapefile",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__c8/63/59/c863591984d73341779d1f2f3a17d55089ed7f0e",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 508,
+        "dateUploaded": "2024-02-05T17:17:46Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "c210ab63705f2915884d16df91164ff7",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__c8%2F63%2F59%2Fc863591984d73341779d1f2f3a17d55089ed7f0e",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__c8%2F63%2F59%2Fc863591984d73341779d1f2f3a17d55089ed7f0e"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516cb35d34e5f8ef156489b#/facets/0/files/0",
+      "source_item_id": "6516cb35d34e5f8ef156489b",
+      "json_pointer": "/facets/0/files/0",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_FaultPolygons_PRVI_v1.cpg",
+        "title": "",
+        "contentType": "text/plain",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__22/11/0e/22110eb0cbe48fbef3c7bce6f013df121d2b2a90",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 5,
+        "dateUploaded": "2023-09-29T13:03:39Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "ae3b3df9970b49b6523e608759bc957d",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__22%2F11%2F0e%2F22110eb0cbe48fbef3c7bce6f013df121d2b2a90",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__22%2F11%2F0e%2F22110eb0cbe48fbef3c7bce6f013df121d2b2a90",
+        "viewUri": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__22%2F11%2F0e%2F22110eb0cbe48fbef3c7bce6f013df121d2b2a90&allowOpen=true"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516cb35d34e5f8ef156489b#/facets/0/files/1",
+      "source_item_id": "6516cb35d34e5f8ef156489b",
+      "json_pointer": "/facets/0/files/1",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_FaultPolygons_PRVI_v1.dbf",
+        "title": "",
+        "contentType": "application/unknown",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__9e/13/98/9e1398876b7fc78987215026a9c30bfbb44e2f23",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 3388,
+        "dateUploaded": "2023-09-29T13:03:39Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "5c97c5ac3f29f2c9770676ea9d19301b",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__9e%2F13%2F98%2F9e1398876b7fc78987215026a9c30bfbb44e2f23",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__9e%2F13%2F98%2F9e1398876b7fc78987215026a9c30bfbb44e2f23"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516cb35d34e5f8ef156489b#/facets/0/files/2",
+      "source_item_id": "6516cb35d34e5f8ef156489b",
+      "json_pointer": "/facets/0/files/2",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_FaultPolygons_PRVI_v1.prj",
+        "title": "",
+        "contentType": "text/plain",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__69/61/cb/6961cbd2fcc5037819de7fd7465931aca21635fa",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 145,
+        "dateUploaded": "2023-09-29T13:03:39Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "c742bee3d4edfc2948a2ad08de1790a5",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__69%2F61%2Fcb%2F6961cbd2fcc5037819de7fd7465931aca21635fa",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__69%2F61%2Fcb%2F6961cbd2fcc5037819de7fd7465931aca21635fa",
+        "viewUri": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__69%2F61%2Fcb%2F6961cbd2fcc5037819de7fd7465931aca21635fa&allowOpen=true"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516cb35d34e5f8ef156489b#/facets/0/files/3",
+      "source_item_id": "6516cb35d34e5f8ef156489b",
+      "json_pointer": "/facets/0/files/3",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_FaultPolygons_PRVI_v1.shp",
+        "title": "",
+        "contentType": "x-gis/x-shapefile",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__c0/17/7b/c0177b616aac4206cd426ed3076291f435bc3ffc",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 1204,
+        "dateUploaded": "2023-09-29T13:03:39Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "8c5876ea2366964f911d4884ff97f7e8",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__c0%2F17%2F7b%2Fc0177b616aac4206cd426ed3076291f435bc3ffc",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__c0%2F17%2F7b%2Fc0177b616aac4206cd426ed3076291f435bc3ffc"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516cb35d34e5f8ef156489b#/facets/0/files/4",
+      "source_item_id": "6516cb35d34e5f8ef156489b",
+      "json_pointer": "/facets/0/files/4",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_FaultPolygons_PRVI_v1.shx",
+        "title": "",
+        "contentType": "x-gis/x-shapefile",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__eb/55/34/eb5534bfb35afb0a5035f856a0fb77ce72c28d4d",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 148,
+        "dateUploaded": "2023-09-29T13:03:39Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "112ebcf0f9d434de19799b419af01883",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__eb%2F55%2F34%2Feb5534bfb35afb0a5035f856a0fb77ce72c28d4d",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516cb35d34e5f8ef156489b?f=__disk__eb%2F55%2F34%2Feb5534bfb35afb0a5035f856a0fb77ce72c28d4d"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516cbf9d34e5f8ef15648a2#/facets/0/files/0",
+      "source_item_id": "6516cbf9d34e5f8ef15648a2",
+      "json_pointer": "/facets/0/files/0",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_FaultSections_PRVI_v1.cpg",
+        "title": "",
+        "contentType": "text/plain",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__28/14/f2/2814f29fafc3d636f706d6a801f1914c9594eb4d",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 5,
+        "dateUploaded": "2024-01-29T22:12:26Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "ae3b3df9970b49b6523e608759bc957d",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__28%2F14%2Ff2%2F2814f29fafc3d636f706d6a801f1914c9594eb4d",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__28%2F14%2Ff2%2F2814f29fafc3d636f706d6a801f1914c9594eb4d",
+        "viewUri": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__28%2F14%2Ff2%2F2814f29fafc3d636f706d6a801f1914c9594eb4d&allowOpen=true"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516cbf9d34e5f8ef15648a2#/facets/0/files/1",
+      "source_item_id": "6516cbf9d34e5f8ef15648a2",
+      "json_pointer": "/facets/0/files/1",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_FaultSections_PRVI_v1.dbf",
+        "title": "",
+        "contentType": "text/plain",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__56/b6/63/56b663c561fb3413f3d258f9e6967d592c183c6a",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 18557,
+        "dateUploaded": "2024-01-29T22:12:26Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "3f8fca90e7a030a05ed9432bfb8d9fd3",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__56%2Fb6%2F63%2F56b663c561fb3413f3d258f9e6967d592c183c6a",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__56%2Fb6%2F63%2F56b663c561fb3413f3d258f9e6967d592c183c6a",
+        "viewUri": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__56%2Fb6%2F63%2F56b663c561fb3413f3d258f9e6967d592c183c6a&allowOpen=true"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516cbf9d34e5f8ef15648a2#/facets/0/files/2",
+      "source_item_id": "6516cbf9d34e5f8ef15648a2",
+      "json_pointer": "/facets/0/files/2",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_FaultSections_PRVI_v1.prj",
+        "title": "",
+        "contentType": "text/plain",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__ab/63/30/ab63302ef01f4e5f15cce8f5c9200111060217c9",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 145,
+        "dateUploaded": "2024-01-29T22:12:26Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "c742bee3d4edfc2948a2ad08de1790a5",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__ab%2F63%2F30%2Fab63302ef01f4e5f15cce8f5c9200111060217c9",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__ab%2F63%2F30%2Fab63302ef01f4e5f15cce8f5c9200111060217c9",
+        "viewUri": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__ab%2F63%2F30%2Fab63302ef01f4e5f15cce8f5c9200111060217c9&allowOpen=true"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516cbf9d34e5f8ef15648a2#/facets/0/files/3",
+      "source_item_id": "6516cbf9d34e5f8ef15648a2",
+      "json_pointer": "/facets/0/files/3",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_FaultSections_PRVI_v1.shp",
+        "title": "",
+        "contentType": "x-gis/x-shapefile",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__e1/b1/67/e1b167e856419b8e9e5910a08529e09d6e75ceb4",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 10556,
+        "dateUploaded": "2024-01-29T22:12:26Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "5a09aaf343bce10076ce2b6c458a1a31",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__e1%2Fb1%2F67%2Fe1b167e856419b8e9e5910a08529e09d6e75ceb4",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__e1%2Fb1%2F67%2Fe1b167e856419b8e9e5910a08529e09d6e75ceb4"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "reference_id": "6516cbf9d34e5f8ef15648a2#/facets/0/files/4",
+      "source_item_id": "6516cbf9d34e5f8ef15648a2",
+      "json_pointer": "/facets/0/files/4",
+      "root_release_ids": [
+        "64a85bf3d34e70357a27ddd5"
+      ],
+      "raw_descriptor": {
+        "cuid": null,
+        "key": null,
+        "bucket": null,
+        "published": false,
+        "node": null,
+        "name": "NSHM2025_FaultSections_PRVI_v1.shx",
+        "title": "",
+        "contentType": "x-gis/x-shapefile",
+        "contentEncoding": null,
+        "pathOnDisk": "__disk__4b/db/9c/4bdb9cca2b2d796e8597d958b9227df55ec9faf5",
+        "processed": false,
+        "processToken": null,
+        "imageWidth": null,
+        "imageHeight": null,
+        "size": 380,
+        "dateUploaded": "2024-01-29T22:12:26Z",
+        "originalMetadata": false,
+        "useForPreview": false,
+        "movedToS3": false,
+        "s3Object": null,
+        "checksum": {
+          "value": "e7edeb54788537cf61163090fa0fc4f4",
+          "type": "MD5"
+        },
+        "url": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__4b%2Fdb%2F9c%2F4bdb9cca2b2d796e8597d958b9227df55ec9faf5",
+        "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516cbf9d34e5f8ef15648a2?f=__disk__4b%2Fdb%2F9c%2F4bdb9cca2b2d796e8597d958b9227df55ec9faf5"
+      },
+      "exact_top_level_descriptor_matches": [],
+      "binding_scope": "Exact logical descriptor only; not independent payload identity",
+      "payload_state": "UNVERIFIED",
+      "activation_state": "BLOCKED"
+    }
+  ],
+  "distribution_references_not_acquired": 30,
+  "safety_policy": {
+    "https_host": "www.sciencebase.gov",
+    "redirects": "REFUSE",
+    "source_id_and_checksum": "REQUIRED",
+    "cached_passed_payloads": "REUSE_NO_REFETCH"
+  },
+  "activation_state": "BLOCKED"
+}

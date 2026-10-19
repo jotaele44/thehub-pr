@@ -82,6 +82,8 @@ def main():
             "source_review_sha256": readiness["source_review_sha256"],
             "source_review_state": readiness["review_state"],
             "kml_adjudication": readiness["kml_adjudication"],
+            "legacy_inventory_scope": "TOP_LEVEL_FILES_ONLY",
+            "nested_reference_inventory": readiness["nested_reference_inventory"],
             "cross_format_failed_assets": readiness["cross_format_failures"],
             "production_eligible": 0,
             "activated": 0,

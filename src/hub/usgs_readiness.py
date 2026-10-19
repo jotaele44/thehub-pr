@@ -13,8 +13,10 @@ REVIEW_SHA256 = "b09f5f34411f9570927202f34067463262f526b29138a232f49193257def44a
 INPUT_SHA256 = "ecdd787388d5c391c44839bbafe4b9de1763d8b28a30a3bba77772aeb8afb296"
 
 
-KML_REVIEW_SHA256 = "9cae8b05b8de25339dc446f347a05ba48815e00fd899a897667c4464c5b25ac0"
+KML_REVIEW_SHA256 = "e65348a25164f53f7cc012c70535ac5c2af00371620ba1672c98699b81de69e9"
 KML_INPUT_SHA256 = "a1605b8975a38f84bb726bdb833df705cf2a5d6fac3d99b6c6836828b5ab27d3"
+
+NESTED_REVIEW_SHA256 = "cf13e4a488442c100e647d7ab19f0ea45dffc5822f1c9a571a9243dcc13b03b1"
 
 def _sha(raw):
     return hashlib.sha256(raw).hexdigest()
@@ -44,7 +46,7 @@ def assess_usgs_readiness(source_root):
     assets = {a["asset_id"]: a for a in inventory["assets"]}
     if len(assets) != inventory["file_count"]:
         raise ValueError("Duplicate frozen asset identity")
-    kml_raw = (root / "registry/usgs/kml_adjudication.v1.json").read_bytes()
+    kml_raw = (root / "registry/usgs/kml_adjudication.v2.json").read_bytes()
     kml_input_raw = (root / "data/usgs/kml_review_inputs/input.v1.json").read_bytes()
     if _sha(kml_raw) != KML_REVIEW_SHA256 or _sha(kml_input_raw) != KML_INPUT_SHA256:
         raise ValueError("Unreviewed KML adjudication/input bytes")
@@ -72,6 +74,12 @@ def assess_usgs_readiness(source_root):
                 raise ValueError("Frozen descriptor mismatch")
             if frozen["payload_state"] != "PASS":
                 raise ValueError("Source review cannot admit quarantined bytes")
+    nested_raw = (root / "registry/usgs/nested_file_inventory.v1.json.gz").read_bytes()
+    if _sha(nested_raw) != NESTED_REVIEW_SHA256:
+        raise ValueError("Unreviewed nested file-reference inventory")
+    nested = json.loads(gzip.decompress(nested_raw))
+    if _sha((root / "data/usgs/snapshots/20261016_all_item_metadata.zip").read_bytes()) != nested["metadata_archive_sha256"]:
+        raise ValueError("Nested metadata archive binding mismatch")
     memberships = root_membership([spec["root_release_id"]], inventory["child_edges"])
     release_ids = {a["asset_id"] for a in inventory["assets"]
                    if spec["root_release_id"] in memberships.get(a["source_item_id"], [])}
@@ -96,12 +104,25 @@ def assess_usgs_readiness(source_root):
         "exact_release_certification": "BLOCKED",
         "release_manifestation_closure": {
             "state": "PASS",
-            "scope": "Declared frozen files of one NSHM release; excludes external links/services and other releases",
+            "scope": "Legacy top-level file descriptors of one NSHM release only",
+            "full_file_closure": "OPEN",
+            "nested_reference_observations": sum(spec["root_release_id"] in r["root_release_ids"] for r in nested["references"]),
             "intersection": len(release_ids & reviewed_ids),
             "a_only": sorted(release_ids - reviewed_ids),
             "b_only": sorted(reviewed_ids - release_ids),
             "union": len(release_ids | reviewed_ids),
             "symmetric_difference": len(release_ids ^ reviewed_ids),
+        },
+        "nested_reference_inventory": {
+            "metadata_enumeration_state": nested["metadata_enumeration_state"],
+            "top_level_baseline_references": nested["top_level_baseline_references"],
+            "nested_reference_observations": nested["nested_reference_observations"],
+            "reference_locations": nested["reference_locations"],
+            "combined_reference_observations": nested["combined_reference_observations"],
+            "non_array_files_fields": nested["non_array_files_field_count"],
+            "unique_asset_binding_state": "UNRESOLVED",
+            "full_payload_closure": "OPEN",
+            "scope": "Reference observations are not unique payload assets",
         },
         "kml_adjudication": {
             "state": kml["state"],
