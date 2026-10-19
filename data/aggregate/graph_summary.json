@@ -15,15 +15,15 @@
   },
   "producers": {
     "aguayluz-pr": {
-      "alerts": 4397,
-      "entities": 46224,
-      "relationships": 65178,
-      "sources": 38993
+      "alerts": 4348,
+      "entities": 45977,
+      "relationships": 64940,
+      "sources": 38760
     },
     "centinelas-pr": {
       "entities": 100,
       "observations": 100,
-      "sources": 6
+      "sources": 7
     },
     "moneysweep-pr": {
       "entities": 207,
@@ -50,10 +50,10 @@
     }
   },
   "streams": {
-    "alerts": 4399,
-    "entities": 48224,
+    "alerts": 4350,
+    "entities": 47977,
     "observations": 572,
-    "relationships": 66769,
-    "sources": 43842
+    "relationships": 66531,
+    "sources": 43610
   }
 }
