@@ -6,10 +6,15 @@ import hashlib
 import json
 from pathlib import Path
 
+from .usgs_assets import root_membership
+
 # Reviewed immutable snapshot. A rehashed receipt cannot authorize a different review.
 REVIEW_SHA256 = "b09f5f34411f9570927202f34067463262f526b29138a232f49193257def44a9"
 INPUT_SHA256 = "ecdd787388d5c391c44839bbafe4b9de1763d8b28a30a3bba77772aeb8afb296"
 
+
+KML_REVIEW_SHA256 = "9cae8b05b8de25339dc446f347a05ba48815e00fd899a897667c4464c5b25ac0"
+KML_INPUT_SHA256 = "a1605b8975a38f84bb726bdb833df705cf2a5d6fac3d99b6c6836828b5ab27d3"
 
 def _sha(raw):
     return hashlib.sha256(raw).hexdigest()
@@ -39,7 +44,20 @@ def assess_usgs_readiness(source_root):
     assets = {a["asset_id"]: a for a in inventory["assets"]}
     if len(assets) != inventory["file_count"]:
         raise ValueError("Duplicate frozen asset identity")
-    for entry in spec["assets"] + native["assets"] + [spec["release_metadata"]]:
+    kml_raw = (root / "registry/usgs/kml_adjudication.v1.json").read_bytes()
+    kml_input_raw = (root / "data/usgs/kml_review_inputs/input.v1.json").read_bytes()
+    if _sha(kml_raw) != KML_REVIEW_SHA256 or _sha(kml_input_raw) != KML_INPUT_SHA256:
+        raise ValueError("Unreviewed KML adjudication/input bytes")
+    kml, kml_input = json.loads(kml_raw), json.loads(kml_input_raw)
+    if (kml["prior_review_report_sha256"] != REVIEW_SHA256
+            or kml_input["source_review_report_sha256"] != REVIEW_SHA256
+            or kml_input["source_review_input_sha256"] != INPUT_SHA256
+            or kml_input["source_inventory_sha256"] != _sha(inventory_raw)
+            or kml["input_sha256"] != KML_INPUT_SHA256):
+        raise ValueError("KML/source review binding mismatch")
+    if {e["geojson_asset_id"] for e in kml_input["assets"]} != {e["asset_id"] for e in native["assets"]}:
+        raise ValueError("KML/source membership mismatch")
+    for entry in spec["assets"] + native["assets"] + kml_input["assets"] + kml_input["supporting_documents"] + [spec["release_metadata"]]:
         path = (root / entry.get("path", entry.get("raw_file"))).resolve()
         path.relative_to(root)
         packed = path.read_bytes()
@@ -54,6 +72,12 @@ def assess_usgs_readiness(source_root):
                 raise ValueError("Frozen descriptor mismatch")
             if frozen["payload_state"] != "PASS":
                 raise ValueError("Source review cannot admit quarantined bytes")
+    memberships = root_membership([spec["root_release_id"]], inventory["child_edges"])
+    release_ids = {a["asset_id"] for a in inventory["assets"]
+                   if spec["root_release_id"] in memberships.get(a["source_item_id"], [])}
+    reviewed_ids = {e["asset_id"] for e in spec["assets"] + native["assets"] + kml_input["assets"] + kml_input["supporting_documents"]}
+    if release_ids != reviewed_ids:
+        raise ValueError("Frozen release file review denominator mismatch")
     return {
         "contract": "prii.usgs-readiness/v1",
         "source_review_sha256": REVIEW_SHA256,
@@ -70,5 +94,32 @@ def assess_usgs_readiness(source_root):
         "activated": 0,
         "activation_state": "BLOCKED",
         "exact_release_certification": "BLOCKED",
+        "release_manifestation_closure": {
+            "state": "PASS",
+            "scope": "Declared frozen files of one NSHM release; excludes external links/services and other releases",
+            "intersection": len(release_ids & reviewed_ids),
+            "a_only": sorted(release_ids - reviewed_ids),
+            "b_only": sorted(reviewed_ids - release_ids),
+            "union": len(release_ids | reviewed_ids),
+            "symmetric_difference": len(release_ids ^ reviewed_ids),
+        },
+        "kml_adjudication": {
+            "state": kml["state"],
+            "support_documents": kml["support_documents"]["asset_count"],
+            "unit_definitions": "RECORDED",
+            "unit_value_validation": "UNRESOLVED",
+            "axis_definition": kml["support_documents"]["axis_definition_state"],
+            "complete_observation_text": "CSV_PUBLISHER_DIRECTED",
+            "fault_changelog_null_key_rows": 1,
+            "report_sha256": KML_REVIEW_SHA256,
+            "asset_count": kml["asset_count"],
+            "features": kml["features"],
+            "source_key_intersection": sum(a["kml_to_geojson"]["intersection"] for a in kml["assets"]),
+            "source_key_symmetric_difference": sum(a["kml_to_geojson"]["symmetric_difference"] for a in kml["assets"]),
+            "exact_geometry_objects": sum(g["exact_comparison_object"] for a in kml["assets"] for g in a["geometry_comparisons"]),
+            "geometry_within_numeric_tolerance": sum(g["within_pointwise_tolerance"] for a in kml["assets"] for g in a["geometry_comparisons"]),
+            "authority_state": "UNRESOLVED",
+            "scientific_staging": "BLOCKED",
+        },
         "assets": review["assets"],
     }

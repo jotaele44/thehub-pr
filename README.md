@@ -211,3 +211,6 @@ TheHub is the federation control plane, validation authority, evidence explorer,
 
 USGS frozen source review now records cross-format conflicts and blocks scientific
 staging and exact-release certification; see [catalog evidence](docs/federation/USGS_PR_CATALOG.md).
+
+The USGS evidence inspector includes all 14 declared frozen file manifestations
+of the reviewed NSHM release; source-axis and identity conflicts still block activation.

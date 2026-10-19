@@ -30,6 +30,7 @@ def main():
     report = assess_usgs_export(args.package, args.input_manifest, ROOT)
     readiness = assess_usgs_readiness(ROOT)
     reviewed = {a["asset_id"]: a for a in readiness["assets"]}
+    kml_ids = {a["asset_id"].rsplit(":", 1)[0] + ":2" for a in readiness["assets"]}
     if args.write_receipts:
         (ROOT / "registry/usgs/export_validation.v1.json").write_text(
             json.dumps(report, indent=2) + "\n"
@@ -53,6 +54,7 @@ def main():
                     "adapter_scope": "DOCUMENTARY_TEST_ONLY"
                     if asset["asset_id"] in exported
                     else "UNVERIFIED",
+                    "additional_manifestation_review": "AUDIT_ONLY" if asset["asset_id"] in kml_ids else "NOT_APPLICABLE",
                     "consumer_fitness": "OPEN",
                     "PR_coverage": "UNRESOLVED",
                     "geometry_CRS_Z_M": "OPEN",
@@ -79,6 +81,7 @@ def main():
             "test_export_asset_count": len(exported),
             "source_review_sha256": readiness["source_review_sha256"],
             "source_review_state": readiness["review_state"],
+            "kml_adjudication": readiness["kml_adjudication"],
             "cross_format_failed_assets": readiness["cross_format_failures"],
             "production_eligible": 0,
             "activated": 0,

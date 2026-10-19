@@ -259,3 +259,46 @@ Exit 0 is not issued by this evidence-limited build. An operational exception
 cannot substitute for source adjudication. Full source review is retained in
 `registry/usgs/source_review.v1.json`; an initial superseded derived review is
 preserved separately. No canonical identity or geometry repair was performed.
+
+## Full frozen NSHM manifestation review (2026-10-19)
+
+The independent parent/child file-set check now covers 14 declared files for
+root 64a85bf3d34e70357a27ddd5: FGDC XML, three CSV, three GeoJSON, three KML,
+two change logs, a README and bibliography. Intersection=14, A_ONLY=0,
+B_ONLY=0, union=14, symmetric difference=0. This bounded closure excludes
+other releases, services, external links and current-version claims. All original
+2,286 inventory assets and their 593/82/1,611 byte states remain unchanged.
+
+KML-to-GeoJSON stable-key intersections are 51/6/35 with zero set differences.
+All 92 geometry comparisons fall within 1e-10 raw numeric tolerance (maximum
+5e-14), while only 36 comparison objects/topologies are exactly equal. Raw
+coordinate text, geometry type/dimensions, schemas, property serialization and
+missing-versus-null distinctions remain preserved. Agreement does not choose
+canonical authority. The polygons KML's v0 schema versus v1 filename is unresolved.
+
+Four support files narrow prior uncertainty. The README records WGS84 and
+44 field definitions, including scientific units, and directs users to CSV for
+complete Obsern descriptions. Published definitions are recorded; scientific
+value validation remains unresolved. Its X=latitude and Y=longitude labels
+conflict with negative-longitude X values and native geometry. No axis swap is
+performed. RecurUn versus data RecurUnc remains an unresolved schema alias.
+The README allows sites outside the hazard area; this does not establish that
+its hazard area is the metadata bbox or a Puerto Rico jurisdiction mask.
+
+The fault changelog retains all 36 rows: 35 keyed matches and one blank-key
+Bowin row. No name-based join fills that key. The polygon changelog has six
+keyed matches. FS6 Offshore is supported by the change log and KML/GeoJSON,
+but CSV HIS remains a conflicting source observation. EGQ5/EQG5 and 15 raw
+numeric CSV/geometry differences remain unresolved. The bibliography is
+preserved; cited publications were not newly acquired by this bounded review.
+
+The producer's [KML review command](https://github.com/jotaele44/spiderweb-pr/blob/c752506a1d4ddd8e3f26bf9bf9d1e5e86ab4c5ed/scripts/review_usgs_kml.py) is a diagnostic maintenance command
+with expected exit 2. It rejects malformed schemas, duplicate IDs/fields,
+network links, DTD/entity declarations, nonfinite coordinates and automatic
+ring repair. The Hub pins its review bytes and inputs and checks every source
+against the frozen inventory. Rehashed fake PASS reports and swapped inputs
+remain rejected. The catalog evidence inspector exposes the added summary.
+Scientific staging, activation and exact dataset certification remain BLOCKED.
+The previous iOS companion CI observation is now PASS at d637786; it does not
+certify a new head or physical-device installation. The prior SIGE TLS failure
+remains historical evidence, not a new live-provider observation.

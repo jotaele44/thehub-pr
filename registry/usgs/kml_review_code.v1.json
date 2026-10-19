@@ -1,0 +1,17 @@
+{
+  "contract": "prii.usgs-kml-review-code/v1",
+  "repository": "jotaele44/spiderweb-pr",
+  "commit": "c752506a1d4ddd8e3f26bf9bf9d1e5e86ab4c5ed",
+  "tree": "6cc246c3a8a141f5b0a24cba4336388aae556c21",
+  "input_sha256": "a1605b8975a38f84bb726bdb833df705cf2a5d6fac3d99b6c6836828b5ab27d3",
+  "report_sha256": "9cae8b05b8de25339dc446f347a05ba48815e00fd899a897667c4464c5b25ac0",
+  "code_sha256": {
+    "federation/usgs_kml_review.py": "d6ac051512551669be137e0a469aa7f831bd835712915da12da0d76a71c92db2",
+    "federation/usgs_document_review.py": "5df9cb29d0daf3cb2afe480187848fe1476aca49279308e3d82a7c301305ed35",
+    "scripts/review_usgs_kml.py": "020016e9a6f190faba4aca6421d72e3a3af21bfa05aab00bc1cb68fc643f276a"
+  },
+  "state": "AUDIT_ONLY",
+  "scientific_staging": "BLOCKED",
+  "activated": 0,
+  "review_scope": "14 declared frozen files of NSHM root 64a85bf3d34e70357a27ddd5; no external publications/services/latest-version claim"
+}
