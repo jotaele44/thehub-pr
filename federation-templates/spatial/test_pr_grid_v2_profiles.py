@@ -49,6 +49,7 @@ def _inputs(tmp_path):
             "Grid_Version": grid.GRID_VERSION,
             "Grid_Manifest_SHA256": grid.GRID_MANIFEST_SHA256,
             "Binding_Schema_Version": grid.BINDING_SCHEMA_VERSION,
+            "Migration_Provenance_Class": "RECOMPUTED_FROM_SOURCE_COORDINATE",
             "Binding_Output_SHA256": hashlib.sha256(raw).hexdigest(),
             "Binding_Output_Bytes": len(raw),
             "Binding_Row_Count": 1,
@@ -87,6 +88,8 @@ def test_domain_profile_preserves_evidence_states(tmp_path):
     profiles, receipt = build_profiles(**args)
     assert [p["Data_State"] for p in profiles] == ["HAS_RECORDS", "ZERO_RECORDS", "NO_DATA"]
     assert profiles[0]["Profile_Type"]
+    assert profiles[0]["Grid_Deep_Link"].startswith("/grid/PR_GRID_GEOGRAPHIC_V2/2.0.0-rc1/")
+    assert profiles[0]["Migration_Class"] == "RECOMPUTED_FROM_SOURCE_COORDINATE"
     assert profiles[0]["Shared_Boundary_Record_Count"] == 1
     assert all(p["Geometry_Included"] is False for p in profiles)
     assert all(
@@ -199,3 +202,74 @@ def test_zero_measure_exact_geometry_binding_fails_closed(tmp_path, method, fiel
 
     with pytest.raises(ProfileError, match=message):
         build_profiles(**args)
+
+
+def test_incremental_refresh_recomputes_old_and_new_cells(tmp_path):
+    args = _inputs(tmp_path)
+    full_profiles, _ = build_profiles(**args)
+    previous_profiles = tmp_path / "previous-profiles.jsonl"
+    previous_profiles.write_text(
+        "".join(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n" for row in full_profiles),
+        encoding="utf-8",
+    )
+
+    previous_bindings = tmp_path / "previous-bindings.jsonl"
+    previous_bindings.write_bytes(args["bindings_path"].read_bytes())
+    previous_receipt = tmp_path / "previous-receipt.json"
+    previous_receipt.write_bytes(args["receipt_path"].read_bytes())
+
+    original = json.loads(args["bindings_path"].read_text())
+    moved = dict(original)
+    moved["Cell_ID"] = "PRG2:" + LEVEL + ":R000:C0003"
+    _replace_binding(args, moved)
+
+    from pr_grid_v2_profiles import build_incremental_profiles
+
+    profiles, receipt = build_incremental_profiles(
+        pin_path=args["pin_path"],
+        records_path=args["records_path"],
+        bindings_path=args["bindings_path"],
+        receipt_path=args["receipt_path"],
+        previous_bindings_path=previous_bindings,
+        previous_receipt_path=previous_receipt,
+        previous_profiles_path=previous_profiles,
+        coverage_path=args["coverage_path"],
+        level=LEVEL,
+        changed_record_ids=("record-a",),
+    )
+
+    assert receipt["Refresh_Mode"] == "INCREMENTAL"
+    assert receipt["Output_Mode"] == "DELTA_UPSERT"
+    assert receipt["Impact_Cell_Count"] == 2
+    assert receipt["Impacted_Cell_IDs"] == sorted(
+        [
+            "PRG2:" + LEVEL + ":R000:C0000",
+            "PRG2:" + LEVEL + ":R000:C0003",
+        ]
+    )
+    assert receipt["Rollback_Target_SHA256"] == hashlib.sha256(
+        previous_profiles.read_bytes()
+    ).hexdigest()
+    by_cell = {row["Cell_ID"]: row for row in profiles}
+    assert by_cell["PRG2:" + LEVEL + ":R000:C0000"]["Data_State"] == "NO_DATA"
+    assert by_cell["PRG2:" + LEVEL + ":R000:C0003"]["Data_State"] == "HAS_RECORDS"
+
+
+def test_incremental_refresh_requires_declared_change(tmp_path):
+    args = _inputs(tmp_path)
+    from pr_grid_v2_profiles import ProfileError, compute_impacted_cells
+
+    previous_bindings = tmp_path / "previous-bindings.jsonl"
+    previous_bindings.write_bytes(args["bindings_path"].read_bytes())
+    previous_receipt = tmp_path / "previous-receipt.json"
+    previous_receipt.write_bytes(args["receipt_path"].read_bytes())
+
+    with pytest.raises(ProfileError, match="requires changed"):
+        compute_impacted_cells(
+            pin_path=args["pin_path"],
+            previous_bindings_path=previous_bindings,
+            previous_receipt_path=previous_receipt,
+            bindings_path=args["bindings_path"],
+            receipt_path=args["receipt_path"],
+            level=LEVEL,
+        )

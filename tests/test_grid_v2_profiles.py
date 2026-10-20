@@ -10,7 +10,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "federation-templates/spatial"))
-from pr_grid_v2_profiles import ProfileError, build_profiles  # noqa: E402
+from pr_grid_v2_profiles import ProfileError, build_incremental_profiles, build_profiles  # noqa: E402
 import pr_grid_v2_runtime as grid  # noqa: E402
 
 
@@ -37,6 +37,7 @@ def _fixture(tmp_path: Path):
         "Grid_ID": grid.GRID_ID, "Grid_Version": grid.GRID_VERSION,
         "Grid_Manifest_SHA256": grid.GRID_MANIFEST_SHA256,
         "Binding_Schema_Version": grid.BINDING_SCHEMA_VERSION,
+        "Migration_Provenance_Class": "RECOMPUTED_FROM_SOURCE_COORDINATE",
         "Binding_Output_SHA256": hashlib.sha256(raw).hexdigest(),
         "Binding_Output_Bytes": len(raw), "Binding_Row_Count": 1,
     })
@@ -60,6 +61,8 @@ def test_profiles_separate_present_zero_and_absent(tmp_path):
     profiles, receipt = build_profiles(**args, requested_cells=("PRG2:L1:R075:C0236",))
     assert [p["Data_State"] for p in profiles] == ["HAS_RECORDS", "ZERO_RECORDS", "NO_DATA"]
     assert profiles[0]["Record_Count"] == 1
+    assert profiles[0]["Grid_Deep_Link"].startswith("/grid/PR_GRID_GEOGRAPHIC_V2/2.0.0-rc1/")
+    assert profiles[0]["Migration_Class"] == "RECOMPUTED_FROM_SOURCE_COORDINATE"
     assert profiles[0]["Shared_Boundary_Record_Count"] == 1
     assert profiles[1]["Record_Count"] == 0
     assert profiles[1]["Coverage_State"] == "VERIFIED"
@@ -134,7 +137,7 @@ def test_exact_geometry_bindings_are_profile_eligible(tmp_path, method, measure_
     assert profiles[0]["Data_State"] == "HAS_RECORDS"
     assert profiles[0]["Record_Count"] == 1
     assert profiles[0]["Shared_Boundary_Record_Count"] == 0
-    assert receipt["Migration_Class"] == "SPIDERWEB_CERTIFIED_EXACT_BINDINGS"
+    assert receipt["Migration_Class"] == "RECOMPUTED_FROM_SOURCE_COORDINATE"
     assert receipt["Accepted_Binding_Methods"] == [
         "COVERS",
         "INTERSECTS_POSITIVE_AREA",
@@ -186,3 +189,47 @@ def test_invalid_exact_geometry_measure_fails_closed(tmp_path, method, fields, m
 
     with pytest.raises(ProfileError, match=message):
         build_profiles(**args)
+
+
+def test_incremental_refresh_is_old_plus_new_cell_union(tmp_path):
+    args = _fixture(tmp_path)
+    full_profiles, _ = build_profiles(
+        **args,
+        requested_cells=("PRG2:L1:R075:C0236",),
+    )
+    previous_profiles = tmp_path / "previous-profiles.jsonl"
+    previous_profiles.write_text(
+        "".join(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n" for row in full_profiles),
+        encoding="utf-8",
+    )
+    previous_bindings = tmp_path / "previous-bindings.jsonl"
+    previous_bindings.write_bytes(args["bindings_path"].read_bytes())
+    previous_receipt = tmp_path / "previous-receipt.json"
+    previous_receipt.write_bytes(args["receipt_path"].read_bytes())
+
+    row = json.loads(args["bindings_path"].read_text())
+    row["Cell_ID"] = "PRG2:L1:R075:C0237"
+    _replace_binding(args, row)
+
+    profiles, receipt = build_incremental_profiles(
+        pin_path=args["pin_path"],
+        records_path=args["records_path"],
+        bindings_path=args["bindings_path"],
+        receipt_path=args["receipt_path"],
+        previous_bindings_path=previous_bindings,
+        previous_receipt_path=previous_receipt,
+        previous_profiles_path=previous_profiles,
+        coverage_path=args["coverage_path"],
+        level="L1",
+        changed_record_ids=("g1",),
+    )
+    assert receipt["Impacted_Cell_IDs"] == [
+        "PRG2:L1:R075:C0234",
+        "PRG2:L1:R075:C0237",
+    ]
+    assert receipt["Rollback_Target_SHA256"] == hashlib.sha256(
+        previous_profiles.read_bytes()
+    ).hexdigest()
+    by_cell = {row["Cell_ID"]: row for row in profiles}
+    assert by_cell["PRG2:L1:R075:C0234"]["Data_State"] == "NO_DATA"
+    assert by_cell["PRG2:L1:R075:C0237"]["Data_State"] == "HAS_RECORDS"
