@@ -219,7 +219,6 @@ def build_profiles(
         bindings=bindings,
         consumer=pin.consumer,
         level=level,
-        record_ids=set(records),
     )
     for assigned in grouped.values():
         for rid in assigned:
