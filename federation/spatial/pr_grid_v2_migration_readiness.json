@@ -1,0 +1,161 @@
+{
+  "schema_version": "pr-grid-v2-migration-readiness/1.0",
+  "evaluated_at": "2026-10-20",
+  "grid_identity": {
+    "Grid_ID": "PR_GRID_GEOGRAPHIC_V2",
+    "Grid_Version": "2.0.0-rc1",
+    "CRS": "EPSG:6566",
+    "Grid_Manifest_SHA256": "8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4",
+    "Geometry_Authority": "spiderweb-pr",
+    "Authority_Commit": "0c66e13d14232c0d7cbcbc179b3655904777dc71"
+  },
+  "policy": {
+    "exact_profile_rule": "Exact Cell_Profile counts require frozen non-synthetic source bytes plus Spiderweb-certified exact bindings. Runtime/template availability alone is insufficient.",
+    "legacy_coordinate_rule": "Legacy latitude/longitude fields are not exact unless per-record evidence explicitly establishes VERIFIED_SOURCE_COORDINATE or equivalent source geometry provenance.",
+    "fixture_rule": "tests, fixtures, samples, and conformance-only artifacts cannot satisfy a production migration denominator.",
+    "null_semantics": "NO_DATA != ZERO_RECORDS; ZERO_RECORDS requires verified coverage evidence.",
+    "geometry_ownership": "Spiderweb remains the sole canonical geometry authority; consumers are reference-only."
+  },
+  "domain_denominator": [
+    {
+      "repository": "aguayluz-pr",
+      "default_level": "L1",
+      "readiness_state": "PASS",
+      "exact_binding_permitted": true,
+      "production_profile_permitted": true,
+      "migration_class": "RECOMPUTED_FROM_SOURCE_COORDINATE",
+      "denominator_id": "AGUAYLUZ_NWPS_GAUGE_STATE_V2_L1",
+      "evidence": [
+        {
+          "role": "SOURCE",
+          "repository": "jotaele44/aguayluz-pr",
+          "path": "data/nwps_gauge_state.jsonl",
+          "frozen_commit": "459c0777365786419da5c62db20abfdec21aa092",
+          "git_blob_sha1": "f8ec4cdf63fb74bc73bce84560c9525444a8620c"
+        },
+        {
+          "role": "CERTIFICATION_WORKFLOW",
+          "repository": "jotaele44/spiderweb-pr",
+          "path": ".github/workflows/pr-grid-v2-certification.yml",
+          "note": "Cross-repo job freezes source identity, materializes Spiderweb bindings, materializes AguaYLuz Cell_Profiles, and verifies receipts."
+        }
+      ],
+      "blocker_codes": []
+    },
+    {
+      "repository": "skywatcher-pr",
+      "default_level": "L2",
+      "readiness_state": "BLOCKED",
+      "exact_binding_permitted": false,
+      "production_profile_permitted": false,
+      "migration_class": null,
+      "denominator_id": "SKYWATCHER_FLIGHT_GEOMETRY_PENDING",
+      "evidence": [
+        {
+          "role": "BLOCKER_EVIDENCE",
+          "repository": "jotaele44/skywatcher-pr",
+          "path": "data/flight_tracks/N400AH/ingestion_receipt.json",
+          "git_blob_sha1": "7fd7317f74c342eb36c10981406ef104d233967c",
+          "note": "Receipt declares 25 tracks / 12,455 observations and hashes tracks.geojson, but canonical geometry bytes are not committed on main."
+        }
+      ],
+      "blocker_codes": [
+        "SOURCE_GEOMETRY_BYTES_MISSING"
+      ],
+      "required_next_evidence": [
+        "Freeze accessible canonical track geometry bytes and verify them against the existing receipt or a superseding receipt.",
+        "Run Spiderweb geometry binding at the Skywatcher default level before exact Cell_Profile materialization."
+      ]
+    },
+    {
+      "repository": "ovnis-pr",
+      "default_level": "L1",
+      "readiness_state": "BLOCKED",
+      "exact_binding_permitted": false,
+      "production_profile_permitted": false,
+      "migration_class": null,
+      "denominator_id": "OVNIS_MASTER_COORDINATE_PROVENANCE_PENDING",
+      "evidence": [
+        {
+          "role": "BLOCKER_EVIDENCE",
+          "repository": "jotaele44/ovnis-pr",
+          "path": "releases/2026-06-23/ovnis_cases_master.csv",
+          "git_blob_sha1": "8b97115f32bfbe48e80fd96a36d74e4e4e168226",
+          "note": "Master rows contain latitude/longitude but no per-record coordinate evidence field establishing source-reported precision; repeated locality coordinates demonstrate that exactness cannot be assumed."
+        }
+      ],
+      "blocker_codes": [
+        "COORDINATE_PROVENANCE_UNDECLARED"
+      ],
+      "required_next_evidence": [
+        "Add a source-linked per-record coordinate evidence adjudication that distinguishes VERIFIED_SOURCE_COORDINATE from administrative/derived/unknown locations.",
+        "Migrate only evidence-qualified exact coordinates; preserve municipality/site-only cases as uncertain/set-bound or unmigrated."
+      ]
+    },
+    {
+      "repository": "moneysweep-pr",
+      "default_level": "L1",
+      "readiness_state": "BLOCKED",
+      "exact_binding_permitted": false,
+      "production_profile_permitted": false,
+      "migration_class": null,
+      "denominator_id": "MONEYSWEEP_PRODUCTION_GEOMETRY_PENDING",
+      "evidence": [
+        {
+          "role": "BLOCKER_EVIDENCE",
+          "repository": "jotaele44/moneysweep-pr",
+          "path": "exports/gis/layer_manifest.json",
+          "git_blob_sha1": "810f28348f8388ebd9931a77b9f83e00199a36c1",
+          "note": "GIS manifest explicitly reports blocked layers where asset coordinates are not committed; sample/conformance coordinates do not constitute a production denominator."
+        }
+      ],
+      "blocker_codes": [
+        "PRODUCTION_COORDINATE_DENOMINATOR_UNFROZEN"
+      ],
+      "required_next_evidence": [
+        "Freeze a non-synthetic production geometry/coordinate denominator with source lineage and attribution semantics.",
+        "Exclude exports/samples and conformance-only fixtures from production certification."
+      ]
+    },
+    {
+      "repository": "centinelas-pr",
+      "default_level": "L0",
+      "readiness_state": "BLOCKED",
+      "exact_binding_permitted": false,
+      "production_profile_permitted": false,
+      "migration_class": null,
+      "denominator_id": "CENTINELAS_SIGNAL_GEOMETRY_PENDING",
+      "evidence": [
+        {
+          "role": "BLOCKER_EVIDENCE",
+          "repository": "jotaele44/centinelas-pr",
+          "path": "data/reference/source_registry.csv",
+          "git_blob_sha1": "8f7cb9503869fd6a51ecdf59f498f76fade6d198",
+          "note": "Current source registry contains source/location descriptions but no canonical coordinate-bearing signal denominator."
+        }
+      ],
+      "blocker_codes": [
+        "NO_CANONICAL_SIGNAL_GEOMETRY_DENOMINATOR"
+      ],
+      "required_next_evidence": [
+        "Freeze coordinate- or geometry-bearing signal records with provenance before V2 exact binding.",
+        "Do not infer exact cell identity from textual location labels alone."
+      ]
+    }
+  ],
+  "control_plane": {
+    "repository": "thehub-pr",
+    "role": "VALIDATE_AND_AGGREGATE_REFERENCE_ONLY",
+    "geometry_authority": false,
+    "expected_domain_count": 5,
+    "current_pass_domains": [
+      "aguayluz-pr"
+    ],
+    "current_blocked_domains": [
+      "centinelas-pr",
+      "moneysweep-pr",
+      "ovnis-pr",
+      "skywatcher-pr"
+    ]
+  }
+}
