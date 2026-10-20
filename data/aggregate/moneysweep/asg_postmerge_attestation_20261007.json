@@ -1,10 +1,10 @@
 {
   "schemaVersion": "thehub.moneysweep-asg-postmerge-attestation/v3",
-  "observedAt": "2026-10-15",
+  "observedAt": "2026-10-20",
   "state": "PASS",
   "scopeId": "moneysweep.leaderboard.asg-emergency-source-native-v1",
   "thehubMainAtReplay": "d765bb0bd02adee985bb38a9d8839f291a472a7a",
-  "moneysweepMainObserved": "5487a75b1417edee25a2acf1b2896c474f3978fd",
+  "moneysweepMainObserved": "7cf946691d485da3fb88c308f63f3f1d73efa841",
   "package": {
     "sha256": "6ecdad09a48cdbd4ae1076138a9b5017a5be82608b489871a50ce0d599680337",
     "producerConsumerBytesIdentical": true
@@ -74,5 +74,10 @@
   },
   "terminalRule": "PASS remains valid only while the receipt-bearing PR head reruns the exact ASG rendered browser gate successfully. Any source, package, scope, or authority change requires a new attestation.",
   "thehubBaseAtCurrentReplay": "a3e24e3c3d998cd936814517a01f79907ab5488b",
-  "thehubRenderedSourceCommit": "b1004293fd2e2147063c9d84d545d97c7ce08b38"
+  "thehubRenderedSourceCommit": "b1004293fd2e2147063c9d84d545d97c7ce08b38",
+  "currentProducerHeadContext": {
+    "state": "PASS_PACKAGE_BYTES_UNCHANGED",
+    "currentHead": "7cf946691d485da3fb88c308f63f3f1d73efa841",
+    "note": "ASG source-native package remains content-addressed at 6ecdad09...; producer main advanced only through separately adjudicated non-package changes."
+  }
 }
