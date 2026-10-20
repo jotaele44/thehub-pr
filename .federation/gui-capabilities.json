@@ -831,6 +831,53 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "aguayluz-outdoor-conditions",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Per-municipio outdoor conditions composed by aguayluz-pr (rip current and surf, marine alerts, nearest-buoy sea state, UV, heat, air quality, beach advisories, river flood, rainfall, NWS alerts, storms, quakes, El Yunque closures). The Hub projects the producer's outdoor_condition entities into OutdoorConditions and shows them read-only on the AguaYLuz page; every component keeps its state, so missing data reads as not covered, stale, failed or not configured, never as safe. Conditions context, not safety advice.",
+      "backend": {
+        "files": [
+          "src/hub/ingest.py",
+          "server/backend/main_core.py"
+        ],
+        "endpoints": [
+          "GET /api/entities/{entity_name}"
+        ],
+        "symbols": [
+          "src/hub/ingest.py:project_outdoor_conditions"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/aguayluz"
+        ],
+        "e2e_routes": [
+          "/aguayluz"
+        ],
+        "components": [
+          "server/frontend/src/pages/AguaYLuz.jsx",
+          "server/frontend/src/components/shared/EntityLedger.jsx",
+          "server/frontend/src/lib/chips.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_outdoor_conditions_surface.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/AguaYLuz.test.jsx",
+          "server/frontend/src/lib/chips.test.js"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
     }
   ],
   "exceptions": []

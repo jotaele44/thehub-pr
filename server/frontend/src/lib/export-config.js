@@ -65,6 +65,13 @@ export const EXPORT_LEDGERS = [
     columns: ["risk_id", "risk_type", "severity", "confidence", "status", "municipality", "summary"],
   },
   {
+    entity: "OutdoorConditions",
+    label: "Outdoor Conditions",
+    module: "AguaYLuz-PR",
+    geo: true,
+    columns: ["municipality", "level", "driver_summary", "rip_current_risk", "surf_ft", "wave_height_ft", "water_temp_f", "uv_index", "heat_band", "aqi", "beach_advisories", "river_flood_category", "rain_24h_max_in", "nws_alerts", "as_of", "latitude", "longitude"],
+  },
+  {
     entity: "Contracts",
     label: "Contracts",
     module: "MoneySweep-PR",
