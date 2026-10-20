@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "8497e03bcefe055ae0fa3ec3647080de92d0b880",
+  "source_commit": "b1004293fd2e2147063c9d84d545d97c7ce08b38",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -1986,6 +1986,44 @@
         "server/frontend/src/pages/Timeline.jsx:73",
         "server/frontend/src/pages/Timeline.test.jsx:68",
         "server/frontend/src/pages/Timeline.test.jsx:91"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/AoiComparison\\.jsx:136:Download receipt \\(JSON\\)",
+      "classification": "BROWSER_ACTION",
+      "rationale": "This control serializes the already-computed AOI comparison receipt in the browser and passes it to downloadText; it performs no Hub backend mutation and requires no separate backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/gis/AoiComparison.jsx:136",
+        "server/frontend/src/components/gis/AoiComparison.jsx:252-257",
+        "server/frontend/src/lib/download.js"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/AoiComparison\\.jsx:241:unlabeled-control",
+      "classification": "BROWSER_ACTION",
+      "rationale": "This dynamically labeled control invokes loadBoundary, which acquires the declared TIGERweb municipio boundary source directly through the browser-side acquisition facade and stores the result in local component state; it is not a Hub backend mutation.",
+      "evidence": [
+        "server/frontend/src/components/gis/AoiComparison.jsx:151-160",
+        "server/frontend/src/components/gis/AoiComparison.jsx:241-243",
+        "server/frontend/src/gis/acquisitionFacade.js"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/AoiComparison\\.jsx:244:Compare",
+      "classification": "CLIENT_STATE",
+      "rationale": "This control runs compareAois deterministically over the spatial records already loaded into the page and updates local comparison/error state; it does not call or mutate a backend route.",
+      "evidence": [
+        "server/frontend/src/components/gis/AoiComparison.jsx:162-184",
+        "server/frontend/src/components/gis/AoiComparison.jsx:244"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/InterpretiveLayers\\.jsx:125:Download CSV",
+      "classification": "BROWSER_ACTION",
+      "rationale": "This control serializes the already-computed interpretive profile to CSV and invokes the browser download helper; it has no distinct backend mutation or missing server target.",
+      "evidence": [
+        "server/frontend/src/components/gis/InterpretiveLayers.jsx:125",
+        "server/frontend/src/lib/download.js"
       ]
     }
   ],
