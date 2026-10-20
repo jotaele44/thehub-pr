@@ -57,9 +57,15 @@
   "terminalRule": "PASS is valid only while the receipt-bearing PR head replays this exact producer commit successfully and preserves zero-residue GUI-backend governance. Future producer/package changes require a new receipt.",
   "replayEvidence": {
     "workflow": "MoneySweep full package replay",
-    "state": "PENDING_RERUN_AT_7CF94669",
+    "workflowRunId": 39489864676,
+    "workflowRunNumber": 21,
+    "workflowUrl": "https://github.com/jotaele44/thehub-pr/actions/runs/39489864676",
+    "jobId": 118859996758,
+    "validationHead": "4383cd8e6ad7ff4ec8ceb72f61e0ced94ff933f2",
     "test": "tests/test_moneysweep_full_package_current.py",
-    "expectedProducerCommit": "7cf946691d485da3fb88c308f63f3f1d73efa841"
+    "result": "PASS",
+    "testsPassed": 1,
+    "testsFailed": 0
   },
   "guiBackendAudit": {
     "state": "PASS",
