@@ -1,0 +1,90 @@
+{
+  "state": "PASS",
+  "scope": "Repository identities and declared roles only; proposed dataset fitness remains OPEN",
+  "bindings": [
+    {
+      "program_id": "moneysweep-pr",
+      "repository": "jotaele44/moneysweep-pr",
+      "role": "public_money_intelligence_node",
+      "repository_binding_state": "PASS",
+      "consumer_fitness_state": "OPEN",
+      "payload_states": {
+        "PASS": 22,
+        "FAIL": 2,
+        "BLOCKED": 135
+      },
+      "production_export_state": "BLOCKED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "program_id": "spiderweb-pr",
+      "repository": "jotaele44/spiderweb-pr",
+      "role": "spatial_operational_producer",
+      "repository_binding_state": "PASS",
+      "consumer_fitness_state": "OPEN",
+      "payload_states": {
+        "PASS": 593,
+        "FAIL": 82,
+        "BLOCKED": 1611
+      },
+      "production_export_state": "BLOCKED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "program_id": "aguayluz-pr",
+      "repository": "jotaele44/aguayluz-pr",
+      "role": "water_grid_monitoring_node",
+      "repository_binding_state": "PASS",
+      "consumer_fitness_state": "OPEN",
+      "payload_states": {
+        "PASS": 327,
+        "FAIL": 62,
+        "BLOCKED": 560
+      },
+      "production_export_state": "BLOCKED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "program_id": "ovnis-pr",
+      "repository": "jotaele44/ovnis-pr",
+      "role": "anomaly_intelligence_node",
+      "repository_binding_state": "PASS",
+      "consumer_fitness_state": "OPEN",
+      "payload_states": {
+        "PASS": 0,
+        "FAIL": 0,
+        "BLOCKED": 0
+      },
+      "production_export_state": "BLOCKED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "program_id": "skywatcher-pr",
+      "repository": "jotaele44/skywatcher-pr",
+      "role": "airspace_intelligence_node",
+      "repository_binding_state": "PASS",
+      "consumer_fitness_state": "OPEN",
+      "payload_states": {
+        "PASS": 0,
+        "FAIL": 0,
+        "BLOCKED": 0
+      },
+      "production_export_state": "BLOCKED",
+      "activation_state": "BLOCKED"
+    },
+    {
+      "program_id": "centinelas-pr",
+      "repository": "jotaele44/centinelas-pr",
+      "role": "pre_officialization_signal_producer",
+      "repository_binding_state": "PASS",
+      "consumer_fitness_state": "OPEN",
+      "payload_states": {
+        "PASS": 0,
+        "FAIL": 0,
+        "BLOCKED": 0
+      },
+      "production_export_state": "BLOCKED",
+      "activation_state": "BLOCKED"
+    }
+  ]
+}
