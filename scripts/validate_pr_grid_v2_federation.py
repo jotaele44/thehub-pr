@@ -53,7 +53,7 @@ def main() -> int:
     try:
         pins = validate_pin_set(paths)
         authority_root = args.authority_root or (args.workspace_root / "spiderweb-pr")
-        authority = validate_authority_root(authority_root.resolve())
+        authority = validate_authority_root(\n            authority_root.resolve(), verify_commit_object=True\n        )
         denominator = validate_frozen_pin_denominator(
             paths, REPO_ROOT / "registry/spatial/v2/consumer_pin_denominator.json"
         )
