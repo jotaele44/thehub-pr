@@ -19,6 +19,6 @@ export function deriveSnapshot(data) {
   if (new Set(ids).size!==ids.length || ids.some(x=>typeof x!=='string'||!x)) return {valid:false,components:[],edges:[],reason:'Duplicate or invalid component identifiers'};
   const set=new Set(ids);
   if (data.edges.some(e=>!set.has(e.source)||!set.has(e.target)||!e.id)||new Set(data.edges.map(e=>e.id)).size!==data.edges.length) return {valid:false,components:[],edges:[],reason:'Orphan or duplicate dependency edges'};
-  const components=data.components.map(c=>({...c, derived:classifyComponent(c,data.sha)}));
+  const components=data.components.map(c=>{ const candidate=classifyComponent(c,data.sha); return {...c, derived:candidate.state===STATES.PASS ? {state:STATES.PROVISIONAL,reason:'Local snapshot is untrusted: gates asserted but authoritative provenance not verified'} : candidate}; });
   return {valid:true,sha:data.sha,components,edges:data.edges,reason:null};
 }
