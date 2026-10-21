@@ -52,4 +52,4 @@ jobs:
         run: python -m pip install --disable-pip-version-check pytest
 
       - name: Authority commit regression tests
-        run: python -m pytest -q tests/test_grid_v2_authority.py
+        run: PYTHONPATH=src python -m pytest -q tests/test_grid_v2_authority.py
