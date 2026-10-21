@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 const tones={PASS:'#54d9a3',PROVISIONAL:'#dec075',OPEN:'#dec075',BLOCKED:'#ef8181',FAIL:'#ef8181',UNKNOWN:'#8795a8',NOT_STARTED:'#687586',AUDIT_ONLY:'#8795a8',SUPERSEDED:'#687586'};
 /** Bounded read-only topology: edges only represent unverified declarations. */
-export default function DependencyDiagram({components=[],edges=[],selected,onSelect}){
+export default function DependencyDiagram({components=[],edges=[],selected}){
  const layout=useMemo(()=>components.map((node,i)=>({node,x:14+(i%2)*178,y:20+Math.floor(i/2)*106})),[components]);
  const index=new Map(layout.map(x=>[x.node.id,x]));
  const height=Math.max(150,Math.ceil(layout.length/2)*106+24);
