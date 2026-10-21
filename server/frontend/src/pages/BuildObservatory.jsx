@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { deriveSnapshot } from '@/features/observatory/status';
+import DependencyDiagram from '@/features/observatory/DependencyDiagram';
 
 const palette = { PASS:'#57e7ae', OPEN:'#e7bd69', BLOCKED:'#f18484', FAIL:'#f18484', UNKNOWN:'#8996a9', NOT_STARTED:'#657183', PROVISIONAL:'#e7bd69', AUDIT_ONLY:'#8996a9', SUPERSEDED:'#657183' };
 const sample = {sha:null,components:[],edges:[]};
@@ -30,6 +31,7 @@ export default function BuildObservatory(){
     </section>
     <section className="rounded-xl border p-4 space-y-3" aria-label="Dependency topology">
       <h2 className="font-semibold">Dependency topology</h2>
+      <DependencyDiagram components={data.components} edges={data.edges} selected={selected} />
       <p className="text-xs text-muted-foreground">Declared edges are discovery evidence, not verified runtime integrations.</p>
       <ul className="grid gap-2 sm:grid-cols-2">{data.edges.map(edge=><li key={edge.id} className="rounded-lg border px-3 py-2 text-sm"><span className="font-medium">{data.components.find(c=>c.id===edge.source)?.name}</span><span aria-label="depends on" className="px-2">→</span><span className="font-medium">{data.components.find(c=>c.id===edge.target)?.name}</span><span className="block text-xs text-muted-foreground">{edge.relationship_type||'UNVERIFIED_RELATIONSHIP'} · NOT CERTIFIED</span></li>)}</ul>
       {data.edges.length===0&&<p className="text-sm text-muted-foreground">No dependency edges in this snapshot; absence is not proof of independence.</p>}
