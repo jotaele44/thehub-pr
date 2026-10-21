@@ -10,9 +10,14 @@ from typing import Any, Iterable
 
 import pr_grid_v2_runtime as grid
 
-PROFILE_VERSION = "pr-grid-v2-cell-profile/1.1"
+PROFILE_VERSION = "pr-grid-v2-cell-profile/1.2"
 EXACT_PROFILE_METHODS = ("COVERS", "INTERSECTS_POSITIVE_AREA", "LINE_POSITIVE_LENGTH")
-EXACT_MIGRATION_CLASSES = (
+SET_PROFILE_POLICIES = {
+    "ADMINISTRATIVE_SET": ("ADMINISTRATIVE_ONLY", "VERIFIED_ADMINISTRATIVE_GEOMETRY"),
+    "DERIVED_SET": ("DERIVED", "VERIFIED_DERIVED_GEOMETRY"),
+}
+PROFILE_METHODS = EXACT_PROFILE_METHODS + tuple(SET_PROFILE_POLICIES)
+MIGRATION_CLASSES = (
     "RECOMPUTED_FROM_SOURCE_COORDINATE",
     "RECOMPUTED_FROM_SOURCE_GEOMETRY",
     "VERIFIED_CROSSWALK",
@@ -49,8 +54,8 @@ def _migration_class(receipt: dict[str, Any]) -> str:
     value = receipt.get("Migration_Provenance_Class")
     if value is None and receipt.get("contract") == "pr-grid-v2-exact-point-binding-receipt/1.0":
         value = "RECOMPUTED_FROM_SOURCE_COORDINATE"
-    if value not in EXACT_MIGRATION_CLASSES:
-        raise ProfileError("authority binding receipt lacks an exact migration provenance class")
+    if value not in MIGRATION_CLASSES:
+        raise ProfileError("authority binding receipt lacks a supported migration provenance class")
     return str(value)
 
 
@@ -107,8 +112,8 @@ def _validated_binding_index(
     consumer: str,
     level: str,
     record_ids: set[str] | None = None,
-) -> dict[str, dict[str, tuple[str, str]]]:
-    grouped: dict[str, dict[str, tuple[str, str]]] = defaultdict(dict)
+) -> dict[str, dict[str, tuple[str, str, str]]]:
+    grouped: dict[str, dict[str, tuple[str, str, str]]] = defaultdict(dict)
     for binding in bindings:
         if (
             binding.get("Grid_ID") != grid.GRID_ID
@@ -117,15 +122,29 @@ def _validated_binding_index(
             raise ProfileError("incorrect grid version in binding")
         bound_level = grid.validate_level(binding.get("Grid_Level"))
         grid.validate_cell_id(binding.get("Cell_ID"), level=bound_level)
-        if binding.get("Uncertainty_Class") != "EXACT":
-            raise ProfileError("non-exact binding cannot enter exact profiles")
         method = binding.get("Binding_Method")
-        if method not in EXACT_PROFILE_METHODS:
-            raise ProfileError("unsupported exact binding method")
+        if method not in PROFILE_METHODS:
+            raise ProfileError("unsupported binding method")
+        uncertainty = binding.get("Uncertainty_Class")
+        if method in EXACT_PROFILE_METHODS:
+            if uncertainty != "EXACT":
+                raise ProfileError("exact binding method requires Uncertainty_Class=EXACT")
+        else:
+            expected_uncertainty, expected_geometry_state = SET_PROFILE_POLICIES[str(method)]
+            if uncertainty != expected_uncertainty:
+                raise ProfileError(
+                    f"{method} requires Uncertainty_Class={expected_uncertainty}"
+                )
+            if binding.get("Geometry_State") != expected_geometry_state:
+                raise ProfileError(
+                    f"{method} requires Geometry_State={expected_geometry_state}"
+                )
+            if binding.get("Confidence") is not None:
+                raise ProfileError(f"{method} requires Confidence=null")
         state = binding.get("Binding_State")
         if state not in ("INTERIOR", "EDGE_SHARED", "CORNER_SHARED"):
             raise ProfileError("unsupported boundary state")
-        if method == "INTERSECTS_POSITIVE_AREA":
+        if method in ("INTERSECTS_POSITIVE_AREA", "ADMINISTRATIVE_SET", "DERIVED_SET"):
             area = binding.get("Overlap_Area_m2")
             fraction = binding.get("Cell_Coverage_Fraction")
             if (
@@ -138,7 +157,7 @@ def _validated_binding_index(
                 or fraction <= 0
                 or fraction > 1
             ):
-                raise ProfileError("invalid positive-area exact binding")
+                raise ProfileError("invalid positive-area binding")
         elif method == "LINE_POSITIVE_LENGTH":
             length = binding.get("Length_In_Cell_m")
             if (
@@ -160,7 +179,7 @@ def _validated_binding_index(
         cid = str(binding["Cell_ID"])
         if rid in grouped[cid]:
             raise ProfileError("duplicate record-cell binding")
-        grouped[cid][rid] = (str(state), str(method))
+        grouped[cid][rid] = (str(state), str(method), str(uncertainty))
     return grouped
 
 
@@ -243,8 +262,13 @@ def build_profiles(
         assigned = grouped.get(cid, {})
         ids = sorted(assigned)
         categories: dict[str, int] = defaultdict(int)
+        method_counts: dict[str, int] = defaultdict(int)
+        uncertainty_counts: dict[str, int] = defaultdict(int)
         for rid in ids:
             categories[records[rid]["Category"]] += 1
+            _, method, uncertainty = assigned[rid]
+            method_counts[method] += 1
+            uncertainty_counts[uncertainty] += 1
         state = "HAS_RECORDS" if ids else ("ZERO_RECORDS" if cid in covered else "NO_DATA")
         states[state] += 1
         profiles.append(
@@ -265,7 +289,13 @@ def build_profiles(
                 "Category_Count": len(categories),
                 "Categories": dict(sorted(categories.items())),
                 "Top_Record_IDs": ids[:25],
-                "Shared_Boundary_Record_Count": sum(s != "INTERIOR" for s, _ in assigned.values()),
+                "Binding_Method_Counts": dict(sorted(method_counts.items())),
+                "Uncertainty_Class_Counts": dict(sorted(uncertainty_counts.items())),
+                "Exact_Record_Count": uncertainty_counts.get("EXACT", 0),
+                "Non_Exact_Record_Count": len(ids) - uncertainty_counts.get("EXACT", 0),
+                "Shared_Boundary_Record_Count": sum(
+                    state != "INTERIOR" for state, _, _ in assigned.values()
+                ),
                 "Migration_Class": migration_class,
                 "Identity_Default": "CANDIDATE_NOT_IDENTITY",
                 "Geometry_Included": False,
@@ -282,7 +312,15 @@ def build_profiles(
         "Profile_Count": len(profiles),
         "Data_State_Counts": dict(sorted(states.items())),
         "Migration_Class": migration_class,
-        "Accepted_Binding_Methods": list(EXACT_PROFILE_METHODS),
+        "Accepted_Binding_Methods": list(PROFILE_METHODS),
+        "Accepted_Set_Policies": {
+            method: {
+                "Uncertainty_Class": uncertainty,
+                "Geometry_State": geometry_state,
+                "Confidence": None,
+            }
+            for method, (uncertainty, geometry_state) in SET_PROFILE_POLICIES.items()
+        },
         "Geometry_Copied": False,
         "State": "CANDIDATE_NOT_CANONICAL",
     }
