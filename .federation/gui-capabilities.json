@@ -54,12 +54,13 @@
       "classification": "internal",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "Fail-closed federation contract/runtime for PR_GRID_GEOGRAPHIC_V2 pins, live authority-byte validation, immutable identity stamping, and read-only cell handoff. It is an internal federation primitive; Spiderweb remains sole geometry authority.",
+      "rationale": "Fail-closed federation contract/runtime and governance validation for PR_GRID_GEOGRAPHIC_V2 pins, live authority-byte validation, immutable identity stamping, migration-readiness evidence gates, and read-only cell handoff. It is an internal federation primitive; Spiderweb remains sole geometry authority and no separate operator GUI is required.",
       "analysis": {
         "files": [
           "scripts/validate_pr_grid_v2_federation.py",
           "src/hub/grid_v2.py",
-          "src/hub/grid_v2_authority.py"
+          "src/hub/grid_v2_authority.py",
+          "scripts/validate_pr_grid_v2_migration_readiness.py"
         ],
         "symbols": [
           "scripts/validate_pr_grid_v2_federation.py:main",
@@ -74,13 +75,17 @@
           "src/hub/grid_v2.py:validate_pin_payload",
           "src/hub/grid_v2.py:validate_pin_set",
           "src/hub/grid_v2_authority.py:validate_authority_root",
-          "src/hub/grid_v2_authority.py:validate_frozen_pin_denominator"
+          "src/hub/grid_v2_authority.py:validate_frozen_pin_denominator",
+          "scripts/validate_pr_grid_v2_migration_readiness.py:ReadinessError",
+          "scripts/validate_pr_grid_v2_migration_readiness.py:main",
+          "scripts/validate_pr_grid_v2_migration_readiness.py:validate_ledger"
         ]
       },
       "tests": {
         "contract": [
           "tests/test_grid_v2_runtime.py",
-          "tests/test_grid_v2_profiles.py"
+          "tests/test_grid_v2_profiles.py",
+          "tests/test_pr_grid_v2_migration_readiness.py"
         ],
         "backend": [
           "tests/test_grid_v2_api.py"

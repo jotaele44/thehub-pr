@@ -1,0 +1,220 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/schemas/pr_grid_v2_migration_readiness.schema.json",
+  "title": "PR Grid V2 Migration Readiness Ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "evaluated_at",
+    "grid_identity",
+    "policy",
+    "domain_denominator",
+    "control_plane"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "pr-grid-v2-migration-readiness/1.0"
+    },
+    "evaluated_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "grid_identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "Grid_ID",
+        "Grid_Version",
+        "CRS",
+        "Grid_Manifest_SHA256",
+        "Geometry_Authority",
+        "Authority_Commit"
+      ],
+      "properties": {
+        "Grid_ID": {
+          "const": "PR_GRID_GEOGRAPHIC_V2"
+        },
+        "Grid_Version": {
+          "const": "2.0.0-rc1"
+        },
+        "CRS": {
+          "const": "EPSG:6566"
+        },
+        "Grid_Manifest_SHA256": {
+          "const": "8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4"
+        },
+        "Geometry_Authority": {
+          "const": "spiderweb-pr"
+        },
+        "Authority_Commit": {
+          "const": "0c66e13d14232c0d7cbcbc179b3655904777dc71"
+        }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "domain_denominator": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "repository",
+          "default_level",
+          "readiness_state",
+          "exact_binding_permitted",
+          "production_profile_permitted",
+          "migration_class",
+          "denominator_id",
+          "evidence",
+          "blocker_codes"
+        ],
+        "properties": {
+          "repository": {
+            "enum": [
+              "aguayluz-pr",
+              "skywatcher-pr",
+              "ovnis-pr",
+              "moneysweep-pr",
+              "centinelas-pr"
+            ]
+          },
+          "default_level": {
+            "enum": [
+              "L0",
+              "L1",
+              "L2",
+              "L3"
+            ]
+          },
+          "readiness_state": {
+            "enum": [
+              "PASS",
+              "BLOCKED"
+            ]
+          },
+          "exact_binding_permitted": {
+            "type": "boolean"
+          },
+          "production_profile_permitted": {
+            "type": "boolean"
+          },
+          "migration_class": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "denominator_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "role",
+                "repository",
+                "path"
+              ],
+              "properties": {
+                "role": {
+                  "enum": [
+                    "SOURCE",
+                    "CERTIFICATION_WORKFLOW",
+                    "BLOCKER_EVIDENCE"
+                  ]
+                },
+                "repository": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "frozen_commit": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "git_blob_sha1": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                },
+                "note": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "blocker_codes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "required_next_evidence": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "control_plane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository",
+        "role",
+        "geometry_authority",
+        "expected_domain_count",
+        "current_pass_domains",
+        "current_blocked_domains"
+      ],
+      "properties": {
+        "repository": {
+          "const": "thehub-pr"
+        },
+        "role": {
+          "const": "VALIDATE_AND_AGGREGATE_REFERENCE_ONLY"
+        },
+        "geometry_authority": {
+          "const": false
+        },
+        "expected_domain_count": {
+          "const": 5
+        },
+        "current_pass_domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "current_blocked_domains": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}
