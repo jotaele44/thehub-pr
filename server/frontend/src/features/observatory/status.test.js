@@ -13,5 +13,5 @@ describe('fail-closed illumination',()=>{
  it('does not light duplicate requirement IDs',()=>expect(classifyComponent({...node,requirement_ids:['REQ-1','REQ-1']},sha).state).toBe('UNKNOWN'));
  it('rejects duplicated nodes',()=>expect(deriveSnapshot({sha,components:[node,node],edges:[]}).valid).toBe(false));
  it('rejects edges to unknown components',()=>expect(deriveSnapshot({sha,components:[node],edges:[{id:'e1',source:'module-1',target:'missing'}]}).valid).toBe(false));
- it('accepts well-formed graph with explicit evidence',()=>expect(deriveSnapshot({sha,components:[node],edges:[]}).components[0].derived.state).toBe('PASS'));
+ it('does not certify a locally asserted evidence graph',()=>expect(deriveSnapshot({sha,components:[node],edges:[]}).components[0].derived.state).toBe('PROVISIONAL'));
 });
