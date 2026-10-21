@@ -9,6 +9,7 @@ Missing consumers or mismatched authority state fail closed.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -32,6 +33,60 @@ from hub.grid_v2_authority import (  # noqa: E402
 )
 
 PIN_REL = Path("federation/spatial/pr_grid_geographic_v2.pin.json")
+
+SHARED_CONSUMER_FILES = {
+    "federation/spatial/pr_grid_v2_runtime.py":
+        REPO_ROOT / "federation-templates/spatial/pr_grid_v2_runtime.py",
+    "federation/spatial/pr_grid_v2_profiles.py":
+        REPO_ROOT / "federation-templates/spatial/pr_grid_v2_profiles.py",
+    "federation/spatial/materialize_pr_grid_v2_profiles.py":
+        REPO_ROOT / "federation-templates/spatial/materialize_pr_grid_v2_profiles.py",
+    "server/backend/grid_v2_api.py":
+        REPO_ROOT / "federation-templates/spatial/pr_grid_v2_api.py",
+}
+
+
+def _sha256(payload: bytes) -> str:
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _validate_shared_consumer_runtime(workspace_root: Path) -> dict[str, object]:
+    expected_consumers = sorted(EXPECTED_CONSUMERS - {"thehub-pr"})
+    files: dict[str, dict[str, object]] = {}
+    for output_rel, template_path in SHARED_CONSUMER_FILES.items():
+        try:
+            expected = template_path.read_bytes()
+        except OSError as exc:
+            raise GridV2PinError(
+                f"cannot read shared V2 template {template_path}: {exc}"
+            ) from exc
+        per_repo = {}
+        for consumer in expected_consumers:
+            path = workspace_root / consumer / output_rel
+            try:
+                observed = path.read_bytes()
+            except OSError as exc:
+                raise GridV2PinError(
+                    f"missing shared V2 runtime file for {consumer}: {output_rel}: {exc}"
+                ) from exc
+            if observed != expected:
+                raise GridV2PinError(
+                    f"shared V2 runtime drift: {consumer}:{output_rel}"
+                )
+            per_repo[consumer] = _sha256(observed)
+        files[output_rel] = {
+            "Template_SHA256": _sha256(expected),
+            "Consumer_SHA256": per_repo,
+            "State": "BYTE_IDENTICAL_PASS",
+        }
+    return {
+        "Expected_Consumer_Count": len(expected_consumers),
+        "Verified_Consumer_Count": len(expected_consumers),
+        "Geometry_Producer": "spiderweb-pr",
+        "Consumer_Geometry_Mode": "REFERENCE_ONLY",
+        "Files": files,
+        "State": "SHARED_RUNTIME_PARITY_PASS",
+    }
 
 
 def _pin_paths(workspace_root: Path) -> dict[str, Path]:
@@ -73,6 +128,7 @@ def main() -> int:
             paths,
             REPO_ROOT / "registry/spatial/v2/consumer_pin_denominator.json",
         )
+        shared_runtime = _validate_shared_consumer_runtime(workspace_root)
     except GridV2PinError as exc:
         print(
             json.dumps(
@@ -99,6 +155,7 @@ def main() -> int:
         "consumer_count": len(pins),
         "authority_source_validation": authority,
         "frozen_denominator": denominator,
+        "shared_consumer_runtime": shared_runtime,
         "Grid_ID": GRID_ID,
         "Grid_Version": GRID_VERSION,
         "Authority_Commit": AUTHORITY_COMMIT,
