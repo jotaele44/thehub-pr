@@ -1,7 +1,7 @@
 # Federation Build Observatory — isolated V0.1
 
 ## Scope and status
-This branch adds a read-only, lazy-loaded route at `/build-observatory`, local reviewed JSON snapshot loading, a component illumination grid, state filtering, an evidence inspector, and fail-closed status derivation. This is **not** a certified full architecture graph, and is not connected to live GitHub data. There are no inferred completion percentages.
+This branch adds a read-only, lazy-loaded route at `/build-observatory`, local reviewed JSON snapshot loading, a declared dependency list, a component illumination grid, state filtering, an evidence inspector, and fail-closed status derivation. This is **not** a certified full architecture graph, and is not connected to live GitHub data. There are no inferred completion percentages.
 
 ### Snapshot V0.1 input contract
 ```json
@@ -23,7 +23,7 @@ This branch adds a read-only, lazy-loaded route at `/build-observatory`, local r
 }
 ```
 
-**Warning:** This format is a prototype UI contract. It checks formal evidence fields but cannot establish that an evidence ID corresponds to an authentic run. Do not treat local supplied data as trusted certification authority. Future certification must verify signed/pinned manifests and authoritative CI provenance server-side.
+**Warning:** This format is a prototype UI contract. It checks formal evidence fields but cannot establish that an evidence ID corresponds to an authentic run. Therefore, a locally claimed PASS is rendered PROVISIONAL, never PASS; local JSON cannot illuminate a certified node. Do not treat local supplied data as trusted certification authority. Future certification must verify signed/pinned manifests and authoritative CI provenance server-side.
 
 ## Local verification (repository root)
 ```sh
