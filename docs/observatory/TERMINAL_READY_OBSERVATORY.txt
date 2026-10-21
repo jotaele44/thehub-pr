@@ -1,0 +1,28 @@
+OBSERVATORY V0.1 — TASK-SPECIFIC TERMINAL INSTRUCTIONS
+STATUS: AUDIT_ONLY. Neither release nor component certification is claimed.
+
+FROM THEHUB-PR ROOT (macOS/Linux):
+cd server/frontend
+npm ci
+npm run lint
+npm run typecheck
+npm run test -- --run src/features/observatory/status.test.js
+npm run build
+
+SMOKE TEST:
+Run npm run dev and navigate to /build-observatory under existing app authentication.
+Upload a JSON graph snapshot conforming to docs/observatory/README.md.
+Verify exact-SHA PASS illuminates, missing/stale evidence stays UNKNOWN, required FAIL stays BLOCKED.
+Check keyboard focus and narrow-screen layout.
+
+INTEGRITY:
+git rev-parse HEAD
+git status --short
+git show --stat --oneline HEAD
+sha256sum docs/observatory/README.md
+
+FAILURE:
+If any command fails, stop release certification; keep branch isolated and preserve raw logs.
+Do not promote local JSON assertions into authoritative evidence. Do not merge without exact-head CI and security checks.
+
+ROOT TERMINAL_READY.txt remains authoritative for the rest of THEHUB-PR.
