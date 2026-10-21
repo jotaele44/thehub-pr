@@ -45,3 +45,6 @@ Deployment and promotion remain blocked until exact-head tests pass, evidence pr
 
 ## Constraints
 Maintain existing artifact-based producer boundary (see ARCHITECTURE.md). Do not assume folder existence, stub code or stale test records imply completion. Source-code and runtime verification are distinct.
+
+## Topology renderer (successor candidate)
+`server/frontend/src/features/observatory/DependencyDiagram.jsx` visualizes declared edges in a bounded SVG. Edges remain unverified; the component cards provide keyboard-accessible selection. This renderer is not proof of producer runtime execution. Larger graphs, trusted attestations, historical revisions and production authorization remain OPEN.
