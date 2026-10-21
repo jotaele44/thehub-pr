@@ -28,6 +28,12 @@ export default function BuildObservatory(){
         <aside aria-label="Node evidence inspector" className="rounded-xl border p-4 space-y-2 break-words"><h3 className="font-semibold">Evidence inspector</h3>{active?<><p>{active.name}</p><p className="text-sm">{active.derived.state}: {active.derived.reason}</p><p className="text-xs">Component ID: {active.id}</p><p className="text-xs">Source SHA: {active.source_sha||'UNKNOWN'}</p><h4 className="text-sm font-medium">Mandatory gates</h4><ul className="text-xs space-y-1">{(active.gates||[]).map(g=><li key={g.id}>{g.id}: {g.state} {g.evidence_id?`— ${g.evidence_id}`:'— no evidence'}</li>)}</ul></>:<p className="text-sm text-muted-foreground">Select a component to inspect its reasons and gate records.</p>}</aside>
       </div>
     </section>
+    <section className="rounded-xl border p-4 space-y-3" aria-label="Dependency topology">
+      <h2 className="font-semibold">Dependency topology</h2>
+      <p className="text-xs text-muted-foreground">Declared edges are discovery evidence, not verified runtime integrations.</p>
+      <ul className="grid gap-2 sm:grid-cols-2">{data.edges.map(edge=><li key={edge.id} className="rounded-lg border px-3 py-2 text-sm"><span className="font-medium">{data.components.find(c=>c.id===edge.source)?.name}</span><span aria-label="depends on" className="px-2">→</span><span className="font-medium">{data.components.find(c=>c.id===edge.target)?.name}</span><span className="block text-xs text-muted-foreground">{edge.relationship_type||'UNVERIFIED_RELATIONSHIP'} · NOT CERTIFIED</span></li>)}</ul>
+      {data.edges.length===0&&<p className="text-sm text-muted-foreground">No dependency edges in this snapshot; absence is not proof of independence.</p>}
+    </section>
     <p className="text-xs text-muted-foreground">This initial isolated implementation renders component status cards; connector ingestion, edge routing, interactive topology, historical playback and production certification remain OPEN.</p>
   </main>;
 }
