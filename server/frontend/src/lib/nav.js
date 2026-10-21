@@ -42,6 +42,7 @@ export const NAV_GROUPS = [
       { label: "Anomaly Overlap", path: "/anomaly-overlap", icon: Layers },
       { label: "Transition Audit", path: "/transition", icon: Share2 },
       { label: "Module Readiness", path: "/readiness", icon: Github },
+      { label: "Build Observatory", path: "/build-observatory", icon: Network },
       { label: "Control Ledgers", path: "/control", icon: Boxes },
     ],
   },
