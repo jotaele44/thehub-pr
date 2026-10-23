@@ -1,0 +1,102 @@
+{
+  "schema_version": "federation.gui-backend-parity-exact-pin-inventory/1.0",
+  "generated_at": "2026-09-06T14:35:00Z",
+  "state": "SOURCE_INVENTORY_COMPLETE_RUNTIME_LEDGER_BLOCKED",
+  "certified": false,
+  "control_plane": {
+    "repository": "Jotaele44/thehub-pr",
+    "branch": "cert/gui-backend-parity-v1-20260906",
+    "auditor_commit_before_receipt": "affaab6375da3f473c023e5d48489e1738f8e3f3",
+    "pin_manifest": "federation-audit/manifests/gui-backend-parity-pins.json"
+  },
+  "repositories": [
+    {
+      "id": "thehub-pr",
+      "repository": "Jotaele44/thehub-pr",
+      "exact_commit": "6f037e038442ee6cea76c5f3592ed921adbb6f83",
+      "contract_source_commit": "94e000b5e0f21a5d1acaed42e79e73523c86ab56",
+      "contract_blob_sha": "c8a21a1576ee6017998b61f4a45ff0bb6ca0fd32",
+      "contract_relation": "ANCESTOR_CLEAN",
+      "ancestry_evidence": "compare 94e000b5e0f21a5d1acaed42e79e73523c86ab56..6f037e038442ee6cea76c5f3592ed921adbb6f83 status=ahead merge_base=source; changed files are contract/control-plane audit/workflow files outside declared application audit roots",
+      "pull_request": 262
+    },
+    {
+      "id": "spiderweb-pr",
+      "repository": "Jotaele44/spiderweb-pr",
+      "exact_commit": "a657d2254edbe3a0103421ed25e3e974227ac2ec",
+      "contract_source_commit": "f46546ef24c7dc2164b3f203d1af57e7d2570219",
+      "contract_blob_sha": "e746348d9cf2784cd46b3df331dd8e11086a1684",
+      "contract_relation": "ANCESTOR_CLEAN",
+      "ancestry_evidence": "PR 332 base=contract_source, head=exact_commit; only repository-local contract and CI gate were added",
+      "pull_request": 332
+    },
+    {
+      "id": "skywatcher-pr",
+      "repository": "Jotaele44/skywatcher-pr",
+      "exact_commit": "20caeb4a9bfd33df8b83f0c6ed13b0c1775bc3b8",
+      "contract_source_commit": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "contract_blob_sha": "9714eb9e7a8838dd17fda5d051d2ccbf45394a3d",
+      "contract_relation": "ANCESTOR_CLEAN",
+      "ancestry_evidence": "PR 251 base=contract_source, head=exact_commit; only repository-local contract and CI gate were added",
+      "pull_request": 251
+    },
+    {
+      "id": "ovnis-pr",
+      "repository": "Jotaele44/ovnis-pr",
+      "exact_commit": "457b6de4128e5348df5d395b530bcb2e9f3249a8",
+      "contract_source_commit": "68b87366207cb3fe249814ee6611a03b18d67a6b",
+      "contract_blob_sha": "302852204a902ee9326e4eb2a67d38e2900b6e69",
+      "contract_relation": "ANCESTOR_CLEAN",
+      "ancestry_evidence": "PR 126 base=contract_source, head=exact_commit; only repository-local contract and CI gate were added",
+      "pull_request": 126
+    },
+    {
+      "id": "aguayluz-pr",
+      "repository": "Jotaele44/aguayluz-pr",
+      "exact_commit": "9203124f0e670700b4204040815eef64efb2fb9e",
+      "contract_source_commit": "3678271a03e36375dc3e9f2fb4da0b6b655622bd",
+      "contract_blob_sha": "c08d6c35807f7bfbf262256211dab4fa17b9565e",
+      "contract_relation": "ANCESTOR_CLEAN",
+      "ancestry_evidence": "PR 236 base=contract_source, head=exact_commit; only repository-local contract and CI gate were added",
+      "pull_request": 236
+    },
+    {
+      "id": "centinelas-pr",
+      "repository": "Jotaele44/centinelas-pr",
+      "exact_commit": "df4d098cd5ee123caa8985f023bfdf0bb5d191d1",
+      "contract_source_commit": "caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+      "contract_blob_sha": "6fc4036f1f0f461e649825c7830357524891b34f",
+      "contract_relation": "ANCESTOR_CLEAN",
+      "ancestry_evidence": "PR 126 base=contract_source, head=exact_commit; only repository-local contract and CI gate were added",
+      "pull_request": 126
+    },
+    {
+      "id": "moneysweep-pr",
+      "repository": "Jotaele44/moneysweep-pr",
+      "exact_commit": "312996e9e00cb48582a038ec1ec8878c6373bb11",
+      "contract_source_commit": "74b10245f925bfd9b9ea07b2ce986981d5d65525",
+      "contract_blob_sha": "e1285ba70430dbf536420fb807ea5b7725430a95",
+      "contract_relation": "ANCESTOR_CLEAN",
+      "ancestry_evidence": "PR 564 base=contract_source, head=exact_commit; only repository-local contract and CI gate were added",
+      "pull_request": 564
+    }
+  ],
+  "arithmetic": {
+    "repositories_expected": 7,
+    "repositories_pinned": 7,
+    "repository_local_contracts": 7,
+    "fallback_contracts_used": 0,
+    "source_ancestry_clean": 7
+  },
+  "github_actions_execution": {
+    "workflow": "Federation GUI backend parity",
+    "run_id": 34039738907,
+    "job": "inventory",
+    "conclusion": "failure",
+    "steps": null,
+    "logs_url": null,
+    "classification": "PRE_STEP_RUNNER_FAILURE",
+    "note": "No checkout, test, scanner, or inventory step executed; this is not a parity finding against repository code."
+  },
+  "boundary": "This receipt certifies only the exact seven-repository source/contract inventory and contract-source ancestry. It does not substitute for the executable parity ledger, runtime/device evidence, production smoke tests, or final federation certification."
+}

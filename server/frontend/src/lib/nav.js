@@ -4,6 +4,7 @@ import {
   Activity, Hexagon, GitCompareArrows, Layers, Share2, Github, Boxes,
   FolderKanban, FileStack, BookOpen, ListChecks, ShieldCheck, Download,
   BookA, Sparkles, Plug, Network, Radar, Droplets, Banknote, Plane, Signpost, AppWindow, TerminalSquare, Settings,
+  Search, History,
 } from "lucide-react";
 import { MODULES, domainAccent } from "@/lib/federation";
 
@@ -29,6 +30,8 @@ export const NAV_GROUPS = [
     items: [
       { label: "Recent Activity", path: "/", icon: Activity },
       { label: "Hub", path: "/hub", icon: Hexagon, accentDot: domainAccent("ControlPlane").dot },
+      { label: "Search", path: "/search", icon: Search },
+      { label: "Timeline", path: "/timeline", icon: History },
     ],
   },
   { label: "Producers", items: producerItems },

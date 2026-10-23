@@ -1,0 +1,37 @@
+{
+  "candidateCount": 14,
+  "consumerCodeCommit": "b0b789757bfa15c9ba1e7547224167a3f5b6714a",
+  "consumerPackageSha256": "86ad2e178972b794c1afbe042cf0f51a098080f73030e7efa7a376ff85a8c4ea",
+  "execution": {
+    "deterministicContractReplay": "PASS",
+    "githubActions": {
+      "assertsPass": false,
+      "state": "WAIVED_BY_USER"
+    },
+    "pytest": {
+      "assertsPass": false,
+      "state": "NOT_EXECUTED"
+    }
+  },
+  "packagePath": "data/aggregate/moneysweep/leaderboard_package.json",
+  "producerCommit": "6d37d675d49285057ab43c88d294e8a5e8e52beb",
+  "schemaVersion": "thehub.moneysweep-leaderboard-replay/v1",
+  "scopeId": "moneysweep.leaderboard.production-v1",
+  "state": "PASS",
+  "trust": {
+    "packageTrusted": true,
+    "receiptTrusted": true,
+    "releaseTrusted": true,
+    "scopeTrusted": true
+  },
+  "trustManifestPath": "data/aggregate/moneysweep/leaderboard_trust.json",
+  "validation": {
+    "canonicalIdentity": true,
+    "certificationRuntimeHashMatched": true,
+    "competitionRanking": true,
+    "errors": [],
+    "mountedBytesExact": true,
+    "sourceCommitBinding": true,
+    "zeroResidueAccounting": true
+  }
+}

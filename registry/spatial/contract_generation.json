@@ -8,7 +8,7 @@
         "cell_domain_summary@1",
         "cell_profile@1",
         "federation_cell_index@1",
-        "record_cell_binding@1"
+        "record_cell_binding@2"
       ],
       "receipt_present": true,
       "repository": "spiderweb-pr",
@@ -19,7 +19,7 @@
         "cell_domain_summary@1",
         "cell_profile@1",
         "federation_cell_index@1",
-        "record_cell_binding@1"
+        "record_cell_binding@2"
       ],
       "disposition": "ATTESTED",
       "missing_contracts": [],
@@ -32,7 +32,7 @@
         "cell_domain_summary@1",
         "cell_profile@1",
         "federation_cell_index@1",
-        "record_cell_binding@1"
+        "record_cell_binding@2"
       ],
       "disposition": "ATTESTED",
       "missing_contracts": [],
@@ -45,7 +45,7 @@
         "cell_domain_summary@1",
         "cell_profile@1",
         "federation_cell_index@1",
-        "record_cell_binding@1"
+        "record_cell_binding@2"
       ],
       "disposition": "ATTESTED",
       "missing_contracts": [],
@@ -58,7 +58,7 @@
         "cell_domain_summary@1",
         "cell_profile@1",
         "federation_cell_index@1",
-        "record_cell_binding@1"
+        "record_cell_binding@2"
       ],
       "disposition": "ATTESTED",
       "missing_contracts": [],
@@ -71,7 +71,7 @@
         "cell_domain_summary@1",
         "cell_profile@1",
         "federation_cell_index@1",
-        "record_cell_binding@1"
+        "record_cell_binding@2"
       ],
       "disposition": "ATTESTED",
       "missing_contracts": [],
@@ -85,7 +85,7 @@
     "cell_domain_summary@1": "Tiny per-repository per-cell aggregate the Hub reads to compose a cross-domain view. Counts and identifiers only.",
     "cell_profile@1": "GET /cells/{Cell_ID}/profile envelope. Same shape everywhere, domain-specific payload, geometry never included.",
     "federation_cell_index@1": "Canonical 98,304-cell Cell_ID address space and its geographic geometry, published solely by the geometry authority.",
-    "record_cell_binding@1": "Binding of a domain record to one or more Cell_IDs, with a spatial role. Membership is computed once by the authority and stored by the producer."
+    "record_cell_binding@2": "Fail-closed binding of a domain record to Spiderweb spatial output. While the transform is PROVISIONAL, exact Cell_ID ground claims are forbidden and the producer must preserve the full content-addressed uncertainty Cell_Set."
   },
   "control_plane": "thehub-pr",
   "generation": "federation-spatial-index/1",
@@ -94,7 +94,7 @@
   "notes": [
     "Only the geometry authority may publish canonical geometry; every other repository consumes Cell_IDs and never becomes a second geometry producer.",
     "A Cell_ID is a spatial address, not an identity claim. Co-location in a cell never establishes that two records are the same entity.",
-    "The grid transform is PROVISIONAL in this generation, so consumers must not present a Cell_ID as a certified ground location."
+    "The grid transform is PROVISIONAL in this generation, so consumers must not present a Cell_ID as a certified ground location and must preserve the full uncertainty Cell_Set under record_cell_binding@2."
   ],
   "rule": "No affected repository may merge, release or certify this federation-visible change while generation_state is OPEN.",
   "schema_version": "prii_federation_contract_generation_v1"

@@ -30,7 +30,7 @@ def client(monkeypatch):
     router.register_adapter(ContractsAdapter(client=FakeClient({})))
     app = FastAPI()
     app.include_router(build_mcp_api(router))
-    return TestClient(app)
+    return TestClient(app, client=("127.0.0.1", 8000))
 
 
 def test_route_happy_path(client):
@@ -52,6 +52,68 @@ def test_route_forbidden_when_not_declared(client):
         "params": {"keyword": "x"},
     })
     assert resp.status_code == 403
+
+
+def test_route_rejects_non_loopback_clients():
+    router = Router(RuntimeRegistry())
+    router.register_adapter(GeospatialAdapter())
+    app = FastAPI()
+    app.include_router(build_mcp_api(router))
+    remote_client = TestClient(app, client=("198.51.100.7", 8000))
+
+    response = remote_client.post("/mcp/route", json={
+        "project": "spiderweb", "capability": "geospatial", "action": "distance",
+        "params": {"a": [18.46, -66.10], "b": [18.01, -66.61]},
+    })
+
+    assert response.status_code == 403
+
+
+def test_adapter_declared_write_requires_hub_write_authorizer():
+    class WriteGeospatialAdapter(GeospatialAdapter):
+        def write_actions(self):
+            return ["distance"]
+
+    router = Router(RuntimeRegistry())
+    router.register_adapter(WriteGeospatialAdapter())
+    app = FastAPI()
+    app.include_router(build_mcp_api(router))
+    local_client = TestClient(app, client=("127.0.0.1", 8000))
+
+    response = local_client.post("/mcp/route", json={
+        "project": "spiderweb", "capability": "geospatial", "action": "distance",
+        "params": {"a": [18.46, -66.10], "b": [18.01, -66.61]},
+    })
+
+    assert response.status_code == 503
+    assert response.json()["detail"] == "MCP write authorization is not configured"
+
+
+def test_adapter_declared_write_calls_authorizer_even_when_request_flag_is_false():
+    class WriteGeospatialAdapter(GeospatialAdapter):
+        def write_actions(self):
+            return ["distance"]
+
+    authorized_requests = []
+    router = Router(RuntimeRegistry())
+    router.register_adapter(WriteGeospatialAdapter())
+    app = FastAPI()
+    app.include_router(
+        build_mcp_api(
+            router,
+            write_authorizer=lambda request: authorized_requests.append(request),
+        )
+    )
+    local_client = TestClient(app, client=("127.0.0.1", 8000))
+
+    response = local_client.post("/mcp/route", json={
+        "project": "spiderweb", "capability": "geospatial", "action": "distance",
+        "params": {"a": [18.46, -66.10], "b": [18.01, -66.61]},
+        "is_write": False,
+    })
+
+    assert len(authorized_requests) == 1
+    assert response.status_code == 403
 
 
 def test_route_bad_action_is_400(client):
@@ -78,9 +140,18 @@ def test_health_and_ready(client):
 
 def test_capabilities_lists_registry(client):
     body = client.get("/mcp/capabilities").json()
-    assert len(body["capabilities"]) == 13
+    assert len(body["capabilities"]) == 15
     assert body["capabilities"]["federation-core"]["version_pin"] == "1.0.0"
     assert body["capabilities"]["osha"]["class"] == "government"
+    jp_flood = body["capabilities"]["jp-flood-certification"]
+    assert jp_flood["class"] == "domain"
+    assert jp_flood["status"] == "active"
+    assert jp_flood["version_pin"] == "3.0.0"
+    assert sorted(jp_flood["required_by"]) == ["aguayluz", "spiderweb"]
+    intelligence_query = body["capabilities"]["intelligence-query"]
+    assert intelligence_query["class"] == "core"
+    assert intelligence_query["status"] == "pilot"
+    assert intelligence_query["required_by"] == ["ovnis"]
     assert "moneysweep" in body["projects"]
 
 
@@ -95,7 +166,7 @@ def test_metrics_endpoint_reports_after_routes():
     router.register_adapter(GeospatialAdapter())
     app = FastAPI()
     app.include_router(build_mcp_api(router))
-    c = TestClient(app)
+    c = TestClient(app, client=("127.0.0.1", 8000))
 
     payload = {
         "project": "spiderweb", "capability": "geospatial", "action": "distance",

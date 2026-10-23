@@ -485,6 +485,13 @@ it, both look identical until a write fails.
 | `thehub-pr` | `require_write_access` | token plumbed but cleared at boot | `?write_token=`, separate storage slot |
 | `skywatcher-pr` | `require_write_access` | same | same |
 
+TheHub's Operator Settings page now also provides a discoverable password-field
+workflow to save or clear the write token in the current browser profile. It
+never reads the stored value back into the page, clears the field after saving,
+and states that storage is browser-local and not verified until a write request.
+The query parameter remains available for controlled bootstrap, but is no longer
+the only way for an operator to configure a credential.
+
 **The harness now covers this.** `scripts/verify_audit.py` gained a check that each
 backend advertises the write-token flag, and its aguayluz check flipped from "which
 route is unguarded" to "how many are" — so a new mutating route shipped without a

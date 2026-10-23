@@ -31,6 +31,15 @@ VITE_FEDERATION_MODE=diagnostic
 | `GET /api/apps/public-settings` | yes — reports `requires_auth: false`, `mode: diagnostic` |
 | `GET /api/auth/me` | yes, but always **401** in diagnostic mode |
 | `GET /api/entities/:entity` | yes |
+| `GET /api/evidence/:collection/:id` | yes — Evidence Object and lineage; 404 for a record the Hub does not hold |
+| `GET /api/search` | yes — federated search (`q`, `type`, `include_synthetic`, `limit`, `cursor`); 422 on a bad parameter |
+| `GET /api/entity/:id` | yes — entity composition; 404 for an entity the Hub does not hold |
+| `GET /api/timeline` | yes — OVNIS event timeline (`sort`, `category`, `findings_only`, `include_synthetic`, `limit`, `cursor`); 422 on a bad parameter |
+| `GET /api/research` | yes — OVNIS research overview (per-kind totals, topic cards) |
+| `GET /api/research/records/:kind` | yes — one research kind, paged (`status`, `origin`, `include_synthetic`, `limit`, `cursor`); 422 for an unknown kind |
+| `GET /api/research/case/:caseId` | yes — case reconstruction; 404 for a case the Hub does not hold |
+| `GET /api/spatial/features` | yes — Property Map and Digital Twin features by declared precision, each with its time at the recorded precision (`time_start`, `time_end`, `time_basis`, `temporal_state`), plus each feature's `declared_epistemic_class` and `declared_data_stage` (the producer's own declaration, or `null`), an account of records not drawn, the collection's `time_extent`, `undated` and `read_at`, and `store` (how the served store was built: `bounded-sample`, `not_recorded` or `unreadable`) (`bbox`, `category`, `producer`, `include_synthetic`, `limit`); 422 on a bad `bbox` |
+| `GET /api/spatial/intel` | yes — Location Intel: records within `radius_m` of `lat`,`lon`, nearest first, and records naming `municipality`; 422 on a bad parameter |
 | `POST /api/entities/:entity/filter` | yes (a read, despite the verb) |
 | `POST /api/entities/:entity` | yes — **write-guarded** |
 | `PATCH /api/entities/:entity/:id` | yes — **write-guarded** |
@@ -39,7 +48,7 @@ VITE_FEDERATION_MODE=diagnostic
 | `GET /api/notifications` | yes |
 | `POST /api/notifications/ack`, `PUT /api/notifications/preferences` | yes — **write-guarded** |
 | `POST /api/functions/:name/invoke` | yes |
-| `/api/agents/*`, `/api/integrations/*` | yes |
+| `/api/agents/*`, `/api/integrations/*` | yes — explicit `status: "not_implemented"` diagnostic response; no agent or provider execution |
 | `POST /api/files/upload` | yes, returns a diagnostic stub |
 | `GET /api/connectors/:name/connection` | yes, hardcoded `not_connected` |
 | `POST /api/auth/login` | **no — 404** |
@@ -62,8 +71,8 @@ succeed.
 Mutating routes are guarded by `require_write_access` in `server/backend/main.py`:
 
 - `PRII_WRITE_TOKEN` **set** → every mutating request needs `Authorization: Bearer <token>`
-- `PRII_WRITE_TOKEN` **unset** → writes are served to local-network clients
-  (loopback, RFC1918 private, link-local) and refused for public addresses
+- `PRII_WRITE_TOKEN` **unset** → every mutating request is refused (`503`,
+  fail-closed) — there is no exception for local-network callers
 
 Reads are never affected.
 
@@ -75,8 +84,11 @@ look identical until a write 401s. Only the boolean is exposed, never the token.
 ### Supplying the token from the browser
 
 Load the app with `?write_token=<PRII_WRITE_TOKEN>`. The value is stripped from
-the URL, stored under `federation_write_token`, and sent as
-`Authorization: Bearer` on every request that has no session token.
+the URL, stored under `federation_write_token` in tab-scoped session storage,
+and sent as `Authorization: Bearer` on every request that has no session token.
+It is removed when the tab session ends and is not written to persistent local
+storage. Scripts running in the app's origin can still access it, so only use
+this option on a trusted device.
 `?clear_write_token=true` removes it.
 
 It is a **separate slot from the access token, and has to be.** In diagnostic mode

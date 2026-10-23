@@ -39,6 +39,11 @@ def _targets():
     return yaml.safe_load((_TEMPLATES / "targets.yaml").read_text())["targets"]
 
 
+def test_shared_jsx_lint_template_covers_shipped_archive_shells():
+    template = (_TEMPLATES / "baseline" / "eslint.config.js").read_text()
+    assert '"src/zip-design/**/*.{js,mjs,cjs,jsx}"' in template
+
+
 def test_every_referenced_template_exists():
     for t in _targets():
         assert (_TEMPLATES / t["template"]).is_file(), t["template"]
@@ -221,7 +226,11 @@ def test_centinelas_desktop_requirements_support_plain_pip_install(tmp_path):
     assert f"prii-maintenance @ {archive}" in requirements
     assert f"prii-export-utils @ {archive}" in requirements
     assert "git+https://github.com/jotaele44/thehub-pr" not in requirements
-    assert requirements.count("f2b81769924689b4d959554928810b1d7b7ef3d6.zip") == 3
+    # prii-desktop is pinned to the commit carrying the visible-startup-failure fix;
+    # the other two shared packages stay on their original immutable pin.
+    assert f"prii-desktop @ {archive}1313c77aec1a0742c1abb444026284a825af4177.zip" in requirements
+    assert requirements.count("1313c77aec1a0742c1abb444026284a825af4177.zip") == 1
+    assert requirements.count("f2b81769924689b4d959554928810b1d7b7ef3d6.zip") == 2
 
 
 def test_every_producer_declares_an_app_title():
@@ -360,7 +369,7 @@ def test_unresolved_placeholder_is_detected():
 
 
 def test_baseline_workflows_are_valid_and_least_privilege():
-    for name in ("codeql.yml", "secret-scan.yml", "pip-audit.yml"):
+    for name in ("codeql.yml", "secret-scan.yml", "pip-audit.yml", "docs-sync.yml"):
         doc = yaml.safe_load((_TEMPLATES / "baseline" / name).read_text())
         assert "permissions" in doc, f"{name} must declare a top-level permissions block"
         assert doc["permissions"] == {"contents": "read"}, name
@@ -404,3 +413,95 @@ def test_baseline_actions_are_sha_pinned():
     for path in sorted((_TEMPLATES / "baseline").glob("*.yml")):
         for ref in re.findall(r"uses:\s*\S+@(\S+)", path.read_text()):
             assert pinned.match(ref), f"{path.name}: {ref} is not a SHA pin"
+
+
+# ── Documentation stays true (docs-sync) ──────────────────────────────────────
+
+_DOCS_SYNC_TARGETS = {
+    "baseline/check_docs_sync.py": "tools/check_docs_sync.py",
+    "baseline/docs-sync.yml": ".github/workflows/docs-sync.yml",
+    "baseline/claude-settings.json": ".claude/settings.json",
+    "baseline/CLAUDE.md": "CLAUDE.md",
+}
+
+
+def test_docs_sync_rule_ships_to_every_repo_and_only_as_one_unit():
+    # The rule is the checker + its CI job + the agent-time hook + the standing
+    # instruction. Shipping a subset (a workflow that calls a script the repo does
+    # not have, a hook pointing at nothing) is worse than shipping none, so the
+    # four targets must cover exactly the same repos, and all seven of them.
+    by_template = {t["template"]: t for t in _targets()}
+    everyone = set(_vars())
+    for template, output in _DOCS_SYNC_TARGETS.items():
+        assert by_template[template]["output"] == output
+        assert set(by_template[template]["repos"]) == everyone, template
+
+
+def test_docs_sync_pieces_agree_with_each_other():
+    import json
+
+    workflow = yaml.safe_load((_TEMPLATES / "baseline" / "docs-sync.yml").read_text())
+    # PyYAML reads the bare key `on` as the boolean True (YAML 1.1).
+    triggers = workflow.get("on", workflow.get(True))
+    assert "pull_request" in triggers
+    # A required check must report on every PR; a paths filter would leave
+    # docs-only PRs waiting on a status that never arrives.
+    assert "paths" not in (triggers["pull_request"] or {})
+    job = workflow["jobs"]["docs-sync"]
+    assert job["name"] == "docs-sync"  # the name to mark as a required status check
+    steps = job["steps"]
+    assert any(s.get("with", {}).get("fetch-depth") == 0 for s in steps)  # merge base needed
+    scripts = "\n".join(s.get("run", "") for s in steps)
+    assert "tools/check_docs_sync.py" in scripts
+    # PR text is attacker-controlled: it may reach the script only via env.
+    assert "github.event" not in scripts
+
+    settings = json.loads((_TEMPLATES / "baseline" / "claude-settings.json").read_text())
+    (hook,) = settings["hooks"]["Stop"][0]["hooks"]
+    assert hook["type"] == "command"
+    assert "tools/check_docs_sync.py" in hook["command"] and "--agent-hook" in hook["command"]
+
+    for name in ("CONTRIBUTING.md", "CLAUDE.md"):
+        text = (_TEMPLATES / "baseline" / name).read_text()
+        assert ".federation/docs-sync.json" in text, name
+        assert "Docs-Impact: none -" in text, name
+    pr_template = (_TEMPLATES / "baseline" / "pull_request_template.md").read_text()
+    assert "tools/check_docs_sync.py" in pr_template
+    precommit = yaml.safe_load((_TEMPLATES / "baseline" / "pre-commit-config.yaml").read_text())
+    local = [h for r in precommit["repos"] if r["repo"] == "local" for h in r["hooks"]]
+    assert [h["id"] for h in local] == ["docs-sync"]
+    assert "tools/check_docs_sync.py --staged" in local[0]["entry"]
+
+
+def test_docs_sync_files_render_into_a_fresh_repo(tmp_path):
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    for output in _DOCS_SYNC_TARGETS.values():
+        assert (tmp_path / output).is_file(), output
+    # Byte-identical everywhere: the rule must not vary by repo.
+    template = (_TEMPLATES / "baseline" / "check_docs_sync.py").read_bytes()
+    assert (tmp_path / "tools" / "check_docs_sync.py").read_bytes() == template
+
+
+def test_pr_grid_v2_runtime_respects_geometry_authority_boundary():
+    targets = [
+        target
+        for target in _targets()
+        if target["template"] == "spatial/pr_grid_v2_runtime.py"
+    ]
+    assert len(targets) == 2
+
+    by_output = {target["output"]: set(target["repos"]) for target in targets}
+    assert by_output["federation/spatial/pr_grid_v2_runtime.py"] == {
+        "aguayluz-pr",
+        "centinelas-pr",
+        "moneysweep-pr",
+        "ovnis-pr",
+        "skywatcher-pr",
+    }
+    assert by_output["src/hub/grid_v2.py"] == {"thehub-pr"}
+
+    recipients = set().union(*by_output.values())
+    assert "spiderweb-pr" not in recipients

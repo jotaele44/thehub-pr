@@ -42,12 +42,17 @@ const ControlLedgers = lazy(() => import('@/pages/ControlLedgers'));
 const Hub = lazy(() => import('@/pages/Hub'));
 const ProjectSigns = lazy(() => import('@/pages/ProjectSigns'));
 const RecentActivity = lazy(() => import('@/pages/RecentActivity'));
-const ResearchAssistant = lazy(() => import('@/pages/ResearchAssistant'));
+const ResearchHub = lazy(() => import('@/pages/ResearchHub'));
+const CaseReconstruction = lazy(() => import('@/pages/CaseReconstruction'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
 const AppCenter = lazy(() => import('@/pages/AppCenter'));
 const Operations = lazy(() => import('@/pages/Operations'));
 const GISWorkspace = lazy(() => import('@/pages/GISWorkspace'));
 const OperatorSettings = lazy(() => import('@/pages/OperatorSettings'));
+const EvidenceInspector = lazy(() => import('@/pages/EvidenceInspector'));
+const SearchPage = lazy(() => import('@/pages/Search'));
+const EntityPage = lazy(() => import('@/pages/EntityPage'));
+const TimelinePage = lazy(() => import('@/pages/Timeline'));
 
 const AppRoutes = () => {
   const { isLoadingPublicSettings, appPublicSettings } = useAuth();
@@ -104,10 +109,15 @@ const AppRoutes = () => {
             <Route path="/control" element={<ControlLedgers />} />
             <Route path="/hub" element={<Hub />} />
             <Route path="/project-signs" element={<ProjectSigns />} />
-            <Route path="/research" element={<ResearchAssistant />} />
+            <Route path="/research" element={<ResearchHub />} />
+            <Route path="/research/case/:caseId" element={<CaseReconstruction />} />
             <Route path="/dictionary" element={<Dictionary />} />
             <Route path="/manifest" element={<Manifest />} />
             <Route path="/gis" element={<GISWorkspace />} />
+            <Route path="/evidence/:collection/:id" element={<EvidenceInspector />} />
+            <Route path="/search" element={<SearchPage />} />
+            <Route path="/entity/:id" element={<EntityPage />} />
+            <Route path="/timeline" element={<TimelinePage />} />
             <Route path="/spiderweb" element={<Spiderweb />} />
             <Route path="/ovnis" element={<Ovnis />} />
             <Route path="/aguayluz" element={<AguaYLuz />} />

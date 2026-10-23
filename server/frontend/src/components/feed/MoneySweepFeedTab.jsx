@@ -13,6 +13,7 @@ import IdCode from "@/components/shared/IdCode";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RefreshCw, FileStack, DollarSign, UserPlus, AlertTriangle, ExternalLink } from "lucide-react";
 import { promoteFeedItem } from "@/lib/promote-feed";
+import { requireReviewerEmail } from "@/lib/reviewerIdentity";
 import { toast } from "@/components/ui/use-toast";
 
 const fmtMoney = (n) => (n || n === 0) ? `$${Number(n).toLocaleString()}` : "—";
@@ -59,15 +60,21 @@ export default function MoneySweepFeedTab() {
         qc.invalidateQueries({ queryKey: ["entity", "Contracts"] });
         qc.invalidateQueries({ queryKey: ["entity", "Vendors"] });
       } else if (sync_status === "Verified") {
-        let reviewer = null;
-        try { reviewer = (await federation.auth.me())?.email || null; } catch { reviewer = null; }
+        const reviewer = await requireReviewerEmail();
         await updateItem({ id: item.id, data: { sync_status, verified_by: reviewer, verified_at: new Date().toISOString() } });
         toast({ title: "Verified — ready to promote" });
       } else {
         await updateItem({ id: item.id, data: { sync_status } });
       }
     } catch (e) {
-      toast({ title: `Promotion failed: ${e.message}`, variant: "destructive" });
+      const promotion = sync_status === "Promoted";
+      toast({
+        title: promotion ? "Promotion could not be completed" : "Status update failed",
+        description: promotion
+          ? `${e.message}. Retrying is safe; an existing matching contract will be reused.`
+          : e.message,
+        variant: "destructive",
+      });
     }
   };
 

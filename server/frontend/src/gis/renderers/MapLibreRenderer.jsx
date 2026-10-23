@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import * as maplibregl from 'maplibre-gl';
+import { maplibregl } from '@/gis/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { canonicalViewToMapLibre, mapLibreViewToCanonical } from '../rendererView';
 

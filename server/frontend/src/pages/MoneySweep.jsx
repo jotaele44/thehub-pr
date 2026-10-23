@@ -3,6 +3,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
 import MoneySweepFeedTab from "@/components/feed/MoneySweepFeedTab";
+import MoneySweepLeaderboardsTab from "@/components/feed/MoneySweepLeaderboardsTab";
 import StatusChip from "@/components/shared/StatusChip";
 import IdCode from "@/components/shared/IdCode";
 import { Banknote } from "lucide-react";
@@ -81,14 +82,18 @@ export default function MoneySweep() {
     <div>
       <ModulePageHeader module={MODULE} icon={Banknote} />
       <Tabs defaultValue="feed">
-        <TabsList className="mb-4">
-          <TabsTrigger value="feed">Procurement + Funding Feed</TabsTrigger>
-          <TabsTrigger value="contracts">Contracts</TabsTrigger>
-          <TabsTrigger value="vendors">Vendors</TabsTrigger>
-          <TabsTrigger value="flags">Anomaly Flags</TabsTrigger>
+        <TabsList className="mb-4 flex h-auto min-h-11 flex-wrap">
+          <TabsTrigger value="feed" className="min-h-11">Procurement + Funding Feed</TabsTrigger>
+          <TabsTrigger value="leaderboards" className="min-h-11">Leaderboards</TabsTrigger>
+          <TabsTrigger value="contracts" className="min-h-11">Contracts</TabsTrigger>
+          <TabsTrigger value="vendors" className="min-h-11">Vendors</TabsTrigger>
+          <TabsTrigger value="flags" className="min-h-11">Anomaly Flags</TabsTrigger>
         </TabsList>
         <TabsContent value="feed">
           <MoneySweepFeedTab />
+        </TabsContent>
+        <TabsContent value="leaderboards">
+          <MoneySweepLeaderboardsTab />
         </TabsContent>
         <TabsContent value="contracts">
           <EntityLedger entityName="Contracts" fields={contractFields} columns={contractColumns}

@@ -1,0 +1,43 @@
+name: MoneySweep full package replay
+
+on:
+  pull_request:
+    paths:
+      - "data/aggregate/moneysweep/full_package_current_receipt.json"
+      - "tests/test_moneysweep_full_package_current.py"
+      - ".github/workflows/moneysweep-full-package-replay.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install TheHub validator
+        run: pip install -e ".[dev]"
+      - name: Fetch exact MoneySweep producer package
+        env:
+          PRODUCER_SHA: 7cf946691d485da3fb88c308f63f3f1d73efa841
+        run: |
+          set -euo pipefail
+          mkdir -p _producer_package
+          BASE="https://raw.githubusercontent.com/jotaele44/moneysweep-pr/${PRODUCER_SHA}/data/exports/canonical_v1_federation"
+          for file in manifest.json sources.jsonl entities.jsonl relationships.jsonl; do
+            curl --fail --location --retry 3 --retry-all-errors "${BASE}/${file}" -o "_producer_package/${file}"
+          done
+      - name: Replay full package through TheHub schemas
+        env:
+          PRII_MONEYSWEEP_FULL_PACKAGE_ROOT: ${{ github.workspace }}/_producer_package
+          PRII_MONEYSWEEP_FULL_PACKAGE_COMMIT: 7cf946691d485da3fb88c308f63f3f1d73efa841
+        run: pytest -q tests/test_moneysweep_full_package_current.py

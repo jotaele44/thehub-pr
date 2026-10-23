@@ -5,11 +5,13 @@ import {
   FederationProvenanceBadge,
   FederationSourceBadge,
 } from '@pr-federation/react';
-import { Search, Database, MapPin, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Search, Database, MapPin, AlertTriangle, RefreshCw, ScanSearch } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useEntityData } from '@/hooks/useEntityData';
 import MultiMarkerMap from '@/components/shared/MultiMarkerMap';
 import ForensicStateBadge from './ForensicStateBadge';
 import { filterIntelligenceRows } from '@/lib/intelligenceWorkspaceState';
+import { canonicalEvidenceRef, evidenceHref } from '@/lib/evidenceState';
 
 const TIME_OPTIONS = [
   ['all', 'All'],
@@ -71,6 +73,7 @@ function Inspector({ adapter, row, relatedRows, queryUpdatedAt }) {
   }
 
   const axes = adapter.getForensicAxes(row);
+  const evidenceRef = canonicalEvidenceRef(row);
   const sources = adapter.getSources(row);
   const contradictions = adapter.getContradictions(row);
   const confidence = normalizeSemantic(adapter.getConfidence(row), 'unknown');
@@ -83,6 +86,16 @@ function Inspector({ adapter, row, relatedRows, queryUpdatedAt }) {
         <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Inspector</div>
         <h3 className="mt-1 text-base font-semibold text-foreground">{adapter.getTitle(row)}</h3>
         <div className="mt-1 text-xs text-muted-foreground">{adapter.getLocation(row)}</div>
+        {evidenceRef ? (
+          <Link
+            to={evidenceHref(evidenceRef.collection, evidenceRef.id)}
+            className="mt-2 inline-flex items-center gap-1.5 text-xs text-primary underline"
+            data-provenance-link
+          >
+            <ScanSearch className="h-3.5 w-3.5" aria-hidden="true" />
+            Open provenance inspector
+          </Link>
+        ) : null}
       </div>
 
       <div className="space-y-4 p-4">

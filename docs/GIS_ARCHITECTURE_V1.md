@@ -126,6 +126,13 @@ Archive classification must preserve member PATH + UNCOMPRESSED_SIZE + SHA256 wh
 
 Route: `/gis`.
 
+`/gis?lat=<lat>&lon=<lon>&z=<zoom>` deep-links a map view:
+
+- **A valid link** centres the canonical view and states that it did so. `z` is a MapLibre zoom from 0 to 22, and the default is 12.
+- **A malformed link**, meaning a non-numeric value, latitude outside ±90, longitude outside ±180, or zoom outside 0–22, is reported. The default view is kept, never corrected.
+
+The command palette builds these links from typed coordinates.
+
 Implemented chain:
 
 `local RAW GeoJSON → JSON/FeatureCollection validation → geometry/Z/M inspection → SHA-256 where Web Crypto is available → canonical layer manifest → canonical map state → transitional Leaflet visualization`

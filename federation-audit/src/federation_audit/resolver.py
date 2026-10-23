@@ -3,18 +3,36 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
+import os
 import re
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
 SOURCE_SUFFIXES = {".py", ".js", ".jsx", ".ts", ".tsx", ".vue"}
-IGNORED_DIRS = {".git", "node_modules", "dist", "build", ".venv", "venv", "__pycache__", ".pytest_cache"}
+IGNORED_DIRS = {
+    ".git",
+    ".pytest_cache",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules",
+    "tests",
+    "venv",
+}
 JS_IMPORT = re.compile(
     r"import\s+(?:\{(?P<named>[^}]+)\}|(?P<default>[A-Za-z_$][\w$]*))\s+from\s+[\"'](?P<module>[^\"']+)[\"']"
 )
+JS_LAZY_IMPORT = re.compile(
+    r"(?:const|let)\s+(?P<local>[A-Za-z_$][\w$]*)\s*=\s*lazy\s*\(\s*"
+    r"\(\s*\)\s*=>\s*import\s*\(\s*[\"'](?P<module>[^\"']+)[\"']\s*\)"
+    r"\.then\s*\(\s*\(\s*(?P<namespace>[A-Za-z_$][\w$]*)\s*\)\s*=>\s*"
+    r"\(\s*\{\s*default\s*:\s*(?P=namespace)\.(?P<exported>[A-Za-z_$][\w$]*)\s*\}\s*\)\s*\)",
+    re.S,
+)
 JS_FUNCTION = re.compile(
-    r"(?:export\s+)?(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\([^)]*\)\s*\{",
+    r"(?P<prefix>(?:export\s+)?(?:async\s+)?function\s+)(?P<name>[A-Za-z_$][\w$]*)\s*\(",
     re.M,
 )
 JS_ARROW = re.compile(
@@ -22,10 +40,17 @@ JS_ARROW = re.compile(
     re.M,
 )
 FETCH_LITERAL = re.compile(
-    r"(?:(fetch)\s*\(\s*|axios\.(get|post|put|patch|delete)\s*\(\s*)[\"'`]([^\"'`]+)",
+    r"(?:(fetch|requestJSON|fetchJSON|getJSON|getRequiredJSON)\s*\(\s*|"
+    r"axios\.(get|post|put|patch|delete)\s*\(\s*)"
+    r"[\"'`]([^\"'`]+)",
     re.I,
 )
 METHOD_OPTION = re.compile(r"method\s*:\s*[\"'](GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)[\"']", re.I)
+ENTITY_CLIENT_OPERATION = re.compile(
+    r"\bfederation\.entities\s*\["
+    r"(?:[A-Za-z_$][\w$]*\s*\[[^\]]+\]|[^\[\]]+)\]\s*\.\s*"
+    r"(list|filter|get|create|update|delete)\s*\("
+)
 
 
 def stable_digest(*parts: str) -> str:
@@ -101,13 +126,12 @@ class ResolutionIndex:
 
 
 def iter_sources(root: Path) -> Iterable[Path]:
-    for path in root.rglob("*"):
-        if (
-            path.is_file()
-            and path.suffix.lower() in SOURCE_SUFFIXES
-            and not any(part in IGNORED_DIRS for part in path.parts)
-        ):
-            yield path
+    for current, directories, files in os.walk(root):
+        directories[:] = sorted(directory for directory in directories if directory not in IGNORED_DIRS)
+        for filename in sorted(files):
+            path = Path(current) / filename
+            if path.suffix.lower() in SOURCE_SUFFIXES:
+                yield path
 
 
 def _literal_string(node: ast.AST | None) -> str | None:
@@ -142,9 +166,84 @@ def _router_prefixes(tree: ast.AST) -> dict[str, str]:
     return prefixes
 
 
-def _include_prefixes(tree: ast.AST) -> dict[str, list[str]]:
-    """Return include_router target symbol -> literal include prefixes in this module."""
-    result: dict[str, list[str]] = {}
+def _module_file(root: Path, source_rel: str, module: str | None, level: int) -> str | None:
+    if level:
+        package = Path(source_rel).parent
+        for _ in range(level - 1):
+            package = package.parent
+        candidate = package.joinpath(*(module or "").split("."))
+    elif module:
+        candidate = Path(*module.split("."))
+    else:
+        return None
+    for relative in (candidate.with_suffix(".py"), candidate / "__init__.py"):
+        if (root / relative).is_file():
+            return relative.as_posix()
+    return None
+
+
+def _python_imports(root: Path, source_rel: str, tree: ast.AST) -> dict[str, tuple[str, str | None]]:
+    result: dict[str, tuple[str, str | None]] = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if not alias.asname and "." in alias.name:
+                    continue
+                module_file = _module_file(root, source_rel, alias.name, 0)
+                if module_file:
+                    result[alias.asname or alias.name] = (module_file, None)
+        elif isinstance(node, ast.ImportFrom):
+            module_file = _module_file(root, source_rel, node.module, node.level)
+            if not module_file:
+                continue
+            for alias in node.names:
+                if alias.name == "*":
+                    continue
+                local_name = alias.asname or alias.name
+                module_path = Path(module_file)
+                if module_path.name == "__init__.py":
+                    package = module_path.parent
+                    child_candidates = (
+                        package / f"{alias.name}.py",
+                        package / alias.name / "__init__.py",
+                    )
+                    child = next((item for item in child_candidates if (root / item).is_file()), None)
+                    if child:
+                        result[local_name] = (child.as_posix(), None)
+                        continue
+                result[local_name] = (module_file, alias.name)
+    return result
+
+
+def _include_target(
+    argument: ast.AST,
+    source_rel: str,
+    local_routers: dict[str, str],
+    imports: dict[str, tuple[str, str | None]],
+) -> tuple[str, str] | None:
+    if isinstance(argument, ast.Name):
+        if argument.id in local_routers:
+            return source_rel, argument.id
+        binding = imports.get(argument.id)
+        if binding and binding[1]:
+            return binding[0], binding[1]
+        return None
+    if isinstance(argument, ast.Attribute) and isinstance(argument.value, ast.Name):
+        binding = imports.get(argument.value.id)
+        if binding and binding[1] is None:
+            return binding[0], argument.attr
+    return None
+
+
+def _include_prefixes(
+    root: Path,
+    source_rel: str,
+    tree: ast.AST,
+    local_routers: dict[str, str],
+) -> dict[tuple[str, str], list[str]]:
+    """Return module-qualified include_router targets and literal mount prefixes."""
+    result: dict[tuple[str, str], list[str]] = {}
+    imports = _python_imports(root, source_rel, tree)
     for node in ast.walk(tree):
         if (
             not isinstance(node, ast.Call)
@@ -154,25 +253,20 @@ def _include_prefixes(tree: ast.AST) -> dict[str, list[str]]:
             continue
         if not node.args:
             continue
-        arg = node.args[0]
-        symbol: str | None = None
-        if isinstance(arg, ast.Name):
-            symbol = arg.id
-        elif isinstance(arg, ast.Attribute):
-            symbol = arg.attr
-        if not symbol:
+        target = _include_target(node.args[0], source_rel, local_routers, imports)
+        if not target:
             continue
         prefix = ""
         for kw in node.keywords:
             if kw.arg == "prefix":
                 prefix = _literal_string(kw.value) or ""
-        result.setdefault(symbol, []).append(prefix)
+        result.setdefault(target, []).append(prefix)
     return result
 
 
 def _python_routes(root: Path) -> tuple[list[ResolvedRoute], list[str]]:
     raw: list[tuple[str, str, str, int, str, str, str]] = []
-    include_prefixes: dict[str, list[str]] = {}
+    include_prefixes: dict[tuple[str, str], list[str]] = {}
     gaps: list[str] = []
 
     for path in iter_sources(root):
@@ -186,8 +280,8 @@ def _python_routes(root: Path) -> tuple[list[ResolvedRoute], list[str]]:
             gaps.append(f"python-parse:{rel}:{type(exc).__name__}")
             continue
         local_prefix = _router_prefixes(tree)
-        for symbol, prefixes in _include_prefixes(tree).items():
-            include_prefixes.setdefault(symbol, []).extend(prefixes)
+        for target, prefixes in _include_prefixes(root, rel, tree, local_prefix).items():
+            include_prefixes.setdefault(target, []).extend(prefixes)
         for node in ast.walk(tree):
             if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
                 continue
@@ -216,9 +310,9 @@ def _python_routes(root: Path) -> tuple[list[ResolvedRoute], list[str]]:
 
     resolved: list[ResolvedRoute] = []
     for method, route_path, rel, line, handler, router, router_prefix in raw:
-        prefixes = include_prefixes.get(router) or [""]
+        prefixes = include_prefixes.get((rel, router)) or [""]
         # Multiple literal includes are represented as multiple concrete routes rather than guessed.
-        for include_prefix in prefixes:
+        for include_prefix in dict.fromkeys(prefixes):
             full = join_route(include_prefix, router_prefix, route_path)
             resolved.append(
                 ResolvedRoute(
@@ -235,33 +329,153 @@ def _python_routes(root: Path) -> tuple[list[ResolvedRoute], list[str]]:
                     ),
                 )
             )
-    return resolved, gaps
+    unique = dict.fromkeys(resolved)
+    return sorted(
+        unique,
+        key=lambda route: (
+            route.source,
+            route.line,
+            route.method,
+            route.path,
+            route.handler,
+            route.router_symbol,
+            route.evidence,
+        ),
+    ), gaps
 
 
 def _resolve_module(source_rel: str, module: str, root: Path) -> str | None:
-    if not module.startswith("."):
-        return None
-    base = (root / source_rel).parent
-    candidate = (base / module).resolve()
     root_resolved = root.resolve()
-    try:
-        candidate.relative_to(root_resolved)
-    except ValueError:
+    bases: list[Path] = []
+    source_dir = (root / source_rel).parent
+    if module.startswith("."):
+        bases.append((source_dir / module).resolve())
+    else:
+        for directory in (source_dir, *source_dir.parents):
+            try:
+                config_dir = directory.resolve()
+                config_dir.relative_to(root_resolved)
+            except ValueError:
+                break
+            config_path = next(
+                (
+                    candidate
+                    for candidate in (config_dir / "jsconfig.json", config_dir / "tsconfig.json")
+                    if candidate.is_file()
+                ),
+                None,
+            )
+            if config_path is None:
+                continue
+            try:
+                config = json.loads(config_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                continue
+            compiler = config.get("compilerOptions", {})
+            paths = compiler.get("paths", {})
+            base_url = config_dir / compiler.get("baseUrl", ".")
+            for alias, targets in paths.items():
+                wildcard = "*" in alias
+                prefix, suffix = alias.split("*", 1) if wildcard else (alias, "")
+                if wildcard and (
+                    not module.startswith(prefix) or (suffix and not module.endswith(suffix))
+                ):
+                    continue
+                if not wildcard and module != alias:
+                    continue
+                if wildcard:
+                    end = len(module) - len(suffix) if suffix else len(module)
+                    replacement = module[len(prefix) : end]
+                else:
+                    replacement = ""
+                if not isinstance(targets, list):
+                    continue
+                for target in targets:
+                    mapped = target.replace("*", replacement)
+                    bases.append((base_url / mapped).resolve())
+            if bases:
+                break
+
+    for candidate in bases:
+        try:
+            candidate.relative_to(root_resolved)
+        except ValueError:
+            continue
+        possibilities = [
+            candidate,
+            candidate.with_suffix(".ts"),
+            candidate.with_suffix(".tsx"),
+            candidate.with_suffix(".js"),
+            candidate.with_suffix(".jsx"),
+            candidate.with_suffix(".vue"),
+            candidate / "index.ts",
+            candidate / "index.tsx",
+            candidate / "index.js",
+            candidate / "index.jsx",
+            candidate / "index.vue",
+        ]
+        for item in possibilities:
+            if item.is_file():
+                return item.relative_to(root_resolved).as_posix()
+    return None
+
+
+def _function_body_open(source: str, cursor: int) -> int | None:
+    while cursor < len(source) and source[cursor].isspace():
+        cursor += 1
+    if cursor >= len(source):
         return None
-    possibilities = [
-        candidate,
-        candidate.with_suffix(".ts"),
-        candidate.with_suffix(".tsx"),
-        candidate.with_suffix(".js"),
-        candidate.with_suffix(".jsx"),
-        candidate / "index.ts",
-        candidate / "index.tsx",
-        candidate / "index.js",
-        candidate / "index.jsx",
-    ]
-    for item in possibilities:
-        if item.is_file():
-            return item.relative_to(root_resolved).as_posix()
+    if source[cursor] == "{":
+        return cursor
+    if source[cursor] != ":":
+        return None
+
+    cursor += 1
+    type_text = False
+    object_type_seen = False
+    angle_depth = 0
+    paren_depth = 0
+    square_depth = 0
+    while cursor < len(source):
+        char = source[cursor]
+        if char == "{" and (angle_depth > 0 or paren_depth == 0 and square_depth == 0):
+            previous = cursor - 1
+            while previous >= 0 and source[previous].isspace():
+                previous -= 1
+            if angle_depth == 0 and type_text and previous >= 0 and source[previous] not in "|&":
+                return cursor
+            depth = 1
+            cursor += 1
+            while cursor < len(source) and depth:
+                if source[cursor] == "{":
+                    depth += 1
+                elif source[cursor] == "}":
+                    depth -= 1
+                cursor += 1
+            if depth:
+                return None
+            type_text = True
+            object_type_seen = True
+            continue
+        if char == "<":
+            angle_depth += 1
+        elif char == ">" and angle_depth:
+            angle_depth -= 1
+        elif char == "(":
+            paren_depth += 1
+        elif char == ")" and paren_depth:
+            paren_depth -= 1
+        elif char == "[":
+            square_depth += 1
+        elif char == "]" and square_depth:
+            square_depth -= 1
+        elif char == "{" and object_type_seen and angle_depth == paren_depth == square_depth == 0:
+            return cursor
+        elif char == ";" and angle_depth == paren_depth == square_depth == 0:
+            return None
+        if not char.isspace():
+            type_text = True
+        cursor += 1
     return None
 
 
@@ -279,15 +493,33 @@ def _frontend_index(
             source = path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        for regex in (JS_FUNCTION, JS_ARROW):
-            for match in regex.finditer(source):
-                name = match.group(1)
-                exported = bool(
-                    re.match(r"\s*export\b", source[max(0, match.start() - 12) : match.start() + 7])
-                )
-                symbols.setdefault(name, []).append(
-                    SymbolLocation(name, rel, source[: match.start()].count("\n") + 1, exported)
-                )
+        for match in JS_FUNCTION.finditer(source):
+            depth = 1
+            cursor = match.end()
+            while cursor < len(source) and depth:
+                if source[cursor] == "(":
+                    depth += 1
+                elif source[cursor] == ")":
+                    depth -= 1
+                cursor += 1
+            if depth:
+                continue
+            body_open = _function_body_open(source, cursor)
+            if body_open is None:
+                continue
+            name = match.group("name")
+            exported = bool(re.search(r"\bexport\s+(?:async\s+)?function\s+$", match.group("prefix")))
+            symbols.setdefault(name, []).append(
+                SymbolLocation(name, rel, source[: match.start()].count("\n") + 1, exported)
+            )
+        for match in JS_ARROW.finditer(source):
+            name = match.group(1)
+            exported = bool(
+                re.match(r"\s*export\b", source[max(0, match.start() - 12) : match.start() + 7])
+            )
+            symbols.setdefault(name, []).append(
+                SymbolLocation(name, rel, source[: match.start()].count("\n") + 1, exported)
+            )
         for match in JS_IMPORT.finditer(source):
             module = match.group("module")
             module_path = _resolve_module(rel, module, root)
@@ -307,6 +539,15 @@ def _frontend_index(
                     original = pieces[0]
                     local = pieces[-1]
                     bindings[local] = (module_path, original)
+        for match in JS_LAZY_IMPORT.finditer(source):
+            module_path = _resolve_module(rel, match.group("module"), root)
+            if module_path is None:
+                gaps.append(f"unresolved-import:{rel}:{match.group('module')}")
+                continue
+            imports.setdefault(rel, {})[match.group("local")] = (
+                module_path,
+                match.group("exported"),
+            )
     return symbols, imports, gaps
 
 
@@ -339,6 +580,18 @@ def build_resolution_index(root: Path) -> ResolutionIndex:
 
 def network_intents(body: str) -> list[tuple[str, str]]:
     intents: list[tuple[str, str]] = []
+    entity_routes = {
+        "list": ("GET", "/api/entities/{entity_name}"),
+        "filter": ("POST", "/api/entities/{entity_name}/filter"),
+        "get": ("GET", "/api/entities/{entity_name}/{entity_id}"),
+        "create": ("POST", "/api/entities/{entity_name}"),
+        "update": ("PATCH", "/api/entities/{entity_name}/{entity_id}"),
+        "delete": ("DELETE", "/api/entities/{entity_name}/{entity_id}"),
+    }
+    intents.extend(
+        entity_routes[match.group(1)]
+        for match in ENTITY_CLIENT_OPERATION.finditer(body)
+    )
     for match in FETCH_LITERAL.finditer(body):
         fetch_token, axios_method, target = match.groups()
         method = (axios_method or "GET").upper()
@@ -347,5 +600,14 @@ def network_intents(body: str) -> list[tuple[str, str]]:
             method_match = METHOD_OPTION.search(after)
             if method_match:
                 method = method_match.group(1).upper()
+        if target.startswith("${API_BASE}/"):
+            target = target[len("${API_BASE}") :]
+        elif target.startswith("${API_BASE}"):
+            continue
+        if target.startswith("/"):
+            target = re.sub(r"\$\{(?:qs|queryString)\([^}]*\)\}$", "", target)
+            target = re.sub(r"\$\{[^}]+\}", "{param}", target)
+        elif not re.match(r"^https?://", target, re.I):
+            continue
         intents.append((method, target))
     return intents

@@ -49,6 +49,30 @@ def _load_snapshot(path: Path) -> dict[str, Any]:
     return payload
 
 
+def get_active_snapshot(storage_root) -> dict[str, Any] | None:
+    """Return the currently ACTIVE snapshot manifest, or ``None`` if none has ever been promoted.
+
+    Read-only counterpart to ``promote_snapshot``/``rollback_snapshot``: it never
+    creates or modifies the pointer, and validates the resolved manifest the same
+    way promotion does so a caller never serves an unvalidated or tampered file.
+    """
+    root = Path(storage_root)
+    pointer_path = root / "registry" / "active_snapshot.json"
+    if not pointer_path.exists():
+        return None
+    try:
+        pointer = json.loads(pointer_path.read_text(encoding="utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ActiveSnapshotError("ACTIVE snapshot pointer is not valid UTF-8 JSON") from exc
+    if not isinstance(pointer, dict) or not isinstance(pointer.get("manifest_locator"), str):
+        raise ActiveSnapshotError("ACTIVE snapshot pointer is malformed")
+    manifest_path = root / pointer["manifest_locator"]
+    manifest = _load_snapshot(manifest_path)
+    if manifest.get("snapshot_id") != pointer.get("snapshot_id"):
+        raise ActiveSnapshotError("ACTIVE snapshot pointer/manifest identity mismatch")
+    return manifest
+
+
 def promote_snapshot(storage_root, manifest_path, *, actor: str, promoted_at: str) -> dict[str, Any]:
     """Atomically make a frozen snapshot the sole ACTIVE query target.
 
@@ -138,4 +162,4 @@ def rollback_snapshot(storage_root, target_snapshot_id: str, *, actor: str, roll
     return pointer
 
 
-__all__ = ["ActiveSnapshotError", "promote_snapshot", "rollback_snapshot"]
+__all__ = ["ActiveSnapshotError", "get_active_snapshot", "promote_snapshot", "rollback_snapshot"]

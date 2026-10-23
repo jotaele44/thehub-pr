@@ -4,7 +4,12 @@ import json
 
 import pytest
 
-from control_plane.active_snapshot import ActiveSnapshotError, promote_snapshot, rollback_snapshot
+from control_plane.active_snapshot import (
+    ActiveSnapshotError,
+    get_active_snapshot,
+    promote_snapshot,
+    rollback_snapshot,
+)
 
 
 def _manifest(snapshot_id: str, *, decision: str = "PROMOTE", failed: int = 0) -> dict:
@@ -76,3 +81,32 @@ def test_non_promote_decision_cannot_be_activated(tmp_path):
     path = _write_manifest(tmp_path, rejected)
     with pytest.raises(ActiveSnapshotError, match="not PROMOTE"):
         promote_snapshot(tmp_path / "store", path, actor="a", promoted_at="2026-01-01T00:00:00Z")
+
+
+def test_get_active_snapshot_returns_none_before_any_promotion(tmp_path):
+    assert get_active_snapshot(tmp_path / "store") is None
+
+
+def test_get_active_snapshot_returns_the_promoted_manifest(tmp_path):
+    manifest = _manifest("snap_" + "4" * 32)
+    path = _write_manifest(tmp_path, manifest)
+    store = tmp_path / "store"
+    promote_snapshot(store, path, actor="a", promoted_at="2026-01-01T00:00:01Z")
+
+    active = get_active_snapshot(store)
+    assert active is not None
+    assert active["snapshot_id"] == manifest["snapshot_id"]
+    assert active["sha256_manifest"] == manifest["sha256_manifest"]
+
+
+def test_get_active_snapshot_tracks_rollback(tmp_path):
+    first = _manifest("snap_" + "5" * 32)
+    second = _manifest("snap_" + "6" * 32)
+    store = tmp_path / "store"
+    promote_snapshot(store, _write_manifest(tmp_path, first), actor="a", promoted_at="2026-01-01T00:00:01Z")
+    promote_snapshot(store, _write_manifest(tmp_path, second), actor="a", promoted_at="2026-01-01T00:00:02Z")
+    rollback_snapshot(store, first["snapshot_id"], actor="a", rolled_back_at="2026-01-01T00:00:03Z")
+
+    active = get_active_snapshot(store)
+    assert active is not None
+    assert active["snapshot_id"] == first["snapshot_id"]

@@ -14,7 +14,7 @@ import server.backend.main as backend_main  # noqa: E402
 def client(tmp_path, monkeypatch):
     monkeypatch.setattr(backend_main, "DB_PATH", tmp_path / "hub.db")
     monkeypatch.setattr(backend_main, "_WRITE_TOKEN", "settings-token")
-    with TestClient(backend_main.app) as test_client:
+    with TestClient(backend_main.app, client=("127.0.0.1", 8000)) as test_client:
         yield test_client
 
 
@@ -111,7 +111,8 @@ def test_preferences_drop_targets_for_disabled_channels(client):
 
 
 def test_upload_connector_and_mcp_contracts_are_real_http_routes(client):
-    upload = client.post("/api/files/upload")
+    assert client.post("/api/files/upload").status_code == 401
+    upload = client.post("/api/files/upload", headers=auth())
     assert upload.status_code == 200
     assert upload.json()["implemented"] is False
     assert upload.json()["file_id"]
@@ -122,6 +123,23 @@ def test_upload_connector_and_mcp_contracts_are_real_http_routes(client):
 
     capabilities = client.get("/mcp/capabilities")
     assert capabilities.status_code == 200
+
+
+def test_mcp_write_route_uses_the_hub_write_token(client):
+    payload = {
+        "project": "spiderweb",
+        "capability": "geospatial",
+        "action": "distance",
+        "params": {"a": [18.46, -66.10], "b": [18.01, -66.61]},
+        "is_write": True,
+    }
+    assert client.post("/mcp/route", json=payload).status_code == 401
+    assert client.post(
+        "/mcp/route", json=payload, headers=auth("wrong")
+    ).status_code == 401
+    assert client.post(
+        "/mcp/route", json=payload, headers=auth()
+    ).status_code == 403
 
 
 def test_duplicate_entity_id_returns_conflict(client):

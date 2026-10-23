@@ -10,7 +10,6 @@ Start with:
 """
 from __future__ import annotations
 
-import ipaddress
 import json
 import logging
 import os
@@ -66,19 +65,8 @@ log = logging.getLogger("hub.backend")
 _WRITE_TOKEN = os.environ.get("PRII_WRITE_TOKEN", "")
 
 
-def _is_local_network(host: str) -> bool:
-    """True for loopback, RFC1918 private, and link-local client addresses."""
-    if host in ("localhost", ""):
-        return host == "localhost"
-    try:
-        ip = ipaddress.ip_address(host)
-    except ValueError:
-        return False
-    return ip.is_loopback or ip.is_private or ip.is_link_local
-
-
 def require_write_access(request: Request) -> None:
-    """Authorize a mutating request, by bearer token or by local-network origin."""
+    """Authorize a mutating request by bearer token; fail closed if none is configured."""
     if _WRITE_TOKEN:
         scheme, _, presented = request.headers.get("authorization", "").partition(" ")
         if scheme.lower() != "bearer" or not secrets.compare_digest(
@@ -575,6 +563,10 @@ DIAGNOSTIC_STUB_REASONS: dict[str, str] = {
         "Binary file storage is not provisioned in diagnostic mode; this hub "
         "build retains no upload backend."
     ),
+    "integrations": (
+        "External integration services are not provisioned in diagnostic mode; "
+        "configure a provider backend before using this feature."
+    ),
 }
 
 
@@ -612,10 +604,10 @@ async def agents_stub(path: str, request: Request):
 
 @app.api_route("/api/integrations/{path:path}", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
 async def integrations_stub(path: str, request: Request):
-    return {"message": f"Integration {path!r} not configured"}
+    return _diagnostic_stub("integrations", integration=path)
 
 
-@app.post("/api/files/upload")
+@app.post("/api/files/upload", dependencies=_WRITE_GUARD)
 async def files_upload() -> dict[str, Any]:
     return _diagnostic_stub("files", file_id=str(uuid.uuid4()))
 
@@ -676,7 +668,12 @@ async def project_signs_generate(request: Request):
 try:
     from server.backend.mcp_api import build_mcp_api, create_default_hub_router
 
-    app.include_router(build_mcp_api(create_default_hub_router()))
+    app.include_router(
+        build_mcp_api(
+            create_default_hub_router(),
+            write_authorizer=require_write_access,
+        )
+    )
 except Exception as _mcp_exc:  # pragma: no cover - defensive mount guard
     import logging as _logging
 
@@ -691,15 +688,27 @@ _SPA_ROOT_FILES = {
 }
 
 
+# Directories the build emits beside index.html that are served as files: Vite's
+# hashed bundles, and Cesium's runtime (workers, assets, widget CSS), which Cesium
+# fetches by URL from /cesium/ (see cesiumRuntimeAssets in vite.config.js).
+_STATIC_DIRS = ("assets", "cesium")
+
+
 def _spa_file(full_path: str) -> Path:
     candidate = _SPA_ROOT_FILES.get(full_path)
     if candidate is not None and candidate.is_file():
         return candidate
     return _SPA_INDEX
 
+
+def _mount_static_dirs(target: FastAPI, dist: Path) -> None:
+    for name in _STATIC_DIRS:
+        if (dist / name).is_dir():
+            target.mount(f"/{name}", StaticFiles(directory=dist / name), name=name)
+
+
 if DIST.is_dir():
-    if (DIST / "assets").is_dir():
-        app.mount("/assets", StaticFiles(directory=DIST / "assets"), name="assets")
+    _mount_static_dirs(app, DIST)
 
     @app.get("/{full_path:path}")
     def spa(full_path: str):

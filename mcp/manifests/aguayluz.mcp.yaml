@@ -13,6 +13,7 @@ capabilities:
   - weather
   - utilities
   - osha
+  - jp-flood-certification
 
 write_policy:
   default: read_only

@@ -11,10 +11,12 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+from ipaddress import ip_address
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -71,6 +73,43 @@ FEDERATION_REPOS = [
         "domain": "Pre-signal monitoring",
     },
 ]
+
+
+def _require_loopback(request: Request) -> None:
+    client_host = request.client.host if request.client else ""
+    try:
+        client_is_loopback = ip_address(client_host).is_loopback
+    except ValueError:
+        client_is_loopback = client_host == "localhost"
+    if not client_is_loopback:
+        raise HTTPException(status_code=403, detail="launcher is loopback-only")
+
+
+def _require_same_origin(request: Request) -> None:
+    origin = request.headers.get("origin", "")
+    try:
+        parsed = urlsplit(origin)
+        origin_host = parsed.hostname or ""
+        try:
+            origin_is_loopback = ip_address(origin_host).is_loopback
+        except ValueError:
+            origin_is_loopback = origin_host == "localhost"
+        origin_port = parsed.port
+    except ValueError as exc:
+        raise HTTPException(status_code=403, detail="launcher origin is not allowed") from exc
+
+    if (
+        parsed.scheme != "http"
+        or not origin_is_loopback
+        or origin_port != request.url.port
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.path
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise HTTPException(status_code=403, detail="launcher origin is not allowed")
+
 
 router = APIRouter(prefix="/api/local", tags=["local-launcher"])
 
@@ -154,7 +193,9 @@ def federation_icon(repo: str) -> FileResponse:
 
 
 @router.post("/launch/{repo}")
-def launch(repo: str) -> dict[str, Any]:
+def launch(repo: str, request: Request) -> dict[str, Any]:
+    _require_loopback(request)
+    _require_same_origin(request)
     entry = next((e for e in FEDERATION_REPOS if e["repo"] == repo), None)
     if entry is None:
         raise HTTPException(status_code=404, detail=f"Unknown federation repo: {repo}")

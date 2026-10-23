@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { NAV_GROUPS, isNavActive } from "@/lib/nav";
 import ThemeToggle from "@/components/shared/ThemeToggle";
+import { CommandPaletteTrigger } from "@/components/command/CommandPalette";
 import brandMark from "@/assets/icon-64.png?inline";
 
 function NavItem({ item, active }) {
@@ -40,6 +41,10 @@ export default function Sidebar() {
             <div className="text-[10px] text-sidebar-foreground uppercase tracking-widest">Control Plane</div>
           </div>
         </div>
+      </div>
+
+      <div className="px-3 pt-4">
+        <CommandPaletteTrigger />
       </div>
 
       <nav aria-label="Primary" className="flex-1 overflow-y-auto px-3 py-4 space-y-4">

@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Loader2, ScanSearch } from "lucide-react";
+import { Link } from "react-router-dom";
+import { canonicalEvidenceRef, evidenceHref } from "@/lib/evidenceState";
 
 // fields: [{ key, label, type: 'text'|'textarea'|'select'|'number'|'date', options?, required?, placeholder?, full? }]
 export default function RecordSheet({ open, onOpenChange, title, fields, initial, onSave, saving }) {
@@ -28,12 +30,22 @@ export default function RecordSheet({ open, onOpenChange, title, fields, initial
   };
 
   const missingRequired = fields.some((f) => f.required && (form[f.key] === undefined || form[f.key] === ""));
+  const evidenceRef = canonicalEvidenceRef(initial);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-lg overflow-y-auto bg-card border-border flex flex-col">
         <SheetHeader>
           <SheetTitle>{title}</SheetTitle>
+          {evidenceRef ? (
+            <Link
+              to={evidenceHref(evidenceRef.collection, evidenceRef.id)}
+              className="inline-flex items-center gap-1.5 text-xs text-primary underline"
+            >
+              <ScanSearch className="h-3.5 w-3.5" aria-hidden="true" />
+              Open provenance inspector
+            </Link>
+          ) : null}
         </SheetHeader>
 
         <div className="grid grid-cols-2 gap-4 py-4 flex-1">

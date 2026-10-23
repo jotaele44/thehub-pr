@@ -1,0 +1,839 @@
+{
+  "schema_version": "prii.gui-capability/v1",
+  "repository": "jotaele44/thehub-pr",
+  "policy": {
+    "mode": "ratchet",
+    "baseline": ".federation/gui-parity-baseline.json",
+    "require_discoverable_gui": true,
+    "require_e2e": true,
+    "terminal_free_user_path": true
+  },
+  "discovery": {
+    "backend_roots": [
+      "server/backend"
+    ],
+    "production_roots": [
+      "src/hub",
+      "src/control_plane",
+      "src/evidence_engine",
+      "src/intelligence_engine"
+    ],
+    "analysis_roots": [
+      "scripts"
+    ],
+    "frontend_roots": [
+      "server/frontend/src"
+    ],
+    "frontend_capability_roots": [
+      "server/frontend/src/pages"
+    ],
+    "frontend_api_roots": [
+      "server/frontend/src/api"
+    ],
+    "route_files": [
+      "server/frontend/src/App.jsx"
+    ],
+    "navigation_files": [
+      "server/frontend/src/lib/nav.js",
+      "server/frontend/src/components/layout/Sidebar.jsx",
+      "server/frontend/src/components/layout/MobileNav.jsx"
+    ],
+    "implicit_routes": [],
+    "exclude": [
+      "**/tests/**",
+      "**/test/**",
+      "**/*.test.*",
+      "**/*.spec.*",
+      "**/components/ui/**",
+      "scripts/check_gui_parity.py"
+    ]
+  },
+  "capabilities": [
+    {
+      "id": "pr-grid-v2-runtime-contract",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Fail-closed federation contract/runtime for PR_GRID_GEOGRAPHIC_V2 pins, live authority-byte validation, immutable identity stamping, and read-only cell handoff. It is an internal federation primitive; Spiderweb remains sole geometry authority.",
+      "analysis": {
+        "files": [
+          "scripts/validate_pr_grid_v2_federation.py",
+          "src/hub/grid_v2.py",
+          "src/hub/grid_v2_authority.py"
+        ],
+        "symbols": [
+          "scripts/validate_pr_grid_v2_federation.py:main",
+          "src/hub/grid_v2.py:GridV2Pin",
+          "src/hub/grid_v2.py:GridV2PinError",
+          "src/hub/grid_v2.py:attach_grid_identity",
+          "src/hub/grid_v2.py:build_grid_deep_link",
+          "src/hub/grid_v2.py:grid_identity",
+          "src/hub/grid_v2.py:load_pin",
+          "src/hub/grid_v2.py:validate_cell_id",
+          "src/hub/grid_v2.py:validate_level",
+          "src/hub/grid_v2.py:validate_pin_payload",
+          "src/hub/grid_v2.py:validate_pin_set",
+          "src/hub/grid_v2_authority.py:validate_authority_commit_object",
+          "src/hub/grid_v2_authority.py:validate_authority_root",
+          "src/hub/grid_v2_authority.py:validate_frozen_pin_denominator"
+        ]
+      },
+      "tests": {
+        "contract": [
+          "tests/test_grid_v2_authority.py",
+          "tests/test_grid_v2_profiles.py",
+          "tests/test_grid_v2_runtime.py"
+        ],
+        "backend": [
+          "tests/test_grid_v2_api.py"
+        ]
+      },
+      "backend": {
+        "files": [
+          "server/backend/grid_v2_api.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /grid/{grid_id}/{grid_version}/{level}/{cell_id}",
+          "GET /api/grid/{grid_id}/{grid_version}/{level}/{cell_id}"
+        ],
+        "symbols": [
+          "server/backend/grid_v2_api.py:cell_handoff"
+        ]
+      }
+    },
+    {
+      "id": "twin-capability-census-validator",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "CI/governance validator for the Twin observed and Federation-derived capability manifests (directive §35 exception 1: internal build/developer utility). It checks committed governance data; it is not an operator workflow.",
+      "analysis": {
+        "files": [
+          "scripts/validate_twin_manifests.py",
+          "src/hub/twin_manifest.py"
+        ],
+        "symbols": [
+          "scripts/validate_twin_manifests.py:main",
+          "src/hub/twin_manifest.py:check_repo",
+          "src/hub/twin_manifest.py:validate_observed",
+          "src/hub/twin_manifest.py:validate_derived",
+          "src/hub/twin_manifest.py:reconcile_observed",
+          "src/hub/twin_manifest.py:reconcile_derived"
+        ]
+      },
+      "tests": {
+        "contract": [
+          "tests/test_twin_capability_manifests.py"
+        ]
+      }
+    },
+    {
+      "id": "evidence-provenance-inspector",
+      "classification": "analysis",
+      "status": "active",
+      "requires_terminal": false,
+      "twin_refs": [
+        "TWIN-018",
+        "TWIN-019",
+        "TWIN-020",
+        "TWIN-023",
+        "TWIN-074"
+      ],
+      "backend": {
+        "files": [
+          "server/backend/evidence_api.py",
+          "src/hub/epistemic.py",
+          "src/hub/evidence_lineage.py",
+          "src/hub/evidence_object.py"
+        ],
+        "endpoints": [
+          "GET /{collection}/{record_id}"
+        ],
+        "symbols": [
+          "server/backend/evidence_api.py:evidence_for",
+          "server/backend/evidence_api.py:get_evidence_object",
+          "src/hub/epistemic.py:as_mapping",
+          "src/hub/epistemic.py:content_hash",
+          "src/hub/epistemic.py:data_stage_for",
+          "src/hub/epistemic.py:declared",
+          "src/hub/epistemic.py:edge_state_for",
+          "src/hub/epistemic.py:epistemic_class_for",
+          "src/hub/epistemic.py:geometry_for",
+          "src/hub/epistemic.py:has_locator",
+          "src/hub/epistemic.py:identity_for",
+          "src/hub/epistemic.py:observation_state_for",
+          "src/hub/epistemic.py:parse_instant",
+          "src/hub/epistemic.py:pick",
+          "src/hub/epistemic.py:retrievable_locator",
+          "src/hub/epistemic.py:source_binding_basis",
+          "src/hub/epistemic.py:source_state_for",
+          "src/hub/epistemic.py:temporal_for",
+          "src/hub/epistemic.py:temporal_state_at",
+          "src/hub/epistemic.py:truncate_to_precision",
+          "src/hub/evidence_lineage.py:build_lineage",
+          "src/hub/evidence_lineage.py:validate_edge",
+          "src/hub/evidence_lineage.py:validate_lineage",
+          "src/hub/evidence_object.py:evidence_id",
+          "src/hub/evidence_object.py:project_evidence_object",
+          "src/hub/evidence_object.py:record_title",
+          "src/hub/evidence_object.py:row_sha256",
+          "src/hub/evidence_object.py:validate_evidence_object"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/evidence/:collection/:id"
+        ],
+        "e2e_routes": [
+          "/evidence/:collection/:id"
+        ],
+        "components": [
+          "server/frontend/src/pages/EvidenceInspector.jsx",
+          "server/frontend/src/components/evidence/ProvenanceInspector.jsx",
+          "server/frontend/src/components/evidence/EvidenceStateStrip.jsx",
+          "server/frontend/src/lib/evidenceState.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx",
+          "server/frontend/src/components/shared/RecordSheet.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_evidence_api.py"
+        ],
+        "contract": [
+          "tests/test_epistemic_state.py",
+          "tests/test_evidence_object.py"
+        ],
+        "unit": [
+          "server/frontend/src/lib/evidenceState.test.js",
+          "server/frontend/src/components/evidence/ProvenanceInspector.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "moneysweep-certified-debt-leaderboard",
+      "classification": "analysis",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Read-only federation product surface for the exact MoneySweep-certified debt_issuance package. TheHub does not recompute producer totals, ranks, identity, source semantics, or geometry and remains fail-closed until exact producer hashes are trusted.",
+      "backend": {
+        "files": [
+          "server/backend/moneysweep_leaderboards.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /status",
+          "GET /top"
+        ],
+        "symbols": [
+          "server/backend/moneysweep_leaderboards.py:status",
+          "server/backend/moneysweep_leaderboards.py:top"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/moneysweep"
+        ],
+        "e2e_routes": [
+          "/moneysweep"
+        ],
+        "components": [
+          "server/frontend/src/pages/MoneySweep.jsx",
+          "server/frontend/src/components/feed/MoneySweepLeaderboardsTab.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/MoneySweep.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_moneysweep_leaderboard_consumer.py"
+        ],
+        "contract": [
+          "tests/test_moneysweep_leaderboard_crossrepo.py"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "moneysweep-certified-asg-leaderboard",
+      "classification": "analysis",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Read-only federation product surface for the exact MoneySweep-certified ASG emergency-purchase source-native package. TheHub preserves producer-native ASG supplier identifiers, rows, accounting, rank, and scope boundaries; name-only or missing-vendor records remain excluded and the surface fails closed until exact producer hashes are trusted.",
+      "backend": {
+        "files": [
+          "server/backend/moneysweep_asg_leaderboards.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /status",
+          "GET /top"
+        ],
+        "symbols": [
+          "server/backend/moneysweep_asg_leaderboards.py:status",
+          "server/backend/moneysweep_asg_leaderboards.py:top"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/moneysweep"
+        ],
+        "e2e_routes": [
+          "/moneysweep"
+        ],
+        "components": [
+          "server/frontend/src/pages/MoneySweep.jsx",
+          "server/frontend/src/components/feed/MoneySweepLeaderboardsTab.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/MoneySweep.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_moneysweep_asg_leaderboard_consumer.py"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "federated-search",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "One read-only search across the canonical streams every producer exports into the Hub (TWIN-012, TWIN-082..096): multiword AND, accent-folded, synthetic rows excluded and counted, FINDING declared empty until a producer emits findings, every result deep-linked to its Evidence Object.",
+      "backend": {
+        "files": [
+          "server/backend/search_api.py",
+          "src/hub/federated_search.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /"
+        ],
+        "symbols": [
+          "server/backend/search_api.py:current_index",
+          "server/backend/search_api.py:search",
+          "src/hub/federated_search.py:FederatedSearchIndex",
+          "src/hub/federated_search.py:SearchDoc",
+          "src/hub/federated_search.py:fold",
+          "src/hub/federated_search.py:parse_cursor",
+          "src/hub/federated_search.py:result_kind",
+          "src/hub/federated_search.py:words"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/search"
+        ],
+        "e2e_routes": [
+          "/search"
+        ],
+        "components": [
+          "server/frontend/src/pages/Search.jsx",
+          "server/frontend/src/lib/deepLinks.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/lib/commands.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_search_entity_api.py"
+        ],
+        "contract": [
+          "tests/test_federated_search.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/Search.test.jsx",
+          "server/frontend/src/lib/deepLinks.test.js"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "entity-composition",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Global entity page (FDX-051): one producer entity with the relationships, observations, alerts and sources the Hub store already links to it. Identity is reported as recorded (FDX-008: the registry is not wired, so nothing is merged); proximity correlations stay CANDIDATE.",
+      "backend": {
+        "files": [
+          "server/backend/entity_api.py",
+          "src/hub/entity_composition.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /{record_id}"
+        ],
+        "symbols": [
+          "server/backend/entity_api.py:composition_for",
+          "server/backend/entity_api.py:get_entity_composition",
+          "src/hub/entity_composition.py:compose_entity",
+          "src/hub/entity_composition.py:validate_entity_composition"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/entity/:id"
+        ],
+        "e2e_routes": [
+          "/entity/:id"
+        ],
+        "components": [
+          "server/frontend/src/pages/EntityPage.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/Search.jsx",
+          "server/frontend/src/pages/EvidenceInspector.jsx",
+          "server/frontend/src/lib/commands.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_search_entity_api.py"
+        ],
+        "contract": [
+          "tests/test_entity_composition.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/EntityPage.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "command-palette-and-map-deep-links",
+      "classification": "client_only",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Ctrl/Cmd+K command palette (TWIN-095, FDX-055) and URL deep links (FDX-056). Every command is a client-side navigation derived from NAV_GROUPS or a parsed query (search, Collection/id, ent_ id, lat/lon); the palette performs no writes. /gis?lat&lon&z centres the canonical map view or reports an invalid link.",
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/command/CommandPalette.jsx",
+          "server/frontend/src/lib/commands.js",
+          "server/frontend/src/hooks/useGlobalShortcut.js",
+          "server/frontend/src/gis/deepLinkView.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/components/layout/Sidebar.jsx",
+          "server/frontend/src/components/layout/AppLayout.jsx"
+        ]
+      },
+      "tests": {
+        "unit": [
+          "server/frontend/src/components/command/CommandPalette.test.jsx",
+          "server/frontend/src/lib/commands.test.js",
+          "server/frontend/src/lib/deepLinks.test.js"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "ovnis-event-timeline",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Event timeline over the OVNIS case corpus (TWIN-003, TWIN-180..200; directive section 13): chronological ledger with oldest/newest sort, category filters and totals, a findings-only mode that reports NO_FINDINGS_RECORDED until OVNIS publishes findings, dates at their recorded precision, source-bounded places, and every event linked to its source, Evidence Object and case composition.",
+      "backend": {
+        "files": [
+          "server/backend/timeline_api.py",
+          "src/hub/event_timeline.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /"
+        ],
+        "symbols": [
+          "server/backend/timeline_api.py:timeline",
+          "src/hub/event_timeline.py:TimelineEvent",
+          "src/hub/event_timeline.py:build_timeline",
+          "src/hub/event_timeline.py:era",
+          "src/hub/event_timeline.py:is_timeline_row",
+          "src/hub/event_timeline.py:parse_cursor",
+          "src/hub/event_timeline.py:recorded_date"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/timeline"
+        ],
+        "e2e_routes": [
+          "/timeline"
+        ],
+        "components": [
+          "server/frontend/src/pages/Timeline.jsx",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/lib/commands.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_timeline_api.py"
+        ],
+        "contract": [
+          "tests/test_event_timeline.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/Timeline.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "ovnis-research-hub",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Research Hub over the OVNIS research record (TWIN-004, TWIN-164..175, TWIN-013/222/223, TWIN-009/208..210/218/221; FDX-013..017): topic cards with finding and distinct-source counts, hypotheses with their nine falsification checks, contradictions with both claims verbatim, the read-only duplicate-candidate queue (computed pairs stay unreviewed CANDIDATEs), the research queue, the per-case reconstruction with its report and receipt, and the OVNIS reports workspace and show log. Empty ledgers say NONE_RECORDED; the LLM research assistant keeps its own tab.",
+      "backend": {
+        "files": [
+          "server/backend/research_api.py",
+          "src/hub/research_composition.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /",
+          "GET /case/{case_id}",
+          "GET /records/{kind}"
+        ],
+        "symbols": [
+          "server/backend/research_api.py:research_case",
+          "server/backend/research_api.py:research_overview",
+          "server/backend/research_api.py:research_records",
+          "server/backend/research_api.py:research_rows",
+          "src/hub/research_composition.py:case_reconstruction",
+          "src/hub/research_composition.py:case_summary",
+          "src/hub/research_composition.py:cases_named",
+          "src/hub/research_composition.py:finding_links",
+          "src/hub/research_composition.py:is_research_row",
+          "src/hub/research_composition.py:kind_of",
+          "src/hub/research_composition.py:overview",
+          "src/hub/research_composition.py:record",
+          "src/hub/research_composition.py:record_id",
+          "src/hub/research_composition.py:records",
+          "src/hub/research_composition.py:topic_cards"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/research",
+          "/research/case/:caseId"
+        ],
+        "e2e_routes": [
+          "/research",
+          "/research/case/:caseId"
+        ],
+        "components": [
+          "server/frontend/src/pages/ResearchHub.jsx",
+          "server/frontend/src/pages/CaseReconstruction.jsx",
+          "server/frontend/src/components/research/ResearchRecords.jsx",
+          "server/frontend/src/components/research/OvnisResearchTabs.jsx",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/lib/commands.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_research_api.py"
+        ],
+        "contract": [
+          "tests/test_research_composition.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/ResearchHub.test.jsx",
+          "server/frontend/src/pages/CaseReconstruction.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "property-map-location-intel",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Property Map at /gis?view=property-map (TWIN-006/132..149, FDX-021/022/027; Phase 5, P5-A): Hub-held records drawn only where their producer declared a point precision and styled by it (observed solid, interpreted ringed, representative hollow), data-derived category legend, AOI area, Location Intel (records within a radius, municipio by point in polygon), the selected record with provenance links, municipality-level records outlined on TIGERweb municipios by exact folded name (OVNIS cases, municipality only) with every other recorded value listed, and a layer provenance inspector. Every loaded row is accounted for; nothing is geocoded.",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /features",
+          "GET /intel"
+        ],
+        "symbols": [
+          "server/backend/spatial_api.py:location_intel",
+          "server/backend/spatial_api.py:spatial_features",
+          "server/backend/spatial_api.py:spatial_rows",
+          "src/hub/spatial_features.py:build_features",
+          "src/hub/spatial_features.py:category",
+          "src/hub/spatial_features.py:coordinates",
+          "src/hub/spatial_features.py:distance_m",
+          "src/hub/spatial_features.py:feature",
+          "src/hub/spatial_features.py:municipality",
+          "src/hub/spatial_features.py:nearby",
+          "src/hub/spatial_features.py:object_type",
+          "src/hub/spatial_features.py:parse_bbox",
+          "src/hub/spatial_features.py:producer"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/components/gis/PropertyMap.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/gis/propertyMap.js",
+          "server/frontend/src/gis/basemaps.js",
+          "server/frontend/src/api/federationClient.js",
+          "server/frontend/src/gis/maplibre.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/propertyMap.test.js",
+          "server/frontend/src/components/gis/PropertyMap.test.jsx",
+          "server/frontend/src/gis/maplibre.test.js"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "digital-twin",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Digital Twin at /gis?view=digital-twin (TWIN-005/057/058/144/150..163, FDX-023/030/031; Phase 5, P5-B): four panels on one shared camera and selection (Cesium perspective over uniform-datum NOAA CUDEM m9525 terrain, PRVD02, bound only because the 3D source gate certifies it, and placed on the ellipsoid through NOAA NGS GEOID18 only while its datum is the one the geoid relates; MapLibre ortho; USGS orthoimagery; details), each maximizable through ?panel= and fullscreen. Time playback over each record's span at its recorded precision (undated records counted, never placed in time), findings and live/current toggles whose counters say why a zero is a zero, the selected record's CUDEM elevation with its datum and source tile, DEM and imagery provenance, and GeoJSON and USD (.usda) exports of exactly what is shown with export provenance (not certified).",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:time_span",
+          "src/hub/spatial_features.py:build_features",
+          "src/hub/spatial_features.py:feature"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/DigitalTwin.jsx",
+          "server/frontend/src/components/gis/DigitalTwinPerspective.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/digitalTwin.js",
+          "server/frontend/src/gis/cudem.js",
+          "server/frontend/src/gis/cudemTerrainProvider.js",
+          "server/frontend/src/gis/geoid.js",
+          "server/frontend/src/gis/advanced3dSourceRegistry.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/digitalTwin.test.js",
+          "server/frontend/src/gis/cudem.test.js",
+          "server/frontend/src/gis/cudemTerrainProvider.test.js",
+          "server/frontend/src/gis/geoid.test.js",
+          "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
+          "server/frontend/src/components/gis/DigitalTwin.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "interpretive-layers",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Subsurface and interpretive layers at /gis?view=interpretive-layers (TWIN-075/076/077/146, FDX-024; Phase 5, P5-C): documented geometry (SIGE karst, aquifer and watershed outlines loaded through the source registry with their gates, counts and hashes, or the provider's failure verbatim; Hub-held USGS mineral occurrences) kept apart from a MODELLED — not observed geometry group that holds only records whose producer declared the INTERPRETIVE class (none today, and it says why), with separate styling that tests keep distinct; and a CUDEM terrain profile along a drawn line with its datum (PRVD02), no-data samples kept as gaps, the documented layers it crosses, a statement that nothing is drawn below the surface (no subsurface model is supplied) and a CSV download. The Hub store's sampling basis is stated.",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:store_basis",
+          "src/hub/spatial_features.py:feature"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/InterpretiveLayers.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/interpretive.js",
+          "server/frontend/src/gis/storeBasis.js",
+          "server/frontend/src/gis/cudem.js",
+          "server/frontend/src/gis/acquisitionFacade.js",
+          "server/frontend/src/lib/download.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/interpretive.test.js",
+          "server/frontend/src/gis/storeBasis.test.js",
+          "server/frontend/src/components/gis/InterpretiveLayers.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "aoi-comparison",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "AOI comparison with negative controls at /gis?view=aoi-comparison (FDX-028/029; directive §32 and §46; Phase 5, P5-C): a study area (a bounding box or a TIGERweb municipio by recorded name) against one or more control areas that must be disjoint from it and from each other, by records per km² per (producer, stream, category), counting only points whose producer declared a placed position (stand-ins inside an AOI are counted apart as membership not determined; nothing is geocoded). Rate ratio with an exact conditional binomial test and a Clopper-Pearson interval, no ratio below five combined records, the number of comparisons stated (p-values unadjusted), every result labelled BACKGROUND COMPARISON — not a finding, the Hub store's sampling basis (a bounded sample, from the build record) stated before and after the results, and a JSON receipt (NOT_CERTIFIED) with the AOIs, area method, store and method.",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:store_basis"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/AoiComparison.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/aoiComparison.js",
+          "server/frontend/src/gis/propertyMap.js",
+          "server/frontend/src/gis/storeBasis.js",
+          "server/frontend/src/gis/acquisitionFacade.js",
+          "server/frontend/src/lib/download.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/aoiComparison.test.js",
+          "server/frontend/src/gis/storeBasis.test.js",
+          "server/frontend/src/components/gis/AoiComparison.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    }
+  ],
+  "exceptions": []
+}

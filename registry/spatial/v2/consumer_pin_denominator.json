@@ -1,0 +1,50 @@
+{
+  "Schema_Version": "pr-grid-v2-consumer-denominator/1.0",
+  "Grid_ID": "PR_GRID_GEOGRAPHIC_V2",
+  "Grid_Version": "2.0.0-rc1",
+  "CRS": "EPSG:6566",
+  "Authority_Repository": "jotaele44/spiderweb-pr",
+  "Authority_Commit": "0c66e13d14232c0d7cbcbc179b3655904777dc71",
+  "Grid_Manifest_SHA256": "8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4",
+  "Cell_Schema_SHA256": "1c173aee4b21b9baa545b656735155f2236a87c436d467a12132ef53b2592f5d",
+  "Binding_Schema_SHA256": "dabc461e47134b3b150be9aeb23b3d0097563493b33b3187538255e06b16a022",
+  "Mask_Schema_SHA256": "0b31b717d274b19686bf7f47edbabdaec31c86800f2ca7f1e73ffb663600978b",
+  "Expected_Consumer_Count": 6,
+  "Consumers": [
+    {
+      "Repository": "aguayluz-pr",
+      "Default_Level": "L1",
+      "Pin_Git_Blob_SHA1": "25b71bf67e55b105543dde3d47fb0dfded12e797"
+    },
+    {
+      "Repository": "centinelas-pr",
+      "Default_Level": "L0",
+      "Pin_Git_Blob_SHA1": "1e63af91dd9df71745a0f2d374bc58809636b157"
+    },
+    {
+      "Repository": "moneysweep-pr",
+      "Default_Level": "L1",
+      "Pin_Git_Blob_SHA1": "4919a5dfaa2bac740a243cae91c5eb9f6eea37c5"
+    },
+    {
+      "Repository": "ovnis-pr",
+      "Default_Level": "L1",
+      "Pin_Git_Blob_SHA1": "64ad908b403c5be61104cc75c509a941a1fd85e2"
+    },
+    {
+      "Repository": "skywatcher-pr",
+      "Default_Level": "L2",
+      "Pin_Git_Blob_SHA1": "0f01cd576addd98848f5d1471339d98db6447fe6"
+    },
+    {
+      "Repository": "thehub-pr",
+      "Default_Level": "L1",
+      "Pin_Git_Blob_SHA1": "41686994625485098b0c4aba6dc64636ff8ea2a5"
+    }
+  ],
+  "Geometry_Producer_Count": 1,
+  "Geometry_Producer": "spiderweb-pr",
+  "Consumer_Geometry_Mode": "REFERENCE_ONLY",
+  "State": "FROZEN_PIN_DENOMINATOR",
+  "Notes": "Git blob SHA1 identifies exact pin bytes; source manifests are independently SHA256-checked against Spiderweb."
+}

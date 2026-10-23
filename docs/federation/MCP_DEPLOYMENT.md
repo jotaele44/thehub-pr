@@ -11,15 +11,14 @@ Adapter credentials are always sourced from the environment at runtime (see
 ## Deployment invariant: diagnostic (no-auth) mode must never bind past loopback
 
 This build ships with no login (`/api/auth/me` always 401s, `requires_auth` is
-always `false`). The only thing standing between a network caller and a write
-to `data/hub.db` is `PRII_WRITE_TOKEN` — and when it is unset, writes are
-served to *any* local-network caller (loopback, RFC1918 private, link-local;
-see `require_write_access` / `_is_local_network` in
-`server/backend/main_core.py`). Publishing port 8000 to a public interface
-without first setting `PRII_WRITE_TOKEN` exposes anonymous create/update/
-**delete**/bulk-overwrite of every collection backing the UI. Both deployment
-paths below default to loopback-only for this reason; widen the bind only
-after `PRII_WRITE_TOKEN` is configured.
+always `false`), so every read route is unauthenticated by design. `PRII_WRITE_TOKEN`
+gates every mutating route to `data/hub.db`: when it is unset, `require_write_access`
+in `server/backend/main_core.py` refuses every write outright (`503`, fail-closed) —
+there is no local-network exception, regardless of the caller's address. Publishing
+port 8000 to a public interface without `PRII_WRITE_TOKEN` therefore does not expose
+writes, but it does expose anonymous reads of every collection backing the UI. Both
+deployment paths below default to loopback-only for this reason; widen the bind
+deliberately, and set `PRII_WRITE_TOKEN` first if you need writes to work at all.
 
 ## Docker
 

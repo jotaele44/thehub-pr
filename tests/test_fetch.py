@@ -2,7 +2,8 @@ import json
 
 import pytest
 
-from hub.fetch import _validate_command, clone_or_pull, export_command, fetch_all
+from hub.fetch import FetchError, _validate_command, clone_or_pull, export_command, fetch_all
+from hub.cli import main as cli_main
 from hub.registry import Producer, Registry
 
 
@@ -183,6 +184,50 @@ def test_fetch_run_real_subprocess(tmp_path):
     reg = _registry(Producer(program_id="p", repo="o/p", role="x", local_path=str(base)))
     results = fetch_all(reg, tmp_path / "ws", run_export=True)
     assert results[0]["exported"] is True
+
+
+@pytest.mark.parametrize(
+    "manifest",
+    [
+        {},
+        {"hub_callable_commands": {}},
+        {"hub_callable_commands": {"export_canonical": "python3 export.py; false"}},
+    ],
+)
+def test_fetch_run_fails_when_no_safe_export_command_exists(tmp_path, manifest):
+    base = tmp_path / "producer"
+    base.mkdir()
+    (base / "federation.json").write_text(json.dumps(manifest))
+    reg = _registry(Producer(program_id="p", repo="o/p", role="x", local_path=str(base)))
+
+    with pytest.raises(FetchError, match="--run requested but no safe export_canonical command"):
+        fetch_all(reg, tmp_path / "ws", run_export=True, runner=FakeRunner())
+
+
+def test_fetch_cli_returns_failure_when_export_command_is_missing(tmp_path, capsys):
+    base = tmp_path / "producer"
+    base.mkdir()
+    (base / "federation.json").write_text(json.dumps({"hub_callable_commands": {}}))
+    registry = tmp_path / "registry.yaml"
+    registry.write_text(
+        "hub: thehub-pr\n"
+        "schema_version: test\n"
+        "producers:\n"
+        "  - program_id: p\n"
+        "    repo: o/p\n"
+        "    role: test\n"
+        f"    local_path: {base}\n"
+    )
+
+    code = cli_main([
+        "fetch",
+        "--registry", str(registry),
+        "--root", str(tmp_path / "ws"),
+        "--run",
+    ])
+
+    assert code == 1
+    assert "ERROR: p: --run requested" in capsys.readouterr().err
 
 
 def test_fetch_all_skips_clone_for_local_path(tmp_path):

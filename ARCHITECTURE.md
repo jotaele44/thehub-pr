@@ -76,12 +76,101 @@ already-published exports. `ready_for_hub_live_execution` (running the producer'
 `hub_callable_commands` against live sources) is a stricter gate, typically blocked until manual
 sources are materialized and runtime keys are supplied.
 
+## Evidence Object and epistemic state (candidate)
+
+Any canonical stream row can be viewed as a `FEDERATION_EVIDENCE_OBJECT_V1`. The view keeps these
+axes independent of one another:
+
+- data stage;
+- epistemic class: MEASURED, COMPUTED, CURATED or INTERPRETIVE;
+- identity state;
+- source state;
+- temporal state and temporal precision;
+- observation semantics;
+- geometry precision.
+
+Every Evidence Object also carries its lineage, contradictions, citations and a row SHA-256.
+Three contracts define it. All three are **CANDIDATE** and are not yet pinned in
+`schemas/FROZEN.sha256`:
+
+- `schemas/federation/epistemic_state.v1.schema.json`
+- `schemas/federation/evidence_object.v1.schema.json`
+- `schemas/federation/evidence_lineage.v1.schema.json`
+
+`hub.evidence_object.project_evidence_object` builds the view as a read-only projection, and
+`GET /api/evidence/{collection}/{record_id}` serves it. It is rendered at
+`/evidence/:collection/:id`.
+
+Producers can declare state by attaching an additive `evidence_state` object to a row. Anything a
+producer does not declare fails closed and is never guessed. See
+[`docs/federation/EVIDENCE_OBJECT_V1.md`](docs/federation/EVIDENCE_OBJECT_V1.md).
+
+### Search and entity composition (candidate)
+
+`GET /api/search` (`hub.federated_search`) is a lexical index over the entities, sources,
+observations and alerts the Hub store already holds:
+
+- every query word must match;
+- synthetic rows are excluded by default and counted;
+- each producer is reported `AVAILABLE` or `NO_DATA`.
+
+`GET /api/entity/{record_id}` (`hub.entity_composition`, contract
+`FEDERATION_ENTITY_COMPOSITION_V1`) composes one entity from the rows linked to it. It
+reports identity exactly as recorded and runs no matching.
+
+Both are rendered at `/search` and `/entity/:id`, and the command palette (Ctrl/Cmd+K) reaches
+them. See [`docs/federation/SEARCH_AND_ENTITY_V1.md`](docs/federation/SEARCH_AND_ENTITY_V1.md).
+
+`GET /api/timeline` (`hub.event_timeline`) orders the OVNIS case observations the store holds,
+keeping each date at its recorded precision and each place as the source gives it. It is
+rendered at `/timeline`. See [`docs/federation/EVENT_TIMELINE_V1.md`](docs/federation/EVENT_TIMELINE_V1.md).
+
+`GET /api/research` (`hub.research_composition`, contract `federation-research-v1`) serves the
+research record OVNIS curates and exports as typed entity rows:
+
+- topics, findings, hypotheses with their falsification checks, and contradictions;
+- duplicate-case adjudications, the research queue, media episodes and per-case reports.
+
+Empty ledgers report `NONE_RECORDED`, and a computed duplicate pair stays an unreviewed
+CANDIDATE. The record is rendered at `/research`, `/research/case/:caseId` and the `/ovnis`
+Reports and Show Log tabs. See [`docs/federation/RESEARCH_HUB_V1.md`](docs/federation/RESEARCH_HUB_V1.md).
+
+`GET /api/spatial/features` and `GET /api/spatial/intel` (`hub.spatial_features`, contract
+`federation-spatial-features-v1`) place Hub-held records on the Property Map
+(`/gis?view=property-map`). A record is drawn only where its producer declared a point
+precision, and it is styled by that precision. Every other record is counted, and a recorded
+municipality is passed through as recorded and outlined on its municipio by exact name. Nothing
+is geocoded. See [`docs/federation/PROPERTY_MAP_V1.md`](docs/federation/PROPERTY_MAP_V1.md).
+
+The same features carry each record's time at the precision its producer recorded (`time_start`
+and `time_end`, with `time_basis` and `temporal_state`). The Digital Twin (`/gis?view=digital-twin`)
+draws them in four synchronized panels over NOAA CUDEM terrain. CUDEM is bound only because its one
+declared vertical datum (PRVD02) passes the fail-closed 3D source gate. The view adds temporal
+playback and exports exactly what is shown as GeoJSON and USD. The browser reads the terrain
+directly from NOAA's cloud-optimized GeoTIFFs. See
+[`docs/federation/DIGITAL_TWIN_V1.md`](docs/federation/DIGITAL_TWIN_V1.md).
+
+The same endpoint reports `store`, how the served store was built (the committed fixture is a bounded
+sample, so its counts are never totals), and each feature's `declared_epistemic_class` and
+`declared_data_stage`. Three more `/gis` views use them. The Digital Twin applies the NOAA GEOID18
+separation to its CUDEM heights and shows both the PRVD02 and the ellipsoidal height. The subsurface
+view (`/gis?view=interpretive-layers`) keeps documented layers apart from records a producer declared
+INTERPRETIVE, which is empty today, and draws a terrain profile with gaps kept as gaps. The AOI
+comparison (`/gis?view=aoi-comparison`) tests a study area against disjoint control areas with an exact
+binomial test and labels the result a background comparison, not a finding. See
+[`docs/federation/SUBSURFACE_AND_CONTROLS_V1.md`](docs/federation/SUBSURFACE_AND_CONTROLS_V1.md).
+
 ## Governance
 
 Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,
 and documentation-drift gates are defined under `governance/` and enforced by
 `.github/workflows/federation-governance.yml`. Undeclared dependencies and unresolved impacted-repo
 compatibility fail closed.
+
+Every repository also runs the shared `docs-sync` gate (`tools/check_docs_sync.py`, configured per
+repository by `.federation/docs-sync.json`): a change to paths a document covers must update that
+document, and no change may leave a document pointing at a path that no longer exists. The checker
+is rendered from `federation-templates/baseline/`; ADR 0010 records the decision.
 
 ## Decision records
 
@@ -93,3 +182,6 @@ Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
 - [ADR 0004 — Federation governance layer](docs/adr/0004-federation-governance-layer.md):
   make cross-repo dependencies, contract compatibility, impact disposition, and documentation
   synchronization machine-enforced merge gates.
+- [ADR 0010 — Change-coupled documentation gate](docs/adr/0010-change-coupled-documentation-gate.md):
+  generalize ADR 0004's documentation-drift rule into one shared checker that requires a document
+  to change with the paths it covers and forbids new dangling references.

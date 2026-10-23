@@ -8,9 +8,22 @@ from __future__ import annotations
 
 import hashlib
 import json
+import sys
 from pathlib import Path
 
 import pytest
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+# Stale editable installs from other federation repos can shadow the active
+# checkout and swap `server.backend.main` to the wrong worktree. Strip those
+# hooks before any test imports resolve modules.
+for finder in list(sys.meta_path):
+    module = getattr(finder, "__module__", "")
+    if "spiderweb" in module.lower() or "__editable__" in module and "spiderweb" in module.lower():
+        sys.meta_path.remove(finder)
 
 SRC = "src_0123456789abcdef0123456789abcdef"
 ENT_AGENCY = "ent_0123456789abcdef0123456789abce01"

@@ -17,13 +17,25 @@ const WRITE_TOKEN_STORAGE_KEY = 'federation_write_token';
 // write token stored alongside it would be discarded before the first request.
 export const getWriteToken = () => {
   if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem(WRITE_TOKEN_STORAGE_KEY) || null;
+  return window.sessionStorage.getItem(WRITE_TOKEN_STORAGE_KEY) || null;
 };
 
 export const setWriteToken = (token) => {
-  if (typeof window === 'undefined') return;
-  if (token) window.localStorage.setItem(WRITE_TOKEN_STORAGE_KEY, token);
-  else window.localStorage.removeItem(WRITE_TOKEN_STORAGE_KEY);
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(WRITE_TOKEN_STORAGE_KEY);
+    if (token) window.sessionStorage.setItem(WRITE_TOKEN_STORAGE_KEY, token);
+    else window.sessionStorage.removeItem(WRITE_TOKEN_STORAGE_KEY);
+  }
+  appParams.writeToken = token || null;
+};
+
+export const requireImplementedResponse = (result, feature) => {
+  if (result?.status === 'not_implemented' || result?.implemented === false) {
+    throw new Error(
+      result.reason || result.message || `${feature} is not available in this deployment.`,
+    );
+  }
+  return result;
 };
 
 const setStoredToken = (token) => {
@@ -63,7 +75,7 @@ async function request(path, options = {}) {
   // Write token last: it only applies once no session token is in play, which is
   // exactly the diagnostic-mode case the write guard exists for.
   const token = options.token ?? appParams.token ?? getStoredToken()
-    ?? appParams.writeToken ?? getWriteToken();
+    ?? getWriteToken() ?? appParams.writeToken;
   const headers = new Headers(options.headers || {});
 
   if (!(options.body instanceof FormData) && !headers.has('Content-Type')) {
@@ -222,6 +234,69 @@ const notifications = {
     request('/notifications/preferences', { method: 'PUT', body: { prefs, targets } }),
 };
 
+// Evidence Object API (provenance inspector). Read-only; see server/backend/evidence_api.py.
+const evidence = {
+  get: (collection, recordId) => request(`/evidence/${encode(collection)}/${encode(recordId)}`),
+};
+
+// Federated search over the canonical streams the Hub ingests. Read-only; see
+// server/backend/search_api.py. `cursor` is the opaque value the previous page returned.
+const search = {
+  query: ({ q = '', type = 'ALL', includeSynthetic = false, limit = 25, cursor } = {}) => {
+    const params = new URLSearchParams({ q, type, include_synthetic: String(includeSynthetic), limit: String(limit) });
+    if (cursor) params.set('cursor', cursor);
+    return request(`/search?${params.toString()}`);
+  },
+};
+
+// Entity composition (FEDERATION_ENTITY_COMPOSITION_V1). Read-only; see server/backend/entity_api.py.
+const composition = {
+  get: (recordId) => request(`/entity/${encode(recordId)}`),
+};
+
+// Event timeline over the OVNIS case corpus. Read-only; see server/backend/timeline_api.py.
+const timeline = {
+  query: ({ sort = 'oldest', categories = [], findingsOnly = false, includeSynthetic = false, limit = 50, cursor } = {}) => {
+    const params = new URLSearchParams({
+      sort, findings_only: String(findingsOnly), include_synthetic: String(includeSynthetic), limit: String(limit),
+    });
+    categories.forEach((category) => params.append('category', category));
+    if (cursor) params.set('cursor', cursor);
+    return request(`/timeline?${params.toString()}`);
+  },
+};
+
+// OVNIS research records (topics, findings, hypotheses, contradictions,
+// adjudications, queue, episodes, reports). Read-only; see server/backend/research_api.py.
+const research = {
+  overview: ({ includeSynthetic = false } = {}) =>
+    request(`/research?${new URLSearchParams({ include_synthetic: String(includeSynthetic) }).toString()}`),
+  records: (kind, { status, origin, includeSynthetic = false, limit = 50, cursor } = {}) => {
+    const params = new URLSearchParams({ include_synthetic: String(includeSynthetic), limit: String(limit) });
+    if (status) params.set('status', status);
+    if (origin) params.set('origin', origin);
+    if (cursor) params.set('cursor', cursor);
+    return request(`/research/records/${encode(kind)}?${params.toString()}`);
+  },
+  caseRecord: (caseId) => request(`/research/case/${encode(caseId)}`),
+};
+
+// Property Map spatial features and Location Intel. Read-only; see server/backend/spatial_api.py.
+const spatial = {
+  features: ({ bbox, includeSynthetic = false, limit = 5000 } = {}) => {
+    const params = new URLSearchParams({ include_synthetic: String(includeSynthetic), limit: String(limit) });
+    if (bbox) params.set('bbox', bbox.join(','));
+    return request(`/spatial/features?${params.toString()}`);
+  },
+  intel: ({ lat, lon, radiusM = 1000, municipality, includeSynthetic = false }) => {
+    const params = new URLSearchParams({
+      lat: String(lat), lon: String(lon), radius_m: String(radiusM), include_synthetic: String(includeSynthetic),
+    });
+    if (municipality) params.set('municipality', municipality);
+    return request(`/spatial/intel?${params.toString()}`);
+  },
+};
+
 export const federation = {
   app: { id: appParams.appId, programId: appParams.programId },
   auth,
@@ -234,5 +309,11 @@ export const federation = {
   asServiceRole: { entities, connectors },
   system,
   projectSigns,
+  evidence,
+  search,
+  composition,
+  timeline,
+  research,
+  spatial,
   request,
 };

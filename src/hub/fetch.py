@@ -55,6 +55,10 @@ _PY_VALUE_LONG = ("--check-hash-based-pycs",)
 Runner = Callable[[Sequence[str], Optional[str]], Any]
 
 
+class FetchError(RuntimeError):
+    """A requested producer export could not be materialized."""
+
+
 def _subprocess_runner(cmd: Sequence[str], cwd: Optional[str] = None):
     """Default runner: run `cmd`, raising CalledProcessError on non-zero exit."""
     return subprocess.run(list(cmd), cwd=cwd, check=True, capture_output=True, text=True)
@@ -181,9 +185,13 @@ def fetch_all(
         exported = False
         if run_export:
             cmd = export_command(base)
-            if cmd:
-                runner(cmd, str(base))
-                exported = True
+            if not cmd:
+                raise FetchError(
+                    f"{p.program_id}: --run requested but no safe "
+                    f"export_canonical command is available in {base / p.federation_manifest}"
+                )
+            runner(cmd, str(base))
+            exported = True
 
         results.append(
             {

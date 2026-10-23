@@ -4,6 +4,7 @@ import StatusChip from "@/components/shared/StatusChip";
 import IdCode from "@/components/shared/IdCode";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, Check, AlertCircle, ExternalLink, Inbox } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
 
 const SYNC = {
   New: "bg-status-info/15 text-status-info-fg border-status-info/30",
@@ -27,6 +28,22 @@ function itemMeta(it) {
 // MoneySweep / AguaYLuz feed items before they're eligible to hit the ledger.
 export default function VerificationGatePanel() {
   const { pending, counts, isLoading, saving, verify, reject } = useVerificationGate();
+
+  const handleVerify = async (item) => {
+    try {
+      await verify(item);
+    } catch (error) {
+      toast({ title: `Verification failed: ${error.message}`, variant: "destructive" });
+    }
+  };
+
+  const handleReject = async (item) => {
+    try {
+      await reject(item);
+    } catch (error) {
+      toast({ title: `Review update failed: ${error.message}`, variant: "destructive" });
+    }
+  };
 
   return (
     <div className="rounded-xl border border-border bg-card p-5 mb-8">
@@ -64,10 +81,10 @@ export default function VerificationGatePanel() {
                   <div className="mt-1"><IdCode>{it.feed_item_id}</IdCode></div>
                 </div>
                 <div className="flex flex-col gap-1.5 shrink-0">
-                  <Button size="sm" disabled={saving} onClick={() => verify(it)}>
+                  <Button size="sm" disabled={saving} onClick={() => handleVerify(it)}>
                     <Check className="h-3.5 w-3.5 mr-1" /> Verify
                   </Button>
-                  <Button size="sm" variant="ghost" disabled={saving} onClick={() => reject(it)}>
+                  <Button size="sm" variant="ghost" disabled={saving} onClick={() => handleReject(it)}>
                     <AlertCircle className="h-3.5 w-3.5 mr-1" /> Flag
                   </Button>
                   {it.source_url && (

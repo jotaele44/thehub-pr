@@ -61,7 +61,9 @@ lock:
 smoke-fetch:
 	$(eval TMP := $(shell mktemp -d))
 	mkdir -p $(TMP)/producer
-	: > $(TMP)/producer/export.py
+	printf '%s\n' 'from pathlib import Path' 'Path("export-ran").write_text("ok\n")' > $(TMP)/producer/export.py
+	printf '%s\n' 'hub: thehub-pr' 'schema_version: "1.0.0"' 'producers:' '  - program_id: smoke' '    repo: local/smoke' '    role: test' '    local_path: "$(TMP)/producer"' > $(TMP)/registry.yaml
 	echo '{"program_id":"smoke","hub_parent":"thehub-pr","hub_callable_commands":{"export_canonical":"python3 export.py"}}' > $(TMP)/producer/federation.json
-	PYTHONPATH=src $(PY) -m hub fetch --run --root $(TMP)/ws 2>&1 || true
+	PYTHONPATH=src $(PY) -m hub fetch --run --registry $(TMP)/registry.yaml --root $(TMP)/ws
+	test -f $(TMP)/producer/export-ran
 	rm -rf $(TMP)

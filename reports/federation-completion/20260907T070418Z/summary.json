@@ -1,0 +1,777 @@
+{
+  "artifact_sha256": {
+    "remote_completion_ledger": "df99581a2f1778c1f9afad08c318e54beca9b157ff225b700c1083ce4c9746b9",
+    "startup_completion_ledger": "7aeffeb278b1d671defce034a7ddf05df00f8ec66926d16b8339e9e056588046"
+  },
+  "artifacts": {
+    "implementation_plan": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/IMPLEMENTATION_PLAN.md",
+    "remote_completion_ledger": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/remote-completion-ledger.json",
+    "startup_completion_ledger": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/startup/startup_completion_audit.json",
+    "summary": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/summary.json"
+  },
+  "certification": "AUDIT_ONLY",
+  "commands": [
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--all",
+        "--prune",
+        "--tags"
+      ],
+      "exit_code": 0,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/logs/fetch-aguayluz-pr.log",
+      "name": "fetch-aguayluz-pr"
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--all",
+        "--prune",
+        "--tags"
+      ],
+      "exit_code": 0,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/logs/fetch-centinelas-pr.log",
+      "name": "fetch-centinelas-pr"
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--all",
+        "--prune",
+        "--tags"
+      ],
+      "exit_code": 0,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/logs/fetch-moneysweep-pr.log",
+      "name": "fetch-moneysweep-pr"
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--all",
+        "--prune",
+        "--tags"
+      ],
+      "exit_code": 0,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/logs/fetch-ovnis-pr-actual.log",
+      "name": "fetch-ovnis-pr-actual"
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--all",
+        "--prune",
+        "--tags"
+      ],
+      "exit_code": 0,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/logs/fetch-skywatcher-pr.log",
+      "name": "fetch-skywatcher-pr"
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--all",
+        "--prune",
+        "--tags"
+      ],
+      "exit_code": 0,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/logs/fetch-spiderweb-pr.log",
+      "name": "fetch-spiderweb-pr"
+    },
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--all",
+        "--prune",
+        "--tags"
+      ],
+      "exit_code": 0,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/logs/fetch-thehub-pr.log",
+      "name": "fetch-thehub-pr"
+    },
+    {
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
+        "/Users/jotaele/fed-repos/thehub-pr/scripts/federation_completion_gate.py",
+        "--config",
+        "/Users/jotaele/fed-repos/thehub-pr/federation/completion-gate.json",
+        "--out",
+        "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/remote-completion-ledger.json",
+        "--fail-on-actionable"
+      ],
+      "exit_code": 3,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/logs/remote-completion-gate.log",
+      "name": "remote-completion-gate"
+    },
+    {
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.13/bin/python3",
+        "/Users/jotaele/fed-repos/thehub-pr/scripts/startup_completion_audit.py",
+        "--root",
+        "/Users/jotaele/fed-repos",
+        "--out",
+        "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/startup",
+        "--timeout",
+        "300"
+      ],
+      "exit_code": 0,
+      "log_path": "/Users/jotaele/fed-repos/thehub-pr/reports/federation-completion/20260907T070418Z/logs/startup-completion-audit.log",
+      "name": "startup-completion-audit"
+    }
+  ],
+  "generated_utc": "2026-09-07T07:18:14Z",
+  "remote_gate": {
+    "actionable_counts": {
+      "REBASE_REQUIRED": 48,
+      "STACKED": 5
+    },
+    "audit_truncated": false,
+    "by_repo": {
+      "jotaele44/aguayluz-pr": {
+        "REBASE_REQUIRED": 13,
+        "STACKED": 1
+      },
+      "jotaele44/centinelas-pr": {
+        "BLOCKED": 4
+      },
+      "jotaele44/moneysweep-pr": {
+        "REBASE_REQUIRED": 10
+      },
+      "jotaele44/ovnis-pr": {
+        "BLOCKED": 6,
+        "STACKED": 1
+      },
+      "jotaele44/skywatcher-pr": {
+        "BLOCKED": 7
+      },
+      "jotaele44/spiderweb-pr": {
+        "REBASE_REQUIRED": 8
+      },
+      "jotaele44/thehub-pr": {
+        "REBASE_REQUIRED": 17,
+        "STACKED": 3
+      }
+    },
+    "certification": "FAIL_ACTIONABLE_RESIDUE",
+    "counts": {
+      "BLOCKED": 17,
+      "REBASE_REQUIRED": 48,
+      "STACKED": 5
+    },
+    "errors": [],
+    "open_pr_denominator": 70,
+    "open_pr_denominator_complete": true
+  },
+  "repo_snapshots_after_fetch": [
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 11,
+      "dirty_status": [
+        "M .federation/gui-capabilities.json",
+        " M dashboard/eslint.config.js",
+        " M dashboard/gui-parity.playwright.config.mjs",
+        " M dashboard/package.json",
+        " M dashboard/src/components/AiQueryPanel.jsx",
+        " M dashboard/src/components/layout/DashboardLayout.jsx",
+        " M dashboard/src/components/layout/Sidebar.jsx",
+        " M dashboard/src/main.jsx",
+        "?? dashboard/src/zip-design/",
+        "?? dashboard/tests/zip-design.spec.mjs",
+        "?? dashboard/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "dc1a23810bba50f69bb222f16d6d601c1eb7cceb",
+      "origin_main_sha": "dc1a23810bba50f69bb222f16d6d601c1eb7cceb",
+      "path": "/Users/jotaele/fed-repos/aguayluz-pr",
+      "remote_url": "https://github.com/jotaele44/aguayluz-pr.git",
+      "repo_id": "aguayluz-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 10,
+      "dirty_status": [
+        "M .federation/gui-capabilities.json",
+        " M frontend/eslint.config.js",
+        " M frontend/gui-parity.playwright.config.mjs",
+        " M frontend/package.json",
+        " M frontend/src/components/Layout.jsx",
+        " M frontend/src/main.jsx",
+        " M server/backend/main.py",
+        "?? frontend/src/zip-design/",
+        "?? frontend/tests/zip-design.spec.mjs",
+        "?? frontend/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+      "origin_main_sha": "caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+      "path": "/Users/jotaele/fed-repos/centinelas-pr",
+      "remote_url": "https://github.com/jotaele44/centinelas-pr.git",
+      "repo_id": "centinelas-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 16,
+      "dirty_status": [
+        "M .federation/gui-capabilities.json",
+        " M dashboard/eslint.config.js",
+        " M dashboard/gui-parity.playwright.config.mjs",
+        " M dashboard/package.json",
+        " M dashboard/src/components/DataSources.jsx",
+        " M dashboard/src/main.jsx",
+        " M dashboard/src/pages/Dashboard.jsx",
+        " M server/backend/materialization.py",
+        "?? artifacts/",
+        "?? dashboard/src/components/HudDrgrAudit.jsx",
+        "?? dashboard/src/lib/hudDrgrApi.js",
+        "?? dashboard/src/zip-design/",
+        "?? dashboard/tests/hud-drgr-audit.spec.mjs",
+        "?? dashboard/tests/zip-design.spec.mjs",
+        "?? dashboard/zip-design.playwright.config.mjs",
+        "?? tests/test_hud_drgr_audit_api.py"
+      ],
+      "head_sha": "936fba993ff2ddcce4bbfb1a06d6eaea6af884d2",
+      "origin_main_sha": "936fba993ff2ddcce4bbfb1a06d6eaea6af884d2",
+      "path": "/Users/jotaele/fed-repos/moneysweep-pr",
+      "remote_url": "https://github.com/jotaele44/moneysweep-pr.git",
+      "repo_id": "moneysweep-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 14,
+      "dirty_status": [
+        "M .federation/gui-capabilities.json",
+        " M dashboard/eslint.config.js",
+        " M dashboard/gui-parity.playwright.config.mjs",
+        " M dashboard/package.json",
+        " M dashboard/src/lib/snapshot.json",
+        " M dashboard/src/main.jsx",
+        " M dashboard/src/pages/Dashboard.jsx",
+        " M scripts/build_snapshot.py",
+        " M server/backend/main.py",
+        "A  server/backend/payloads.py",
+        "A  tests/test_build_snapshot.py",
+        "?? dashboard/src/zip-design/",
+        "?? dashboard/tests/zip-design.spec.mjs",
+        "?? dashboard/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "68b87366207cb3fe249814ee6611a03b18d67a6b",
+      "origin_main_sha": "68b87366207cb3fe249814ee6611a03b18d67a6b",
+      "path": "/Users/jotaele/fed-repos/ovnis-pr-actual",
+      "remote_url": "https://github.com/jotaele44/ovnis-pr.git",
+      "repo_id": "ovnis-pr-actual"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 11,
+      "dirty_status": [
+        "M .federation/gui-capabilities.json",
+        " M frontend/eslint.config.js",
+        " M frontend/gui-parity.playwright.config.mjs",
+        " M frontend/package.json",
+        " M frontend/src/components/skywatcher/Layout.jsx",
+        " M frontend/src/components/skywatcher/Sidebar.jsx",
+        " M frontend/src/main.jsx",
+        " M server/backend/main.py",
+        "?? frontend/src/zip-design/",
+        "?? frontend/tests/zip-design.spec.mjs",
+        "?? frontend/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "origin_main_sha": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "path": "/Users/jotaele/fed-repos/skywatcher-pr",
+      "remote_url": "https://github.com/jotaele44/skywatcher-pr.git",
+      "repo_id": "skywatcher-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 6,
+      "dirty_status": [
+        "M server/frontend/package.json",
+        " M server/frontend/src/App.tsx",
+        " M server/frontend/src/main.tsx",
+        "?? server/frontend/src/zip-design/",
+        "?? server/frontend/tests/zip-design.spec.mjs",
+        "?? server/frontend/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "d4bfb233a032a4c2bb1331c21bc56b2d48bfbba0",
+      "origin_main_sha": "d4bfb233a032a4c2bb1331c21bc56b2d48bfbba0",
+      "path": "/Users/jotaele/fed-repos/spiderweb-pr",
+      "remote_url": "https://github.com/jotaele44/spiderweb-pr.git",
+      "repo_id": "spiderweb-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 67,
+      "dirty_status": [
+        "A  reports/federation-completion/20260905T145933Z/remote-completion-ledger.json",
+        "A  reports/federation-completion/20260905T145933Z/startup/STARTUP_COMPLETION_AUDIT.md",
+        "A  reports/federation-completion/20260905T145933Z/startup/startup_completion_audit.json",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/aggregation_collisions.json",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/entities.jsonl",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/graph_summary.json",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/observations.jsonl",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/relationships.jsonl",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+        "A  reports/federation-completion/20260905T145933Z/summary.json",
+        "A  reports/federation-completion/20260905T151022Z/remote-completion-ledger.json",
+        "A  reports/federation-completion/20260905T152023Z/remote-completion-ledger.json",
+        "A  reports/federation-completion/20260905T152023Z/startup/STARTUP_COMPLETION_AUDIT.md",
+        "A  reports/federation-completion/20260905T152023Z/startup/startup_completion_audit.json",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/aggregation_collisions.json",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/entities.jsonl",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/graph_summary.json",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/observations.jsonl",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/relationships.jsonl",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+        "A  reports/federation-completion/20260905T152023Z/summary.json",
+        "A  reports/federation-completion/20260905T202703Z/IMPLEMENTATION_PLAN.md",
+        "A  reports/federation-completion/20260905T202703Z/remote-completion-ledger.json",
+        "A  reports/federation-completion/20260905T202703Z/startup/STARTUP_COMPLETION_AUDIT.md",
+        "A  reports/federation-completion/20260905T202703Z/startup/startup_completion_audit.json",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/aggregation_collisions.json",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/entities.jsonl",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/graph_summary.json",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/observations.jsonl",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/relationships.jsonl",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+        "A  reports/federation-completion/20260905T202703Z/summary.json",
+        "A  reports/federation-completion/20260905T204952Z/IMPLEMENTATION_PLAN.md",
+        "A  reports/federation-completion/20260905T204952Z/remote-completion-ledger.json",
+        "A  reports/federation-completion/20260905T204952Z/startup/STARTUP_COMPLETION_AUDIT.md",
+        "A  reports/federation-completion/20260905T204952Z/startup/startup_completion_audit.json",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/aggregation_collisions.json",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/entities.jsonl",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/graph_summary.json",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/observations.jsonl",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/relationships.jsonl",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+        "A  reports/federation-completion/20260905T204952Z/summary.json",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/aggregation_collisions.json",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/entities.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/graph_summary.json",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/observations.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/relationships.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/sources.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/logs/03_hub_federation_status.json",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/THEHUB_MONEYSWEEP_HUD_VALIDATOR_PICKUP.md",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/aggregation_collisions.json",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/entities.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/graph_summary.json",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/observations.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/relationships.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/sources.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/logs/03_hub_validate_federation.json",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/thehub_moneysweep_hud_validator_pickup_receipt.json",
+        " M server/frontend/eslint.config.js",
+        " M server/frontend/package.json",
+        " M server/frontend/src/components/layout/AppLayout.jsx",
+        " M server/frontend/src/components/ui/toast.jsx",
+        " M server/frontend/src/main.jsx",
+        "?? server/frontend/src/zip-design/",
+        "?? server/frontend/tests/zip-design.spec.mjs",
+        "?? server/frontend/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "d509b78a59c7f79c716da3a004fa6e371d1cc7ce",
+      "origin_main_sha": "d509b78a59c7f79c716da3a004fa6e371d1cc7ce",
+      "path": "/Users/jotaele/fed-repos/thehub-pr",
+      "remote_url": "https://github.com/jotaele44/thehub-pr.git",
+      "repo_id": "thehub-pr"
+    }
+  ],
+  "repo_snapshots_before_fetch": [
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 11,
+      "dirty_status": [
+        "M .federation/gui-capabilities.json",
+        " M dashboard/eslint.config.js",
+        " M dashboard/gui-parity.playwright.config.mjs",
+        " M dashboard/package.json",
+        " M dashboard/src/components/AiQueryPanel.jsx",
+        " M dashboard/src/components/layout/DashboardLayout.jsx",
+        " M dashboard/src/components/layout/Sidebar.jsx",
+        " M dashboard/src/main.jsx",
+        "?? dashboard/src/zip-design/",
+        "?? dashboard/tests/zip-design.spec.mjs",
+        "?? dashboard/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "dc1a23810bba50f69bb222f16d6d601c1eb7cceb",
+      "origin_main_sha": "dc1a23810bba50f69bb222f16d6d601c1eb7cceb",
+      "path": "/Users/jotaele/fed-repos/aguayluz-pr",
+      "remote_url": "https://github.com/jotaele44/aguayluz-pr.git",
+      "repo_id": "aguayluz-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 10,
+      "dirty_status": [
+        "M .federation/gui-capabilities.json",
+        " M frontend/eslint.config.js",
+        " M frontend/gui-parity.playwright.config.mjs",
+        " M frontend/package.json",
+        " M frontend/src/components/Layout.jsx",
+        " M frontend/src/main.jsx",
+        " M server/backend/main.py",
+        "?? frontend/src/zip-design/",
+        "?? frontend/tests/zip-design.spec.mjs",
+        "?? frontend/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+      "origin_main_sha": "caf086598a4f99e2eb0ca4aac6d51e2d9bd46321",
+      "path": "/Users/jotaele/fed-repos/centinelas-pr",
+      "remote_url": "https://github.com/jotaele44/centinelas-pr.git",
+      "repo_id": "centinelas-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 16,
+      "dirty_status": [
+        "M .federation/gui-capabilities.json",
+        " M dashboard/eslint.config.js",
+        " M dashboard/gui-parity.playwright.config.mjs",
+        " M dashboard/package.json",
+        " M dashboard/src/components/DataSources.jsx",
+        " M dashboard/src/main.jsx",
+        " M dashboard/src/pages/Dashboard.jsx",
+        " M server/backend/materialization.py",
+        "?? artifacts/",
+        "?? dashboard/src/components/HudDrgrAudit.jsx",
+        "?? dashboard/src/lib/hudDrgrApi.js",
+        "?? dashboard/src/zip-design/",
+        "?? dashboard/tests/hud-drgr-audit.spec.mjs",
+        "?? dashboard/tests/zip-design.spec.mjs",
+        "?? dashboard/zip-design.playwright.config.mjs",
+        "?? tests/test_hud_drgr_audit_api.py"
+      ],
+      "head_sha": "936fba993ff2ddcce4bbfb1a06d6eaea6af884d2",
+      "origin_main_sha": "936fba993ff2ddcce4bbfb1a06d6eaea6af884d2",
+      "path": "/Users/jotaele/fed-repos/moneysweep-pr",
+      "remote_url": "https://github.com/jotaele44/moneysweep-pr.git",
+      "repo_id": "moneysweep-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 14,
+      "dirty_status": [
+        "M .federation/gui-capabilities.json",
+        " M dashboard/eslint.config.js",
+        " M dashboard/gui-parity.playwright.config.mjs",
+        " M dashboard/package.json",
+        " M dashboard/src/lib/snapshot.json",
+        " M dashboard/src/main.jsx",
+        " M dashboard/src/pages/Dashboard.jsx",
+        " M scripts/build_snapshot.py",
+        " M server/backend/main.py",
+        "A  server/backend/payloads.py",
+        "A  tests/test_build_snapshot.py",
+        "?? dashboard/src/zip-design/",
+        "?? dashboard/tests/zip-design.spec.mjs",
+        "?? dashboard/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "68b87366207cb3fe249814ee6611a03b18d67a6b",
+      "origin_main_sha": "68b87366207cb3fe249814ee6611a03b18d67a6b",
+      "path": "/Users/jotaele/fed-repos/ovnis-pr-actual",
+      "remote_url": "https://github.com/jotaele44/ovnis-pr.git",
+      "repo_id": "ovnis-pr-actual"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 11,
+      "dirty_status": [
+        "M .federation/gui-capabilities.json",
+        " M frontend/eslint.config.js",
+        " M frontend/gui-parity.playwright.config.mjs",
+        " M frontend/package.json",
+        " M frontend/src/components/skywatcher/Layout.jsx",
+        " M frontend/src/components/skywatcher/Sidebar.jsx",
+        " M frontend/src/main.jsx",
+        " M server/backend/main.py",
+        "?? frontend/src/zip-design/",
+        "?? frontend/tests/zip-design.spec.mjs",
+        "?? frontend/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "origin_main_sha": "39e1fb297e24cd9017167a8725b40e73dd0349e4",
+      "path": "/Users/jotaele/fed-repos/skywatcher-pr",
+      "remote_url": "https://github.com/jotaele44/skywatcher-pr.git",
+      "repo_id": "skywatcher-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 6,
+      "dirty_status": [
+        "M server/frontend/package.json",
+        " M server/frontend/src/App.tsx",
+        " M server/frontend/src/main.tsx",
+        "?? server/frontend/src/zip-design/",
+        "?? server/frontend/tests/zip-design.spec.mjs",
+        "?? server/frontend/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "d4bfb233a032a4c2bb1331c21bc56b2d48bfbba0",
+      "origin_main_sha": "d4bfb233a032a4c2bb1331c21bc56b2d48bfbba0",
+      "path": "/Users/jotaele/fed-repos/spiderweb-pr",
+      "remote_url": "https://github.com/jotaele44/spiderweb-pr.git",
+      "repo_id": "spiderweb-pr"
+    },
+    {
+      "ahead_behind": "0\t0",
+      "branch": "main",
+      "dirty_count": 67,
+      "dirty_status": [
+        "A  reports/federation-completion/20260905T145933Z/remote-completion-ledger.json",
+        "A  reports/federation-completion/20260905T145933Z/startup/STARTUP_COMPLETION_AUDIT.md",
+        "A  reports/federation-completion/20260905T145933Z/startup/startup_completion_audit.json",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/aggregation_collisions.json",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/entities.jsonl",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/graph_summary.json",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/observations.jsonl",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/relationships.jsonl",
+        "A  reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+        "A  reports/federation-completion/20260905T145933Z/summary.json",
+        "A  reports/federation-completion/20260905T151022Z/remote-completion-ledger.json",
+        "A  reports/federation-completion/20260905T152023Z/remote-completion-ledger.json",
+        "A  reports/federation-completion/20260905T152023Z/startup/STARTUP_COMPLETION_AUDIT.md",
+        "A  reports/federation-completion/20260905T152023Z/startup/startup_completion_audit.json",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/aggregation_collisions.json",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/entities.jsonl",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/graph_summary.json",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/observations.jsonl",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/relationships.jsonl",
+        "A  reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+        "A  reports/federation-completion/20260905T152023Z/summary.json",
+        "A  reports/federation-completion/20260905T202703Z/IMPLEMENTATION_PLAN.md",
+        "A  reports/federation-completion/20260905T202703Z/remote-completion-ledger.json",
+        "A  reports/federation-completion/20260905T202703Z/startup/STARTUP_COMPLETION_AUDIT.md",
+        "A  reports/federation-completion/20260905T202703Z/startup/startup_completion_audit.json",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/aggregation_collisions.json",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/entities.jsonl",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/graph_summary.json",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/observations.jsonl",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/relationships.jsonl",
+        "A  reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+        "A  reports/federation-completion/20260905T202703Z/summary.json",
+        "A  reports/federation-completion/20260905T204952Z/IMPLEMENTATION_PLAN.md",
+        "A  reports/federation-completion/20260905T204952Z/remote-completion-ledger.json",
+        "A  reports/federation-completion/20260905T204952Z/startup/STARTUP_COMPLETION_AUDIT.md",
+        "A  reports/federation-completion/20260905T204952Z/startup/startup_completion_audit.json",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/aggregation_collisions.json",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/entities.jsonl",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/graph_summary.json",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/observations.jsonl",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/relationships.jsonl",
+        "A  reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+        "A  reports/federation-completion/20260905T204952Z/summary.json",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/aggregation_collisions.json",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/entities.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/graph_summary.json",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/observations.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/relationships.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/sources.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/logs/03_hub_federation_status.json",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/THEHUB_MONEYSWEEP_HUD_VALIDATOR_PICKUP.md",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/aggregation_collisions.json",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/entities.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/graph_summary.json",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/observations.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/relationships.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/aggregate/sources.jsonl",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/logs/03_hub_validate_federation.json",
+        "A  reports/moneysweep-live-readiness/20260906T184017Z_moneysweep_hud_validator_pickup_rerun/thehub_moneysweep_hud_validator_pickup_receipt.json",
+        " M server/frontend/eslint.config.js",
+        " M server/frontend/package.json",
+        " M server/frontend/src/components/layout/AppLayout.jsx",
+        " M server/frontend/src/components/ui/toast.jsx",
+        " M server/frontend/src/main.jsx",
+        "?? server/frontend/src/zip-design/",
+        "?? server/frontend/tests/zip-design.spec.mjs",
+        "?? server/frontend/zip-design.playwright.config.mjs"
+      ],
+      "head_sha": "d509b78a59c7f79c716da3a004fa6e371d1cc7ce",
+      "origin_main_sha": "d509b78a59c7f79c716da3a004fa6e371d1cc7ce",
+      "path": "/Users/jotaele/fed-repos/thehub-pr",
+      "remote_url": "https://github.com/jotaele44/thehub-pr.git",
+      "repo_id": "thehub-pr"
+    }
+  ],
+  "root": "/Users/jotaele/fed-repos",
+  "run_id": "20260907T070418Z",
+  "schema_version": "federation_completion_runner.v1",
+  "startup_audit": {
+    "arithmetic": {
+      "classified": 7,
+      "closed": true,
+      "counts": {
+        "BLOCKED": 4,
+        "FAIL": 3
+      },
+      "total": 7
+    },
+    "code_completion_arithmetic": {
+      "certification_language": "CODE_COMPLETE_CANDIDATE is not source-certified or product-certified.",
+      "classified": 7,
+      "closed": true,
+      "counts": {
+        "CODE_COMPLETE_CANDIDATE": 4,
+        "CODE_COMPLETE_CANDIDATE_SOURCE_BLOCKED": 1,
+        "CODE_INCOMPLETE": 2
+      },
+      "total": 7
+    },
+    "product_arithmetic": {
+      "classified": 7,
+      "closed": true,
+      "counts": {
+        "BLOCKED_FOR_PRODUCT_COMPLETION": 7
+      },
+      "total": 7
+    },
+    "product_completion_certification": "PROVISIONAL",
+    "repositories": [
+      {
+        "code_completion_blockers": [
+          "test_suite:FAIL"
+        ],
+        "code_completion_state": "CODE_INCOMPLETE",
+        "product_completion_blockers": [
+          "startup_setup_state:FAIL"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "PRODUCTION_REAL_DATA_PARTIAL",
+        "ready_for_hub_live_execution": true,
+        "repo_id": "aguayluz-pr",
+        "startup_setup_blockers": [
+          "test_suite:FAIL"
+        ],
+        "startup_setup_state": "FAIL"
+      },
+      {
+        "code_completion_blockers": [
+          "export_canonical:SOURCE_BLOCKED"
+        ],
+        "code_completion_state": "CODE_COMPLETE_CANDIDATE_SOURCE_BLOCKED",
+        "product_completion_blockers": [
+          "startup_setup_state:FAIL"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "PRODUCTION",
+        "ready_for_hub_live_execution": true,
+        "repo_id": "centinelas-pr",
+        "startup_setup_blockers": [
+          "export_canonical:FAIL"
+        ],
+        "startup_setup_state": "FAIL"
+      },
+      {
+        "code_completion_blockers": [
+          "test_suite:FAIL"
+        ],
+        "code_completion_state": "CODE_INCOMPLETE",
+        "product_completion_blockers": [
+          "startup_setup_state:FAIL",
+          "manual-source Tranche B remains partial/unresolved for hud_drgr_authorized; prasa, pr_cabilderos, and oficina_contralor were source-drop staged or parsed and materialized in reports/live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/",
+          "cor3 live endpoints return no data (portal likely requires JavaScript rendering); manual CSV export fallback documented",
+          "PR-gov scraper-needed queue: 13 of 15 sources promoted to api_producer; 2 true stubs remain (hacienda_sut_ivu, pr_act_154_excise)",
+          "PROPUBLICA_API_KEY not supplied (nonprofits adapter)",
+          "source-count wording must stay reconciled to reports/materialization_readiness.json truth",
+          "MANIFEST_READY_FOR_HUB_LIVE_EXECUTION_FALSE"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "NON_PRODUCTION_DIAGNOSTIC",
+        "ready_for_hub_live_execution": false,
+        "repo_id": "moneysweep-pr",
+        "startup_setup_blockers": [
+          "test_suite:FAIL"
+        ],
+        "startup_setup_state": "FAIL"
+      },
+      {
+        "code_completion_blockers": [],
+        "code_completion_state": "CODE_COMPLETE_CANDIDATE",
+        "product_completion_blockers": [
+          "startup_setup_state:BLOCKED"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "PRODUCTION",
+        "ready_for_hub_live_execution": true,
+        "repo_id": "ovnis-pr",
+        "startup_setup_blockers": [
+          "setup:setup skipped by audit policy; use --run-setup to execute"
+        ],
+        "startup_setup_state": "BLOCKED"
+      },
+      {
+        "code_completion_blockers": [],
+        "code_completion_state": "CODE_COMPLETE_CANDIDATE",
+        "product_completion_blockers": [
+          "startup_setup_state:BLOCKED",
+          "scaled bounded non-synthetic bbox/icon proof package exists (3 reviewed visible-icon screenshots with approximate capture geometry), but full live observation export remains blocked pending media identity reconciliation and completed capture-geometry review",
+          "canonical export adapter (scripts/federation_export.py) projects observations->entities/sources/relationships; production live readiness remains blocked until the reviewed non-synthetic corpus is materially complete and unresolved media identities are adjudicated",
+          "external imagery acquisition and production model execution are pending migration to TheHub under ADR 0006; the existing local imagery MCP and direct-provider vision path are deprecated but retained until parity, dual-run, rollback, GUI and retirement gates pass",
+          "FR24 ingest pipeline is now in-tree (fr24/); ILAP intake still requires FlightRadar24 screenshot/track inputs supplied locally (external data gap)",
+          "MANIFEST_READY_FOR_HUB_LIVE_EXECUTION_FALSE"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "NON_PRODUCTION_DIAGNOSTIC",
+        "ready_for_hub_live_execution": false,
+        "repo_id": "skywatcher-pr",
+        "startup_setup_blockers": [
+          "setup:setup skipped by audit policy; use --run-setup to execute"
+        ],
+        "startup_setup_state": "BLOCKED"
+      },
+      {
+        "code_completion_blockers": [],
+        "code_completion_state": "CODE_COMPLETE_CANDIDATE",
+        "product_completion_blockers": [
+          "startup_setup_state:BLOCKED"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": "PRODUCTION",
+        "ready_for_hub_live_execution": true,
+        "repo_id": "spiderweb-pr",
+        "startup_setup_blockers": [
+          "setup:setup skipped by audit policy; use --run-setup to execute"
+        ],
+        "startup_setup_state": "BLOCKED"
+      },
+      {
+        "code_completion_blockers": [],
+        "code_completion_state": "CODE_COMPLETE_CANDIDATE",
+        "product_completion_blockers": [
+          "startup_setup_state:BLOCKED"
+        ],
+        "product_completion_state": "BLOCKED_FOR_PRODUCT_COMPLETION",
+        "production_status": null,
+        "ready_for_hub_live_execution": null,
+        "repo_id": "thehub-pr",
+        "startup_setup_blockers": [
+          "setup:setup skipped by audit policy; use --run-setup to execute"
+        ],
+        "startup_setup_state": "BLOCKED"
+      }
+    ],
+    "startup_setup_certification": "PROVISIONAL"
+  },
+  "tooling": {
+    "lumen": "UNAVAILABLE_NOT_EXPOSED",
+    "mode": "remote_pr_gate_plus_startup_product_audit",
+    "python_shim_dir": null
+  }
+}

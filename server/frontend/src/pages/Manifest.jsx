@@ -26,6 +26,9 @@ export default function Manifest() {
     { key: "module_role", label: "Module Role", type: "select", options: ROLES, required: true },
     { key: "schema_version", label: "Schema Version", required: true, placeholder: "1.0.0" },
     { key: "status", label: "Status", type: "select", options: STATUSES, required: true },
+    { key: "source_hash", label: "Source Hash" },
+    { key: "source_commit", label: "Source Commit" },
+    { key: "review_status", label: "Review Status" },
     { key: "notes", label: "Notes", type: "textarea" },
   ];
 
@@ -48,6 +51,7 @@ export default function Manifest() {
     { key: "module_role", label: "Role", render: (r) => <span className="font-medium">{r.module_role}</span> },
     { key: "schema_version", label: "Schema", render: (r) => <IdCode>{r.schema_version}</IdCode> },
     { key: "status", label: "Status", render: (r) => <StatusChip map={GENERIC_STATUS} value={r.status} /> },
+    { key: "source_hash", label: "Hash", render: (r) => <IdCode>{r.source_hash || "—"}</IdCode> },
   ];
 
   return (

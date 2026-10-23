@@ -172,31 +172,36 @@ snapshots pass against the **existing committed baselines** with no regeneration
 the useful part: it proves the login page still renders pixel-identically when auth is
 required, so this change gates the route without altering the page.
 
-**2. Mutating API routes refuse unauthenticated callers from public addresses.**
+**2. Mutating API routes require a write token; there is no local-network fallback.**
 `server/backend/main.py` gains `require_write_access` on `POST`/`PATCH`/`DELETE`
 `/api/entities/*` and the notification write routes:
 
 - `PRII_WRITE_TOKEN` set → `Authorization: Bearer <token>` required (`secrets.compare_digest`)
-- `PRII_WRITE_TOKEN` unset → writes served to local-network clients (loopback, RFC1918
-  private, link-local) and refused for public addresses; a startup warning is logged
+- `PRII_WRITE_TOKEN` unset → every mutating request is refused (`503`, fail-closed); a
+  startup warning is logged
 
 Reads are untouched in every case. This matters because the repo ships a `Dockerfile` and
-`docker-compose.yml`, so "it only listens on localhost" was never structurally guaranteed.
+`docker-compose.yml`, so "it only listens on localhost" was never structurally guaranteed —
+and because it means the shipped Docker Compose deployment writes nothing at all until
+`PRII_WRITE_TOKEN` is configured, including from the Docker bridge address a `docker compose
+up` host sees rather than `127.0.0.1`.
 
-The private-range allowance is deliberate. A first cut of this guard was loopback-only, and
-review correctly pointed out that it would 403 **every** write in the documented
-`docker compose up` deployment: opened from the host, uvicorn sees the Docker bridge address
-(typically `172.17.0.1`), not `127.0.0.1`. A guard that breaks the shipped deployment just
-gets reverted. Refusing public addresses still closes the case this is meant to close — an
-instance accidentally exposed to the internet — without breaking anything that works today.
+**Correction, current behavior.** This section previously described a private-network
+write allowance keyed off an `_is_local_network` classifier (loopback/RFC1918/link-local
+callers write, public callers refused). That never shipped as described:
+`require_write_access` in `server/backend/main_core.py` refuses every mutating request
+when `PRII_WRITE_TOKEN` is unset, with no exception for any caller address —
+`_is_local_network` existed in that file but was never called by it, and has since been
+removed as dead code. Set `PRII_WRITE_TOKEN` to enable writes at all; there is no
+network-based fallback.
 
 Verified by booting on `0.0.0.0` and probing from a non-loopback address, plus a unit check
 of the classifier:
 
 | Condition | Expected | Observed |
 |---|---|---|
-| no token, loopback write | 200 | **200** |
-| no token, private/bridge-address write | 200 | **200** |
+| no token, loopback write | refused | **refused** |
+| no token, private/bridge-address write | refused | **refused** |
 | no token, private-address **read** | 200 | **200** |
 | no token, public address (`8.8.8.8`, `1.1.1.1`, `93.184.216.34`, IPv6) | refused | **refused** |
 | token set, correct bearer | 200 | **200** |

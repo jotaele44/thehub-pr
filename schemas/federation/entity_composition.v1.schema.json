@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:prii:federation:entity_composition:v1",
+  "title": "FEDERATION_ENTITY_COMPOSITION_V1 (candidate)",
+  "description": "Read-only composition of one canonical entity with the relationships, linked records, sources and contradictions the Hub store already holds. Producers stay canonical: every item is a reference back to a producer row. Identity is reported as recorded, never inferred: no matching runs here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contract", "contract_status", "anchor", "identity", "sections", "relationships", "linked_records", "truncated", "limits"],
+  "properties": {
+    "contract": {"const": "federation-entity-composition-v1"},
+    "contract_status": {"const": "CANDIDATE"},
+    "anchor": {"$ref": "urn:prii:federation:evidence_object:v1"},
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["identity_state", "identity_scope", "identity_basis", "registry_status", "members"],
+      "properties": {
+        "identity_state": {"enum": ["BOUND", "CANDIDATE", "UNRESOLVED", "CONFLICTING"]},
+        "identity_scope": {"enum": ["PRODUCER_LOCAL", "FEDERATION"]},
+        "identity_basis": {"type": "string", "minLength": 1},
+        "registry_status": {"enum": ["NOT_CONFIGURED", "CONSULTED"]},
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["producer", "collection", "record_id"],
+            "properties": {
+              "producer": {"type": "string", "minLength": 1},
+              "collection": {"type": "string", "minLength": 1},
+              "record_id": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["producer", "status", "relationship_count", "linked_record_count"],
+        "properties": {
+          "producer": {"type": "string", "minLength": 1},
+          "status": {"enum": ["AVAILABLE", "NO_DATA"]},
+          "relationship_count": {"type": "integer", "minimum": 0},
+          "linked_record_count": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "relationships": {"type": "array", "items": {"$ref": "#/$defs/relationship"}},
+    "linked_records": {"type": "array", "items": {"$ref": "#/$defs/linked_record"}},
+    "truncated": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relationships", "linked_records"],
+      "properties": {
+        "relationships": {"type": "boolean"},
+        "linked_records": {"type": "boolean"}
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["relationships", "linked_records"],
+      "properties": {
+        "relationships": {"type": "integer", "minimum": 1},
+        "linked_records": {"type": "integer", "minimum": 1}
+      }
+    }
+  },
+  "$defs": {
+    "relationship": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "collection", "record_id", "relationship_type", "direction", "counterpart", "edge_state", "edge_basis", "producers", "synthetic", "match_basis", "evidence_href"],
+      "properties": {
+        "evidence_id": {"type": "string", "pattern": "^evo:"},
+        "collection": {"enum": ["Relationships", "Correlations"]},
+        "record_id": {"type": "string", "minLength": 1},
+        "relationship_type": {"type": "string", "minLength": 1},
+        "direction": {"enum": ["OUTBOUND", "INBOUND", "SELF"]},
+        "counterpart": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["record_id", "title", "resolved", "entity_href"],
+          "properties": {
+            "record_id": {"type": "string", "minLength": 1},
+            "title": {"type": ["string", "null"]},
+            "resolved": {"type": "boolean"},
+            "entity_href": {"type": ["string", "null"]}
+          }
+        },
+        "edge_state": {"enum": ["DOCUMENTED", "COMPUTED", "CANDIDATE", "CONFLICTING", "REJECTED", "UNKNOWN"]},
+        "edge_basis": {"type": "string", "minLength": 1},
+        "producers": {"type": "array", "items": {"type": "string"}},
+        "synthetic": {"type": "boolean"},
+        "match_basis": {"type": ["string", "null"]},
+        "evidence_href": {"type": "string", "pattern": "^/evidence/"}
+      }
+    },
+    "linked_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_id", "collection", "record_id", "title", "producers", "synthetic", "evidence_href"],
+      "properties": {
+        "evidence_id": {"type": "string", "pattern": "^evo:"},
+        "collection": {"enum": ["Observations", "Alerts"]},
+        "record_id": {"type": "string", "minLength": 1},
+        "title": {"type": "string", "minLength": 1},
+        "producers": {"type": "array", "items": {"type": "string"}},
+        "synthetic": {"type": "boolean"},
+        "evidence_href": {"type": "string", "pattern": "^/evidence/"}
+      }
+    }
+  }
+}

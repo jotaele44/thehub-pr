@@ -19,5 +19,9 @@
   "orphan_geometries": 0,
   "path": "(not mirrored: geometry bytes stay with the authority)",
   "sha256": "5a84abe39eb80bde21c95698002097cb6ea8fda3c951c71db5c795b02538a422",
-  "size_bytes": 65266439
+  "size_bytes": 65266439,
+  "binding_schema_version": "spiderweb.record_cell_binding.v0.2",
+  "exact_cell_claims_permitted": false,
+  "cell_set_required": true,
+  "note": "Read-only geometry snapshot from Spiderweb. certification_state is PROVISIONAL: exact Cell_ID ground claims are forbidden and record bindings must preserve the full content-addressed uncertainty Cell_Set until VERIFIED."
 }

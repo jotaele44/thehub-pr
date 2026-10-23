@@ -1,0 +1,117 @@
+/* ZIP tokens isolated from the existing semantic contract. Fonts use bundled/system families. */
+
+:root {
+  /* Overlay layers */
+  --zip-z-overlay: 400;
+
+  --zip-z-spotlight: 1000; /* Tutorial spotlights/guided help */
+
+  /* System layers */
+  --zip-z-critical: 2000; /* Critical system notifications */
+
+  /* spacing */
+  --zip-spacing-1: 0.25rem;
+  --zip-spacing-2: 0.5rem;
+  --zip-spacing-3: 0.75rem;
+  --zip-spacing-4: 1rem;
+  --zip-spacing-6: 1.5rem;
+  --zip-spacing-8: 2rem;
+  --zip-spacing-12: 3rem;
+  --zip-spacing-16: 4rem;
+  --zip-spacing-20: 5rem;
+}
+
+:root {
+  --zip-background: hsl(42, 24%, 96%);
+  --zip-foreground: hsl(218, 31%, 13%);
+  --zip-surface: hsl(42, 28%, 92%);
+  --zip-surface-foreground: hsl(218, 31%, 13%);
+  --zip-sidebar: hsl(219, 34%, 15%);
+  --zip-sidebar-foreground: hsl(42, 20%, 94%);
+  --zip-card: hsl(45, 35%, 98%);
+  --zip-card-foreground: hsl(218, 31%, 13%);
+  --zip-popup: hsl(45, 38%, 99%);
+  --zip-popup-foreground: hsl(218, 31%, 13%);
+  --zip-primary: hsl(218, 44%, 20%);
+  --zip-primary-foreground: hsl(45, 35%, 98%);
+  --zip-secondary: hsl(212, 16%, 86%);
+  --zip-secondary-foreground: hsl(218, 31%, 16%);
+  --zip-accent: hsl(12, 70%, 44%);
+  --zip-accent-foreground: hsl(45, 35%, 98%);
+  --zip-muted: hsl(39, 15%, 89%);
+  --zip-muted-foreground: hsl(216, 11%, 42%);
+  --zip-success: hsl(153, 45%, 31%);
+  --zip-success-foreground: hsl(45, 35%, 98%);
+  --zip-error: hsl(4, 58%, 43%);
+  --zip-error-foreground: hsl(45, 35%, 98%);
+  --zip-warning: hsl(35, 74%, 42%);
+  --zip-warning-foreground: hsl(220, 28%, 13%);
+  --zip-info: hsl(208, 52%, 39%);
+  --zip-info-foreground: hsl(45, 35%, 98%);
+  --zip-info-hover: hsl(208, 52%, 34%);
+  --zip-info-active: hsl(208, 52%, 29%);
+  --zip-border: hsl(216, 15%, 74%);
+  --zip-font-family-base: 'IBM Plex Sans', sans-serif;
+  --zip-font-family-display: 'Newsreader', serif;
+  --zip-font-family-monospace: 'IBM Plex Mono', monospace;
+  --zip-font-family-cursive: 'Newsreader', serif;
+  --zip-shadow: 0 1px 2px hsla(218, 31%, 13%, 0.08);
+  --zip-shadow-md: 0 5px 14px hsla(218, 31%, 13%, 0.10);
+  --zip-shadow-lg: 0 14px 34px hsla(218, 31%, 13%, 0.13);
+  --zip-shadow-focus: 0 0 0 3px hsla(12, 70%, 44%, 0.20);
+  --zip-radius-sm: 2px;
+  --zip-radius: 4px;
+  --zip-radius-md: 6px;
+  --zip-radius-lg: 8px;
+  --zip-radius-full: 999px;
+  --zip-animation-duration-fast: 110ms;
+  --zip-animation-duration-normal: 180ms;
+  --zip-animation-duration-slow: 280ms;
+  --zip-chart-color-1: hsl(218, 44%, 28%);
+  --zip-chart-color-2: hsl(12, 70%, 44%);
+  --zip-chart-color-3: hsl(153, 45%, 31%);
+  --zip-chart-color-4: hsl(35, 74%, 42%);
+  --zip-chart-color-5: hsl(208, 52%, 39%);
+}
+
+:root.dark, :root[data-theme="dark"] {
+  --zip-background: hsl(218, 28%, 9%);
+  --zip-foreground: hsl(42, 20%, 91%);
+  --zip-surface: hsl(218, 25%, 12%);
+  --zip-surface-foreground: hsl(42, 20%, 91%);
+  --zip-sidebar: hsl(220, 31%, 7%);
+  --zip-sidebar-foreground: hsl(42, 20%, 91%);
+  --zip-card: hsl(217, 23%, 13%);
+  --zip-card-foreground: hsl(42, 20%, 91%);
+  --zip-popup: hsl(217, 23%, 14%);
+  --zip-popup-foreground: hsl(42, 20%, 91%);
+  --zip-primary: hsl(210, 42%, 71%);
+  --zip-primary-foreground: hsl(220, 31%, 8%);
+  --zip-secondary: hsl(216, 18%, 20%);
+  --zip-secondary-foreground: hsl(42, 20%, 91%);
+  --zip-accent: hsl(12, 74%, 58%);
+  --zip-accent-foreground: hsl(220, 31%, 8%);
+  --zip-muted: hsl(217, 16%, 18%);
+  --zip-muted-foreground: hsl(215, 12%, 65%);
+  --zip-success: hsl(153, 42%, 48%);
+  --zip-success-foreground: hsl(220, 31%, 8%);
+  --zip-error: hsl(4, 70%, 59%);
+  --zip-error-foreground: hsl(220, 31%, 8%);
+  --zip-warning: hsl(35, 78%, 58%);
+  --zip-warning-foreground: hsl(220, 31%, 8%);
+  --zip-info: hsl(208, 60%, 60%);
+  --zip-info-foreground: hsl(220, 31%, 8%);
+  --zip-info-hover: hsl(208, 60%, 65%);
+  --zip-info-active: hsl(208, 60%, 70%);
+  --zip-border: hsl(216, 15%, 28%);
+  --zip-shadow: 0 1px 2px hsla(220, 60%, 2%, 0.32);
+  --zip-shadow-md: 0 5px 14px hsla(220, 60%, 2%, 0.40);
+  --zip-shadow-lg: 0 14px 34px hsla(220, 60%, 2%, 0.48);
+  --zip-shadow-focus: 0 0 0 3px hsla(12, 74%, 58%, 0.24);
+  --zip-chart-color-1: hsl(210, 42%, 71%);
+  --zip-chart-color-2: hsl(12, 74%, 58%);
+  --zip-chart-color-3: hsl(153, 42%, 48%);
+  --zip-chart-color-4: hsl(35, 78%, 58%);
+  --zip-chart-color-5: hsl(208, 60%, 60%);
+}
+:root { --zip-font-family-base: "Inter Variable", Inter, system-ui, sans-serif; --zip-font-family-display: Georgia, serif; --zip-font-family-heading: "Inter Variable", Inter, system-ui, sans-serif; --zip-font-family-monospace: "JetBrains Mono", monospace; }

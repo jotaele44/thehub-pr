@@ -177,3 +177,69 @@ def test_hub_mirrors_manifests_but_not_geometry_bytes() -> None:
     assert manifest["cell_count"] == 98_304
     assert manifest["mirrored_from"] == "spiderweb-pr"
     assert "not mirrored" in manifest["path"]
+
+
+# -------------------------------------------------- record-cell binding v0.2
+
+
+def _provisional_binding(**overrides: object) -> dict[str, object]:
+    row: dict[str, object] = {
+        "Repository": "aguayluz-pr",
+        "Record_ID": "asset-1",
+        "Spatial_Role": "POINT_LOCATION",
+        "Binding_Method": "RESOLVER_POINT",
+        "Certification_State": "PROVISIONAL",
+        "Resolution_State": "PROVISIONAL_UNCERTAINTY_CELL_SET",
+        "Cell_ID": None,
+        "Cell_Set_ID": "CS_0123456789abcdef",
+        "Cell_Set_SHA256": "a" * 64,
+        "Member_Cell_IDs": ["R73_C203", "R73_C204"],
+        "Anchor_Cell_ID": "R73_C203",
+        "Uncertainty_Radius_Km": 22.4996762572509,
+        "Uncertainty_Basis": "FITTED_CONTROL_P90_DISCOVERY_ENVELOPE",
+        "Uncertainty_Semantics": "CONSERVATIVE_DISCOVERY_ENVELOPE_NOT_CONFIDENCE_INTERVAL",
+        "Identity_Default": "CANDIDATE_NOT_IDENTITY",
+    }
+    row.update(overrides)
+    return row
+
+
+def test_provisional_binding_v0_2_accepts_full_uncertainty_cell_set() -> None:
+    assert spatial.validate_record_cell_binding_v0_2(_provisional_binding()) == []
+
+
+def test_provisional_binding_v0_2_rejects_exact_cell_leakage() -> None:
+    errors = spatial.validate_record_cell_binding_v0_2(_provisional_binding(Cell_ID="R73_C203"))
+    assert any("must not carry an exact Cell_ID" in error for error in errors)
+
+
+def test_provisional_binding_v0_2_rejects_duplicate_or_empty_candidate_sets() -> None:
+    duplicate = spatial.validate_record_cell_binding_v0_2(
+        _provisional_binding(Member_Cell_IDs=["R73_C203", "R73_C203"])
+    )
+    empty = spatial.validate_record_cell_binding_v0_2(_provisional_binding(Member_Cell_IDs=[]))
+    assert any("duplicate Member_Cell_ID" in error for error in duplicate)
+    assert any("non-empty Member_Cell_IDs" in error for error in empty)
+
+
+def test_provisional_binding_v0_2_rejects_identity_upgrade_and_bad_uncertainty_semantics() -> None:
+    errors = spatial.validate_record_cell_binding_v0_2(
+        _provisional_binding(
+            Identity_Default="RESOLVED_IDENTITY",
+            Uncertainty_Semantics="CONFIDENCE_INTERVAL",
+        )
+    )
+    assert any("CANDIDATE_NOT_IDENTITY" in error for error in errors)
+    assert any("invalid uncertainty semantics" in error for error in errors)
+
+
+def test_snapshot_binds_failed_independent_spike_and_cell_set_policy() -> None:
+    policy = TRANSFORM_SNAPSHOT["uncertainty_policy"]
+    evidence = TRANSFORM_SNAPSHOT["provenance_evidence"]
+    assert TRANSFORM_SNAPSHOT["certification_state"] == "PROVISIONAL"
+    assert evidence["authority_commit"] == "bb8463c8d8cf4b54486674ee9b665ce3d2502e8b"
+    assert evidence["authoritative_parameters_recovered"] is False
+    assert evidence["independent_spike_state"] == "FAIL_KILL_CRITERIA"
+    assert policy["exact_cell_claims_permitted"] is False
+    assert policy["cell_set_required"] is True
+    assert policy["identity_default"] == "CANDIDATE_NOT_IDENTITY"

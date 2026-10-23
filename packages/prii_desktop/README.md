@@ -11,6 +11,10 @@ Shared self-contained desktop runtime for federation applications:
 - Per-user state and the single-instance lock live in Application Support on
   macOS rather than inside the app or PyInstaller extraction directory.
 - `--smoke` bypasses interactive setup for frozen-build CI.
+- A failed start is never silent: the splash shows first, and any backend import
+  or startup error (or a backend thread that dies) replaces it with an error
+  screen offering **Try Again** and **Open Setup & Diagnostics**. The traceback is
+  appended to `<app state dir>/logs/launcher.log`.
 
 Release bundles contain the Python runtime, producer backend, dependencies,
 built frontend, and app artwork. The setup center never downloads tools, runs a

@@ -1,9 +1,10 @@
 {
   "by_blocker": {
     "declared_not_live": 2,
-    "missing_export_package": 4
+    "missing_export_package": 3,
+    "ready": 1
   },
-  "generated_at": "2026-09-02T13:54:32.546444+00:00",
+  "generated_at": "2026-09-21T03:03:57.486220+00:00",
   "hub": "thehub-pr",
   "kind": "federation-readiness-snapshot",
   "note": "Built by scripts/build_federation_status.py from `hub validate-federation` against a workspace holding the producer checkouts. This is a point-in-time snapshot, not live state: a deployed hub has no producer checkouts and cannot recompute it. Regenerate with `make federation-status`.",
@@ -41,7 +42,11 @@
       "package_valid": true,
       "program_id": "moneysweep-pr",
       "repo": "jotaele44/moneysweep-pr",
-      "role": "public_money_intelligence_node"
+      "role": "public_money_intelligence_node",
+      "spatial_authority": null,
+      "spatial_manifest_path": "/Users/jotaele/fed-repos/moneysweep-pr/federation.spatial.json",
+      "spatial_manifest_present": false,
+      "spatial_manifest_valid": false
     },
     {
       "blocker_class": "missing_export_package",
@@ -68,7 +73,11 @@
       "package_valid": false,
       "program_id": "spiderweb-pr",
       "repo": "jotaele44/spiderweb-pr",
-      "role": "spatial_operational_producer"
+      "role": "spatial_operational_producer",
+      "spatial_authority": "",
+      "spatial_manifest_path": "/Users/jotaele/fed-repos/spiderweb-pr/federation.spatial.json",
+      "spatial_manifest_present": true,
+      "spatial_manifest_valid": true
     },
     {
       "blocker_class": "missing_export_package",
@@ -101,10 +110,14 @@
       "package_valid": false,
       "program_id": "aguayluz-pr",
       "repo": "jotaele44/aguayluz-pr",
-      "role": "water_grid_monitoring_node"
+      "role": "water_grid_monitoring_node",
+      "spatial_authority": "",
+      "spatial_manifest_path": "/Users/jotaele/fed-repos/aguayluz-pr/federation.spatial.json",
+      "spatial_manifest_present": true,
+      "spatial_manifest_valid": true
     },
     {
-      "blocker_class": "missing_export_package",
+      "blocker_class": "ready",
       "callable_commands": [
         "dedupe",
         "export_canonical",
@@ -117,7 +130,7 @@
       "checkout_present": true,
       "declared_status": "ready_for_live",
       "errors": [],
-      "last_package_timestamp": null,
+      "last_package_timestamp": "2026-09-17T02:04:05Z",
       "live_execution_ready": true,
       "local_path": "ovnis-pr",
       "manifest_path": "ovnis-pr/federation.json",
@@ -125,11 +138,15 @@
       "manifest_schema_version": "repo_federation_manifest_v1",
       "manifest_valid": true,
       "package_path": "ovnis-pr/exports/federation",
-      "package_present": false,
-      "package_valid": false,
+      "package_present": true,
+      "package_valid": true,
       "program_id": "ovnis-pr",
       "repo": "jotaele44/ovnis-pr",
-      "role": "anomaly_intelligence_node"
+      "role": "anomaly_intelligence_node",
+      "spatial_authority": null,
+      "spatial_manifest_path": "/Users/jotaele/fed-repos/ovnis-pr/federation.spatial.json",
+      "spatial_manifest_present": false,
+      "spatial_manifest_valid": false
     },
     {
       "blocker_class": "declared_not_live",
@@ -156,7 +173,11 @@
       "package_valid": true,
       "program_id": "skywatcher-pr",
       "repo": "jotaele44/skywatcher-pr",
-      "role": "airspace_intelligence_node"
+      "role": "airspace_intelligence_node",
+      "spatial_authority": "",
+      "spatial_manifest_path": "/Users/jotaele/fed-repos/skywatcher-pr/federation.spatial.json",
+      "spatial_manifest_present": true,
+      "spatial_manifest_valid": true
     },
     {
       "blocker_class": "missing_export_package",
@@ -188,10 +209,16 @@
       "package_valid": false,
       "program_id": "centinelas-pr",
       "repo": "jotaele44/centinelas-pr",
-      "role": "pre_officialization_signal_producer"
+      "role": "pre_officialization_signal_producer",
+      "spatial_authority": null,
+      "spatial_manifest_path": "/Users/jotaele/fed-repos/centinelas-pr/federation.spatial.json",
+      "spatial_manifest_present": false,
+      "spatial_manifest_valid": false
     }
   ],
-  "ready_count": 0,
+  "ready_count": 1,
   "root": ".",
-  "schema_version": "hub_registry_v1"
+  "schema_version": "hub_registry_v1",
+  "spatial_manifest_count": 3,
+  "spatial_valid_count": 3
 }

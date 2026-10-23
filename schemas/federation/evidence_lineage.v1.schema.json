@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:prii:federation:evidence_lineage:v1",
+  "title": "FEDERATION_EVIDENCE_LINEAGE_V1",
+  "description": "Candidate lineage graph for one Federation record: SOURCE → SOURCE_MANIFESTATION → RAW_RECORD → NORMALIZED_RECORD → CANONICAL_ENTITY/EVENT → FINDING → COMPUTATION → INTERPRETATION → REPORT. PRODUCER_INPUT marks an input artifact whose stage the producer did not declare; SOURCE_MISSING terminates a chain with no source instead of inventing one. Every edge is inspectable. Proximity, temporal adjacency or name similarity alone never yields a DOCUMENTED or COMPUTED edge (enforced by src/hub/evidence_lineage.py:validate_edge). Status: CANDIDATE.",
+  "x-contract-id": "federation-evidence-lineage-v1",
+  "x-status": "CANDIDATE",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["nodes", "edges"],
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["node_id", "kind", "label"],
+        "properties": {
+          "node_id": {"type": "string", "minLength": 1},
+          "kind": {"enum": ["SOURCE", "SOURCE_MANIFESTATION", "RAW_RECORD", "NORMALIZED_RECORD", "CANONICAL_ENTITY", "CANONICAL_EVENT", "FINDING", "COMPUTATION", "INTERPRETATION", "REPORT", "PRODUCER_INPUT", "SOURCE_MISSING"]},
+          "label": {"type": "string"}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["edge_id", "relationship_type", "from", "to", "producer", "source", "evidence_ids", "created_at", "valid_from", "valid_to", "edge_state", "derivation_method", "basis", "contradiction_state"],
+        "properties": {
+          "edge_id": {"type": "string", "minLength": 1},
+          "relationship_type": {"type": "string", "minLength": 1},
+          "from": {"type": "string", "minLength": 1},
+          "to": {"type": "string", "minLength": 1},
+          "producer": {"type": "string", "minLength": 1},
+          "source": {"type": ["string", "null"]},
+          "evidence_ids": {"type": "array", "items": {"type": "string"}},
+          "created_at": {"type": ["string", "null"]},
+          "valid_from": {"type": ["string", "null"]},
+          "valid_to": {"type": ["string", "null"]},
+          "edge_state": {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/edge_state"},
+          "derivation_method": {"type": "string", "minLength": 1},
+          "basis": {"type": "string"},
+          "contradiction_state": {
+            "oneOf": [
+              {"type": "null"},
+              {"$ref": "urn:prii:federation:epistemic_state:v1#/$defs/contradiction_state"}
+            ]
+          }
+        }
+      }
+    }
+  }
+}

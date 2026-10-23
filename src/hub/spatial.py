@@ -221,6 +221,66 @@ def validate_cell_domain_summary(summary: Mapping[str, object]) -> list[str]:
     return errors
 
 
+def validate_record_cell_binding_v0_2(binding: Mapping[str, object]) -> list[str]:
+    """Fail closed on provisional grid bindings and preserve full candidate sets."""
+    errors: list[str] = []
+    state = binding.get("Certification_State")
+    if state not in CERTIFICATION_STATES:
+        errors.append(f"unknown Certification_State: {state!r}")
+        return errors
+
+    identity = binding.get("Identity_Default")
+    if identity != IDENTITY_DEFAULT:
+        errors.append("Identity_Default must be CANDIDATE_NOT_IDENTITY")
+
+    resolution = binding.get("Resolution_State")
+    cell_id_value = binding.get("Cell_ID")
+
+    if state == "PROVISIONAL":
+        if cell_id_value is not None:
+            errors.append("PROVISIONAL binding must not carry an exact Cell_ID")
+        if resolution != "PROVISIONAL_UNCERTAINTY_CELL_SET":
+            errors.append("PROVISIONAL binding requires PROVISIONAL_UNCERTAINTY_CELL_SET")
+
+        members = binding.get("Member_Cell_IDs")
+        if not isinstance(members, Sequence) or isinstance(members, (str, bytes)) or not members:
+            errors.append("PROVISIONAL binding requires non-empty Member_Cell_IDs")
+        else:
+            seen: set[str] = set()
+            for member in members:
+                member_errors = validate_cell_id(member)
+                errors.extend(member_errors)
+                if isinstance(member, str):
+                    if member in seen:
+                        errors.append(f"duplicate Member_Cell_ID: {member}")
+                    seen.add(member)
+
+        cell_set_id = binding.get("Cell_Set_ID")
+        if not isinstance(cell_set_id, str) or not re.match(r"^CS_[0-9a-f]{16}$", cell_set_id):
+            errors.append("PROVISIONAL binding requires canonical Cell_Set_ID")
+        cell_set_sha = binding.get("Cell_Set_SHA256")
+        if not isinstance(cell_set_sha, str) or not re.match(r"^[0-9a-f]{64}$", cell_set_sha):
+            errors.append("PROVISIONAL binding requires Cell_Set_SHA256")
+
+        radius = binding.get("Uncertainty_Radius_Km")
+        if not isinstance(radius, (int, float)) or isinstance(radius, bool) or radius <= 0:
+            errors.append("PROVISIONAL binding requires positive Uncertainty_Radius_Km")
+        if binding.get("Uncertainty_Semantics") != "CONSERVATIVE_DISCOVERY_ENVELOPE_NOT_CONFIDENCE_INTERVAL":
+            errors.append("PROVISIONAL binding has invalid uncertainty semantics")
+        if not isinstance(binding.get("Uncertainty_Basis"), str) or not binding.get("Uncertainty_Basis"):
+            errors.append("PROVISIONAL binding requires Uncertainty_Basis")
+    else:
+        errors.extend(validate_cell_id(cell_id_value))
+        if resolution != "VERIFIED_CELL_SET":
+            errors.append("VERIFIED binding requires VERIFIED_CELL_SET")
+        if binding.get("Uncertainty_Radius_Km") != 0:
+            errors.append("VERIFIED binding requires zero uncertainty radius")
+        if binding.get("Uncertainty_Semantics") != "NONE":
+            errors.append("VERIFIED binding requires NONE uncertainty semantics")
+
+    return errors
+
+
 def validate_cell_profile(profile: Mapping[str, object]) -> list[str]:
     """Same envelope from every repository; geometry never travels with it."""
     errors = list(validate_cell_id(profile.get("cell_id")))

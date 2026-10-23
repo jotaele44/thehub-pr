@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { federation } from "@/api/federationClient";
 import { useLiveFeed } from "@/hooks/useLiveFeed";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -13,6 +12,7 @@ import IdCode from "@/components/shared/IdCode";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Plus, Zap, Droplet, MapPin, AlertTriangle } from "lucide-react";
 import { promoteFeedItem } from "@/lib/promote-feed";
+import { requireReviewerEmail } from "@/lib/reviewerIdentity";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 
@@ -62,15 +62,21 @@ export default function AguaYLuzFeedTab() {
         toast({ title: `Promoted to Asset ${recordId}` });
         qc.invalidateQueries({ queryKey: ["entity", "InfrastructureAssets"] });
       } else if (sync_status === "Verified") {
-        let reviewer = null;
-        try { reviewer = (await federation.auth.me())?.email || null; } catch { reviewer = null; }
+        const reviewer = await requireReviewerEmail();
         await updateItem({ id: item.id, data: { sync_status, verified_by: reviewer, verified_at: new Date().toISOString() } });
         toast({ title: "Verified — ready to promote" });
       } else {
         await updateItem({ id: item.id, data: { sync_status } });
       }
     } catch (e) {
-      toast({ title: `Promotion failed: ${e.message}`, variant: "destructive" });
+      const promotion = sync_status === "Promoted";
+      toast({
+        title: promotion ? "Promotion could not be completed" : "Status update failed",
+        description: promotion
+          ? `${e.message}. Retrying is safe; an existing matching asset will be reused.`
+          : e.message,
+        variant: "destructive",
+      });
     }
   };
   const handleSave = async (data) => {

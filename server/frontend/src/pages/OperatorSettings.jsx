@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { federation } from "@/api/federationClient";
+import { federation, getWriteToken, setWriteToken } from "@/api/federationClient";
 import PageHeader from "@/components/shared/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bell, CheckCircle2, FileUp, Loader2, PlugZap, RefreshCw, Settings, TriangleAlert } from "lucide-react";
+import { Bell, CheckCircle2, FileUp, KeyRound, Loader2, PlugZap, RefreshCw, Settings, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const OPERATOR_CONNECTORS = [
@@ -40,6 +40,80 @@ function SectionState({ kind, children }) {
       <Icon className={cn("h-4 w-4 shrink-0", kind === "loading" && "animate-spin")} aria-hidden="true" />
       <span>{children}</span>
     </div>
+  );
+}
+
+function WriteTokenPanel() {
+  const [configured, setConfigured] = useState(() => Boolean(getWriteToken()));
+  const [value, setValue] = useState("");
+  const [state, setState] = useState(null);
+
+  const save = (event) => {
+    event.preventDefault();
+    const token = value.trim();
+    if (!token) {
+      setState({ kind: "error", message: "Enter a write token before saving." });
+      return;
+    }
+    try {
+      setWriteToken(token);
+      setConfigured(true);
+      setValue("");
+      setState({ kind: "success", message: "Write token saved for this tab session. It has not been verified yet." });
+    } catch (error) {
+      setState({ kind: "error", message: error?.message || "The write token could not be stored in this browser." });
+    }
+  };
+
+  const clear = () => {
+    try {
+      setWriteToken(null);
+      setConfigured(false);
+      setValue("");
+      setState({ kind: "success", message: "Write token removed from this browser." });
+    } catch (error) {
+      setState({ kind: "error", message: error?.message || "The write token could not be removed from this browser." });
+    }
+  };
+
+  return (
+    <Card className="xl:col-span-2">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <KeyRound className="h-5 w-5" aria-hidden="true" />
+          <CardTitle>Administrative write access</CardTitle>
+        </div>
+        <CardDescription>
+          If this server requires PRII_WRITE_TOKEN, enter it here to enable authorized write requests from this browser.
+          The value is kept for this tab session, attached to API requests as a bearer credential, and never displayed after saving.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={save} className="space-y-3">
+          <div className="space-y-2">
+            <Label htmlFor="operator-write-token">Write token</Label>
+            <Input
+              id="operator-write-token"
+              type="password"
+              autoComplete="new-password"
+              value={value}
+              onChange={(event) => setValue(event.target.value)}
+              placeholder="Paste PRII_WRITE_TOKEN"
+              aria-describedby="operator-write-token-storage-note"
+            />
+            <p id="operator-write-token-storage-note" className="text-xs text-muted-foreground">
+              Stored in this tab's session storage and cleared when the tab session ends. Scripts running in this app can still access it; use only on a trusted device.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button type="submit" disabled={!value.trim()}>Save write token</Button>
+            <Button type="button" variant="outline" onClick={clear} disabled={!configured}>Clear write token</Button>
+            {configured && !state && <SectionState kind="success">A write token is stored for this tab session; its value is hidden.</SectionState>}
+            {state && <SectionState kind={state.kind}>{state.message}</SectionState>}
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -442,9 +516,10 @@ export default function OperatorSettings({ api = defaultApi }) {
       <PageHeader
         icon={Settings}
         title="Operator Settings"
-        description="Operator-facing file transfer, connection checks, and notification delivery settings."
+        description="Operator-facing credentials, file transfer, connection checks, and notification delivery settings."
       />
       <div className="grid gap-5 xl:grid-cols-2">
+        <WriteTokenPanel />
         <UploadPanel api={api} />
         <ConnectionsPanel api={api} />
         <div className="xl:col-span-2">

@@ -28,8 +28,17 @@ def _app():
     return app
 
 
+def _local_client():
+    return TestClient(
+        _app(),
+        base_url="http://127.0.0.1:8000",
+        client=("127.0.0.1", 8000),
+        headers={"Origin": "http://127.0.0.1:8000"},
+    )
+
+
 def test_federation_lists_all_repos():
-    c = TestClient(_app())
+    c = _local_client()
     rows = c.get("/api/local/federation").json()
     assert len(rows) == 7
     assert {r["repo"] for r in rows} >= {"ovnis-pr", "thehub-pr", "spiderweb-pr"}
@@ -41,19 +50,48 @@ def test_federation_lists_all_repos():
 
 
 def test_launch_unknown_repo_404():
-    c = TestClient(_app())
+    c = _local_client()
     assert c.post("/api/local/launch/not-a-repo").status_code == 404
 
 
+def test_launch_rejects_non_loopback_clients():
+    c = TestClient(
+        _app(),
+        base_url="http://127.0.0.1:8000",
+        client=("198.51.100.7", 8000),
+        headers={"Origin": "http://127.0.0.1:8000"},
+    )
+    assert c.post("/api/local/launch/not-a-repo").status_code == 403
+
+
+def test_launch_rejects_cross_origin_browser_requests():
+    c = TestClient(
+        _app(),
+        base_url="http://127.0.0.1:8000",
+        client=("127.0.0.1", 8000),
+        headers={"Origin": "http://attacker.example:8000"},
+    )
+    assert c.post("/api/local/launch/not-a-repo").status_code == 403
+
+
+def test_launch_rejects_requests_without_an_origin():
+    c = TestClient(
+        _app(),
+        base_url="http://127.0.0.1:8000",
+        client=("127.0.0.1", 8000),
+    )
+    assert c.post("/api/local/launch/not-a-repo").status_code == 403
+
+
 def test_launch_hub_rejected_400():
-    c = TestClient(_app())
+    c = _local_client()
     assert c.post("/api/local/launch/thehub-pr").status_code == 400
 
 
 def test_launch_missing_clone_409(monkeypatch, tmp_path):
     # Point PARENT at an empty dir so no sibling repo is "cloned".
     monkeypatch.setattr(launcher_api, "PARENT", tmp_path)
-    c = TestClient(_app())
+    c = _local_client()
     r = c.post("/api/local/launch/ovnis-pr")
     assert r.status_code == 409
 
@@ -79,7 +117,7 @@ def test_launch_spawns_script_when_present(monkeypatch, tmp_path):
             return None
 
     monkeypatch.setattr(launcher_api.subprocess, "Popen", FakePopen)
-    r = TestClient(_app()).post("/api/local/launch/ovnis-pr")
+    r = _local_client().post("/api/local/launch/ovnis-pr")
     assert r.status_code == 200
     assert r.json()["status"] == "launched"
     assert r.json()["pid"] == 4321
@@ -108,7 +146,7 @@ def test_launch_macos_prefers_app_bundle(monkeypatch, tmp_path):
             return None
 
     monkeypatch.setattr(launcher_api.subprocess, "Popen", FakePopen)
-    r = TestClient(_app()).post("/api/local/launch/ovnis-pr")
+    r = _local_client().post("/api/local/launch/ovnis-pr")
     assert r.status_code == 200
     assert captured["cmd"] == ["open", "-W", str(bundle)]
 

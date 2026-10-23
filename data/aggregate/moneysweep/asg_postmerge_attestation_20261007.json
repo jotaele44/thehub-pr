@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "thehub.moneysweep-asg-postmerge-attestation/v3",
+  "observedAt": "2026-10-20",
+  "state": "PASS",
+  "scopeId": "moneysweep.leaderboard.asg-emergency-source-native-v1",
+  "thehubMainAtReplay": "d765bb0bd02adee985bb38a9d8839f291a472a7a",
+  "moneysweepMainObserved": "7cf946691d485da3fb88c308f63f3f1d73efa841",
+  "package": {
+    "sha256": "6ecdad09a48cdbd4ae1076138a9b5017a5be82608b489871a50ce0d599680337",
+    "producerConsumerBytesIdentical": true
+  },
+  "postMergeConsumerReplay": {
+    "state": "PASS",
+    "checksExecuted": 13,
+    "checksPassed": 13,
+    "candidateCount": 10,
+    "retainedRecords": 21,
+    "metricTotal": 4423664.82,
+    "currency": "USD",
+    "consumerRecomputes": false
+  },
+  "flootRegressionPlane": {
+    "state": "HISTORICAL_PASS",
+    "note": "Prior TheHub Floot regression evidence is preserved as historical only. Current rendered certification is bound to the GitHub Actions browser evidence below."
+  },
+  "renderedQa": {
+    "state": "PASS",
+    "assertsPass": true,
+    "sourceCommit": "b1004293fd2e2147063c9d84d545d97c7ce08b38",
+    "workflow": "MoneySweep ASG rendered QA",
+    "workflowRunId": 38805551447,
+    "workflowRunNumber": 12,
+    "workflowUrl": "https://github.com/jotaele44/thehub-pr/actions/runs/38805551447",
+    "jobId": 116665345615,
+    "result": "1 passed",
+    "durationSeconds": 8.5,
+    "testDurationSeconds": 2.4,
+    "desktop": {
+      "state": "PASS",
+      "viewport": "1280x800",
+      "documentOverflowPx": 0,
+      "minVisibleMoneySweepTabHeightPx": 44
+    },
+    "iphone393": {
+      "state": "PASS",
+      "viewport": "393x852",
+      "documentOverflowPx": 0,
+      "minVisibleMoneySweepTabHeightPx": 44
+    },
+    "artifact": {
+      "id": 12005937238,
+      "name": "moneysweep-asg-rendered-qa",
+      "sha256": "c7cea222eb03de8a18ef2a1db779e4ccd2bacf001faee9c7aa391f82fbfa916b",
+      "sizeBytes": 414454,
+      "expiresAt": "2026-11-14T20:54:37Z"
+    }
+  },
+  "publishedFlootState": {
+    "state": "HISTORICAL_CONTEXT_ONLY",
+    "published": true,
+    "url": "https://thehub-pr.floot.app",
+    "visibility": "internal",
+    "publishedRenderedQaClaimed": false
+  },
+  "authority": {
+    "thehubRecomputesRankings": false,
+    "wholeSourceClaimAuthorized": false,
+    "boundedPromotionAuthorized": true
+  },
+  "githubActions": {
+    "state": "PASS",
+    "assertsPass": true,
+    "workflowRunId": 38805551447
+  },
+  "terminalRule": "PASS remains valid only while the receipt-bearing PR head reruns the exact ASG rendered browser gate successfully. Any source, package, scope, or authority change requires a new attestation.",
+  "thehubBaseAtCurrentReplay": "a3e24e3c3d998cd936814517a01f79907ab5488b",
+  "thehubRenderedSourceCommit": "b1004293fd2e2147063c9d84d545d97c7ce08b38",
+  "currentProducerHeadContext": {
+    "state": "PASS_PACKAGE_BYTES_UNCHANGED",
+    "currentHead": "7cf946691d485da3fb88c308f63f3f1d73efa841",
+    "note": "ASG source-native package remains content-addressed at 6ecdad09...; producer main advanced only through separately adjudicated non-package changes."
+  }
+}

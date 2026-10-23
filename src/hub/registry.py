@@ -1,11 +1,14 @@
 """Load the producer registry (registry/producers.yaml)."""
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import yaml
+
+_REPO_PATTERN = re.compile(r"^[\w.-]+/[\w.-]+$")
 
 
 @dataclass
@@ -21,6 +24,17 @@ class Producer:
     # "branding" block. Optional so a registry entry written before a producer
     # had artwork still loads — Producer(**entry) is a strict splat.
     branding: Optional[Dict[str, Any]] = None
+
+    def __post_init__(self) -> None:
+        # Defense-in-depth: `repo` feeds a GitHub clone URL (src/hub/fetch.py).
+        # That call is already shell=False with a fixed URL prefix, so this
+        # isn't exploitable today, but a malformed registry entry should fail
+        # loudly here rather than produce a broken clone URL downstream.
+        if not _REPO_PATTERN.match(self.repo):
+            raise ValueError(
+                f"Producer {self.program_id!r}: repo {self.repo!r} must look like "
+                "'owner/name'"
+            )
 
     @property
     def repo_name(self) -> str:

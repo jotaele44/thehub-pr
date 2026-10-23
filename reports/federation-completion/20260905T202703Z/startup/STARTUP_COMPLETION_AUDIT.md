@@ -1,0 +1,51 @@
+# Federation Startup Completion Audit
+
+- Generated UTC: `2026-09-05T20:39:24Z`
+- Run ID: `20260905T202920Z`
+- Startup/setup certification: `PROVISIONAL`
+- Product completion certification: `PROVISIONAL`
+- Startup/setup arithmetic: `7=7`
+- Code-complete arithmetic: `7=7`
+- Code-complete language: `CODE_COMPLETE_CANDIDATE is not source-certified or product-certified.`
+- Lumen: `LUMEN_UNAVAILABLE_OR_UNHEALTHY`
+- Deferred Skill selector: `UNAVAILABLE`
+
+## Repository Results
+
+| Repo | SHA | Code complete | Startup/setup | Product completion | Live Ready | Setup | Tests | Export | Startup |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| aguayluz-pr | `3678271a03e3` | `CODE_INCOMPLETE` | `FAIL` | `BLOCKED_FOR_PRODUCT_COMPLETION` | `True` | `SKIP_WITH_REASON` | `BLOCKED` | `PASS` | `PASS` |
+| centinelas-pr | `caf086598a4f` | `CODE_INCOMPLETE` | `FAIL` | `BLOCKED_FOR_PRODUCT_COMPLETION` | `True` | `SKIP_WITH_REASON` | `PASS` | `FAIL` | `PASS` |
+| moneysweep-pr | `74b10245f925` | `CODE_INCOMPLETE` | `FAIL` | `BLOCKED_FOR_PRODUCT_COMPLETION` | `False` | `SKIP_WITH_REASON` | `BLOCKED` | `PASS` | `PASS` |
+| ovnis-pr | `68b87366207c` | `CODE_COMPLETE_CANDIDATE` | `BLOCKED` | `BLOCKED_FOR_PRODUCT_COMPLETION` | `True` | `SKIP_WITH_REASON` | `PASS` | `PASS` | `PASS` |
+| skywatcher-pr | `39e1fb297e24` | `CODE_INCOMPLETE` | `FAIL` | `BLOCKED_FOR_PRODUCT_COMPLETION` | `False` | `SKIP_WITH_REASON` | `BLOCKED` | `PASS` | `PASS` |
+| spiderweb-pr | `f46546ef24c7` | `CODE_INCOMPLETE` | `FAIL` | `BLOCKED_FOR_PRODUCT_COMPLETION` | `True` | `SKIP_WITH_REASON` | `FAIL` | `PASS` | `PASS` |
+| thehub-pr | `94e000b5e0f2` | `CODE_COMPLETE_CANDIDATE` | `BLOCKED` | `BLOCKED_FOR_PRODUCT_COMPLETION` | `None` | `SKIP_WITH_REASON` | `PASS` | `PASS` | `PASS` |
+
+## Code Completion Blockers
+
+- `aguayluz-pr`: `CODE_INCOMPLETE` - test_suite:BLOCKED
+- `centinelas-pr`: `CODE_INCOMPLETE` - export_canonical:FAIL
+- `moneysweep-pr`: `CODE_INCOMPLETE` - test_suite:BLOCKED
+- `skywatcher-pr`: `CODE_INCOMPLETE` - test_suite:BLOCKED
+- `spiderweb-pr`: `CODE_INCOMPLETE` - test_suite:FAIL
+
+## Startup/Setup Blockers
+
+- `aguayluz-pr`: `FAIL` - test_suite:BLOCKED
+- `centinelas-pr`: `FAIL` - export_canonical:FAIL
+- `moneysweep-pr`: `FAIL` - test_suite:BLOCKED
+- `ovnis-pr`: `BLOCKED` - setup:setup skipped by audit policy; use --run-setup to execute
+- `skywatcher-pr`: `FAIL` - test_suite:BLOCKED
+- `spiderweb-pr`: `FAIL` - test_suite:FAIL
+- `thehub-pr`: `BLOCKED` - setup:setup skipped by audit policy; use --run-setup to execute
+
+## Product Completion Blockers
+
+- `aguayluz-pr`: `BLOCKED_FOR_PRODUCT_COMPLETION` - startup_setup_state:FAIL
+- `centinelas-pr`: `BLOCKED_FOR_PRODUCT_COMPLETION` - startup_setup_state:FAIL
+- `moneysweep-pr`: `BLOCKED_FOR_PRODUCT_COMPLETION` - startup_setup_state:FAIL, manual-source Tranche B remains partial/unresolved for hud_drgr_authorized; prasa, pr_cabilderos, and oficina_contralor were source-drop staged or parsed and materialized in reports/live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/, cor3 live endpoints return no data (portal likely requires JavaScript rendering); manual CSV export fallback documented, PR-gov scraper-needed queue: 13 of 15 sources promoted to api_producer; 2 true stubs remain (hacienda_sut_ivu, pr_act_154_excise), PROPUBLICA_API_KEY not supplied (nonprofits adapter), source-count wording must stay reconciled to reports/materialization_readiness.json truth, MANIFEST_READY_FOR_HUB_LIVE_EXECUTION_FALSE
+- `ovnis-pr`: `BLOCKED_FOR_PRODUCT_COMPLETION` - startup_setup_state:BLOCKED
+- `skywatcher-pr`: `BLOCKED_FOR_PRODUCT_COMPLETION` - startup_setup_state:FAIL, scaled bounded non-synthetic bbox/icon proof package exists (3 reviewed visible-icon screenshots with approximate capture geometry), but full live observation export remains blocked pending media identity reconciliation and completed capture-geometry review, canonical export adapter (scripts/federation_export.py) projects observations->entities/sources/relationships; production live readiness remains blocked until the reviewed non-synthetic corpus is materially complete and unresolved media identities are adjudicated, external imagery acquisition and production model execution are pending migration to TheHub under ADR 0006; the existing local imagery MCP and direct-provider vision path are deprecated but retained until parity, dual-run, rollback, GUI and retirement gates pass, FR24 ingest pipeline is now in-tree (fr24/); ILAP intake still requires FlightRadar24 screenshot/track inputs supplied locally (external data gap), MANIFEST_READY_FOR_HUB_LIVE_EXECUTION_FALSE
+- `spiderweb-pr`: `BLOCKED_FOR_PRODUCT_COMPLETION` - startup_setup_state:FAIL
+- `thehub-pr`: `BLOCKED_FOR_PRODUCT_COMPLETION` - startup_setup_state:BLOCKED

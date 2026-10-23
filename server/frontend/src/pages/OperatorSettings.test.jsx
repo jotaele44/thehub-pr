@@ -1,10 +1,23 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { axe } from "vitest-axe";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import OperatorSettings, { OPERATOR_CONNECTORS } from "./OperatorSettings";
 
-vi.mock("@/api/federationClient", () => ({ federation: {} }));
+const writeTokenMocks = vi.hoisted(() => ({
+  get: vi.fn(() => null),
+  set: vi.fn(),
+}));
+vi.mock("@/api/federationClient", () => ({
+  federation: {},
+  getWriteToken: writeTokenMocks.get,
+  setWriteToken: writeTokenMocks.set,
+}));
+
+beforeEach(() => {
+  writeTokenMocks.get.mockReturnValue(null);
+  writeTokenMocks.set.mockClear();
+});
 
 function makeApi(overrides = {}) {
   return {
@@ -23,6 +36,37 @@ function makeApi(overrides = {}) {
 }
 
 describe("OperatorSettings", () => {
+  it("stores a write token without displaying it and allows clearing it", async () => {
+    const secret = "operator-write-secret";
+    render(<OperatorSettings api={makeApi()} />);
+    const input = screen.getByLabelText("Write token");
+
+    fireEvent.change(input, { target: { value: secret } });
+    fireEvent.click(screen.getByRole("button", { name: "Save write token" }));
+
+    expect(writeTokenMocks.set).toHaveBeenCalledWith(secret);
+    expect(await screen.findByText(/write token saved for this tab session/i)).toBeInTheDocument();
+    expect(input).toHaveValue("");
+    expect(screen.queryByText(secret)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Clear write token" }));
+
+    expect(writeTokenMocks.set).toHaveBeenLastCalledWith(null);
+    expect(await screen.findByText(/write token removed from this browser/i)).toBeInTheDocument();
+  });
+
+  it("does not reveal an existing write token in the password field", async () => {
+    writeTokenMocks.get.mockReturnValue("existing-secret");
+    const api = makeApi();
+    render(<OperatorSettings api={api} />);
+
+    expect(screen.getByLabelText("Write token")).toHaveValue("");
+    expect(screen.queryByText("existing-secret")).not.toBeInTheDocument();
+    await screen.findByRole("button", { name: "Save preferences" });
+    await waitFor(() => expect(api.getConnection).toHaveBeenCalledTimes(OPERATOR_CONNECTORS.length));
+    writeTokenMocks.get.mockReturnValue(null);
+  });
+
   it("checks each operator connection on load and supports individual retries", async () => {
     const api = makeApi();
     render(<OperatorSettings api={api} />);

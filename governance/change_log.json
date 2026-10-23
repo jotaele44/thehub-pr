@@ -8,6 +8,88 @@
       "files": [
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-09-22",
+      "summary": "Governance determination for moneysweep-pr #585 drift: source_truth count change (total_sources 164→167) is metadata-only; no export contract schema changed; disposition COMPATIBLE under PR #218 baseline. producer_receipt_refs.json advanced to post-#585 HEAD (105ab0e). Reconciliation receipt to follow in moneysweep-pr.",
+      "files": [
+        "governance/producer_receipt_refs.json",
+        "governance/change_log.json"
+      ],
+      "producer_drift_reconciliation": {
+        "repo": "moneysweep-pr",
+        "cause_pr": 585,
+        "cause_commit": "e2ed593",
+        "change": "source_truth count update total_sources 164→167; automatable_total 115→119; automatable_ready 115→119; queued_excluded_total 49→48",
+        "determination": "COMPATIBLE",
+        "rationale": "source_truth fields are producer-local metadata; federation export contract schema and generation federation-spatial-index/1 unchanged; all contracts listed in moneysweep-pr receipt remain valid"
+      }
+    },
+    {
+      "date": "2026-09-29",
+      "summary": "Introduced the change-coupled documentation gate (ADR 0010, extending ADR 0004 section Documentation drift): a shared tools/check_docs_sync.py rendered from federation-templates/baseline/, a docs-sync workflow, a Claude Code Stop hook, CLAUDE.md, and this repo's .federation/docs-sync.json. Template, tooling and workflow change only: no governed contract, schema or dependency edge changed, so no compatibility disposition is required. PROVISIONAL until docs-sync is a required status check on main.",
+      "files": [
+        "docs/adr/0010-change-coupled-documentation-gate.md",
+        "federation-templates/baseline/check_docs_sync.py",
+        "federation-templates/targets.yaml",
+        ".federation/docs-sync.json",
+        "governance/change_log.json"
+      ]
+    },
+    {
+      "date": "2026-10-03",
+      "summary": "Fixed a false positive in the shared documentation gate's reference check (thehub-pr ADR 0010, rule R2): a reference written as path:symbol, such as `scripts/build.py:_helper` or `server/app.py:App.run`, was read as a path containing a colon and reported as missing. A trailing :symbol is now treated as a locator, like :42 and ::node already were, so the path before it is checked as usual and a symbol in a file that does not exist is still reported as a missing path. Changed in federation-templates/baseline/check_docs_sync.py and re-rendered into this repo; producers pick it up by re-pinning PRII_TEMPLATE_REF. Tooling change only: no contract, schema or dependency edge changed.",
+      "files": [
+        "federation-templates/baseline/check_docs_sync.py",
+        "tools/check_docs_sync.py",
+        "tests/test_check_docs_sync.py",
+        "governance/change_log.json"
+      ]
+    },
+    {
+      "date": "2026-10-12",
+      "summary": "Added tools/require_docs_sync.py for ADR 0010 rollout step 3: run by a repository administrator, it marks docs-sync a required status check on main in each federation repo (appending it to an existing ruleset or branch protection, otherwise creating a ruleset that requires only docs-sync), skips a repo with no docs-sync workflow on main, and holds aguayluz-pr, whose refresh.yml pushes straight to main. Re-audited main's rulesets and branch protection across all seven repos, now including each repo's required checks, in governance/merge_blocking_status.json. Tooling and governance-record change only: no contract, schema or dependency edge changed, and no repository setting was changed by this commit.",
+      "files": [
+        "tools/require_docs_sync.py",
+        "tests/test_require_docs_sync.py",
+        "governance/merge_blocking_status.json",
+        "docs/FEDERATION_STATUS.md",
+        "docs/adr/0010-change-coupled-documentation-gate.md",
+        "federation-templates/README.md",
+        "governance/change_log.json"
+      ]
+    },
+    {
+      "date": "2026-10-12",
+      "summary": "Hardened the shared documentation gate (thehub-pr ADR 0010) after review of its first rollout. A pull request can no longer exempt itself: exempt_authors counts only when the base manifest already lists the author. Manifest hygiene is judged on the head manifest, so retiring a coupling together with its last covered file, or renaming a coupled doc and repointing the coupling, no longer fails, while the base's couplings and mode still bind the change. A renamed doc counts as updated and keeps its history for the reference ratchet and the dead-glob check. A glob that matches nothing now fails when the change adds it and only warns when it was already there. A path:symbol or :line locator is dropped from Markdown link targets as well as inline code. The CONTRIBUTING.md section now states the coupling's on events, the reference check's scope (root Markdown and docs/**) and the new glob rule, and no longer lists .pre-commit-config.yaml as rendered for repositories that keep their own. Tooling and documentation change only: no contract, schema or dependency edge changed.",
+      "files": [
+        "federation-templates/baseline/check_docs_sync.py",
+        "federation-templates/baseline/CONTRIBUTING.md",
+        "tools/check_docs_sync.py",
+        "CONTRIBUTING.md",
+        "tests/test_check_docs_sync.py",
+        "docs/adr/0010-change-coupled-documentation-gate.md",
+        "governance/change_log.json"
+      ]
+    },
+    {
+      "date": "2026-10-15",
+      "summary": "Reverted #362, so tools/require_docs_sync.py no longer holds centinelas-pr; aguayluz-pr stays held. Recorded the result of the first tools/require_docs_sync.py --apply run: main now requires docs-sync in thehub-pr, ovnis-pr and skywatcher-pr (new main-required-checks ruleset), moneysweep-pr (main-protection ruleset) and spiderweb-pr (branch protection). governance/merge_blocking_status.json carries the 2026-10-15 re-audit and notes that centinelas-pr's scheduled refresh workflows push straight to main, which a required check would reject; docs/FEDERATION_STATUS.md gains Part 11. No repository setting was changed by this commit.",
+      "files": [
+        "tools/require_docs_sync.py",
+        "governance/merge_blocking_status.json",
+        "docs/FEDERATION_STATUS.md",
+        "governance/change_log.json"
+      ]
+    },
+    {
+      "date": "2026-10-20",
+      "summary": "Recorded that tools/require_docs_sync.py --apply has made docs-sync a required check on centinelas-pr's main (new main-required-checks ruleset), so six of seven federation repositories now require it and only aguayluz-pr is held. governance/merge_blocking_status.json carries the 2026-10-20 re-audit and notes that centinelas-pr's three scheduled refresh workflows, which push straight to main, are now rejected (el-yunque-access-monitor.yml silently, because of its `|| echo`). docs/FEDERATION_STATUS.md gains Part 12 and updated blocked-gaps rows. No repository setting was changed by this commit.",
+      "files": [
+        "governance/merge_blocking_status.json",
+        "docs/FEDERATION_STATUS.md",
+        "governance/change_log.json"
+      ]
     }
   ]
 }

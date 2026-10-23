@@ -34,6 +34,21 @@
       "consumers": ["moneysweep-pr", "spiderweb-pr", "aguayluz-pr", "ovnis-pr", "skywatcher-pr", "centinelas-pr"],
       "breaking_requires_major": true
     }
+,
+    "federation_evidence_object": {
+      "current": "1.0.0-candidate.1",
+      "compatibility": "semver",
+      "owner": "thehub-pr",
+      "status": "CANDIDATE",
+      "consumers": ["ovnis-pr", "spiderweb-pr", "skywatcher-pr", "aguayluz-pr", "moneysweep-pr"],
+      "schemas": [
+        "schemas/federation/epistemic_state.v1.schema.json",
+        "schemas/federation/evidence_object.v1.schema.json",
+        "schemas/federation/evidence_lineage.v1.schema.json"
+      ],
+      "freeze_rule": "Promote to 1.0.0 and pin in schemas/FROZEN.sha256 only after producer adoption, positive and negative fixtures, GUI parity and Federation compatibility pass (directive section 42).",
+      "breaking_requires_major": true
+    }
   },
   "rules": {
     "patch": "backward-compatible fixes only",

@@ -51,9 +51,10 @@ CONTRACTS = {
         "Tiny per-repository per-cell aggregate the Hub reads to compose a "
         "cross-domain view. Counts and identifiers only."
     ),
-    "record_cell_binding@1": (
-        "Binding of a domain record to one or more Cell_IDs, with a spatial role. "
-        "Membership is computed once by the authority and stored by the producer."
+    "record_cell_binding@2": (
+        "Fail-closed binding of a domain record to Spiderweb spatial output. "
+        "While the transform is PROVISIONAL, exact Cell_ID ground claims are forbidden "
+        "and the producer must preserve the full content-addressed uncertainty Cell_Set."
     ),
     "cell_profile@1": (
         "GET /cells/{Cell_ID}/profile envelope. Same shape everywhere, "
@@ -120,7 +121,8 @@ def determine(workspace: Path) -> dict[str, Any]:
             "A Cell_ID is a spatial address, not an identity claim. Co-location in a "
             "cell never establishes that two records are the same entity.",
             "The grid transform is PROVISIONAL in this generation, so consumers must "
-            "not present a Cell_ID as a certified ground location.",
+            "not present a Cell_ID as a certified ground location and must preserve "
+            "the full uncertainty Cell_Set under record_cell_binding@2.",
         ],
     }
 

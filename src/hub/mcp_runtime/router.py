@@ -103,6 +103,13 @@ class Router:
     def _candidates(self, capability: str) -> List[MCPAdapter]:
         return [adapter for _, _, adapter in self._adapters.get(capability, [])]
 
+    def is_write_request(self, request: MCPRequest) -> bool:
+        """Classify a request using adapter declarations, never caller input alone."""
+        return request.is_write or any(
+            adapter.is_write_action(request.action)
+            for adapter in self._candidates(request.capability)
+        )
+
     def registered_capabilities(self) -> List[str]:
         """Capabilities that currently have at least one registered adapter."""
         return list(self._adapters)
@@ -174,9 +181,7 @@ class Router:
 
         # 2. Write classification is the strictest across candidates, so a
         #    caller can never conceal a write by hitting a read-only adapter.
-        is_write = request.is_write or any(
-            a.is_write_action(request.action) for a in candidates
-        )
+        is_write = self.is_write_request(request)
         try:
             self.policy.check_write(request, is_write)
         except PolicyViolation as exc:

@@ -1,0 +1,68 @@
+{
+  "_comment": "Documentation-sync policy for thehub-pr (ADR 0010, extending ADR 0004). Read by tools/check_docs_sync.py. couplings: when a covered path changes, the doc must change in the same diff, or the commit/PR says 'Docs-Impact: none - <reason>'. Seeded conservatively: each coupling was replayed over recent history and either never fired or fired with the doc already updated. Add couplings for docs that enumerate things; do not add ones that fire on routine work.",
+  "schema_version": "prii_docs_sync_v1",
+  "mode": "enforce",
+  "base_branch": "main",
+  "exempt_docs": [
+    "AUDIT.md",
+    "docs/adr/**",
+    "docs/**/*[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*",
+    "docs/*AUDIT*.md",
+    "docs/*REPORT*.md",
+    "docs/*LEDGER*",
+    "docs/*PLAN*.md",
+    "docs/*HANDOFF*.md",
+    "docs/a11y-evidence/**",
+    "docs/htr-run-receipts/**",
+    "docs/federation-baseline/**",
+    "docs/FOUR_REPO_PIPELINE_LOGIC.md"
+  ],
+  "ignore_refs": [
+    "data/**",
+    "outputs/**",
+    "reports/**",
+    "server/frontend/dist/**",
+    "node_modules/**"
+  ],
+  "couplings": [
+    {
+      "doc": "README.md",
+      "covers": [
+        "registry/producers.yaml",
+        "schemas/repo_federation_manifest.schema.json"
+      ],
+      "on": ["add", "delete", "rename", "modify"],
+      "why": "'Active producer map' mirrors the producer registry and 'The producer contract' restates the manifest schema."
+    },
+    {
+      "doc": "ARCHITECTURE.md",
+      "covers": [
+        "registry/producers.yaml",
+        "governance/federation_dependencies.yaml"
+      ],
+      "on": ["add", "delete", "rename", "modify"],
+      "why": "Roles names every producer, the registration protocol lists the registry status values, and the topology follows the dependency graph."
+    },
+    {
+      "doc": "ARCHITECTURE.md",
+      "covers": ["schemas/federation_*.schema.json"],
+      "on": ["add", "delete", "rename"],
+      "why": "'Canonical streams & id namespaces' has one row per federation_* stream schema."
+    },
+    {
+      "doc": "docs/FEDERATION_TOPOLOGY.md",
+      "covers": [
+        "registry/producers.yaml",
+        "governance/federation_dependencies.yaml"
+      ],
+      "on": ["add", "delete", "rename", "modify"],
+      "why": "Declares how the producers are grouped and connected, which the registry and dependency graph encode."
+    },
+    {
+      "doc": "docs/FEDERATION_STATUS.md",
+      "covers": ["governance/merge_blocking_status.json"],
+      "on": ["add", "delete", "rename", "modify"],
+      "why": "Reports the branch-protection and merge-blocking state recorded there."
+    }
+  ]
+}

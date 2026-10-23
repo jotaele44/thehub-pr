@@ -1,0 +1,119 @@
+{
+  "schema_version": "federation_record_cell_binding_v0_2_closeout/1.0",
+  "date_utc": "2026-09-28",
+  "scope": "Six-consumer migration and bounded no-exact-cell-leakage closeout for record_cell_binding@2",
+  "authority": {
+    "repository": "jotaele44/spiderweb-pr",
+    "commit": "bb8463c8d8cf4b54486674ee9b665ce3d2502e8b",
+    "grid_sha256": "17733f3f18c8a644e31c1eb25fb27b73b4bf353c6de57d5203c4311e05d64483",
+    "independent_control_sha256": "92b167ed014bd938d6b5d95bdb7187f45e4c3483a544e1649170155a9c5bd082",
+    "certification_state": "PROVISIONAL",
+    "authoritative_parameters_recovered": false,
+    "independent_reconstruction_state": "FAIL_KILL_CRITERIA"
+  },
+  "canonical_contract": {
+    "contract": "record_cell_binding@2",
+    "binding_schema_version": "spiderweb.record_cell_binding.v0.2",
+    "schema_git_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+    "schema_byte_identity": "PASS_ALL_SIX_MIRRORS_SAME_GIT_BLOB",
+    "exact_cell_claims_permitted": false,
+    "cell_set_required": true,
+    "identity_default": "CANDIDATE_NOT_IDENTITY",
+    "radius_semantics": "CONSERVATIVE_DISCOVERY_ENVELOPE_NOT_CONFIDENCE_INTERVAL"
+  },
+  "consumers": [
+    {
+      "repository": "thehub-pr",
+      "head_before_closeout": "1a31951963801fcf73689335fb1059fd6bdee162",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "transform_snapshot_blob_sha": "53548c3e889fa40fb41779b0e06c810ea3642abc",
+      "geometry_manifest_blob_sha": "f47e97f41088ec53db3a13dd8aa3e5773ee617ef",
+      "contract_generation_blob_sha": "fa846edc2fde9f4b93144a88e7c228fff7272355",
+      "regression_blob_sha": "9d8510428b24d7496f2a582dd70ec42463b79ee9"
+    },
+    {
+      "repository": "moneysweep-pr",
+      "head": "e26183342f0971010341185fab92b5d5f2ed94e2",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "registry_blob_sha": "9cbb7de8dc124c978680c1f48f66eaa20535fd43",
+      "geometry_manifest_blob_sha": "4e5583a3dee72d43eb0c439f33f32f6f2ad858b7",
+      "compatibility_receipt_blob_sha": "1b95d2c186614c11d5df52ece88e6649cbe3ff3a",
+      "regression_blob_sha": "2fc786090e3dde1c8fd459c9fb08aefda55fb406"
+    },
+    {
+      "repository": "aguayluz-pr",
+      "head": "3f9cf81e77ef0dec7d8cda81f8d8ded18109219a",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "registry_blob_sha": "f3e1b3d16cd47fe31214aed232d67a3a4adc9a98",
+      "geometry_manifest_blob_sha": "4e5583a3dee72d43eb0c439f33f32f6f2ad858b7",
+      "compatibility_receipt_blob_sha": "c566ad5efa86fb6f9ed4721b45e7b67de0afd10d",
+      "regression_blob_sha": "ec641e0daf2452e067d51f6183ceff5fd7c916c3"
+    },
+    {
+      "repository": "skywatcher-pr",
+      "head": "211b39725452c0ec5b61600a1de3943fbf5279d8",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "registry_blob_sha": "2f2095a2d1964d21aa0d0cf9e18ba424a9f9d7ba",
+      "geometry_manifest_blob_sha": "4e5583a3dee72d43eb0c439f33f32f6f2ad858b7",
+      "compatibility_receipt_blob_sha": "4865b9fed791a5ee8e028ffde0cf93d80e0be274",
+      "regression_blob_sha": "ec641e0daf2452e067d51f6183ceff5fd7c916c3"
+    },
+    {
+      "repository": "ovnis-pr",
+      "head": "ecfe25114b9a83ac72916c37716b7e38443bffe2",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "registry_blob_sha": "d625c50fefb609c5ace3028f1e031848bb0964fd",
+      "geometry_manifest_blob_sha": "4e5583a3dee72d43eb0c439f33f32f6f2ad858b7",
+      "compatibility_receipt_blob_sha": "08fcb6c0c8f5de5eea452fa5eaa5acf79f332cbe",
+      "regression_blob_sha": "ec641e0daf2452e067d51f6183ceff5fd7c916c3"
+    },
+    {
+      "repository": "centinelas-pr",
+      "head": "d662949441b2130483dcc2ef31ba69446cdd772b",
+      "schema_blob_sha": "54fd5fe1517cc777b14758d629f2bd6d69b50a85",
+      "registry_blob_sha": "bcb31f8578b6b7019b413b81ff6f27dc41680b74",
+      "geometry_manifest_blob_sha": "4e5583a3dee72d43eb0c439f33f32f6f2ad858b7",
+      "compatibility_receipt_blob_sha": "d17546c1b485ff485f52331436ff61add23cad29",
+      "regression_blob_sha": "ec641e0daf2452e067d51f6183ceff5fd7c916c3"
+    }
+  ],
+  "bounded_leakage_search": {
+    "repositories_checked": 6,
+    "legacy_contract_query": "record_cell_binding@1",
+    "legacy_contract_hits": 0,
+    "legacy_schema_query": "spiderweb.cell_source_binding.v0.1",
+    "legacy_schema_hits": 0,
+    "provisional_contract_presence": "PASS_ALL_SIX",
+    "claim": "Bounded code-search evidence on the current default branches. Source search is not universal proof of absence outside the searched manifestations."
+  },
+  "regression_contract": {
+    "positive": [
+      "PROVISIONAL retained",
+      "Cell_Set required",
+      "full candidate membership contract present",
+      "authority geometry hash retained"
+    ],
+    "negative": [
+      "exact Cell_ID under PROVISIONAL forbidden",
+      "duplicate or empty candidate sets rejected by control-plane validator/schema gates",
+      "identity upgrade to RESOLVED_IDENTITY rejected",
+      "probabilistic/confidence-interval reinterpretation rejected"
+    ],
+    "adversarial": [
+      "noncanonical Cell_ID rejected",
+      "geometry duplication by consumers rejected at control plane",
+      "missing consumer attestation reopens generation"
+    ],
+    "artifact_state": "PASS",
+    "repository_wide_execution_state": "AUDIT_ONLY",
+    "repository_wide_execution_reason": "No GitHub Actions workflow runs are published for the current migration heads; this closeout does not substitute contract artifact inspection for full repository execution."
+  },
+  "federation_generation": {
+    "state": "CLOSED",
+    "blocking_repositories": [],
+    "geometry_authority": "spiderweb-pr",
+    "control_plane": "thehub-pr"
+  },
+  "terminal_transform_state": "PROVISIONAL",
+  "promotion_rule": "GRID TRANSFORM VERIFIED remains forbidden unless future authoritative evidence closes every material transform residue. Failed reconstruction parameters remain failed evidence and are never canonical."
+}
