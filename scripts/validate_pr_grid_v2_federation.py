@@ -4,7 +4,9 @@
 TheHub is the federation control plane, not the geometry authority. This command
 proves that all six consumers reference the same immutable Spiderweb RC1
 contract and that the Spiderweb checkout is the exact pinned authority commit.
-Missing consumers or mismatched authority state fail closed.
+Missing consumers or mismatched authority state fail closed. Shared consumer
+runtime files must be byte-identical to the hub templates, except files listed in
+PENDING_ADOPTION_FILES, whose drift is reported as a warning until adopted.
 """
 from __future__ import annotations
 
@@ -46,6 +48,22 @@ SHARED_CONSUMER_FILES = {
 }
 
 
+# Shared files the hub has updated but the consumers have not adopted on their
+# default branch yet (profiles/materializer v1.2 from #376/#380, and the
+# Cell_Profile API distributed by #382). Drift or absence in these files is
+# reported as PENDING_ADOPTION (a CI warning) instead of failing closed, so the
+# hub can ship templates ahead of the consumer PRs. Every other shared file
+# (currently pr_grid_v2_runtime.py) stays strictly byte-identical. Remove an
+# entry once all consumers carry the hub bytes, to make it strict again.
+PENDING_ADOPTION_FILES = frozenset(
+    {
+        "federation/spatial/pr_grid_v2_profiles.py",
+        "federation/spatial/materialize_pr_grid_v2_profiles.py",
+        "server/backend/grid_v2_api.py",
+    }
+)
+
+
 def _sha256(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
 
@@ -53,6 +71,7 @@ def _sha256(payload: bytes) -> str:
 def _validate_shared_consumer_runtime(workspace_root: Path) -> dict[str, object]:
     expected_consumers = sorted(EXPECTED_CONSUMERS - {"thehub-pr"})
     files: dict[str, dict[str, object]] = {}
+    warnings: list[str] = []
     for output_rel, template_path in SHARED_CONSUMER_FILES.items():
         try:
             expected = template_path.read_bytes()
@@ -60,32 +79,50 @@ def _validate_shared_consumer_runtime(workspace_root: Path) -> dict[str, object]
             raise GridV2PinError(
                 f"cannot read shared V2 template {template_path}: {exc}"
             ) from exc
-        per_repo = {}
+        pending_ok = output_rel in PENDING_ADOPTION_FILES
+        per_repo: dict[str, object] = {}
+        pending: dict[str, str] = {}
         for consumer in expected_consumers:
             path = workspace_root / consumer / output_rel
             try:
                 observed = path.read_bytes()
             except OSError as exc:
-                raise GridV2PinError(
-                    f"missing shared V2 runtime file for {consumer}: {output_rel}: {exc}"
-                ) from exc
+                if not pending_ok:
+                    raise GridV2PinError(
+                        f"missing shared V2 runtime file for {consumer}: {output_rel}: {exc}"
+                    ) from exc
+                per_repo[consumer] = None
+                pending[consumer] = "MISSING"
+                continue
             if observed != expected:
-                raise GridV2PinError(
-                    f"shared V2 runtime drift: {consumer}:{output_rel}"
-                )
+                if not pending_ok:
+                    raise GridV2PinError(
+                        f"shared V2 runtime drift: {consumer}:{output_rel}"
+                    )
+                pending[consumer] = "DRIFT"
             per_repo[consumer] = _sha256(observed)
         files[output_rel] = {
             "Template_SHA256": _sha256(expected),
             "Consumer_SHA256": per_repo,
-            "State": "BYTE_IDENTICAL_PASS",
+            "Pending_Adoption": pending,
+            "State": "PENDING_ADOPTION" if pending else "BYTE_IDENTICAL_PASS",
         }
+        for consumer, reason in sorted(pending.items()):
+            warnings.append(
+                f"{consumer}:{output_rel} {reason} (pending adoption of hub template)"
+            )
     return {
         "Expected_Consumer_Count": len(expected_consumers),
         "Verified_Consumer_Count": len(expected_consumers),
         "Geometry_Producer": "spiderweb-pr",
         "Consumer_Geometry_Mode": "REFERENCE_ONLY",
         "Files": files,
-        "State": "SHARED_RUNTIME_PARITY_PASS",
+        "Warnings": warnings,
+        "State": (
+            "SHARED_RUNTIME_PARITY_PASS_WITH_PENDING_ADOPTION"
+            if warnings
+            else "SHARED_RUNTIME_PARITY_PASS"
+        ),
     }
 
 
@@ -169,6 +206,8 @@ def main() -> int:
             for consumer, pin in sorted(pins.items())
         },
     }
+    for warning in shared_runtime["Warnings"]:
+        print(f"::warning title=PR Grid V2 pending adoption::{warning}", file=sys.stderr)
     print(json.dumps(payload, indent=2, sort_keys=True))
     return 0
 
