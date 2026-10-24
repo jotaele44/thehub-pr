@@ -114,6 +114,12 @@ targets:
   - template: spatial/test_pr_grid_v2_profiles.py
     output: tests/test_pr_grid_v2_profiles.py
     repos: *grid_v2_producer_consumers
+  - template: spatial/export_pr_grid_v2_exact_observations.py
+    output: federation/spatial/export_pr_grid_v2_exact_observations.py
+    repos: *grid_v2_producer_consumers
+  - template: spatial/test_pr_grid_v2_source_export.py
+    output: tests/test_pr_grid_v2_source_export.py
+    repos: *grid_v2_producer_consumers
 
   # Engineering baseline — supply-chain and dependency hygiene that every repo
   # in the federation needs identically. Single-sourced here so a fix lands once

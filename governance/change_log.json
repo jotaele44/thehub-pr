@@ -81,6 +81,15 @@
         "docs/FEDERATION_STATUS.md",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-10-20",
+      "summary": "Recorded that tools/require_docs_sync.py --apply has made docs-sync a required check on centinelas-pr's main (new main-required-checks ruleset), so six of seven federation repositories now require it and only aguayluz-pr is held. governance/merge_blocking_status.json carries the 2026-10-20 re-audit and notes that centinelas-pr's three scheduled refresh workflows, which push straight to main, are now rejected (el-yunque-access-monitor.yml silently, because of its `|| echo`). docs/FEDERATION_STATUS.md gains Part 12 and updated blocked-gaps rows. No repository setting was changed by this commit.",
+      "files": [
+        "governance/merge_blocking_status.json",
+        "docs/FEDERATION_STATUS.md",
+        "governance/change_log.json"
+      ]
     }
   ]
 }

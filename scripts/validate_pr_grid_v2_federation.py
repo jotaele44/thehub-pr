@@ -2,8 +2,9 @@
 """Validate the complete PR_GRID_GEOGRAPHIC_V2 consumer pin denominator.
 
 TheHub is the federation control plane, not the geometry authority. This command
-only proves that all six consumers reference the same immutable Spiderweb RC1
-contract. Missing consumers are failures, not skips.
+proves that all six consumers reference the same immutable Spiderweb RC1
+contract and that the Spiderweb checkout is the exact pinned authority commit.
+Missing consumers or mismatched authority state fail closed.
 """
 from __future__ import annotations
 
@@ -15,7 +16,6 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from hub.grid_v2_authority import validate_authority_root, validate_frozen_pin_denominator  # noqa: E402
 from hub.grid_v2 import (  # noqa: E402
     AUTHORITY_COMMIT,
     EXPECTED_CONSUMERS,
@@ -26,14 +26,20 @@ from hub.grid_v2 import (  # noqa: E402
     grid_identity,
     validate_pin_set,
 )
+from hub.grid_v2_authority import (  # noqa: E402
+    validate_authority_root,
+    validate_frozen_pin_denominator,
+)
 
 PIN_REL = Path("federation/spatial/pr_grid_geographic_v2.pin.json")
 
 
-def _pin_paths(workspace_root: Path) -> dict:
-    paths = {}
+def _pin_paths(workspace_root: Path) -> dict[str, Path]:
+    paths: dict[str, Path] = {}
     for consumer in sorted(EXPECTED_CONSUMERS):
-        repo_root = REPO_ROOT if consumer == "thehub-pr" else workspace_root / consumer
+        repo_root = (
+            REPO_ROOT if consumer == "thehub-pr" else workspace_root / consumer
+        )
         paths[consumer] = repo_root / PIN_REL
     return paths
 
@@ -46,16 +52,26 @@ def main() -> int:
         default=REPO_ROOT.parent,
         help="directory containing sibling federation repositories",
     )
-    parser.add_argument("--authority-root", type=Path, help="Spiderweb checkout; defaults to workspace sibling")
+    parser.add_argument(
+        "--authority-root",
+        type=Path,
+        help="Spiderweb checkout; defaults to workspace sibling",
+    )
     args = parser.parse_args()
 
-    paths = _pin_paths(args.workspace_root.resolve())
+    workspace_root = args.workspace_root.resolve()
+    paths = _pin_paths(workspace_root)
+
     try:
         pins = validate_pin_set(paths)
-        authority_root = args.authority_root or (args.workspace_root / "spiderweb-pr")
-        authority = validate_authority_root(authority_root.resolve())
+        authority_root = args.authority_root or (workspace_root / "spiderweb-pr")
+        authority = validate_authority_root(
+            authority_root.resolve(),
+            verify_commit_object=True,
+        )
         denominator = validate_frozen_pin_denominator(
-            paths, REPO_ROOT / "registry/spatial/v2/consumer_pin_denominator.json"
+            paths,
+            REPO_ROOT / "registry/spatial/v2/consumer_pin_denominator.json",
         )
     except GridV2PinError as exc:
         print(
@@ -67,7 +83,10 @@ def main() -> int:
                     "Authority_Commit": AUTHORITY_COMMIT,
                     "Grid_Manifest_SHA256": GRID_MANIFEST_SHA256,
                     "error": str(exc),
-                    "pin_paths": {k: str(v) for k, v in sorted(paths.items())},
+                    "pin_paths": {
+                        key: str(value)
+                        for key, value in sorted(paths.items())
+                    },
                 },
                 indent=2,
                 sort_keys=True,
