@@ -1,3 +1,4 @@
+import { federationOffline } from './offline/vite-offline.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import react from '@vitejs/plugin-react';
@@ -66,7 +67,7 @@ export default defineConfig({
       ],
     },
   },
-  plugins: OFFLINE ? [react(), viteSingleFile(), cesiumRuntimeAssets()] : [react(), cesiumRuntimeAssets()],
+  plugins: OFFLINE ? [react(), viteSingleFile(), cesiumRuntimeAssets()] : [react(), cesiumRuntimeAssets(), federationOffline({ appId: 'thehub-pr' })],
   // MapLibre creates its worker as a module worker (see src/gis/maplibre.js).
   worker: { format: 'es' },
   build: OFFLINE

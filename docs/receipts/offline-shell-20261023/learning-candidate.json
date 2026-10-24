@@ -1,0 +1,16 @@
+{
+  "schema": "reviewed-learning-candidate/v1",
+  "destination": "Mucaro governed learning review",
+  "status": "REVIEW_PENDING",
+  "scope": "verified HTTP shell pattern only",
+  "evidence": "federation-summary.json",
+  "lessons": [
+    "Precache all lazy chunks and runtime assets with hashes.",
+    "Separate shell readiness, domain data and synchronization.",
+    "Observe worker installed/activated states; never infer activation from elapsed time.",
+    "Fail installation atomically on corrupted assets.",
+    "Detect eviction and admit only verified repairs.",
+    "Reuse evidence only after exact source and verifier binding."
+  ],
+  "promotion": "OPEN \u2014 no automatic prompt or skill mutation"
+}

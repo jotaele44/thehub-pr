@@ -1,0 +1,13 @@
+{
+  "browser-receipt.json": "05a1492b4781c5fdef86949f39d5c72e07a5d842b96623fd8440dac3e5d29bd3",
+  "build-manifest.json": "b491a17eba92396665bf85f71a89319a4460357235525ec233dc8f8b4ad35575",
+  "candidate-receipt.json": "e84607d094244d8eef2be651344f8575b2a10e6bf805e7f92af299a6356161f8",
+  "offline-1440.png": "e993dd3593d59c47c2838450ccfec2d79a8b14cff5e3df8963ae47d59d61a39d",
+  "offline-393.png": "839247cb0818ffd64bf94cbdbdd32894aebc9c975f644c43a93453e58a75a223",
+  "offline-430.png": "fa3cc9aec5fa3072fd97204f0f9cdba137f407517393dba6dceaa7cde4159878",
+  "thehub-pr-offline-browser-closure.log": "2bb993a05732f4727ad9a8e38b0548712f382896b1a3eeae676ae8b564710240",
+  "thehub-pr-offline-browser-closure2.log": "2bb993a05732f4727ad9a8e38b0548712f382896b1a3eeae676ae8b564710240",
+  "thehub-pr-offline-build-closure.log": "dc34bbc612929abcc7b6f1d9a802135fdedbdf874979ed7f504565555085e6a4",
+  "thehub-pr-offline-build-closure2.log": "dc34bbc612929abcc7b6f1d9a802135fdedbdf874979ed7f504565555085e6a4",
+  "thehub-pr-offline-docs.log": "eb7949cfbaa2a974b7cc799c2a37b23674e7cf74f038086890b57b10f6d93d54"
+}
