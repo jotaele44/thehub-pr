@@ -44,7 +44,7 @@ password-gated visitor analytics module, are listed under
 
 - `ALREADY_PRESENT`
 - `SCHEDULED_THIS_RUN`, `PARTIAL_THIS_RUN` and `IMPLEMENTED_THIS_RUN`. These three record run 1 and are only valid for Phases 1–3.
-- `SCHEDULED_RUN_2`, `PARTIAL_RUN_2` and `IMPLEMENTED_RUN_2`. These record run 2 and are only valid for Phases 4 (OVNIS) and 5 (Spiderweb). A later run never rewrites what an earlier run recorded.
+- `SCHEDULED_RUN_2`, `PARTIAL_RUN_2` and `IMPLEMENTED_RUN_2`. These record run 2 and are only valid for Phases 4 (OVNIS), 5 (Spiderweb) and 6 (Skywatcher). A later run never rewrites what an earlier run recorded.
 - `DEFERRED`
 - `BLOCKED`
 - `NOT_APPLICABLE`
@@ -83,9 +83,9 @@ means each one has an explicit disposition backed by evidence.
 - why the evidence contracts remain CANDIDATE;
 - the leads logged for later phases.
 
-## Run 2 (Phases 4 and 5)
+## Run 2 (Phases 4, 5 and 6)
 
-Run 2 delivers Phase 4 (OVNIS) and Phase 5 (Spiderweb). Its records are marked `IMPLEMENTED_RUN_2`, `PARTIAL_RUN_2` or a reasoned `DEFERRED`.
+Run 2 delivers Phase 4 (OVNIS), Phase 5 (Spiderweb) and Phase 6 (Skywatcher). Its records are marked `IMPLEMENTED_RUN_2`, `PARTIAL_RUN_2` or a reasoned `DEFERRED`.
 
 | Delivery | Document |
 |---|---|
@@ -94,5 +94,6 @@ Run 2 delivers Phase 4 (OVNIS) and Phase 5 (Spiderweb). Its records are marked `
 | Property Map (`/gis?view=property-map`): precision-styled records, Location Intel, municipality-level OVNIS cases and layer provenance (Phase 5, P5-A) | [`PROPERTY_MAP_V1.md`](PROPERTY_MAP_V1.md) |
 | Digital Twin (`/gis?view=digital-twin`): four synchronized panels over uniform-datum NOAA CUDEM terrain, DEM and imagery provenance, temporal playback, honest finding and live counters, and GeoJSON/USD export (Phase 5, P5-B) | [`DIGITAL_TWIN_V1.md`](DIGITAL_TWIN_V1.md) |
 | Datum awareness (GEOID18 applied to the Digital Twin's heights), the subsurface separation view (`/gis?view=interpretive-layers`) and the AOI comparison with negative controls (`/gis?view=aoi-comparison`) (Phase 5, P5-C) | [`SUBSURFACE_AND_CONTROLS_V1.md`](SUBSURFACE_AND_CONTROLS_V1.md) |
+| Sky workspace (`/skywatcher?view=sky`): the Sun, Moon and naked-eye planets for an explicit observer and UTC instant, computed in the browser and held to JPL Horizons and USNO, plus the latest NOAA SWPC Kp, solar-wind speed and IMF Bz (Phase 6, P6-A) | [`SKY_WORKSPACE_V1.md`](SKY_WORKSPACE_V1.md) |
 
 OVNIS owns the research record. Its ledgers, validator, duplicate candidates and case reports are documented in the [ovnis-pr research-ledger doc](https://github.com/jotaele44/ovnis-pr/blob/main/docs/RESEARCH_LEDGERS.md).
