@@ -13,6 +13,7 @@ export default function AppLayout() {
         <Sidebar />
         <div className="flex-1 min-w-0 flex flex-col">
           <HubHeader />
+        <div data-offline-status-host style={{ padding: "2px 12px", flexShrink: 0 }} />
           <MobileNav />
           <main className="flex-1 px-4 sm:px-6 lg:px-8 py-6 max-w-[1600px] w-full mx-auto">
             <Outlet />

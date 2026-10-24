@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Bell, CheckCircle2, FileUp, KeyRound, Loader2, PlugZap, RefreshCw, Settings, TriangleAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
+import OfflineReceipts from '@/components/offline/OfflineReceipts';
 
 export const OPERATOR_CONNECTORS = [
   { name: "Federation", label: "Federation" },
@@ -519,6 +520,7 @@ export default function OperatorSettings({ api = defaultApi }) {
         description="Operator-facing credentials, file transfer, connection checks, and notification delivery settings."
       />
       <div className="grid gap-5 xl:grid-cols-2">
+        <OfflineReceipts />
         <WriteTokenPanel />
         <UploadPanel api={api} />
         <ConnectionsPanel api={api} />
