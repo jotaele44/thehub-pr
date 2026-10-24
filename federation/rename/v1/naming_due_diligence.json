@@ -1,0 +1,44 @@
+{
+ "gate": "NAMING_DUE_DILIGENCE",
+ "state": "PARTIAL_OPEN",
+ "generated_at": "2026-10-06T19:48:59.474730+00:00",
+ "method_limits": "Web search + PyPI/npm HTTP status + GitHub repo search + DNS resolution only. NOT checked: USPTO/TESS and PR trademark registries, PR Departamento de Estado entity registry, WHOIS, App Store/Play Store, social handles. DNS 'no-dns' is not proof a domain is available. Candidate names are NOT externally cleared marks.",
+ "names": {
+  "Batey-PR": {
+   "risk": "MEDIUM",
+   "pypi_npm": "free (404)",
+   "github": "many unrelated 'batey' repos; JuanDelPueblo/batey (archived, 2026): 'an uncomplicated hub to connect and manage all your ACP agents' - same hub/orchestration semantics",
+   "domains": "batey.com/.org/.app/.dev resolve",
+   "notes": "'batey' is also a surname (Mark Batey holds unrelated US trademarks) and a Spanish/Taino-linked term (bateyes, ceremonial plazas)"
+  },
+  "Chanchullos-PR": {
+   "risk": "LOW_COLLISION_HIGH_CONNOTATION",
+   "pypi_npm": "free (404)",
+   "github": "no matches",
+   "domains": "only chanchullos.com resolves",
+   "notes": "No software/trademark hits. Spanish 'chanchullos' = shady deals/rackets: public-facing name for a procurement-analysis tool implies wrongdoing (neutrality/defamation-perception risk; inference, not a legal finding)"
+  },
+  "Cronos-PR": {
+   "risk": "HIGH",
+   "pypi_npm": "'cronos' taken on both (PyPI 0.0.6, npm 0.1.0); '-pr' variants free",
+   "github": "crypto-org-chain/cronos (335 stars, blockchain), HangfireIO/Cronos (cron library, 1.1k stars), several security tools named Cronos",
+   "domains": "cronos.com/.org/.app/.dev resolve",
+   "notes": "Strong existing brands; 'Cronos' also reads as cron-scheduling to developers. Consider 'Cronos' only with the '-PR' suffix and no public standalone use"
+  },
+  "Pitirre-PR": {
+   "risk": "MEDIUM",
+   "pypi_npm": "free (404)",
+   "github": "Pitirre-tech org with Pitirre-Gastos repo (created 2026-10-02, JavaScript, expense app)",
+   "domains": "pitirre.com/.org/.net resolve",
+   "notes": "Org-handle and a fresh same-name app exist; Pitirre is also a common Puerto Rican bird name (Gray Kingbird) and cultural term. Collides conceptually with 'pitorro' trademark results only by search noise"
+  },
+  "Borikén-PR": {
+   "risk": "MEDIUM_HIGH",
+   "pypi_npm": "free (404)",
+   "github": "Boriken-Dev org (boriken.dev), boriken-apps org (ATH Movil SDK), borikenDEV, several small repos",
+   "domains": "boriken.com/.org/.net/.app/.dev all resolve",
+   "notes": "Widely used PR cultural name; many PR businesses use it (moneysweep data even contains a vendor 'BORIKEN PARTS AND EQUIPMENTS CORP'). Accent form needs ASCII slug 'boriken'"
+  }
+ },
+ "recommendation": "Internal use of all five names is safe to proceed. Before public branding: run USPTO/PR registry and WHOIS checks; reconsider Cronos (highest collision) and Chanchullos (connotation); keep repo slugs with -pr suffix; PyPI/npm names for the -pr slugs are free."
+}
