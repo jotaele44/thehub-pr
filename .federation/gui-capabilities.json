@@ -833,6 +833,32 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "build-observatory-v01",
+      "classification": "client_only",
+      "status": "staged",
+      "requires_terminal": false,
+      "feature_flag": "observatory_local_snapshot_v01",
+      "tracking": "https://github.com/jotaele44/thehub-pr/pull/379",
+      "expires_on": "2026-12-31",
+      "rationale": "Audit-only local JSON graph visualization. Snapshot attestations remain PROVISIONAL; authoritative CI provenance and full topology are not implemented. Route is deliberately discoverable and staged, not certified.",
+      "frontend": {
+        "routes": [
+          "/build-observatory"
+        ],
+        "components": [
+          "server/frontend/src/pages/BuildObservatory.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "unit": [
+          "server/frontend/src/features/observatory/status.test.js"
+        ]
+      }
     }
   ],
   "exceptions": []
