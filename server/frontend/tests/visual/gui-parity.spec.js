@@ -60,6 +60,28 @@ test.describe('provenance inspector', () => {
   });
 });
 
+test.describe('AguaYLuz outdoor conditions', () => {
+  test('is reachable from the AguaYLuz module and says why a cell has no value', async ({ page }) => {
+    const rows = [
+      { id: 'ent_out_sj', municipality: 'San Juan', level: 'ELEVATED', rip_current_state: 'REPORTED', rip_current_risk: 'HIGH',
+        surf_ft: '5–7', air_quality_state: 'NOT_CONFIGURED', _producers: ['aguayluz-pr'] },
+      { id: 'ent_out_x', municipality: 'Ponce', level: 'ELEVATED', _producers: ['skywatcher-pr'] },
+    ];
+    await mockApi(page, { '/entities/OutdoorConditions': rows });
+
+    await page.goto('/aguayluz', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Outdoor Conditions' }).click();
+    const panel = page.getByRole('tabpanel');
+
+    await expect(panel.getByText(/Conditions context, not safety advice/)).toBeVisible();
+    const row = panel.getByRole('row', { name: /San Juan/ });
+    await expect(row.getByText('HIGH')).toBeVisible();
+    await expect(row.getByText('5–7 ft')).toBeVisible();
+    await expect(row.getByText('NOT_CONFIGURED')).toBeVisible();
+    await expect(panel.getByText('Ponce')).toHaveCount(0);
+  });
+});
+
 test.describe('MoneySweep certified leaderboard consumer', () => {
   test('is discoverable from MoneySweep and preserves certified producer rows', async ({ page }) => {
     const packageHash = 'a'.repeat(64);
