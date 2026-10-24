@@ -5,6 +5,10 @@ on:
     paths:
       - "src/hub/grid_v2_authority.py"
       - "scripts/validate_pr_grid_v2_federation.py"
+      - "federation-templates/spatial/pr_grid_v2_runtime.py"
+      - "federation-templates/spatial/pr_grid_v2_profiles.py"
+      - "federation-templates/spatial/materialize_pr_grid_v2_profiles.py"
+      - "federation-templates/spatial/pr_grid_v2_api.py"
       - "tests/test_grid_v2_authority.py"
       - "registry/spatial/v2/**"
       - "federation/spatial/pr_grid_geographic_v2.pin.json"
@@ -43,7 +47,7 @@ jobs:
 
           for repo in aguayluz-pr skywatcher-pr ovnis-pr moneysweep-pr centinelas-pr; do
             git clone --depth 1 --filter=blob:none --sparse               "https://github.com/jotaele44/$repo.git" "$root/$repo"
-            git -C "$root/$repo" sparse-checkout set --no-cone               federation/spatial/pr_grid_geographic_v2.pin.json
+            git -C "$root/$repo" sparse-checkout set --no-cone               federation/spatial/pr_grid_geographic_v2.pin.json               federation/spatial/pr_grid_v2_runtime.py               federation/spatial/pr_grid_v2_profiles.py               federation/spatial/materialize_pr_grid_v2_profiles.py               server/backend/grid_v2_api.py
           done
 
           python scripts/validate_pr_grid_v2_federation.py             --workspace-root "$root"             --authority-root "$root/spiderweb-pr"

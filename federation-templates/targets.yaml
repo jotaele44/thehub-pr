@@ -121,6 +121,15 @@ targets:
     output: tests/test_pr_grid_v2_source_export.py
     repos: *grid_v2_producer_consumers
 
+  # Read-only producer Cell_Profile API. It serves only receipt-verified profile
+  # materializations, always stamps Grid_Identity, and never copies geometry.
+  - template: spatial/pr_grid_v2_api.py
+    output: server/backend/grid_v2_api.py
+    repos: *grid_v2_producer_consumers
+  - template: spatial/test_pr_grid_v2_api.py
+    output: tests/test_pr_grid_v2_api.py
+    repos: *grid_v2_producer_consumers
+
   # Engineering baseline — supply-chain and dependency hygiene that every repo
   # in the federation needs identically. Single-sourced here so a fix lands once
   # instead of seven times, and so template-drift.yml keeps it from rotting.
