@@ -74,6 +74,7 @@
           "src/hub/grid_v2.py:validate_level",
           "src/hub/grid_v2.py:validate_pin_payload",
           "src/hub/grid_v2.py:validate_pin_set",
+          "src/hub/grid_v2_authority.py:validate_authority_commit_object",
           "src/hub/grid_v2_authority.py:validate_authority_root",
           "src/hub/grid_v2_authority.py:validate_frozen_pin_denominator",
           "scripts/validate_pr_grid_v2_migration_readiness.py:ReadinessError",
@@ -83,8 +84,9 @@
       },
       "tests": {
         "contract": [
-          "tests/test_grid_v2_runtime.py",
+          "tests/test_grid_v2_authority.py",
           "tests/test_grid_v2_profiles.py",
+          "tests/test_grid_v2_runtime.py",
           "tests/test_pr_grid_v2_migration_readiness.py"
         ],
         "backend": [
