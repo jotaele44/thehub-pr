@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "federation_gateway_authority_partition_v1",
+  "repositoryId": "github:1258897469",
+  "repository": "jotaele44/thehub-pr",
+  "canonicalRoot": "packages/federation_execution_gateway",
+  "gatewayAuthority": [
+    "cross-repository execution orchestration",
+    "compatibility",
+    "provenance",
+    "provider coordination",
+    "release coordination",
+    "LOCKSTEP",
+    "federation certification"
+  ],
+  "producerDomainAuthority": "RETAINED_BY_EACH_PRODUCER",
+  "forbidden": [
+    "implicit producer-domain authority transfer",
+    "direct-main write",
+    "force push",
+    "administrative bypass",
+    "name-only repository identity"
+  ]
+}
