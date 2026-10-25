@@ -15,7 +15,7 @@ MACOS / LINUX (TheHub repository root)
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -e ".[dev]" -r server/backend/requirements.txt
-python -m pytest -q tests/test_grid_v2_runtime.py tests/test_grid_v2_profiles.py tests/test_grid_v2_api.py
+python -m pytest -q tests/test_grid_v2_runtime.py tests/test_grid_v2_profiles.py tests/test_grid_v2_api.py tests/test_grid_v2_authority.py
 python tests/test_schema_freeze.py
 
 SIX-CONSUMER AUTHORITY CERTIFICATION
@@ -25,9 +25,11 @@ python scripts/validate_pr_grid_v2_federation.py --workspace-root "$(dirname "$P
 
 Expected result: state=PASS, consumer_count=6,
 frozen_denominator.State=FROZEN_DENOMINATOR_PASS,
-authority_source_validation.Verification_State=SOURCE_BYTES_PASS.
-If any input repo, schema, or pin is absent or mismatched, stop.
-SOURCE_BYTES_PASS does not assert the historic Git commit object itself was revalidated.
+authority_source_validation.Verification_State=AUTHORITY_COMMIT_AND_SOURCE_BYTES_PASS,
+authority_source_validation.Authority_Commit_Object_Verified=true,
+authority_source_validation.Authority_Commit_Observed=0c66e13d14232c0d7cbcbc179b3655904777dc71.
+If any input repo, schema, pin, or authority Git object is absent or mismatched, stop.
+The Spiderweb checkout must be detached at the exact pinned authority commit.
 
 DOMAIN PRODUCERS (once the shared template is distributed)
 python federation/spatial/materialize_pr_grid_v2_profiles.py --pin federation/spatial/pr_grid_geographic_v2.pin.json --level L1 --records /path/source_record_metadata.jsonl --bindings /path/spiderweb_binding_rows.jsonl --binding-receipt /path/spiderweb_binding_receipt.json --out /path/L1.jsonl --receipt-out /path/L1.receipt.json

@@ -50,10 +50,6 @@ REGISTRY = Path(__file__).resolve().parents[1] / "registry" / "producers.yaml"
 # the workflow opens a pull request instead of pushing to main.
 HELD = {
     "aguayluz-pr": "refresh.yml commits scheduled data refreshes straight to main",
-    "centinelas-pr": (
-        "signal-ledger-refresh.yml, just-security-monitor.yml and "
-        "el-yunque-access-monitor.yml commit scheduled refreshes straight to main"
-    ),
 }
 
 # (method, path, body) -> parsed JSON, or None when the API answers with an error.

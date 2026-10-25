@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "29fab24f74e88d39bd3a5a41ff596094524bfb75",
+  "source_commit": "7e890a4e4154bc03515116f5daf01481852b4c2f",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -2007,40 +2007,41 @@
       ]
     },
     {
-      "pattern": "^server/frontend/src/components/gis/AoiComparison\\.jsx:\\d+:Download\\ receipt\\ \\(JSON\\)$",
+      "pattern": "server/frontend/src/components/gis/AoiComparison\\.jsx:136:Download receipt \\(JSON\\)",
       "classification": "BROWSER_ACTION",
-      "rationale": "Existing main browser-only Blob export of comparisonReceipt; verified by the receipt download E2E test.",
+      "rationale": "This control serializes the already-computed AOI comparison receipt in the browser and passes it to downloadText; it performs no Hub backend mutation and requires no separate backend endpoint.",
       "evidence": [
-        "server/frontend/src/components/gis/AoiComparison.jsx:255",
-        "server/frontend/tests/visual/gui-parity.spec.js"
+        "server/frontend/src/components/gis/AoiComparison.jsx:136",
+        "server/frontend/src/components/gis/AoiComparison.jsx:252-257",
+        "server/frontend/src/lib/download.js"
       ]
     },
     {
-      "pattern": "^server/frontend/src/components/gis/AoiComparison\\.jsx:\\d+:unlabeled\\-control$",
-      "classification": "CLIENT_STATE",
-      "rationale": "This is the existing Load municipio boundaries button, whose label changes while loading; loadBoundary calls acquireOnlineSource and stores returned evidence/errors.",
-      "evidence": [
-        "server/frontend/src/components/gis/AoiComparison.jsx:154-161",
-        "server/frontend/src/components/gis/AoiComparison.test.jsx"
-      ]
-    },
-    {
-      "pattern": "^server/frontend/src/components/gis/AoiComparison\\.jsx:\\d+:Compare$",
-      "classification": "CLIENT_STATE",
-      "rationale": "Compare computes compareAois on the already acquired bounded store and records validation errors; it does not require a separate endpoint.",
-      "evidence": [
-        "server/frontend/src/components/gis/AoiComparison.jsx:163-189",
-        "server/frontend/src/components/gis/AoiComparison.test.jsx",
-        "server/frontend/tests/visual/gui-parity.spec.js"
-      ]
-    },
-    {
-      "pattern": "^server/frontend/src/components/gis/InterpretiveLayers\\.jsx:\\d+:Download\\ CSV$",
+      "pattern": "server/frontend/src/components/gis/AoiComparison\\.jsx:241:unlabeled-control",
       "classification": "BROWSER_ACTION",
-      "rationale": "Existing main browser-only Blob download of profileCsv; covered by the terrain profile CSV E2E test.",
+      "rationale": "This dynamically labeled control invokes loadBoundary, which acquires the declared TIGERweb municipio boundary source directly through the browser-side acquisition facade and stores the result in local component state; it is not a Hub backend mutation.",
+      "evidence": [
+        "server/frontend/src/components/gis/AoiComparison.jsx:151-160",
+        "server/frontend/src/components/gis/AoiComparison.jsx:241-243",
+        "server/frontend/src/gis/acquisitionFacade.js"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/AoiComparison\\.jsx:244:Compare",
+      "classification": "CLIENT_STATE",
+      "rationale": "This control runs compareAois deterministically over the spatial records already loaded into the page and updates local comparison/error state; it does not call or mutate a backend route.",
+      "evidence": [
+        "server/frontend/src/components/gis/AoiComparison.jsx:162-184",
+        "server/frontend/src/components/gis/AoiComparison.jsx:244"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/InterpretiveLayers\\.jsx:125:Download CSV",
+      "classification": "BROWSER_ACTION",
+      "rationale": "This control serializes the already-computed interpretive profile to CSV and invokes the browser download helper; it has no distinct backend mutation or missing server target.",
       "evidence": [
         "server/frontend/src/components/gis/InterpretiveLayers.jsx:125",
-        "server/frontend/tests/visual/gui-parity.spec.js"
+        "server/frontend/src/lib/download.js"
       ]
     }
   ],
