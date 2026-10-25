@@ -93,10 +93,61 @@ def _normal_route(value: str) -> str:
     return value.rstrip("/") or "/"
 
 
+def _route_decorator_path(route: Any) -> str | None:
+    for item in route.evidence:
+        if item.startswith("decorator:"):
+            return _normal_route(item.removeprefix("decorator:") or "/")
+    return None
+
+
+def _capability_endpoint_bindings(
+    endpoint: str,
+    backend_files: set[str],
+    routes: Iterable[Any],
+) -> tuple[set[str], str | None]:
+    normalized = _normal_route(endpoint)
+    method, separator, path = normalized.partition(" ")
+    if not separator:
+        return set(), f"invalid-endpoint:{endpoint}"
+
+    eligible = [
+        route
+        for route in routes
+        if route.method.upper() == method
+        and (not backend_files or route.source in backend_files)
+    ]
+    local = [route for route in eligible if _route_decorator_path(route) == path]
+    declarations = {
+        (route.source, route.line, route.handler, route.router_symbol)
+        for route in local
+    }
+    if len(declarations) == 1:
+        return {
+            _normal_route(f"{route.method} {route.path}")
+            for route in local
+        }, None
+    if len(declarations) > 1:
+        evidence = ",".join(
+            f"{source}:{line}:{handler}:{router}"
+            for source, line, handler, router in sorted(declarations)
+        )
+        return set(), f"ambiguous-endpoint:{endpoint}:{evidence}"
+
+    exact = [route for route in eligible if _normal_route(route.path) == path]
+    exact_keys = {_normal_route(f"{route.method} {route.path}") for route in exact}
+    if len(exact_keys) == 1:
+        return exact_keys, None
+    if len(exact_keys) > 1:
+        return set(), f"ambiguous-mounted-endpoint:{endpoint}:{','.join(sorted(exact_keys))}"
+    return set(), f"unresolved-endpoint:{endpoint}"
+
+
 def _existing_capability_bindings(
-    root: Path, contract: dict[str, Any]
+    root: Path,
+    contract: dict[str, Any],
+    routes: Iterable[Any],
 ) -> tuple[set[str], set[str], list[str]]:
-    backend: set[str] = set()
+    backend_bindings: set[str] = set()
     gui: set[str] = set()
     gaps: list[str] = []
     for rel in contract.get("discovery", {}).get("existing_gui_capability_manifests", []):
@@ -112,13 +163,25 @@ def _existing_capability_bindings(
         for capability in manifest.get("capabilities", []):
             if capability.get("status") not in {None, "active", "staged"}:
                 continue
-            for endpoint in capability.get("backend", {}).get("endpoints", []):
+            capability_id = str(capability.get("id", "unknown"))
+            backend = capability.get("backend", {})
+            backend_files = {
+                str(item) for item in backend.get("files", []) if isinstance(item, str)
+            }
+            for endpoint in backend.get("endpoints", []):
                 if isinstance(endpoint, str):
-                    backend.add(_normal_route(endpoint))
+                    bindings, gap = _capability_endpoint_bindings(
+                        endpoint,
+                        backend_files,
+                        routes,
+                    )
+                    backend_bindings.update(bindings)
+                    if gap:
+                        gaps.append(f"existing-gui-endpoint:{rel}:{capability_id}:{gap}")
             for route in capability.get("frontend", {}).get("routes", []):
                 if isinstance(route, str):
                     gui.add(_normal_route(route))
-    return backend, gui, gaps
+    return backend_bindings, gui, gaps
 
 
 def _gui_routes(root: Path, contract: dict[str, Any]) -> tuple[set[str], dict[str, str]]:
@@ -370,7 +433,11 @@ def audit_repository(
         )
 
     traces, index = strict_scan_repository(repo_root, repo)
-    existing_backend, existing_gui, manifest_gaps = _existing_capability_bindings(repo_root, contract)
+    existing_backend, existing_gui, manifest_gaps = _existing_capability_bindings(
+        repo_root,
+        contract,
+        index.routes,
+    )
     for gap in manifest_gaps:
         findings.append(Finding("CAPABILITY_MANIFEST_GAP", repo_id, "executability", gap, gap))
 

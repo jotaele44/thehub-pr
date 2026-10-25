@@ -150,6 +150,16 @@ playback and exports exactly what is shown as GeoJSON and USD. The browser reads
 directly from NOAA's cloud-optimized GeoTIFFs. See
 [`docs/federation/DIGITAL_TWIN_V1.md`](docs/federation/DIGITAL_TWIN_V1.md).
 
+The same endpoint reports `store`, how the served store was built (the committed fixture is a bounded
+sample, so its counts are never totals), and each feature's `declared_epistemic_class` and
+`declared_data_stage`. Three more `/gis` views use them. The Digital Twin applies the NOAA GEOID18
+separation to its CUDEM heights and shows both the PRVD02 and the ellipsoidal height. The subsurface
+view (`/gis?view=interpretive-layers`) keeps documented layers apart from records a producer declared
+INTERPRETIVE, which is empty today, and draws a terrain profile with gaps kept as gaps. The AOI
+comparison (`/gis?view=aoi-comparison`) tests a study area against disjoint control areas with an exact
+binomial test and labels the result a background comparison, not a finding. See
+[`docs/federation/SUBSURFACE_AND_CONTROLS_V1.md`](docs/federation/SUBSURFACE_AND_CONTROLS_V1.md).
+
 ## Governance
 
 Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,

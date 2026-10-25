@@ -76,9 +76,8 @@ def _expect_equal(
 
 def validate_level(level: object) -> str:
     if not isinstance(level, str) or level not in ALLOWED_LEVELS:
-        raise GridV2PinError(
-            f"unsupported grid level {level!r}; expected one of {', '.join(ALLOWED_LEVELS)}"
-        )
+        expected = ", ".join(ALLOWED_LEVELS)
+        raise GridV2PinError(f"unsupported grid level {level!r}; expected one of {expected}")
     return level
 
 

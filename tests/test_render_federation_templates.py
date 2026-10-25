@@ -39,6 +39,11 @@ def _targets():
     return yaml.safe_load((_TEMPLATES / "targets.yaml").read_text())["targets"]
 
 
+def test_shared_jsx_lint_template_covers_shipped_archive_shells():
+    template = (_TEMPLATES / "baseline" / "eslint.config.js").read_text()
+    assert '"src/zip-design/**/*.{js,mjs,cjs,jsx}"' in template
+
+
 def test_every_referenced_template_exists():
     for t in _targets():
         assert (_TEMPLATES / t["template"]).is_file(), t["template"]

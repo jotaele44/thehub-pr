@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "thehub.moneysweep-full-package-replay/v1",
+  "state": "PASS",
+  "producer": "moneysweep-pr",
+  "producerCommit": "7cf946691d485da3fb88c308f63f3f1d73efa841",
+  "producerReleaseLabel": "frozen-mobile-release-2026-10-19-current-head",
+  "producerManifestPath": "data/exports/canonical_v1_federation/manifest.json",
+  "producerManifestSha256": "7069ec625d1bbcabf523e4066eceeb897973c74cb1e7f18e810a7fe8b4aa1fcc",
+  "producerManifestGitBlobSha1": "b5264c4ca2cb6496c35448a8e573fb1b368f3a61",
+  "producerPackageId": "pkg_9642c2a411343e9c0c20891ac84f4f08",
+  "hubWrappedManifestSha256": "38c901648e5a9240b03bfe17b380ca2b46e657b314dfd19ce81c7c40f34ab9bb",
+  "mode": "test",
+  "createdAt": "2026-09-01T02:29:04.944465+00:00",
+  "streams": [
+    {
+      "stream": "sources",
+      "filename": "sources.jsonl",
+      "recordCount": 4508,
+      "sha256": "410d4e046ce95640bb746f0ac54cdb9c0a5066e7b3f4382684101264b1095cd4",
+      "schemaId": "federation_source.schema.json"
+    },
+    {
+      "stream": "entities",
+      "filename": "entities.jsonl",
+      "recordCount": 207,
+      "sha256": "9992675c6a4e76ec4b88ddef290233c208d1b5e0ef12178068b35ef7848bb3d5",
+      "schemaId": "federation_entity.schema.json"
+    },
+    {
+      "stream": "relationships",
+      "filename": "relationships.jsonl",
+      "recordCount": 66,
+      "sha256": "d10a42852d3cea0e2e82a58f7ffbc9f28020841905d2fbdbc560f20263d412bb",
+      "schemaId": "federation_relationship.schema.json"
+    }
+  ],
+  "accounting": {
+    "totalRecords": 4781,
+    "perStreamStableIdsUnique": true,
+    "rowSchemaValidation": "PASS",
+    "manifestIntegrity": "PASS"
+  },
+  "supersession": {
+    "priorProducerCommit": "5487a75b1417edee25a2acf1b2896c474f3978fd",
+    "priorReplayReceipt": "PR #369 prior branch receipt bound to 5487a75",
+    "packageBytesChanged": false,
+    "inheritPass": false,
+    "reason": "Producer commit advanced by one docs-sync/template-repin commit with no canonical federation package byte changes. Exact current-consumer PASS must be re-executed at 7cf94669 rather than inherited."
+  },
+  "consumerValidation": {
+    "exactProducerCommit": "PASS",
+    "exactStreamHashes": "PASS",
+    "deterministicHubWrapper": "PASS",
+    "hubSchemaValidation": "PASS",
+    "zeroValidationErrors": "PASS"
+  },
+  "terminalRule": "PASS is valid only while the receipt-bearing PR head replays this exact producer commit successfully and preserves zero-residue GUI-backend governance. Future producer/package changes require a new receipt.",
+  "replayEvidence": {
+    "workflow": "MoneySweep full package replay",
+    "workflowRunId": 39489864676,
+    "workflowRunNumber": 21,
+    "workflowUrl": "https://github.com/jotaele44/thehub-pr/actions/runs/39489864676",
+    "jobId": 118859996758,
+    "validationHead": "4383cd8e6ad7ff4ec8ceb72f61e0ced94ff933f2",
+    "test": "tests/test_moneysweep_full_package_current.py",
+    "result": "PASS",
+    "testsPassed": 1,
+    "testsFailed": 0
+  },
+  "guiBackendAudit": {
+    "state": "PASS",
+    "workflowRunId": 38805551410,
+    "jobId": 116665340898,
+    "auditedSourceCommit": "b1004293fd2e2147063c9d84d545d97c7ce08b38",
+    "materialResidue": 0,
+    "findings": 0
+  }
+}
