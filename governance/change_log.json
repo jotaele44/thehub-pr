@@ -90,6 +90,16 @@
         "docs/FEDERATION_STATUS.md",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-10-25",
+      "summary": "tools/check_docs_sync.py now applies the base manifest's exempt_authors to a --staged run as well as to --base, so the two modes agree: an author the committed manifest lists is skipped, one named only in the staged manifest is not. Found by a Codex review of the moneysweep-pr re-pin (a P2). No hook or workflow passes --author with --staged today, so nothing changes in practice; two CLI tests pin the behaviour. The template and the hub's rendered copy changed; producers take it on their next pin move and none is re-pinned by this change.",
+      "files": [
+        "federation-templates/baseline/check_docs_sync.py",
+        "tools/check_docs_sync.py",
+        "tests/test_check_docs_sync.py",
+        "governance/change_log.json"
+      ]
     }
   ]
 }
