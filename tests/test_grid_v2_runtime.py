@@ -70,6 +70,8 @@ def test_real_thehub_pin_loads_and_emits_identity():
         ("grid_version", "2.0.0", "grid_version"),
         ("grid_manifest_sha256", "0" * 64, "grid_manifest_sha256"),
         ("cell_schema_sha256", "0" * 64, "cell_schema_sha256"),
+        ("binding_schema_sha256", "0" * 64, "binding_schema_sha256"),
+        ("mask_schema_sha256", "0" * 64, "mask_schema_sha256"),
     ],
 )
 def test_contract_identity_mismatch_fails_closed(tmp_path, field, bad_value, message):
