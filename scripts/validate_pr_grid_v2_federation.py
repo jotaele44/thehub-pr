@@ -57,6 +57,11 @@ def main() -> int:
         type=Path,
         help="Spiderweb checkout; defaults to workspace sibling",
     )
+    parser.add_argument(
+        "--require-authority-head",
+        action="store_true",
+        help="also require Spiderweb checkout HEAD to equal the pinned RC1 commit",
+    )
     args = parser.parse_args()
 
     workspace_root = args.workspace_root.resolve()
@@ -68,6 +73,7 @@ def main() -> int:
         authority = validate_authority_root(
             authority_root.resolve(),
             verify_commit_object=True,
+            require_authority_head=args.require_authority_head,
         )
         denominator = validate_frozen_pin_denominator(
             paths,
