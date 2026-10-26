@@ -46,7 +46,7 @@ jobs:
             git -C "$root/$repo" sparse-checkout set --no-cone               federation/spatial/pr_grid_geographic_v2.pin.json
           done
 
-          python scripts/validate_pr_grid_v2_federation.py             --workspace-root "$root"             --authority-root "$root/spiderweb-pr"
+          python scripts/validate_pr_grid_v2_federation.py             --workspace-root "$root"             --authority-root "$root/spiderweb-pr"             --require-authority-head
 
       - name: Install regression-test dependency
         run: python -m pip install --disable-pip-version-check pytest
