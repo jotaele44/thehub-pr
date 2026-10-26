@@ -40,9 +40,29 @@ def _sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def validate_authority_commit_object(root: Path) -> str:
-    """Require the authority checkout itself to be the frozen Spiderweb commit."""
+def validate_authority_commit_object(
+    root: Path, *, require_head: bool = False
+) -> str:
+    """Require the pinned Spiderweb commit object to exist.
+
+    A moving Spiderweb main checkout may legitimately have a newer HEAD while
+    retaining the immutable RC1 commit and byte-identical pinned authority files.
+    Dedicated exact-commit certification can opt into require_head=True.
+    """
     try:
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(root),
+                "cat-file",
+                "-e",
+                AUTHORITY_COMMIT + "^{commit}",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
         result = subprocess.run(
             ["git", "-C", str(root), "rev-parse", "HEAD"],
             check=True,
@@ -55,16 +75,19 @@ def validate_authority_commit_object(root: Path) -> str:
         ) from exc
 
     observed = result.stdout.strip()
-    if observed != AUTHORITY_COMMIT:
+    if require_head and observed != AUTHORITY_COMMIT:
         raise GridV2PinError(
-            "Spiderweb authority commit mismatch: "
+            "Spiderweb authority HEAD mismatch: "
             f"expected {AUTHORITY_COMMIT}, got {observed or '<empty>'}"
         )
     return observed
 
 
 def validate_authority_root(
-    root: Path, *, verify_commit_object: bool = False
+    root: Path,
+    *,
+    verify_commit_object: bool = False,
+    require_authority_head: bool = False,
 ) -> dict[str, Any]:
     """Fail closed if the geometry authority's exact source manifests differ."""
     try:
@@ -116,7 +139,10 @@ def validate_authority_root(
 
     observed_commit = None
     if verify_commit_object:
-        observed_commit = validate_authority_commit_object(root)
+        observed_commit = validate_authority_commit_object(
+            root,
+            require_head=require_authority_head,
+        )
 
     return {
         "Authority": "spiderweb-pr",
@@ -127,10 +153,15 @@ def validate_authority_root(
         "Grid_Manifest_SHA256": GRID_MANIFEST_SHA256,
         "Source_Bytes_Verified": True,
         "Authority_Commit_Object_Verified": verify_commit_object,
+        "Authority_HEAD_Required": require_authority_head,
         "Verification_State": (
-            "AUTHORITY_COMMIT_AND_SOURCE_BYTES_PASS"
-            if verify_commit_object
-            else "SOURCE_BYTES_PASS"
+            "AUTHORITY_EXACT_HEAD_AND_SOURCE_BYTES_PASS"
+            if verify_commit_object and require_authority_head
+            else (
+                "AUTHORITY_COMMIT_OBJECT_AND_SOURCE_BYTES_PASS"
+                if verify_commit_object
+                else "SOURCE_BYTES_PASS"
+            )
         ),
     }
 
