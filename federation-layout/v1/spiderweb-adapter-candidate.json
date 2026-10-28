@@ -1,0 +1,72 @@
+{
+  "schema": "federation-layout/spiderweb-source-adapter/v1",
+  "status": "DISCOVERY_ONLY",
+  "source": {
+    "repo": "jotaele44/spiderweb-pr",
+    "commit": "b8f5cf303ab7fc2b6ed006edce0fb12e1344a096",
+    "frontendRoot": "server/frontend/src",
+    "routing": "tab-driven module selection, not JSX React Router routes"
+  },
+  "observedFiles": [
+    {
+      "path": "server/frontend/src/App.tsx",
+      "blobSha": "76477e9af71a8de7ba0be2bc1b266e458e49bfe7"
+    },
+    {
+      "path": "server/frontend/src/components/LeftRail.tsx",
+      "blobSha": "936afda3bf8a317abf87a1a5bb0745af13c3b2bd"
+    },
+    {
+      "path": "server/frontend/src/components/CommandBar.tsx",
+      "blobSha": "18c51649ab01d8ea9f8ae8c042c4dd22f2b79ebe"
+    },
+    {
+      "path": "server/frontend/src/components/Inspector.tsx",
+      "blobSha": "93c8fac2975b014f784dc8fbcbf474333f77425a"
+    },
+    {
+      "path": "server/frontend/src/components/Timeline.tsx",
+      "blobSha": "5ead8996a89da9dc0aaa2200256ebb043f3d6bbd"
+    }
+  ],
+  "observedModuleIds": [
+    "command",
+    "finance",
+    "spatial",
+    "anomaly",
+    "graph",
+    "query"
+  ],
+  "observedShellRoles": [
+    "command-bar",
+    "left-navigation-rail",
+    "center-module-workspace",
+    "right-inspector",
+    "timeline"
+  ],
+  "unknowns": [
+    "complete nested component tree",
+    "CSS implementation and media rules",
+    "all states and interaction transitions",
+    "renderer measurements and scroll-owner proofs",
+    "equivalence versus other seven app navigation roles"
+  ],
+  "proposedAdapter": {
+    "inputs": [
+      "pinned source tree",
+      "App.tsx tab IDs and module switch",
+      "static import graph",
+      "CSS modules and global sheets",
+      "verified rendered state observations"
+    ],
+    "output": "source-bound module/component/state/viewport registry with classification and provenance",
+    "strictRules": [
+      "do not infer route count from zero Route tags",
+      "do not claim app inventory exhausted from observed five files",
+      "preserve identity by pinned file paths and blob SHAs",
+      "separate common navigation from specialized inspector/timeline"
+    ]
+  },
+  "certification": "WITHHELD",
+  "floot": "LOCKED"
+}
