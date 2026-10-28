@@ -1,0 +1,30 @@
+{
+  "schema": "federation-layout/compatibility-finding/v1",
+  "scope": "source-bound candidate, not complete",
+  "source": "jotaele44/thehub-pr/docs/design-system-parity/skywatcher-pr.json",
+  "sourceObservationDate": "2026-08-24",
+  "observations": [
+    {
+      "code": "DESIGN_PACKAGE_EXPORT_SKEW",
+      "app": "skywatcher-pr",
+      "evidence": "Archived TheHub parity report reports @pr-federation/react v0.3.0 lacks test-harness.contract.json export and newer Federation component symbols.",
+      "status": "HISTORICAL_CORROBORATION_REQUIRES_CURRENT_HEAD_RECHECK"
+    },
+    {
+      "code": "GUI_CAPABILITIES_ALREADY_DEFINED",
+      "app": "thehub-pr",
+      "evidence": ".federation/gui-capabilities.json defines frontend_roots, route_files, navigation_files and exclusions.",
+      "status": "EXISTING_INFRASTRUCTURE_REUSE_CANDIDATE"
+    },
+    {
+      "code": "PINNED_TREE_INVENTORY_EXISTS",
+      "app": "thehub-pr",
+      "evidence": "handoff-audit/phase0/PINNED_TREE_INVENTORY.tsv exists but source snapshot must be checked before reuse.",
+      "status": "HISTORICAL_NOT_CURRENT_PROOF"
+    }
+  ],
+  "adjudication": "OPEN",
+  "effect": "Do not certify shared-component compatibility or promote layout runtime until exact-current seven consumer export coverage verified",
+  "designRecommendation": "Reuse GUI capability inventories as discovery and federation-design tests as prior art; never promote them to exhaustive denominators without reconciliation.",
+  "authorization": "DENY"
+}
