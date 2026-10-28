@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/jotaele44/thehub-pr/schemas/cell_profile_v2.schema.json",
   "title": "PR Grid V2 Domain Cell Profile",
-  "description": "Domain-owned profile; references Spiderweb-generated Cell_IDs, never carries canonical geometry.",
+  "description": "Domain-owned PR grid V2 Cell_Profile v1.2. References Spiderweb-generated Cell_IDs and certified bindings; canonical geometry is never copied into producer profiles.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -11,31 +11,41 @@
     "Repository",
     "Profile_Type",
     "Cell_ID",
+    "Grid_Deep_Link",
     "Data_State",
     "Coverage_State",
     "Record_Count",
     "Category_Count",
     "Categories",
     "Top_Record_IDs",
+    "Binding_Method_Counts",
+    "Uncertainty_Class_Counts",
+    "Exact_Record_Count",
+    "Non_Exact_Record_Count",
     "Shared_Boundary_Record_Count",
+    "Migration_Class",
     "Identity_Default",
     "Geometry_Included"
   ],
   "properties": {
     "Schema_Version": {
-      "const": "pr-grid-v2-cell-profile/1.0"
+      "const": "pr-grid-v2-cell-profile/1.2"
     },
     "Grid_Identity": {
       "type": "object",
+      "additionalProperties": false,
       "required": [
         "Grid_ID",
         "Grid_Version",
         "Grid_Level",
         "CRS",
         "Grid_Manifest_SHA256",
-        "Cell_ID",
+        "Cell_Schema_SHA256",
+        "Binding_Schema_SHA256",
+        "Mask_Schema_SHA256",
         "Geometry_Authority",
-        "Authority_Commit"
+        "Authority_Commit",
+        "Cell_ID"
       ],
       "properties": {
         "Grid_ID": {
@@ -58,15 +68,24 @@
         "Grid_Manifest_SHA256": {
           "const": "8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4"
         },
-        "Cell_ID": {
-          "type": "string",
-          "pattern": "^PRG2:L[0-3]:R[0-9]{3}:C[0-9]{4}$"
+        "Cell_Schema_SHA256": {
+          "const": "1c173aee4b21b9baa545b656735155f2236a87c436d467a12132ef53b2592f5d"
+        },
+        "Binding_Schema_SHA256": {
+          "const": "dabc461e47134b3b150be9aeb23b3d0097563493b33b3187538255e06b16a022"
+        },
+        "Mask_Schema_SHA256": {
+          "const": "0b31b717d274b19686bf7f47edbabdaec31c86800f2ca7f1e73ffb663600978b"
         },
         "Geometry_Authority": {
           "const": "spiderweb-pr"
         },
         "Authority_Commit": {
           "const": "b8f5cf303ab7fc2b6ed006edce0fb12e1344a096"
+        },
+        "Cell_ID": {
+          "type": "string",
+          "pattern": "^PRG2:L[0-3]:R[0-9]{3}:C[0-9]{4}$"
         }
       }
     },
@@ -91,6 +110,10 @@
     "Cell_ID": {
       "type": "string",
       "pattern": "^PRG2:L[0-3]:R[0-9]{3}:C[0-9]{4}$"
+    },
+    "Grid_Deep_Link": {
+      "type": "string",
+      "pattern": "^/grid/PR_GRID_GEOGRAPHIC_V2/2\\.0\\.0-rc1/L[0-3]/PRG2:L[0-3]:R[0-9]{3}:C[0-9]{4}(\\?as_of=.*)?$"
     },
     "Data_State": {
       "enum": [
@@ -129,9 +152,68 @@
         "minLength": 1
       }
     },
+    "Binding_Method_Counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "COVERS": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "INTERSECTS_POSITIVE_AREA": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "LINE_POSITIVE_LENGTH": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ADMINISTRATIVE_SET": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "DERIVED_SET": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "Uncertainty_Class_Counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "EXACT": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ADMINISTRATIVE_ONLY": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "DERIVED": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "Exact_Record_Count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "Non_Exact_Record_Count": {
+      "type": "integer",
+      "minimum": 0
+    },
     "Shared_Boundary_Record_Count": {
       "type": "integer",
       "minimum": 0
+    },
+    "Migration_Class": {
+      "enum": [
+        "RECOMPUTED_FROM_SOURCE_COORDINATE",
+        "RECOMPUTED_FROM_SOURCE_GEOMETRY",
+        "VERIFIED_CROSSWALK"
+      ]
     },
     "Identity_Default": {
       "const": "CANDIDATE_NOT_IDENTITY"
