@@ -1,0 +1,5 @@
+USGS reference intake staging. Production exports BLOCKED; activated=0.
+Run from repository root: PYTHONPATH=src python -m pytest tests/test_usgs_assets.py tests/test_usgs_continuation.py tests/test_usgs_catalog.py
+Verify: python scripts/verify_usgs_build.py
+Native GeoJSON retains source geometry and CRS without correction. Source keys are scoped to each asset.
+Do not load these reference envelopes as canonical producer streams. Consumer fitness, PR coverage, geometry, lineage and usage remain OPEN.

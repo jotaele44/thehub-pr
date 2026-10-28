@@ -1,0 +1,25 @@
+{
+  "contract": "prii.usgs-source-review-code/v1",
+  "repository": "jotaele44/spiderweb-pr",
+  "commit": "daa111bfed19c6f06bb94c8841bf46ef3c40c04d",
+  "tree": "183d2a100dc57c95351f8993a0358fd1006f4564",
+  "report_sha256": "b09f5f34411f9570927202f34067463262f526b29138a232f49193257def44a9",
+  "executed_code_sha256": {
+    "federation/usgs_source_review.py": "b28903b94ebf5c9ef571871ad90ae054700e8d65b285168140d522ca91012020",
+    "scripts/review_usgs_sources.py": "f0b0cb127d7daad0dd61ec26572abd2067b05543c6de2b39fc9e85167a45d11e",
+    "federation/usgs_native_reference.py": "9365286aae1a383ae4649b724d56e5678af0fbe001a8fbdd0f88cadd85094b63"
+  },
+  "source_archive_sha256": "b8fed761b822c9287a6423e9ca9ad4df5d49453e57dffb727d40568873459b72",
+  "archive_members": 2317,
+  "source_scope": "Frozen 20261016 evidence; no new acquisition or current-version claim",
+  "review_state": "FAIL",
+  "scientific_staging": "BLOCKED",
+  "exact_release_certification": "BLOCKED",
+  "production_eligible": 0,
+  "activated": 0,
+  "geometry_engine": {
+    "name": "Shapely",
+    "version": "2.2.0"
+  },
+  "pull_request": "https://github.com/jotaele44/spiderweb-pr/pull/419"
+}

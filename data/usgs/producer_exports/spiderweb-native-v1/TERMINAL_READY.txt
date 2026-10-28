@@ -1,0 +1,4 @@
+USGS documentary reference test export. Production and activation BLOCKED.
+From thehub-pr root: python -m hub validate-package /absolute/path/to/this/package
+Do not add this package to live aggregation. Native geometry stays in attributes; no canonical locations emitted.
+Timestamps describe source retrieval, not geological events. Domain confidence is unassessed.

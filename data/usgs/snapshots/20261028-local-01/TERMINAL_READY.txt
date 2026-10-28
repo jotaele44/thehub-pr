@@ -1,0 +1,5 @@
+USGS controlled facet snapshot. BYTE evidence only; activation BLOCKED.
+Use the same plan, directory and snapshot ID to reuse all frozen attempts.
+Failed observations are not retried under the same snapshot ID.
+No response body may exceed the 1 MiB aggregate budget.
+Do not infer source absence from HTTP, redirect, timeout or checksum failure.

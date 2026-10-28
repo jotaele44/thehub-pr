@@ -1,5 +1,11 @@
 # thehub-pr — PRII Federation Hub
 
+The staged [USGS Puerto Rico catalog](docs/federation/USGS_PR_CATALOG.md) registers
+174 releases with proposed federation consumers and frozen acquisition receipts.
+Open Records → USGS Catalog to search and inspect them. Payload activation is
+blocked pending live asset verification. Root `TERMINAL_READY.txt` supplies
+installation, execution, integrity checks and scoped validation instructions.
+
 `thehub-pr` is the central control-plane and aggregation node for the Puerto Rico Integrated Intelligence (PRII) federation.
 
 The Hub does not own domain data collection. It discovers producer repositories, validates their manifests and export packages, aggregates canonical streams, and derives cross-producer relationships from normalized names, external identifiers, locations, dates, source lineage, and confidence metadata.
@@ -202,3 +208,21 @@ TheHub is the federation control plane, validation authority, evidence explorer,
 
 **Current vector:** close persisted materialization, authenticated role E2E where required, final desktop rendered evidence, hosting/publish blockers, producer-consumer receipts, and downstream release freeze. Federation certification requires frozen producer inputs, explicit inclusion/exclusion, validated IDs, closed package and ingest arithmetic, contradiction/supersession preservation, positive/negative regressions, reproducible outputs, and zero material unresolved residue within the declared federation scope.
 <!-- PROJECT-OPERATING-CONTRACT:END -->
+
+USGS frozen source review now records cross-format conflicts and blocks scientific
+staging and exact-release certification; see [catalog evidence](docs/federation/USGS_PR_CATALOG.md).
+
+The USGS evidence inspector includes 14 legacy top-level file manifestations
+of the reviewed NSHM release; source-axis and identity conflicts still block activation.
+
+Recursive USGS metadata audit also records 850 facet and 3,136 distribution
+references; mirror identity and nested payload verification remain OPEN.
+
+USGS facet acquisition now has an explicit bounded-snapshot maintenance command;
+ordinary CI reuses frozen sources. HTTP/redirect/checksum failures remain blocked
+and never establish source absence or dataset readiness.
+
+The independent 2026-10-28 facet snapshot verifies all 16 planned components
+(378,473 bytes) offline against source checksums. This is a bounded BYTE gate;
+scientific staging and activation remain BLOCKED. Local HTTP 403 receipts remain
+preserved separately. Root TERMINAL_READY.txt includes replay and refusal checks.

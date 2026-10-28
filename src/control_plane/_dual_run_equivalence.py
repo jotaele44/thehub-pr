@@ -93,17 +93,17 @@ def compare_values(left: Any, right: Any, rule: Mapping[str, Any]) -> Tuple[bool
     if comparator == "SET_EQUAL":
         if not isinstance(left, list) or not isinstance(right, list):
             raise DualRunReadinessError("set comparator requires arrays")
-        lv = sorted(sha256_json(item) for item in left)
-        rv = sorted(sha256_json(item) for item in right)
-        return lv == rv, {"left_normalized": lv, "right_normalized": rv}
+        left_set = sorted(sha256_json(item) for item in left)
+        right_set = sorted(sha256_json(item) for item in right)
+        return left_set == right_set, {"left_normalized": left_set, "right_normalized": right_set}
     tolerance = numeric(parameters.get("tolerance"), "tolerance")
     if comparator == "NUMERIC_ABSOLUTE_TOLERANCE":
         delta = abs(numeric(left, "left") - numeric(right, "right"))
         return delta <= tolerance, {"delta": delta, "tolerance": tolerance}
     if comparator == "NUMERIC_RELATIVE_TOLERANCE":
-        lv, rv = numeric(left, "left"), numeric(right, "right")
-        denominator = max(abs(lv), abs(rv), 1e-15)
-        delta = abs(lv - rv) / denominator
+        left_number, right_number = numeric(left, "left"), numeric(right, "right")
+        denominator = max(abs(left_number), abs(right_number), 1e-15)
+        delta = abs(left_number - right_number) / denominator
         return delta <= tolerance, {"relative_delta": delta, "tolerance": tolerance}
     if comparator == "TIMESTAMP_TOLERANCE":
         delta = abs(_parse_timestamp(left) - _parse_timestamp(right))

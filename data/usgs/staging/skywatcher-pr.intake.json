@@ -1,0 +1,41 @@
+{
+  "contract": "prii.usgs-producer-intake-staging/v1",
+  "program_id": "skywatcher-pr",
+  "repository": "jotaele44/skywatcher-pr",
+  "role": "airspace_intelligence_node",
+  "repository_binding_state": "PASS",
+  "consumer_fitness_state": "OPEN",
+  "producer_contract_blob": "9d0850ab2103552d33edacd1c8d421091d52584f",
+  "source_archive_sha256": "b8fed761b822c9287a6423e9ca9ad4df5d49453e57dffb727d40568873459b72",
+  "release_ids": [],
+  "candidate_assets": [],
+  "payload_states": {
+    "PASS": 0,
+    "FAIL": 0,
+    "BLOCKED": 0
+  },
+  "upstream_readiness_raw": {
+    "ready_for_hub_discovery": true,
+    "ready_for_hub_live_execution": false,
+    "blocking_conditions": [
+      "scaled bounded non-synthetic bbox/icon proof package exists (3 reviewed visible-icon screenshots with approximate capture geometry), but full live observation export remains blocked pending media identity reconciliation and completed capture-geometry review",
+      "canonical export adapter (scripts/federation_export.py) projects observations->entities/sources/relationships; production live readiness remains blocked until the reviewed non-synthetic corpus is materially complete and unresolved media identities are adjudicated",
+      "external imagery acquisition and production model execution are pending migration to TheHub under ADR 0006; the existing local imagery MCP and direct-provider vision path are deprecated but retained until parity, dual-run, rollback, GUI and retirement gates pass",
+      "FR24 ingest pipeline is now in-tree (fr24/); ILAP intake still requires FlightRadar24 screenshot/track inputs supplied locally (external data gap)"
+    ]
+  },
+  "export_command_reference": "python3 scripts/federation_export.py --mode test",
+  "stage": "REFERENCE_INTAKE_ONLY",
+  "canonical_streams_emitted": false,
+  "production_export_state": "BLOCKED",
+  "activation_state": "BLOCKED",
+  "open_gates": [
+    "consumer_fitness",
+    "schema_and_units",
+    "PR_coverage",
+    "geometry_CRS_Z_M",
+    "version_lineage",
+    "usage_constraints",
+    "producer_adapter_and_contract_validation"
+  ]
+}

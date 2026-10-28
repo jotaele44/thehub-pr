@@ -23,6 +23,7 @@ const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 const Programs = lazy(() => import('@/pages/Programs'));
 const Cases = lazy(() => import('@/pages/Cases'));
 const Sources = lazy(() => import('@/pages/Sources'));
+const UsgsCatalog = lazy(() => import('@/pages/UsgsCatalog'));
 const Tasks = lazy(() => import('@/pages/Tasks'));
 const Gates = lazy(() => import('@/pages/Gates'));
 const Integrations = lazy(() => import('@/pages/Integrations'));
@@ -97,6 +98,7 @@ const AppRoutes = () => {
             <Route path="/operations" element={<Operations />} />
             <Route path="/cases" element={<Cases />} />
             <Route path="/sources" element={<Sources />} />
+            <Route path="/usgs-catalog" element={<UsgsCatalog />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/gates" element={<Gates />} />
             <Route path="/integrations" element={<Integrations />} />

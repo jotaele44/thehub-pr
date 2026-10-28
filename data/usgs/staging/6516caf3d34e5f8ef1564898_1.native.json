@@ -1,0 +1,401 @@
+{
+  "contract": "prii.usgs-native-feature-staging/v1",
+  "verification": {
+    "state": "PASS",
+    "bytes": 3909,
+    "sha256": "c84b261975627547ca4a6d28b57c83d928b23bd851e2273886a0aafa1929dfa0",
+    "source_checksum_type": "md5",
+    "source_checksum_value": "ad31c5aed7554a9c2c783b9bdd2c46e2",
+    "meaning": "BYTE integrity only; semantic and activation gates remain OPEN"
+  },
+  "source_key": "PolyID",
+  "source_keys": [
+    "FP1",
+    "FP4",
+    "FP6",
+    "FP5",
+    "FP3",
+    "FP2"
+  ],
+  "feature_count": 6,
+  "native_feature_collection": {
+    "type": "FeatureCollection",
+    "name": "NSHM2025_FaultPolygons_PRVI_v0",
+    "crs": {
+      "type": "name",
+      "properties": {
+        "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+      }
+    },
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "id": null,
+          "PolyID": "FP1",
+          "FZ_Name": "Cerro Goden",
+          "CountryTer": "PR",
+          "FaultDip": 50,
+          "DipDir": 180,
+          "Rake": -135,
+          "UpDep": 0,
+          "LowerDep": 15
+        },
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  -67.24186980060963,
+                  18.311986720283226
+                ],
+                [
+                  -67.154450764236,
+                  18.311986720283226
+                ],
+                [
+                  -67.09543679290255,
+                  18.31174184903288
+                ],
+                [
+                  -67.09480603194024,
+                  18.28233498989533
+                ],
+                [
+                  -67.16391641423238,
+                  18.28496609582016
+                ],
+                [
+                  -67.24127092842231,
+                  18.287597201744987
+                ],
+                [
+                  -67.24186980060963,
+                  18.311986720283226
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": null,
+          "PolyID": "FP4",
+          "FZ_Name": "Anegada Passage SW",
+          "CountryTer": "Offshore",
+          "FaultDip": 50,
+          "DipDir": 315,
+          "Rake": -45,
+          "UpDep": 0,
+          "LowerDep": 15
+        },
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  -65.95878567255967,
+                  17.936642987021855
+                ],
+                [
+                  -65.54858558286273,
+                  18.03919300944609
+                ],
+                [
+                  -64.99980438178169,
+                  18.183317365285557
+                ],
+                [
+                  -64.62607653844897,
+                  18.253354291213135
+                ],
+                [
+                  -64.45006845386293,
+                  18.09140571243818
+                ],
+                [
+                  -64.34918907491986,
+                  17.95970207881807
+                ],
+                [
+                  -64.2703539151739,
+                  17.85736118228429
+                ],
+                [
+                  -65.23816389336234,
+                  17.556930741829415
+                ],
+                [
+                  -65.81743293894789,
+                  17.584646964106238
+                ],
+                [
+                  -65.91578076692507,
+                  17.774726343703758
+                ],
+                [
+                  -65.95878567255967,
+                  17.936642987021855
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": null,
+          "PolyID": "FP6",
+          "FZ_Name": "SW Puerto Rico",
+          "CountryTer": "PR/Offshore",
+          "FaultDip": 50,
+          "DipDir": null,
+          "Rake": -45,
+          "UpDep": 0,
+          "LowerDep": 15
+        },
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  -66.91694598215562,
+                  17.897612806642886
+                ],
+                [
+                  -66.91843327139443,
+                  17.923640368322097
+                ],
+                [
+                  -66.91917691601384,
+                  17.974580024751415
+                ],
+                [
+                  -66.69757081943082,
+                  17.97978553708726
+                ],
+                [
+                  -66.69195424827313,
+                  17.869816671588616
+                ],
+                [
+                  -66.91545869291681,
+                  17.866751554937533
+                ],
+                [
+                  -66.91694598215562,
+                  17.897612806642886
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": null,
+          "PolyID": "FP5",
+          "FZ_Name": "Anegada Passage NE",
+          "CountryTer": "Offshore",
+          "FaultDip": 50,
+          "DipDir": 135,
+          "Rake": -45,
+          "UpDep": 0,
+          "LowerDep": 15
+        },
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  -64.62730791825594,
+                  18.253933600735337
+                ],
+                [
+                  -63.800531582546455,
+                  18.93124079971845
+                ],
+                [
+                  -63.08237458838737,
+                  19.387639637127965
+                ],
+                [
+                  -62.54543477967029,
+                  19.038628761461865
+                ],
+                [
+                  -62.94458383338617,
+                  18.704388049765814
+                ],
+                [
+                  -63.86093731102713,
+                  18.159389824687647
+                ],
+                [
+                  -64.27002678449925,
+                  17.854619392419043
+                ],
+                [
+                  -64.45157110061592,
+                  18.092272348598012
+                ],
+                [
+                  -64.62730791825594,
+                  18.253933600735337
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": null,
+          "PolyID": "FP3",
+          "FZ_Name": "Mona Passage NE",
+          "CountryTer": "Offshore",
+          "FaultDip": 50,
+          "DipDir": 45,
+          "Rake": -90,
+          "UpDep": 0,
+          "LowerDep": 15
+        },
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  -67.81901937981569,
+                  18.416461489032482
+                ],
+                [
+                  -67.82462378975697,
+                  18.466901178504013
+                ],
+                [
+                  -67.58503526476719,
+                  18.632231271771815
+                ],
+                [
+                  -67.47715037339752,
+                  18.536956302770033
+                ],
+                [
+                  -67.56822203494335,
+                  18.385637234355436
+                ],
+                [
+                  -67.60324959707636,
+                  18.3281920324573
+                ],
+                [
+                  -67.67050251637173,
+                  18.32959313494262
+                ],
+                [
+                  -67.73495323069646,
+                  18.350609672222426
+                ],
+                [
+                  -67.81901937981569,
+                  18.416461489032482
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": {
+          "id": null,
+          "PolyID": "FP2",
+          "FZ_Name": "Mayaguez Bay",
+          "CountryTer": "PR",
+          "FaultDip": 50,
+          "DipDir": 180,
+          "Rake": -90,
+          "UpDep": 0,
+          "LowerDep": 15
+        },
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  -67.26424925349913,
+                  18.252954307068087
+                ],
+                [
+                  -67.18917503111071,
+                  18.233308716162707
+                ],
+                [
+                  -67.18864880992575,
+                  18.19752567558505
+                ],
+                [
+                  -67.26442466056078,
+                  18.22594161957319
+                ],
+                [
+                  -67.26424925349913,
+                  18.252954307068087
+                ]
+              ]
+            ]
+          ]
+        }
+      }
+    ]
+  },
+  "adapter_state": "PASS",
+  "spatial_state": "UNRESOLVED",
+  "semantic_state": "OPEN",
+  "activation_state": "BLOCKED",
+  "production_export_state": "BLOCKED",
+  "asset_id": "6516caf3d34e5f8ef1564898:1",
+  "root_release_ids": [
+    "64a85bf3d34e70357a27ddd5"
+  ],
+  "source_descriptor_raw": {
+    "cuid": null,
+    "key": null,
+    "bucket": null,
+    "published": false,
+    "node": null,
+    "name": "NSHM2025_FaultPolygons_PRVI_v1.geojson",
+    "title": "",
+    "contentType": "text/plain",
+    "contentEncoding": null,
+    "pathOnDisk": "__disk__01/79/12/017912cff83902fc5385be7101db7c7c1e8b8236",
+    "processed": false,
+    "processToken": null,
+    "imageWidth": null,
+    "imageHeight": null,
+    "size": 3909,
+    "dateUploaded": "2023-09-29T13:02:40Z",
+    "originalMetadata": false,
+    "useForPreview": false,
+    "movedToS3": false,
+    "s3Object": null,
+    "checksum": {
+      "value": "ad31c5aed7554a9c2c783b9bdd2c46e2",
+      "type": "MD5"
+    },
+    "url": "https://www.sciencebase.gov/catalog/file/get/6516caf3d34e5f8ef1564898?f=__disk__01%2F79%2F12%2F017912cff83902fc5385be7101db7c7c1e8b8236",
+    "downloadUri": "https://www.sciencebase.gov/catalog/file/get/6516caf3d34e5f8ef1564898?f=__disk__01%2F79%2F12%2F017912cff83902fc5385be7101db7c7c1e8b8236",
+    "viewUri": "https://www.sciencebase.gov/catalog/file/get/6516caf3d34e5f8ef1564898?f=__disk__01%2F79%2F12%2F017912cff83902fc5385be7101db7c7c1e8b8236&allowOpen=true"
+  }
+}

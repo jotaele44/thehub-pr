@@ -1,0 +1,6 @@
+{
+  "contract": "prii.usgs-facet-snapshot/v1",
+  "snapshot_id": "20261028-local-01",
+  "plan_sha256": "5015df7976366e4de4c8bf1309650f7e86ed857f2704c680c1e85238c25ba55d",
+  "byte_budget": 1048576
+}

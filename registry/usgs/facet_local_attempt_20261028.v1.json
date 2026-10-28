@@ -1,0 +1,21 @@
+{
+  "contract": "prii.usgs-facet-attempts/v1",
+  "scope": "New local-runtime probe of sixteen previously unverified facet references",
+  "snapshot_id": "20261028-local-01",
+  "summary_path": "data/usgs/snapshots/20261028-local-01/summary.json",
+  "summary_sha256": "43e304e91e2b822a1e79ceb1e1154a65fef2dcfd45077ad36a980064766f944e",
+  "byte_states": {
+    "PASS": 0,
+    "FAIL": 0,
+    "BLOCKED": 16
+  },
+  "http_statuses": {
+    "403": 16
+  },
+  "captured_response_bytes": 343,
+  "execution_code_identity": "UNRESOLVED_PRECOMMIT_LOCAL_PROBE",
+  "cached_revalidation": "PASS_UNCHANGED_INPUTS_AND_BODIES",
+  "meaning": "Frozen local transport failures; no source absence or scientific readiness claim",
+  "activation_state": "BLOCKED",
+  "activated": 0
+}

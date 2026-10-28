@@ -1,0 +1,51 @@
+{
+  "source_url": "https://github.com/jotaele44/ovnis-pr/blob/main/federation.json",
+  "git_blob_sha": "efcd9a1b3fd20f0e3948351ca1f6757c3bd46e7b",
+  "raw_manifest": {
+    "schema_version": "repo_federation_manifest_v1",
+    "program_id": "ovnis-pr",
+    "repository_full_name": "jotaele44/ovnis-pr",
+    "repository_legacy_name": "PRUFON",
+    "federation_role": "anomaly_intelligence_node",
+    "hub_parent": "thehub-pr",
+    "branding": {
+      "icon": "assets/branding/icon.png",
+      "icon_dir": "assets/branding",
+      "accent_color": "#8a148c"
+    },
+    "jurisdiction": "Puerto Rico",
+    "active_vector": "DESIGN_OVNIS_GITHUB_CONTROL_PLANE",
+    "production_status": "PRODUCTION",
+    "pause_lock_required": true,
+    "source_truth": {
+      "case_schema": "data/schemas/case.schema.json",
+      "candidate_ledger": "data/candidates/candidate_cases.jsonl",
+      "master_ledger": "data/master/master_cases.jsonl",
+      "source_registry": "data/reference/source_registry.csv",
+      "promotion_standard": "docs/CASE_PROMOTION_STANDARD.md",
+      "intake_doctrine": "Automated ingestion writes only to the candidate ledger; master promotion occurs through reviewed PRs."
+    },
+    "hub_callable_commands": {
+      "setup": "python -m pip install -r requirements.txt",
+      "validate_ledgers": "python3 scripts/validate_case_ledgers.py",
+      "dedupe": "python3 scripts/dedupe_candidates.py",
+      "score": "python3 scripts/score_candidates.py",
+      "test_suite": "python -m pytest -q",
+      "export_canonical": "python3 scripts/federation_export.py --mode production",
+      "maintenance": "python3 scripts/run_maintenance.py --repo ovnis-pr --mode audit"
+    },
+    "canonical_outputs": {
+      "master_cases": "data/master/master_cases.jsonl",
+      "candidate_cases": "data/candidates/candidate_cases.jsonl",
+      "source_registry": "data/reference/source_registry.csv",
+      "case_schema": "data/schemas/case.schema.json",
+      "canonical_export_dir": "exports/federation",
+      "maintenance_report": "reports/maintenance/latest.json"
+    },
+    "federation_readiness_gate": {
+      "ready_for_hub_discovery": true,
+      "ready_for_hub_live_execution": true,
+      "blocking_conditions": []
+    }
+  }
+}
