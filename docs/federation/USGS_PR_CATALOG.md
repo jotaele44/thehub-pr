@@ -326,3 +326,37 @@ the offline reference audit. Duplicate members, wrong requested/returned IDs,
 baseline descriptor changes and malformed descriptors fail regression checks.
 Repeated descriptors retain separate pointer IDs; they are not deduplicated into
 canonical assets. The catalog evidence inspector exposes the corrected scope.
+
+## Controlled facet acquisition (2026-10-28)
+
+The frozen sixteen-component plan remains unchanged: 378,473 declared bytes,
+with a 1 MiB response-body cap. The new maintenance command
+`scripts/acquire_usgs_facets.py` performs one explicit new snapshot; it does not
+refresh earlier passed assets. Every attempt retains its URL, UTC, status,
+size, SHA-256, truncation state and source checksum result. A BYTE pass requires
+both the source-declared size and checksum. Redirects, timeouts and HTTP errors
+remain blocked transport observations, never evidence of source absence.
+
+The local snapshot 20261028-local-01 returned sixteen HTTP 403 observations,
+with 343 captured response bytes, zero checksum passes and zero activations.
+Its request receipts and bounded response fragments are preserved. The initial
+probe used an uncommitted implementation, so its executed-code identity remains
+UNRESOLVED; it does not support exact-release certification. Cached revalidation
+passes without new requests. Existing observations, including failures, are reused
+under the same snapshot ID. Corruption, orphan bodies, missing members of a
+completed snapshot and plan changes require recovery or a separately named new
+snapshot; they do not silently trigger refetching.
+
+Ordinary PR CI remains offline. A same-repository label event on this draft PR
+can trigger the separately scoped controlled-facet-snapshot runner job. The
+explicit label is usgs-facet-snapshot-20261028. It checks out the exact PR head,
+uses only read permissions and preserves all receipts as an Actions artifact,
+including a commit/code-hash execution receipt. Re-running a job attempt cannot
+repeat acquisition. A new label event is a new run/snapshot, not a replacement
+of prior observations. This control does not close mirror identity, CRS/axis,
+source conflicts, consumer fitness or any production activation gate.
+
+At the restored head 3634c894, USGS and GUI checks pass. The broader CI failure
+is consumer grid-authority pin drift (0c66e13 versus b8f5cf3), and the October 25
+live-provider run still reports four SIGE TLS-chain failures. Those observations
+are recorded independently; neither gate is waived by this acquisition work.

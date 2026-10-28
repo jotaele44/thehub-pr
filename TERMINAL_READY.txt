@@ -250,3 +250,21 @@ python -m pytest -q tests/test_usgs_nested_inventory.py tests/test_usgs_readines
 python scripts/inventory_usgs_nested.py --out /absolute/path/new-inventory.json.gz
 Expected script exit 0 for successful audit; metadata state OPEN, not certification.
 No network request or payload acquisition occurs. Keep prior output paths.
+
+CONTROLLED USGS FACET SNAPSHOT — 2026-10-28
+Run from a repository checkout with Python 3.9+; no third-party dependency is
+needed for this acquisition CLI itself. This is a new bounded snapshot only.
+MACOS / LINUX:
+python3 scripts/acquire_usgs_facets.py --snapshot-id <NEW_SNAPSHOT_ID> --out /absolute/path/new-facet-snapshot
+WINDOWS POWERSHELL:
+py -3 scripts/acquire_usgs_facets.py --snapshot-id <NEW_SNAPSHOT_ID> --out C:\path\new-facet-snapshot
+Expected exit 0 only for sixteen BYTE passes; exit 2 means incomplete/blocked
+acquisition. Neither result certifies scientific staging or activation.
+Target plan SHA256: 5015df7976366e4de4c8bf1309650f7e86ed857f2704c680c1e85238c25ba55d
+16 targets, 378473 declared bytes, 1048576 maximum captured response bytes.
+Reuse a complete snapshot with the same plan, snapshot ID and directory.
+Do not repeat HTTP failures or replace missing cached evidence under the same ID.
+Smoke test: python -m pytest -q tests/test_usgs_facet_snapshot.py
+Local snapshot 20261028-local-01: 16 HTTP403, 0 BYTE passes, activated=0.
+Remote controlled runner requires an explicit usgs-facet-snapshot-20261028 label
+event on the same-repository draft PR; normal synchronization stays offline.

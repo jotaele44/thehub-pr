@@ -1,0 +1,16 @@
+{
+  "reference_id": "6516c9bad34e5f8ef1564892#/facets/0/files/3",
+  "source_item_id": "6516c9bad34e5f8ef1564892",
+  "plan_sha256": "5015df7976366e4de4c8bf1309650f7e86ed857f2704c680c1e85238c25ba55d",
+  "url": "https://www.sciencebase.gov/catalog/file/get/6516c9bad34e5f8ef1564892?f=__disk__5c%2F3e%2F5e%2F5c3e5ea1e705e00f715b9501803c2bcf12ee3fac",
+  "retrieval_utc": "2026-10-28T11:46:19.828835+00:00",
+  "http_status": 403,
+  "content_type": "text/plain",
+  "error": "HTTP_403",
+  "truncated": false,
+  "byte_state": "BLOCKED",
+  "activation_state": "BLOCKED",
+  "bytes": 25,
+  "sha256": "870d84f11d07934098167265fdbe64f27821a0e5d7843d66b6a27efe8a02461b",
+  "response_file": "03.response.bin"
+}

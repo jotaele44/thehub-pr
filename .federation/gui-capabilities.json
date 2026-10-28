@@ -903,7 +903,9 @@
           "src/hub/usgs_readiness.py",
           "scripts/certify_usgs_release.py",
           "src/hub/usgs_nested_inventory.py",
-          "scripts/inventory_usgs_nested.py"
+          "scripts/inventory_usgs_nested.py",
+          "src/hub/usgs_facet_snapshot.py",
+          "scripts/acquire_usgs_facets.py"
         ],
         "endpoints": [],
         "symbols": [
@@ -931,7 +933,10 @@
           "src/hub/usgs_readiness.py:assess_usgs_readiness",
           "scripts/certify_usgs_release.py:main",
           "src/hub/usgs_nested_inventory.py:inventory_nested_files",
-          "scripts/inventory_usgs_nested.py:main"
+          "scripts/inventory_usgs_nested.py:main",
+          "src/hub/usgs_facet_snapshot.py:load_facet_plan",
+          "src/hub/usgs_facet_snapshot.py:acquire_facet_snapshot",
+          "scripts/acquire_usgs_facets.py:main"
         ]
       },
       "frontend": {
@@ -946,7 +951,8 @@
           "tests/test_usgs_continuation.py",
           "tests/test_usgs_exports.py",
           "tests/test_usgs_readiness.py",
-          "tests/test_usgs_nested_inventory.py"
+          "tests/test_usgs_nested_inventory.py",
+          "tests/test_usgs_facet_snapshot.py"
         ]
       }
     }

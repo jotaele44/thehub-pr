@@ -2,6 +2,7 @@ name: USGS frozen evidence validation
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled]
     branches: [main]
     paths:
       - "src/hub/usgs_*.py"
@@ -16,6 +17,7 @@ permissions:
 
 jobs:
   frozen-evidence:
+    if: github.event.action != 'labeled'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -29,7 +31,7 @@ jobs:
         run: |
           python scripts/verify_usgs_build.py
           python scripts/validate_usgs_exports.py
-          pytest -q tests/test_usgs_catalog.py tests/test_usgs_assets.py tests/test_usgs_continuation.py tests/test_usgs_exports.py tests/test_usgs_readiness.py tests/test_usgs_nested_inventory.py
+          pytest -q tests/test_usgs_catalog.py tests/test_usgs_assets.py tests/test_usgs_continuation.py tests/test_usgs_exports.py tests/test_usgs_readiness.py tests/test_usgs_nested_inventory.py tests/test_usgs_facet_snapshot.py
       - name: Require exact-release scientific refusal
         run: |
           set +e
@@ -40,3 +42,47 @@ jobs:
       # Acquisition ran at 38859073401. Ordinary PR synchronization must reuse
       # its frozen evidence, not repeat a 256 MiB crawl to obtain another PASS.
       # This job certifies offline checks only, never scientific readiness.
+
+  controlled-facet-snapshot:
+    if: >-
+      github.event.action == 'labeled' &&
+      github.event.label.name == 'usgs-facet-snapshot-20261028' &&
+      github.event.pull_request.number == 357 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.run_attempt == 1
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+      - name: Acquire only the frozen sixteen-component plan
+        env:
+          SNAPSHOT_ID: 20261028-gh-${{ github.run_id }}
+        run: |
+          set +e
+          python scripts/acquire_usgs_facets.py --snapshot-id "$SNAPSHOT_ID" --out "$RUNNER_TEMP/usgs-facet-snapshot"
+          status=$?
+          set -e
+          SNAPSHOT_EXIT="$status" python - <<'PYEXEC'
+          import hashlib, json, os, ssl, subprocess
+          from pathlib import Path
+          code = ['src/hub/usgs_facet_snapshot.py','src/hub/usgs_assets.py','src/hub/usgs_acquisition.py','scripts/acquire_usgs_facets.py']
+          receipt = {'commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'run_id':os.environ['GITHUB_RUN_ID'],'run_attempt':os.environ['GITHUB_RUN_ATTEMPT'],'exit_code':int(os.environ['SNAPSHOT_EXIT']),'code_sha256':{p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in code},'tls':ssl.OPENSSL_VERSION,'activation_state':'BLOCKED'}
+          out = Path(os.environ['RUNNER_TEMP']) / 'usgs-facet-snapshot'
+          out.mkdir(parents=True, exist_ok=True)
+          (out/'execution.json').write_text(json.dumps(receipt,indent=2)+'\n')
+          PYEXEC
+          exit "$status"
+      - name: Preserve every success and failure receipt
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: usgs-facet-snapshot-${{ github.run_id }}
+          path: ${{ runner.temp }}/usgs-facet-snapshot
+          if-no-files-found: error
+          retention-days: 30

@@ -217,3 +217,7 @@ of the reviewed NSHM release; source-axis and identity conflicts still block act
 
 Recursive USGS metadata audit also records 850 facet and 3,136 distribution
 references; mirror identity and nested payload verification remain OPEN.
+
+USGS facet acquisition now has an explicit bounded-snapshot maintenance command;
+ordinary CI reuses frozen sources. HTTP/redirect/checksum failures remain blocked
+and never establish source absence or dataset readiness.
