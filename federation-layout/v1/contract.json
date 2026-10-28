@@ -1,0 +1,74 @@
+{
+  "schema": "pr-federation/layout-contract/v1",
+  "version": "1.0.0-candidate.1",
+  "status": "CANDIDATE_NOT_IDENTITY",
+  "scope": {
+    "included": [
+      "shared-shell",
+      "header",
+      "sidebar",
+      "page-container",
+      "navigation",
+      "scroll-ownership",
+      "responsive-geometry"
+    ],
+    "excluded": [
+      "theme",
+      "color",
+      "font-family",
+      "branding",
+      "decoration",
+      "domain-specific-content"
+    ]
+  },
+  "viewports": [
+    320,
+    393,
+    430,
+    768,
+    1024,
+    1440
+  ],
+  "geometry": {
+    "header": {
+      "height": {
+        "mobile": 56,
+        "desktop": 64
+      }
+    },
+    "sidebar": {
+      "width": {
+        "desktop": 256
+      },
+      "mobileMode": "drawer"
+    },
+    "page": {
+      "gutter": {
+        "mobile": 16,
+        "tablet": 24,
+        "desktop": 32
+      },
+      "maxWidth": 1440
+    },
+    "navigation": {
+      "minHitTarget": 44
+    }
+  },
+  "breakpoints": {
+    "mobileMax": 767,
+    "tabletMax": 1199
+  },
+  "tolerancePx": 1,
+  "expectedConsumers": [
+    "spiderweb-pr",
+    "skywatcher-pr",
+    "ovnis-pr",
+    "aguayluz-pr",
+    "moneysweep-pr",
+    "thehub-pr",
+    "centinelas-pr"
+  ],
+  "identityPolicy": "require-exact-current-head-and-reviewed-component-role-map",
+  "certification": "WITHHELD",
+  "notes": "Proposed tokens only; never treat as measured source baseline."
+}
