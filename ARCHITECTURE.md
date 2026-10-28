@@ -125,6 +125,17 @@ them. See [`docs/federation/SEARCH_AND_ENTITY_V1.md`](docs/federation/SEARCH_AND
 keeping each date at its recorded precision and each place as the source gives it. It is
 rendered at `/timeline`. See [`docs/federation/EVENT_TIMELINE_V1.md`](docs/federation/EVENT_TIMELINE_V1.md).
 
+`GET /api/constellation` (`hub.constellation`, contract `federation-constellation-v1`) draws the
+seven apps as one graph with two lenses:
+
+- **Code:** each app's components and the CALL / HANDOFF / RESULT edges between them, declared in
+  `registry/constellation.v1.json` and checked against the repo by its tests.
+- **Content:** the records they move, with exported totals, rows stored in this Hub, lineage,
+  sample rows and synthetic correlation candidates.
+
+It is rendered at `/constellation` as an animated stage tour. See
+[`docs/federation/CONSTELLATION_V1.md`](docs/federation/CONSTELLATION_V1.md).
+
 `GET /api/research` (`hub.research_composition`, contract `federation-research-v1`) serves the
 research record OVNIS curates and exports as typed entity rows:
 

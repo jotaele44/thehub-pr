@@ -119,6 +119,13 @@ def test_projections_agree_with_ingest():
     assert set(spec) - set(expected) == {ingest._CROSSOVER_COLLECTION, "ContinuityRisks", "LiveFeedItems"}
 
 
+def test_the_doc_names_every_stage():
+    doc = (ROOT / "docs" / "federation" / "CONSTELLATION_V1.md").read_text(encoding="utf-8")
+    for stage in SPEC["stages"]:
+        assert f"{stage['title']['lead']} {stage['title']['accent']}" in doc, stage["id"]
+        assert stage["subtitle_es"] in doc, stage["id"]
+
+
 # ── validation rejects inconsistent specs ────────────────────────────────────
 
 def test_rejects_a_call_across_apps():

@@ -2025,6 +2025,33 @@
         "server/frontend/src/components/gis/InterpretiveLayers.jsx:125",
         "server/frontend/src/lib/download.js"
       ]
+    },
+    {
+      "pattern": "server/frontend/src/components/constellation/ConstellationControls\\.jsx:[0-9]+:(Zoom in|Zoom out|Fit the stage in view)$",
+      "classification": "CLIENT_STATE",
+      "rationale": "Constellation view controls: they move the canvas camera (zoom about the centre, or refit the stage) through the canvas handle and perform no backend request.",
+      "evidence": [
+        "server/frontend/src/components/constellation/ConstellationControls.jsx:62",
+        "server/frontend/src/pages/FederationConstellation.test.jsx:164"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/constellation/NodeDetails\\.jsx:[0-9]+:unlabeled-control$",
+      "classification": "CLIENT_STATE",
+      "rationale": "A connection in the constellation details panel; its visible label is the connected node's name, and it selects that node in the page's tour state without a backend request.",
+      "evidence": [
+        "server/frontend/src/components/constellation/NodeDetails.jsx:59",
+        "server/frontend/src/pages/FederationConstellation.test.jsx:113"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/constellation/NodeDetails\\.jsx:[0-9]+:Provenance$",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "Each constellation sample record links to its Evidence Object route (/evidence/{collection}/{id}), whose data comes from GET /api/evidence.",
+      "evidence": [
+        "server/frontend/src/components/constellation/NodeDetails.jsx:121",
+        "server/frontend/tests/visual/gui-parity.spec.js:503"
+      ]
     }
   ],
   "state_claims": [

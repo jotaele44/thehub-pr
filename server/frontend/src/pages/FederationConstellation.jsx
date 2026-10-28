@@ -93,6 +93,7 @@ function ConstellationView({ model, layout, reducedMotion }) {
       '=': () => canvas?.zoomBy(1.25),
       '-': () => canvas?.zoomBy(0.8),
       f: () => canvas?.fit(),
+      F: () => canvas?.fit(),
       Escape: () => dispatch({ type: 'CLEAR_SELECTION' }),
     };
     const run = keys[event.key];

@@ -110,7 +110,10 @@ describe('FederationConstellation', () => {
     const details = document.querySelector('[data-constellation-details="thehub.aggregate"]');
     expect(details).toHaveTextContent('Unions validated rows.');
     expect(within(details).getByText('CALL')).toBeInTheDocument();
-    fireEvent.click(within(details).getByRole('button', { name: /observations/ }));
+    fireEvent.click(within(details).getByRole('button', { name: 'fetch_all' }));
+    expect(document.querySelector('[data-constellation-details="thehub.fetch"]')).toBeInTheDocument();
+    fireEvent.click(within(document.querySelector('[data-constellation-details]')).getByRole('button', { name: 'aggregate' }));
+    fireEvent.click(within(document.querySelector('[data-constellation-details]')).getByRole('button', { name: /observations/ }));
     expect(screen.getByRole('img')).toHaveAttribute('data-lens', 'content');
     const stream = document.querySelector('[data-constellation-details="content:thehub:stream:observations"]');
     expect(stream).toHaveTextContent('572');
