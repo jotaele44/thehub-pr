@@ -1,0 +1,98 @@
+{
+  "schema": "federation-layout/spiderweb-module-traversal/v1",
+  "source": {
+    "repo": "jotaele44/spiderweb-pr",
+    "commit": "b8f5cf303ab7fc2b6ed006edce0fb12e1344a096"
+  },
+  "status": "PARTIAL_DISCOVERY",
+  "modules": [
+    {
+      "module": "CommandCenter",
+      "blobSha": "0d07494bbf6902011e5b6dd912fa445f1c2df854",
+      "children": [
+        "Card",
+        "AnomalyCard",
+        "ProgramTimeline"
+      ]
+    },
+    {
+      "module": "FinanceIntelligence",
+      "blobSha": "7a5f88269e6613bb172e58e6a563ed86c8b2d693",
+      "children": [
+        "Card",
+        "TanStack Table"
+      ]
+    },
+    {
+      "module": "SpatialIntelligence",
+      "blobSha": "818a47b215a1a05e08c93909a57c184e17785968",
+      "children": [
+        "SpatialToolsPanel",
+        "MapLibre",
+        "spatial runtime"
+      ]
+    },
+    {
+      "module": "AnomalyWorkbench",
+      "blobSha": "a181db164da0620280470c19d09ae317b0aa9e4c",
+      "children": [
+        "AnomalyCard"
+      ]
+    },
+    {
+      "module": "InvestigationGraph",
+      "blobSha": "aae7a2c520a72a12d6680c3bd2ca69e983bf5740",
+      "children": [
+        "graph"
+      ]
+    },
+    {
+      "module": "QueryLayer",
+      "blobSha": "a30fc58993d79ab75b262fb31e014c2956b6e88c",
+      "children": [
+        "query results",
+        "Badges"
+      ]
+    }
+  ],
+  "examinedSharedChildren": [
+    {
+      "name": "Card",
+      "blobSha": "65a25cce9a4167c4ddc7ae966cddaaacb0d997c8"
+    },
+    {
+      "name": "AnomalyCard",
+      "blobSha": "961e322effceefdca4ab35bfe70a41079e1ef04e"
+    },
+    {
+      "name": "ProgramTimeline",
+      "blobSha": "959517b82eefcd93c947d90893dd5b3f13b6ba93"
+    },
+    {
+      "name": "SpatialToolsPanel",
+      "blobSha": "49d7846d55071c62d9008b3024e08f2b50c7e1f2"
+    },
+    {
+      "name": "RailSection",
+      "blobSha": "46414c95e861a4104c6fb1a54415fe72252d1179"
+    }
+  ],
+  "equivalenceCandidates": [
+    "Card",
+    "AnomalyCard",
+    "Badges",
+    "navigation",
+    "timeline",
+    "table",
+    "query"
+  ],
+  "unresolved": [
+    "recursive import tree not exhausted",
+    "CSS selectors and computed DOM geometry unverified",
+    "runtime state variants unenumerated",
+    "cross-project behavioral equivalence not adjudicated",
+    "source file universe denominator not computed"
+  ],
+  "approval": "WITHHELD",
+  "floot": "LOCKED"
+}
