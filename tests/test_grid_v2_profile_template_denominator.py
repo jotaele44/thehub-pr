@@ -21,7 +21,7 @@ def test_profile_template_denominator_matches_canonical_bytes():
     d = json.loads(DENOMINATOR.read_text(encoding="utf-8"))
     assert d["State"] == "FROZEN_TEMPLATE_GENERATION"
     assert d["Authority_Repository"] == "jotaele44/thehub-pr"
-    assert d["Authority_Commit"] == "befacc8432f1849a586f036fda8bf133f7374e2d"
+    assert d["Authority_Commit"] == "d7716d00c0ab40a79cee06e192508924ef17d9eb"
     assert d["Profile_Schema_Version"] == "pr-grid-v2-cell-profile/1.2"
     assert d["Producer_Count"] == 5
     assert d["Geometry_Producer"] == "spiderweb-pr"
