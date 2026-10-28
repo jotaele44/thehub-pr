@@ -1,0 +1,71 @@
+{
+  "schema": "federation-layout/source-baseline/v1",
+  "observedDate": "2026-10-28",
+  "branch": "main",
+  "status": "PROVISIONAL",
+  "scope": "Observed GitHub commits verified by fetch_commit; not exhaustive tree or byte snapshot; not necessarily current at later time.",
+  "sourceHeads": {
+    "spiderweb-pr": {
+      "fullSha": "b8f5cf303ab7fc2b6ed006edce0fb12e1344a096",
+      "repository": "jotaele44/spiderweb-pr",
+      "commitUrl": "https://github.com/jotaele44/spiderweb-pr/commit/b8f5cf303ab7fc2b6ed006edce0fb12e1344a096",
+      "verifiedBy": "GitHub fetch_commit",
+      "sourceTreeManifest": "OPEN"
+    },
+    "skywatcher-pr": {
+      "fullSha": "960a8348a040d9d809f694ad6d961034e9977465",
+      "repository": "jotaele44/skywatcher-pr",
+      "commitUrl": "https://github.com/jotaele44/skywatcher-pr/commit/960a8348a040d9d809f694ad6d961034e9977465",
+      "verifiedBy": "GitHub fetch_commit",
+      "sourceTreeManifest": "OPEN"
+    },
+    "ovnis-pr": {
+      "fullSha": "5011c8a70435f6effd9a47615f057c546a7c9d98",
+      "repository": "jotaele44/ovnis-pr",
+      "commitUrl": "https://github.com/jotaele44/ovnis-pr/commit/5011c8a70435f6effd9a47615f057c546a7c9d98",
+      "verifiedBy": "GitHub fetch_commit",
+      "sourceTreeManifest": "OPEN"
+    },
+    "aguayluz-pr": {
+      "fullSha": "db84c8ae45b91e21395f4ac781c8567c7631a513",
+      "repository": "jotaele44/aguayluz-pr",
+      "commitUrl": "https://github.com/jotaele44/aguayluz-pr/commit/db84c8ae45b91e21395f4ac781c8567c7631a513",
+      "verifiedBy": "GitHub fetch_commit",
+      "sourceTreeManifest": "OPEN"
+    },
+    "moneysweep-pr": {
+      "fullSha": "81a9190f9c5c0bd1ba8297d0a8b36809439c4977",
+      "repository": "jotaele44/moneysweep-pr",
+      "commitUrl": "https://github.com/jotaele44/moneysweep-pr/commit/81a9190f9c5c0bd1ba8297d0a8b36809439c4977",
+      "verifiedBy": "GitHub fetch_commit",
+      "sourceTreeManifest": "OPEN"
+    },
+    "thehub-pr": {
+      "fullSha": "9adf06d31ddffef1010d3d6461373ca3300f48be",
+      "repository": "jotaele44/thehub-pr",
+      "commitUrl": "https://github.com/jotaele44/thehub-pr/commit/9adf06d31ddffef1010d3d6461373ca3300f48be",
+      "verifiedBy": "GitHub fetch_commit",
+      "sourceTreeManifest": "OPEN"
+    },
+    "centinelas-pr": {
+      "fullSha": "e744c2ddf7b0130444f68fc9dcb4cc43be37015d",
+      "repository": "jotaele44/centinelas-pr",
+      "commitUrl": "https://github.com/jotaele44/centinelas-pr/commit/e744c2ddf7b0130444f68fc9dcb4cc43be37015d",
+      "verifiedBy": "GitHub fetch_commit",
+      "sourceTreeManifest": "OPEN"
+    }
+  },
+  "certificationGates": {
+    "sourceRevisionExistence": "PASS",
+    "treeManifest": "OPEN",
+    "routeDenominators": "OPEN",
+    "componentDenominators": "OPEN",
+    "renderedGeometry": "OPEN",
+    "equivalenceReview": "OPEN",
+    "individualStrategies": "PROVISIONAL",
+    "collectiveContract": "PROVISIONAL",
+    "independentReview": "NOT_PERFORMED",
+    "flootAuthorization": "DENY"
+  },
+  "warning": "Do not automatically reuse previously observed file blobs as exact-current-head source evidence. AguaYLuz source advanced during prior inspections."
+}
