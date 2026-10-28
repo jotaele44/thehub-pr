@@ -43,8 +43,7 @@
       "subtitle_es": "Ancla financiera · MoneySweep",
       "apps": ["moneysweep"],
       "summary": "MoneySweep reads the Centinelas drops it cares about, places each one on a Puerto Rico municipality, and emits pre-official located finance candidates.",
-      "code_focus_extra": ["centinelas.dispatch"],
-      "content_focus": ["content:moneysweep:*", "content:seam:intake-drops"]
+      "content_focus": ["content:moneysweep:*"]
     },
     {
       "id": "spatial-scoring",
@@ -68,7 +67,6 @@
       "subtitle_es": "Paquetes canónicos hacia TheHub",
       "apps": ["centinelas", "moneysweep", "spiderweb", "ovnis", "aguayluz", "skywatcher"],
       "summary": "Each producer writes a canonical package (sources, entities, relationships and more, plus a sha256 manifest). Packages are the only way content reaches the Hub.",
-      "code_focus_extra": ["thehub.fetch"],
       "content_focus": ["content:centinelas:*", "content:moneysweep:*", "content:spiderweb:*", "content:ovnis:*", "content:aguayluz:*", "content:skywatcher:*", "content:thehub:stream:*"]
     },
     {
@@ -85,7 +83,7 @@
       "subtitle_es": "Correlación entre productores",
       "apps": ["thehub"],
       "summary": "Six strategies link rows from disjoint producers: shared name, shared external id, spatial proximity, temporal proximity, alert footprints and observation footprints. Every link is a candidate.",
-      "content_focus": ["content:thehub:correlation:*", "content:thehub:stream:entities", "content:thehub:stream:alerts", "content:thehub:stream:observations"]
+      "content_focus": ["content:thehub:correlation:*"]
     },
     {
       "id": "ingest-serve",

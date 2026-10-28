@@ -115,9 +115,6 @@ def validate_spec(spec: Mapping[str, Any]) -> None:
             _require(bool(cites.get("doc") and cites.get("mentions")), f"{cid}: a sibling-repo component must cite a Hub doc")
         for pattern in comp.get("produces", []):
             _require(pattern.startswith("content:"), f"{cid}: produces must name content ids")
-    for stage in spec["stages"]:
-        for cid in stage.get("code_focus_extra", []):
-            _require(cid in components, f"stage {stage['id']}: unknown component {cid}")
 
     for edge in spec["code_edges"]:
         src, dst = components.get(edge["from"]), components.get(edge["to"])
@@ -407,7 +404,6 @@ def _focus(stage: Mapping[str, Any], homes: Mapping[str, str], code_nodes: Seque
     if stage.get("overview"):
         return {"code": [n["id"] for n in code_nodes], "content": [n["id"] for n in content_nodes]}
     code = anchors + [n["id"] for n in code_nodes if n["kind"] != "app" and n["stage"] == stage["id"]]
-    code += [c for c in stage.get("code_focus_extra", []) if c not in code]
     content = anchors + [n["id"] for n in content_nodes
                          if n["kind"] != "app" and _matches(n["id"], stage["content_focus"])]
     return {"code": code, "content": content}

@@ -222,7 +222,8 @@ def test_stage_focus_covers_its_apps_and_patterns():
     domain = stages["domain-producers"]["focus"]
     assert {"app:ovnis", "app:aguayluz", "app:skywatcher"} <= set(domain["code"])
     assert {"content:aguayluz:entities", "content:aguayluz:alerts", "content:ovnis:entities"} <= set(domain["content"])
-    assert "thehub.fetch" in stages["canonical-exports"]["focus"]["code"]
+    assert "thehub.fetch" not in stages["canonical-exports"]["focus"]["code"]  # handoffs arrive from off-screen
+    assert "app:thehub" not in stages["correlation"]["focus"]["code"]  # the anchor lives at hub-aggregate
     overview = stages["federation"]
     assert overview["overview"] is True
     assert len(overview["focus"]["code"]) == len(SPEC["components"]) + len(SPEC["apps"])
