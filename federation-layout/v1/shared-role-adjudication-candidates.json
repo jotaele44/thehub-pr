@@ -1,0 +1,83 @@
+{
+  "schema": "federation-layout/shared-role-adjudication/v1",
+  "status": "CANDIDATE_NOT_IDENTITY",
+  "sourceBaseline": "federation-layout/v1/source-baseline-2026-10-28.json",
+  "review": "OPEN",
+  "rules": {
+    "canonicalIdentity": "authoritative function+interaction evidence; name alone never sufficient",
+    "structuralParity": "exact same rules for proven equivalent functions",
+    "projectStyles": "isolated",
+    "unresolved": "fail closed"
+  },
+  "cases": [
+    {
+      "role": "navigation-shell",
+      "candidates": [
+        {
+          "repo": "spiderweb-pr",
+          "path": "server/frontend/src/components/LeftRail.tsx",
+          "blob": "936afda3bf8a317abf87a1a5bb0745af13c3b2bd"
+        },
+        {
+          "repo": "centinelas-pr",
+          "path": "frontend/src/zip-design/AppShell.jsx"
+        },
+        {
+          "repo": "thehub-pr",
+          "path": "server/frontend/src/components/layout/Sidebar.jsx"
+        }
+      ],
+      "classification": "UNRESOLVED",
+      "reason": "workbench module navigation versus multi-route sidebar; interaction parity not proven"
+    },
+    {
+      "role": "evidence-badge",
+      "candidates": [
+        {
+          "repo": "spiderweb-pr",
+          "path": "server/frontend/src/components/Badges.tsx",
+          "blob": "06b1d8c17b16687901a6f8be541a46d61361d7b2"
+        },
+        {
+          "repo": "thehub-pr",
+          "path": "federation-design/packages/react/src/index.jsx"
+        }
+      ],
+      "classification": "UNRESOLVED",
+      "reason": "semantic thresholds, state vocabularies and presentation geometry need independent reconciliation"
+    },
+    {
+      "role": "right-inspector",
+      "candidates": [
+        {
+          "repo": "spiderweb-pr",
+          "path": "server/frontend/src/components/InspectorShell.tsx",
+          "blob": "956f1ad6db1cfe8c8683085bc5fc3dd7b947beec"
+        }
+      ],
+      "classification": "DOMAIN_VARIANT_CANDIDATE",
+      "reason": "specific multi-pane workbench role, not automatically common sidebar"
+    },
+    {
+      "role": "entity-link-list",
+      "candidates": [
+        {
+          "repo": "spiderweb-pr",
+          "path": "server/frontend/src/components/EntityLinkList.tsx",
+          "blob": "60912a0ec58b8300414dc5f1273c122b3afec3b7"
+        }
+      ],
+      "classification": "DISCOVERY_ONLY",
+      "reason": "potential shared card/link function; peer implementations not exhaustively inventoried"
+    }
+  ],
+  "regressions": [
+    "equal names with different behavior must not merge",
+    "different names with authoritative equivalent behavior must merge",
+    "tied evidence remains UNRESOLVED",
+    "variant does not imply equivalent shell",
+    "any missing roles/viewport/state blocks certification"
+  ],
+  "approval": "WITHHELD",
+  "floot": "LOCKED"
+}
