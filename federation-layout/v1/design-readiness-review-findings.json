@@ -1,0 +1,56 @@
+{
+  "schema": "federation-layout/independent-design-readiness-review/v1",
+  "status": "AUDIT_ONLY",
+  "date": "2026-10-28",
+  "reviewer": "source-separation check, not an independently qualified reviewer",
+  "pinnedSource": {
+    "repo": "jotaele44/thehub-pr",
+    "commit": "9adf06d31ddffef1010d3d6461373ca3300f48be"
+  },
+  "inspected": [
+    {
+      "path": "scripts/check_gui_parity.py",
+      "blob": "0ba04b791d7951faaed062bbf1727b875b7aaaa9",
+      "finding": "Existing broad capability parity checker supports no-new-debt ratchet and bidirectional GUI capability validation; does not establish DOM layout geometry."
+    },
+    {
+      "path": ".federation/gui-parity-baseline.json",
+      "blob": "6592020df34ab3319442b8a232c33ad5b3b3efc0",
+      "finding": "Historical candidate_count=1181 including backend and analysis modules; not layout component denominator."
+    },
+    {
+      "path": "docs/adr/0007-isolated-clone-shared-package-pins.md",
+      "blob": "018e05e4af77c470ad56ccf8f0498fca3b588909",
+      "finding": "Accepted isolation rule requires application install/test/build/package from isolated checkout and immutable shared-package pin."
+    }
+  ],
+  "adjudications": [
+    {
+      "classification": "SCOPE",
+      "result": "GUI capability parity does not imply geometric parity"
+    },
+    {
+      "classification": "COUNT",
+      "result": "1181 candidate_count does not equal layout component count"
+    },
+    {
+      "classification": "COMPATIBILITY",
+      "result": "Cross-repo layout governance must honor isolated checkout and immutable package revisions"
+    }
+  ],
+  "positiveNegativeTests": [
+    "positive: identical contract + same role/state/viewport => no geometry drift",
+    "negative: UI capability PASS but sidebar width differs => geometry FAIL",
+    "negative: name-only role match => UNRESOLVED",
+    "negative: shared package fetched from sibling mutable path => FAIL",
+    "negative: absent route denominator => BLOCKED"
+  ],
+  "blockers": [
+    "no complete 7-way pinned source tree inventory",
+    "no fully adjudicated N:N shared role mapping",
+    "no rendered DOM measurements and breakpoint state coverage",
+    "no separate independent review"
+  ],
+  "certification": "WITHHELD",
+  "flootAuthorization": "DENY"
+}
