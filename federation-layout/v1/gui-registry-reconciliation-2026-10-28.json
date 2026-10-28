@@ -1,0 +1,79 @@
+{
+  "schema": "federation-layout/gui-registry-reconciliation/v1",
+  "observedDate": "2026-10-28",
+  "state": "AUDIT_ONLY",
+  "registries": [
+    {
+      "repo": "spiderweb-pr",
+      "registry": ".federation/gui-capabilities.json",
+      "observed": false,
+      "declaredCapabilityCount": null,
+      "blobSha": null,
+      "classification": "REGISTRY_NOT_FOUND"
+    },
+    {
+      "repo": "skywatcher-pr",
+      "registry": ".federation/gui-capabilities.json",
+      "observed": true,
+      "declaredCapabilityCount": 8,
+      "blobSha": "0002d10af063e7b36c400103fb2e72e50e39778f",
+      "classification": "DISCOVERY_ONLY"
+    },
+    {
+      "repo": "ovnis-pr",
+      "registry": ".federation/gui-capabilities.json",
+      "observed": true,
+      "declaredCapabilityCount": 12,
+      "blobSha": "fea93cc10bbb00e21c88f431a7abd5e981867948",
+      "classification": "DISCOVERY_ONLY"
+    },
+    {
+      "repo": "aguayluz-pr",
+      "registry": ".federation/gui-capabilities.json",
+      "observed": true,
+      "declaredCapabilityCount": 33,
+      "blobSha": "ff506c74289a4538bbc5b45c605935e953f067c8",
+      "classification": "DISCOVERY_ONLY"
+    },
+    {
+      "repo": "moneysweep-pr",
+      "registry": ".federation/gui-capabilities.json",
+      "observed": true,
+      "declaredCapabilityCount": 22,
+      "blobSha": "1b2b196961e884159862a9a82e52389e06a7deed",
+      "classification": "DISCOVERY_ONLY"
+    },
+    {
+      "repo": "thehub-pr",
+      "registry": ".federation/gui-capabilities.json",
+      "observed": true,
+      "declaredCapabilityCount": 14,
+      "blobSha": "e1c4ebda70bc3db92eb6a57a57b6d2108444260f",
+      "classification": "DISCOVERY_ONLY"
+    },
+    {
+      "repo": "centinelas-pr",
+      "registry": ".federation/gui-capabilities.json",
+      "observed": true,
+      "declaredCapabilityCount": 14,
+      "blobSha": "d1eda4396a7c84972b9597f36b4b306ad17339e0",
+      "classification": "DISCOVERY_ONLY"
+    }
+  ],
+  "observedSixRegistryCapabilityTotal": 103,
+  "coverage": "6/7 expected registry paths found; exhaustive discovery UNPROVEN",
+  "nonEquivalence": "Capability counts are not route counts or layout component counts. Do not use name-only joins.",
+  "nextActions": [
+    "locate Spiderweb registry alternatives",
+    "pin registry reads to seven exact baseline SHAs",
+    "enumerate imported components and runtime routes per registry",
+    "capture rendered states and breakpoints",
+    "review all equivalence class candidate sets"
+  ],
+  "gate": {
+    "individual": "WITHHELD",
+    "collective": "WITHHELD",
+    "independent": "NOT_PERFORMED",
+    "floot": "LOCKED"
+  }
+}
