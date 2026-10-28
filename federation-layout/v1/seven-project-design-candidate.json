@@ -1,0 +1,214 @@
+{
+  "schema": "federation-layout/design-strategy/v1",
+  "status": "PROVISIONAL",
+  "implementationAuthorization": "DENY",
+  "asOf": "2026-10-28",
+  "identityPolicy": "Evidence of source location is not an exhaustive identity or role proof",
+  "scope": {
+    "include": [
+      "structure",
+      "geometry",
+      "formatting",
+      "responsive",
+      "scroll",
+      "keyboard/accessibility geometry"
+    ],
+    "exclude": [
+      "color",
+      "theme",
+      "brand styling",
+      "decorative effects"
+    ]
+  },
+  "equivalence": {
+    "rule": "shared function and interaction contract => identical canonical structural rules at matched viewport,state,content fixture",
+    "matching": "reviewed role plus observed behavior and functional contract; names alone insufficient",
+    "outcomes": [
+      "EQUIVALENT",
+      "DOMAIN_VARIANT",
+      "DISTINCT",
+      "UNRESOLVED"
+    ],
+    "unresolvedPolicy": "fail-closed; preserve candidates",
+    "themeOverrides": "no layout-affecting overrides"
+  },
+  "canonicalCandidates": {
+    "desktopSidebarPx": 256,
+    "desktopHeaderPx": 64,
+    "mobileHeaderPx": 56,
+    "contentMaxWidthPx": 1440,
+    "breakpointsPx": [
+      320,
+      393,
+      430,
+      768,
+      1024,
+      1440
+    ],
+    "status": "CANDIDATE_NOT_APPROVED"
+  },
+  "perProject": {
+    "spiderweb-pr": {
+      "source": "server/frontend/src/App.tsx",
+      "role": "multi-pane-workbench",
+      "observed": [
+        "CommandBar",
+        "LeftRail",
+        "Inspector",
+        "Timeline",
+        "six lazily loaded workspaces"
+      ],
+      "migration": [
+        "map LeftRail navigation to shared sidebar role only after interaction equivalence review",
+        "preserve inspector and timeline as domain pane variants",
+        "derive responsive and collapse geometry from CSS and DOM"
+      ],
+      "blockers": [
+        "complete styles and module-tree inventory",
+        "viewport measurements",
+        "full state denominator"
+      ]
+    },
+    "skywatcher-pr": {
+      "source": "frontend/src/components/skywatcher/Layout.jsx",
+      "role": "tracking-workspace",
+      "observed": [
+        "desktop sidebar",
+        "mobile overlay",
+        "independently scrolling main",
+        "1400px max content"
+      ],
+      "migration": [
+        "map equivalent sidebar and header controls to canonical contracts",
+        "preserve aviation-specific status strip and map/timeline views",
+        "adjudicate scroll semantics"
+      ],
+      "blockers": [
+        "full route graph traversal",
+        "sidebar and overlay state matrix",
+        "rendered geometry"
+      ]
+    },
+    "ovnis-pr": {
+      "source": "dashboard/src/pages/Dashboard.jsx",
+      "role": "case-map-workspace",
+      "observed": [
+        "safe-area header",
+        "860px shell breakpoint",
+        "54px header token",
+        "440px details pane"
+      ],
+      "migration": [
+        "canonicalize equivalent header/search/tabs",
+        "preserve case-map and evidence detail variant",
+        "verify offline routing and narrow-screen behavior"
+      ],
+      "blockers": [
+        "component subtree denominator",
+        "map/detail state matrix",
+        "geometry measurements"
+      ]
+    },
+    "aguayluz-pr": {
+      "source": "dashboard/src/components/layout/DashboardLayout.jsx",
+      "role": "infrastructure-monitor",
+      "observed": [
+        "sidebar 224px expanded 56px collapsed 256px drawer",
+        "full-height shell",
+        "scrollable main"
+      ],
+      "migration": [
+        "reconcile sidebar variants against canonical equivalent roles",
+        "preserve status/monitoring/map domain layout",
+        "enforce drawer and scroll tests"
+      ],
+      "blockers": [
+        "complete routes and components",
+        "collapsed/drawer state coverage",
+        "geometry measurements"
+      ]
+    },
+    "moneysweep-pr": {
+      "source": "dashboard/src/pages/Dashboard.jsx",
+      "role": "investigation-data-workspace",
+      "observed": [
+        "scrollable tabs minimum 880px",
+        "investigation panels",
+        "tab activity scroll"
+      ],
+      "migration": [
+        "canonicalize equivalent search/tabs/table toolbars",
+        "retain data-dense graph/table variants",
+        "ensure no page horizontal overflow"
+      ],
+      "blockers": [
+        "all dashboard tabs component graph",
+        "data-density and overflow states",
+        "geometry measurements"
+      ]
+    },
+    "thehub-pr": {
+      "source": "server/frontend/src/components/layout/AppLayout.jsx",
+      "role": "governance-dashboard",
+      "observed": [
+        "256px sidebar",
+        "max 1600px page",
+        "HubHeader",
+        "mobile navigation"
+      ],
+      "migration": [
+        "extend existing federation-design library rather than duplicate components",
+        "align shell roles",
+        "add read-only layout compliance consumer after receipt schema approval"
+      ],
+      "blockers": [
+        "all route/component coverage",
+        "design package compatibility",
+        "compliance receipt binding"
+      ]
+    },
+    "centinelas-pr": {
+      "source": "frontend/src/zip-design/AppShell.jsx",
+      "role": "triage-workspace",
+      "observed": [
+        "232px grid sidebar",
+        "58px header",
+        "820px breakpoint",
+        "1500px content limit"
+      ],
+      "migration": [
+        "treat homepage as reference candidate pending measured review",
+        "canonicalize equivalent shell/navigation/header roles",
+        "preserve triage-specific navigation/workflows"
+      ],
+      "blockers": [
+        "all CSS and descendant component inventory",
+        "complete responsive states",
+        "rendered validation"
+      ]
+    }
+  },
+  "collectiveGates": [
+    "exact current-head source manifests",
+    "complete file/route/component/state denominators",
+    "N:N shared role candidate matrix",
+    "reviewed equivalent function matches",
+    "identical canonical geometry policies",
+    "domain exception approval",
+    "responsive and scroll specification",
+    "positive/negative fixtures",
+    "independent compatibility review",
+    "zero material unresolved findings"
+  ],
+  "review": {
+    "state": "NOT_PERFORMED",
+    "findings": [
+      "incomplete component and route denominators",
+      "unapproved canonical geometry",
+      "rendered viewport measurements absent",
+      "package compatibility unresolved"
+    ],
+    "certification": "WITHHELD"
+  },
+  "notes": "Design manifest only. No Floot changes, package upgrades, or authorization to merge/deploy."
+}
