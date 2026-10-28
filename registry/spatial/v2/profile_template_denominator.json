@@ -1,0 +1,47 @@
+{
+  "Schema_Version": "pr-grid-v2-profile-template-denominator/1.0",
+  "State": "FROZEN_TEMPLATE_GENERATION",
+  "Authority_Repository": "jotaele44/thehub-pr",
+  "Authority_Commit": "9adf06d31ddffef1010d3d6461373ca3300f48be",
+  "Profile_Schema_Version": "pr-grid-v2-cell-profile/1.2",
+  "Profile_Module_Git_Blob_SHA1": "0e9cd5a421e87d707d99d13a25e713a324614fa2",
+  "Materializer_Git_Blob_SHA1": "33557e2e60b3d0f79545ac5269f82abc0a6b3391",
+  "Profile_Test_Git_Blob_SHA1": "c2c3e34e0396d8b260fa13df3f6f0902becaa857",
+  "Producer_Count": 5,
+  "Producers": [
+    {
+      "Repository": "aguayluz-pr",
+      "Default_Level": "L1",
+      "Profile_Type": "water_hydrology"
+    },
+    {
+      "Repository": "skywatcher-pr",
+      "Default_Level": "L2",
+      "Profile_Type": "flight_activity"
+    },
+    {
+      "Repository": "ovnis-pr",
+      "Default_Level": "L1",
+      "Profile_Type": "anomalous_cases"
+    },
+    {
+      "Repository": "moneysweep-pr",
+      "Default_Level": "L1",
+      "Profile_Type": "financial_activity"
+    },
+    {
+      "Repository": "centinelas-pr",
+      "Default_Level": "L0",
+      "Profile_Type": "monitoring_state"
+    }
+  ],
+  "Geometry_Producer": "spiderweb-pr",
+  "Geometry_Copied_To_Producers": false,
+  "Incremental_Refresh_Supported": true,
+  "Data_States": [
+    "HAS_RECORDS",
+    "ZERO_RECORDS",
+    "NO_DATA"
+  ],
+  "Notes": "TheHub owns the shared profile aggregation template and schema; Spiderweb remains the sole geometry and record-to-cell binding producer."
+}
