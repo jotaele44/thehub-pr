@@ -91,6 +91,8 @@ describe('constellation layout', () => {
     const b = boundsOf(layout, 'code', ['centinelas.poll', 'thehub.fetch']);
     expect(b.x1).toBeGreaterThan(b.x0);
     expect(boundsOf(layout, 'code', ['missing'])).toBeNull();
+    const wide = boundsOf(layout, 'code', ['centinelas.poll', 'thehub.fetch'], 2);
+    expect(wide.x1 - wide.x0).toBeGreaterThan(b.x1 - b.x0);
   });
 });
 

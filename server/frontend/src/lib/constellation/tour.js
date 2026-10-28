@@ -37,7 +37,7 @@ export function tourReducer(state, action) {
       return index === state.stageIndex ? state : { ...state, stageIndex: index, selectedId: null };
     }
     case 'SET_LENS':
-      // The caller passes the counterpart of the current selection in the new lens.
+      // The caller passes the counterpart of the selection in the new lens.
       return state.lens === action.lens ? state : { ...state, lens: action.lens, selectedId: action.selectedId ?? null };
     case 'SELECT':
       return { ...state, selectedId: action.id, playing: false,

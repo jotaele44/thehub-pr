@@ -9,12 +9,13 @@
 
 import { LENSES } from './model';
 
-export const STAGE_GAP = 1500;
-export const MEANDER = 520;
-const APP_RING = 440;
-const FOREIGN_RING = 420;
-const SPIRAL_BASE = 150;
-const SPIRAL_STEP = 72;
+export const STAGE_GAP = 1200;
+export const MEANDER = 420;
+// Rings are ellipses: the stage is wider than it is tall.
+const APP_RING = { x: 400, y: 190 };
+const FOREIGN_RING = { x: 420, y: 190 };
+const SPIRAL_BASE = 95;
+const SPIRAL_STEP = 52;
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 const SETTLE_ITERATIONS = 160;
 const RESOLVE_ITERATIONS = 400;
@@ -83,11 +84,11 @@ function appAnchors(model, centers) {
     const c = centers.get(stageId) || { x: 0, y: 0 };
     apps.forEach((appId, k) => {
       if (apps.length === 1) {
-        anchors.set(`app:${appId}`, { x: c.x - 220, y: c.y });
+        anchors.set(`app:${appId}`, { x: c.x - 160, y: c.y });
         return;
       }
       const angle = -Math.PI / 2 + (2 * Math.PI * k) / apps.length;
-      anchors.set(`app:${appId}`, { x: c.x + APP_RING * Math.cos(angle), y: c.y + APP_RING * Math.sin(angle) });
+      anchors.set(`app:${appId}`, { x: c.x + APP_RING.x * Math.cos(angle), y: c.y + APP_RING.y * Math.sin(angle) });
     });
   }
   return anchors;
@@ -171,7 +172,7 @@ function layoutLens(model, lensName, centers, anchors) {
         return;
       }
       const angle = Math.PI / 2 + (2 * Math.PI * k) / foreign.length + (homeApps.length ? Math.PI / foreign.length : 0);
-      clusterCenter.set(app, { x: center.x + FOREIGN_RING * Math.cos(angle), y: center.y + FOREIGN_RING * Math.sin(angle) });
+      clusterCenter.set(app, { x: center.x + FOREIGN_RING.x * Math.cos(angle), y: center.y + FOREIGN_RING.y * Math.sin(angle) });
     });
     const items = [];
     const counters = new Map();
@@ -207,14 +208,15 @@ export function computeLayout(model) {
   return { centers, positions, boxes };
 }
 
-// World-space bounds of a set of nodes, label boxes included.
-export function boundsOf(layout, lens, ids) {
+// World-space bounds of a set of nodes, label boxes included. `labelScale` > 1
+// widens the boxes for when labels are drawn larger than the zoom (a readable floor).
+export function boundsOf(layout, lens, ids, labelScale = 1) {
   let x0 = Infinity; let y0 = Infinity; let x1 = -Infinity; let y1 = -Infinity;
   for (const id of ids) {
     const p = layout.positions[lens].get(id);
     const box = layout.boxes[lens].get(id);
     if (!p || !box) continue;
-    const f = footprint(p, box);
+    const f = footprint(p, labelScale === 1 ? box : { w: box.w * labelScale, h: box.h * labelScale });
     x0 = Math.min(x0, f.x0); y0 = Math.min(y0, f.y0); x1 = Math.max(x1, f.x1); y1 = Math.max(y1, f.y1);
   }
   return Number.isFinite(x0) ? { x0, y0, x1, y1 } : null;
