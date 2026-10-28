@@ -1,0 +1,26 @@
+name: Federation Layout Contract V1 Candidate
+on:
+  push:
+    paths:
+      - 'federation-layout/v1/**'
+      - '.github/workflows/layout-governance-v1.yml'
+  pull_request:
+    paths:
+      - 'federation-layout/v1/**'
+      - '.github/workflows/layout-governance-v1.yml'
+permissions:
+  contents: read
+jobs:
+  synthetic-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Contract and adversarial auditor tests
+        run: node --test federation-layout/v1/audit.test.mjs
+      - name: Scope guard
+        run: |
+          echo "This verifies only the candidate contract/auditor."
+          echo "Seven-app rendered geometry and LOCKSTEP remain unverified."
