@@ -2,11 +2,11 @@
   "Schema_Version": "pr-grid-v2-profile-template-denominator/1.0",
   "State": "FROZEN_TEMPLATE_GENERATION",
   "Authority_Repository": "jotaele44/thehub-pr",
-  "Authority_Commit": "befacc8432f1849a586f036fda8bf133f7374e2d",
+  "Authority_Commit": "d7716d00c0ab40a79cee06e192508924ef17d9eb",
   "Profile_Schema_Version": "pr-grid-v2-cell-profile/1.2",
-  "Profile_Module_Git_Blob_SHA1": "e245d91a9b5da829d1bbdaec329958c08e057701",
-  "Materializer_Git_Blob_SHA1": "33557e2e60b3d0f79545ac5269f82abc0a6b3391",
-  "Profile_Test_Git_Blob_SHA1": "c2c3e34e0396d8b260fa13df3f6f0902becaa857",
+  "Profile_Module_Git_Blob_SHA1": "704ac0dc222b5a980811b84312961f66cc3ee309",
+  "Materializer_Git_Blob_SHA1": "66a3c995118353bce0260c874901496b8847acc6",
+  "Profile_Test_Git_Blob_SHA1": "6eb7c9d4699691b1f1e25f65351441b51a8382fb",
   "Producer_Count": 5,
   "Producers": [
     {
