@@ -1,0 +1,67 @@
+{
+  "schema": "federation-layout/pinned-gui-registry/v1",
+  "status": "AUDIT_ONLY",
+  "asOf": "2026-10-28",
+  "pinnedGuiRegistries": [
+    {
+      "repo": "jotaele44/skywatcher-pr",
+      "declaredCapabilities": 8,
+      "blobSha": "0002d10af063e7b36c400103fb2e72e50e39778f",
+      "verifiedAt": "exact baseline commit listed in source-baseline-2026-10-28.json"
+    },
+    {
+      "repo": "jotaele44/ovnis-pr",
+      "declaredCapabilities": 12,
+      "blobSha": "fea93cc10bbb00e21c88f431a7abd5e981867948",
+      "verifiedAt": "exact baseline commit listed in source-baseline-2026-10-28.json"
+    },
+    {
+      "repo": "jotaele44/aguayluz-pr",
+      "declaredCapabilities": 33,
+      "blobSha": "ff506c74289a4538bbc5b45c605935e953f067c8",
+      "verifiedAt": "exact baseline commit listed in source-baseline-2026-10-28.json"
+    },
+    {
+      "repo": "jotaele44/moneysweep-pr",
+      "declaredCapabilities": 22,
+      "blobSha": "1b2b196961e884159862a9a82e52389e06a7deed",
+      "verifiedAt": "exact baseline commit listed in source-baseline-2026-10-28.json"
+    },
+    {
+      "repo": "jotaele44/thehub-pr",
+      "declaredCapabilities": 14,
+      "blobSha": "e1c4ebda70bc3db92eb6a57a57b6d2108444260f",
+      "verifiedAt": "exact baseline commit listed in source-baseline-2026-10-28.json"
+    },
+    {
+      "repo": "jotaele44/centinelas-pr",
+      "declaredCapabilities": 14,
+      "blobSha": "d1eda4396a7c84972b9597f36b4b306ad17339e0",
+      "verifiedAt": "exact baseline commit listed in source-baseline-2026-10-28.json"
+    }
+  ],
+  "sixRegistryTotal": 103,
+  "spiderweb": {
+    "repo": "jotaele44/spiderweb-pr",
+    "expectedRegistryPath": ".federation/gui-capabilities.json",
+    "status": "ABSENT_AT_EXPECTED_PATH",
+    "alternativeSources": [
+      "server/frontend/src/App.tsx",
+      "docs/FRONTEND_AUDIT.md",
+      "server/frontend/src/components/LeftRail.tsx",
+      "styles/federation.css"
+    ],
+    "conclusion": "Need explicit independent inventory adapter; absence of a registry is not absence of UI functionality."
+  },
+  "denominatorStatus": "OPEN",
+  "equivalenceStatus": "OPEN",
+  "geometryStatus": "OPEN",
+  "independentReview": "NOT_PERFORMED",
+  "flootAuthorization": "DENY",
+  "safeguards": [
+    "Do not equate capability entries with route or component denominators",
+    "Pin all future file reads to exact commit refs",
+    "Recheck Spiderweb diagnostic-only versus project intended Floot scope",
+    "Do not infer complete inventory from code search"
+  ]
+}
