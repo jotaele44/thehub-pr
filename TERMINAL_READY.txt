@@ -268,3 +268,17 @@ Smoke test: python -m pytest -q tests/test_usgs_facet_snapshot.py
 Local snapshot 20261028-local-01: 16 HTTP403, 0 BYTE passes, activated=0.
 Remote controlled runner requires an explicit usgs-facet-snapshot-20261028 label
 event on the same-repository draft PR; normal synchronization stays offline.
+
+FROZEN INDEPENDENT FACET EVIDENCE — 2026-10-28
+Runner snapshot 20261028-gh-40683670587: 16 BYTE PASS, 378473 response bytes.
+Executed source: 1fae4069ff06ed1698453c5b8956d52c4a750714.
+Frozen archive SHA256: 3861e09f6fcf4d0f698faa6d2d7df125b00de8dbf380af3e433c256fa16dbb92
+36 exact members; CRC, source checksums and executed-code hashes verified.
+Local 403 evidence remains a separate immutable snapshot; it is not superseded.
+Offline smoke: python -m pytest -q tests/test_usgs_facet_snapshot.py tests/test_usgs_readiness.py
+The readiness assessment replays every archived body against the frozen plan.
+Self-consistent receipt rehashing cannot authorize changed source bytes.
+This closes only sixteen component BYTE checks, not shapefile semantics,
+mirror identity, full nested enumeration, source adjudication or consumer fitness.
+Scientific staging, activation and exact dataset certification remain BLOCKED.
+No staged release archive is issued while these gates remain open; activated=0.

@@ -221,3 +221,90 @@ def acquire_facet_snapshot(plan_path, destination, snapshot_id, opener=None):
         "Do not infer source absence from HTTP, redirect, timeout or checksum failure.\n"
     )
     return summary
+
+
+def verify_facet_archive(archive_path, expected_sha256, plan_path):
+    """Independently replay all sixteen BYTE checks; never infer domain readiness."""
+    import zipfile
+
+    archive_path = Path(archive_path)
+    packed = archive_path.read_bytes()
+    if len(packed) > MAX_BUDGET or _sha(packed) != expected_sha256:
+        raise ValueError("Facet artifact archive mismatch")
+    plan = load_facet_plan(plan_path)
+    targets = {t["reference_id"]: t for t in plan["targets"]}
+    expected_names = {
+        "snapshot.json",
+        "summary.json",
+        "execution.json",
+        "TERMINAL_READY.txt",
+    }
+    for i in range(16):
+        expected_names.update({f"{i:02d}.receipt.json", f"{i:02d}.response.bin"})
+    with zipfile.ZipFile(archive_path) as z:
+        names = z.namelist()
+        if len(names) != len(set(names)) or set(names) != expected_names:
+            raise ValueError("Facet archive member denominator mismatch")
+        if sum(i.file_size for i in z.infolist()) > MAX_BUDGET + 256 * 1024:
+            raise ValueError("Facet archive expanded capacity exceeded")
+        if z.testzip() is not None:
+            raise ValueError("Facet archive CRC mismatch")
+        marker, summary = (
+            json.loads(z.read("snapshot.json")),
+            json.loads(z.read("summary.json")),
+        )
+        if (
+            marker["plan_sha256"] != PLAN_SHA256
+            or summary["plan_sha256"] != PLAN_SHA256
+            or marker["snapshot_id"] != summary["snapshot_id"]
+        ):
+            raise ValueError("Facet snapshot/plan binding mismatch")
+        stored = summary["receipts"]
+        if len(stored) != 16 or {r["reference_id"] for r in stored} != set(targets):
+            raise ValueError("Facet reference membership mismatch")
+        total = 0
+        for i, target in enumerate(plan["targets"]):
+            receipt = json.loads(z.read(f"{i:02d}.receipt.json"))
+            body = z.read(f"{i:02d}.response.bin")
+            if (
+                json.dumps(receipt, sort_keys=True)
+                != json.dumps(stored[i], sort_keys=True)
+                or receipt["reference_id"] != target["reference_id"]
+                or receipt["source_item_id"] != target["source_item_id"]
+                or receipt["response_file"] != f"{i:02d}.response.bin"
+                or receipt["url"]
+                != approved_download_url(
+                    target["source_item_id"], target["raw_descriptor"]
+                )
+                or receipt["plan_sha256"] != PLAN_SHA256
+                or receipt["http_status"] != 200
+                or receipt["byte_state"] != "PASS"
+                or receipt["activation_state"] != "BLOCKED"
+                or receipt["error"]
+                or receipt["truncated"]
+                or receipt["bytes"] != len(body)
+                or receipt["sha256"] != _sha(body)
+            ):
+                raise ValueError("Facet receipt/body identity or integrity mismatch")
+            verify_payload(body, target["raw_descriptor"])
+            total += len(body)
+        if (
+            total != summary["captured_response_bytes"]
+            or total != plan["declared_bytes"]
+            or summary["byte_states"] != {"PASS": 16, "FAIL": 0, "BLOCKED": 0}
+            or summary["activated"] != 0
+            or summary["scientific_staging"] != "BLOCKED"
+        ):
+            raise ValueError("Facet byte denominator/promotion mismatch")
+        return {
+            "contract": "prii.usgs-facet-byte-validation/v1",
+            "state": "PASS",
+            "scope": "Sixteen frozen facet component BYTE checks only",
+            "snapshot_id": summary["snapshot_id"],
+            "archive_sha256": expected_sha256,
+            "reference_count": 16,
+            "bytes": total,
+            "scientific_staging": "BLOCKED",
+            "activation_state": "BLOCKED",
+            "activated": 0,
+        }

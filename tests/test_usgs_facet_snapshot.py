@@ -4,11 +4,14 @@ import hashlib
 import io
 import json
 import urllib.error
+import zipfile
 from pathlib import Path
 
 import pytest
 
-from hub.usgs_facet_snapshot import PLAN_SHA256, acquire_facet_snapshot, load_facet_plan
+from hub.usgs_facet_snapshot import (
+    PLAN_SHA256, acquire_facet_snapshot, load_facet_plan, verify_facet_archive,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN = ROOT / "registry/usgs/facet_acquisition_plan.v1.json"
@@ -142,3 +145,45 @@ def test_plan_identity_snapshot_id_and_unknown_files_are_not_overwritten(tmp_pat
     with pytest.raises(ValueError, match="Nonempty"):
         acquire_facet_snapshot(PLAN, out, "run")
     assert (out / "unrelated").read_text() == "keep"
+
+
+ARCHIVE = ROOT / "data/usgs/snapshots/20261028_runner_facets.zip"
+ARCHIVE_SHA = "3861e09f6fcf4d0f698faa6d2d7df125b00de8dbf380af3e433c256fa16dbb92"
+
+
+def test_frozen_runner_archive_replays_source_checks_without_promotion():
+    result = verify_facet_archive(ARCHIVE, ARCHIVE_SHA, PLAN)
+    assert result["reference_count"] == 16 and result["bytes"] == 378473
+    assert result["state"] == "PASS" and result["activated"] == 0
+    assert result["scientific_staging"] == result["activation_state"] == "BLOCKED"
+
+
+@pytest.mark.parametrize("mutation", ["body", "identity", "missing", "promotion", "typed_receipt"])
+def test_self_consistently_rehashed_archive_still_requires_frozen_source(tmp_path, mutation):
+    with zipfile.ZipFile(ARCHIVE) as z:
+        members = {name: z.read(name) for name in z.namelist()}
+    summary = json.loads(members["summary.json"])
+    receipt = json.loads(members["00.receipt.json"])
+    if mutation == "body":
+        raw = members["00.response.bin"]
+        members["00.response.bin"] = bytes([raw[0] ^ 1]) + raw[1:]
+        receipt["sha256"] = hashlib.sha256(members["00.response.bin"]).hexdigest()
+    elif mutation == "identity":
+        receipt["source_item_id"] = "foreign"
+    elif mutation == "missing":
+        del members["15.response.bin"]
+    elif mutation == "promotion":
+        summary["scientific_staging"] = "PASS"
+    else:
+        # Python dict equality considers 200 and 200.0 equal; preserve JSON types.
+        receipt["http_status"] = 200.0
+    if mutation != "typed_receipt":
+        summary["receipts"][0] = receipt
+    members["00.receipt.json"] = json.dumps(receipt).encode()
+    members["summary.json"] = json.dumps(summary).encode()
+    changed = tmp_path / "changed.zip"
+    with zipfile.ZipFile(changed, "w", zipfile.ZIP_DEFLATED) as z:
+        for name, raw in members.items():
+            z.writestr(name, raw)
+    with pytest.raises(ValueError):
+        verify_facet_archive(changed, hashlib.sha256(changed.read_bytes()).hexdigest(), PLAN)

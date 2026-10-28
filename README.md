@@ -221,3 +221,8 @@ references; mirror identity and nested payload verification remain OPEN.
 USGS facet acquisition now has an explicit bounded-snapshot maintenance command;
 ordinary CI reuses frozen sources. HTTP/redirect/checksum failures remain blocked
 and never establish source absence or dataset readiness.
+
+The independent 2026-10-28 facet snapshot verifies all 16 planned components
+(378,473 bytes) offline against source checksums. This is a bounded BYTE gate;
+scientific staging and activation remain BLOCKED. Local HTTP 403 receipts remain
+preserved separately. Root TERMINAL_READY.txt includes replay and refusal checks.

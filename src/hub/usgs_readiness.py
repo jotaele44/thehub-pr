@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 
 from .usgs_assets import root_membership
+from .usgs_facet_snapshot import verify_facet_archive
 
 # Reviewed immutable snapshot. A rehashed receipt cannot authorize a different review.
 REVIEW_SHA256 = "b09f5f34411f9570927202f34067463262f526b29138a232f49193257def44a9"
@@ -86,8 +87,14 @@ def assess_usgs_readiness(source_root):
     reviewed_ids = {e["asset_id"] for e in spec["assets"] + native["assets"] + kml_input["assets"] + kml_input["supporting_documents"]}
     if release_ids != reviewed_ids:
         raise ValueError("Frozen release file review denominator mismatch")
+    facet_bytes = verify_facet_archive(
+        root / "data/usgs/snapshots/20261028_runner_facets.zip",
+        "3861e09f6fcf4d0f698faa6d2d7df125b00de8dbf380af3e433c256fa16dbb92",
+        root / "registry/usgs/facet_acquisition_plan.v1.json",
+    )
     return {
         "contract": "prii.usgs-readiness/v1",
+        "facet_snapshot": facet_bytes,
         "source_review_sha256": REVIEW_SHA256,
         "review_state": review["state"],
         "asset_count": review["asset_count"],

@@ -360,3 +360,16 @@ At the restored head 3634c894, USGS and GUI checks pass. The broader CI failure
 is consumer grid-authority pin drift (0c66e13 versus b8f5cf3), and the October 25
 live-provider run still reports four SIGE TLS-chain failures. Those observations
 are recorded independently; neither gate is waived by this acquisition work.
+
+The independent runner snapshot 20261028-gh-40683670587 passed all sixteen
+source size/checksum checks (378,473 captured bytes). Its exact 36-member ZIP
+is frozen at `data/usgs/snapshots/20261028_runner_facets.zip`; its archive hash,
+run/artifact IDs, executed commit and code hashes are retained in
+`registry/usgs/facet_runner_evidence_20261028.v1.json`. CRC and every archived
+body were independently checked. The normal offline readiness assessment now
+replays these byte checks against the frozen acquisition plan. Tests reject
+self-consistently rehashed changed bodies, wrong identities, missing members,
+typed receipt disagreement and attempted promotion. Local HTTP 403 evidence
+remains separately preserved. No shapefile semantic adapter or canonical export
+is certified by these checks; full nested closure, scientific staging,
+activation and exact dataset certification remain BLOCKED, activated=0.

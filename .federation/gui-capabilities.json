@@ -936,7 +936,8 @@
           "scripts/inventory_usgs_nested.py:main",
           "src/hub/usgs_facet_snapshot.py:load_facet_plan",
           "src/hub/usgs_facet_snapshot.py:acquire_facet_snapshot",
-          "scripts/acquire_usgs_facets.py:main"
+          "scripts/acquire_usgs_facets.py:main",
+          "src/hub/usgs_facet_snapshot.py:verify_facet_archive"
         ]
       },
       "frontend": {

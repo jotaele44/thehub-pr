@@ -1,0 +1,29 @@
+{
+  "contract": "prii.usgs-facet-runner-evidence/v1",
+  "run_id": 40683670587,
+  "artifact_id": 12813413188,
+  "archive_path": "data/usgs/snapshots/20261028_runner_facets.zip",
+  "archive_sha256": "3861e09f6fcf4d0f698faa6d2d7df125b00de8dbf380af3e433c256fa16dbb92",
+  "archive_bytes": 36959,
+  "archive_members": 36,
+  "crc_state": "PASS",
+  "executed_commit": "1fae4069ff06ed1698453c5b8956d52c4a750714",
+  "executed_code_sha256": {
+    "src/hub/usgs_facet_snapshot.py": "158b67144f2a434add8d4ede399d6420811eaa19efb2879e5ea4d7241b877f8a",
+    "src/hub/usgs_assets.py": "b9a732c8a497b7fd3935722d3cd3e9088a67ea3c3cd3b29a35646c87feb23925",
+    "src/hub/usgs_acquisition.py": "30338a5191299314692dcfb9759d1fd5b1f78c3d793151a79ee4f309db22a86d",
+    "scripts/acquire_usgs_facets.py": "0a2541dffe56b20572d787128637c1ea4952e1501018041734e953d1f1b20562"
+  },
+  "snapshot_id": "20261028-gh-40683670587",
+  "captured_bytes": 378473,
+  "target_count": 16,
+  "byte_states": {
+    "PASS": 16,
+    "FAIL": 0,
+    "BLOCKED": 0
+  },
+  "scientific_staging": "BLOCKED",
+  "activation_state": "BLOCKED",
+  "activated": 0,
+  "replaces_local_failure": false
+}

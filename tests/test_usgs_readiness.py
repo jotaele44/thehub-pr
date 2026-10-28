@@ -32,6 +32,7 @@ def evidence(tmp_path):
     paths += [e["path"] for e in kml["assets"] + kml["supporting_documents"]]
     paths += ["registry/usgs/nested_file_inventory.v1.json.gz",
               "data/usgs/snapshots/20261016_all_item_metadata.zip"]
+    paths += ["data/usgs/snapshots/20261028_runner_facets.zip", "registry/usgs/facet_acquisition_plan.v1.json"]
     for name in paths:
         dst = tmp_path / name
         dst.parent.mkdir(parents=True, exist_ok=True)
@@ -51,6 +52,9 @@ def test_source_truth_blocks_all_assets_despite_native_format_pass(evidence):
     assert r["kml_adjudication"]["features"] == 92
     assert r["kml_adjudication"]["exact_geometry_objects"] == 36
     assert r["kml_adjudication"]["authority_state"] == "UNRESOLVED"
+    assert r["facet_snapshot"]["reference_count"] == 16
+    assert r["facet_snapshot"]["bytes"] == 378473
+    assert r["facet_snapshot"]["activation_state"] == "BLOCKED"
     assert r["constraints_recorded"] == "PASS"
     assert r["native_geometry_format_pass"] == 3
     assert r["cross_format_failures"] == 3 and r["extent_failures"] == 2
