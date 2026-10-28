@@ -400,9 +400,10 @@ def _links(spec: Mapping[str, Any], content_nodes: Sequence[Mapping[str, Any]],
     return links
 
 
-def _focus(spec: Mapping[str, Any], stage: Mapping[str, Any], code_nodes: Sequence[Mapping[str, Any]],
+def _focus(stage: Mapping[str, Any], homes: Mapping[str, str], code_nodes: Sequence[Mapping[str, Any]],
            content_nodes: Sequence[Mapping[str, Any]]) -> Dict[str, List[str]]:
-    anchors = [f"app:{a}" for a in stage["apps"]]
+    # An app's anchor frames only the stage it lives at; elsewhere its edges reach in from off-screen.
+    anchors = [f"app:{a}" for a in stage["apps"] if homes.get(a) == stage["id"]]
     if stage.get("overview"):
         return {"code": [n["id"] for n in code_nodes], "content": [n["id"] for n in content_nodes]}
     code = anchors + [n["id"] for n in code_nodes if n["kind"] != "app" and n["stage"] == stage["id"]]
@@ -424,7 +425,7 @@ def build_constellation(spec: Mapping[str, Any], store: StoreSnapshot,
     stages = [{
         "id": stage["id"], "index": i, "title": stage["title"], "subtitle_es": stage["subtitle_es"],
         "apps": stage["apps"], "summary": stage["summary"], "overview": bool(stage.get("overview")),
-        "focus": _focus(spec, stage, code_nodes, content_nodes),
+        "focus": _focus(stage, homes, code_nodes, content_nodes),
     } for i, stage in enumerate(spec["stages"])]
     return {
         "schema_version": SCHEMA_VERSION,
