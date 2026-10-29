@@ -177,7 +177,7 @@ def validate_pin_payload(
     if not isinstance(blockers, list):
         errors.append("external_provider_blockers must be a list")
     else:
-        observed_blockers = {}
+        observed_blockers: dict[str, bool] = {}
         for row in blockers:
             if not isinstance(row, Mapping):
                 errors.append("external_provider_blockers entries must be objects")
@@ -265,11 +265,11 @@ def attach_grid_identity(
 ) -> dict[str, Any]:
     """Copy a payload and attach one validated immutable Grid_Identity envelope."""
     output = dict(payload)
-    output["Grid_Identity"] = grid_identity(
-        pin,
-        level=level,
-        cell_id=cell_id,
-    )
+    identity = grid_identity(pin, level=level, cell_id=cell_id)
+    existing = output.get("Grid_Identity")
+    if existing is not None and existing != identity:
+        raise GridV2PinError("payload contains conflicting Grid_Identity")
+    output["Grid_Identity"] = identity
     return output
 
 

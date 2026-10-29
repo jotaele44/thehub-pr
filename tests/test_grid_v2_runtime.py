@@ -229,3 +229,14 @@ def test_deep_link_rejects_blank_as_of():
             cell_id="PRG2:L1:R075:C0234",
             as_of=" ",
         )
+
+
+def test_attach_grid_identity_rejects_conflicting_existing_identity():
+    pin = load_pin(PIN_PATH, expected_consumer="thehub-pr")
+    with pytest.raises(GridV2PinError, match="conflicting Grid_Identity"):
+        attach_grid_identity(
+            {"Grid_Identity": {"Grid_ID": "WRONG_GRID"}},
+            pin,
+            level="L1",
+            cell_id="PRG2:L1:R075:C0234",
+        )
