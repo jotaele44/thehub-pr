@@ -3,6 +3,9 @@ import { acquireOnlineSource, acquireRasterAsset } from './acquisitionFacade';
 import { getOnlineSourceDefinition } from './sourceRegistry';
 import { CUDEM_PR, CUDEM_TILES, elevationAt, openTile, tileBounds } from './cudem';
 import { GEOID18_PR, geoidHeight, openGeoid } from './geoid';
+import { bodyPosition, localDayWindow, makeObserver, riseTransitSet } from '../sky/astronomy';
+import reference from '../sky/referenceEphemerides.json';
+import { loadSpaceWeather } from '../sky/spaceWeather';
 
 const runLive = process.env.GIS_LIVE_PROVIDER_TESTS === '1';
 const live = runLive ? describe : describe.skip;
@@ -144,4 +147,107 @@ live('live authoritative GIS providers', () => {
     }
     console.log('GIS_LIVE_GEOID', JSON.stringify({ sourceId: GEOID18_PR.sourceId, receipts }));
   }, 120000);
+
+  // The Sky workspace's providers. A provider that cannot be reached is logged as unavailable (these are public
+  // services with no SLA, and CelesTrak-style throttling is real); a provider that answers with data the code
+  // cannot read, or with values outside the measured tolerance, fails.
+  const OUTAGE = /HTTP 5\d\d|failed to fetch|fetch failed|network|timed out|abort|econn|enotfound|socket|reset/i;
+
+  it('NOAA SWPC answers Kp, solar-wind speed and IMF Bz in the shapes the parser reads', async () => {
+    const result = await loadSpaceWeather({ fetchImpl: boundedFetch });
+    const receipts = [];
+    for (const item of [result.kp, result.solarWind, result.imf]) {
+      if (item.state === 'FAILED') {
+        if (!OUTAGE.test(item.error)) throw new Error(`${item.id}: the payload could not be read: ${item.error}`);
+        console.log('GIS_LIVE_UNAVAILABLE', JSON.stringify({ sourceId: item.id, error: item.error }));
+        continue;
+      }
+      expect(item.observedAt.getTime()).toBeLessThan(Date.now() + 10 * 60000);
+      receipts.push({ id: item.id, value: item.value, observedAt: item.observedAt.toISOString(), state: item.state });
+    }
+    for (const item of [result.kp, result.solarWind, result.imf].filter((x) => x.state !== 'FAILED')) {
+      if (item.id === 'kp') {
+        expect(item.value).toBeGreaterThanOrEqual(0);
+        expect(item.value).toBeLessThanOrEqual(9);
+        expect(item.series.length).toBeGreaterThan(20);
+        expect(item.spanDays).toBeGreaterThan(3);
+      } else if (item.id === 'solar-wind-speed') {
+        expect(item.value).toBeGreaterThan(100);
+        expect(item.value).toBeLessThan(3000);
+      } else {
+        expect(Math.abs(item.bz)).toBeLessThan(200);
+      }
+    }
+    console.log('GIS_LIVE_SWPC', JSON.stringify({ receipts }));
+  }, 60000);
+
+  it('JPL Horizons and astronomy-engine agree on where the Sun, Moon and Venus are, within the tolerance measured when the references were frozen', async () => {
+    const site = { name: 'San Juan', lat: 18.4663, lon: -66.1057, elevation: 0 };
+    const time = '2026-10-15T16:00:00Z';
+    const jd = new Date(time).getTime() / 86400000 + 2440587.5;
+    const observer = makeObserver(site);
+    const receipts = [];
+    for (const [body, command] of [['Sun', '10'], ['Moon', '301'], ['Venus', '299']]) {
+      const params = new URLSearchParams({
+        format: 'text', COMMAND: `'${command}'`, OBJ_DATA: "'NO'", MAKE_EPHEM: "'YES'", EPHEM_TYPE: "'OBSERVER'", CENTER: "'coord@399'",
+        COORD_TYPE: "'GEODETIC'", SITE_COORD: `'${site.lon},${site.lat},${site.elevation / 1000}'`, TLIST_TYPE: "'JD'", TIME_TYPE: "'UT'",
+        TLIST: `'${jd.toFixed(8)}'`, QUANTITIES: "'4'", ANG_FORMAT: "'DEG'", APPARENT: "'REFRACTED'", CSV_FORMAT: "'YES'",
+      });
+      let text;
+      try {
+        const response = await boundedFetch(`https://ssd.jpl.nasa.gov/api/horizons.api?${params}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        text = await response.text();
+      } catch (error) {
+        if (!OUTAGE.test(String(error))) throw error;
+        console.log('GIS_LIVE_UNAVAILABLE', JSON.stringify({ sourceId: 'jpl-horizons', error: String(error) }));
+        return;
+      }
+      const row = text.split('$$SOE')[1]?.split('$$EOE')[0]?.trim().split(',').map((cell) => cell.trim());
+      expect(row, `Horizons gave no ephemeris row for ${body}`).toBeTruthy();
+      const [az, alt] = [Number(row[3]), Number(row[4])];
+      expect(Number.isFinite(az) && Number.isFinite(alt)).toBe(true);
+      const mine = bodyPosition(body, time, observer, { refraction: 'jplhor' });
+      const dAz = Math.abs(((mine.azimuth - az) % 360 + 540) % 360 - 180) * Math.cos((alt * Math.PI) / 180);
+      const arcminutes = Math.hypot(dAz, mine.altitude - alt) * 60;
+      expect(arcminutes, `${body} differs from Horizons by ${arcminutes.toFixed(3)} arcmin`).toBeLessThan(reference.tolerances.position_arcmin);
+      receipts.push({ body, arcminutes: Number(arcminutes.toFixed(3)) });
+    }
+    console.log('GIS_LIVE_HORIZONS', JSON.stringify({ time, receipts }));
+  }, 120000);
+
+  it('the US Naval Observatory and astronomy-engine agree on San Juan\'s rise, transit and set, within a minute', async () => {
+    const date = '2026-10-15';
+    let data;
+    try {
+      const response = await boundedFetch(`https://aa.usno.navy.mil/api/rstt/oneday?date=${date}&coords=18.4663,-66.1057&tz=-4`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      data = (await response.json()).properties?.data;
+    } catch (error) {
+      if (!OUTAGE.test(String(error))) throw error;
+      console.log('GIS_LIVE_UNAVAILABLE', JSON.stringify({ sourceId: 'usno-aa', error: String(error) }));
+      return;
+    }
+    expect(data?.sundata, 'USNO gave no sun data').toBeTruthy();
+    const window = localDayWindow(`${date}T12:00:00Z`, -4);
+    const observer = makeObserver({ lat: 18.4663, lon: -66.1057 });
+    const sun = riseTransitSet('Sun', observer, window);
+    const moon = riseTransitSet('Moon', observer, window);
+    const minutes = (hhmm) => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m; };
+    const into = (instant) => (instant.getTime() - window.start.getTime()) / 60000;
+    const receipts = [];
+    for (const [table, mine, names] of [[data.sundata, { Rise: sun.rise, 'Upper Transit': sun.transit, Set: sun.set }, ['Rise', 'Upper Transit', 'Set']],
+      [data.moondata, { Rise: moon.rise, 'Upper Transit': moon.transit, Set: moon.set }, ['Rise', 'Upper Transit', 'Set']]]) {
+      for (const name of names) {
+        const listed = table.find((item) => item.phen === name);
+        if (!listed) continue;
+        expect(mine[name], `engine has no ${name}`).toBeTruthy();
+        const difference = Math.abs(into(mine[name]) - minutes(listed.time));
+        expect(difference, `${name}: ${difference.toFixed(2)} min`).toBeLessThanOrEqual(reference.tolerances.event_minutes);
+        receipts.push({ name, minutes: Number(difference.toFixed(2)) });
+      }
+    }
+    expect(receipts.length).toBeGreaterThanOrEqual(4);
+    console.log('GIS_LIVE_USNO', JSON.stringify({ date, receipts }));
+  }, 60000);
 });
