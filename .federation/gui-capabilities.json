@@ -512,6 +512,77 @@
       }
     },
     {
+      "id": "federation-constellation",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Federation Constellation: the seven federation apps as one animated graph. A stage tour (Centinelas intake through Hub ingest) flies the camera under English/Spanish captions and hands it to the viewer on pause. A Code | Content toggle switches between the declared components of each app (registry/constellation.v1.json, CALL/HANDOFF/RESULT edges) and the records they move (graph_summary totals, stored rows, lineage, sample rows and synthetic correlation candidates from the Hub store), with selections carried across lenses through lineage. Read-only.",
+      "backend": {
+        "files": [
+          "server/backend/constellation_api.py",
+          "src/hub/constellation.py",
+          "server/backend/main.py",
+          "registry/constellation.v1.json"
+        ],
+        "endpoints": [
+          "GET /"
+        ],
+        "symbols": [
+          "server/backend/constellation_api.py:constellation",
+          "server/backend/constellation_api.py:store_snapshot",
+          "src/hub/constellation.py:ConstellationSpecError",
+          "src/hub/constellation.py:CorrelationRow",
+          "src/hub/constellation.py:StoreSnapshot",
+          "src/hub/constellation.py:build_constellation",
+          "src/hub/constellation.py:load_spec",
+          "src/hub/constellation.py:sample_view",
+          "src/hub/constellation.py:strategy_for",
+          "src/hub/constellation.py:validate_spec"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/constellation"
+        ],
+        "e2e_routes": [
+          "/constellation"
+        ],
+        "components": [
+          "server/frontend/src/pages/FederationConstellation.jsx",
+          "server/frontend/src/components/constellation/ConstellationCanvas.jsx",
+          "server/frontend/src/components/constellation/ConstellationControls.jsx",
+          "server/frontend/src/components/constellation/ConstellationLegend.jsx",
+          "server/frontend/src/components/constellation/NodeDetails.jsx",
+          "server/frontend/src/components/constellation/StageCaption.jsx",
+          "server/frontend/src/components/constellation/StageOutline.jsx",
+          "server/frontend/src/lib/constellation/model.js",
+          "server/frontend/src/lib/constellation/layout.js",
+          "server/frontend/src/lib/constellation/camera.js",
+          "server/frontend/src/lib/constellation/tour.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/lib/commands.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_constellation_api.py"
+        ],
+        "contract": [
+          "tests/test_constellation.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/FederationConstellation.test.jsx",
+          "server/frontend/src/lib/constellation/constellation.test.js"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
       "id": "ovnis-research-hub",
       "classification": "user",
       "status": "active",

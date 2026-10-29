@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { OVNIS_YEAR_ONLY_CASE } from '../../src/test/fixtures/evidenceObject.js';
+import { constellationPayload } from '../../src/test/constellationPayload.js';
 
 // GUI capability parity E2E (see .federation/gui-capabilities.json). Every
 // active capability's e2e_routes must be reachable from visible navigation and
@@ -464,6 +465,44 @@ test.describe('event timeline', () => {
     await page.goto('/timeline?findings=1', { waitUntil: 'networkidle' });
     await expect(page.locator('[data-findings-status="NO_FINDINGS_RECORDED"]')).toBeVisible();
     await expect(page.locator('[data-timeline-event]')).toHaveCount(0);
+  });
+});
+
+test.describe('federation constellation', () => {
+  test('is reachable from navigation and toggles between the code and the content it moves', async ({ page }) => {
+    await mockApi(page, { '/constellation': constellationPayload });
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'Constellation', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Federation Constellation' })).toBeVisible();
+    await expect(page.locator('[data-stage-title]')).toHaveText('SIGNAL INTAKE');
+    await expect(page.locator('[data-stage-caption="signal-intake"]').getByText('Captura de señales · Centinelas')).toBeVisible();
+    await expect(page.getByRole('img', { name: /code lens\. Stage 1 of 3/ })).toBeVisible();
+    await expect(page.getByRole('list', { name: 'Edge legend, code lens' })).toContainText('HANDOFF');
+
+    await page.getByRole('button', { name: 'Content' }).click();
+    await expect(page.locator('[data-constellation-lens="content"]')).toBeVisible();
+    await expect(page.getByRole('list', { name: 'Edge legend, content lens' })).toContainText('RECORDS');
+    await expect(page).toHaveURL(/lens=content/);
+
+    await page.getByRole('button', { name: 'Next stage' }).click();
+    await expect(page.locator('[data-stage-title]')).toHaveText('HUB AGGREGATE');
+    await page.getByRole('region', { name: 'Nodes in this stage' }).getByRole('button', { name: /^observations/ }).click();
+    const details = page.locator('[data-constellation-details="content:thehub:stream:observations"]');
+    await expect(details).toContainText('572');
+    await details.getByRole('button', { name: /aggregate/ }).click();
+    await expect(page.locator('[data-constellation-lens="code"]')).toBeVisible();
+    await expect(page.locator('[data-constellation-details="thehub.aggregate"]')).toContainText('src/hub/aggregate.py');
+    await expect(page).toHaveURL(/node=thehub\.aggregate/);
+  });
+
+  test('a deep link opens a content node with its real sample records', async ({ page }) => {
+    await mockApi(page, { '/constellation': constellationPayload });
+    await page.goto('/constellation?lens=content&stage=signal-intake&node=content:centinelas:observations', { waitUntil: 'networkidle' });
+    const sample = page.locator('[data-constellation-sample="obs_004a"]');
+    await expect(sample).toContainText('Municipio adjudica contrato del acueducto');
+    await expect(sample.getByRole('link', { name: 'Provenance' })).toHaveAttribute('href', '/evidence/Observations/obs_004a');
+    await page.getByRole('button', { name: 'Play tour' }).click();
+    await expect(page.getByRole('button', { name: 'Pause' })).toHaveAttribute('aria-pressed', 'true');
   });
 });
 

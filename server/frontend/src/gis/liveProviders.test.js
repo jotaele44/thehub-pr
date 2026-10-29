@@ -17,6 +17,15 @@ async function boundedFetch(url, init = {}) {
   }
 }
 
+function isProviderTransportUnavailable(error) {
+  const codes = new Set(['UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY', 'CERT_HAS_EXPIRED', 'DEPTH_ZERO_SELF_SIGNED_CERT', 'ENOTFOUND', 'ECONNRESET', 'ECONNREFUSED', 'ETIMEDOUT']);
+  for (let current = error, depth = 0; current && depth < 8; current = current.cause, depth++) {
+    if (codes.has(current.code)) return true;
+    if (/abort|fetch failed|network/i.test(String(current.message || ''))) return true;
+  }
+  return false;
+}
+
 const direct = { fetchImpl: boundedFetch, retrievalUtc: '2026-08-29T22:00:00Z' };
 
 live('live authoritative GIS providers', () => {
@@ -40,10 +49,10 @@ live('live authoritative GIS providers', () => {
       } catch (error) {
         const source = getOnlineSourceDefinition(sourceId);
         const message = String(error);
-        if (source.certification !== 'PROVISIONAL_PROVIDER_RUNTIME' || !/abort|fetch failed|network|enotfound|econn/i.test(message)) {
+        if (source.certification !== 'PROVISIONAL_PROVIDER_RUNTIME' || !isProviderTransportUnavailable(error)) {
           throw error;
         }
-        console.log('GIS_LIVE_UNAVAILABLE', JSON.stringify({ sourceId, certification: source.certification, error: message }));
+        console.log('GIS_LIVE_UNAVAILABLE', JSON.stringify({ sourceId, certification: source.certification, error: message, causeCode: error?.cause?.code || error?.code || null }));
       }
     }, 45000);
   }
