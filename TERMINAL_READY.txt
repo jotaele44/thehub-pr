@@ -20,9 +20,22 @@ Expected result: state=PASS, consumer_count=6,
 frozen_denominator.State=FROZEN_DENOMINATOR_PASS,
 authority_source_validation.Verification_State=AUTHORITY_COMMIT_AND_SOURCE_BYTES_PASS,
 authority_source_validation.Authority_Commit_Object_Verified=true,
-authority_source_validation.Authority_Commit_Observed=0c66e13d14232c0d7cbcbc179b3655904777dc71.
+authority_source_validation.Authority_Commit_Observed=b8f5cf303ab7fc2b6ed006edce0fb12e1344a096.
 If any input repo, schema, pin, or authority Git object is absent or mismatched, stop.
 The Spiderweb checkout must be detached at the exact pinned authority commit.
+
+AUTHORITY-EPOCH TRANSITION
+The current candidate advances the authority commit from 0c66e13 to b8f5cf3.
+The grid manifest, geometry source and schema bytes are unchanged; verify them
+independently rather than treating descendant ancestry as sufficient proof.
+The Cell_Profile schema's Authority_Commit constant advances with the runtime;
+schemas/FROZEN.sha256 records that deliberate contract change.
+Historical lane receipts retain their original authority commit and are not
+current-epoch execution evidence. Replay against all six consumer mains is
+required before promotion. A candidate-only rehearsal is not main parity.
+Hub CI audits current sibling mains in _federation and checks the grid authority
+in a separate immutable checkout. A later Spiderweb main is not substituted
+for the pinned authority, and consumers are never replaced by older snapshots.
 
 DOMAIN PRODUCERS (once the shared template is distributed)
 python federation/spatial/materialize_pr_grid_v2_profiles.py --pin federation/spatial/pr_grid_geographic_v2.pin.json --level L1 --records /path/source_record_metadata.jsonl --bindings /path/spiderweb_binding_rows.jsonl --binding-receipt /path/spiderweb_binding_receipt.json --out /path/L1.jsonl --receipt-out /path/L1.receipt.json
