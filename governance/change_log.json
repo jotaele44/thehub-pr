@@ -90,6 +90,16 @@
         "docs/FEDERATION_STATUS.md",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-10-25",
+      "summary": "federation-ingest.yml had never succeeded: every run pushed a new fixture-refresh-<run_id> branch and then failed at `gh pr create` because GitHub Actions is not permitted to create pull requests in this repository, leaving about 1,000 orphan branches. It now force-pushes one standing fixture-refresh branch and opens a PR only when none is open (otherwise it updates the open one), and it runs tools/check_docs_sync.py on the head and records the docs-sync status there, since docs-sync is the one check main requires and a PR opened with the built-in token runs no CI. Opening the PR still needs the repository setting that lets GitHub Actions create pull requests, or SYNC_PAT. Workflow, README and test change only: no contract, schema or dependency edge changed.",
+      "files": [
+        ".github/workflows/federation-ingest.yml",
+        "README.md",
+        "tests/test_deployment_assets.py",
+        "governance/change_log.json"
+      ]
     }
   ]
 }
