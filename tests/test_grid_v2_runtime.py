@@ -66,6 +66,7 @@ def test_real_thehub_pin_loads_and_emits_identity():
 @pytest.mark.parametrize(
     ("field", "bad_value", "message"),
     [
+        ("authority_commit", "0c66e13d14232c0d7cbcbc179b3655904777dc71", "authority_commit"),
         ("grid_id", "PR_GRID_LOGICAL_V1", "grid_id"),
         ("grid_version", "2.0.0", "grid_version"),
         ("grid_manifest_sha256", "0" * 64, "grid_manifest_sha256"),

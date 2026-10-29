@@ -31,7 +31,7 @@ jobs:
         run: |
           set -euo pipefail
           root="$RUNNER_TEMP/prii_grid_v2"
-          authority_sha="0c66e13d14232c0d7cbcbc179b3655904777dc71"
+          authority_sha="b8f5cf303ab7fc2b6ed006edce0fb12e1344a096"
           mkdir -p "$root"
 
           git clone --filter=blob:none --no-checkout             "https://github.com/jotaele44/spiderweb-pr.git" "$root/spiderweb-pr"
