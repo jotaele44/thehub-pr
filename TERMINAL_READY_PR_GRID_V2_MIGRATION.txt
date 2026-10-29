@@ -1,0 +1,46 @@
+TERMINAL_READY — PR Grid V2 Migration Readiness Ledger
+
+PURPOSE
+Validate the current five-domain production migration denominator without
+promoting fixture-only, proxy, or source-incomplete records.
+
+CURRENT FROZEN STATE
+aguayluz-pr=PASS
+skywatcher-pr=BLOCKED_SOURCE_GEOMETRY_BYTES_MISSING
+ovnis-pr=BLOCKED_COORDINATE_PROVENANCE_UNDECLARED
+moneysweep-pr=BLOCKED_PRODUCTION_COORDINATE_DENOMINATOR_UNFROZEN
+centinelas-pr=BLOCKED_NO_CANONICAL_SIGNAL_GEOMETRY_DENOMINATOR
+
+MACOS / LINUX — THEHUB REPOSITORY ROOT
+python3 scripts/validate_pr_grid_v2_migration_readiness.py
+python3 -m pytest -q tests/test_pr_grid_v2_migration_readiness.py
+python3 -m json.tool federation/spatial/pr_grid_v2_migration_readiness.json >/dev/null
+python3 -m json.tool schemas/pr_grid_v2_migration_readiness.schema.json >/dev/null
+
+EXPECTED
+PR_GRID_V2_MIGRATION_READINESS=PASS
+
+SMOKE TEST — ALL V2 RUNTIME / PROFILE / READINESS GATES
+python3 -m pytest -q tests/test_grid_v2_runtime.py tests/test_grid_v2_profiles.py tests/test_grid_v2_api.py tests/test_pr_grid_v2_migration_readiness.py
+
+FAILURE HANDLING
+Any validation, test, schema, authority-hash, denominator, or evidence-role
+failure means BLOCKED. Do not promote another domain to PASS by editing the
+ledger alone. First freeze the required production source bytes/provenance and
+produce Spiderweb-certified binding evidence, then update the ledger and tests
+in one reviewed change.
+
+ARTIFACT PATHS
+federation/spatial/pr_grid_v2_migration_readiness.json
+schemas/pr_grid_v2_migration_readiness.schema.json
+scripts/validate_pr_grid_v2_migration_readiness.py
+tests/test_pr_grid_v2_migration_readiness.py
+
+CANONICAL GRID HASH
+8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4
+
+SHA-256 CHECK
+python3 -c "import hashlib,pathlib; files=['federation/spatial/pr_grid_v2_migration_readiness.json','schemas/pr_grid_v2_migration_readiness.schema.json','scripts/validate_pr_grid_v2_migration_readiness.py','tests/test_pr_grid_v2_migration_readiness.py']; [print(hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest(),p) for p in files]"
+
+NON-EXECUTABLE ARTIFACTS
+NOT_APPLICABLE

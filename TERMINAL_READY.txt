@@ -77,3 +77,12 @@ Expected:
 - ADMINISTRATIVE_SET and DERIVED_SET remain excluded from exact profiles.
 - Migration_Class=SPIDERWEB_CERTIFIED_EXACT_BINDINGS.
 - Geometry_Included=false for every profile.
+
+
+MIGRATION READINESS LEDGER
+Task-specific validation and promotion policy:
+TERMINAL_READY_PR_GRID_V2_MIGRATION.txt
+
+Quick validation:
+python3 scripts/validate_pr_grid_v2_migration_readiness.py
+python3 -m pytest -q tests/test_pr_grid_v2_migration_readiness.py
