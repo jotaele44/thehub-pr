@@ -163,7 +163,7 @@ spatial layers).
   need to open a pull request instead. (Resolved without a pull request; see Part 13.)
 
 **Part 13 — `centinelas-pr` bot pushes record their own `docs-sync` status (2026-10-29):**
-- **Change.** `centinelas-pr` #182 added `scripts/push_to_main.sh`, now used by
+- **Change.** `centinelas-pr` #182 added `centinelas-pr/scripts/push_to_main.sh`, now used by
   `handoff-ack.yml`, `signal-ledger-refresh.yml`, `just-security-monitor.yml` and
   `el-yunque-access-monitor.yml` in place of `git push`. It replays the job's data commit
   on the tip of `main`, stages it on a scratch `bot/<name>` branch, runs
@@ -189,7 +189,7 @@ Each item below is **code-ready** unless noted; the missing item is named.
 | Live exec | moneysweep-pr | Tranche-B manual source exports (hud_drgr, prasa, oficina_contralor, pr_cabilderos) + cor3 portal export (JS-rendered; manual CSV fallback) + `PROPUBLICA_API_KEY`. Runtime keys (FEC/SAM/HigherGov/LDA/Data.gov-family via `X_API_KEY`) are now supplied and 8/14 required sources are live-materialized. |
 | Per-asset outage attribution | aguayluz | A finer outage feed; PREPS is island-wide aggregate and third-party outage snapshots remain review-grade until promoted. |
 | ECW photomosaic extents | PRIIS | A GDAL ECW driver/plugin or external ECW→GeoTIFF conversion before remaining mosaics can be ingested. |
-| `docs-sync` required on `main` | aguayluz | Held until `refresh.yml` either opens a pull request or records `docs-sync` on its commit before pushing (as `centinelas-pr`'s `scripts/push_to_main.sh` does); then an administrator runs `tools/require_docs_sync.py --apply`, since repository settings are outside what a template or CI can change. |
+| `docs-sync` required on `main` | aguayluz | Held until `refresh.yml` either opens a pull request or records `docs-sync` on its commit before pushing (as `centinelas-pr/scripts/push_to_main.sh` does); then an administrator runs `tools/require_docs_sync.py --apply`, since repository settings are outside what a template or CI can change. |
 | Fixture-refresh PR from `federation-ingest.yml` | thehub | Repository setting: Settings → Actions → General → Workflow permissions → "Allow GitHub Actions to create and approve pull requests" (or a `SYNC_PAT` secret). Until then each run updates the `fixture-refresh` branch but cannot open its PR. |
 | Repo deletion | `jotaele44/Aerospace-Intelligence-Tool` | `gh auth refresh -s delete_repo` then `gh repo delete … --yes`. Content preserved in `skywatcher-pr` archive/provenance notes. |
 | Repo deletion | `jorgegonzalez44/Puerto-Rico-Airspace-Intelligence-Tool` | Delete from the **jorgegonzalez44** account after confirming no unsalvaged material remains. |
