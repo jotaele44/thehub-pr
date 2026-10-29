@@ -78,7 +78,8 @@ package changes.
 `.github/workflows/federation-ingest.yml` closes that loop: on each producer
 `repository_dispatch` it re-runs every producer's `export_canonical`, rebuilds the bounded
 fixture, and **opens a pull request** when the data actually changed. Nothing lands on `main`
-without review.
+without review. Every refresh force-pushes the one `fixture-refresh` branch, so an open
+refresh PR always shows the newest data and a run that cannot open a PR leaves no new branch.
 
 Two details worth knowing before touching that workflow:
 
@@ -93,8 +94,11 @@ Two details worth knowing before touching that workflow:
   when producer data really moved.
 
 No secrets are required — the producer repos are public and the PR is same-repo, so the
-built-in `GITHUB_TOKEN` covers it. GitHub does not run workflows on a PR that token creates;
-if you want CI on fixture-refresh PRs, set the repo's existing `SYNC_PAT` secret and the
+built-in `GITHUB_TOKEN` can open it, provided the repository allows that (Settings → Actions →
+General → *Allow GitHub Actions to create and approve pull requests*). GitHub does not run
+workflows on a PR that token creates, so the workflow runs `tools/check_docs_sync.py` itself
+and records the `docs-sync` status — the one check `main` requires — on the PR's head. If you
+want the rest of CI on fixture-refresh PRs, set the repo's existing `SYNC_PAT` secret and the
 workflow will use it automatically.
 
 ## Desktop app
