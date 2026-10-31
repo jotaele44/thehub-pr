@@ -103,6 +103,198 @@ test.describe('MoneySweep certified leaderboard consumer', () => {
     await expect(page.getByText(/Package SHA-256:/)).toBeVisible();
   });
 
+  test('switches to the certified ASG plane and preserves source-native accounting', async ({ page }) => {
+    const packageHash = 'c'.repeat(64);
+    await mockApi(page, {
+      '/moneysweep/leaderboards/status': {
+        state: 'BLOCKED',
+        reason: 'certified debt leaderboard package is not mounted',
+      },
+      '/moneysweep/asg-leaderboards/status': {
+        state: 'PASS',
+        producerCommit: 'd'.repeat(40),
+        rankingContractVersion: 'moneysweep.leaderboard/v1.1',
+        ontologyContractVersion: 'moneysweep.financial-category-ontology/v1.1',
+        scopeId: 'moneysweep.leaderboard.asg-emergency-source-native-v1',
+        inputRecords: 1431,
+        outOfScopeRecords: 1410,
+        retainedRecords: 21,
+        candidateCount: 10,
+        consumerPackageSha256: packageHash,
+      },
+      '/moneysweep/asg-leaderboards/top': {
+        categoryId: 'asg_emergency_purchase_source_native',
+        metricType: 'ASG_EMERGENCY_PURCHASE_COST',
+        rows: [
+          {
+            entityId: 'ASG-12345',
+            entityDisplayName: 'Proveedor con ID nativo',
+            entityResolutionState: 'SOURCE_NATIVE_ID',
+            currency: 'USD',
+            metricValue: 125000,
+            recordCount: 3,
+            rank: 1,
+          },
+        ],
+        consumerState: 'PASS',
+        producerCommit: 'd'.repeat(40),
+        scopeId: 'moneysweep.leaderboard.asg-emergency-source-native-v1',
+        scopeBoundary: 'Only purchases with an explicit ASG Licitador ID are ranked.',
+        consumerPackageSha256: packageHash,
+      },
+    });
+
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Leaderboards' }).click();
+    await page.getByRole('tab', { name: 'ASG emergency purchases' }).click();
+
+    await expect(page.getByRole('heading', { name: 'ASG Emergency Purchases — Source-Native IDs' })).toBeVisible();
+    await expect(page.getByText('Proveedor con ID nativo')).toBeVisible();
+    await expect(page.getByText('ASG-12345')).toBeVisible();
+    await expect(page.getByText('SOURCE_NATIVE_ID')).toBeVisible();
+    await expect(page.getByText('3 retained purchases')).toBeVisible();
+    await expect(page.getByText(/1431 records = 1410 explicit identity exclusions \+ 21 retained source-native rows/)).toBeVisible();
+    await expect(page.getByText(/Package SHA-256:/)).toBeVisible();
+  });
+
+  test('renders exact ASG consumer at desktop and iPhone width without overflow or sub-44px tabs', async ({ page }, testInfo) => {
+    const packageHash = '6ecdad09a48cdbd4ae1076138a9b5017a5be82608b489871a50ce0d599680337';
+    await mockApi(page, {
+      '/moneysweep/leaderboards/status': {
+        state: 'BLOCKED',
+        reason: 'certified debt leaderboard package is not mounted',
+      },
+      '/moneysweep/asg-leaderboards/status': {
+        state: 'PASS',
+        producerCommit: 'e963f4258a78c9b30427df7a7e9b4edf83f00692',
+        rankingContractVersion: 'moneysweep.leaderboard/v1.1',
+        ontologyContractVersion: 'moneysweep.financial-category-ontology/v1.1',
+        scopeId: 'moneysweep.leaderboard.asg-emergency-source-native-v1',
+        inputRecords: 1431,
+        outOfScopeRecords: 1410,
+        retainedRecords: 21,
+        candidateCount: 10,
+        consumerPackageSha256: packageHash,
+      },
+      '/moneysweep/asg-leaderboards/top': {
+        categoryId: 'asg_emergency_purchase_source_native',
+        metricType: 'ASG_EMERGENCY_PURCHASE_COST',
+        rows: [{
+          entityId: 'asg_licitador_id:23388',
+          entityDisplayName: 'Sonnell Truck Center LLC',
+          entityResolutionState: 'SOURCE_NATIVE_ASG_LICITADOR_ID',
+          currency: 'USD',
+          metricValue: 1744085,
+          recordCount: 1,
+          rank: 1,
+        }],
+        consumerState: 'PASS',
+        producerCommit: 'e963f4258a78c9b30427df7a7e9b4edf83f00692',
+        scopeId: 'moneysweep.leaderboard.asg-emergency-source-native-v1',
+        scopeBoundary: 'Only purchases with an explicit ASG Licitador ID are ranked.',
+        consumerPackageSha256: packageHash,
+      },
+    });
+
+    for (const viewport of [
+      { name: 'desktop', width: 1280, height: 800 },
+      { name: 'iphone393', width: 393, height: 852 },
+    ]) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+      await page.getByRole('tab', { name: 'Leaderboards' }).click();
+      await page.getByRole('tab', { name: 'ASG emergency purchases' }).click();
+
+      await expect(page.getByRole('heading', { name: 'ASG Emergency Purchases — Source-Native IDs' })).toBeVisible();
+      await expect(page.getByText('Sonnell Truck Center LLC')).toBeVisible();
+      await expect(page.getByText('asg_licitador_id:23388')).toBeVisible();
+      await expect(page.getByText('SOURCE_NATIVE_ASG_LICITADOR_ID')).toBeVisible();
+      await expect(page.getByText('1 retained purchase')).toBeVisible();
+      await expect(page.getByText(/1431 records = 1410 explicit identity exclusions \+ 21 retained source-native rows/)).toBeVisible();
+      await expect(page.getByText(new RegExp(packageHash.slice(0, 24)))).toBeVisible();
+
+      const geometry = await page.evaluate(() => {
+        const root = document.documentElement;
+        const tabs = [...document.querySelectorAll('[role="tab"]')]
+          .filter((el) => {
+            const r = el.getBoundingClientRect();
+            const style = getComputedStyle(el);
+            return r.width > 0 && r.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
+          })
+          .map((el) => {
+            const r = el.getBoundingClientRect();
+            return { label: el.textContent?.trim() || '', width: r.width, height: r.height };
+          });
+        const intentionalScroller = (el) => {
+          let node = el;
+          while (node && node !== document.body) {
+            const style = getComputedStyle(node);
+            if ((style.overflowX === 'auto' || style.overflowX === 'scroll') && node.scrollWidth > node.clientWidth + 1) return true;
+            node = node.parentElement;
+          }
+          return false;
+        };
+        const offenders = [...document.querySelectorAll('body *')]
+          .map((el) => ({ el, rect: el.getBoundingClientRect() }))
+          .filter(({ el, rect }) => rect.width > 0 && (rect.right > root.clientWidth + 1 || rect.left < -1) && !intentionalScroller(el))
+          .slice(0, 30)
+          .map(({ el, rect }) => ({
+            tag: el.tagName.toLowerCase(),
+            className: typeof el.className === 'string' ? el.className.slice(0, 180) : '',
+            text: (el.textContent || '').trim().replace(/\s+/g, ' ').slice(0, 100),
+            left: Math.round(rect.left),
+            right: Math.round(rect.right),
+            width: Math.round(rect.width),
+            scrollWidth: el.scrollWidth,
+            clientWidth: el.clientWidth,
+          }));
+        return {
+          clientWidth: root.clientWidth,
+          scrollWidth: root.scrollWidth,
+          overflowPx: Math.max(0, root.scrollWidth - root.clientWidth),
+          tabs,
+          offenders,
+        };
+      });
+
+      await page.screenshot({
+        path: testInfo.outputPath(`moneysweep-asg-${viewport.width}x${viewport.height}.png`),
+        fullPage: true,
+      });
+
+      expect(
+        geometry.overflowPx,
+        `${viewport.name} document overflow; geometry=${JSON.stringify(geometry)}`,
+      ).toBe(0);
+      expect(geometry.tabs.length).toBeGreaterThanOrEqual(7);
+      for (const tab of geometry.tabs) {
+        expect(tab.height, `${viewport.name} tab "${tab.label}" height`).toBeGreaterThanOrEqual(44);
+      }
+    }
+  });
+
+  test('shows the ASG producer blocker without synthesizing ranking rows', async ({ page }) => {
+    await mockApi(page, {
+      '/moneysweep/leaderboards/status': {
+        state: 'BLOCKED',
+        reason: 'certified debt leaderboard package is not mounted',
+      },
+      '/moneysweep/asg-leaderboards/status': {
+        state: 'BLOCKED',
+        reason: 'certified ASG MoneySweep leaderboard package is not mounted',
+      },
+    });
+
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Leaderboards' }).click();
+    await page.getByRole('tab', { name: 'ASG emergency purchases' }).click();
+
+    await expect(page.getByRole('heading', { name: 'ASG Emergency Purchases — Source-Native IDs' })).toBeVisible();
+    await expect(page.getByText('BLOCKED')).toBeVisible();
+    await expect(page.getByText('certified ASG MoneySweep leaderboard package is not mounted')).toBeVisible();
+    await expect(page.getByRole('table')).toHaveCount(0);
+  });
+
   test('shows fail-closed producer status instead of synthetic ranking rows', async ({ page }) => {
     await mockApi(page, {
       '/moneysweep/leaderboards/status': {
@@ -114,9 +306,9 @@ test.describe('MoneySweep certified leaderboard consumer', () => {
     await page.goto('/moneysweep', { waitUntil: 'networkidle' });
     await page.getByRole('tab', { name: 'Leaderboards' }).click();
 
-    await expect(page.getByRole('heading', { name: 'Financial Leaderboards' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Certified Public Debt Issuance' })).toBeVisible();
     await expect(page.getByText('BLOCKED')).toBeVisible();
-    await expect(page.getByText(/fail-closed until MoneySweep supplies/)).toBeVisible();
+    await expect(page.getByText(/fail-closed until TheHub trusts/)).toBeVisible();
     await expect(page.getByRole('table')).toHaveCount(0);
   });
 });
@@ -463,6 +655,18 @@ const TWIN_FEATURES = {
   ],
 };
 
+// Serves a file the way NOAA's bucket and the PROJ CDN do: 206 for one byte range, CORS open.
+function serveRanges(route, file) {
+  const range = /^bytes=(\d+)-(\d+)$/.exec(route.request().headers().range || '');
+  if (!range) return route.fulfill({ status: 200, contentType: 'image/tiff', headers: { 'Access-Control-Allow-Origin': '*' }, body: file });
+  const start = Number(range[1]);
+  const end = Math.min(Number(range[2]), file.length - 1);
+  return route.fulfill({
+    status: 206, contentType: 'image/tiff', body: file.subarray(start, end + 1),
+    headers: { 'Access-Control-Allow-Origin': '*', 'Content-Range': `bytes ${start}-${end}/${file.length}` },
+  });
+}
+
 async function mockCudem(page) {
   const { writeArrayBuffer } = await import('geotiff');
   const { tileBounds } = await import('../../src/gis/cudem.js');
@@ -471,21 +675,134 @@ async function mockCudem(page) {
     const [west, south, east, north] = tileBounds(name);
     const pixels = 64;
     const values = new Float32Array(pixels * pixels).map((_, index) => 100 + Math.floor(index / pixels) * 10);
-    const file = Buffer.from(writeArrayBuffer(values, {
+    return serveRanges(route, Buffer.from(writeArrayBuffer(values, {
       width: pixels, height: pixels, BitsPerSample: [32], SampleFormat: [3],
       ModelPixelScale: [(east - west) / pixels, (north - south) / pixels, 0],
       ModelTiepoint: [0, 0, 0, west, north, 0], GeographicTypeGeoKey: 4269,
-    }));
-    const range = /^bytes=(\d+)-(\d+)$/.exec(route.request().headers().range || '');
-    if (!range) return route.fulfill({ status: 200, contentType: 'image/tiff', headers: { 'Access-Control-Allow-Origin': '*' }, body: file });
-    const start = Number(range[1]);
-    const end = Math.min(Number(range[2]), file.length - 1);
-    return route.fulfill({
-      status: 206, contentType: 'image/tiff', body: file.subarray(start, end + 1),
-      headers: { 'Access-Control-Allow-Origin': '*', 'Content-Range': `bytes ${start}-${end}/${file.length}` },
-    });
+    })));
   });
 }
+
+// GEOID18's layout (301 x 361 nodes at 1 arc-minute, longitudes 0-360, PixelIsPoint) holding N = -40 m.
+async function mockGeoid(page) {
+  const { writeArrayBuffer } = await import('geotiff');
+  const file = Buffer.from(writeArrayBuffer(new Float32Array(301 * 361).fill(-40), {
+    width: 301, height: 361, BitsPerSample: [32], SampleFormat: [3],
+    ModelPixelScale: [1 / 60, 1 / 60, 0], ModelTiepoint: [0, 0, 0, 291, 21, 0],
+    GeographicTypeGeoKey: 6318, GTRasterTypeGeoKey: 2,
+  }));
+  await page.route('https://cdn.proj.org/us_noaa_g2018p0.tif', (route) => serveRanges(route, file));
+}
+
+// SIGE's karst layer (sumideros): a count query, then GeoJSON pages, as the registry's acquisition gates expect.
+async function mockSige(page) {
+  await page.route('https://sige.pr.gov/**', (route) => {
+    const body = route.request().url().includes('returnCountOnly')
+      ? { count: 1 }
+      : {
+        type: 'FeatureCollection',
+        features: [{
+          type: 'Feature', properties: { OBJECTID: 1, NOMBRE: 'Sumidero de prueba' },
+          geometry: { type: 'Polygon', coordinates: [[[-66.3, 18.1], [-66.2, 18.1], [-66.2, 18.3], [-66.3, 18.3], [-66.3, 18.1]]] },
+        }],
+      };
+    return route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify(body) });
+  });
+}
+
+// Nine records of one category: six inside the study box, three inside the control box.
+const AOI_FEATURES = {
+  contract: 'federation-spatial-features-v1', type: 'FeatureCollection', loaded: 9, matched: 9, truncated: false, excluded_synthetic: 0, outside_bbox: 0,
+  features: [
+    ...Array.from({ length: 6 }, (_, i) => [`s${i}`, -66.55 + i * 0.02]),
+    ...Array.from({ length: 3 }, (_, i) => [`c${i}`, -65.95 + i * 0.05]),
+  ].map(([id, lon]) => ({
+    type: 'Feature', id: `evo:entities:${id}`, geometry: { type: 'Point', coordinates: [lon, 18.2] },
+    properties: {
+      evidence_id: `evo:entities:${id}`, title: id, category: 'utility_asset', stream: 'entities', producer: 'aguayluz-pr', producers: ['aguayluz-pr'],
+      geometry_precision: 'OBSERVED_POINT', geometry_basis: null, municipality: null, object_type: null, synthetic: false,
+      evidence_href: `/evidence/Entities/${id}`, entity_href: null, time_start: null, time_end: null, temporal_state: 'UNKNOWN',
+    },
+  })),
+  categories: [{ producer: 'aguayluz-pr', stream: 'entities', category: 'utility_asset', count: 9 }], precision_counts: { OBSERVED_POINT: 9 },
+  coordinates_without_point_precision: {}, not_drawn: [], area_references: [], time_extent: null, undated: 9,
+  store: { kind: 'bounded-sample', cap_per_stream: 400, streams: { entities: { sampled: 825, actual: 48224, closure_added: 425 } } },
+};
+
+test.describe('aoi comparison', () => {
+  test('compares a study box with a control box as background, over a stated sample, and refuses overlap', async ({ page }) => {
+    test.setTimeout(90000);
+    await mockApi(page, { '/spatial/features': AOI_FEATURES });
+    await mockMapProviders(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'GIS Workspace', exact: true }).click();
+    await page.getByRole('button', { name: 'AOI comparison', exact: true }).click();
+    await expect(page).toHaveURL(/\/gis\?view=aoi-comparison$/);
+    await expect(page.getByTestId('aoi-map')).toHaveAttribute('data-map-ready', 'true', { timeout: 30000 });
+    await expect(page.locator('[data-store-basis]')).toContainText('bounded sample (at most 400 records per stream): entities 825 of 48224');
+
+    await page.getByLabel('Study AOI bounding box').fill('-66.6,18.1,-66.4,18.3');
+    await page.getByLabel('Control 1 bounding box').fill('-66.5,18.1,-65.8,18.3');
+    await page.getByRole('button', { name: 'Compare' }).click();
+    await expect(page.getByRole('alert')).toContainText('overlaps the study AOI');
+
+    await page.getByLabel('Control 1 bounding box').fill('-66.0,18.1,-65.8,18.3');
+    await page.getByRole('button', { name: 'Compare' }).click();
+    await expect(page.locator('[data-not-a-finding]')).toHaveText('BACKGROUND COMPARISON — not a finding');
+    const row = page.locator('[data-comparison-row="aguayluz-pr|entities|utility_asset"]');
+    await expect(row.locator('[data-study-count]')).toHaveText('6');
+    await expect(row.locator('[data-control-count]')).toHaveText('3');
+    await expect(row.locator('[data-ratio]')).toContainText(/^\d+\.\d{2} \(95% CI/);
+    await expect(row.locator('[data-p]')).toHaveText(/^\d\.\d{3}$/);
+    await expect(page.locator('[data-multiplicity]')).toContainText('not adjusted for multiple comparisons');
+    await expect(page.locator('[data-aoi-summary]')).toContainText('spherical polygon area');
+
+    const [receipt] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download receipt (JSON)' }).click()]);
+    expect(receipt.suggestedFilename()).toBe('aoi-comparison.json');
+    const { readFile } = await import('node:fs/promises');
+    const body = JSON.parse(await readFile(await receipt.path(), 'utf8'));
+    expect(body).toMatchObject({ contract: 'aoi-comparison-v1', certification: 'NOT_CERTIFIED', store: { sample: true } });
+    expect(body.rows[0]).toMatchObject({ study_count: 6, control_count: 3 });
+  });
+});
+
+test.describe('interpretive layers', () => {
+  test('keeps documented and modelled geometry apart and reads a terrain profile with its datum and gaps', async ({ page }) => {
+    test.setTimeout(90000);
+    await mockApi(page, { '/spatial/features': SPATIAL_FEATURES });
+    await mockMapProviders(page);
+    await mockCudem(page);
+    await mockSige(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'GIS Workspace', exact: true }).click();
+    await page.getByRole('button', { name: 'Subsurface & interpretive', exact: true }).click();
+    await expect(page).toHaveURL(/\/gis\?view=interpretive-layers$/);
+    await expect(page.getByTestId('interpretive-map')).toHaveAttribute('data-map-ready', 'true', { timeout: 30000 });
+
+    const modelled = page.locator('[data-group="modelled"]');
+    await expect(modelled).toContainText('MODELLED — not observed geometry');
+    await expect(modelled.locator('[data-modelled-count]')).toHaveText('0');
+    await expect(modelled).toContainText('No producer exports a modelled or interpretive layer');
+    await expect(page.locator('[data-hub-documented]')).toContainText('1 Hub-held documented record');
+
+    const karst = page.locator('[data-layer="pr-sige-sumideros"]');
+    await karst.getByRole('button', { name: 'Load Sumideros' }).click();
+    await expect(karst.locator('[data-layer-provenance]')).toContainText(/1 feature .* snapshot SHA-256 [0-9a-f]{12}/);
+
+    // West to east across the island and out to sea: CUDEM ends at -65.25, so the east is a gap, not zero.
+    await page.getByLabel('Start (lat, lon)').fill('18.2, -66.5');
+    await page.getByLabel('End (lat, lon)').fill('18.2, -64.0');
+    await page.getByRole('button', { name: 'Draw profile' }).click();
+    const stats = page.locator('[data-profile-stats]');
+    await expect(stats).toContainText(/100 samples · [1-9]\d* with a CUDEM height · [1-9]\d* without/, { timeout: 30000 });
+    await expect(page.locator('[data-profile-datum]')).toContainText('PRVD02');
+    await expect(page.locator('svg[data-profile-chart] path')).toHaveAttribute('d', /^M/);
+    await expect(page.locator('[data-profile-crossings]')).toContainText('Sumideros');
+    await expect(page.locator('[data-profile-subsurface]')).toContainText('No subsurface model supplied');
+    const [csv] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download CSV' }).click()]);
+    expect(csv.suggestedFilename()).toBe('terrain-profile.csv');
+  });
+});
 
 test.describe('digital twin', () => {
   test('is reachable from the GIS workspace, binds uniform-datum terrain and keeps panels in step', async ({ page }) => {
@@ -494,6 +811,7 @@ test.describe('digital twin', () => {
     await mockApi(page, { '/spatial/features': TWIN_FEATURES });
     await mockMapProviders(page);
     await mockCudem(page);
+    await mockGeoid(page);
     await page.goto('/sources', { waitUntil: 'networkidle' });
     await (await openPrimaryNav(page)).getByRole('link', { name: 'GIS Workspace', exact: true }).click();
     await page.getByRole('button', { name: 'Digital Twin', exact: true }).click();
@@ -502,14 +820,18 @@ test.describe('digital twin', () => {
     const perspective = page.getByTestId('digital-twin-perspective');
     await expect(perspective).toHaveAttribute('data-ready', 'true', { timeout: 30000 });
     await expect(perspective).toHaveAttribute('data-terrain', 'noaa-ncei-cudem-pr-ninth-m9525');
+    await expect(perspective).toHaveAttribute('data-geoid', 'applied');
     await expect(page.getByTestId('digital-twin-ortho')).toHaveAttribute('data-map-ready', 'true', { timeout: 30000 });
     await expect(page.getByTestId('digital-twin-ortho')).toHaveAttribute('data-drawn-count', /^[1-9]/, { timeout: 30000 });
     await expect(page.locator('[data-dt-findings-status]')).toContainText('No finding carries geometry');
     await expect(page.locator('[data-dt-live-status]')).toContainText('No producer declares a live cadence');
     await expect(page.locator('[data-dt-terrain-status]')).toContainText('bound (uniform vertical datum)');
+    await expect(page.locator('[data-dt-geoid]')).toContainText('GEOID18 applied');
 
     await page.locator('[data-dt-record="evo:entities:ent_m"]').click();
     await expect(page.locator('[data-dt-elevation]')).toContainText(/m PRVD02 · CUDEM m9525/, { timeout: 30000 });
+    // The ellipsoidal height is H + N from the geoid grid read from the CDN (N = -40 m in the mock), with its own datum.
+    await expect(page.locator('[data-dt-ellipsoidal]')).toContainText(/Geoid N -40\.0 m \(GEOID18\) → [\d.]+ m NAD83\(2011\) ellipsoidal · H \+ N/);
     await expect(page.locator('[data-dt-terrain-tiles]')).toContainText('ncei19_', { timeout: 30000 });
 
     await page.getByRole('slider', { name: 'Time' }).fill(String(Date.parse('2005-01-01T00:00:00Z')));

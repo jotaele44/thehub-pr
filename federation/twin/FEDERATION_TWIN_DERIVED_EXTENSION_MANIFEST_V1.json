@@ -366,9 +366,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "PARTIAL_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): A terrain profile along a drawn line (CUDEM, PRVD02, no-data kept as gaps) with the documented layers it crosses and the statement that nothing is drawn below the surface, because no subsurface model is supplied. A 3D subsurface cross-section needs a supplied model with a vertical datum. Tests: server/frontend/src/gis/interpretive.test.js, server/frontend/src/components/gis/InterpretiveLayers.test.jsx, server/frontend/tests/visual/gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-025",
@@ -381,9 +381,9 @@
       "existing_equivalent": "spiderweb-pr source_adapters/ncei_coastal_dem/datum_policy.py; thehub-pr server/frontend/src/gis/advanced3dContracts.js verticalDatum",
       "implementation_status": "EXTEND",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): Every height carries its datum and source, or \"datum not declared\"; heights of different or undeclared datums are refused on one axis. NOAA NGS GEOID18 (the PROJ-data mirror: 1 arc-minute grid, CORS open, ranged reads) relates PRVD02 to NAD83(2011) ellipsoidal heights and corrects the 3D terrain, bound by a check of its own (the terrain's EPSG datum must be the geoid's orthometric datum) beside the unchanged fail-closed 3D gate; an unreadable geoid is stated with its reason. Live check 2026-10-07: the bilinear grid agrees with NGS's own service within 0.0125 m at six points (San Juan -43.132 vs -43.131 m; Cerro de Punta -38.746 vs -38.733 m). Tests: server/frontend/src/gis/geoid.test.js, cudemTerrainProvider.test.js, DigitalTwin.test.jsx, liveProviders.test.js, gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-026",
@@ -426,11 +426,11 @@
       "existing_equivalent": "spiderweb-pr configs/location_query_reference_aois.json (regression AOIs, not controls)",
       "implementation_status": "EXTEND",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [
         "negative-control AOIs"
       ],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): /gis?view=aoi-comparison: a study AOI (a bounding box or a TIGERweb municipio by recorded name) against one or more control AOIs that must be disjoint from it and from each other (crossing, touching or contained areas are refused), by records per km² per (producer, stream, category). Only points whose producer declared a placed position count; stand-ins inside an AOI are counted apart as membership not determined. Every result is labelled BACKGROUND COMPARISON — not a finding, and a JSON receipt (NOT_CERTIFIED) records the AOIs, area method and store. Tests: server/frontend/src/gis/aoiComparison.test.js, server/frontend/src/components/gis/AoiComparison.test.jsx, server/frontend/src/gis/storeBasis.test.js, tests/test_spatial_features.py, tests/test_spatial_api.py, server/frontend/tests/visual/gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-029",
@@ -443,9 +443,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): The comparison normalizes by area and reports a rate ratio with an exact conditional binomial test and a Clopper-Pearson interval (reference values: binom.test(8,10) p = 0.109375, interval 0.4439045-0.9747893), no ratio below five combined records, and the number of comparisons with p-values left unadjusted. It is computed over the served store, which in the committed fixture is a bounded sample (400 per stream; alerts 400 of 4399, entities 825 of 48224): the view and the receipt say so, and that the sample's representativeness is not established. Tests: server/frontend/src/gis/aoiComparison.test.js, server/frontend/src/components/gis/AoiComparison.test.jsx, server/frontend/src/gis/storeBasis.test.js, tests/test_spatial_features.py, tests/test_spatial_api.py, server/frontend/tests/visual/gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-030",
@@ -1066,7 +1066,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): A gazetteer task, not a map task: resolving historical names needs a vetted name source and a rule that never promotes precision. Spiderweb holds the road-name gazetteer ingest; nothing is exported to the Hub for it yet."
     },
     {
       "capability_id": "FDX-071",
@@ -1096,7 +1096,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): Spiderweb's schema defines review_state (UNREVIEWED, REVIEW, ACCEPTED, REJECTED, CERTIFIED), but no row in the Hub store carries it (0 of the entities, observations and alerts), so there is no certified geometry to hand off. Nothing here upgrades approximate geometry: the comparison counts only declared placed points and keeps stand-ins apart."
     },
     {
       "capability_id": "FDX-073",
@@ -1136,9 +1136,9 @@
     "DERIVED_SCHEDULED": 0,
     "DERIVED_ALREADY_PRESENT": 1,
     "DERIVED_BLOCKED": 3,
-    "DERIVED_DEFERRED": 44,
-    "DERIVED_IMPLEMENTED_RUN_2": 10,
-    "DERIVED_PARTIAL_RUN_2": 2,
+    "DERIVED_DEFERRED": 40,
+    "DERIVED_IMPLEMENTED_RUN_2": 13,
+    "DERIVED_PARTIAL_RUN_2": 3,
     "DERIVED_SCHEDULED_RUN_2": 0,
     "by_implementation_status": {
       "BLOCKED": 3,

@@ -1,11 +1,9 @@
 # PRII Federation — Gap-Closure Status
 
 _Authoritative status of the Puerto Rico Integrated Intelligence (PRII) federation._
-_Last updated: 2026-09-06 (federation-wide gap-closure audit: branch-protection
-verification across all seven repos, plus thehub-pr's own upgrade-audit Phase
-1+2 closure — see Part 9 below). Prior update: 2026-08-31 (promoted centinelas to live-ready from its
-authoritative producer manifest after a 100-signal real refresh, successful
-production export, and downstream Hub package validation)._
+_Last updated: 2026-10-29 (`centinelas-pr`'s scheduled data pushes reach `main` again,
+each recording its own `docs-sync` status — see Part 13 below). Prior update: 2026-10-20
+(`docs-sync` required on `main` in `centinelas-pr` too, six repos in all — see Part 12)._
 
 The federation is **artifact-based**: producers emit a discovery manifest
 (`federation.json`) plus a canonical export package (`sources/entities/
@@ -117,6 +115,70 @@ spatial layers).
   FR24 capture), moneysweep-pr (Tranche-B manual exports + API keys), aguayluz
   (per-asset outage granularity) — no code in this pass could close them.
 
+**Part 10 — Branch-protection re-audit and the `docs-sync` required check (2026-10-12):**
+- **Re-audit, now with the required-check lists.** Read every active ruleset and the
+  classic branch protection on `main` across all seven repos, which the Part 9 audit
+  could not do. Nothing protects `main` in `thehub-pr`, `aguayluz-pr`, `ovnis-pr`,
+  `skywatcher-pr` or `centinelas-pr`. `moneysweep-pr` and `spiderweb-pr` require only
+  their own CI jobs; neither requires `federation-compatibility`, so no federation
+  check blocks a merge anywhere. Recorded in `governance/merge_blocking_status.json`;
+  `merge_blocking_status` stays `BLOCKED`.
+- **`docs-sync` ready to require (ADR 0010, rollout step 3).**
+  `tools/require_docs_sync.py --apply` marks it required on `main` per repo: appended to
+  `moneysweep-pr`'s ruleset and `spiderweb-pr`'s branch protection, and a new
+  `main-required-checks` ruleset in `thehub-pr`, `ovnis-pr` and `skywatcher-pr`. It is a
+  repository setting, so a repository administrator runs it; until then the gate stays
+  `PROVISIONAL`. `aguayluz-pr` is held because `refresh.yml` pushes its scheduled data
+  commits straight to `main`, which a required check would reject. `skywatcher-pr`'s
+  `centinelas-handoff.yml` also pushes to `main` but has never been dispatched; it needs
+  the same change before it is first used. `centinelas-pr` has not adopted the gate yet.
+
+**Part 11 — `docs-sync` required on `main` in five repos (2026-10-15):**
+- **Applied.** A repository administrator ran `tools/require_docs_sync.py --apply`. `main`
+  now requires `docs-sync` in `thehub-pr`, `ovnis-pr` and `skywatcher-pr` (a new
+  `main-required-checks` ruleset with the repository-admin bypass), in `moneysweep-pr`
+  (added to its `main-protection` ruleset) and in `spiderweb-pr` (added to its branch
+  protection), so the gate is no longer `PROVISIONAL` there. Re-audit recorded in
+  `governance/merge_blocking_status.json`; `merge_blocking_status` stays `BLOCKED`, since
+  no federation check is required anywhere and two repos have nothing protecting `main`.
+- **Still open.** `aguayluz-pr` stays held because `refresh.yml` pushes to `main`.
+  `centinelas-pr` adopted the gate on 2026-10-12 (its PR #166) and is not held: the change
+  that held it (#362) was reverted. Its `signal-ledger-refresh.yml`,
+  `just-security-monitor.yml` and `el-yunque-access-monitor.yml` push scheduled data
+  commits straight to `main`, so the next `--apply` creates a ruleset there and those
+  pushes will then be rejected.
+
+**Part 12 — `docs-sync` required on `main` in `centinelas-pr` (2026-10-20):**
+- **Applied.** A repository administrator re-ran `tools/require_docs_sync.py --apply`,
+  which created a `main-required-checks` ruleset in `centinelas-pr` (repository-admin
+  bypass). Six repos now require `docs-sync` on `main`; only `aguayluz-pr` is held.
+  Re-audit recorded in `governance/merge_blocking_status.json`; `merge_blocking_status`
+  stays `BLOCKED`, since no federation check is required anywhere and `aguayluz-pr` has
+  nothing protecting `main`.
+- **Consequence.** `centinelas-pr`'s `signal-ledger-refresh.yml`,
+  `just-security-monitor.yml` and `el-yunque-access-monitor.yml` push scheduled data
+  commits straight to `main` with the Actions token; those pushes are now rejected. The
+  first two fail visibly. `el-yunque-access-monitor.yml` ends its push with
+  `|| echo "nothing to push"`, so its runs stay green while the refresh is lost. All three
+  need to open a pull request instead. (Resolved without a pull request; see Part 13.)
+
+**Part 13 — `centinelas-pr` bot pushes record their own `docs-sync` status (2026-10-29):**
+- **Change.** `centinelas-pr` #182 added `centinelas-pr/scripts/push_to_main.sh`, now used by
+  `handoff-ack.yml`, `signal-ledger-refresh.yml`, `just-security-monitor.yml` and
+  `el-yunque-access-monitor.yml` in place of `git push`. It replays the job's data commit
+  on the tip of `main`, stages it on a scratch `bot/<name>` branch, runs
+  `tools/check_docs_sync.py` on that exact commit, posts the verdict as the `docs-sync`
+  commit status with the Actions token (`statuses: write`), and pushes to `main` only if
+  the check passed. `el-yunque-access-monitor.yml` no longer hides a failed push.
+- **Verified.** GitHub accepts that status for the ruleset's `docs-sync` check:
+  `el-yunque` commit `a40464f` and two `handoff-ack` commits reached `main` on 2026-10-29,
+  each carrying a `docs-sync` success status from `github-actions[bot]`, with no `GH013`.
+  No deploy key or bypass is involved. The same script would also let `aguayluz-pr`'s
+  `refresh.yml` keep pushing once `docs-sync` is required there.
+- **Hub ingest.** `federation-ingest.yml` (thehub-pr #390) now reuses one
+  `fixture-refresh` branch and records `docs-sync` on its PR head the same way. Opening
+  that PR still needs the repository setting below.
+
 ## Blocked gaps — fully specified, waiting on a named external input
 
 Each item below is **code-ready** unless noted; the missing item is named.
@@ -127,6 +189,8 @@ Each item below is **code-ready** unless noted; the missing item is named.
 | Live exec | moneysweep-pr | Tranche-B manual source exports (hud_drgr, prasa, oficina_contralor, pr_cabilderos) + cor3 portal export (JS-rendered; manual CSV fallback) + `PROPUBLICA_API_KEY`. Runtime keys (FEC/SAM/HigherGov/LDA/Data.gov-family via `X_API_KEY`) are now supplied and 8/14 required sources are live-materialized. |
 | Per-asset outage attribution | aguayluz | A finer outage feed; PREPS is island-wide aggregate and third-party outage snapshots remain review-grade until promoted. |
 | ECW photomosaic extents | PRIIS | A GDAL ECW driver/plugin or external ECW→GeoTIFF conversion before remaining mosaics can be ingested. |
+| `docs-sync` required on `main` | aguayluz | Held until `refresh.yml` either opens a pull request or records `docs-sync` on its commit before pushing (as `centinelas-pr/scripts/push_to_main.sh` does); then an administrator runs `tools/require_docs_sync.py --apply`, since repository settings are outside what a template or CI can change. |
+| Fixture-refresh PR from `federation-ingest.yml` | thehub | Repository setting: Settings → Actions → General → Workflow permissions → "Allow GitHub Actions to create and approve pull requests" (or a `SYNC_PAT` secret). Until then each run updates the `fixture-refresh` branch but cannot open its PR. |
 | Repo deletion | `jotaele44/Aerospace-Intelligence-Tool` | `gh auth refresh -s delete_repo` then `gh repo delete … --yes`. Content preserved in `skywatcher-pr` archive/provenance notes. |
 | Repo deletion | `jorgegonzalez44/Puerto-Rico-Airspace-Intelligence-Tool` | Delete from the **jorgegonzalez44** account after confirming no unsalvaged material remains. |
 

@@ -52,7 +52,8 @@ their own copies of those and carry the same additions by hand.
 
 Adding the rule to a repo: render it, write its manifest, seed couplings by replaying the
 repo's recent history (a coupling that fires on routine work is noise — remove it, do not
-waive it), then mark `docs-sync` as a required status check for `main`. Repository settings
+waive it), then mark `docs-sync` as a required status check for `main`
+(`tools/require_docs_sync.py --apply`, run by a repository administrator). Repository settings
 are outside what a template can set, so until that last step the gate is `PROVISIONAL`.
 
 ## Scope note

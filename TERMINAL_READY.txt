@@ -1,0 +1,79 @@
+TERMINAL_READY — PR Grid V2 Federation Runtime / Domain Profile Contract
+
+STATE
+RC1_CANDIDATE. This build does not promote external source evidence,
+does not generate producer geometry, and does not alter V1 spatial bindings.
+
+MACOS / LINUX (TheHub repository root)
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e ".[dev]" -r server/backend/requirements.txt
+python -m pytest -q tests/test_grid_v2_runtime.py tests/test_grid_v2_profiles.py tests/test_grid_v2_api.py tests/test_grid_v2_authority.py
+python tests/test_schema_freeze.py
+
+SIX-CONSUMER AUTHORITY CERTIFICATION
+Check out all six consumer repos plus spiderweb-pr as siblings to thehub-pr.
+Then run:
+python scripts/validate_pr_grid_v2_federation.py --workspace-root "$(dirname "$PWD")" --authority-root "$(dirname "$PWD")/spiderweb-pr"
+
+Expected result: state=PASS, consumer_count=6,
+frozen_denominator.State=FROZEN_DENOMINATOR_PASS,
+authority_source_validation.Verification_State=AUTHORITY_COMMIT_AND_SOURCE_BYTES_PASS,
+authority_source_validation.Authority_Commit_Object_Verified=true,
+authority_source_validation.Authority_Commit_Observed=0c66e13d14232c0d7cbcbc179b3655904777dc71.
+If any input repo, schema, pin, or authority Git object is absent or mismatched, stop.
+The Spiderweb checkout must be detached at the exact pinned authority commit.
+
+DOMAIN PRODUCERS (once the shared template is distributed)
+python federation/spatial/materialize_pr_grid_v2_profiles.py --pin federation/spatial/pr_grid_geographic_v2.pin.json --level L1 --records /path/source_record_metadata.jsonl --bindings /path/spiderweb_binding_rows.jsonl --binding-receipt /path/spiderweb_binding_receipt.json --out /path/L1.jsonl --receipt-out /path/L1.receipt.json
+
+Use the consumer's pinned default level. The binding receipt must contain
+Grid_Manifest_SHA256, Binding_Output_SHA256, Binding_Output_Bytes and denominator.
+Only Spiderweb may create record-to-cell spatial bindings. Producer profile input
+contains record metadata, not geometry.
+
+Exact profile admission is limited to Spiderweb-certified bindings with:
+- Uncertainty_Class=EXACT
+- Binding_Method=COVERS
+- Binding_Method=INTERSECTS_POSITIVE_AREA with positive Overlap_Area_m2 and
+  Cell_Coverage_Fraction in (0,1]
+- Binding_Method=LINE_POSITIVE_LENGTH with positive Length_In_Cell_m
+
+ADMINISTRATIVE_SET, DERIVED_SET, APPROXIMATE, INFERRED, UNKNOWN, and other
+non-exact bindings must fail closed and cannot enter exact Cell_Profile counts.
+V1/provisional/uncertain records remain unmigrated until a separate
+evidence-authorized profile vector.
+ZERO_RECORDS requires verified per-cell coverage evidence; otherwise NO_DATA.
+
+GRID HANDOFF (TheHub FastAPI)
+GET /grid/PR_GRID_GEOGRAPHIC_V2/2.0.0-rc1/L1/PRG2:L1:R075:C0234
+GET /api/grid/PR_GRID_GEOGRAPHIC_V2/2.0.0-rc1/L1/PRG2:L1:R075:C0234
+
+Set PRII_GRID_V2_PROFILE_ROOT to a folder containing producer/L1.jsonl (or
+producer/<level>.jsonl) only after profiles and receipts are verified.
+When unset, the endpoint returns NO_DATA, not synthetic zero counts.
+
+CHECKS
+python -m compileall src/hub server/backend
+python -m pytest -q
+python -m ruff check src/hub server tests
+
+HASH/FAILURE POLICY
+Match the pinned Grid_Manifest_SHA256:
+8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4
+No schema hash may change without reviewed freeze-manifest update.
+Any gate failure BLOCKS certification and consumer activation.
+
+
+EXACT-GEOMETRY PROFILE GATE
+python -m pytest -q tests/test_grid_v2_profiles.py
+
+Expected:
+- COVERS exact point rows remain accepted.
+- INTERSECTS_POSITIVE_AREA exact polygon rows are accepted only with positive
+  area and valid positive cell coverage fraction.
+- LINE_POSITIVE_LENGTH exact line rows are accepted only with positive in-cell
+  length.
+- ADMINISTRATIVE_SET and DERIVED_SET remain excluded from exact profiles.
+- Migration_Class=SPIDERWEB_CERTIFIED_EXACT_BINDINGS.
+- Geometry_Included=false for every profile.

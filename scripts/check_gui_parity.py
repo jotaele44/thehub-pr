@@ -43,7 +43,7 @@ FRONTEND_SUFFIXES = {".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs"}
 
 ENDPOINT_RE = re.compile(
     r"@\s*[A-Za-z_][A-Za-z0-9_]*\s*\.\s*"
-    r"(get|post|put|patch|delete)\s*\(\s*[\"']([^\"']+)[\"']",
+    r"(get|post|put|patch|delete)\s*\(\s*[\"']([^\"']*)[\"']",
     re.IGNORECASE,
 )
 ROUTE_RES = (
@@ -254,7 +254,7 @@ def _discover_python(
 
         if path in backend_files:
             for match in ENDPOINT_RE.finditer(text):
-                detail = f"{match.group(1).upper()} {match.group(2)}"
+                detail = f"{match.group(1).upper()} {match.group(2) or '/'}"
                 records.append(
                     _candidate(
                         "backend_endpoint",

@@ -1,0 +1,55 @@
+name: PR Grid V2 federation authority parity
+
+on:
+  pull_request:
+    paths:
+      - "src/hub/grid_v2_authority.py"
+      - "scripts/validate_pr_grid_v2_federation.py"
+      - "tests/test_grid_v2_authority.py"
+      - "registry/spatial/v2/**"
+      - "federation/spatial/pr_grid_geographic_v2.pin.json"
+      - "TERMINAL_READY.txt"
+      - ".github/workflows/grid-v2-federation-authority.yml"
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-six-consumers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Fetch six consumer pins and exact Spiderweb authority commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/prii_grid_v2"
+          authority_sha="0c66e13d14232c0d7cbcbc179b3655904777dc71"
+          mkdir -p "$root"
+
+          git clone --filter=blob:none --no-checkout             "https://github.com/jotaele44/spiderweb-pr.git" "$root/spiderweb-pr"
+          git -C "$root/spiderweb-pr" sparse-checkout init --no-cone
+          git -C "$root/spiderweb-pr" sparse-checkout set --no-cone             registry/spatial/v2/pr_grid_geographic_v2.manifest.json             registry/spatial/v2/pr_grid_geographic_v2.source.json             schemas/pr_grid_geographic_v2_cell.schema.json             schemas/pr_grid_geographic_v2_binding.schema.json             schemas/pr_grid_geographic_v2_mask.schema.json             schemas/pr_grid_geographic_v2_manifest.schema.json
+          git -C "$root/spiderweb-pr" fetch --depth 1 origin "$authority_sha"
+          git -C "$root/spiderweb-pr" checkout --detach FETCH_HEAD
+          test "$(git -C "$root/spiderweb-pr" rev-parse HEAD)" = "$authority_sha"
+
+          for repo in aguayluz-pr skywatcher-pr ovnis-pr moneysweep-pr centinelas-pr; do
+            git clone --depth 1 --filter=blob:none --sparse               "https://github.com/jotaele44/$repo.git" "$root/$repo"
+            git -C "$root/$repo" sparse-checkout set --no-cone               federation/spatial/pr_grid_geographic_v2.pin.json
+          done
+
+          python scripts/validate_pr_grid_v2_federation.py             --workspace-root "$root"             --authority-root "$root/spiderweb-pr"
+
+      - name: Install regression-test dependency
+        run: python -m pip install --disable-pip-version-check pytest
+
+      - name: Authority commit regression tests
+        run: PYTHONPATH=src python -m pytest -q tests/test_grid_v2_authority.py

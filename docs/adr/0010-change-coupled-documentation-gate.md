@@ -37,13 +37,13 @@ Seeds are chosen by replaying history. A coupling that fires on routine work is 
 
 ## Merge enforcement
 
-Per ADR 0004, a passing workflow without a required-status rule is `PROVISIONAL`, not a certified merge block. `docs-sync` is `PROVISIONAL` in every repository until `main` requires it. `governance/merge_blocking_status.json` records that on 2026-09-06 five of the seven repositories had no branch protection on `main` at all. Repository settings are outside what a template can set, so a repository administrator must mark `docs-sync` required once per repository.
+Per ADR 0004, a passing workflow without a required-status rule is `PROVISIONAL`, not a certified merge block. `docs-sync` is `PROVISIONAL` in every repository until `main` requires it. `governance/merge_blocking_status.json` records what `main` requires in each repository and where `docs-sync` stands. Repository settings are outside what a template can set, so a repository administrator must mark `docs-sync` required once per repository; `tools/require_docs_sync.py` does that.
 
 ## Rollout
 
 1. `thehub-pr`: templates, `targets.yaml` entries, this repository's manifest, this ADR.
 2. Each producer, after (1) merges: re-render with `--template-ref <merged hub SHA>`, add its own `.federation/docs-sync.json`, and hand-apply the pre-commit, `CONTRIBUTING.md` and PR-template additions where the repository keeps its own copies (`moneysweep-pr`, `spiderweb-pr`).
-3. Mark `docs-sync` required in each repository's ruleset.
+3. Mark `docs-sync` required on `main` in each repository: `tools/require_docs_sync.py --apply`, run by a repository administrator. It appends the check to an existing ruleset or branch protection that already requires checks, otherwise creates a ruleset requiring only `docs-sync`. It skips a repository whose `main` has no `docs-sync` workflow, and holds any repository in its `HELD` table: one where a workflow in regular use pushes commits straight to `main`, which a required check would reject.
 
 ## Consequences
 
@@ -51,3 +51,13 @@ Per ADR 0004, a passing workflow without a required-status rule is `PROVISIONAL`
 - Touching a covered path costs either a doc edit or one reasoned line. That line is visible to reviewers in the log, which is the point.
 - The gate is only as good as its couplings. Documents that no coupling names are protected only by the reference ratchet.
 - Files rendered from templates stay single-sourced: the checker cannot drift between repositories the way hand-copied scripts have.
+
+## Amendment (2026-10-12): what "judged by both manifests" covers
+
+Review of the first rollout found the rule stated more broadly than it was built. It is corrected, and now tested:
+
+- The base manifest's couplings and `mode` still bind a change, so it cannot pass by deleting the coupling it violates or by switching the gate to report-only. Manifest hygiene (decision 3) is judged on the head manifest alone, so retiring a coupling together with its last covered file, or renaming a coupled doc and repointing the coupling, passes once the doc is updated. A doc renamed in the change counts as updated, and is compared with itself under its old name for the reference ratchet and the dead-glob check.
+- A glob that matches nothing is a violation when the change adds it, and a warning when it was already there. Without a base to compare with (`--validate`, or a base manifest that does not parse) it stays a warning.
+- `exempt_authors` is honoured only when the base manifest already lists the author. Read from the head, it let a pull request exempt itself and switch the whole gate off. Dependabot, the Actions bot and the federation bot stay built in.
+- A `:symbol`, `:42` or `::node` locator is dropped from Markdown link targets as well as from inline code.
+- Reference checking (decision 2) reads root Markdown and `docs/**` only. That scope is deliberate for the first version and is now stated in `CONTRIBUTING.md`. `exempt_docs` and `ignore_refs` still come from the head manifest because they are visible, per-document escape hatches.

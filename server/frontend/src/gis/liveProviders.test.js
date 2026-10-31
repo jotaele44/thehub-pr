@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { acquireOnlineSource, acquireRasterAsset } from './acquisitionFacade';
 import { getOnlineSourceDefinition } from './sourceRegistry';
 import { CUDEM_PR, CUDEM_TILES, elevationAt, openTile, tileBounds } from './cudem';
+import { GEOID18_PR, geoidHeight, openGeoid } from './geoid';
 
 const runLive = process.env.GIS_LIVE_PROVIDER_TESTS === '1';
 const live = runLive ? describe : describe.skip;
@@ -115,5 +116,32 @@ live('live authoritative GIS providers', () => {
     const offshore = await elevationAt(-66.9, 18.6);
     expect(offshore.metres).toBeLessThan(0);
     console.log('GIS_LIVE_DEM', JSON.stringify({ sourceId: CUDEM_PR.sourceId, summit: peak, offshore }));
+  }, 120000);
+
+  it('NOAA NGS GEOID18 (PROJ mirror) agrees with NGS\'s own geoid service across Puerto Rico and the USVI', async () => {
+    const grid = await openGeoid();
+    // 1 arc-minute grid, values on the nodes, longitudes 0-360, covering the declared extent.
+    expect([grid.width, grid.height]).toEqual([301, 361]);
+    expect(grid.originLon).toBeCloseTo(291, 6);
+    expect(grid.originLat).toBeCloseTo(21, 6);
+    expect(grid.stepLon).toBeCloseTo(1 / 60, 9);
+    expect(grid.stepLat).toBeCloseTo(-1 / 60, 9);
+    // Bilinear N against NGS's keyless service (https://geodesy.noaa.gov/api/geoid/ght). Measured
+    // 2026-10-07 over these six points: at most 0.0125 m apart, against a stated NGS error of 0.04-0.07 m.
+    const points = [
+      ['San Juan', -66.105, 18.466], ['Cerro de Punta', -66.5916862, 18.172281], ['Mayaguez', -67.14, 18.2],
+      ['Culebra', -65.3, 18.31], ['Vieques', -65.45, 18.12], ['St. Thomas', -64.93, 18.34],
+    ];
+    const receipts = [];
+    for (const [name, lon, lat] of points) {
+      const response = await boundedFetch(`https://geodesy.noaa.gov/api/geoid/ght?lat=${lat}&lon=${lon}`);
+      expect(response.ok).toBe(true);
+      const ngs = await response.json();
+      expect(ngs.geoidModel).toBe('GEOID18');
+      const mine = geoidHeight(grid, lon, lat);
+      expect(Math.abs(mine - ngs.geoidHeight)).toBeLessThan(0.03);
+      receipts.push({ name, grid: Number(mine.toFixed(3)), ngs: ngs.geoidHeight });
+    }
+    console.log('GIS_LIVE_GEOID', JSON.stringify({ sourceId: GEOID18_PR.sourceId, receipts }));
   }, 120000);
 });

@@ -54,11 +54,12 @@
       "classification": "internal",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "Fail-closed federation contract utility for validating PR_GRID_GEOGRAPHIC_V2 consumer pins and stamping immutable grid identity. It is an internal runtime/governance primitive, not a standalone operator workflow; user-facing grid identity is surfaced through the consuming Cell_Profile/API responses rather than through a separate validator GUI.",
+      "rationale": "Fail-closed federation contract/runtime for PR_GRID_GEOGRAPHIC_V2 pins, live authority-byte validation, immutable identity stamping, and read-only cell handoff. It is an internal federation primitive; Spiderweb remains sole geometry authority.",
       "analysis": {
         "files": [
           "scripts/validate_pr_grid_v2_federation.py",
-          "src/hub/grid_v2.py"
+          "src/hub/grid_v2.py",
+          "src/hub/grid_v2_authority.py"
         ],
         "symbols": [
           "scripts/validate_pr_grid_v2_federation.py:main",
@@ -71,12 +72,33 @@
           "src/hub/grid_v2.py:validate_cell_id",
           "src/hub/grid_v2.py:validate_level",
           "src/hub/grid_v2.py:validate_pin_payload",
-          "src/hub/grid_v2.py:validate_pin_set"
+          "src/hub/grid_v2.py:validate_pin_set",
+          "src/hub/grid_v2_authority.py:validate_authority_commit_object",
+          "src/hub/grid_v2_authority.py:validate_authority_root",
+          "src/hub/grid_v2_authority.py:validate_frozen_pin_denominator"
         ]
       },
       "tests": {
         "contract": [
+          "tests/test_grid_v2_authority.py",
+          "tests/test_grid_v2_profiles.py",
           "tests/test_grid_v2_runtime.py"
+        ],
+        "backend": [
+          "tests/test_grid_v2_api.py"
+        ]
+      },
+      "backend": {
+        "files": [
+          "server/backend/grid_v2_api.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /grid/{grid_id}/{grid_version}/{level}/{cell_id}",
+          "GET /api/grid/{grid_id}/{grid_version}/{level}/{cell_id}"
+        ],
+        "symbols": [
+          "server/backend/grid_v2_api.py:cell_handoff"
         ]
       }
     },
@@ -243,6 +265,50 @@
       }
     },
     {
+      "id": "moneysweep-certified-asg-leaderboard",
+      "classification": "analysis",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Read-only federation product surface for the exact MoneySweep-certified ASG emergency-purchase source-native package. TheHub preserves producer-native ASG supplier identifiers, rows, accounting, rank, and scope boundaries; name-only or missing-vendor records remain excluded and the surface fails closed until exact producer hashes are trusted.",
+      "backend": {
+        "files": [
+          "server/backend/moneysweep_asg_leaderboards.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /status",
+          "GET /top"
+        ],
+        "symbols": [
+          "server/backend/moneysweep_asg_leaderboards.py:status",
+          "server/backend/moneysweep_asg_leaderboards.py:top"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/moneysweep"
+        ],
+        "e2e_routes": [
+          "/moneysweep"
+        ],
+        "components": [
+          "server/frontend/src/pages/MoneySweep.jsx",
+          "server/frontend/src/components/feed/MoneySweepLeaderboardsTab.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/MoneySweep.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_moneysweep_asg_leaderboard_consumer.py"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
       "id": "federated-search",
       "classification": "user",
       "status": "active",
@@ -253,6 +319,9 @@
           "server/backend/search_api.py",
           "src/hub/federated_search.py",
           "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /"
         ],
         "symbols": [
           "server/backend/search_api.py:current_index",
@@ -398,6 +467,9 @@
           "src/hub/event_timeline.py",
           "server/backend/main.py"
         ],
+        "endpoints": [
+          "GET /"
+        ],
         "symbols": [
           "server/backend/timeline_api.py:timeline",
           "src/hub/event_timeline.py:TimelineEvent",
@@ -452,6 +524,7 @@
           "server/backend/main.py"
         ],
         "endpoints": [
+          "GET /",
           "GET /case/{case_id}",
           "GET /records/{kind}"
         ],
@@ -585,7 +658,7 @@
       "classification": "user",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "Digital Twin at /gis?view=digital-twin (TWIN-005/057/058/144/150..163, FDX-023/030/031; Phase 5, P5-B): four panels on one shared camera and selection (Cesium perspective over uniform-datum NOAA CUDEM m9525 terrain, PRVD02, bound only because the 3D source gate certifies it; MapLibre ortho; USGS orthoimagery; details), each maximizable through ?panel= and fullscreen. Time playback over each record's span at its recorded precision (undated records counted, never placed in time), findings and live/current toggles whose counters say why a zero is a zero, the selected record's CUDEM elevation with its datum and source tile, DEM and imagery provenance, and GeoJSON and USD (.usda) exports of exactly what is shown with export provenance (not certified).",
+      "rationale": "Digital Twin at /gis?view=digital-twin (TWIN-005/057/058/144/150..163, FDX-023/030/031; Phase 5, P5-B): four panels on one shared camera and selection (Cesium perspective over uniform-datum NOAA CUDEM m9525 terrain, PRVD02, bound only because the 3D source gate certifies it, and placed on the ellipsoid through NOAA NGS GEOID18 only while its datum is the one the geoid relates; MapLibre ortho; USGS orthoimagery; details), each maximizable through ?panel= and fullscreen. Time playback over each record's span at its recorded precision (undated records counted, never placed in time), findings and live/current toggles whose counters say why a zero is a zero, the selected record's CUDEM elevation with its datum and source tile, DEM and imagery provenance, and GeoJSON and USD (.usda) exports of exactly what is shown with export provenance (not certified).",
       "backend": {
         "files": [
           "server/backend/spatial_api.py",
@@ -615,6 +688,7 @@
           "server/frontend/src/gis/digitalTwin.js",
           "server/frontend/src/gis/cudem.js",
           "server/frontend/src/gis/cudemTerrainProvider.js",
+          "server/frontend/src/gis/geoid.js",
           "server/frontend/src/gis/advanced3dSourceRegistry.js",
           "server/frontend/src/api/federationClient.js"
         ],
@@ -634,8 +708,126 @@
           "server/frontend/src/gis/digitalTwin.test.js",
           "server/frontend/src/gis/cudem.test.js",
           "server/frontend/src/gis/cudemTerrainProvider.test.js",
+          "server/frontend/src/gis/geoid.test.js",
           "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
           "server/frontend/src/components/gis/DigitalTwin.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "interpretive-layers",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Subsurface and interpretive layers at /gis?view=interpretive-layers (TWIN-075/076/077/146, FDX-024; Phase 5, P5-C): documented geometry (SIGE karst, aquifer and watershed outlines loaded through the source registry with their gates, counts and hashes, or the provider's failure verbatim; Hub-held USGS mineral occurrences) kept apart from a MODELLED — not observed geometry group that holds only records whose producer declared the INTERPRETIVE class (none today, and it says why), with separate styling that tests keep distinct; and a CUDEM terrain profile along a drawn line with its datum (PRVD02), no-data samples kept as gaps, the documented layers it crosses, a statement that nothing is drawn below the surface (no subsurface model is supplied) and a CSV download. The Hub store's sampling basis is stated.",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:store_basis",
+          "src/hub/spatial_features.py:feature"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/InterpretiveLayers.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/interpretive.js",
+          "server/frontend/src/gis/storeBasis.js",
+          "server/frontend/src/gis/cudem.js",
+          "server/frontend/src/gis/acquisitionFacade.js",
+          "server/frontend/src/lib/download.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/interpretive.test.js",
+          "server/frontend/src/gis/storeBasis.test.js",
+          "server/frontend/src/components/gis/InterpretiveLayers.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "aoi-comparison",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "AOI comparison with negative controls at /gis?view=aoi-comparison (FDX-028/029; directive §32 and §46; Phase 5, P5-C): a study area (a bounding box or a TIGERweb municipio by recorded name) against one or more control areas that must be disjoint from it and from each other, by records per km² per (producer, stream, category), counting only points whose producer declared a placed position (stand-ins inside an AOI are counted apart as membership not determined; nothing is geocoded). Rate ratio with an exact conditional binomial test and a Clopper-Pearson interval, no ratio below five combined records, the number of comparisons stated (p-values unadjusted), every result labelled BACKGROUND COMPARISON — not a finding, the Hub store's sampling basis (a bounded sample, from the build record) stated before and after the results, and a JSON receipt (NOT_CERTIFIED) with the AOIs, area method, store and method.",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:store_basis"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/AoiComparison.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/aoiComparison.js",
+          "server/frontend/src/gis/propertyMap.js",
+          "server/frontend/src/gis/storeBasis.js",
+          "server/frontend/src/gis/acquisitionFacade.js",
+          "server/frontend/src/lib/download.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/aoiComparison.test.js",
+          "server/frontend/src/gis/storeBasis.test.js",
+          "server/frontend/src/components/gis/AoiComparison.test.jsx"
         ],
         "e2e": [
           "server/frontend/tests/visual/gui-parity.spec.js"

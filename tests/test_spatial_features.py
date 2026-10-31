@@ -12,6 +12,7 @@ bbox are refused.
 
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 
 import pytest
@@ -188,6 +189,54 @@ def test_validity_window_extent_and_undated_count():
     assert alert["temporal_state"] == "HISTORICAL"  # the window closed before NOW
     assert body["time_extent"] == {"start": "2019-10-01T00:00:00.000Z", "end": "2019-12-31T00:00:00.000Z"}
     assert body["undated"] == 1 and body["read_at"] == "2026-10-04T12:00:00.000Z"
+
+
+def test_features_carry_the_class_and_stage_their_producer_declared():
+    modelled = _entity("ent_model", 18.2, -66.5, "INTERPRETED_POINT")
+    modelled[2]["evidence_state"].update({"epistemic_class": "INTERPRETIVE", "data_stage": "INTERPRETATION",
+                                          "interpretation_basis": "model of a reported void"})
+    documented = _entity("ent_doc", 18.3, -66.4, "OBSERVED_POINT")
+    documented[2]["evidence_state"].update({"epistemic_class": "CURATED", "data_stage": "CANONICAL"})
+    undeclared = _entity("ent_none", 18.4, -66.3, "OBSERVED_POINT")
+    props = {f["properties"]["record_id"]: f["properties"]
+             for f in sf.build_features([modelled, documented, undeclared], now=NOW)["features"]}
+    assert (props["ent_model"]["declared_epistemic_class"], props["ent_model"]["declared_data_stage"]) == ("INTERPRETIVE", "INTERPRETATION")
+    assert (props["ent_doc"]["declared_epistemic_class"], props["ent_doc"]["declared_data_stage"]) == ("CURATED", "CANONICAL")
+    # Only what the producer declared: nothing is crosswalked or guessed here.
+    assert (props["ent_none"]["declared_epistemic_class"], props["ent_none"]["declared_data_stage"]) == (None, None)
+
+
+def test_store_basis_reports_a_bounded_sample_from_the_build_record(tmp_path):
+    (tmp_path / "fixture.json").write_text(json.dumps({
+        "kind": "bounded-sample", "cap_per_stream": 400, "note": "Records are genuine but truncated.",
+        "streams": {"alerts": {"actual": 4399, "sampled": 400},
+                    "entities": {"actual": 48224, "closure_added": 425, "sampled": 825}},
+        "collections": {"Alerts": 400},
+    }), encoding="utf-8")
+    basis = sf.store_basis(tmp_path)
+    assert basis == {
+        "kind": "bounded-sample", "cap_per_stream": 400, "note": "Records are genuine but truncated.",
+        "streams": {"alerts": {"sampled": 400, "actual": 4399},
+                    "entities": {"sampled": 825, "actual": 48224, "closure_added": 425}},
+    }
+
+
+def test_store_basis_never_assumes_a_complete_store(tmp_path):
+    # No build record: the store's basis is not recorded, which is not the same as complete.
+    assert sf.store_basis(tmp_path)["kind"] == "not_recorded"
+    (tmp_path / "fixture.json").write_text("{not json", encoding="utf-8")
+    assert sf.store_basis(tmp_path)["kind"] == "unreadable"
+    (tmp_path / "fixture.json").write_text(json.dumps({"streams": {}}), encoding="utf-8")
+    assert sf.store_basis(tmp_path) == {"kind": "unreadable", "basis": "fixture.json declares no kind"}
+    (tmp_path / "fixture.json").write_text(json.dumps([1, 2]), encoding="utf-8")
+    assert sf.store_basis(tmp_path)["kind"] == "unreadable"
+    # Malformed stream counts are dropped, not guessed.
+    (tmp_path / "fixture.json").write_text(json.dumps({
+        "kind": "bounded-sample", "cap_per_stream": "many",
+        "streams": {"alerts": {"sampled": "400", "actual": 4399}, "entities": {"sampled": 5, "actual": 9}},
+    }), encoding="utf-8")
+    basis = sf.store_basis(tmp_path)
+    assert basis["cap_per_stream"] is None and basis["streams"] == {"entities": {"sampled": 5, "actual": 9}}
 
 
 def test_live_needs_a_declared_cadence():
