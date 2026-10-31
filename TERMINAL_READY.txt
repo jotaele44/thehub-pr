@@ -20,7 +20,7 @@ Expected result: state=PASS, consumer_count=6,
 frozen_denominator.State=FROZEN_DENOMINATOR_PASS,
 authority_source_validation.Verification_State=AUTHORITY_COMMIT_AND_SOURCE_BYTES_PASS,
 authority_source_validation.Authority_Commit_Object_Verified=true,
-authority_source_validation.Authority_Commit_Observed=0c66e13d14232c0d7cbcbc179b3655904777dc71.
+authority_source_validation.Authority_Commit_Observed=b8f5cf303ab7fc2b6ed006edce0fb12e1344a096.
 If any input repo, schema, pin, or authority Git object is absent or mismatched, stop.
 The Spiderweb checkout must be detached at the exact pinned authority commit.
 
