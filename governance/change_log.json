@@ -100,6 +100,16 @@
         "tests/test_deployment_assets.py",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-10-29",
+      "summary": "Recorded that centinelas-pr's scheduled data pushes reach main again. centinelas-pr #182 routes handoff-ack, signal-ledger-refresh, just-security-monitor and el-yunque-access-monitor through scripts/push_to_main.sh, which runs tools/check_docs_sync.py on the exact commit and posts the verdict as the docs-sync commit status before pushing; on 2026-10-29 three bot commits landed on main with a docs-sync success status and no GH013. merge_blocking_status.json replaces the centinelas caution with that verified bot_pushes note, refreshes the branch-protection audit (moneysweep-pr also has classic protection), and names the same route for aguayluz-pr's held refresh.yml; FEDERATION_STATUS.md adds Part 13 and swaps the centinelas blocked-gap row for the thehub federation-ingest repository-setting row; require_docs_sync.py's HELD comment names the alternative. Records and a comment only: no contract, schema or dependency edge changed.",
+      "files": [
+        "governance/merge_blocking_status.json",
+        "docs/FEDERATION_STATUS.md",
+        "tools/require_docs_sync.py",
+        "governance/change_log.json"
+      ]
     }
   ]
 }
