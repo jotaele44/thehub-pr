@@ -4,7 +4,7 @@ import {
   Activity, Hexagon, GitCompareArrows, Layers, Share2, Github, Boxes,
   FolderKanban, FileStack, BookOpen, ListChecks, ShieldCheck, Download,
   BookA, Sparkles, Plug, Network, Radar, Droplets, Banknote, Plane, Signpost, AppWindow, TerminalSquare, Settings,
-  Search, History,
+  Search, History, Orbit,
 } from "lucide-react";
 import { MODULES, domainAccent } from "@/lib/federation";
 
@@ -38,6 +38,7 @@ export const NAV_GROUPS = [
   {
     label: "Federation",
     items: [
+      { label: "Constellation", path: "/constellation", icon: Orbit },
       { label: "Crossover", path: "/crossover", icon: GitCompareArrows },
       { label: "Anomaly Overlap", path: "/anomaly-overlap", icon: Layers },
       { label: "Transition Audit", path: "/transition", icon: Share2 },
