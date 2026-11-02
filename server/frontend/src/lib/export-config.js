@@ -69,7 +69,25 @@ export const EXPORT_LEDGERS = [
     label: "Outdoor Conditions",
     module: "AguaYLuz-PR",
     geo: true,
-    columns: ["municipality", "level", "driver_summary", "rip_current_risk", "surf_ft", "wave_height_ft", "water_temp_f", "uv_index", "heat_band", "aqi", "beach_advisories", "river_flood_category", "rain_24h_max_in", "nws_alerts", "as_of", "latitude", "longitude"],
+    // Each measurement is followed by its component's state, so a carried (STALE) or
+    // missing value keeps its qualification in the CSV.
+    columns: [
+      "municipality", "level", "driver_summary",
+      "rip_current_risk", "surf_ft", "rip_current_state",
+      "wave_height_ft", "water_temp_f", "sea_state_state",
+      "uv_index", "uv_state",
+      "heat_band", "heat_state",
+      "aqi", "air_quality_state",
+      "beach_advisories", "beach_water_quality_state",
+      "river_flood_category", "river_flood_state",
+      "rain_24h_max_in", "rainfall_24h_state",
+      "nws_alerts", "nws_alerts_state",
+      "marine_alerts", "marine_alerts_state",
+      "storms", "tropical_cyclone_state",
+      "closures", "access_closures_state",
+      "quake_max_magnitude", "earthquakes_state",
+      "as_of", "latitude", "longitude",
+    ],
   },
   {
     entity: "Contracts",

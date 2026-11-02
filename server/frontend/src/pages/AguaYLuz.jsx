@@ -66,12 +66,31 @@ const buoyText = (r) => [
 ].filter(Boolean).join(" · ") || (present(r.wind_speed_kt) ? `wind ${r.wind_speed_kt} kt, no waves` : "no waves reported");
 
 const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
-const outdoorAlerts = (r) => [
-  r.nws_alerts,
-  r.marine_alerts,
-  r.storms && `Storm: ${r.storms}`,
-  r.closures ? `${plural(r.closures, "closure")} (${r.closure_assets})` : null,
-].filter(Boolean).join(" · ");
+// The alerts column folds four components together; each keeps its own state, so a
+// carried marine alert or closure still shows STALE while NWS land alerts are fresh.
+const outdoorAlertParts = (r) => [
+  ["nws_alerts", r.nws_alerts, r.nws_alerts_state],
+  ["marine_alerts", r.marine_alerts, r.marine_alerts_state],
+  ["tropical_cyclone", r.storms ? `Storm: ${r.storms}` : null, r.tropical_cyclone_state],
+  ["access_closures", r.closures ? `${plural(r.closures, "closure")} (${r.closure_assets})` : null, r.access_closures_state],
+];
+// States that need no chip of their own when the component has nothing to show.
+const QUIET_STATES = new Set(["NONE_ACTIVE", "NOT_COVERED", "REPORTED", undefined, null]);
+
+// Shows every component that has a value or a state worth flagging (failed, stale,
+// not configured, not ingested). Only when all four are quiet does it fall back to
+// the NWS land-alert state, usually NONE_ACTIVE.
+function OutdoorAlertsCell({ row }) {
+  const shown = outdoorAlertParts(row).filter(([, value, state]) => present(value) || !QUIET_STATES.has(state));
+  if (!shown.length) return <StatusChip map={OUTDOOR_STATE} value={row.nws_alerts_state} />;
+  return (
+    <span className="inline-flex flex-wrap items-center gap-1.5">
+      {shown.map(([name, value, state]) => (
+        <OutdoorCell key={name} state={state}>{present(value) ? value : null}</OutdoorCell>
+      ))}
+    </span>
+  );
+}
 
 export default function AguaYLuz() {
   const assetFields = [
@@ -239,7 +258,7 @@ export default function AguaYLuz() {
     {
       key: "nws_alerts",
       label: "Alerts & closures",
-      render: (r) => <OutdoorCell state={r.nws_alerts_state}><span className="truncate">{outdoorAlerts(r) || null}</span></OutdoorCell>,
+      render: (r) => <OutdoorAlertsCell row={r} />,
     },
     {
       key: "as_of",

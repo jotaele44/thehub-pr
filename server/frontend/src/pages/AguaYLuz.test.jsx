@@ -15,7 +15,7 @@ const OUTDOOR = [
     air_quality_state: 'NOT_CONFIGURED',
     beach_water_quality_state: 'REPORTED', beach_advisories: 2, beach_advisory_names: 'Escambrón; Ocean Park',
     river_flood_state: 'REPORTED', rainfall_24h_state: 'REPORTED', rain_24h_max_in: 1.1, rain_24h_mean_in: 0.4,
-    nws_alerts_state: 'REPORTED', nws_alerts: 'Heat Advisory', marine_alerts: 'Small Craft Advisory',
+    nws_alerts_state: 'REPORTED', nws_alerts: 'Heat Advisory', marine_alerts_state: 'REPORTED', marine_alerts: 'Small Craft Advisory',
     as_of: '2026-10-19T12:00:00Z', _producers: ['aguayluz-pr'],
   },
   {
@@ -24,9 +24,17 @@ const OUTDOOR = [
     uv_state: 'SOURCE_FAILED',
     heat_state: 'STALE', heat_band: 'CAUTION', air_quality_state: 'NOT_INGESTED',
     beach_water_quality_state: 'NOT_COVERED', river_flood_state: 'REPORTED', river_flood_category: 'minor',
-    rainfall_24h_state: 'NOT_COVERED', nws_alerts_state: 'NONE_ACTIVE', closures: 1, closure_assets: 'El Portal',
+    rainfall_24h_state: 'NOT_COVERED', nws_alerts_state: 'NONE_ACTIVE', access_closures_state: 'REPORTED', closures: 1, closure_assets: 'El Portal',
     as_of: '2026-10-19T12:00:00Z', _producers: ['aguayluz-pr'],
   },
+  // NWS land alerts failed and nothing else has a value: the cell must say SOURCE_FAILED
+  { id: 'ent_out_vq', municipality: 'Vieques', level: 'INSUFFICIENT_DATA', nws_alerts_state: 'SOURCE_FAILED',
+    marine_alerts_state: 'NONE_ACTIVE', tropical_cyclone_state: 'NONE_ACTIVE', access_closures_state: 'NOT_COVERED',
+    as_of: '2026-10-19T12:00:00Z', _producers: ['aguayluz-pr'] },
+  // a carried marine alert keeps its own STALE chip while NWS land alerts are fresh
+  { id: 'ent_out_cu', municipality: 'Culebra', level: 'NO_DRIVER_REPORTED', nws_alerts_state: 'NONE_ACTIVE',
+    marine_alerts_state: 'STALE', marine_alerts: 'Gale Warning', tropical_cyclone_state: 'NONE_ACTIVE',
+    access_closures_state: 'NOT_COVERED', as_of: '2026-10-19T12:00:00Z', _producers: ['aguayluz-pr'] },
   // another producer's row in the same collection must not appear in the AguaYLuz tab
   { id: 'ent_out_x', municipality: 'Ponce', level: 'ELEVATED', _producers: ['skywatcher-pr'] },
 ];
@@ -61,7 +69,8 @@ describe('AguaYLuz Outdoor Conditions tab', () => {
     expect(sj.getByText('DANGER')).toBeInTheDocument();
     expect(sj.getByText('2 advisories')).toBeInTheDocument();
     expect(sj.getByText('No gauge in flood')).toBeInTheDocument();
-    expect(sj.getByText('Heat Advisory · Small Craft Advisory')).toBeInTheDocument();
+    expect(sj.getByText('Heat Advisory')).toBeInTheDocument();
+    expect(sj.getByText('Small Craft Advisory')).toBeInTheDocument();
   });
 
   it('shows why a cell has no value instead of leaving it blank', () => {
@@ -78,5 +87,14 @@ describe('AguaYLuz Outdoor Conditions tab', () => {
     expect(ut.getAllByText('STALE')).toHaveLength(2); // the heat band and the buoy
     expect(ut.getByText('minor flood stage')).toBeInTheDocument();
     expect(ut.getByText('1 closure (El Portal)')).toBeInTheDocument();
+  });
+
+  it('keeps each alert component\'s own state in the alerts column', () => {
+    const panel = openOutdoor();
+    const vq = within(rowOf(panel, 'Vieques'));
+    expect(vq.getByText('SOURCE_FAILED')).toBeInTheDocument();
+    const cu = within(rowOf(panel, 'Culebra'));
+    expect(cu.getByText('Gale Warning')).toBeInTheDocument();
+    expect(cu.getByText('STALE')).toBeInTheDocument();
   });
 });
