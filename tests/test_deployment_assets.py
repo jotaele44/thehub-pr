@@ -114,3 +114,19 @@ def test_ingest_gates_its_pr_on_substantive_drift():
     workflow = _ingest_workflow()
     assert "scripts/fixture_drift.py" in workflow
     assert "steps.drift.outputs.drift == 'true'" in workflow
+
+
+def test_ingest_reuses_one_refresh_branch():
+    """A branch per run left ~1,000 orphans when PR creation was refused."""
+    workflow = _ingest_workflow()
+    assert 'branch="fixture-refresh"' in workflow
+    assert "fixture-refresh-${{ github.run_id }}" not in workflow
+    assert "gh pr list --head" in workflow
+
+
+def test_ingest_records_docs_sync_on_its_pr_head():
+    """main requires docs-sync, and a PR the built-in token opens runs no CI."""
+    workflow = _ingest_workflow()
+    assert "statuses: write" in workflow
+    assert "tools/check_docs_sync.py" in workflow
+    assert "-f context=docs-sync" in workflow

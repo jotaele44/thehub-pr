@@ -10,6 +10,11 @@ It complements `registry/producers.yaml` (the machine-readable producer list) an
 change any Hub code — the Hub consumes the result through its existing
 aggregate → correlate → ingest pipeline.
 
+The Federation Constellation (`/constellation`) draws this grouping, and its handoffs, as an
+animated graph. Every cross-app handoff it shows must be an edge declared in
+`governance/federation_dependencies.yaml`. See
+[`docs/federation/CONSTELLATION_V1.md`](federation/CONSTELLATION_V1.md).
+
 ## The grouping
 
 ```

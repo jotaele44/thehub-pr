@@ -46,6 +46,7 @@ const ResearchHub = lazy(() => import('@/pages/ResearchHub'));
 const CaseReconstruction = lazy(() => import('@/pages/CaseReconstruction'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
 const AppCenter = lazy(() => import('@/pages/AppCenter'));
+const FederationConstellation = lazy(() => import('@/pages/FederationConstellation'));
 const Operations = lazy(() => import('@/pages/Operations'));
 const GISWorkspace = lazy(() => import('@/pages/GISWorkspace'));
 const OperatorSettings = lazy(() => import('@/pages/OperatorSettings'));
@@ -105,6 +106,7 @@ const AppRoutes = () => {
             <Route path="/readiness" element={<ModuleReadiness />} />
             <Route path="/transition" element={<TransitionAudit />} />
             <Route path="/crossover" element={<FederationCrossoverWorkspace />} />
+            <Route path="/constellation" element={<FederationConstellation />} />
             <Route path="/anomaly-overlap" element={<AnomalyOverlap />} />
             <Route path="/control" element={<ControlLedgers />} />
             <Route path="/hub" element={<Hub />} />
