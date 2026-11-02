@@ -418,12 +418,13 @@ Module Readiness, Manifest) under one URL, syncing the active tab to `?tab=`.
 
 ### AguaYLuz (`/aguayluz`)
 
-`src/pages/AguaYLuz.jsx` + `components/feed/AguaYLuzFeedTab.jsx` — water/power module: a live
-feed tab, plus Infrastructure Assets, Operational Alerts (read-only), and Continuity Risks.
+`src/pages/AguaYLuz.jsx` + `components/feed/AguaYLuzFeedTab.jsx` — water/power module: the
+intelligence workspace, a live feed tab, plus Infrastructure Assets, Operational Alerts
+(read-only), Continuity Risks, and Outdoor Conditions (read-only).
 
 | Element | Type | Label | Handler/Behavior | Verified | Notes |
 |---|---|---|---|---|---|
-| Module tabs | tab (×4) | Water + Power Feed / Infrastructure Assets / Operational Alerts / Continuity Risks | Radix `Tabs` | live | Clicked "Operational Alerts" |
+| Module tabs | tab (×6) | Workspace / Water + Power Feed / Infrastructure Assets / Operational Alerts / Continuity Risks / Outdoor Conditions | Radix `Tabs` | live | Clicked "Operational Alerts"; "Outdoor Conditions" clicked against an aggregate of a live aguayluz-pr export |
 | Feed tab: inner tabs | tab (×3) | Service Feed / Staging Queue (N) / Sources | Radix `Tabs` | live | Clicked "Staging Queue" |
 | Feed tab: "Add Service Event" button | button | "Add Service Event" | opens a `RecordSheet` (14 fields: Feed Item ID, Source ID, Source System, Utility Domain, Event Type, Title, Facility Name/Type, Municipality, Customers Affected, Lat/Long, Source URL, Evidence Tier, Summary) | live | Sheet opened, then Cancel clicked |
 | Staging Queue: "Verify" button | button (per row, conditional) | "Verify" (ShieldCheck icon) | `setStatus(item,"Verified")` → resolves reviewer via `auth.me()`, `PATCH LiveFeedItems` | static | Button presence confirmed live; not clicked (would mutate seed data) |
@@ -434,6 +435,7 @@ feed tab, plus Infrastructure Assets, Operational Alerts (read-only), and Contin
 | Infrastructure Assets: search + Type/Status filters, sort, row click, "New Asset", RecordSheet (12 fields) + Cancel/Save | as above | — | standard `EntityLedger` CRUD | static | |
 | Operational Alerts: search + Module/Review filters, sort, row click | as above | — | `EntityLedger … readOnly` — **no create/edit affordances**; a read-only projection of `GovernanceAlerts` scoped to `aguayluz-pr` | live | "Operational Alerts" tab click confirmed the read-only table rendered |
 | Continuity Risks: search + Type/Severity filters, sort, row click, "New Risk", RecordSheet (9 fields) + Cancel/Save | as above | — | standard `EntityLedger` CRUD | static | |
+| Outdoor Conditions: search + Level/Rip risk/Heat filters, sort | as above | — | `EntityLedger … readOnly` — **no create/edit affordances**; a read-only projection of `OutdoorConditions` (`project_outdoor_conditions` in `src/hub/ingest.py`, one row per municipio from aguayluz-pr `outdoor_condition` entities). A cell without a value shows the component's state (`NOT_COVERED`, `STALE`, `SOURCE_FAILED`, `NOT_CONFIGURED`, …) | live | 78 rows rendered from an aggregate of a live aguayluz-pr export, zero console errors |
 
 ### MoneySweep (`/moneysweep`)
 
@@ -623,10 +625,10 @@ components/ui/`, not from `@pr-federation/react`.
 | Metric | Count |
 |---|---|
 | Dashboard pages catalogued (routed + shared app shell) | 30 routed page components + the catch-all 404 + 1 shared app-shell section = **32 sections** |
-| Interactive elements catalogued — dashboard | **199** (201 table rows minus 2 rows that are "this page has no controls" / "see the tabs' own sections" notations, not actual controls) |
+| Interactive elements catalogued — dashboard | **200** (202 table rows minus 2 rows that are "this page has no controls" / "see the tabs' own sections" notations, not actual controls) |
 | Interactive elements catalogued — `launcher.html` | **5** |
 | Interactive elements catalogued — Design System | **19** exported members (2 of which — `FederationPanel` and the vocabulary/logic exports — are non-interactive building blocks, catalogued for completeness) |
-| **Total interactive elements catalogued** | **223** |
+| **Total interactive elements catalogued** | **224** |
 | Live-verified (that specific control clicked/exercised against the running app in this pass) | **45** dashboard rows + `launcher.html`'s static shell load = **~46** |
 | Static-only (read from source only; either not exercised in this pass, or explicitly needs an external service/backend mode this repo doesn't ship here) | **154** dashboard rows (of which 19 are Login/Register/Forgot/Reset controls that need `requires_auth=true` and a real auth backend just to be reachable) + `launcher.html`'s 4 dynamic rows (need its own `/api/local/*` backend, not the plain API server this audit ran) + all 19 Design System rows (library code, not a running screen) |
 | Pages that loaded live with **zero page/render errors** | **27 / 27** routed pages reachable in this repo's default (diagnostic-mode, `requires_auth=false`) configuration |

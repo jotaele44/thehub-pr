@@ -226,3 +226,60 @@ export const SECRET_PRESENCE = {
   absent: AMBER,
   unavailable: RED,
 };
+
+// --- AguaYLuz outdoor conditions ---------------------------------------------
+// The producer's summary level. NO_DRIVER_REPORTED is neutral, not green: no
+// reported driver is not a finding that conditions are safe.
+export const OUTDOOR_LEVEL = {
+  ELEVATED: ORANGE,
+  CAUTION: YELLOW,
+  NO_DRIVER_REPORTED: SLATE,
+  INSUFFICIENT_DATA: AMBER,
+};
+
+// Why a component has (or lacks) a value.
+export const OUTDOOR_STATE = {
+  REPORTED: BLUE,
+  NONE_ACTIVE: SLATE,
+  STALE: AMBER,
+  NOT_COVERED: SLATE,
+  NOT_INGESTED: SLATE,
+  NOT_CONFIGURED: VIOLET,
+  SOURCE_FAILED: RED,
+};
+
+// NWS Surf Zone Forecast rip current risk.
+export const RIP_RISK = {
+  LOW: SLATE,
+  MODERATE: YELLOW,
+  HIGH: RED,
+};
+
+// NWS heat-index chart bands.
+export const HEAT_BAND = {
+  BELOW_CAUTION: SLATE,
+  CAUTION: YELLOW,
+  EXTREME_CAUTION: ORANGE,
+  DANGER: RED,
+  EXTREME_DANGER: RED,
+};
+
+// EPA/WHO UV index exposure categories.
+export const UV_CATEGORY = {
+  LOW: SLATE,
+  MODERATE: YELLOW,
+  HIGH: ORANGE,
+  VERY_HIGH: RED,
+  EXTREME: RED,
+};
+
+// AirNow / EPA AQI categories.
+export const AQI_CATEGORY = {
+  GOOD: GREEN,
+  MODERATE: YELLOW,
+  UNHEALTHY_FOR_SENSITIVE_GROUPS: ORANGE,
+  UNHEALTHY: RED,
+  VERY_UNHEALTHY: RED,
+  HAZARDOUS: RED,
+  UNAVAILABLE: SLATE,
+};
