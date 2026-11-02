@@ -1,0 +1,88 @@
+{
+  "schema": "federation-offline-publication/v1",
+  "scope": "Verified local candidate trees published as unmerged draft PRs",
+  "qualification": "LOCAL_CANDIDATE_ONLY",
+  "production": "OPEN",
+  "fullOfflineDomain": "OPEN",
+  "synchronization": "OPEN",
+  "sourceScopeNote": "These are qualification-subject trees before the documentation-only publication receipt is appended to TheHub.",
+  "subjects": [
+    {
+      "repository": "jotaele44/spiderweb-pr",
+      "url": "https://github.com/jotaele44/spiderweb-pr/pull/429",
+      "draft": true,
+      "remoteCommit": "a72d5738c5ead601da54196d5d22472fb7effc23",
+      "remoteTree": "c8e833bf4a893bf915ddb3708346b4050b721d22",
+      "localCommit": "02588d947b3be79c0336f83ad359df21dd95514f",
+      "localTree": "c8e833bf4a893bf915ddb3708346b4050b721d22",
+      "treeMatch": true,
+      "merged": false
+    },
+    {
+      "repository": "jotaele44/moneysweep-pr",
+      "url": "https://github.com/jotaele44/moneysweep-pr/pull/674",
+      "draft": true,
+      "remoteCommit": "93d4c68d2ab9ecfd95024a6df9da8159b84436dc",
+      "remoteTree": "757494b5fda6e7b8b3d388148d592c3c931b2d09",
+      "localCommit": "d575da27e9a1f7860401acde64b299aa06b3dfe6",
+      "localTree": "757494b5fda6e7b8b3d388148d592c3c931b2d09",
+      "treeMatch": true,
+      "merged": false
+    },
+    {
+      "repository": "jotaele44/aguayluz-pr",
+      "url": "https://github.com/jotaele44/aguayluz-pr/pull/368",
+      "draft": true,
+      "remoteCommit": "05d29b4f35d16791704fb487741663685f47608a",
+      "remoteTree": "9a7e209aa9f03bd419ac172241eacf1014ace938",
+      "localCommit": "d8654a72756cbe03e14de613ac07ceaa9c9966da",
+      "localTree": "9a7e209aa9f03bd419ac172241eacf1014ace938",
+      "treeMatch": true,
+      "merged": false
+    },
+    {
+      "repository": "jotaele44/skywatcher-pr",
+      "url": "https://github.com/jotaele44/skywatcher-pr/pull/356",
+      "draft": true,
+      "remoteCommit": "3f61be516b34aa3e717b5d18027d067eb712c72a",
+      "remoteTree": "46be15c72958aec0332296c45e647cf847856723",
+      "localCommit": "49163ec8053aabb5577a972bd7b027583f8c8093",
+      "localTree": "46be15c72958aec0332296c45e647cf847856723",
+      "treeMatch": true,
+      "merged": false
+    },
+    {
+      "repository": "jotaele44/ovnis-pr",
+      "url": "https://github.com/jotaele44/ovnis-pr/pull/186",
+      "draft": true,
+      "remoteCommit": "397fa8f5bee7462206e9cb18d3ebb4ee8e3cc427",
+      "remoteTree": "cae318d841de391dd412aac2b5a791b41c97a0f8",
+      "localCommit": "ca21fda79913e6041e704a04d1cb3a63f6cc0fe1",
+      "localTree": "cae318d841de391dd412aac2b5a791b41c97a0f8",
+      "treeMatch": true,
+      "merged": false
+    },
+    {
+      "repository": "jotaele44/centinelas-pr",
+      "url": "https://github.com/jotaele44/centinelas-pr/pull/179",
+      "draft": true,
+      "remoteCommit": "e98570735b48e4a0b4a39b079bad53c49d0e226b",
+      "remoteTree": "ea9abf51cafdaff76dc36df0ed9f8f94f65de1e7",
+      "localCommit": "6232d289bee708a59b9d50abde67c25146c75cdb",
+      "localTree": "ea9abf51cafdaff76dc36df0ed9f8f94f65de1e7",
+      "treeMatch": true,
+      "merged": false
+    },
+    {
+      "repository": "jotaele44/thehub-pr",
+      "url": "https://github.com/jotaele44/thehub-pr/pull/386",
+      "draft": true,
+      "remoteCommit": "50a28bbc4c5686edbe43e512ac6d292a5b48a021",
+      "remoteTree": "1f37a92752057e5d391e4b5c6123873d10ed0c19",
+      "localCommit": "6352e4bbf5e4de7b6ec97394508aa458ec44d889",
+      "localTree": "1f37a92752057e5d391e4b5c6123873d10ed0c19",
+      "treeMatch": true,
+      "merged": false
+    }
+  ]
+}

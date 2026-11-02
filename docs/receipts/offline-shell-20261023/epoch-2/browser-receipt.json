@@ -1,0 +1,85 @@
+{
+  "scope": "offline-shell-only",
+  "appId": "thehub-pr",
+  "version": "bcba93eda7a9599097121eee844d34fd24131fe6ccb33e56af1d5a2becfdf7f5",
+  "assets": 547,
+  "bytes": 17047774,
+  "results": [
+    {
+      "status": "PASS",
+      "checks": [
+        "evicted-asset-detected",
+        "verified-online-repair"
+      ]
+    },
+    {
+      "width": 1440,
+      "status": "PASS",
+      "checks": [
+        "cold-reopen",
+        "all-shell-assets",
+        "local-storage-survival",
+        "api-not-cached",
+        "offline-api-fails",
+        "deep-link-preserved",
+        "reconnect"
+      ]
+    },
+    {
+      "status": "PASS",
+      "checks": [
+        "evicted-asset-detected",
+        "verified-online-repair"
+      ]
+    },
+    {
+      "width": 393,
+      "status": "PASS",
+      "checks": [
+        "cold-reopen",
+        "all-shell-assets",
+        "local-storage-survival",
+        "api-not-cached",
+        "offline-api-fails",
+        "deep-link-preserved",
+        "reconnect"
+      ]
+    },
+    {
+      "status": "PASS",
+      "checks": [
+        "evicted-asset-detected",
+        "verified-online-repair"
+      ]
+    },
+    {
+      "width": 430,
+      "status": "PASS",
+      "checks": [
+        "cold-reopen",
+        "all-shell-assets",
+        "local-storage-survival",
+        "api-not-cached",
+        "offline-api-fails",
+        "deep-link-preserved",
+        "reconnect"
+      ]
+    },
+    {
+      "status": "PASS",
+      "checks": [
+        "waiting-update-preserves-open-document",
+        "successor-cold-offline-launch",
+        "old-cache-cleanup",
+        "other-app-cache-preserved"
+      ]
+    },
+    {
+      "status": "PASS",
+      "checks": [
+        "corrupt-asset-rejects-install",
+        "partial-cache-removed"
+      ]
+    }
+  ]
+}
