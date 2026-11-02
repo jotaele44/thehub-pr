@@ -28,6 +28,32 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
         working-directory: server/frontend
+      # sige.pr.gov serves its leaf certificate without the intermediate, which Node
+      # reports as UNABLE_TO_VERIFY_LEAF_SIGNATURE (browsers fetch the missing issuer
+      # themselves). Fetch the issuer named in the leaf's AIA extension, keep it only if
+      # the leaf then verifies against the runner's system roots, and hand it to Node.
+      # Verification stays on; nothing is trusted that does not chain to a system root.
+      - name: Complete the sige.pr.gov certificate chain
+        run: |
+          set -uo pipefail
+          dir="$RUNNER_TEMP/sige-chain"; mkdir -p "$dir"
+          if openssl s_client -connect sige.pr.gov:443 -servername sige.pr.gov -verify_return_error </dev/null >/dev/null 2>&1; then
+            echo "sige.pr.gov sends a complete chain; nothing to add."; exit 0
+          fi
+          openssl s_client -connect sige.pr.gov:443 -servername sige.pr.gov </dev/null 2>/dev/null | openssl x509 > "$dir/leaf.pem" \
+            || { echo "::warning::could not read the sige.pr.gov leaf certificate"; exit 0; }
+          url=$(openssl x509 -in "$dir/leaf.pem" -noout -ext authorityInfoAccess | sed -n 's/.*CA Issuers - URI:\(.*\)$/\1/p' | head -n1)
+          [ -n "$url" ] || { echo "::warning::sige.pr.gov leaf names no CA Issuers URL"; exit 0; }
+          curl -fsSL --max-time 20 "$url" -o "$dir/issuer.raw" || { echo "::warning::could not fetch $url"; exit 0; }
+          openssl x509 -inform DER -in "$dir/issuer.raw" -out "$dir/issuer.pem" 2>/dev/null \
+            || openssl x509 -in "$dir/issuer.raw" -out "$dir/issuer.pem" \
+            || { echo "::warning::$url is not a certificate"; exit 0; }
+          if openssl verify -untrusted "$dir/issuer.pem" "$dir/leaf.pem"; then
+            openssl x509 -in "$dir/issuer.pem" -noout -subject -issuer -enddate
+            echo "NODE_EXTRA_CA_CERTS=$dir/issuer.pem" >> "$GITHUB_ENV"
+          else
+            echo "::warning::the fetched issuer does not complete the sige.pr.gov chain to a system root"
+          fi
       - name: Query live authoritative providers
         env:
           GIS_LIVE_PROVIDER_TESTS: '1'
