@@ -108,13 +108,10 @@ jobs:
       - name: Open or update the fixture-refresh PR
         if: steps.drift.outputs.drift == 'true'
         env:
-          # The built-in token is enough to open the PR, provided the repository
-          # allows it (Settings → Actions → General → "Allow GitHub Actions to
-          # create and approve pull requests"). GitHub deliberately does not run
-          # workflows on a PR that token creates, so that PR arrives without CI.
-          # SYNC_PAT — already this repo's cross-repo write secret — opens it
-          # instead and makes the checks run. Neither is required.
-          GH_TOKEN: ${{ secrets.SYNC_PAT || github.token }}
+          # An authorized publisher is mandatory. Do not fall back to
+          # GITHUB_TOKEN: this repository disallows bot-created PRs, and
+          # that fallback previously force-pushed fixture-refresh before failing.
+          GH_TOKEN: ${{ secrets.SYNC_PAT }}
           # Presence, not the value — the secret itself never reaches the shell.
           HAS_SYNC_PAT: ${{ secrets.SYNC_PAT != '' }}
           # docs-sync is the one check main requires, and nothing else runs it on
@@ -122,8 +119,13 @@ jobs:
           # the verdict on the head commit with its own token.
           STATUS_TOKEN: ${{ github.token }}
         run: |
-          # One standing branch, force-pushed on every refresh: an open refresh PR
-          # follows it, and a run that cannot open a PR leaves no new branch.
+          # Fail before any branch creation/force-push when no authorized publisher
+          # is configured; the always() artifact upload still preserves output.
+          if [ "$HAS_SYNC_PAT" != "true" ]; then
+            echo "::error title=Fixture publisher unavailable::SYNC_PAT is not configured; no fixture-refresh branch was modified. Preserve the ingest artifact and use an authorized reviewed publication path."
+            exit 1
+          fi
+          # One standing branch, force-pushed on each reviewed refresh.
           branch="fixture-refresh"
           git config user.name  "prii-federation-bot"
           git config user.email "noreply@github.com"
@@ -174,11 +176,6 @@ jobs:
           else
             gh pr create --base main --head "$branch" \
               --title "Refresh the committed federation fixture" --body "$body"
-          fi
-          if [ "$HAS_SYNC_PAT" != "true" ]; then
-            echo "::notice title=PR checks limited to docs-sync::Created with the \
-            built-in GITHUB_TOKEN, which does not trigger workflow runs; this job \
-            recorded docs-sync itself. Set SYNC_PAT to have the other checks run."
           fi
 
       - name: Note that the fixture was already current
