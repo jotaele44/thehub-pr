@@ -74,6 +74,10 @@ def test_domain_profile_is_read_only(monkeypatch, tmp_path):
     ("Geometry_Included", True),
     ("Category_Count", 1),
     ("Migration_Class", "INFERRED"),
+    ("Profile_Type", "flight_activity"),
+    ("Coverage_State", "VERIFIED"),
+    ("Shared_Boundary_Record_Count", 1),
+    ("Top_Record_IDs", ["unbound"]),
 ])
 def test_producer_profile_corruption_fails_closed(monkeypatch, tmp_path, mutation):
     from server.backend.grid_v2_api import cell_handoff
