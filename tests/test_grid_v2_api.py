@@ -110,3 +110,48 @@ def test_producer_profile_corruption_fails_closed(monkeypatch, tmp_path, mutatio
     with pytest.raises(HTTPException) as exc:
         cell_handoff("PR_GRID_GEOGRAPHIC_V2", "2.0.0-rc1", "L1", cid)
     assert exc.value.status_code == 503
+
+
+def test_corrupt_nonrequested_profile_row_blocks_entire_artifact(monkeypatch, tmp_path):
+    pin = load_pin(PIN_PATH, expected_consumer="thehub-pr")
+    target = "PRG2:L1:R075:C0234"
+    other = "PRG2:L1:R075:C0235"
+    directory = tmp_path / "aguayluz-pr"
+    directory.mkdir()
+
+    def profile(cid):
+        return {
+            "Schema_Version": "pr-grid-v2-cell-profile/1.2",
+            "Grid_Identity": grid_identity(pin, level="L1", cell_id=cid),
+            "Cell_ID": cid, "Repository": "aguayluz-pr",
+            "Profile_Type": "water_hydrology",
+            "Grid_Deep_Link": f"/grid/PR_GRID_GEOGRAPHIC_V2/2.0.0-rc1/L1/{cid}",
+            "Data_State": "HAS_RECORDS", "Coverage_State": "UNKNOWN",
+            "Record_Count": 1, "Category_Count": 1,
+            "Categories": {"gauge": 1}, "Top_Record_IDs": ["g1"],
+            "Binding_Method_Counts": {"COVERS": 1},
+            "Uncertainty_Class_Counts": {"EXACT": 1},
+            "Exact_Record_Count": 1, "Non_Exact_Record_Count": 0,
+            "Shared_Boundary_Record_Count": 0,
+            "Migration_Class": "RECOMPUTED_FROM_SOURCE_COORDINATE",
+            "Identity_Default": "CANDIDATE_NOT_IDENTITY",
+            "Geometry_Included": False,
+        }
+
+    good, neighbor = profile(target), profile(other)
+    neighbor["Categories"] = {"gauge": 2}  # schema-valid, arithmetic-invalid
+    artifact = directory / "L1.jsonl"
+    artifact.write_text(json.dumps(good) + "\n" + json.dumps(neighbor) + "\n")
+    receipt = {
+        "Output_SHA256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
+        "Repository": "aguayluz-pr",
+        "Grid_Identity": grid_identity(pin, level="L1"),
+        "Geometry_Copied": False,
+        "State": "CANDIDATE_NOT_CANONICAL",
+        "Profile_Count": 2,
+    }
+    (directory / "L1.receipt.json").write_text(json.dumps(receipt) + "\n")
+    monkeypatch.setenv("PRII_GRID_V2_PROFILE_ROOT", str(tmp_path))
+    with pytest.raises(HTTPException) as exc:
+        cell_handoff("PR_GRID_GEOGRAPHIC_V2", "2.0.0-rc1", "L1", target)
+    assert exc.value.status_code == 503
