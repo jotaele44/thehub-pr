@@ -97,7 +97,7 @@ def test_producer_profile_corruption_fails_closed(monkeypatch, tmp_path, mutatio
     }
     row[mutation[0]] = mutation[1]
     artifact = directory / "L1.jsonl"
-    artifact.write_text(json.dumps(row) + "\\n")
+    artifact.write_text(json.dumps(row) + "\n")
     receipt = {
         "Output_SHA256": hashlib.sha256(artifact.read_bytes()).hexdigest(),
         "Repository": "aguayluz-pr",
@@ -105,7 +105,7 @@ def test_producer_profile_corruption_fails_closed(monkeypatch, tmp_path, mutatio
         "Geometry_Copied": False, "State": "CANDIDATE_NOT_CANONICAL",
         "Profile_Count": 1,
     }
-    (directory / "L1.receipt.json").write_text(json.dumps(receipt) + "\\n")
+    (directory / "L1.receipt.json").write_text(json.dumps(receipt) + "\n")
     monkeypatch.setenv("PRII_GRID_V2_PROFILE_ROOT", str(tmp_path))
     with pytest.raises(HTTPException) as exc:
         cell_handoff("PR_GRID_GEOGRAPHIC_V2", "2.0.0-rc1", "L1", cid)
