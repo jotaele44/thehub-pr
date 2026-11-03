@@ -13,7 +13,6 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException
 from jsonschema import Draft202012Validator
-from functools import lru_cache
 
 from hub.grid_v2 import (
     EXPECTED_CONSUMERS, GRID_ID, GRID_VERSION, GridV2PinError,
@@ -26,12 +25,11 @@ PIN_PATH = ROOT / "federation/spatial/pr_grid_geographic_v2.pin.json"
 PROFILE_SCHEMA_PATH = ROOT / "schemas/cell_profile_v2.schema.json"
 
 
-@lru_cache(maxsize=1)
-def profile_validator() -> Draft202012Validator:
-    """Load the frozen producer profile 1.2 contract or fail closed."""
-    schema = json.loads(PROFILE_SCHEMA_PATH.read_text(encoding="utf-8"))
-    Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema)
+# Frozen schema is resolved once during import; failure blocks the API rather than
+# returning partially validated producer profiles.
+_PROFILE_SCHEMA = json.loads(PROFILE_SCHEMA_PATH.read_text(encoding="utf-8"))
+Draft202012Validator.check_schema(_PROFILE_SCHEMA)
+_PROFILE_VALIDATOR = Draft202012Validator(_PROFILE_SCHEMA)
 
 
 @router.get("/grid/{grid_id}/{grid_version}/{level}/{cell_id}")
@@ -83,7 +81,7 @@ def cell_handoff(
                 item = json.loads(raw)
                 if not isinstance(item, dict):
                     raise ValueError("profile is not a JSON object")
-                errors = list(profile_validator().iter_errors(item))
+                errors = list(_PROFILE_VALIDATOR.iter_errors(item))
                 if errors:
                     raise ValueError("invalid Cell_Profile 1.2: " + errors[0].message)
                 cid = item["Cell_ID"]
