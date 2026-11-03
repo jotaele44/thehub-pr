@@ -19,17 +19,11 @@
     "Top_Record_IDs",
     "Shared_Boundary_Record_Count",
     "Identity_Default",
-    "Geometry_Included",
-    "Grid_Deep_Link",
-    "Binding_Method_Counts",
-    "Uncertainty_Class_Counts",
-    "Exact_Record_Count",
-    "Non_Exact_Record_Count",
-    "Migration_Class"
+    "Geometry_Included"
   ],
   "properties": {
     "Schema_Version": {
-      "const": "pr-grid-v2-cell-profile/1.2"
+      "const": "pr-grid-v2-cell-profile/1.0"
     },
     "Grid_Identity": {
       "type": "object",
@@ -41,10 +35,7 @@
         "Grid_Manifest_SHA256",
         "Cell_ID",
         "Geometry_Authority",
-        "Authority_Commit",
-        "Cell_Schema_SHA256",
-        "Binding_Schema_SHA256",
-        "Mask_Schema_SHA256"
+        "Authority_Commit"
       ],
       "properties": {
         "Grid_ID": {
@@ -76,21 +67,8 @@
         },
         "Authority_Commit": {
           "const": "0c66e13d14232c0d7cbcbc179b3655904777dc71"
-        },
-        "Cell_Schema_SHA256": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
-        },
-        "Binding_Schema_SHA256": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
-        },
-        "Mask_Schema_SHA256": {
-          "type": "string",
-          "pattern": "^[0-9a-f]{64}$"
         }
-      },
-      "additionalProperties": false
+      }
     },
     "Repository": {
       "enum": [
@@ -160,39 +138,6 @@
     },
     "Geometry_Included": {
       "const": false
-    },
-    "Grid_Deep_Link": {
-      "type": "string",
-      "pattern": "^/grid/PR_GRID_GEOGRAPHIC_V2/2\\.0\\.0-rc1/L[0-3]/PRG2:L[0-3]:R[0-9]{3}:C[0-9]{4}$"
-    },
-    "Binding_Method_Counts": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "integer",
-        "minimum": 1
-      }
-    },
-    "Uncertainty_Class_Counts": {
-      "type": "object",
-      "additionalProperties": {
-        "type": "integer",
-        "minimum": 1
-      }
-    },
-    "Exact_Record_Count": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "Non_Exact_Record_Count": {
-      "type": "integer",
-      "minimum": 0
-    },
-    "Migration_Class": {
-      "enum": [
-        "RECOMPUTED_FROM_SOURCE_COORDINATE",
-        "RECOMPUTED_FROM_SOURCE_GEOMETRY",
-        "VERIFIED_CROSSWALK"
-      ]
     }
   }
 }
