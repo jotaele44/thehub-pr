@@ -23,6 +23,13 @@ router = APIRouter(tags=["grid-v2"])
 ROOT = Path(__file__).resolve().parents[2]
 PIN_PATH = ROOT / "federation/spatial/pr_grid_geographic_v2.pin.json"
 PROFILE_SCHEMA_PATH = ROOT / "schemas/cell_profile_v2.schema.json"
+PROFILE_TYPES = {
+    "aguayluz-pr": "water_hydrology",
+    "skywatcher-pr": "flight_activity",
+    "ovnis-pr": "anomalous_cases",
+    "moneysweep-pr": "financial_activity",
+    "centinelas-pr": "monitoring_state",
+}
 
 
 # Frozen schema is resolved once during import; failure blocks the API rather than
@@ -102,6 +109,8 @@ def cell_handoff(
                     raise ValueError("mismatched profile deep link")
                 if item.get("Geometry_Included") is not False:
                     raise ValueError("geometry must remain with Spiderweb")
+                if item.get("Profile_Type") != PROFILE_TYPES[repo]:
+                    raise ValueError("producer profile type mismatch")
                 state = item.get("Data_State")
                 count = item.get("Record_Count")
                 if state not in ("HAS_RECORDS", "ZERO_RECORDS", "NO_DATA"):
@@ -112,6 +121,12 @@ def cell_handoff(
                     raise ValueError("data state contradicts record count")
                 if state == "ZERO_RECORDS" and item.get("Coverage_State") != "VERIFIED":
                     raise ValueError("zero records requires verified coverage")
+                if state == "NO_DATA" and item.get("Coverage_State") != "UNKNOWN":
+                    raise ValueError("no data cannot claim verified coverage")
+                if item["Shared_Boundary_Record_Count"] > count:
+                    raise ValueError("shared boundary count exceeds record count")
+                if len(item["Top_Record_IDs"]) > count:
+                    raise ValueError("top record ID count exceeds record count")
                 if item["Category_Count"] != len(item["Categories"]):
                     raise ValueError("category count contradiction")
                 for key in ("Categories", "Binding_Method_Counts", "Uncertainty_Class_Counts"):
