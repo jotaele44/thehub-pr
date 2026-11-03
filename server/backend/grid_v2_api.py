@@ -16,7 +16,7 @@ from jsonschema import Draft202012Validator
 
 from hub.grid_v2 import (
     EXPECTED_CONSUMERS, GRID_ID, GRID_VERSION, GridV2PinError,
-    grid_identity, load_pin, validate_cell_id, validate_level,
+    build_grid_deep_link, grid_identity, load_pin, validate_cell_id, validate_level,
 )
 
 router = APIRouter(tags=["grid-v2"])
@@ -89,10 +89,17 @@ def cell_handoff(
                     raise ValueError("duplicate producer Cell_ID")
                 seen_cells.add(cid)
                 valid_rows += 1
-                if item.get("Cell_ID") != validated_id:
-                    continue
-                if item.get("Repository") != repo or item.get("Grid_Identity") != identity:
+                # Validate every row, not merely the requested Cell_ID. A
+                # corrupted neighboring cell invalidates its source artifact.
+                if (item.get("Repository") != repo
+                        or item.get("Grid_Identity") != grid_identity(
+                            pin, level=level, cell_id=cid
+                        )):
                     raise ValueError("mismatched profile identity")
+                if item.get("Grid_Deep_Link") != build_grid_deep_link(
+                    pin, level=level, cell_id=cid
+                ):
+                    raise ValueError("mismatched profile deep link")
                 if item.get("Geometry_Included") is not False:
                     raise ValueError("geometry must remain with Spiderweb")
                 state = item.get("Data_State")
@@ -112,7 +119,8 @@ def cell_handoff(
                         raise ValueError(key + " count contradiction")
                 if item["Exact_Record_Count"] + item["Non_Exact_Record_Count"] != count:
                     raise ValueError("exact and non-exact record counts contradict total")
-                profiles.append(item)
+                if cid == validated_id:
+                    profiles.append(item)
             if receipt.get("Profile_Count") != valid_rows:
                 raise ValueError("profile row denominator mismatch")
         except (OSError, ValueError, TypeError) as exc:
