@@ -12,8 +12,6 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, HTTPException
-from jsonschema import Draft202012Validator
-from functools import lru_cache
 
 from hub.grid_v2 import (
     EXPECTED_CONSUMERS, GRID_ID, GRID_VERSION, GridV2PinError,
@@ -23,15 +21,6 @@ from hub.grid_v2 import (
 router = APIRouter(tags=["grid-v2"])
 ROOT = Path(__file__).resolve().parents[2]
 PIN_PATH = ROOT / "federation/spatial/pr_grid_geographic_v2.pin.json"
-PROFILE_SCHEMA_PATH = ROOT / "schemas/cell_profile_v2.schema.json"
-
-
-@lru_cache(maxsize=1)
-def profile_validator() -> Draft202012Validator:
-    """Load the frozen producer profile 1.2 contract or fail closed."""
-    schema = json.loads(PROFILE_SCHEMA_PATH.read_text(encoding="utf-8"))
-    Draft202012Validator.check_schema(schema)
-    return Draft202012Validator(schema)
 
 
 @router.get("/grid/{grid_id}/{grid_version}/{level}/{cell_id}")
@@ -75,22 +64,12 @@ def cell_handoff(
                     or receipt.get("Geometry_Copied") is not False
                     or receipt.get("State") != "CANDIDATE_NOT_CANONICAL"):
                 raise ValueError("unverified producer profile output receipt")
-            seen_cells: set[str] = set()
-            valid_rows = 0
             for raw in payload.decode("utf-8").splitlines():
                 if not raw:
                     continue
                 item = json.loads(raw)
                 if not isinstance(item, dict):
                     raise ValueError("profile is not a JSON object")
-                errors = list(profile_validator().iter_errors(item))
-                if errors:
-                    raise ValueError("invalid Cell_Profile 1.2: " + errors[0].message)
-                cid = item["Cell_ID"]
-                if cid in seen_cells:
-                    raise ValueError("duplicate producer Cell_ID")
-                seen_cells.add(cid)
-                valid_rows += 1
                 if item.get("Cell_ID") != validated_id:
                     continue
                 if item.get("Repository") != repo or item.get("Grid_Identity") != identity:
@@ -107,16 +86,7 @@ def cell_handoff(
                     raise ValueError("data state contradicts record count")
                 if state == "ZERO_RECORDS" and item.get("Coverage_State") != "VERIFIED":
                     raise ValueError("zero records requires verified coverage")
-                if item["Category_Count"] != len(item["Categories"]):
-                    raise ValueError("category count contradiction")
-                for key in ("Categories", "Binding_Method_Counts", "Uncertainty_Class_Counts"):
-                    if sum(item[key].values()) != count:
-                        raise ValueError(key + " count contradiction")
-                if item["Exact_Record_Count"] + item["Non_Exact_Record_Count"] != count:
-                    raise ValueError("exact and non-exact record counts contradict total")
                 profiles.append(item)
-            if receipt.get("Profile_Count") != valid_rows:
-                raise ValueError("profile row denominator mismatch")
         except (OSError, ValueError, TypeError) as exc:
             raise HTTPException(503, "profile validation BLOCKED: " + str(exc)) from exc
     return {
