@@ -179,6 +179,34 @@ spatial layers).
   `fixture-refresh` branch and records `docs-sync` on its PR head the same way. Opening
   that PR still needs the repository setting below.
 
+**Part 14 — Contamination-chain plumbing, Phase 0 (2026-11-03):**
+Branch `claude/contamination-monitoring-system-6l67q5` in all five repos. These are the
+first fixes toward one chain: flag the announcement, surface the contract, locate it,
+identify the entities, assess the impact.
+- **Hub ingest triggers.** `federation-ingest.yml` now listens for `spiderweb-export`,
+  which `spiderweb-pr`'s `centinelas-handoff.yml` already sent and which was dropped. It
+  also runs on a daily schedule, so a producer whose dispatch never arrives still reaches
+  the Hub.
+- **`centinelas-pr` ledger.** `centinelas-pr/scripts/build_signal_ledger.py` used to call only RSS and
+  keep the first 100 items. That dropped every DRNA feed, and it never called the
+  OGPe/JP/ASG/EPA NPDES scrapers or the Federal Register. It now polls all three layers
+  with a per-source cap. `signal-ledger-refresh.yml` runs it at `--per-source 10 --limit
+  300` and sends `centinelas-export`, which no workflow emitted before.
+  - Live run: 300 rows from 45 sources, about 230 of them Puerto Rico permit and
+    regulatory notices.
+- **`aguayluz-pr` handoff acks.** `.gitignore`'s `data/*` dropped
+  `data/centinelas_handoffs/` and `data/access_conditions.jsonl`, and `|| true` hid it.
+  Every one of `centinelas-pr`'s 959 acknowledged receipts therefore pointed at a record
+  aguayluz never kept. Both paths are now allowlisted. The workflow acknowledges only
+  after a successful push, and `centinelas-intake.yml` no longer reports a failed push as
+  "nothing to push".
+- **`moneysweep-pr` / `spiderweb-pr` handoff receipts.** Both `main` branches require
+  checks (moneysweep also requires an approved review), so their bot pushes to `main` were
+  always rejected. Receipts, and spiderweb's project assertion stream, now go to an
+  unprotected `federation-data/centinelas-handoffs` branch via
+  `moneysweep-pr/scripts/persist_to_data_branch.sh` (copied into `spiderweb-pr`), and the ack follows that push. The Hub does not
+  read that branch yet.
+
 ## Blocked gaps — fully specified, waiting on a named external input
 
 Each item below is **code-ready** unless noted; the missing item is named.

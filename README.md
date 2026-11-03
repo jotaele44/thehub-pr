@@ -76,7 +76,9 @@ package changes.
 
 `data/aggregate/*.jsonl` is a committed bounded sample, so it goes stale as producers publish.
 `.github/workflows/federation-ingest.yml` closes that loop: on each producer
-`repository_dispatch` it re-runs every producer's `export_canonical`, rebuilds the bounded
+`repository_dispatch` (`moneysweep-export`, `aguayluz-export`, `centinelas-export`,
+`spiderweb-export`), and once a day on a schedule as a backstop, it re-runs every
+producer's `export_canonical`, rebuilds the bounded
 fixture, and **opens a pull request** when the data actually changed. Nothing lands on `main`
 without review. Every refresh force-pushes the one `fixture-refresh` branch, so an open
 refresh PR always shows the newest data and a run that cannot open a PR leaves no new branch.
