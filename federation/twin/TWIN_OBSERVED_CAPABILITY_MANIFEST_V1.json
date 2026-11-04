@@ -1614,9 +1614,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): CelesTrak GP element sets (the JSON form of the orbital elements a two-line set carries) for the ISS, Hubble and the Chinese space station are read in the Sky workspace (/skywatcher?view=sky), validated field by field (SGP4 theory only, value ranges, UTC epoch) and kept with their NORAD catalogue number, international designator, name and epoch, with their age at the chosen instant. A set that cannot be read or validated is listed as failed, never defaulted.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1655,9 +1662,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): The International Space Station (NORAD 25544) from CelesTrak's GP JSON, shown in the Sky workspace (/skywatcher?view=sky). A real CelesTrak answer for the ISS (retrieved 2026-11-03T07:19:14Z, raw-response sha256 recorded) is frozen as the fixture. SGP4 states, look angles, passes and shadow transitions are held to the Vallado verification set (AIAA 2006-6753) and to an independent Rhodes sgp4 / Skyfield reference, within the tolerances the tests state.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1696,9 +1710,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): The Chinese space station is represented by the Tianhe core module (NORAD 48274, 2021-035A, identity read from CelesTrak on 2026-10-20), whose element set is used for the station; docked modules are separate catalogue objects, and the panel says so. A real CelesTrak record for it (epoch 2026-11-03T18:08:45Z, read by the loader on 2026-11-04T01:33:00Z; the hash is of the record's JSON text, the raw bytes were not kept) is frozen as the fixture and held to the independent sgp4/Skyfield reference.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1737,9 +1758,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): The Hubble Space Telescope (NORAD 20580) from CelesTrak's GP JSON, shown in the Sky workspace (/skywatcher?view=sky). A real CelesTrak record for it (epoch 2026-11-03T19:01:49Z, read by the loader on 2026-11-04T01:33:00Z; the hash is of the record's JSON text, the raw bytes were not kept) is frozen as the fixture and held to the independent sgp4/Skyfield reference.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1778,9 +1806,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Orbital objects must keep authoritative NORAD IDs and source epochs (skywatcher-pr README contract).",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): CelesTrak ingestion: one GET per object (an Accept header only, no credential, no token in the address), no retry, a 10 second limit, and the answer must hold exactly one record carrying the requested NORAD number. Orbital objects keep their authoritative NORAD IDs and source epochs (skywatcher-pr README contract). Elements are kept two hours, never polled, and a reload inside a minute is refused, because CelesTrak resets connections after a few requests a minute. No Space-Track and no credential is used.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -2142,9 +2177,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): Passes above 10 degrees in the 24 hours from the chosen instant, for the observer: rise, culmination and set (to about 0.1 s), maximum elevation, azimuths and duration, from SGP4 (satellite.js). Held to the Vallado verification set (33 cases) and to an independent Skyfield reference for all three objects (58 passes; pass times within 1 s, measured 0.22 s; elevation within 0.02 degrees; range within 0.2 km), which proves implementation agreement between two SGP4 programs, not forecast accuracy against sightings.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -2184,9 +2226,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): Geometry only. A pass is a visible-pass candidate when the satellite is above 10 degrees, sunlit (cylindrical Earth shadow, umbra only) and the observer's geometric Sun centre is at or below -6 degrees; otherwise the panel says which condition failed. Brightness, magnitude, weather and obstructions are not estimated, so it is not a prediction that anything will be seen. Elements are current ones: a past event cannot be reproduced without element sets from its own time, which need credentials and are not used.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4506,9 +4555,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): Satellite state at the chosen instant: azimuth, elevation and range, above or below the horizon, sunlit or in the Earth's shadow, the element epoch and its age, and an age policy (normal within 3 days of the epoch, lower to 7, low to 14, refused beyond), drawn on the all-sky chart with a shape of its own, filled when sunlit and hollow in shadow. A satellite whose elements did not load is listed as failed and not placed.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -8570,11 +8626,11 @@
     "by_delivery_state": {
       "ALREADY_PRESENT": 14,
       "BLOCKED": 4,
-      "DEFERRED": 76,
-      "IMPLEMENTED_RUN_2": 88,
+      "DEFERRED": 68,
+      "IMPLEMENTED_RUN_2": 95,
       "IMPLEMENTED_THIS_RUN": 16,
       "NOT_APPLICABLE": 5,
-      "PARTIAL_RUN_2": 15,
+      "PARTIAL_RUN_2": 16,
       "PARTIAL_THIS_RUN": 5
     },
     "census_closed": true

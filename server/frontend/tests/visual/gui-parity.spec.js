@@ -895,6 +895,8 @@ test.describe('digital twin', () => {
 const readJson = (relative) => JSON.parse(readFileSync(fileURLToPath(new URL(relative, import.meta.url)), 'utf8'));
 const SKY_REFERENCE = readJson('../../src/sky/referenceEphemerides.json');
 const SWPC_SAMPLES = readJson('../../src/sky/fixtures/swpc-samples.json');
+const SATELLITE_ELEMENTS = readJson('../../src/sky/fixtures/satellite-elements.json');
+const SATELLITE_REFERENCE = readJson('../../src/sky/fixtures/satelliteReference.json');
 
 // NOAA SWPC answers cross-origin reads; the sandbox browser cannot reach it, so the real payloads frozen in the
 // fixture are served with the same CORS header.
@@ -911,12 +913,27 @@ async function mockSwpc(page, { failSolarWind = false } = {}) {
   });
 }
 
+// CelesTrak answers cross-origin reads too; the sandbox browser cannot reach it either. All three objects are answered
+// with the real element sets frozen in the fixture.
+async function mockCelesTrak(page, { failHubble = false, requests = [] } = {}) {
+  await page.route('https://celestrak.org/**', (route) => {
+    const url = new URL(route.request().url());
+    requests.push(url.toString());
+    const headers = { 'Access-Control-Allow-Origin': '*' };
+    const id = url.searchParams.get('CATNR');
+    if (id === '20580' && failHubble) return route.fulfill({ status: 503, contentType: 'text/plain', headers, body: 'down' });
+    const payload = { 25544: SATELLITE_ELEMENTS.items.ISS.payload, 20580: SATELLITE_ELEMENTS.items.HST.payload, 48274: SATELLITE_ELEMENTS.items.CSS.payload }[id];
+    return route.fulfill({ status: payload ? 200 : 404, contentType: 'application/json', headers, body: JSON.stringify(payload ?? []) });
+  });
+}
+
 test.describe('sky workspace', () => {
   test('is reachable from Skywatcher, reads the sky where Horizons puts it, keeps its state in the link, and says when a product is down', async ({ page }) => {
     test.setTimeout(90000);
     await page.clock.install({ time: new Date('2026-10-18T20:55:00Z') });
     await mockApi(page);
     await mockSwpc(page, { failSolarWind: true });
+    await mockCelesTrak(page);
     await page.goto('/sources', { waitUntil: 'networkidle' });
     await (await openPrimaryNav(page)).getByRole('link', { name: 'Skywatcher-PR', exact: true }).click();
     await page.getByRole('tab', { name: 'Sky', exact: true }).click();
@@ -970,9 +987,71 @@ test.describe('sky workspace', () => {
     await expect(page.locator('[data-sky-sun] [data-testid="altitude"]')).toHaveText(before);
   });
 
+  test('shows the satellites for the observer, holds the station to the independent reference, draws a pass track, and names an object whose elements did not load', async ({ page }) => {
+    test.setTimeout(90000);
+    const celestrak = [];
+    const loaded = [];
+    page.on('request', (request) => loaded.push(request.url()));
+    await page.clock.install({ time: new Date('2026-11-03T18:10:00Z') });
+    await mockApi(page);
+    await mockSwpc(page);
+    await mockCelesTrak(page, { failHubble: true, requests: celestrak });
+    await page.goto('/skywatcher?view=sky&t=2026-11-03T18:10:00Z', { waitUntil: 'networkidle' });
+
+    const iss = page.locator('[data-sat="ISS"]');
+    await expect(iss.locator('[data-testid="sat-state"]')).toHaveText('LOADED');
+    await expect(iss.locator('[data-testid="sat-identity"]')).toContainText('ISS (ZARYA)');
+    await expect(iss.locator('[data-testid="sat-confidence"]')).toContainText('Normal confidence');
+    await expect(page.locator('[data-sat-note]')).toContainText('not all satellites');
+    await expect(page.locator('[data-sat-note]')).toContainText('brightness is not estimated');
+
+    // One request per object, each for its own catalogue number, and no WebAssembly module is loaded.
+    expect(celestrak.map((url) => new URL(url).searchParams.get('CATNR')).sort()).toEqual(['20580', '25544', '48274']);
+    expect(loaded.filter((url) => /\.wasm(\?|$)/.test(url))).toEqual([]);
+
+    // The passes in the next 24 hours, held to the independent Skyfield reference.
+    const reference = SATELLITE_REFERENCE.satellites.ISS.observers['San Juan'].passes.filter((pass) => Date.parse(pass.aos) < Date.parse('2026-11-04T18:10:00Z') && Date.parse(pass.los) > Date.parse('2026-11-03T18:10:00Z'));
+    const rows = iss.locator('[data-sat-pass]');
+    await expect(rows).toHaveCount(reference.length);
+    const secondOfDay = (text) => { const [h, m, s] = /(\d{2}):(\d{2}):(\d{2})/.exec(text).slice(1).map(Number); return h * 3600 + m * 60 + s; };
+    for (let index = 0; index < reference.length; index += 1) {
+      const cells = await rows.nth(index).locator('td').allInnerTexts();
+      const utc = /\((\d{2}:\d{2}:\d{2}) UTC\)/.exec(cells[0])[1];
+      expect(Math.abs(secondOfDay(utc) - secondOfDay(reference[index].aos.slice(11, 19)))).toBeLessThanOrEqual(2);
+      const peak = Number.parseFloat(await rows.nth(index).locator('[data-testid="sat-max-elevation"]').innerText());
+      expect(Math.abs(peak - reference[index].max_elevation)).toBeLessThan(0.08);
+    }
+    await expect(rows.nth(0).locator('[data-testid="sat-visibility"]')).toContainText('in the Earth\'s shadow for the whole pass');
+    await expect(rows.nth(2).locator('[data-testid="sat-visibility"]')).toContainText('Visible-pass candidate (geometry only; brightness not estimated)');
+    await expect(rows.nth(3).locator('[data-testid="sat-visibility"]')).toContainText('The sky is too bright');
+
+    // A pass track appears on the chart and goes away again.
+    await expect(page.locator('[data-sky-track]')).toHaveCount(0);
+    await rows.nth(2).getByRole('button', { name: /^Show the ISS track/ }).click();
+    await expect(page.locator('[data-sky-track="ISS"] path')).toBeVisible();
+    await expect(page.locator('[data-sky-track-key]')).toContainText('Hollow dot: rise. Filled dot: set.');
+    await rows.nth(2).getByRole('button', { name: /^Hide the ISS track/ }).click();
+    await expect(page.locator('[data-sky-track]')).toHaveCount(0);
+
+    // Hubble's elements did not load: it is listed as failed with the reason, and nothing is placed for it.
+    const hubble = page.locator('[data-sat="HST"]');
+    await expect(hubble.locator('[data-testid="sat-state"]')).toHaveText('FAILED');
+    await expect(hubble.locator('[data-testid="sat-error"]')).toContainText('Unavailable: CelesTrak answered HTTP 503');
+    await expect(hubble.locator('[data-testid="sat-position"]')).toHaveCount(0);
+    await expect(page.locator('[data-sky-glyph="HST"]')).toHaveCount(0);
+    await expect(page.locator('[data-sat-summary]')).toContainText('2 of 3 element sets loaded');
+    await expect(page.locator('[data-sat="CSS"] [data-testid="sat-state"]')).toHaveText('LOADED');
+
+    // A reload inside a minute of the last read is refused, in words, and asks CelesTrak nothing.
+    await page.getByRole('button', { name: 'Reload satellite elements' }).click();
+    await expect(page.locator('[data-sat-reload-note]')).toContainText('CelesTrak limits how often it can be asked');
+    expect(celestrak).toHaveLength(3);
+  });
+
   test('refuses an observer it cannot compute for, in words, with no readout', async ({ page }) => {
     await mockApi(page);
     await mockSwpc(page);
+    await mockCelesTrak(page);
     await page.goto('/skywatcher?view=sky&lat=95&lon=-66&t=2026-10-16T00:30:00Z', { waitUntil: 'networkidle' });
     await expect(page.getByRole('alert').first()).toContainText('Latitude must be between -90 and 90 degrees.');
     await expect(page.locator('[data-sky-sun]')).toHaveCount(0);
