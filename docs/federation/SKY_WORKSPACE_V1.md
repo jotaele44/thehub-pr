@@ -2,7 +2,9 @@
 
 TheHub's Sky workspace is the `sky` view of the Skywatcher page, opened at `/skywatcher?view=sky`. It shows
 what is above an observer at a chosen UTC instant (the Sun, the Moon and the five naked-eye planets, when they
-rise and set, how dark it is, the Moon's phase) and the latest space weather (Kp, solar-wind speed, IMF Bz).
+rise and set, how dark it is, the Moon's phase), the International Space Station, Hubble and the Chinese space
+station (where they are, and their passes in the next 24 hours) and the latest space weather (Kp, solar-wind
+speed, IMF Bz).
 
 Under ADR 0001 TheHub is the only product GUI, and under ADR 0006 the Hub, not Skywatcher, owns external
 acquisition. So the sky is computed here, in the browser, and nothing is stored or sent to a producer. The page is
@@ -10,8 +12,8 @@ context for ruling out ordinary explanations. It is not an observation, a case o
 rule out the ordinary before promoting an unexplained result, and the absence of an identified ordinary
 explanation is not evidence of an extraordinary one.
 
-This document covers Phase 6, P6-A. Satellites (P6-B) and the exclusion engine, horizon and line of sight (P6-C)
-are separate changes.
+This document covers Phase 6, P6-A (the sky and space weather) and P6-B (satellites). The exclusion engine,
+horizon and line of sight (P6-C) are a separate change.
 
 ## What is computed, and where
 
@@ -19,8 +21,11 @@ are separate changes.
 |---|---|---|
 | Astronomical state | `server/frontend/src/sky/astronomy.js` | `skyState` (contract `sky-state-v1`): Sun, Moon and Mercury, Venus, Mars, Jupiter and Saturn for an instant and an observer, built on astronomy-engine 2.1.19 (MIT, no dependencies, exactly pinned, loaded only when the Sky tab opens) |
 | Space weather | `server/frontend/src/sky/spaceWeather.js` | `loadSpaceWeather`: Kp, solar-wind speed and IMF Bz read directly from NOAA SWPC |
-| Chart geometry | `server/frontend/src/sky/skyChart.js` | The all-sky chart's projection and the Kp sparkline, as pure functions |
-| View | `server/frontend/src/components/sky/SkyWorkspace.jsx` | Controls, readout, chart, space weather; mounted by `server/frontend/src/pages/Skywatcher.jsx` |
+| Satellite model | `server/frontend/src/sky/satellites.js` | `parseGp`, `elementAge`, `stateAt`, `lookAt`, `findPasses`, `skyTrack` (contract `sky-satellites-v1`): SGP4 from CelesTrak GP elements, built on satellite.js 7.1.0 (MIT, no dependencies, exactly pinned, in the same lazy chunk as the sky engine) |
+| Element loader | `server/frontend/src/sky/satelliteElements.js` | `loadSatelliteElements`: one GET per object to CelesTrak, per-object `LOADED` or `FAILED` |
+| Satellite view | `server/frontend/src/sky/satelliteView.js` | `satelliteSnapshot`, `chartSatellites`, `upcomingPasses`, `passTrack`: what the panel and the chart show, as pure functions |
+| Chart geometry | `server/frontend/src/sky/skyChart.js` | The all-sky chart's projection, satellites and pass tracks on it, and the Kp sparkline, as pure functions |
+| View | `server/frontend/src/components/sky/SkyWorkspace.jsx`, `SatellitesPanel.jsx`, `format.js` | Controls, readout, chart, satellites, space weather; mounted by `server/frontend/src/pages/Skywatcher.jsx` |
 
 The workspace has no backend endpoint and writes nothing, so its capability `sky-workspace` is classified
 `client_only` in `.federation/gui-capabilities.json`.
@@ -134,21 +139,116 @@ inactive source.
 - **Sparkline.** Kp over the span the data holds (7.75 days when measured; the reference showed about 3.5), with
   time on the x axis so a gap is a gap, and the Kp 5 line marked.
 
+## Satellites (P6-B)
+
+Three objects are checked, and the page says so: the International Space Station (NORAD 25544), the Hubble Space
+Telescope (20580) and the Chinese space station, represented by the Tianhe core module (48274, 2021-035A; docked
+modules are separate catalogue objects). It is not "all satellites". Space-Track is not used: it needs credentials.
+
+- **Elements.** CelesTrak's GP element sets, in JSON, from
+  `https://celestrak.org/NORAD/elements/gp.php?CATNR=<id>&FORMAT=json` (CORS-open, no key). The loader sends one
+  GET per object with an `Accept` header and nothing else, no retry and a 10 second limit, and accepts only an
+  answer that holds exactly one record carrying the requested NORAD number. CelesTrak resets connections after a
+  few requests a minute, so the elements are read once, kept for two hours, never polled, and a reload inside a
+  minute of the last read is refused in words. Each object is `LOADED` or `FAILED`, independently: one that failed
+  is listed with the reason and is never placed, defaulted or assumed.
+- **Validation of an element set.** Required numbers, value ranges (eccentricity below 1, mean motion above 0 up to
+  20 rev/day, angles in degrees), SGP4 theory only, the epoch read as UTC (CelesTrak's epoch carries no zone), and a
+  state at the epoch. A set that fails is refused with the field named. The NORAD number, international designator,
+  name and epoch are kept and shown.
+- **Age policy** (a labelled policy, not physics: SGP4 error grows by kilometres a day for a low orbit). Within 3
+  days of the element epoch, either side, confidence is normal; to 7 days, lower; to 14 days, low; beyond 14 days
+  nothing is predicted and the page says why. The elements are current ones, so **a past event cannot be
+  reproduced**: that needs element sets from its own time.
+- **Where it is.** SGP4 gives a state in the TEME frame; azimuth (from north through east), geometric elevation (no
+  refraction) and range come from the observer's geodetic position, with Earth rotation from GMST (UT1−UTC
+  ignored).
+- **Sunlit or in shadow.** The Sun's vector comes from astronomy-engine in J2000, rotated to the equator of date
+  (about 0.375° of precession by 2026) so it can be compared with TEME; the two frames differ by the equation of the
+  equinoxes, about 0.005°, which is stated as an approximation. A satellite is sunlit unless it is behind the Earth
+  and inside a cylinder of the Earth's equatorial radius (6378.137 km) along the Sun direction: umbra only, no
+  penumbra, no atmosphere.
+- **Passes.** The passes above 10° in the 24 hours from the chosen instant (a pass already under way, or still going
+  at the end, is followed to its ends), each with rise, culmination and set found to about 0.1 s, maximum
+  elevation, the three azimuths, duration and the confidence of its element age. The track of a pass can be drawn
+  on the chart, from 30 seconds before it rises above 10° to 30 seconds after it falls below.
+- **Visible-pass candidate.** A pass is labelled "Visible-pass candidate (geometry only; brightness not
+  estimated)" when, at some moment of it, the satellite is above 10°, sunlit, and the observer's geometric Sun
+  centre is at or below −6°. Otherwise the panel says which condition failed ("in the Earth's shadow for the whole
+  pass", "the sky is too bright"). **It does not estimate brightness, weather or obstructions, and is not a
+  prediction that anything will be seen.**
+
+### How the satellite model is held to references
+
+Two independent references, and what they prove:
+
+**The Vallado verification set.** `SGP4-VER.TLE` and `tcppver.out` from Vallado, Crawford, Hujsak and Kelso,
+"Revisiting Spacetrack Report #3" (AIAA 2006-6753), unmodified, in `server/frontend/src/sky/fixtures/vallado/`
+with their sha256. They were taken from the `sgp4` Python package 2.27 (Brandon Rhodes, MIT), which ships them as
+test data, not from CelesTrak (unreachable when captured), so byte-for-byte agreement with CelesTrak's copy is not
+established here. 33 cases, 710 compared states: the largest difference from Vallado's C++ output is 1.2e-7 km
+(0.12 mm) in position and 8.5e-10 km/s in velocity; the tests hold it to 1e-6 km and 1e-8 km/s. One case
+(satellite 33334, a deliberately degenerate orbit) is refused by SGP4 with error code 3, and the test asserts that
+the wrapper fails closed with that code instead of showing a state.
+
+**An independent implementation.** `server/frontend/src/sky/fixtures/satelliteReference.json` holds values computed
+from the same frozen ISS element set by Rhodes' `sgp4` 2.27 and Skyfield 1.55 with JPL DE421 (sha256 recorded;
+Skyfield's built-in timescale, no IERS download), for San Juan and Sydney over a two-day window, with the sha256 of the
+elements fixture it was computed from (the test checks it). The tolerances were set from the differences measured
+when it was frozen, with margin:
+
+| Quantity | Largest difference measured | Tolerance |
+|---|---|---|
+| SGP4 position and velocity (6 states) | 0.2 m (2.1e-4 km); 2.3e-7 km/s | 5 m; 1e-5 km/s |
+| Look angles (45 instants) | azimuth 0.026°, elevation 0.003°, range 0.038 km | 0.1°, 0.02°, 0.2 km |
+| Sunlit or in shadow at each look | 0 mismatches of 45 | exact |
+| Pass rise, culmination, set (15 passes) | 0.13 s | 1 s |
+| Pass maximum elevation, azimuths at rise and set | 0.003°, 0.032° | 0.02°, 0.1° |
+| Azimuth at culmination | 0.48° (a near-zenith pass, where azimuth changes fast) | 1° |
+| Range at culmination, Sun altitude | 0.031 km, 0.000° | 0.2 km, 0.02° |
+| Sunlit seconds in a pass | 5 s (the 5-second sampling step) | 10 s |
+| Shadow entry and exit (62 transitions) | 0.13 s | 1 s |
+
+**What this does not prove.** Both references run the same SGP4 model, so they show that this implementation
+agrees with two others, **not** that a forecast matches what anyone sees: no keyless source of real sightings exists
+(Heavens-Above has no API, N2YO needs a key, Space-Track needs credentials). Historical element sets are
+unavailable, so no past pass has been reproduced.
+
+**Real element sets frozen.** The ISS's only: a real CelesTrak answer (retrieved 2026-11-03T07:19:14Z, epoch
+2026-11-02T18:09:49Z, response sha256 in the fixture). Hubble and the Chinese space station go through the same
+parser and the same code, and the tests answer them with clearly-named synthetic variants of the ISS record (another
+catalogue number, name and mean anomaly): CelesTrak reset this build environment's connections when they were asked
+for, so a real answer for either is not frozen.
+
+**Live invariant.** `server/frontend/src/gis/liveProviders.test.js` asks CelesTrak for all three, one request
+each, when `GIS_LIVE_PROVIDER_TESTS=1`, and checks each answer is the object asked for, in the orbit it has
+(inclination and period), with a usable position now. Throttling or an outage is logged as unavailable; an answer
+that arrives but cannot be read, or is the wrong object, fails.
+
+**Build note.** satellite.js 7 can load an optional WebAssembly bulk-propagation runtime. This page uses only the
+plain JavaScript SGP4, so `vite.config.js` resolves the two specifiers that runtime is loaded through
+(`#wasm-single-thread`, `#wasm-multi-thread`) to `server/frontend/src/sky/wasmNotUsed.js`, which throws if ever
+called. Without that alias the build emits a 309 KB Emscripten module nothing loads. With it the main bundle is
+unchanged (326,344 B) and the lazy Sky chunk grows from 85,180 B to 130,077 B; the E2E asserts no `.wasm` request.
+
 ## The chart
 
 The all-sky chart (`svg[data-sky-chart]`) is the sky as seen looking up: north at the top, east at the left, the
 zenith at the centre, the horizon at the rim, rings at 30° and 60° of altitude. Each body has its own shape and a
-label, so meaning never rests on colour alone. Labels sit beside their glyphs and are nudged so that no label
-overlaps another label or another body's glyph, even when bodies crowd together (the Sun, Mercury and Venus a few
-degrees apart low in the west is the case that prompted it). Bodies below the horizon are not drawn and are named
-under the chart, so all seven are always accounted for. The chart is a 2D view; there is no 3D dome.
+label, so meaning never rests on colour alone. A satellite has a shape of its own (a body with two panels), filled when
+the Sun lights it and hollow when it is in the Earth's shadow, and a pass track can be drawn as a dashed line with a
+hollow dot at the rise and a filled one at the set; the symbol is not a brightness. Labels sit beside their glyphs (on the inner side when the outer side would run off the chart, as the Moon on the
+western rim did) and are nudged so that no label overlaps another label or another body's glyph, even when bodies crowd together (the Sun, Mercury and Venus a few
+degrees apart low in the west is the case that prompted it). Bodies and satellites below the horizon are not drawn and are named
+under the chart, so all seven bodies and every satellite with a position are always accounted for. The chart is a 2D view; there is no 3D dome.
 
 ## Not built
 
 - **A 3D dome** (TWIN-120 is partial: the 2D chart above).
 - **A live camera** (TWIN-121 stays blocked: no authoritative Puerto Rico sky-camera source has been identified).
-- **Satellites** and visible passes (P6-B); **exclusion, horizon, line of sight, frustum and reconstruction**
-  (P6-C); **aircraft** (Skywatcher's export is synthetic, OpenSky does not allow browser reads, and the Hub does
+- **Satellite brightness**, and any prediction that a satellite will be seen: a visible-pass candidate is geometry
+  only. **All satellites**, other than the three named; **past passes** (no historical element sets).
+- **Exclusion, horizon, line of sight, frustum and reconstruction** (P6-C); **aircraft** (Skywatcher's export is synthetic, OpenSky does not allow browser reads, and the Hub does
   not proxy it by decision).
 - **Space weather history or a time machine.** Only the latest reading is shown.
 - **Daylight-saving or named time zones.** A fixed offset only.
@@ -162,15 +262,23 @@ under the chart, so all seven are always accounted for. The chart is a 2D view; 
 - astronomy-engine's own accuracy statement (about 1 arcminute) is the author's claim; the measured numbers above
   are what this repository relies on.
 - The frozen references are what the services returned on 2026-10-18 and could be revised.
+- Satellites: the independent reference and the real element fixture cover the ISS only; Hubble and the Chinese space
+  station are untested on their own real element sets. Skyfield and the model under test both implement SGP4, so
+  their agreement is not a check of the SGP4 model against reality. The shadow is a cylinder (no penumbra), and the
+  Sun is rotated to the equator of date rather than to TEME exactly.
+- Element sets are retrieved when the page opens and are two hours old at most before a reload; the age policy is a
+  stated policy, and a pass near the 14-day limit is low confidence, not wrong or right.
 
 ## Tests
 
 | Kind | Files |
 |---|---|
-| Unit | `server/frontend/src/sky/astronomy.test.js`, `server/frontend/src/sky/spaceWeather.test.js`, `server/frontend/src/sky/skyChart.test.js`, `server/frontend/src/components/sky/SkyWorkspace.test.jsx` |
-| Frozen references | `server/frontend/src/sky/referenceEphemerides.json`, `server/frontend/src/sky/fixtures/swpc-samples.json` (real NOAA payloads) |
-| Live | `server/frontend/src/gis/liveProviders.test.js` (NOAA SWPC, JPL Horizons and USNO, behind `GIS_LIVE_PROVIDER_TESTS=1`) |
+| Unit | `server/frontend/src/sky/astronomy.test.js`, `server/frontend/src/sky/spaceWeather.test.js`, `server/frontend/src/sky/skyChart.test.js`, `server/frontend/src/sky/satellites.test.js`, `server/frontend/src/sky/satelliteElements.test.js`, `server/frontend/src/sky/satelliteView.test.js`, `server/frontend/src/components/sky/SkyWorkspace.test.jsx`, `server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx` |
+| Frozen references | `server/frontend/src/sky/referenceEphemerides.json`, `server/frontend/src/sky/fixtures/swpc-samples.json` (real NOAA payloads), `server/frontend/src/sky/fixtures/satellite-elements.json` (a real CelesTrak answer), `server/frontend/src/sky/fixtures/satelliteReference.json` (Skyfield and sgp4), `server/frontend/src/sky/fixtures/vallado/` (the Vallado verification set) |
+| Live | `server/frontend/src/gis/liveProviders.test.js` (NOAA SWPC, JPL Horizons, USNO and CelesTrak, behind `GIS_LIVE_PROVIDER_TESTS=1`) |
 | E2E | `server/frontend/tests/visual/gui-parity.spec.js` ("sky workspace") |
 
-The E2E serves the real SWPC payloads with the CORS header the provider sends, fixes the page's clock, and holds
-the Sun's altitude to the frozen Horizons value. The sandbox Chromium used in CI cannot reach NOAA.
+The E2E serves the real SWPC payloads and the CelesTrak element sets with the CORS header the providers send, fixes
+the page's clock, holds the Sun's altitude to the frozen Horizons value, holds the station's passes to the Skyfield
+reference, and asserts one request per satellite and no WebAssembly request. The sandbox Chromium used in CI cannot
+reach NOAA or CelesTrak.

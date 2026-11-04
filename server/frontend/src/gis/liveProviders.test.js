@@ -6,6 +6,8 @@ import { GEOID18_PR, geoidHeight, openGeoid } from './geoid';
 import { bodyPosition, localDayWindow, makeObserver, riseTransitSet } from '../sky/astronomy';
 import reference from '../sky/referenceEphemerides.json';
 import { loadSpaceWeather } from '../sky/spaceWeather';
+import { loadSatelliteElements } from '../sky/satelliteElements';
+import { lookAt } from '../sky/satellites';
 
 const runLive = process.env.GIS_LIVE_PROVIDER_TESTS === '1';
 const live = runLive ? describe : describe.skip;
@@ -180,6 +182,47 @@ live('live authoritative GIS providers', () => {
     }
     console.log('GIS_LIVE_SWPC', JSON.stringify({ receipts }));
   }, 60000);
+
+  // CelesTrak resets connections after a few requests a minute and answers 403 or 429 when it is asked too often, so
+  // those are outages here. An answer that arrives but is not the object asked for, or not a usable element set, fails.
+  const CELESTRAK_UNAVAILABLE = /HTTP (403|429)|No answer from|HTTP 5\d\d|failed to fetch|fetch failed|network|timed out|abort|econn|enotfound|socket|reset/i;
+  const ORBITS = Object.freeze({
+    ISS: { inclination: [51, 52], periodMinutes: [91, 94.5] },
+    HST: { inclination: [28, 29], periodMinutes: [94, 97] },
+    CSS: { inclination: [41, 42], periodMinutes: [91, 94] },
+  });
+
+  it('CelesTrak answers the three GP element sets as the loader reads them, each the object asked for and in the orbit it has', async () => {
+    const result = await loadSatelliteElements({ fetchImpl: boundedFetch });
+    const receipts = [];
+    for (const item of result.items) {
+      if (item.state === 'FAILED') {
+        if (!CELESTRAK_UNAVAILABLE.test(item.error)) throw new Error(`${item.id}: the answer could not be used: ${item.error}`);
+        console.log('GIS_LIVE_UNAVAILABLE', JSON.stringify({ sourceId: `celestrak-${item.id}`, error: item.error }));
+        continue;
+      }
+      expect(item.element.noradId).toBe(item.noradId);
+      expect(item.epoch.getTime()).toBeLessThan(Date.now() + 10 * 60000);
+      const orbit = ORBITS[item.id];
+      expect(item.element.inclinationDegrees, `${item.id} inclination`).toBeGreaterThan(orbit.inclination[0]);
+      expect(item.element.inclinationDegrees, `${item.id} inclination`).toBeLessThan(orbit.inclination[1]);
+      expect(item.element.periodMinutes, `${item.id} period`).toBeGreaterThan(orbit.periodMinutes[0]);
+      expect(item.element.periodMinutes, `${item.id} period`).toBeLessThan(orbit.periodMinutes[1]);
+      // Where it is now, over San Juan's sky, when the elements are recent enough to be used.
+      if (item.ageAtRetrieval.state !== 'REFUSED') {
+        const look = lookAt(item.element, result.retrievedAt, { lat: 18.4663, lon: -66.1057, elevation: 0 });
+        expect(look.ok).toBe(true);
+        expect(look.elevation).toBeGreaterThanOrEqual(-90);
+        expect(look.elevation).toBeLessThanOrEqual(90);
+        expect(Math.abs(look.subpoint.latitude)).toBeLessThanOrEqual(item.element.inclinationDegrees + 0.5);
+      }
+      receipts.push({
+        id: item.id, noradId: item.noradId, name: item.name, epoch: item.epoch.toISOString(), ageDays: +item.ageAtRetrieval.days.toFixed(2),
+        inclination: item.element.inclinationDegrees, periodMinutes: +item.element.periodMinutes.toFixed(2),
+      });
+    }
+    console.log('GIS_LIVE_CELESTRAK', JSON.stringify({ retrievedAt: result.retrievedAt.toISOString(), receipts }));
+  }, 90000);
 
   it('JPL Horizons and astronomy-engine agree on where the Sun, Moon and Venus are, within the tolerance measured when the references were frozen', async () => {
     const site = { name: 'San Juan', lat: 18.4663, lon: -66.1057, elevation: 0 };

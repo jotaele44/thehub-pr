@@ -2,8 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { formatClock, instantFrom, makeObserver, skyState } from '@/sky/astronomy';
-import { ALTITUDE_RINGS, CARDINALS, CHART_RADIUS, chartBodies, kpSparkline } from '@/sky/skyChart';
+import { loadSatelliteElements } from '@/sky/satelliteElements';
+import { PASS_MIN_ELEVATION, TRACK_MARGIN_SECONDS, chartSatellites, passTrack, satelliteSnapshot, upcomingPasses } from '@/sky/satelliteView';
+import { ALTITUDE_RINGS, CARDINALS, CHART_RADIUS, chartBodies, chartTrack, kpSparkline } from '@/sky/skyChart';
 import { loadSpaceWeather } from '@/sky/spaceWeather';
+import SatellitesPanel from './SatellitesPanel';
+import { button, degrees, eventText, field, isoOf } from './format';
 
 // The Sky workspace (directive §9; TWIN-008, 111..131): what is above an observer at a chosen UTC instant (Sun,
 // Moon, naked-eye planets, daylight class, rise and set), and the latest space weather. The observer, the time and
@@ -13,12 +17,10 @@ const DEFAULT_OBSERVER = Object.freeze({ lat: 18.4663, lon: -66.1057, elevation:
 const OBSERVER_KEYS = ['lat', 'lon', 'elev', 'tz'];
 const FOLLOW_INTERVAL_MS = 30000;
 const SPACE_WEATHER_REFRESH_MS = 300000;
-const button = 'min-h-[44px] rounded-md border border-border px-3 text-sm font-medium hover:bg-muted disabled:opacity-50';
-const field = 'min-h-[44px] w-full rounded-md border border-border bg-background px-2 text-sm';
-
-const isoOf = (date) => date.toISOString().replace('.000Z', 'Z');
-const degrees = (value) => `${value.toFixed(1)}°`;
-const offsetLabel = (tz) => (tz === 0 ? 'UTC' : `UTC${tz > 0 ? '+' : '-'}${Math.abs(tz)}`);
+// CelesTrak resets connections after a few requests a minute and element sets change a few times a day, so the
+// elements are read once, kept for two hours, never polled, and a reload is refused inside a minute of the last read.
+const SATELLITE_STALE_MS = 2 * 3600e3;
+const SATELLITE_MIN_RELOAD_MS = 60000;
 
 function readNumber(label, raw, fallback) {
   if (raw === null || raw === '') return fallback;
@@ -52,7 +54,6 @@ function formatAge(minutes) {
   return `${Math.floor(minutes / 1440)} d ${Math.floor((minutes % 1440) / 60)} h ago`;
 }
 
-const eventText = (date, tz) => `${formatClock(date, tz)} ${offsetLabel(tz)} (${formatClock(date, 0)} UTC)`;
 const MISSING = Object.freeze({ rise: 'no rise this day', set: 'no set this day', transit: 'no upper transit this day', civilTwilightBegin: 'no civil twilight start this day', civilTwilightEnd: 'no civil twilight end this day' });
 const ALL_DAY = Object.freeze({
   ABOVE_HORIZON_ALL_DAY: 'above the horizon all day (no rise or set)',
@@ -84,8 +85,15 @@ function Position({ item }) {
   );
 }
 
-function Glyph({ shape }) {
+function Glyph({ shape, sunlit }) {
   switch (shape) {
+    // A body with two panels. Filled when the Sun lights it, hollow when it is in the Earth's shadow.
+    case 'satellite': return (
+      <g>
+        <rect x="-2.5" y="-2.5" width="5" height="5" fill={sunlit ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" />
+        <path d="M-8,0 H-3 M3,0 H8 M-8,-3 V3 M8,-3 V3" stroke="currentColor" strokeWidth="1.5" fill="none" />
+      </g>
+    );
     case 'sun': return <g><circle r="5" fill="currentColor" />{[0, 45, 90, 135, 180, 225, 270, 315].map((a) => <line key={a} x1="0" y1="-7" x2="0" y2="-10" stroke="currentColor" strokeWidth="1.5" transform={`rotate(${a})`} />)}</g>;
     case 'moon': return <circle r="5.5" fill="none" stroke="currentColor" strokeWidth="2" />;
     case 'triangle': return <path d="M0,-6 L6,5 L-6,5 Z" fill="currentColor" />;
@@ -97,9 +105,12 @@ function Glyph({ shape }) {
   }
 }
 
-function SkyChart({ sky }) {
-  const { plotted, below } = useMemo(() => chartBodies(sky), [sky]);
-  const label = `Sky chart: north at the top, east at the left, zenith at the centre, horizon at the rim. ${plotted.length} of 7 bodies are above the horizon.`;
+function SkyChart({ sky, satellites = [], track = null }) {
+  const { plotted, below } = useMemo(() => chartBodies(sky, satellites), [sky, satellites]);
+  const path = useMemo(() => (track ? chartTrack(track.points) : null), [track]);
+  const bodiesUp = plotted.filter((body) => body.kind !== 'satellite').length;
+  const satellitesUp = plotted.length - bodiesUp;
+  const label = `Sky chart: north at the top, east at the left, zenith at the centre, horizon at the rim. ${bodiesUp} of 7 bodies are above the horizon.${satellites.length ? ` ${satellitesUp} of ${satellites.length} satellites are above the horizon.` : ''}`;
   return (
     <div>
       <svg data-sky-chart viewBox="-125 -125 250 250" role="img" aria-label={label} className="mx-auto h-auto w-full max-w-[26rem] text-foreground">
@@ -109,13 +120,30 @@ function SkyChart({ sky }) {
         <line x1="0" y1={-CHART_RADIUS} x2="0" y2={CHART_RADIUS} stroke="currentColor" strokeWidth="0.4" opacity="0.5" />
         {CARDINALS.map((c) => <text key={c.label} x={c.x} y={c.y} textAnchor="middle" dominantBaseline="central" fontSize="9" fontWeight="600" fill="currentColor">{c.label}</text>)}
         {ALTITUDE_RINGS.map((ring) => <text key={`l${ring.altitude}`} x="3" y={-ring.radius + 8} fontSize="6" fill="currentColor" opacity="0.7">{ring.altitude}°</text>)}
+        {track && path ? (
+          <g data-sky-track={track.id} className="text-foreground">
+            <path d={path.path} fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 3" />
+            <circle cx={path.start.x} cy={path.start.y} r="2.8" fill="none" stroke="currentColor" strokeWidth="1.5" />
+            <circle cx={path.end.x} cy={path.end.y} r="2.8" fill="currentColor" />
+          </g>
+        ) : null}
         {plotted.map((body) => (
-          <g key={body.body} data-sky-glyph={body.body} transform={`translate(${body.x.toFixed(2)} ${body.y.toFixed(2)})`} className="text-foreground">
-            <Glyph shape={body.shape} />
+          <g key={body.body} data-sky-glyph={body.body} data-sky-kind={body.kind} data-sunlit={body.kind === 'satellite' ? String(body.sunlit) : undefined} transform={`translate(${body.x.toFixed(2)} ${body.y.toFixed(2)})`} className="text-foreground">
+            <Glyph shape={body.shape} sunlit={body.sunlit} />
             <text x={body.labelDx} y={body.labelDy} fontSize="8" fill="currentColor" className="stroke-background" strokeWidth="3" paintOrder="stroke">{body.label}</text>
           </g>
         ))}
       </svg>
+      {satellites.length ? (
+        <p data-sky-satellite-key className="mt-2 text-xs text-muted-foreground">
+          Satellites: a filled symbol is sunlit, a hollow one is in the Earth&apos;s shadow (cylindrical model). The symbol is not a brightness.
+        </p>
+      ) : null}
+      {track && path ? (
+        <p data-sky-track-key className="mt-1 text-xs text-muted-foreground">
+          Dashed line: {track.id} pass, from {TRACK_MARGIN_SECONDS} seconds before it rises above {PASS_MIN_ELEVATION}° to {TRACK_MARGIN_SECONDS} seconds after it falls below. Hollow dot: rise. Filled dot: set.
+        </p>
+      ) : null}
       <p data-sky-below className="mt-2 text-xs text-muted-foreground">
         Below the horizon, not drawn: {below.length ? below.map((b) => `${b.label} (${degrees(b.altitude)})`).join(', ') : 'none'}.
       </p>
@@ -310,9 +338,45 @@ export default function SkyWorkspace() {
   }, [params, timeParam, follow, now, loadedAt]);
   const { observer, instant, sky } = computed;
 
+  // Satellites: CelesTrak's element sets are read once and kept; everything else is computed here for the observer and
+  // instant above. A set that did not load stays in the list as failed.
+  const satelliteQuery = useQuery({
+    queryKey: ['sky-satellite-elements'], queryFn: () => loadSatelliteElements(), staleTime: SATELLITE_STALE_MS,
+    refetchInterval: false, refetchOnWindowFocus: false, refetchOnReconnect: false, retry: false,
+  });
+  const satelliteData = satelliteQuery.data;
+  const snapshot = useMemo(
+    () => (satelliteData && sky ? satelliteSnapshot(satelliteData, observer, instant) : null),
+    [satelliteData, sky, observer, instant],
+  );
+  const satellitesOnChart = useMemo(() => (snapshot ? chartSatellites(snapshot) : []), [snapshot]);
+  const passes = useMemo(
+    () => (snapshot ? Object.fromEntries(snapshot.items.map((item) => [item.id, upcomingPasses(item, observer, instant)])) : null),
+    [snapshot, observer, instant],
+  );
+  // The pass whose track is drawn. It belongs to one observer and one set of elements, so it stops applying when either changes.
+  const observerKey = OBSERVER_KEYS.map((key) => params.get(key) ?? '').join('|');
+  const [shownPass, setShownPass] = useState(null);
+  const [reloadNote, setReloadNote] = useState('');
+  const shown = shownPass && shownPass.observerKey === observerKey && shownPass.data === satelliteData ? shownPass : null;
+  const track = useMemo(() => {
+    if (!shown || !snapshot) return null;
+    const item = snapshot.items.find((candidate) => candidate.id === shown.id);
+    const result = item && item.state === 'LOADED' ? passTrack(item, observer, shown.pass) : null;
+    return result?.ok ? { id: shown.id, points: result.points } : null;
+  }, [shown, snapshot, observer]);
+  const reloadSatellites = () => {
+    const last = satelliteData?.retrievedAt;
+    if (last && Date.now() - last.getTime() < SATELLITE_MIN_RELOAD_MS) {
+      setReloadNote(`CelesTrak limits how often it can be asked. The elements were read at ${isoOf(last)} UTC; ask again after ${isoOf(new Date(last.getTime() + SATELLITE_MIN_RELOAD_MS))} UTC.`);
+      return;
+    }
+    setReloadNote('');
+    satelliteQuery.refetch();
+  };
+
   const draftOf = (o) => ({ lat: String(o.lat), lon: String(o.lon), elevation: String(o.elevation), tzHours: String(o.tzHours) });
   const [draft, setDraft] = useState(() => (computed.observer ? draftOf(computed.observer) : draftOf(DEFAULT_OBSERVER)));
-  const observerKey = OBSERVER_KEYS.map((key) => params.get(key) ?? '').join('|');
   useEffect(() => { if (computed.observer) setDraft(draftOf(computed.observer)); }, [observerKey]);
   const [timeDraft, setTimeDraft] = useState(() => isoOf(instant));
   useEffect(() => { setTimeDraft(isoOf(instant)); }, [timeParam]);
@@ -383,9 +447,13 @@ export default function SkyWorkspace() {
         <>
           <h3 className="text-base font-semibold">Readout</h3>
           <div className="grid gap-4 xl:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
-            <SkyChart sky={sky} />
+            <SkyChart sky={sky} satellites={satellitesOnChart} track={track} />
             <Readout sky={sky} tz={tz} />
           </div>
+          <SatellitesPanel
+            status={satelliteQuery} snapshot={snapshot} passes={passes} tz={tz} shown={shown}
+            onShowTrack={(next) => setShownPass(next && { ...next, observerKey, data: satelliteData })} onReload={reloadSatellites} reloadNote={reloadNote}
+          />
           <section data-sky-conventions className="rounded-md border border-border p-3 text-xs text-muted-foreground">
             <h4 className="mb-1 text-sm font-semibold text-foreground">Conventions</h4>
             <ul className="list-disc space-y-0.5 pl-4">

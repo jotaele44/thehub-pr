@@ -1,0 +1,33 @@
+{
+ "contract": "satellite-elements-samples-v1",
+ "purpose": "Real CelesTrak GP JSON responses captured for parser and propagation tests. Test data, never shown as live data; their epochs are the dates they were captured.",
+ "items": {
+  "ISS": {
+   "url": "https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=json",
+   "retrieved_utc": "2026-11-03T07:19:14Z",
+   "response_bytes": 419,
+   "response_sha256": "6f799db4df33889983933d8532302bfad9e7ac9478452feb32adf487a9d85038",
+   "payload": [
+    {
+     "OBJECT_NAME": "ISS (ZARYA)",
+     "OBJECT_ID": "1998-067A",
+     "EPOCH": "2026-11-02T18:09:49.393152",
+     "MEAN_MOTION": 15.49154261,
+     "ECCENTRICITY": 0.0007124,
+     "INCLINATION": 51.6331,
+     "RA_OF_ASC_NODE": 334.3796,
+     "ARG_OF_PERICENTER": 340.7366,
+     "MEAN_ANOMALY": 19.3352,
+     "EPHEMERIS_TYPE": 0,
+     "CLASSIFICATION_TYPE": "U",
+     "NORAD_CAT_ID": 25544,
+     "ELEMENT_SET_NO": 999,
+     "REV_AT_EPOCH": 59323,
+     "BSTAR": 0.0001062,
+     "MEAN_MOTION_DOT": 5.437e-05,
+     "MEAN_MOTION_DDOT": 0
+    }
+   ]
+  }
+ }
+}
