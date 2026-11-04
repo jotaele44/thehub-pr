@@ -1,0 +1,24 @@
+{
+  "schema_version": "ecpaf-policy/2.1",
+  "policy_id": "ECPAF-V2.1",
+  "mode": "SHADOW_PILOT",
+  "authority": "jotaele44/thehub-pr",
+  "core_repositories": ["jotaele44/aguayluz-pr", "jotaele44/centinelas-pr", "jotaele44/moneysweep-pr", "jotaele44/ovnis-pr", "jotaele44/skywatcher-pr", "jotaele44/spiderweb-pr", "jotaele44/thehub-pr"],
+  "adjacent_repositories": ["jotaele44/mucaro-ai"],
+  "milestones": {"build": 80, "integration": 90, "operational": 95},
+  "execution_classes": ["AI_AUTO", "AI_CONDITIONAL", "HUMAN_REQUIRED", "EXTERNAL_BLOCKED", "INDEPENDENT_REVIEW"],
+  "states": ["PASS", "FAIL", "OPEN", "BLOCKED", "UNRESOLVED"],
+  "mandatory_domains": ["security", "integrity", "identity", "provenance", "authorization"],
+  "protected_operations": ["merge", "deploy", "release", "secret_write", "protection_change", "canonical_promotion"],
+  "protected_release_behavior": "UNCHANGED",
+  "certification": "WITHHELD",
+  "limits": {"max_epochs": 2, "max_repair_rounds": 3, "max_identical_no_delta_retries": 1},
+  "semantics": {
+    "percentages_are_mandatory_gate_waivers": false,
+    "unknown_counts_as_pass": false,
+    "missing_counts_as_pass": false,
+    "self_review_is_independent_approval": false,
+    "mucaro_is_core_member": false,
+    "pilot_can_authorize_operations": false
+  }
+}
