@@ -435,3 +435,37 @@ describe('finding passes', () => {
     expect(refused.ok).toBe(false);
   });
 });
+
+// A pass that clears the minimum elevation for only a few seconds can fall between two samples of the search. These use the
+// independent reference's own maximum elevation for every ISS pass over San Juan (not this module's), asking for a minimum
+// just below it, and just above it.
+describe('passes that only just clear the minimum elevation', () => {
+  const sanJuan = reference.satellites.ISS.observers['San Juan'];
+  const passes = sanJuan.passes.map((pass, index) => ({ index, ...pass }));
+  const hourAround = (pass) => new Date(Date.parse(pass.aos) - 30 * 60e3);
+
+  // The reference and this module agree on a pass's peak to 0.003 degrees (measured), so 0.005 below the reference's peak is
+  // still below this module's.
+  const cases = passes.flatMap((pass) => [0.02, 0.01, 0.005].map((below) => ({ ...pass, below })));
+  it.each(cases)('finds pass $index when the minimum elevation is $below degrees below its peak', (pass) => {
+    const minElevation = pass.max_elevation - pass.below;
+    const result = findPasses(iss(), SAN_JUAN, hourAround(pass), { hours: 1, minElevation });
+    const hit = result.passes.find((p) => Math.abs(p.tca - new Date(pass.tca)) < 5000);
+    expect(hit, `peak ${pass.max_elevation.toFixed(3)} degrees`).toBeTruthy();
+    expect(hit.maxElevation).toBeGreaterThanOrEqual(minElevation);
+    expect(hit.aos < hit.tca && hit.tca < hit.los).toBe(true);
+    expect(hit.durationSeconds).toBeLessThan(30);
+  });
+
+  it.each(passes)('finds no pass near pass $index when the minimum elevation is 0.05 degrees above its peak', (pass) => {
+    const result = findPasses(iss(), SAN_JUAN, hourAround(pass), { hours: 1, minElevation: pass.max_elevation + 0.05 });
+    expect(result.passes.filter((p) => Math.abs(p.tca - new Date(pass.tca)) < 120000)).toHaveLength(0);
+  });
+
+  it('keeps the same rise, culmination and set for a pass the old sampling already found', () => {
+    const pass = passes[0];
+    const wide = findPasses(iss(), SAN_JUAN, hourAround(pass), { hours: 1, minElevation: 10 }).passes.find((p) => Math.abs(p.tca - new Date(pass.tca)) < 5000);
+    expect(Math.abs(wide.aos - new Date(pass.aos))).toBeLessThan(1000);
+    expect(Math.abs(wide.los - new Date(pass.los))).toBeLessThan(1000);
+  });
+});

@@ -170,7 +170,10 @@ modules are separate catalogue objects). It is not "all satellites". Space-Track
   penumbra, no atmosphere.
 - **Passes.** The passes above 10° in the 24 hours from the chosen instant (a pass already under way, or still going
   at the end, is followed to its ends), each with rise, culmination and set found to about 0.1 s, maximum
-  elevation, the three azimuths, duration and the confidence of its element age. The track of a pass can be drawn
+  elevation, the three azimuths, duration and the confidence of its element age. The search samples the elevation every 20
+  seconds, so a pass that clears the minimum for less than one step could fall between two samples; the sampled peaks that sit
+  just below the minimum are refined, so a pass is found even when it clears the minimum by a few thousandths of a degree
+  (found by the automated review of #407 and reproduced: before the fix, a minimum 0.02° below a pass's peak lost the pass). The track of a pass can be drawn
   on the chart, from 30 seconds before it rises above 10° to 30 seconds after it falls below.
 - **Visible-pass candidate.** A pass is labelled "Visible-pass candidate (geometry only; brightness not
   estimated)" when, at some moment of it, the satellite is above 10°, sunlit, and the observer's geometric Sun
