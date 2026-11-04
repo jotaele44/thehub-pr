@@ -110,7 +110,7 @@ jobs:
         env:
           # Do not fallback to GITHUB_TOKEN, whose bot identity cannot create PRs.
           GH_TOKEN: ${{ secrets.SYNC_PAT }}
-          HAS_SYNC_PAT: ${{ secrets.SYNC_PAT != ''}'}
+          HAS_SYNC_PAT: ${{ secrets.SYNC_PAT != '' }}
           STATUS_TOKEN: ${{ github.token }}
         run: |
           # Fail closed before any local or remote branch mutation.
