@@ -40,10 +40,13 @@ def _run(tmp_path: Path, configured: bool, login: str = "", push: str = "", *, g
         '  if [ "$PR_OK" = true ]; then exit 0; fi\n'
         '  exit 73\n'
         'fi\n'
-        'if [ "$1" = api ] && [ "$2" = -X ]; then exit 0; fi\n'
+        'if [ "$1" = api ] && [ "$2" = --silent ] && [ "$3" = -X ] && [ "$4" = POST ] && [ "$5" = "repos/$GITHUB_REPOSITORY/statuses/fake-commit-sha" ]; then exit 0; fi\n'
         'exit 73\n'
     )
     gh.chmod(0o755)
+    tools = tmp_path / "tools"
+    tools.mkdir()
+    (tools / "check_docs_sync.py").write_text("raise SystemExit(0)\n")
     env = dict(os.environ)
     env.update({
         "PATH": str(bin_dir) + os.pathsep + os.environ.get("PATH", ""),
@@ -103,7 +106,7 @@ def test_unique_branch_and_no_force_push() -> None:
     assert "gh pr create --draft" in content
     assert "gh pr edit" not in content
     assert content.index('can_push="$(gh api') < content.index("git checkout -b")
-    assert content.index("git checkout -b") < content.index("git push origin")
+    assert content.index("git checkout -b") < content.index('git push origin "HEAD:refs/heads/$branch"')
     assert "always()" in WORKFLOW.read_text(encoding="utf-8")
 
 
@@ -122,3 +125,16 @@ def test_cleanup_trap_is_cancelled_only_after_pr_creation() -> None:
     assert 'unpublished_branch=""' in code
     assert code.index('gh pr create --draft') < code.rindex('unpublished_branch=""')
     assert 'git push origin ":refs/heads/$unpublished_branch"' in code
+
+
+def test_successful_publication_preserves_authorized_action_order(tmp_path: Path) -> None:
+    result, calls = _run(tmp_path, True, "review-publisher", "true", git_ok=True, pr_ok=True)
+    assert result.returncode == 0
+    actions = calls.splitlines()
+    checkout = next(i for i, line in enumerate(actions) if line.startswith("git checkout -b "))
+    publish = next(i for i, line in enumerate(actions) if line.startswith("git push origin HEAD:refs/heads/"))
+    create_pr = next(i for i, line in enumerate(actions) if line.startswith("gh pr create --draft "))
+    assert actions.index("gh api user --jq .login") < checkout < publish < create_pr
+    assert "git push origin :refs/heads/" not in calls
+    assert "git push --force" not in calls
+

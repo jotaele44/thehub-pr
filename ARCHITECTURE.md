@@ -173,9 +173,13 @@ binomial test and labels the result a background comparison, not a finding. See
 
 The Sky workspace (`/skywatcher?view=sky`) computes the Sun, Moon and naked-eye planets for an explicit
 observer and UTC instant in the browser, with astronomy-engine, and reads the latest Kp, solar-wind speed and
-IMF Bz directly from NOAA SWPC. It has no backend endpoint, stores nothing and calls no producer; its
-agreement with JPL Horizons and USNO is measured and frozen in the tests, and a product that cannot be read is
-shown as unavailable, never as zero. See [`docs/federation/SKY_WORKSPACE_V1.md`](docs/federation/SKY_WORKSPACE_V1.md).
+IMF Bz directly from NOAA SWPC. It also places the International Space Station, Hubble and the Chinese space
+station and lists their passes in the next 24 hours, with SGP4 from CelesTrak's current element sets (read once,
+kept two hours); a pass is only a geometric visible-pass candidate, with brightness not estimated. It has no
+backend endpoint, stores nothing and calls no producer; its agreement with JPL Horizons and USNO, with the Vallado
+SGP4 verification set and with an independent Skyfield reference is measured and frozen in the tests, and a product
+or element set that cannot be read is shown as unavailable, never as zero. See
+[`docs/federation/SKY_WORKSPACE_V1.md`](docs/federation/SKY_WORKSPACE_V1.md).
 
 ## Governance
 
