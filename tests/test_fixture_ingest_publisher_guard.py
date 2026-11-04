@@ -19,12 +19,12 @@ def _script() -> str:
     return textwrap.dedent(raw)
 
 
-def _run(tmp_path: Path, configured: bool, login: str = "", push: str = ""):
+def _run(tmp_path: Path, configured: bool, login: str = "", push: str = "", *, git_ok: bool = False, pr_ok: bool = False):
     bin_dir = tmp_path / "bin"
     bin_dir.mkdir()
     trace = tmp_path / "calls.txt"
     git = bin_dir / "git"
-    git.write_text('#!/bin/sh\nprintf "git %s\\n" "$*" >> "$TRACE"\nexit 81\n')
+    git.write_text('#!/bin/sh\nprintf "git %s\\n" "$*" >> "$TRACE"\nif [ "$GIT_OK" = true ]; then\n  if [ "$1" = rev-parse ]; then echo fake-commit-sha; fi\n  exit 0\nfi\nexit 81\n')
     git.chmod(0o755)
     gh = bin_dir / "gh"
     gh.write_text(
@@ -35,7 +35,13 @@ def _run(tmp_path: Path, configured: bool, login: str = "", push: str = ""):
         'fi\n'
         'if [ "$1" = api ] && [ "$2" = "repos/$GITHUB_REPOSITORY" ]; then\n'
         '  printf "%s\\n" "$PUSH"; exit 0\n'
-        'fi\nexit 73\n'
+        'fi\n'
+        'if [ "$1" = pr ] && [ "$2" = create ]; then\n'
+        '  if [ "$PR_OK" = true ]; then exit 0; fi\n'
+        '  exit 73\n'
+        'fi\n'
+        'if [ "$1" = api ] && [ "$2" = -X ]; then exit 0; fi\n'
+        'exit 73\n'
     )
     gh.chmod(0o755)
     env = dict(os.environ)
@@ -44,6 +50,12 @@ def _run(tmp_path: Path, configured: bool, login: str = "", push: str = ""):
         "HAS_SYNC_PAT": "true" if configured else "false",
         "LOGIN": login,
         "PUSH": push,
+        "GIT_OK": "true" if git_ok else "false",
+        "PR_OK": "true" if pr_ok else "false",
+        "STATUS_TOKEN": "stub-status-token",
+        "GITHUB_SHA": "fake-base-sha",
+        "GITHUB_SERVER_URL": "https://github.com",
+        "GITHUB_WORKFLOW": "Federation ingest",
         "TRACE": str(trace),
         "GITHUB_REPOSITORY": "example/thehub-pr",
         "GITHUB_RUN_ID": "987654",
@@ -93,3 +105,20 @@ def test_unique_branch_and_no_force_push() -> None:
     assert content.index('can_push="$(gh api') < content.index("git checkout -b")
     assert content.index("git checkout -b") < content.index("git push origin")
     assert "always()" in WORKFLOW.read_text(encoding="utf-8")
+
+
+def test_failed_publication_cleans_only_new_branch(tmp_path: Path) -> None:
+    result, calls = _run(tmp_path, True, "review-publisher", "true", git_ok=True)
+    assert result.returncode != 0
+    assert "gh pr create --draft" in calls
+    assert "git push origin HEAD:refs/heads/fixture-refresh/987654-2" in calls
+    assert "git push origin :refs/heads/fixture-refresh/987654-2" in calls
+    assert "git push --force" not in calls
+
+
+def test_cleanup_trap_is_cancelled_only_after_pr_creation() -> None:
+    code = _script()
+    assert 'unpublished_branch="$branch"' in code
+    assert 'unpublished_branch=""' in code
+    assert code.index('gh pr create --draft') < code.rindex('unpublished_branch=""')
+    assert 'git push origin ":refs/heads/$unpublished_branch"' in code
