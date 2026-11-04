@@ -1,6 +1,6 @@
 {
  "contract": "satellite-elements-samples-v1",
- "purpose": "Real CelesTrak GP JSON responses captured for parser and propagation tests. Test data, never shown as live data; their epochs are the dates they were captured.",
+ "purpose": "Real CelesTrak GP JSON answers captured for parser and propagation tests. Test data, never shown as live data; their epochs are the dates they were captured. The ISS's is the response as CelesTrak sent it (raw bytes hashed); Hubble's and the Chinese space station's are the records as the loader read them (the hash is of their JSON text).",
  "items": {
   "ISS": {
    "url": "https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=json",
@@ -25,6 +25,62 @@
      "REV_AT_EPOCH": 59323,
      "BSTAR": 0.0001062,
      "MEAN_MOTION_DOT": 5.437e-05,
+     "MEAN_MOTION_DDOT": 0
+    }
+   ]
+  },
+  "HST": {
+   "url": "https://celestrak.org/NORAD/elements/gp.php?CATNR=20580&FORMAT=json",
+   "retrieved_utc": "2026-11-04T01:33:00Z",
+   "captured_by": "loadSatelliteElements (src/sky/satelliteElements.js), run by the live CelesTrak test through the agent proxy; the record as read, not the raw response",
+   "record_sha256": "7112bdf586350969ac29b0e1a5c263b5b49d78e2b68f1ab413ee3de31ffd69da",
+   "record_sha256_of": "JSON.stringify of the parsed record (number formatting may differ from CelesTrak's own text)",
+   "payload": [
+    {
+     "OBJECT_NAME": "HST",
+     "OBJECT_ID": "1990-037B",
+     "EPOCH": "2026-11-03T19:01:49.943424",
+     "MEAN_MOTION": 15.32164619,
+     "ECCENTRICITY": 0.0001635,
+     "INCLINATION": 28.4725,
+     "RA_OF_ASC_NODE": 205.3934,
+     "ARG_OF_PERICENTER": 269.8662,
+     "MEAN_ANOMALY": 90.1747,
+     "EPHEMERIS_TYPE": 0,
+     "CLASSIFICATION_TYPE": "U",
+     "NORAD_CAT_ID": 20580,
+     "ELEMENT_SET_NO": 999,
+     "REV_AT_EPOCH": 80999,
+     "BSTAR": 0.00013335,
+     "MEAN_MOTION_DOT": 4.497e-05,
+     "MEAN_MOTION_DDOT": 0
+    }
+   ]
+  },
+  "CSS": {
+   "url": "https://celestrak.org/NORAD/elements/gp.php?CATNR=48274&FORMAT=json",
+   "retrieved_utc": "2026-11-04T01:33:00Z",
+   "captured_by": "loadSatelliteElements (src/sky/satelliteElements.js), run by the live CelesTrak test through the agent proxy; the record as read, not the raw response",
+   "record_sha256": "7af946059e019db49c8353213a8fd0bcc0c46711e3c97391e57d12d053e9e497",
+   "record_sha256_of": "JSON.stringify of the parsed record (number formatting may differ from CelesTrak's own text)",
+   "payload": [
+    {
+     "OBJECT_NAME": "CSS (TIANHE)",
+     "OBJECT_ID": "2021-035A",
+     "EPOCH": "2026-11-03T18:08:45.114144",
+     "MEAN_MOTION": 15.61346436,
+     "ECCENTRICITY": 0.0004354,
+     "INCLINATION": 41.4683,
+     "RA_OF_ASC_NODE": 194.0006,
+     "ARG_OF_PERICENTER": 254.906,
+     "MEAN_ANOMALY": 105.1297,
+     "EPHEMERIS_TYPE": 0,
+     "CLASSIFICATION_TYPE": "U",
+     "NORAD_CAT_ID": 48274,
+     "ELEMENT_SET_NO": 999,
+     "REV_AT_EPOCH": 31496,
+     "BSTAR": 0.00014906,
+     "MEAN_MOTION_DOT": 0.00012739,
      "MEAN_MOTION_DDOT": 0
     }
    ]

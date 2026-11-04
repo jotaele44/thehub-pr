@@ -28,11 +28,12 @@ async function loadOne(satellite, { fetchImpl, now, timeoutMs }) {
     const matching = body.filter((record) => Number(record?.NORAD_CAT_ID) === satellite.noradId);
     if (matching.length !== 1) throw new Error(`CelesTrak returned ${matching.length} objects for catalogue number ${satellite.noradId}, not 1`);
     const element = parseGp(matching[0]);
-    return Object.freeze({ ...base, state: 'LOADED', error: null, element, name: element.name, epoch: element.epoch, ageAtRetrieval: elementAge(element, now) });
+    // The record as CelesTrak sent it is kept beside the parsed element set, so what was read can always be shown.
+    return Object.freeze({ ...base, state: 'LOADED', error: null, element, record: Object.freeze({ ...matching[0] }), name: element.name, epoch: element.epoch, ageAtRetrieval: elementAge(element, now) });
   } catch (error) {
     const aborted = error?.name === 'AbortError' || controller.signal.aborted;
     const reason = aborted ? `No answer from CelesTrak within ${timeoutMs / 1000} seconds` : (error?.message || String(error));
-    return Object.freeze({ ...base, state: 'FAILED', error: reason, element: null, name: null, epoch: null, ageAtRetrieval: null });
+    return Object.freeze({ ...base, state: 'FAILED', error: reason, element: null, record: null, name: null, epoch: null, ageAtRetrieval: null });
   } finally {
     clearTimeout(timer);
   }

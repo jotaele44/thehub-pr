@@ -155,7 +155,7 @@ modules are separate catalogue objects). It is not "all satellites". Space-Track
 - **Validation of an element set.** Required numbers, value ranges (eccentricity below 1, mean motion above 0 up to
   20 rev/day, angles in degrees), SGP4 theory only, the epoch read as UTC (CelesTrak's epoch carries no zone), and a
   state at the epoch. A set that fails is refused with the field named. The NORAD number, international designator,
-  name and epoch are kept and shown.
+  name and epoch are kept and shown, and the record as CelesTrak sent it is kept beside the parsed element set.
 - **Age policy** (a labelled policy, not physics: SGP4 error grows by kilometres a day for a low orbit). Within 3
   days of the element epoch, either side, confidence is normal; to 7 days, lower; to 14 days, low; beyond 14 days
   nothing is predicted and the page says why. The elements are current ones, so **a past event cannot be
@@ -192,38 +192,44 @@ established here. 33 cases, 710 compared states: the largest difference from Val
 the wrapper fails closed with that code instead of showing a state.
 
 **An independent implementation.** `server/frontend/src/sky/fixtures/satelliteReference.json` holds values computed
-from the same frozen ISS element set by Rhodes' `sgp4` 2.27 and Skyfield 1.55 with JPL DE421 (sha256 recorded;
-Skyfield's built-in timescale, no IERS download), for San Juan and Sydney over a two-day window, with the sha256 of the
-elements fixture it was computed from (the test checks it). The tolerances were set from the differences measured
-when it was frozen, with margin:
+from the frozen element sets of all three objects by Rhodes' `sgp4` 2.27 and Skyfield 1.55 with JPL DE421 (sha256
+recorded; Skyfield's built-in timescale, no IERS download), for San Juan and Sydney over a two-day window that starts a
+day after each element epoch, with the sha256 of the elements fixture it was computed from (the test checks it). The
+tolerances were set from the differences measured when it was frozen, with margin:
 
 | Quantity | Largest difference measured | Tolerance |
 |---|---|---|
-| SGP4 position and velocity (6 states) | 0.2 m (2.1e-4 km); 2.3e-7 km/s | 5 m; 1e-5 km/s |
-| Look angles (45 instants) | azimuth 0.026°, elevation 0.003°, range 0.038 km | 0.1°, 0.02°, 0.2 km |
-| Sunlit or in shadow at each look | 0 mismatches of 45 | exact |
-| Pass rise, culmination, set (15 passes) | 0.13 s | 1 s |
-| Pass maximum elevation, azimuths at rise and set | 0.003°, 0.032° | 0.02°, 0.1° |
+| SGP4 position and velocity (18 states) | 0.2 m (2.1e-4 km); 2.3e-7 km/s | 5 m; 1e-5 km/s |
+| Look angles (174 instants) | azimuth 0.026°, elevation 0.003°, range 0.039 km | 0.1°, 0.02°, 0.2 km |
+| Sunlit or in shadow at each look | 0 mismatches of 174 | exact |
+| Pass rise, culmination, set (58 passes) | 0.22 s | 1 s |
+| Pass maximum elevation, azimuths at rise and set | 0.003°, 0.05° | 0.02°, 0.1° |
 | Azimuth at culmination | 0.48° (a near-zenith pass, where azimuth changes fast) | 1° |
-| Range at culmination, Sun altitude | 0.031 km, 0.000° | 0.2 km, 0.02° |
+| Range at culmination, Sun altitude | 0.031 km, 0.001° | 0.2 km, 0.02° |
 | Sunlit seconds in a pass | 5 s (the 5-second sampling step) | 10 s |
-| Shadow entry and exit (62 transitions) | 0.13 s | 1 s |
+| Shadow entry and exit (186 transitions) | 0.13 s | 1 s |
 
 **What this does not prove.** Both references run the same SGP4 model, so they show that this implementation
 agrees with two others, **not** that a forecast matches what anyone sees: no keyless source of real sightings exists
 (Heavens-Above has no API, N2YO needs a key, Space-Track needs credentials). Historical element sets are
 unavailable, so no past pass has been reproduced.
 
-**Real element sets frozen.** The ISS's only: a real CelesTrak answer (retrieved 2026-11-03T07:19:14Z, epoch
-2026-11-02T18:09:49Z, response sha256 in the fixture). Hubble and the Chinese space station go through the same
-parser and the same code, and the tests answer them with clearly-named synthetic variants of the ISS record (another
-catalogue number, name and mean anomaly): CelesTrak reset this build environment's connections when they were asked
-for, so a real answer for either is not frozen.
+**Real element sets frozen.** All three are real CelesTrak answers, in `fixtures/satellite-elements.json`, and no test
+uses a synthetic one except to build a wrong answer. The ISS's is the response as CelesTrak sent it (retrieved
+2026-11-03T07:19:14Z, epoch 2026-11-02T18:09:49Z; the sha256 and byte count are of the raw response). Hubble's (epoch
+2026-11-03T19:01:49Z) and the Chinese space station's (epoch 2026-11-03T18:08:45Z) were read by `loadSatelliteElements`
+itself, in the live test's receipt, on 2026-11-04T01:33:00Z; the raw response bytes were not kept, so their
+`record_sha256` is the hash of the record's JSON text as the loader read it (number formatting may differ from
+CelesTrak's own text, for example `5.437e-5` against `0.00005437`), and a test checks that hash. Hubble's period on
+that day was 93.98 minutes, the Chinese space station's 92.23 and the ISS's 92.95.
 
 **Live invariant.** `server/frontend/src/gis/liveProviders.test.js` asks CelesTrak for all three, one request
-each, when `GIS_LIVE_PROVIDER_TESTS=1`, and checks each answer is the object asked for, in the orbit it has
-(inclination and period), with a usable position now. Throttling or an outage is logged as unavailable; an answer
-that arrives but cannot be read, or is the wrong object, fails.
+each, when `GIS_LIVE_PROVIDER_TESTS=1`, and checks each answer is the object asked for, with the inclination that
+object has (the three are told apart by it) and the period of a low Earth orbit (90 to 98 minutes: the first version
+of this test asserted 94 to 97 for Hubble from memory and failed on the real 93.98, so no band tighter than the
+physics is asserted), and a usable position now. It prints each record with the hash of its text, so a real answer
+can be frozen as a fixture. Throttling or an outage is logged as unavailable; an answer that arrives but cannot be
+read, or is the wrong object, fails.
 
 **Build note.** satellite.js 7 can load an optional WebAssembly bulk-propagation runtime. This page uses only the
 plain JavaScript SGP4, so `vite.config.js` resolves the two specifiers that runtime is loaded through
@@ -262,10 +268,12 @@ under the chart, so all seven bodies and every satellite with a position are alw
 - astronomy-engine's own accuracy statement (about 1 arcminute) is the author's claim; the measured numbers above
   are what this repository relies on.
 - The frozen references are what the services returned on 2026-10-18 and could be revised.
-- Satellites: the independent reference and the real element fixture cover the ISS only; Hubble and the Chinese space
-  station are untested on their own real element sets. Skyfield and the model under test both implement SGP4, so
+- Satellites: the real element sets are those of 2026-11-02 and 2026-11-03, so agreement was measured for orbits at
+  those epochs and windows, not for other dates or for a degraded orbit; Hubble's and the Chinese space station's raw
+  response bytes were not kept (see above). Skyfield and the model under test both implement SGP4, so
   their agreement is not a check of the SGP4 model against reality. The shadow is a cylinder (no penumbra), and the
-  Sun is rotated to the equator of date rather than to TEME exactly.
+  Sun is rotated to the equator of date rather than to TEME exactly. The Chinese space station is the Tianhe core
+  module's element set, used for the station.
 - Element sets are retrieved when the page opens and are two hours old at most before a reload; the age policy is a
   stated policy, and a pass near the 14-day limit is low confidence, not wrong or right.
 

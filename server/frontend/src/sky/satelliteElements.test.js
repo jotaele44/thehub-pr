@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { describe, expect, it, vi } from 'vitest';
 import elementsText from './fixtures/satellite-elements.json?raw';
 import { ELEMENT_SOURCE, loadSatelliteElements } from './satelliteElements';
@@ -5,16 +6,18 @@ import { SATELLITES, gpUrl } from './satellites';
 
 const elements = JSON.parse(elementsText);
 const issRecord = elements.items.ISS.payload[0];
-const NOW = new Date('2026-11-03T08:00:00Z');
+const hubbleRecord = elements.items.HST.payload[0];
+const stationRecord = elements.items.CSS.payload[0];
+const NOW = new Date('2026-11-04T08:00:00Z');
 
-// Hubble and the station are answered with synthetic variants of the real ISS record (their catalogue number and
-// name changed), because these tests are about the loader, not about their orbits.
+// All three are real CelesTrak records (see the fixture's provenance). A synthetic variant, with another catalogue
+// number and name, is used only where a test needs an answer that is wrong.
 const variant = (noradId, name, change = {}) => ({ ...issRecord, NORAD_CAT_ID: noradId, OBJECT_NAME: name, ...change });
 const ok = (body) => ({ ok: true, status: 200, json: async () => body });
 const routes = (overrides = {}) => ({
   [gpUrl(25544)]: () => ok([issRecord]),
-  [gpUrl(20580)]: () => ok([variant(20580, 'HST')]),
-  [gpUrl(48274)]: () => ok([variant(48274, 'CSS (TIANHE)')]),
+  [gpUrl(20580)]: () => ok([hubbleRecord]),
+  [gpUrl(48274)]: () => ok([stationRecord]),
   ...overrides,
 });
 const fetchWith = (overrides) => vi.fn(async (url) => routes(overrides)[url]());
@@ -30,6 +33,8 @@ describe('loadSatelliteElements', () => {
     expect(iss).toMatchObject({ state: 'LOADED', noradId: 25544, name: 'ISS (ZARYA)', error: null });
     expect(iss.epoch.toISOString()).toBe(`${issRecord.EPOCH.slice(0, 23)}Z`);
     expect(iss.element.noradId).toBe(25544);
+    // The record as CelesTrak sent it is kept, unchanged, beside the parsed element set.
+    expect(iss.record).toEqual(issRecord);
     expect(iss.url).toBe('https://celestrak.org/NORAD/elements/gp.php?CATNR=25544&FORMAT=json');
     expect(iss.ageAtRetrieval.days).toBeCloseTo((NOW - iss.epoch) / 86400e3, 9);
     expect(result.source).toBe(ELEMENT_SOURCE);
@@ -59,7 +64,7 @@ describe('loadSatelliteElements', () => {
     const result = await loadSatelliteElements({ fetchImpl, now: NOW });
     expect(result).toMatchObject({ requested: 3, loaded: 2 });
     const hubble = result.items.find((item) => item.id === 'HST');
-    expect(hubble).toMatchObject({ state: 'FAILED', element: null, name: null, epoch: null, ageAtRetrieval: null });
+    expect(hubble).toMatchObject({ state: 'FAILED', element: null, record: null, name: null, epoch: null, ageAtRetrieval: null });
     expect(hubble.error).toMatch(/HTTP 503/);
     expect(result.items.filter((item) => item.state === 'LOADED').map((item) => item.id).sort()).toEqual(['CSS', 'ISS']);
   });
@@ -120,6 +125,22 @@ describe('loadSatelliteElements', () => {
       expect(result.items[0].error).toBe('No answer from CelesTrak within 5 seconds');
     } finally {
       vi.useRealTimers();
+    }
+  });
+});
+
+describe('the frozen element fixture', () => {
+  it('holds real records for the three objects, each the object its key names, with the hash of what it holds', () => {
+    expect(Object.keys(elements.items)).toEqual(['ISS', 'HST', 'CSS']);
+    const expected = { ISS: 25544, HST: 20580, CSS: 48274 };
+    for (const [key, item] of Object.entries(elements.items)) {
+      expect(item.payload, key).toHaveLength(1);
+      expect(item.payload[0].NORAD_CAT_ID, key).toBe(expected[key]);
+      expect(item.url, key).toBe(gpUrl(expected[key]));
+      expect(item.retrieved_utc, key).toMatch(/^2026-11-0[34]T\d{2}:\d{2}:\d{2}Z$/);
+      // Hubble's and the station's are the records as the loader read them, hashed as JSON text; the ISS's is the raw response.
+      if (item.record_sha256) expect(createHash('sha256').update(JSON.stringify(item.payload[0])).digest('hex'), key).toBe(item.record_sha256);
+      else expect(item.response_sha256, key).toMatch(/^[0-9a-f]{64}$/);
     }
   });
 });

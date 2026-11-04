@@ -5,7 +5,8 @@ import { SATELLITES, gpUrl } from './satellites';
 import { chartSatellites, passTrack, satelliteSnapshot, upcomingPasses } from './satelliteView';
 
 const elements = JSON.parse(elementsText);
-const issRecord = elements.items.ISS.payload[0];
+// All three objects are answered with their real CelesTrak records.
+const answers = { 25544: elements.items.ISS.payload, 20580: elements.items.HST.payload, 48274: elements.items.CSS.payload };
 const SAN_JUAN = { lat: 18.4663, lon: -66.1057, elevation: 0, tzHours: -4, isDefault: true };
 const NOW = new Date('2026-11-03T08:00:00Z');
 const AT = new Date('2026-11-04T09:30:00Z');
@@ -15,7 +16,7 @@ async function loadedWith(failures = {}) {
   const fetchImpl = vi.fn(async (url) => {
     if (failures[url]) return failures[url];
     const id = Number(url.match(/CATNR=(\d+)/)[1]);
-    return ok([{ ...issRecord, NORAD_CAT_ID: id, OBJECT_NAME: id === 25544 ? 'ISS (ZARYA)' : `OBJECT ${id}` }]);
+    return ok(answers[id]);
   });
   return loadSatelliteElements({ fetchImpl, now: NOW });
 }

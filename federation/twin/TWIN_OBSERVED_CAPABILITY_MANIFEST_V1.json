@@ -1671,7 +1671,7 @@
         "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
         "server/frontend/tests/visual/gui-parity.spec.js"
       ],
-      "notes": "Run 2 (Phase 6, P6-B): The International Space Station (NORAD 25544) from CelesTrak's GP JSON, shown in the Sky workspace (/skywatcher?view=sky). A real CelesTrak answer for the ISS (retrieved 2026-11-03T07:19:14Z, sha256 recorded) is frozen as the fixture. SGP4 states, look angles, passes and shadow transitions are held to the Vallado verification set (AIAA 2006-6753) and to an independent Rhodes sgp4 / Skyfield reference, within the tolerances the tests state.",
+      "notes": "Run 2 (Phase 6, P6-B): The International Space Station (NORAD 25544) from CelesTrak's GP JSON, shown in the Sky workspace (/skywatcher?view=sky). A real CelesTrak answer for the ISS (retrieved 2026-11-03T07:19:14Z, raw-response sha256 recorded) is frozen as the fixture. SGP4 states, look angles, passes and shadow transitions are held to the Vallado verification set (AIAA 2006-6753) and to an independent Rhodes sgp4 / Skyfield reference, within the tolerances the tests state.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1719,7 +1719,7 @@
         "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
         "server/frontend/tests/visual/gui-parity.spec.js"
       ],
-      "notes": "Run 2 (Phase 6, P6-B): The Chinese space station is represented by the Tianhe core module (NORAD 48274, 2021-035A, identity read from CelesTrak on 2026-10-20), whose element set is used for the station; docked modules are separate catalogue objects, and the panel says so. Its tests answer it with a clearly-named synthetic variant of the ISS element set: a real answer for it is not frozen, because CelesTrak refused this build environment's requests.",
+      "notes": "Run 2 (Phase 6, P6-B): The Chinese space station is represented by the Tianhe core module (NORAD 48274, 2021-035A, identity read from CelesTrak on 2026-10-20), whose element set is used for the station; docked modules are separate catalogue objects, and the panel says so. A real CelesTrak record for it (epoch 2026-11-03T18:08:45Z, read by the loader on 2026-11-04T01:33:00Z; the hash is of the record's JSON text, the raw bytes were not kept) is frozen as the fixture and held to the independent sgp4/Skyfield reference.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1767,7 +1767,7 @@
         "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
         "server/frontend/tests/visual/gui-parity.spec.js"
       ],
-      "notes": "Run 2 (Phase 6, P6-B): The Hubble Space Telescope (NORAD 20580) from CelesTrak's GP JSON, shown in the Sky workspace (/skywatcher?view=sky). Its tests answer it with a clearly-named synthetic variant of the ISS element set: a real answer for it is not frozen, because CelesTrak refused this build environment's requests.",
+      "notes": "Run 2 (Phase 6, P6-B): The Hubble Space Telescope (NORAD 20580) from CelesTrak's GP JSON, shown in the Sky workspace (/skywatcher?view=sky). A real CelesTrak record for it (epoch 2026-11-03T19:01:49Z, read by the loader on 2026-11-04T01:33:00Z; the hash is of the record's JSON text, the raw bytes were not kept) is frozen as the fixture and held to the independent sgp4/Skyfield reference.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -2186,7 +2186,7 @@
         "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
         "server/frontend/tests/visual/gui-parity.spec.js"
       ],
-      "notes": "Run 2 (Phase 6, P6-B): Passes above 10 degrees in the 24 hours from the chosen instant, for the observer: rise, culmination and set (to about 0.1 s), maximum elevation, azimuths and duration, from SGP4 (satellite.js). Held to the Vallado verification set (33 cases) and to an independent Skyfield reference (pass times within 1 s, elevation within 0.02 degrees, range within 0.2 km), which proves implementation agreement between two SGP4 programs, not forecast accuracy against sightings.",
+      "notes": "Run 2 (Phase 6, P6-B): Passes above 10 degrees in the 24 hours from the chosen instant, for the observer: rise, culmination and set (to about 0.1 s), maximum elevation, azimuths and duration, from SGP4 (satellite.js). Held to the Vallado verification set (33 cases) and to an independent Skyfield reference for all three objects (58 passes; pass times within 1 s, measured 0.22 s; elevation within 0.02 degrees; range within 0.2 km), which proves implementation agreement between two SGP4 programs, not forecast accuracy against sightings.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",

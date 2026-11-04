@@ -14,20 +14,15 @@ import SkyWorkspace from './SkyWorkspace';
 vi.mock('@/sky/spaceWeather', async (importOriginal) => ({ ...(await importOriginal()), loadSpaceWeather: vi.fn() }));
 vi.mock('@/sky/satelliteElements', async (importOriginal) => ({ ...(await importOriginal()), loadSatelliteElements: vi.fn() }));
 
-// The International Space Station's element set is a real CelesTrak answer (src/sky/fixtures/satellite-elements.json).
-// Hubble and the Chinese space station are answered with clearly-named synthetic variants of it (another catalogue
-// number, name and mean anomaly), because these tests are about the panel, not about their orbits.
-const issRecord = JSON.parse(elementsText).items.ISS.payload[0];
+// All three objects are answered with their real CelesTrak records (src/sky/fixtures/satellite-elements.json).
+const frozen = JSON.parse(elementsText).items;
 const sanJuan = reference.satellites.ISS.observers['San Juan'];
 const RETRIEVED = new Date('2026-11-04T07:00:00Z');
-const variant = (noradId, name, shift) => ({
-  ...issRecord, NORAD_CAT_ID: noradId, OBJECT_NAME: name, MEAN_ANOMALY: (Number(issRecord.MEAN_ANOMALY) + shift) % 360,
-});
 const respond = (payload) => ({ ok: true, status: 200, json: async () => payload });
 const answers = {
-  [gpUrl(25544)]: () => respond([issRecord]),
-  [gpUrl(20580)]: () => respond([variant(20580, 'HST (TEST VARIANT)', 120)]),
-  [gpUrl(48274)]: () => respond([variant(48274, 'CSS (TEST VARIANT)', 240)]),
+  [gpUrl(25544)]: () => respond(frozen.ISS.payload),
+  [gpUrl(20580)]: () => respond(frozen.HST.payload),
+  [gpUrl(48274)]: () => respond(frozen.CSS.payload),
 };
 async function elements(overrides = {}) {
   const { loadSatelliteElements: actual } = await vi.importActual('@/sky/satelliteElements');

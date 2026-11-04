@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { acquireOnlineSource, acquireRasterAsset } from './acquisitionFacade';
 import { getOnlineSourceDefinition } from './sourceRegistry';
@@ -186,11 +187,11 @@ live('live authoritative GIS providers', () => {
   // CelesTrak resets connections after a few requests a minute and answers 403 or 429 when it is asked too often, so
   // those are outages here. An answer that arrives but is not the object asked for, or not a usable element set, fails.
   const CELESTRAK_UNAVAILABLE = /HTTP (403|429)|No answer from|HTTP 5\d\d|failed to fetch|fetch failed|network|timed out|abort|econn|enotfound|socket|reset/i;
-  const ORBITS = Object.freeze({
-    ISS: { inclination: [51, 52], periodMinutes: [91, 94.5] },
-    HST: { inclination: [28, 29], periodMinutes: [94, 97] },
-    CSS: { inclination: [41, 42], periodMinutes: [91, 94] },
-  });
+  // Inclination tells the three objects apart; the period only has to be that of a low Earth orbit (about 300 to 650 km
+  // up is 90 to 98 minutes). Hubble's was 93.98 minutes on 2026-11-04: its altitude has decayed, so no tighter band
+  // than the physics gives is asserted.
+  const INCLINATION = Object.freeze({ ISS: [51, 52], HST: [28, 29], CSS: [41, 42] });
+  const LEO_PERIOD_MINUTES = Object.freeze([90, 98]);
 
   it('CelesTrak answers the three GP element sets as the loader reads them, each the object asked for and in the orbit it has', async () => {
     const result = await loadSatelliteElements({ fetchImpl: boundedFetch });
@@ -201,13 +202,15 @@ live('live authoritative GIS providers', () => {
         console.log('GIS_LIVE_UNAVAILABLE', JSON.stringify({ sourceId: `celestrak-${item.id}`, error: item.error }));
         continue;
       }
+      // The record exactly as read, with the hash of its text, so a real answer can be frozen as a fixture later.
+      const text = JSON.stringify(item.record);
+      console.log('GIS_LIVE_CELESTRAK_RECORD', JSON.stringify({ id: item.id, url: item.url, retrievedAt: result.retrievedAt.toISOString(), recordSha256: createHash('sha256').update(text).digest('hex'), record: item.record }));
       expect(item.element.noradId).toBe(item.noradId);
       expect(item.epoch.getTime()).toBeLessThan(Date.now() + 10 * 60000);
-      const orbit = ORBITS[item.id];
-      expect(item.element.inclinationDegrees, `${item.id} inclination`).toBeGreaterThan(orbit.inclination[0]);
-      expect(item.element.inclinationDegrees, `${item.id} inclination`).toBeLessThan(orbit.inclination[1]);
-      expect(item.element.periodMinutes, `${item.id} period`).toBeGreaterThan(orbit.periodMinutes[0]);
-      expect(item.element.periodMinutes, `${item.id} period`).toBeLessThan(orbit.periodMinutes[1]);
+      expect(item.element.inclinationDegrees, `${item.id} inclination`).toBeGreaterThan(INCLINATION[item.id][0]);
+      expect(item.element.inclinationDegrees, `${item.id} inclination`).toBeLessThan(INCLINATION[item.id][1]);
+      expect(item.element.periodMinutes, `${item.id} period`).toBeGreaterThan(LEO_PERIOD_MINUTES[0]);
+      expect(item.element.periodMinutes, `${item.id} period`).toBeLessThan(LEO_PERIOD_MINUTES[1]);
       // Where it is now, over San Juan's sky, when the elements are recent enough to be used.
       if (item.ageAtRetrieval.state !== 'REFUSED') {
         const look = lookAt(item.element, result.retrievedAt, { lat: 18.4663, lon: -66.1057, elevation: 0 });

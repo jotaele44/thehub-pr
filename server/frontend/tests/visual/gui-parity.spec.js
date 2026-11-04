@@ -913,19 +913,16 @@ async function mockSwpc(page, { failSolarWind = false } = {}) {
   });
 }
 
-// CelesTrak answers cross-origin reads too; the sandbox browser cannot reach it either. The International Space
-// Station is answered with the real element set frozen in the fixture; Hubble and the Chinese space station with
-// clearly-named synthetic variants of it (another catalogue number, name and mean anomaly), so only the panel is under test.
+// CelesTrak answers cross-origin reads too; the sandbox browser cannot reach it either. All three objects are answered
+// with the real element sets frozen in the fixture.
 async function mockCelesTrak(page, { failHubble = false, requests = [] } = {}) {
-  const iss = SATELLITE_ELEMENTS.items.ISS.payload[0];
-  const variant = (noradId, name, shift) => ({ ...iss, NORAD_CAT_ID: noradId, OBJECT_NAME: name, MEAN_ANOMALY: (Number(iss.MEAN_ANOMALY) + shift) % 360 });
   await page.route('https://celestrak.org/**', (route) => {
     const url = new URL(route.request().url());
     requests.push(url.toString());
     const headers = { 'Access-Control-Allow-Origin': '*' };
     const id = url.searchParams.get('CATNR');
     if (id === '20580' && failHubble) return route.fulfill({ status: 503, contentType: 'text/plain', headers, body: 'down' });
-    const payload = { 25544: [iss], 20580: [variant(20580, 'HST (TEST VARIANT)', 120)], 48274: [variant(48274, 'CSS (TEST VARIANT)', 240)] }[id];
+    const payload = { 25544: SATELLITE_ELEMENTS.items.ISS.payload, 20580: SATELLITE_ELEMENTS.items.HST.payload, 48274: SATELLITE_ELEMENTS.items.CSS.payload }[id];
     return route.fulfill({ status: payload ? 200 : 404, contentType: 'application/json', headers, body: JSON.stringify(payload ?? []) });
   });
 }
