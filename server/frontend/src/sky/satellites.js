@@ -186,6 +186,14 @@ function geometryAt(element, instant, place) {
   return { ok: true, state, gmst, azimuth: normalizeDegrees(radiansToDegrees(angles.azimuth)), elevation: radiansToDegrees(angles.elevation), rangeKm: angles.rangeSat };
 }
 
+// Where the satellite is in the observer's sky, geometrically, and nothing more: no Sun, no shadow. The cheap call for
+// scanning a window of time (the exclusion engine); lookAt adds the sub-satellite point and the lit state.
+export function directionAt(element, instant, observer) {
+  const geometry = geometryAt(element, instant, makeObserver(observer));
+  if (!geometry.ok) return geometry;
+  return Object.freeze({ ok: true, time: geometry.state.time, azimuth: geometry.azimuth, elevation: geometry.elevation, rangeKm: geometry.rangeKm, age: geometry.state.age });
+}
+
 // Where the satellite is in the observer's sky, and whether the Sun lights it.
 export function lookAt(element, instant, observer) {
   const geometry = geometryAt(element, instant, makeObserver(observer));

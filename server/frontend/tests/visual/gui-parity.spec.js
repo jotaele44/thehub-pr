@@ -897,6 +897,7 @@ const SKY_REFERENCE = readJson('../../src/sky/referenceEphemerides.json');
 const SWPC_SAMPLES = readJson('../../src/sky/fixtures/swpc-samples.json');
 const SATELLITE_ELEMENTS = readJson('../../src/sky/fixtures/satellite-elements.json');
 const SATELLITE_REFERENCE = readJson('../../src/sky/fixtures/satelliteReference.json');
+const AIRCRAFT_REFERENCE = readJson('../../src/sky/exclusion/fixtures/aircraftReference.json');
 
 // NOAA SWPC answers cross-origin reads; the sandbox browser cannot reach it, so the real payloads frozen in the
 // fixture are served with the same CORS header.
@@ -1046,6 +1047,102 @@ test.describe('sky workspace', () => {
     await page.getByRole('button', { name: 'Reload satellite elements' }).click();
     await expect(page.locator('[data-sat-reload-note]')).toContainText('CelesTrak limits how often it can be asked');
     expect(celestrak).toHaveLength(3);
+  });
+
+  test('rules out the ordinary: lists the station for a sight line aimed at it, refuses tracks with no declaration, compares a supplied track, and downloads a receipt that sends nothing', async ({ page }) => {
+    test.setTimeout(120000);
+    const requests = [];
+    page.on('request', (request) => requests.push({ url: request.url(), method: request.method() }));
+    await page.clock.install({ time: new Date('2026-11-04T09:00:00Z') });
+    await mockApi(page);
+    await mockSwpc(page);
+    await mockCelesTrak(page);
+    const lit = SATELLITE_REFERENCE.satellites.ISS.observers['San Juan'].looks.find((look) => look.sunlit && look.elevation > 20);
+    await page.goto('/skywatcher?view=sky&t=2026-11-04T09:30:42Z', { waitUntil: 'networkidle' });
+    const panel = page.locator('[data-sky-exclusion]');
+    await expect(panel).toBeVisible();
+    await expect(panel.locator('[data-exclusion-note]')).toContainText('Absence of an identified ordinary explanation is not evidence of an extraordinary one.');
+    await expect(panel.locator('[data-exclusion-satellites]')).toContainText('3 of 3 element sets loaded above');
+
+    // An empty form is refused, in words, at the field that decides the answer.
+    const run = panel.getByRole('button', { name: 'Check against ordinary explanations' });
+    await run.click();
+    await expect(panel.getByText(/The time \(UTC\) is required/)).toBeVisible();
+    await expect(panel.getByLabel('Reported at (UTC)')).toBeFocused();
+    await expect(panel.locator('[data-testid="conclusion-headline"]')).toHaveCount(0);
+
+    // A sight line aimed at the station, from the observer and time above.
+    await panel.getByRole('button', { name: 'Start from the observer and time above' }).click();
+    await expect(panel.getByLabel('Reported at (UTC)')).toHaveValue('2026-11-04T09:30:42Z');
+    await panel.getByLabel(/Uncertainty in that time/).fill('5');
+    await panel.getByLabel('Sight line azimuth (°)').fill(String(lit.azimuth));
+    await panel.getByLabel('Sight line elevation (°)').fill(String(lit.elevation));
+    await panel.getByLabel('Azimuth reference').selectOption('TRUE');
+    await panel.getByLabel(/Tolerance/).fill('1.5');
+    await run.click();
+    await expect(panel.locator('[data-testid="conclusion-headline"]')).toHaveText(/^\d+ ORDINARY CANDIDATES? LISTED$/);
+    await expect(panel.locator('[data-testid="certification"]')).toHaveText('NOT_CERTIFIED');
+    const iss = panel.locator('[data-testid="candidates"] [data-candidate="International Space Station"]');
+    await expect(iss).toHaveCount(1);
+    await expect(iss.locator('[data-testid="candidate-basis"]')).toHaveText('MODELLED');
+    await expect(iss).toContainText('Lit by the Sun and the sky is dark: a visible-pass candidate (geometry only)');
+    await expect(panel.locator('[data-testid="conclusion-text"]')).toContainText('Each is a geometric coincidence, not an identification');
+    await expect(panel.locator('[data-exclusion-chart] svg')).toBeVisible();
+    await expect(panel.locator('[data-exclusion-chart] [data-exclusion-sightline="cone"] [data-exclusion-outline="start"]')).toBeVisible();
+    await expect(panel.locator('[data-exclusion-chart] [data-exclusion-sightline="cone"] [data-exclusion-centre]')).toBeVisible();
+    await expect(panel.locator('[data-exclusion-object][data-candidate="true"]')).not.toHaveCount(0);
+    await expect(panel.locator('[data-exclusion-not-checked]')).toContainText('No aircraft tracks were supplied.');
+    await expect(panel.locator('[data-exclusion-not-checked]')).toContainText('The terrain option was not turned on.');
+
+    // A tracks file with no declaration is refused by name; with one, it is compared, and a window it has no data for says so.
+    const csv = ['time,lat,lon,altitude,id', ...Object.values(AIRCRAFT_REFERENCE.tracks).flatMap((track) => track.rows.map((r) => `${r.time},${r.lat},${r.lon},${r.altitude_m},${track.id}`))].join('\n');
+    await panel.getByLabel('Tracks file').setInputFiles({ name: 'tracks.csv', mimeType: 'text/csv', buffer: Buffer.from(csv) });
+    await expect(panel.locator('[data-exclusion-file]')).toContainText('tracks.csv');
+    await run.click();
+    await expect(panel.getByText(/Say where the tracks came from/)).toBeVisible();
+    await expect(panel.getByLabel('Where the tracks came from')).toBeFocused();
+    await panel.getByLabel('Where the tracks came from').fill('synthetic tracks of the reference fixture');
+    await panel.getByLabel('Altitude reference').selectOption('ELLIPSOID');
+    await panel.getByLabel('Altitude unit').selectOption('m');
+    await run.click();
+    const quality = panel.locator('[data-testid="track-quality"]');
+    await expect(quality).toBeVisible();
+    await expect(quality.locator('[data-track="A"]')).toContainText('Not compared:');
+    await expect(quality.locator('[data-track="A"]')).toContainText('No data is not the same as no aircraft');
+
+    // The same tracks, a sight line on aircraft A at 12:02:04: it is listed as a candidate with the basis it rests on.
+    const pass = AIRCRAFT_REFERENCE.scenarios.find((scenario) => scenario.name === 'A pass through the sight line');
+    await panel.getByLabel('Reported at (UTC)').fill(pass.time);
+    await panel.getByLabel(/Uncertainty in that time/).fill('10');
+    await panel.getByLabel('Sight line azimuth (°)').fill(String(pass.azimuth));
+    await panel.getByLabel('Sight line elevation (°)').fill(String(pass.elevation));
+    await panel.getByLabel(/Tolerance/).fill(String(pass.tolerance_deg));
+    await panel.getByLabel(/Height above the WGS84 ellipsoid/).fill(String(AIRCRAFT_REFERENCE.observer.height));
+    await panel.getByLabel(/Observer latitude/).fill(String(AIRCRAFT_REFERENCE.observer.lat));
+    await panel.getByLabel(/Observer longitude/).fill(String(AIRCRAFT_REFERENCE.observer.lon));
+    await run.click();
+    const trackA = panel.locator('[data-testid="candidates"] [data-candidate="A"]');
+    await expect(trackA).toHaveCount(1);
+    await expect(trackA.locator('[data-testid="candidate-basis"]')).toHaveText(/OBSERVED|INTERPOLATED/);
+    await expect(trackA).toContainText('not evidence of intent');
+    await expect(quality.locator('[data-track="B"]')).toContainText('gapped');
+
+    // The receipt downloads under its own name, says what it is, and its digest is the one on the page.
+    const [download] = await Promise.all([page.waitForEvent('download'), panel.getByRole('button', { name: 'Download the receipt (JSON)' }).click()]);
+    expect(download.suggestedFilename()).toMatch(/^sky-exclusion-20261104T120204Z-[0-9a-f]{12}\.json$/);
+    const receipt = JSON.parse(readFileSync(await download.path(), 'utf8'));
+    expect(receipt).toMatchObject({ contract: 'sky-exclusion-v1', certification: { status: 'NOT_CERTIFIED' } });
+    expect(receipt.candidates.map((candidate) => candidate.id)).toContain('A');
+    expect(receipt.blindSpots.length).toBe(8);
+    expect(JSON.stringify(receipt)).not.toMatch(/anomal|UFO|UAP|extraterrestrial|unexplained/i);
+    await expect(panel.locator('[data-testid="digest"]')).toHaveText(receipt.contentDigest);
+    expect(download.suggestedFilename()).toContain(receipt.contentDigest.slice(0, 12));
+
+    // Nothing typed or loaded here left the browser: the only requests are the app's own, SWPC and CelesTrak reads, and none carries the file.
+    const outside = requests.filter((r) => !/^https?:\/\/(localhost|127\.0\.0\.1)/.test(r.url));
+    expect(outside.every((r) => r.method === 'GET' && /services\.swpc\.noaa\.gov|celestrak\.org/.test(r.url))).toBe(true);
+    expect(requests.some((r) => r.method !== 'GET' && !/\/api\//.test(r.url))).toBe(false);
+    expect(requests.some((r) => /tracks\.csv|sky-exclusion/.test(r.url))).toBe(false);
   });
 
   test('refuses an observer it cannot compute for, in words, with no readout', async ({ page }) => {
