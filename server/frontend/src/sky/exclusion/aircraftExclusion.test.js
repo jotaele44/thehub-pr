@@ -8,7 +8,6 @@ import { matchDirection, parseObservation } from './observation';
 const DECLARED = { source: 'synthetic tracks of the reference fixture', altitudeReference: 'ELLIPSOID', altitudeUnits: 'm' };
 const EPOCH = Date.parse(reference.generated_by.epoch);
 const seconds = (s) => EPOCH + s * 1000;
-const csvOf = (track) => ['time,lat,lon,altitude', ...track.rows.map((r) => `${r.time},${r.lat},${r.lon},${r.altitude_m}`)].join('\n');
 const parsedTracks = (declaration = DECLARED) => parseTrackCsv(
   ['time,lat,lon,altitude,id', ...Object.values(reference.tracks).flatMap((t) => t.rows.map((r) => `${r.time},${r.lat},${r.lon},${r.altitude_m},${t.id}`))].join('\n'),
   declaration,

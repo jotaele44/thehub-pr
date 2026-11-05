@@ -1138,11 +1138,16 @@ test.describe('sky workspace', () => {
     await expect(panel.locator('[data-testid="digest"]')).toHaveText(receipt.contentDigest);
     expect(download.suggestedFilename()).toContain(receipt.contentDigest.slice(0, 12));
 
-    // Nothing typed or loaded here left the browser: the only requests are the app's own, SWPC and CelesTrak reads, and none carries the file.
-    const outside = requests.filter((r) => !/^https?:\/\/(localhost|127\.0\.0\.1)/.test(r.url));
-    expect(outside.every((r) => r.method === 'GET' && /services\.swpc\.noaa\.gov|celestrak\.org/.test(r.url))).toBe(true);
-    expect(requests.some((r) => r.method !== 'GET' && !/\/api\//.test(r.url))).toBe(false);
-    expect(requests.some((r) => /tracks\.csv|sky-exclusion/.test(r.url))).toBe(false);
+    // Nothing typed or loaded here left the browser: the only requests are the app's own, and SWPC and CelesTrak reads, and none carries the file.
+    // Hosts are compared exactly, not by pattern: a pattern such as /celestrak.org/ would also accept https://evil.example/celestrak.org.
+    const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);
+    const READ_HOSTS = new Set(['services.swpc.noaa.gov', 'celestrak.org']);
+    const hostOf = (url) => new URL(url).hostname;
+    const outside = requests.filter((r) => !LOCAL_HOSTS.has(hostOf(r.url)));
+    expect(outside.length).toBeGreaterThan(0);
+    expect(outside.filter((r) => r.method !== 'GET' || !READ_HOSTS.has(hostOf(r.url)))).toEqual([]);
+    expect(requests.filter((r) => r.method !== 'GET' && !new URL(r.url).pathname.startsWith('/api/'))).toEqual([]);
+    expect(requests.filter((r) => /tracks\.csv|sky-exclusion/.test(r.url))).toEqual([]);
   });
 
   test('refuses an observer it cannot compute for, in words, with no readout', async ({ page }) => {

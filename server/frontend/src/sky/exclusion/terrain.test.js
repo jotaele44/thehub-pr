@@ -70,7 +70,7 @@ describe('terrainFromCudem', () => {
   const centre = { lon: -66.1057, lat: 18.4663 };
 
   it('reads a fine grid near the observer and a coarse one to the radius, from the injected reader, and declares the datum and the bare-earth limit', async () => {
-    const read = vi.fn(async ([west, south, east, north], width, height) => {
+    const read = vi.fn(async ([west, south, east], width, height) => {
       const heights = new Float32Array(width * height);
       for (let r = 0; r < height; r += 1) {
         for (let c = 0; c < width; c += 1) heights[r * width + c] = 10 + 1000 * (west + ((east - west) * c) / (width - 1) - centre.lon);
@@ -99,7 +99,7 @@ describe('terrainFromCudem', () => {
   });
 
   it('carries missing data through as no data, not as zero', async () => {
-    const read = async ([, , , ], width, height) => ({ heights: new Float32Array(width * height).fill(Number.NaN), tilesRead: [] });
+    const read = async (_bbox, width, height) => ({ heights: new Float32Array(width * height).fill(Number.NaN), tilesRead: [] });
     const terrain = await terrainFromCudem(centre, { radiusKm: 10 }, { heightGrid: read });
     expect(terrain.heightAt(centre.lon, centre.lat)).toBeNull();
     expect(terrain.tilesRead).toEqual([]);

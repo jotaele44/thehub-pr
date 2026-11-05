@@ -18,7 +18,6 @@ import { bodyPosition, skyState } from '../astronomy.js';
 import { ELEMENT_POLICY, directionAt, elementAge } from '../satellites.js';
 import { aircraftLookAt, earthDipDegrees } from './aircraftExclusion.js';
 import { BODIES } from './celestialExclusion.js';
-import { angularSeparation } from './geometry.js';
 import { terrainStatus } from './horizon.js';
 import { matchDirection, sightlineAt } from './observation.js';
 import { apparentElevation } from './refraction.js';
