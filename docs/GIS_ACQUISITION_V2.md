@@ -57,3 +57,5 @@ Raster rendering remains a separate renderer gate; successful discovery/acquisit
 ## Live certification workflow
 
 `.github/workflows/gis-live-providers.yml` runs authoritative network tests separately from deterministic unit tests. Provider invariants are fatal; direct browser CORS is observational because CORS policy is a transport condition, not evidence that the underlying source data failed validation.
+
+PR SIGE (`sige.pr.gov`) serves its certificate without the intermediate, so Node rejects it with `UNABLE_TO_VERIFY_LEAF_SIGNATURE` while browsers, which fetch the missing issuer themselves, do not. Before the provider tests, the workflow fetches the issuer named in the certificate's Authority Information Access extension and passes it to Node through `NODE_EXTRA_CA_CERTS`, but only when the certificate then verifies against the runner's system roots. TLS verification is never disabled, and the step does nothing once the provider sends a complete chain.
