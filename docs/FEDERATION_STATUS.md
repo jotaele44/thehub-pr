@@ -194,12 +194,15 @@ identify the entities, assess the impact.
   300` and sends `centinelas-export`, which no workflow emitted before.
   - Live run: 300 rows from 45 sources, about 230 of them Puerto Rico permit and
     regulatory notices.
-- **`aguayluz-pr` handoff acks.** `.gitignore`'s `data/*` dropped
+- **`aguayluz-pr` handoff receipts.** `.gitignore`'s `data/*` dropped
   `data/centinelas_handoffs/` and `data/access_conditions.jsonl`, and `|| true` hid it.
   Every one of `centinelas-pr`'s 959 acknowledged receipts therefore pointed at a record
-  aguayluz never kept. Both paths are now allowlisted. The workflow acknowledges only
-  after a successful push, and `centinelas-intake.yml` no longer reports a failed push as
-  "nothing to push".
+  aguayluz never kept. Both paths are now allowlisted, and a push that cannot land fails
+  the job. `centinelas-intake.yml` no longer reports a failed push as "nothing to push".
+  - aguayluz no longer sends acks at all: its `main` removed every stored token,
+    `FEDERATION_DISPATCH_TOKEN` included (aguayluz-pr b60c489). That commit also stopped
+    `refresh.yml` from sending `aguayluz-export`, so the daily ingest schedule above is
+    now how aguayluz data reaches the Hub.
 - **`moneysweep-pr` / `spiderweb-pr` handoff receipts.** Both `main` branches require
   checks (moneysweep also requires an approved review), so their bot pushes to `main` were
   always rejected. Receipts, and spiderweb's project assertion stream, now go to an
