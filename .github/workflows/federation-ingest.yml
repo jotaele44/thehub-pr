@@ -1,7 +1,8 @@
 name: Federation ingest
 
-# Event-driven federation hop 2 (receiver): fires when a producer (moneysweep-pr)
-# emits a `moneysweep-export` repository_dispatch after processing new upstream data.
+# Event-driven federation hop 2 (receiver): fires when a producer emits an
+# `<producer>-export` repository_dispatch after processing new upstream data, and
+# once a day on a schedule as a backstop.
 # Runs the existing Hub CLI pipeline — fetch (clone producers) -> aggregate the
 # committed canonical packages -> correlate -> ingest into data/hub.db — and uploads
 # the aggregate + hub.db as artifacts. No Hub code change: producers are read from
@@ -15,9 +16,15 @@ on:
   repository_dispatch:
     # Any producer that lands a fresh canonical export triggers a Hub re-aggregate,
     # so hazard alerts (seismic, weather, contamination) reach users in minutes
-    # instead of waiting for the Hub's own schedule. Add new producers' export
-    # events here as they wire up their dispatch step.
-    types: [moneysweep-export, aguayluz-export, centinelas-export]
+    # instead of waiting for the daily schedule below. Add new producers' export
+    # events here as they wire up their dispatch step. spiderweb-pr's
+    # centinelas-handoff.yml sends spiderweb-export; it was dropped until it was
+    # listed here.
+    types: [moneysweep-export, aguayluz-export, centinelas-export, spiderweb-export]
+  # Backstop: producers that never dispatch (or whose dispatch fails) still reach
+  # the Hub once a day.
+  schedule:
+    - cron: "41 10 * * *"
   workflow_dispatch: {}
 
 # Wider than this repo's usual `contents: read` because this workflow is the one
