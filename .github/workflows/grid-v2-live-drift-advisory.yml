@@ -1,0 +1,43 @@
+name: PR Grid V2 live-main drift advisory
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/check_live_grid_v2_pins.py'
+      - 'tests/test_live_grid_v2_pins.py'
+      - '.github/workflows/grid-v2-live-drift-advisory.yml'
+  schedule:
+    - cron: '17 9 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Test pin observer (offline; no network)
+        run: python -m unittest discover -s tests -p 'test_live_grid_v2_pins.py' -v
+
+  observe-consumer-mains:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: '3.12'
+      - name: Observe live consumer main pins (advisory only)
+        id: drift
+        continue-on-error: true
+        run: python scripts/check_live_grid_v2_pins.py
+      - name: Show advisory outcome
+        if: always()
+        run: echo "Monitor outcome ${{ steps.drift.outcome }}; consult job summary. This is NOT certification."
