@@ -1,0 +1,99 @@
+{
+  "contractVersion": "federation-execution-gateway/v2",
+  "authority": "THEHUB_CROSS_REPOSITORY_CONTROL_PLANE",
+  "producerDomainAuthorityTransfer": "DENY",
+  "capabilityCount": 14,
+  "capabilities": [
+    {
+      "id": "FGW-001",
+      "name": "listProjects",
+      "mcpName": "list_projects",
+      "kind": "READ"
+    },
+    {
+      "id": "FGW-002",
+      "name": "getFederationState",
+      "mcpName": "get_federation_state",
+      "kind": "READ"
+    },
+    {
+      "id": "FGW-003",
+      "name": "getProjectContext",
+      "mcpName": "get_project_context",
+      "kind": "READ"
+    },
+    {
+      "id": "FGW-004",
+      "name": "getRoadmap",
+      "mcpName": "get_roadmap",
+      "kind": "READ"
+    },
+    {
+      "id": "FGW-005",
+      "name": "createChangePlan",
+      "mcpName": "create_change_plan",
+      "kind": "PLAN"
+    },
+    {
+      "id": "FGW-006",
+      "name": "executeChange",
+      "mcpName": "execute_change",
+      "kind": "WRITE"
+    },
+    {
+      "id": "FGW-007",
+      "name": "getExecutionStatus",
+      "mcpName": "get_execution_status",
+      "kind": "READ"
+    },
+    {
+      "id": "FGW-008",
+      "name": "cancelExecution",
+      "mcpName": "cancel_execution",
+      "kind": "CONTROL"
+    },
+    {
+      "id": "FGW-009",
+      "name": "runVerification",
+      "mcpName": "run_verification",
+      "kind": "EXECUTE"
+    },
+    {
+      "id": "FGW-010",
+      "name": "rollbackExecution",
+      "mcpName": "rollback_execution",
+      "kind": "CONTROL"
+    },
+    {
+      "id": "FGW-011",
+      "name": "createCheckpoint",
+      "mcpName": "create_checkpoint",
+      "kind": "WRITE"
+    },
+    {
+      "id": "FGW-012",
+      "name": "runSelfAudit",
+      "mcpName": "run_self_audit",
+      "kind": "EXECUTE"
+    },
+    {
+      "id": "FGW-013",
+      "name": "getAcceptanceReceipt",
+      "mcpName": "get_acceptance_receipt",
+      "kind": "READ"
+    },
+    {
+      "id": "FGW-014",
+      "name": "getCertificationState",
+      "mcpName": "get_certification_state",
+      "kind": "READ"
+    }
+  ],
+  "invariants": {
+    "directMainWrite": "DENY",
+    "forcePush": "DENY",
+    "administrativeBypass": "DENY",
+    "staleRevisionPromotion": "DENY",
+    "evidenceRequiredForPass": true
+  }
+}
