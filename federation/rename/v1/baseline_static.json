@@ -1,0 +1,37 @@
+{
+ "baseline": "STATIC_ONLY",
+ "note": "Static counts from git-tracked files at the frozen HEAD; NOT a collected test denominator. Real denominators (collect-only with deps installed) remain OPEN; per-repo CI is source of truth until frozen.",
+ "generated_at": "2026-10-06T19:47:04.298389+00:00",
+ "repos": {
+  "thehub-pr": {
+   "head": "f346c03d191ec332ff771af7370a43c4b226204b",
+   "py_test_files": 157,
+   "py_test_defs_static": 1613,
+   "js_test_files": 36
+  },
+  "moneysweep-pr": {
+   "head": "905c57fc7368bacad569c3bbe565af6006dc19ee",
+   "py_test_files": 340,
+   "py_test_defs_static": 2648,
+   "js_test_files": 3
+  },
+  "centinelas-pr": {
+   "head": "1fcf246b9c3b7df0fcab066983347f8e3d5e630a",
+   "py_test_files": 45,
+   "py_test_defs_static": 324,
+   "js_test_files": 3
+  },
+  "skywatcher-pr": {
+   "head": "2100e6527d49abc302b804d3175feea9ce614eb4",
+   "py_test_files": 219,
+   "py_test_defs_static": 1665,
+   "js_test_files": 6
+  },
+  "spiderweb-pr": {
+   "head": "71a345fb9bebaa411761f6d61e6e736cca499b80",
+   "py_test_files": 189,
+   "py_test_defs_static": 1730,
+   "js_test_files": 16
+  }
+ }
+}

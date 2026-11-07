@@ -1,0 +1,94 @@
+[
+ {
+  "stable_project_id": "federation.project.thehub_pr",
+  "program_id_frozen": "thehub-pr",
+  "github_repository_id": 1258897469,
+  "canonical_name": "Batey-PR",
+  "canonical_slug": "batey-pr",
+  "previous_names": [
+   "TheHub-PR"
+  ],
+  "aliases": [
+   "TheHub PR",
+   "TheHub-PR",
+   "thehub-pr"
+  ],
+  "migration_type": "RENAME",
+  "state": "IDENTITY_FROZEN",
+  "id_derivation": "existing program_id slug + immutable GitHub repo id; slug is NOT a safe key long-term"
+ },
+ {
+  "stable_project_id": "federation.project.moneysweep_pr",
+  "program_id_frozen": "moneysweep-pr",
+  "github_repository_id": 1197338153,
+  "canonical_name": "Chanchullos-PR",
+  "canonical_slug": "chanchullos-pr",
+  "previous_names": [
+   "MoneySweep-PR"
+  ],
+  "aliases": [
+   "MoneySweep PR",
+   "MoneySweep-PR",
+   "moneysweep-pr"
+  ],
+  "migration_type": "RENAME",
+  "state": "IDENTITY_FROZEN",
+  "id_derivation": "existing program_id slug + immutable GitHub repo id; slug is NOT a safe key long-term"
+ },
+ {
+  "stable_project_id": "federation.project.centinelas_pr",
+  "program_id_frozen": "centinelas-pr",
+  "github_repository_id": 1284431262,
+  "canonical_name": "Cronos-PR",
+  "canonical_slug": "cronos-pr",
+  "previous_names": [
+   "Centinelas-PR"
+  ],
+  "aliases": [
+   "Centinelas PR",
+   "Centinelas-PR",
+   "centinelas-pr"
+  ],
+  "migration_type": "RENAME_PLUS_FUNCTIONAL_REBUILD",
+  "state": "IDENTITY_FROZEN",
+  "id_derivation": "existing program_id slug + immutable GitHub repo id; slug is NOT a safe key long-term"
+ },
+ {
+  "stable_project_id": "federation.project.skywatcher_pr",
+  "program_id_frozen": "skywatcher-pr",
+  "github_repository_id": 1261399537,
+  "canonical_name": "Pitirre-PR",
+  "canonical_slug": "pitirre-pr",
+  "previous_names": [
+   "Skywatcher-PR"
+  ],
+  "aliases": [
+   "Skywatcher PR",
+   "Skywatcher-PR",
+   "skywatcher-pr"
+  ],
+  "migration_type": "RENAME",
+  "state": "IDENTITY_FROZEN",
+  "id_derivation": "existing program_id slug + immutable GitHub repo id; slug is NOT a safe key long-term",
+  "charter_decision": "ADOPT jotaele44/skywatcher-pr docs/architecture/ADR_PITIRRE_DOMAIN_MODEL_v0_1.md (AIR|LAND|WATER|SPACE); decided by owner 2026-10-06",
+  "open_boundary": "ADR claims temporal-state/replay semantics; overlaps Cronos temporal authority - reconcile before CODE_MIGRATED"
+ },
+ {
+  "stable_project_id": "federation.project.spiderweb_pr",
+  "program_id_frozen": "spiderweb-pr",
+  "github_repository_id": 1111911635,
+  "canonical_name": "Borikén-PR",
+  "canonical_slug": "boriken-pr",
+  "previous_names": [
+   "Spiderweb-PR"
+  ],
+  "aliases": [
+   "Spiderweb PR",
+   "Spiderweb-PR",
+   "spiderweb-pr"
+  ],
+  "migration_type": "RENAME",
+  "state": "IDENTITY_FROZEN",
+  "id_derivation": "existing program_id slug + immutable GitHub repo id; slug is NOT a safe key long-term"
+ }
+]
