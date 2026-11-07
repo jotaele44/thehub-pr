@@ -950,6 +950,32 @@
           "server/frontend/tests/visual/gui-parity.spec.js"
         ]
       }
+    },
+    {
+      "id": "ecpaf-v21-shadow-policy-validator",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Internal read-only CI/governance ledger validator. Evaluates frozen policy and evidence bindings only; no operator endpoint, domain analysis, release authorization or user-facing workflow. This shadow pilot cannot certify or authorize protected operations.",
+      "analysis": {
+        "files": [
+          "scripts/ecpaf_v21.py"
+        ],
+        "symbols": [
+          "scripts/ecpaf_v21.py:ContractError",
+          "scripts/ecpaf_v21.py:canonical_sha",
+          "scripts/ecpaf_v21.py:load_json",
+          "scripts/ecpaf_v21.py:validate_policy",
+          "scripts/ecpaf_v21.py:validate_contract",
+          "scripts/ecpaf_v21.py:evaluate",
+          "scripts/ecpaf_v21.py:main"
+        ]
+      },
+      "tests": {
+        "contract": [
+          "tests/test_ecpaf_v21.py"
+        ]
+      }
     }
   ],
   "exceptions": []
