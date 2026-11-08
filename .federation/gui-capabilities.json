@@ -956,7 +956,7 @@
       "classification": "operator",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "Source Monitor (ADR 0011): a read-only view of the sources each producer monitors, normalized from producer source registries by hub source-monitor and loaded by hub ingest into MonitoredSources (replaced on every ingest). The federation-wide page leads with stale sources and reports registry errors per producer; each producer page carries the same table scoped to that producer as its Monitor tab; a detail page shows the normalized fields, the registry fields verbatim and lineage. Freshness is producer-level (export package age against the source's cadence window). Reads only the generic entity endpoints.",
+      "rationale": "Source Monitor (ADR 0012): a read-only view of the sources each producer monitors, normalized from producer source registries by hub source-monitor and loaded by hub ingest into MonitoredSources (replaced on every ingest). The federation-wide page leads with stale sources and reports registry errors per producer; each producer page carries the same table scoped to that producer as its Monitor tab; a detail page shows the normalized fields, the registry fields verbatim and lineage. Freshness is producer-level (export package age against the source's cadence window). Reads only the generic entity endpoints.",
       "backend": {
         "files": [
           "src/hub/source_monitor.py",

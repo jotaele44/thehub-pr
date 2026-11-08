@@ -73,7 +73,7 @@ _ID_FIELD: Dict[str, str] = {**STREAM_ID_FIELD, "correlations": "relationship_id
 _SUMMARY_COLLECTION = "FederationSummary"
 _SUMMARY_ID = "graph_summary"
 
-# Hub-derived source monitor (ADR 0011): monitored_sources.jsonl, written by
+# Hub-derived source monitor (ADR 0012): monitored_sources.jsonl, written by
 # `hub source-monitor` from producer registries, is NOT a federation stream, so it
 # is not in STREAM_TO_COLLECTION. Unlike the streams it is replaced wholesale on
 # ingest, so a source dropped from a producer registry leaves the hub too.
@@ -692,7 +692,7 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
         _ingest_pairs(conn, "ContinuityRisks", project_continuity_risks(agg), ts, collections)
         _ingest_pairs(conn, "LiveFeedItems", project_livefeed(agg), ts, collections)
 
-        # Hub-derived source monitor (ADR 0011). Only touched when the file exists,
+        # Hub-derived source monitor (ADR 0012). Only touched when the file exists,
         # so an aggregate without one leaves the previous monitor rows in place.
         monitor_path = agg / MONITORED_SOURCES_FILE
         if monitor_path.exists():

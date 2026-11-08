@@ -227,7 +227,7 @@ export const SECRET_PRESENCE = {
   unavailable: RED,
 };
 
-// --- Source Monitor (ADR 0011) ----------------------------------------------
+// --- Source Monitor (ADR 0012) ----------------------------------------------
 // Declared status is what a producer registry says about a source, normalized
 // by `hub source-monitor`; it is not a health check. Keyed by display label
 // (formatLabel in lib/sourceMonitor.js turns `not_active` into "not active").

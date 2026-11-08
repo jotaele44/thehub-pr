@@ -9,7 +9,7 @@ import {
   MONITOR_STATUSES, MONITOR_TIERS, formatLabel, monitorPath, withFreshness,
 } from "@/lib/sourceMonitor";
 
-// One read-only template for monitored sources (ADR 0011). Without `producer` it is
+// One read-only template for monitored sources (ADR 0012). Without `producer` it is
 // the federation-wide operator table; with it, a producer page's Sources tab.
 // Rows are a projection of producer registries written by `hub source-monitor` and
 // replaced on every `hub ingest`, so there is nothing to edit here.

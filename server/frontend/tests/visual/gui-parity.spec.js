@@ -1058,7 +1058,7 @@ test.describe('sky workspace', () => {
   });
 });
 
-// Source Monitor (ADR 0011): read-only MonitoredSources rows written by
+// Source Monitor (ADR 0012): read-only MonitoredSources rows written by
 // `hub source-monitor` and loaded by `hub ingest`. Timestamps are relative to
 // now because freshness is computed against the viewer's clock.
 const daysAgo = (days) => new Date(Date.now() - days * 86400000).toISOString();

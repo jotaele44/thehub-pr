@@ -1,4 +1,4 @@
-# ADR 0011 — Source monitor reads producer registries hub-side; a `source_monitors` stream is deferred
+# ADR 0012 — Source monitor reads producer registries hub-side; a `source_monitors` stream is deferred
 
 - **Status:** Accepted (hub-side adapter); `source_monitors` stream deferred
 - **Date:** 2026-11-08

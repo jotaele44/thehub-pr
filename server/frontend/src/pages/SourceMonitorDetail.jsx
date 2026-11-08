@@ -23,7 +23,7 @@ function Field({ label, children }) {
 
 const rawValue = (v) => (v !== null && typeof v === "object" ? JSON.stringify(v) : String(v ?? ""));
 
-// One monitored source, read-only (ADR 0011). Shows the normalized fields, the
+// One monitored source, read-only (ADR 0012). Shows the normalized fields, the
 // producer's own registry fields verbatim, and where the row came from.
 export default function SourceMonitorDetail() {
   const { monitorId } = useParams();

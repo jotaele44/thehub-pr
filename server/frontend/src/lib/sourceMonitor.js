@@ -1,4 +1,4 @@
-// Source Monitor (ADR 0011): shared constants and freshness logic for the
+// Source Monitor (ADR 0012): shared constants and freshness logic for the
 // read-only MonitoredSources views. Rows are written by `hub source-monitor`
 // (src/hub/source_monitor.py) and loaded by `hub ingest`.
 //

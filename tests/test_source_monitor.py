@@ -1,4 +1,4 @@
-"""Tests for the hub-side source monitor (hub.source_monitor, ADR 0011).
+"""Tests for the hub-side source monitor (hub.source_monitor, ADR 0012).
 
 The fixture workspace reproduces each producer's registry with its real header
 row / top-level shape as of 2026-11, so a producer reshaping its registry shows

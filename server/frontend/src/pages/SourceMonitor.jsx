@@ -10,7 +10,7 @@ import {
   MONITOR_LIST_LIMIT, MONITOR_SUMMARY_COLLECTION, MONITOR_SUMMARY_ID, PRODUCER_PAGES,
 } from "@/lib/sourceMonitor";
 
-// Federation-wide, read-only Source Monitor (ADR 0011): the operator view. Each
+// Federation-wide, read-only Source Monitor (ADR 0012): the operator view. Each
 // producer page carries the same table scoped to that producer as a Sources tab.
 export default function SourceMonitor() {
   const { rows: summaries } = useEntityData(MONITOR_SUMMARY_COLLECTION);

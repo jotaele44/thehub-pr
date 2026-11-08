@@ -12,7 +12,7 @@
     hub consume-sensor-fusion <p>    validate skywatcher sensor-fusion export -> dashboard
     hub project-signs [--in d]       render per-project consolidation signs from an aggregate
     hub maintenance [--root ..]      roll up producer maintenance reports + gate
-    hub source-monitor [--root ..]   normalize producer source registries (ADR 0011)
+    hub source-monitor [--root ..]   normalize producer source registries (ADR 0012)
 """
 from __future__ import annotations
 
@@ -129,7 +129,7 @@ def _build_parser() -> argparse.ArgumentParser:
 
     sm = sub.add_parser(
         "source-monitor",
-        help="normalize producer source registries into the hub-derived monitor file (ADR 0011)",
+        help="normalize producer source registries into the hub-derived monitor file (ADR 0012)",
     )
     sm.add_argument("--registry", default=DEFAULT_REGISTRY)
     sm.add_argument("--root", default="..", help="workspace root containing producer checkouts")

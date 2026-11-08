@@ -1,10 +1,10 @@
-"""Hub-side source monitor: normalize producer source registries (ADR 0011).
+"""Hub-side source monitor: normalize producer source registries (ADR 0012).
 
 Each producer keeps its own registry of the sources it monitors, in its own
 shape (a CSV in moneysweep-pr, YAML in skywatcher-pr, JSON families in
 aguayluz-pr, ...). None of that crosses the federation contract: the frozen
 ``federation_export_manifest`` carries seven canonical streams and no
-monitoring fields. ADR 0011 records this module as a scoped, temporary
+monitoring fields. ADR 0012 records this module as a scoped, temporary
 exception to the artifact-only boundary of ADR 0001:
 
 * **Read-only.** It reads registry files from producer checkouts in a
@@ -21,7 +21,7 @@ exception to the artifact-only boundary of ADR 0001:
 Freshness here is **producer-level**: the ``created_at`` of the producer's
 export-package manifest, the same field ``hub.federation_status`` reads. No
 registry records a per-source last-successful-poll time; that needs the
-deferred ``source_monitors`` stream (ADR 0011, phase 2).
+deferred ``source_monitors`` stream (ADR 0012, phase 2).
 
 Producer families are kept verbatim (``producer_family``). There is no shared
 category taxonomy across producers yet, so none is invented here.
