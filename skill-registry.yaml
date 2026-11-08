@@ -47,6 +47,7 @@ packet_config:
     - consume-sensor-fusion
     - project-signs
     - maintenance
+    - source-monitor
   activation_routes:
     - route_to_moneysweep
     - route_to_centinelas

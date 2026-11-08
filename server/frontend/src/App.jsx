@@ -23,6 +23,8 @@ const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 const Programs = lazy(() => import('@/pages/Programs'));
 const Cases = lazy(() => import('@/pages/Cases'));
 const Sources = lazy(() => import('@/pages/Sources'));
+const SourceMonitor = lazy(() => import('@/pages/SourceMonitor'));
+const SourceMonitorDetail = lazy(() => import('@/pages/SourceMonitorDetail'));
 const Tasks = lazy(() => import('@/pages/Tasks'));
 const Gates = lazy(() => import('@/pages/Gates'));
 const Integrations = lazy(() => import('@/pages/Integrations'));
@@ -98,6 +100,8 @@ const AppRoutes = () => {
             <Route path="/operations" element={<Operations />} />
             <Route path="/cases" element={<Cases />} />
             <Route path="/sources" element={<Sources />} />
+            <Route path="/source-monitor" element={<SourceMonitor />} />
+            <Route path="/source-monitor/:monitorId" element={<SourceMonitorDetail />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/gates" element={<Gates />} />
             <Route path="/integrations" element={<Integrations />} />

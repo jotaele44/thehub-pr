@@ -73,6 +73,16 @@ _ID_FIELD: Dict[str, str] = {**STREAM_ID_FIELD, "correlations": "relationship_id
 _SUMMARY_COLLECTION = "FederationSummary"
 _SUMMARY_ID = "graph_summary"
 
+# Hub-derived source monitor (ADR 0011): monitored_sources.jsonl, written by
+# `hub source-monitor` from producer registries, is NOT a federation stream, so it
+# is not in STREAM_TO_COLLECTION. Unlike the streams it is replaced wholesale on
+# ingest, so a source dropped from a producer registry leaves the hub too.
+MONITORED_SOURCES_FILE = "monitored_sources.jsonl"
+MONITOR_SUMMARY_FILE = "monitored_sources_summary.json"
+MONITOR_COLLECTION = "MonitoredSources"
+MONITOR_SUMMARY_COLLECTION = "SourceMonitorSummary"
+MONITOR_SUMMARY_ID = "source_monitor_summary"
+
 # ── Phase 2: frontend-facing CrossoverLinks projection ────────────────────────
 # The Crossover Workspace (server/frontend/src/lib/crossover.js) is explicit-only:
 # it renders the "CrossoverLinks" collection. Phase 1 above loads the canonical
@@ -681,6 +691,19 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
         # the AguaYLuz live feed (water alerts projected into LiveFeedItems).
         _ingest_pairs(conn, "ContinuityRisks", project_continuity_risks(agg), ts, collections)
         _ingest_pairs(conn, "LiveFeedItems", project_livefeed(agg), ts, collections)
+
+        # Hub-derived source monitor (ADR 0011). Only touched when the file exists,
+        # so an aggregate without one leaves the previous monitor rows in place.
+        monitor_path = agg / MONITORED_SOURCES_FILE
+        if monitor_path.exists():
+            pairs = [(str(r["monitor_id"]), r) for r in _read_jsonl(monitor_path) if r.get("monitor_id")]
+            conn.execute("DELETE FROM entities WHERE entity_type=?", (MONITOR_COLLECTION,))
+            _ingest_pairs(conn, MONITOR_COLLECTION, pairs, ts, collections, always=True)
+            monitor_summary = agg / MONITOR_SUMMARY_FILE
+            if monitor_summary.exists():
+                payload = json.loads(monitor_summary.read_text(encoding="utf-8"))
+                _ingest_pairs(conn, MONITOR_SUMMARY_COLLECTION, [(MONITOR_SUMMARY_ID, payload)],
+                              ts, collections, always=True)
 
         conn.commit()
     finally:

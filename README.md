@@ -61,6 +61,7 @@ hub fetch --run --root ws                    # clone/refresh producers and run e
 hub aggregate --root .. --out data/aggregate # merge discoverable packages
 hub correlate --in data/aggregate            # derive cross-producer relationship edges
 hub project-signs --in data/aggregate --out reports/signs  # render per-project consolidation signs
+hub source-monitor --root .. --out data/aggregate  # normalize producer source registries (ADR 0011)
 hub ingest --in data/aggregate --db data/hub.db  # load the aggregate into the app store
 make federation-status                       # snapshot readiness for the control-plane pages
 make test
@@ -125,6 +126,7 @@ React UI, so operators use a single app instead of switching between per-produce
 ```bash
 # 1. Load real federation data into the app store (data/hub.db)
 hub aggregate --root .. --out data/aggregate && hub correlate --in data/aggregate
+hub source-monitor --root .. --out data/aggregate   # optional: the Source Monitor pages
 hub ingest --in data/aggregate --db data/hub.db
 
 # 2. Build the UI once (outputs server/frontend/dist/, git-ignored)
@@ -166,7 +168,11 @@ suits API/CLI callers today.
 `alerts → GovernanceAlerts`, `correlations → CrossoverLinks`); the mapping lives in
 [`src/hub/ingest.py`](src/hub/ingest.py), where `ingest_aggregate` drives the canonical
 streams through `_project_ui` and the `project_*` helpers (`project_producer_collections`,
-`project_crossover_links`, `project_continuity_risks`, `project_livefeed`). Pages backed by these
+`project_crossover_links`, `project_continuity_risks`, `project_livefeed`). It also loads
+`monitored_sources.jsonl` (written by `hub source-monitor` from producer source registries; a
+hub-derived file, not a federation stream, [ADR 0011](docs/adr/0011-source-monitor-registry-adapter.md))
+into `MonitoredSources`, replacing that collection on each run. The read-only Source Monitor
+(`/source-monitor` and a Sources tab on each producer page) reads it. Pages backed by these
 collections (Sources, the Spiderweb graph, cross-producer links) render live aggregate data;
 domain-heavy pages that need per-domain fields the aggregate does not yet carry (contracts,
 feeds, cases) stay empty until producers emit that data. If `dist/` is not built, the backend

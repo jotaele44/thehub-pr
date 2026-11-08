@@ -12,6 +12,7 @@
     hub consume-sensor-fusion <p>    validate skywatcher sensor-fusion export -> dashboard
     hub project-signs [--in d]       render per-project consolidation signs from an aggregate
     hub maintenance [--root ..]      roll up producer maintenance reports + gate
+    hub source-monitor [--root ..]   normalize producer source registries (ADR 0011)
 """
 from __future__ import annotations
 
@@ -30,6 +31,7 @@ from .federation_status import validate_federation
 from .fetch import FetchError, fetch_all
 from .graph_report import graph_report
 from .ingest import ingest_aggregate
+from .source_monitor import build_monitor, write_monitor
 from .maintenance import build_rollup
 from .manifest import load_and_validate_manifest
 from .project_signs import write_project_signs
@@ -124,6 +126,15 @@ def _build_parser() -> argparse.ArgumentParser:
     mt.add_argument("--write-report", action="store_true", help="write the rollup to reports/federation_maintenance/latest.json")
     mt.add_argument("--fail-on-blocker", action="store_true", help="exit 1 if the promotion gate blocks")
     mt.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+
+    sm = sub.add_parser(
+        "source-monitor",
+        help="normalize producer source registries into the hub-derived monitor file (ADR 0011)",
+    )
+    sm.add_argument("--registry", default=DEFAULT_REGISTRY)
+    sm.add_argument("--root", default="..", help="workspace root containing producer checkouts")
+    sm.add_argument("--out", default="data/aggregate", help="aggregate dir to write monitored_sources.jsonl into")
+    sm.add_argument("--json", action="store_true", help="print the summary as JSON")
 
     return p
 
@@ -328,6 +339,21 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(json.dumps({"count": summary["count"], "signs": summary["signs"]},
                              indent=2, sort_keys=True))
         return 0
+
+    if args.cmd == "source-monitor":
+        reg = load_registry(args.registry)
+        rows, summary = build_monitor(reg, args.root)
+        rows_path, _ = write_monitor(rows, summary, args.out)
+        if args.json:
+            print(json.dumps(summary, indent=2, sort_keys=True))
+        else:
+            print(f"wrote {summary['total']} monitored source(s) -> {rows_path}")
+            for pid, info in sorted(summary["producers"].items()):
+                pkg = info["package_created_at"] or "—"
+                print(f"{pid:16} {info['count']:4} source(s)  package {pkg}")
+                for err in info["errors"]:
+                    print(f"{'':16} ! {err}")
+        return 0 if summary["total"] else 1
 
     if args.cmd == "maintenance":
         reg = load_registry(args.registry)

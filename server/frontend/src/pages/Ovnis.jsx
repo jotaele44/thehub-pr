@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
+import SourceMonitorLedger from "@/components/sources/SourceMonitorLedger";
 import StatusChip from "@/components/shared/StatusChip";
 import IdCode from "@/components/shared/IdCode";
 import { Radar } from "lucide-react";
@@ -11,7 +12,7 @@ import { MODULES } from "@/lib/federation";
 import { CONFIDENCE, REVIEW_STATUS, VERIFICATION, GENERIC_STATUS } from "@/lib/chips";
 
 const MODULE = MODULES.find((m) => m.name === "Ovnis-PR");
-const OVNIS_TABS = ["patterns", "witness", "reports", "showlog"];
+const OVNIS_TABS = ["patterns", "witness", "reports", "showlog", "sources"];
 const PATTERN_TYPES = ["Light", "Object", "Formation", "Maneuver", "Sound", "Electromagnetic", "RepeatedLocation", "TimeCluster", "Other"];
 
 export default function Ovnis() {
@@ -68,6 +69,7 @@ export default function Ovnis() {
           <TabsTrigger value="witness">Witness Reports</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
           <TabsTrigger value="showlog">Show Log</TabsTrigger>
+          <TabsTrigger value="sources">Monitor</TabsTrigger>
         </TabsList>
         <TabsContent value="patterns">
           <EntityLedger entityName="PatternObservations" fields={patternFields} columns={patternColumns}
@@ -88,6 +90,9 @@ export default function Ovnis() {
         </TabsContent>
         <TabsContent value="showlog">
           <ShowLog />
+        </TabsContent>
+        <TabsContent value="sources">
+          <SourceMonitorLedger producer="ovnis-pr" />
         </TabsContent>
       </Tabs>
     </div>
