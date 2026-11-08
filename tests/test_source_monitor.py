@@ -357,3 +357,13 @@ def test_cli_writes_monitor_files(workspace, tmp_path):
     empty.mkdir()
     assert main(["source-monitor", "--registry", str(reg_path), "--root", str(empty),
                  "--out", str(tmp_path / "agg2")]) == 1
+
+
+def test_declared_window_wins_and_bad_values_fall_back_to_cadence():
+    from hub.source_monitor import CADENCE_WINDOW_SECONDS, _window
+
+    assert _window("daily", 7200) == 7200
+    assert _window("daily", "7200") == 7200
+    assert _window("daily", "not a number") == CADENCE_WINDOW_SECONDS["daily"]
+    assert _window("daily", 0) == CADENCE_WINDOW_SECONDS["daily"]
+    assert _window("event", None) is None

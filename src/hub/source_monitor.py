@@ -172,11 +172,14 @@ def normalize_tier(raw: Any) -> Optional[str]:
 
 
 def _window(cadence: str, declared_seconds: Any = None) -> Optional[int]:
+    """A producer-declared window in seconds wins; otherwise the cadence's nominal one."""
     try:
-        if declared_seconds is not None and float(declared_seconds) > 0:
-            return int(float(declared_seconds))
+        declared = float(declared_seconds) if declared_seconds is not None else 0.0
     except (TypeError, ValueError):
-        pass
+        # A non-numeric declared window is ignored rather than trusted.
+        declared = 0.0
+    if declared > 0:
+        return int(declared)
     return CADENCE_WINDOW_SECONDS.get(cadence)
 
 
