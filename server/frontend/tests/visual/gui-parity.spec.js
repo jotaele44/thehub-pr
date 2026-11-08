@@ -1057,3 +1057,88 @@ test.describe('sky workspace', () => {
     await expect(page.locator('[data-sky-sun]')).toHaveCount(0);
   });
 });
+
+// Source Monitor (ADR 0011): read-only MonitoredSources rows written by
+// `hub source-monitor` and loaded by `hub ingest`. Timestamps are relative to
+// now because freshness is computed against the viewer's clock.
+const daysAgo = (days) => new Date(Date.now() - days * 86400000).toISOString();
+const MONITOR_ROWS = [
+  {
+    id: 'ovnis-pr:SRC-0001', monitor_id: 'ovnis-pr:SRC-0001', producer: 'ovnis-pr', source_id: 'SRC-0001',
+    name: 'AARO Case Archive', producer_family: 'USAF', evidence_tier: 'T1', cadence: 'yearly', cadence_raw: 'annual',
+    cadence_window_seconds: 366 * 86400, status: 'active', status_raw: 'yes', producer_last_package_at: daysAgo(10),
+    raw: { source_family: 'USAF', retrieval_cadence: 'annual' },
+    lineage: { registry_path: 'data/reference/source_registry.csv', adapter: 'source_monitor_v1' }, observed_at: daysAgo(0),
+  },
+  {
+    id: 'moneysweep-pr:usaspending_prime', monitor_id: 'moneysweep-pr:usaspending_prime', producer: 'moneysweep-pr',
+    source_id: 'usaspending_prime', name: 'usaspending_prime', producer_family: 'federal', evidence_tier: null,
+    cadence: 'weekly', cadence_raw: 'weekly', cadence_window_seconds: 7 * 86400, status: 'partial',
+    status_raw: 'partially_materialized', producer_last_package_at: daysAgo(30),
+    raw: { family: 'federal', pipeline_status: 'partially_materialized' },
+    lineage: { registry_path: 'reports/source_registry_status.csv', adapter: 'source_monitor_v1' }, observed_at: daysAgo(0),
+  },
+];
+const MONITOR_SUMMARY = [{
+  id: 'source_monitor_summary', schema_version: 'prii_source_monitor_v1', adapter: 'source_monitor_v1',
+  generated_at: daysAgo(0), total: 2, error_count: 1,
+  producers: {
+    'moneysweep-pr': { count: 1, package_created_at: daysAgo(30), registries: ['reports/source_registry_status.csv'], excluded: {}, errors: [] },
+    'ovnis-pr': { count: 1, package_created_at: daysAgo(10), registries: ['data/reference/source_registry.csv'], excluded: {}, errors: [] },
+    'centinelas-pr': { count: 0, package_created_at: null, registries: ['data/reference/source_registry.csv'], excluded: {}, errors: ['data/reference/source_registry.csv: file not found'] },
+  },
+}];
+// Detail fragment first: mockApi matches the first fragment the URL contains.
+const MONITOR_API = {
+  '/entities/MonitoredSources/moneysweep-pr': MONITOR_ROWS[1],
+  '/entities/MonitoredSources': MONITOR_ROWS,
+  '/entities/SourceMonitorSummary': MONITOR_SUMMARY,
+};
+
+test.describe('source monitor', () => {
+  test('is reachable from navigation, leads with stale sources and opens a read-only detail', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'Source Monitor', exact: true }).click();
+    await expect(page).toHaveURL(/\/source-monitor$/);
+    await expect(page.getByRole('heading', { name: 'Source Monitor' })).toBeVisible();
+    // A drifted registry is reported per producer, not hidden.
+    await expect(page.getByText('data/reference/source_registry.csv: file not found')).toBeVisible();
+
+    const rows = page.locator('table').last().locator('tbody tr');
+    await expect(rows).toHaveCount(2);
+    await expect(rows.first()).toContainText('moneysweep-pr');
+    await expect(rows.first()).toContainText('Stale');
+    await expect(rows.nth(1)).toContainText('Fresh');
+    await expect(page.getByRole('main').getByRole('button', { name: /^New/ })).toHaveCount(0);
+
+    await rows.first().click();
+    await expect(page).toHaveURL(/\/source-monitor\/moneysweep-pr%3Ausaspending_prime$/);
+    await expect(page.getByRole('heading', { name: 'usaspending_prime' })).toBeVisible();
+    await expect(page.getByText('registry: partially_materialized')).toBeVisible();
+    await expect(page.getByText('reports/source_registry_status.csv')).toBeVisible();
+    await page.getByRole('link', { name: 'Source Monitor' }).first().click();
+    await expect(page).toHaveURL(/\/source-monitor$/);
+  });
+
+  test('each producer page carries the same table scoped to that producer', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Monitor', exact: true }).click();
+    const panel = page.getByRole('tabpanel', { name: 'Monitor' });
+    await expect(panel.locator('tbody tr')).toHaveCount(1);
+    await expect(panel).toContainText('usaspending_prime');
+    await expect(panel).not.toContainText('AARO Case Archive');
+
+    await page.goto('/ovnis?tab=sources', { waitUntil: 'networkidle' });
+    const ovnis = page.getByRole('tabpanel', { name: 'Monitor' });
+    await expect(ovnis.locator('tbody tr')).toHaveCount(1);
+    await expect(ovnis).toContainText('AARO Case Archive');
+  });
+
+  test('a source dropped from its registry is reported, not substituted', async ({ page }) => {
+    await mockApi(page, { '/entities/MonitoredSources/ovnis-pr': { __status: 404, detail: 'MonitoredSources/ovnis-pr:GONE not found' } });
+    await page.goto('/source-monitor/ovnis-pr%3AGONE', { waitUntil: 'networkidle' });
+    await expect(page.getByText('Monitored source not found')).toBeVisible();
+  });
+});
