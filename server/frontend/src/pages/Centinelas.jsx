@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
+import SourceMonitorLedger from "@/components/sources/SourceMonitorLedger";
 import ModuleMapTab from "@/components/shared/ModuleMapTab";
 import StatusChip from "@/components/shared/StatusChip";
 import IdCode from "@/components/shared/IdCode";
@@ -42,6 +43,7 @@ export default function Centinelas() {
         <TabsList className="mb-4">
           <TabsTrigger value="matters">Public Matters</TabsTrigger>
           <TabsTrigger value="map">Map View</TabsTrigger>
+          <TabsTrigger value="sources">Monitor</TabsTrigger>
         </TabsList>
         <TabsContent value="matters">
           <EntityLedger entityName="PublicMatters" fields={matterFields} columns={matterColumns}
@@ -62,6 +64,9 @@ export default function Centinelas() {
               subtitle: [r.entity_type, r.municipality].filter(Boolean).join(" · "),
             })}
           />
+        </TabsContent>
+        <TabsContent value="sources">
+          <SourceMonitorLedger producer="centinelas-pr" />
         </TabsContent>
       </Tabs>
     </div>

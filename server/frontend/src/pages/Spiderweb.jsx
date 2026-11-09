@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
+import SourceMonitorLedger from "@/components/sources/SourceMonitorLedger";
 import ModuleMapTab from "@/components/shared/ModuleMapTab";
 import IntelligenceWorkspace from "@/components/intelligence/IntelligenceWorkspace";
 import StatusChip from "@/components/shared/StatusChip";
@@ -65,6 +66,7 @@ export default function Spiderweb() {
           <TabsTrigger value="nodes">Graph Nodes</TabsTrigger>
           <TabsTrigger value="map">Map View</TabsTrigger>
           <TabsTrigger value="edges">Graph Edges</TabsTrigger>
+          <TabsTrigger value="sources">Monitor</TabsTrigger>
         </TabsList>
         <TabsContent value="workspace">
           <IntelligenceWorkspace adapter={INTELLIGENCE_ADAPTERS.spiderweb} />
@@ -92,6 +94,9 @@ export default function Spiderweb() {
             searchKeys={["edge_id", "source_node_id", "target_node_id", "rationale"]}
             filterDefs={[{ key: "relationship_type", label: "Relationship", options: REL_TYPES }, { key: "evidence_tier", label: "Tier", options: TIERS }]}
             addLabel="New Edge" emptyTitle="No edges" searchPlaceholder="Search edges…" />
+        </TabsContent>
+        <TabsContent value="sources">
+          <SourceMonitorLedger producer="spiderweb-pr" />
         </TabsContent>
       </Tabs>
     </div>

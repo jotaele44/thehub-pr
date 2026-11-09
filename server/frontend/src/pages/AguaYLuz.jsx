@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
+import SourceMonitorLedger from "@/components/sources/SourceMonitorLedger";
 import AguaYLuzFeedTab from "@/components/feed/AguaYLuzFeedTab";
 import IntelligenceWorkspace from "@/components/intelligence/IntelligenceWorkspace";
 import StatusChip from "@/components/shared/StatusChip";
@@ -116,6 +117,7 @@ export default function AguaYLuz() {
           <TabsTrigger value="assets">Infrastructure Assets</TabsTrigger>
           <TabsTrigger value="alerts">Operational Alerts</TabsTrigger>
           <TabsTrigger value="risks">Continuity Risks</TabsTrigger>
+          <TabsTrigger value="sources">Monitor</TabsTrigger>
         </TabsList>
         <TabsContent value="workspace">
           <IntelligenceWorkspace adapter={INTELLIGENCE_ADAPTERS.aguayluz} />
@@ -154,6 +156,9 @@ export default function AguaYLuz() {
             addLabel="New Risk" emptyTitle="No risks"
             emptyDescription="No continuity risks in the current aggregate. Risks are derived from AguaYLuz-PR water↔power dependencies and asset-anchored alerts; run the Hub aggregate/ingest to populate them."
             searchPlaceholder="Search risks…" />
+        </TabsContent>
+        <TabsContent value="sources">
+          <SourceMonitorLedger producer="aguayluz-pr" />
         </TabsContent>
       </Tabs>
     </div>
