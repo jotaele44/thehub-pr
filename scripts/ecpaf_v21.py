@@ -61,6 +61,7 @@ def _exact_set(value, expected, label):
 def validate_policy(policy):
     _require(policy.get("schema_version") == "ecpaf-policy/2.1", "unsupported policy schema")
     _require(policy.get("policy_id") == "ECPAF-V2.1", "wrong policy identity")
+    _require(policy.get("policy_revision") == "2.1.1", "unsupported policy revision")
     _require(policy.get("mode") == "SHADOW_PILOT", "pilot mode required")
     _require(policy.get("authority") == "jotaele44/thehub-pr", "wrong control authority")
     _exact_set(policy.get("core_repositories"), CORE, "core membership")
@@ -75,6 +76,8 @@ def validate_policy(policy):
     _require(all(type(value) is int for value in policy["milestones"].values()), "integer thresholds required")
     _require(policy.get("protected_release_behavior") == "UNCHANGED", "release behavior changed")
     _require(policy.get("certification") == "WITHHELD", "pilot cannot certify")
+    _require(policy.get("independent_review_requirement") == "NOT_REQUIRED", "independent review requirement must be disabled")
+    _require(policy.get("advisory_review_scored") is False, "advisory review cannot affect milestones")
     semantics = policy.get("semantics", {})
     keys = {"percentages_are_mandatory_gate_waivers", "unknown_counts_as_pass", "missing_counts_as_pass",
             "self_review_is_independent_approval", "mucaro_is_core_member", "pilot_can_authorize_operations"}
@@ -107,10 +110,18 @@ def validate_contract(policy, contract):
         _require(type(leaf.get("mandatory")) is bool, "mandatory must be explicit boolean")
         _require(leaf.get("domain") in DOMAINS | {"engineering", "operations", "review"}, "unknown domain")
         _require(leaf["domain"] not in DOMAINS or leaf["mandatory"], "critical gate cannot be optional")
+        if leaf["domain"] == "review" or leaf["execution_class"] == "INDEPENDENT_REVIEW":
+            _require(leaf["domain"] == "review" and leaf["execution_class"] == "INDEPENDENT_REVIEW",
+                     "advisory review requires consistent domain and classification")
+            _require(not leaf["mandatory"], "independent review cannot be a mandatory gate")
         _require(type(leaf.get("weight")) is int and 0 < leaf["weight"] <= 100, "invalid weight")
         deps = leaf.get("depends_on")
         _require(isinstance(deps, list) and len(deps) == len(set(deps)) and set(deps) <= set(ids), "unknown or duplicate dependency")
         _require(all(PHASES.index(by_id[d]["phase"]) <= PHASES.index(leaf["phase"]) for d in deps), "dependency phase reversal")
+    for leaf in leaves:
+        if leaf["domain"] != "review":
+            _require(not any(by_id[dep]["domain"] == "review" for dep in leaf["depends_on"]),
+                     "advisory review cannot gate scored requirements")
     active, visited = set(), set()
 
     def visit(i):
@@ -170,7 +181,8 @@ def evaluate(policy, contract, observations, evidence_root, expected_contract_sh
     _require(sum(counts.values()) == len(by_id), "checkpoint conservation failure")
     stages = {}
     for stage in PHASES:
-        leaves = [leaf for leaf in by_id.values() if PHASES.index(leaf["phase"]) <= PHASES.index(stage)]
+        leaves = [leaf for leaf in by_id.values()
+                  if leaf["domain"] != "review" and PHASES.index(leaf["phase"]) <= PHASES.index(stage)]
         _require(leaves, "empty milestone denominator")
         weight = sum(leaf["weight"] for leaf in leaves)
         passed = sum(leaf["weight"] for leaf in leaves if indexed[leaf["id"]]["state"] == "PASS")
@@ -189,7 +201,9 @@ def evaluate(policy, contract, observations, evidence_root, expected_contract_sh
             "authorities": contract["authorities"], "gate_count": len(by_id), "states": counts,
             "execution_classes": dict(Counter(leaf["execution_class"] for leaf in by_id.values())),
             "milestones": stages, "evidence_assurance": "STRUCTURAL_AND_BYTE_BINDING_ONLY",
-            "independent_review": "OPEN", "certification": "WITHHELD", "release_authorized": False,
+            "independent_review": "NOT_REQUIRED", "advisory_review_states":
+            {i: indexed[i]["state"] for i, leaf in by_id.items() if leaf["domain"] == "review"},
+            "certification": "WITHHELD", "release_authorized": False,
             "protected_operations_authorized": [], "protected_release_behavior": "UNCHANGED"}
 
 

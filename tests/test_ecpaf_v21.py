@@ -61,7 +61,58 @@ class EcpafV21Tests(unittest.TestCase):
         self.assertFalse(result["release_authorized"])
         self.assertEqual(result["protected_operations_authorized"], [])
         self.assertEqual(result["certification"], "WITHHELD")
-        self.assertEqual(result["independent_review"], "OPEN")
+        self.assertEqual(result["independent_review"], "NOT_REQUIRED")
+
+    def add_advisory_review(self, mandatory=False, domain="review", execution_class="INDEPENDENT_REVIEW"):
+        leaf = self.leaf("external-review", "operational", mandatory=mandatory, weight=100)
+        leaf["domain"] = domain
+        leaf["execution_class"] = execution_class
+        self.contract["requirements"].append(leaf)
+        self.contract["declared_requirement_ids"].append("external-review")
+        self.observations["checkpoints"].append({"id": "external-review", "state": "OPEN"})
+        self.bind()
+
+    def test_owner_directive_removes_mandatory_independent_review(self):
+        self.assertEqual(self.policy["policy_revision"], "2.1.1")
+        self.assertEqual(self.policy["independent_review_requirement"], "NOT_REQUIRED")
+        self.add_advisory_review()
+        result = self.run_eval()
+        self.assertEqual(result["independent_review"], "NOT_REQUIRED")
+        self.assertEqual(result["advisory_review_states"], {"external-review": "OPEN"})
+        self.assertEqual(result["states"]["OPEN"], 1)
+        self.assertTrue(all(m["structurally_eligible"] for m in result["milestones"].values()))
+        self.assertNotIn("external-review", result["milestones"]["operational"]["denominator_ids"])
+        self.assertEqual(result["milestones"]["operational"]["total_weight"], 3)
+        self.assertFalse(result["release_authorized"])
+        self.assertEqual(result["certification"], "WITHHELD")
+
+    def test_mandatory_review_checkpoint_rejected(self):
+        self.add_advisory_review(mandatory=True)
+        self.rejects()
+
+    def test_review_domain_misclassification_rejected(self):
+        self.add_advisory_review(domain="engineering")
+        self.rejects()
+
+    def test_review_execution_class_misclassification_rejected(self):
+        self.add_advisory_review(execution_class="AI_AUTO")
+        self.rejects()
+
+    def test_advisory_review_cannot_indirectly_gate_mandatory_work(self):
+        self.add_advisory_review()
+        self.contract["requirements"][2]["depends_on"] = ["external-review"]
+        self.bind()
+        self.rejects()
+
+    def test_review_requirement_cannot_be_reenabled_without_policy_change(self):
+        self.policy["independent_review_requirement"] = "REQUIRED"
+        self.bind()
+        self.rejects()
+
+    def test_review_weight_cannot_be_reintroduced(self):
+        self.policy["advisory_review_scored"] = True
+        self.bind()
+        self.rejects()
 
     def test_optional_residue_can_meet_95_without_certification(self):
         self.contract["requirements"][0]["weight"] = 18
