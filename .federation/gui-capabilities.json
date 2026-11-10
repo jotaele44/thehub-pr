@@ -952,6 +952,77 @@
       }
     },
     {
+      "id": "source-monitor",
+      "classification": "operator",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Source Monitor (ADR 0012): a read-only view of the sources each producer monitors, normalized from producer source registries by hub source-monitor and loaded by hub ingest into MonitoredSources (replaced on every ingest). The federation-wide page leads with stale sources and reports registry errors per producer; each producer page carries the same table scoped to that producer as its Monitor tab; a detail page shows the normalized fields, the registry fields verbatim and lineage. Freshness is producer-level (export package age against the source's cadence window). Reads only the generic entity endpoints.",
+      "backend": {
+        "files": [
+          "src/hub/source_monitor.py",
+          "src/hub/ingest.py",
+          "server/backend/main_core.py"
+        ],
+        "endpoints": [
+          "GET /api/entities/{entity_name}",
+          "GET /api/entities/{entity_name}/{entity_id}"
+        ],
+        "symbols": [
+          "src/hub/source_monitor.py:RegistryShapeError",
+          "src/hub/source_monitor.py:binding_status",
+          "src/hub/source_monitor.py:build_monitor",
+          "src/hub/source_monitor.py:cadence_from_seconds",
+          "src/hub/source_monitor.py:cadence_from_text",
+          "src/hub/source_monitor.py:normalize_cadence",
+          "src/hub/source_monitor.py:normalize_status",
+          "src/hub/source_monitor.py:normalize_tier",
+          "src/hub/source_monitor.py:write_monitor"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/source-monitor",
+          "/source-monitor/:monitorId"
+        ],
+        "e2e_routes": [
+          "/source-monitor",
+          "/source-monitor/:monitorId"
+        ],
+        "components": [
+          "server/frontend/src/pages/SourceMonitor.jsx",
+          "server/frontend/src/pages/SourceMonitorDetail.jsx",
+          "server/frontend/src/components/sources/SourceMonitorLedger.jsx",
+          "server/frontend/src/lib/sourceMonitor.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/pages/AguaYLuz.jsx",
+          "server/frontend/src/pages/Centinelas.jsx",
+          "server/frontend/src/pages/MoneySweep.jsx",
+          "server/frontend/src/pages/Ovnis.jsx",
+          "server/frontend/src/pages/Skywatcher.jsx",
+          "server/frontend/src/pages/Spiderweb.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_ingest.py"
+        ],
+        "contract": [
+          "tests/test_source_monitor.py"
+        ],
+        "unit": [
+          "server/frontend/src/lib/sourceMonitor.test.js",
+          "server/frontend/src/components/sources/SourceMonitorLedger.test.jsx",
+          "server/frontend/src/pages/SourceMonitorDetail.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
       "id": "ecpaf-v21-shadow-policy-validator",
       "classification": "internal",
       "status": "active",

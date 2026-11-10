@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "c558266145bf75a2b673b5b51ffa2ed33de3c787",
+  "source_commit": "0a066702a421dc2dc13c3da6e8d7726a15e4eb85",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -2051,6 +2051,47 @@
       "evidence": [
         "server/frontend/src/components/constellation/NodeDetails.jsx:121",
         "server/frontend/tests/visual/gui-parity.spec.js:503"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/SourceMonitor(?:Detail)?\\.jsx:[0-9]+:unlabeled-control$",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The producer name in the Source Monitor summary table and on a source's detail page links to that producer's Hub page; the target comes from the module registry (PRODUCER_PAGES in lib/sourceMonitor.js, derived from MODULES) and no backend request is made.",
+      "evidence": [
+        "server/frontend/src/pages/SourceMonitor.jsx:65",
+        "server/frontend/src/pages/SourceMonitorDetail.jsx:74",
+        "server/frontend/src/pages/SourceMonitorDetail.test.jsx:51",
+        "server/frontend/src/lib/sourceMonitor.test.js:56"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/SatellitesPanel\\.jsx:[0-9]+:unlabeled-control$",
+      "classification": "CLIENT_STATE",
+      "rationale": "The Show/Hide pass-track button (its label names the satellite and pass, so it is dynamic) calls onShowTrack, which only changes which pass track the Sky workspace draws; no backend request.",
+      "evidence": [
+        "server/frontend/src/components/sky/SatellitesPanel.jsx:87",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx:154"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/SkyWorkspace\\.jsx:[0-9]+:Apply observer$",
+      "classification": "CLIENT_STATE",
+      "rationale": "Submitting the observer form runs applyObserver, which validates the draft coordinates, builds the observer with makeObserver and updates the sky URL state; no backend request.",
+      "evidence": [
+        "server/frontend/src/components/sky/SkyWorkspace.jsx:219",
+        "server/frontend/src/components/sky/SkyWorkspace.jsx:396",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx:170",
+        "server/frontend/tests/visual/gui-parity.spec.js:978"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/SkyWorkspace\\.jsx:[0-9]+:Refresh space weather$",
+      "classification": "BROWSER_ACTION",
+      "rationale": "The button refetches the space-weather query, whose loadSpaceWeather reads NOAA SWPC products (services.swpc.noaa.gov) directly from the browser and keeps them in query state; it is not a Hub backend call.",
+      "evidence": [
+        "server/frontend/src/components/sky/SkyWorkspace.jsx:293",
+        "server/frontend/src/sky/spaceWeather.js:11",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx:271"
       ]
     }
   ],

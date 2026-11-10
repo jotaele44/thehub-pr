@@ -22,6 +22,12 @@ git-URL pip dependency — the first time a producer takes a *build-time* depend
 `thehub-pr`. This does not reverse the artifact-only design: it is one shared library with
 no runtime coupling, versioned by tag, bumped one producer at a time.
 
+**A second scoped exception (ADR 0012): the Source Monitor.** `hub source-monitor`
+(`src/hub/source_monitor.py`) reads each producer's own source registry from a workspace
+checkout, outside the frozen contract, because no federation stream carries monitoring data.
+It is read-only and fail-soft, writes a hub-derived `monitored_sources.jsonl` that is not a
+federation stream, and ends when producers emit the deferred `source_monitors` stream.
+
 ## Data flow
 
 ```
@@ -42,6 +48,9 @@ exports/…/manifest.json + *.jsonl ─(fetch)──▶ hub.validate.validate_pa
                                        │  funding-date / alert / observation footprint)
                                        ▼
                             data/aggregate/correlations.jsonl  (derived federation_relationship rows)
+
+producer source registries ──(hub source-monitor, ADR 0012)──▶ data/aggregate/monitored_sources.jsonl
+                                                                 (hub-derived, not a federation stream)
 ```
 
 ## Canonical streams & id namespaces
@@ -206,3 +215,6 @@ Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
 - [ADR 0010 — Change-coupled documentation gate](docs/adr/0010-change-coupled-documentation-gate.md):
   generalize ADR 0004's documentation-drift rule into one shared checker that requires a document
   to change with the paths it covers and forbids new dangling references.
+- [ADR 0012 — Source monitor reads producer registries hub-side](docs/adr/0012-source-monitor-registry-adapter.md):
+  a read-only, fail-soft adapter normalizes producer source registries for the Source Monitor until
+  a `source_monitors` stream exists; freshness is producer-level until then.

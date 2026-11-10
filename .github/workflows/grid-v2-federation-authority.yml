@@ -9,6 +9,9 @@ on:
       - "registry/spatial/v2/**"
       - "federation/spatial/pr_grid_geographic_v2.pin.json"
       - "TERMINAL_READY.txt"
+      - "schemas/cell_profile_v2.schema.json"
+      - "registry/spatial/v2/consumer_commit_snapshot.json"
+      - "tests/test_grid_v2_frozen_snapshot.py"
       - ".github/workflows/grid-v2-federation-authority.yml"
   push:
     branches: [main]
@@ -41,9 +44,21 @@ jobs:
           git -C "$root/spiderweb-pr" checkout --detach FETCH_HEAD
           test "$(git -C "$root/spiderweb-pr" rev-parse HEAD)" = "$authority_sha"
 
-          for repo in aguayluz-pr skywatcher-pr ovnis-pr moneysweep-pr centinelas-pr; do
-            git clone --depth 1 --filter=blob:none --sparse               "https://github.com/jotaele44/$repo.git" "$root/$repo"
-            git -C "$root/$repo" sparse-checkout set --no-cone               federation/spatial/pr_grid_geographic_v2.pin.json
+          # Exact consumer snapshots; never validate a moving repository main.
+          for entry in \
+            "aguayluz-pr:942eedf78191c5924a0539322cc063d5369e4637" \
+            "skywatcher-pr:4def79d5212ff9990e405c65964198401cde9ce0" \
+            "ovnis-pr:7cae215582825dd9755c5a38d5b99aba86644759" \
+            "moneysweep-pr:c478c3a00d87d51e062df40f9be126d089416822" \
+            "centinelas-pr:5342029030ddb4055c5666f2bfe72dfd3d584ce4"; do
+            repo="${entry%%:*}"
+            revision="${entry#*:}"
+            git clone --filter=blob:none --no-checkout "https://github.com/jotaele44/$repo.git" "$root/$repo"
+            git -C "$root/$repo" sparse-checkout init --no-cone
+            git -C "$root/$repo" sparse-checkout set --no-cone /federation/spatial/pr_grid_geographic_v2.pin.json
+            git -C "$root/$repo" fetch --depth 1 origin "$revision"
+            git -C "$root/$repo" checkout --detach FETCH_HEAD
+            test "$(git -C "$root/$repo" rev-parse HEAD)" = "$revision"
           done
 
           python scripts/validate_pr_grid_v2_federation.py             --workspace-root "$root"             --authority-root "$root/spiderweb-pr"
