@@ -24,7 +24,7 @@ export default function SourceMonitor() {
       <PageHeader
         icon={Gauge}
         title="Source Monitor"
-        description="Read-only view of the sources each producer monitors, normalized from producer registries. Stalest first."
+        description="Read-only view of the sources each producer monitors: from its source_monitors stream where it emits one, otherwise read from its registry. Stalest first."
       />
 
       {summary && (
@@ -50,6 +50,7 @@ export default function SourceMonitor() {
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
                     <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Producer</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Origin</TableHead>
                     <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Sources</TableHead>
                     <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Last export package</TableHead>
                     <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Registries</TableHead>
@@ -63,6 +64,9 @@ export default function SourceMonitor() {
                       <TableRow key={pid} className="border-border">
                         <TableCell className="text-sm font-medium">
                           {PRODUCER_PAGES[pid] ? <Link to={PRODUCER_PAGES[pid]} className="hover:underline">{pid}</Link> : pid}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground" data-origin={p.origin || "hub_adapter"}>
+                          {p.origin === "stream" ? "source_monitors stream" : "registry reader"}
                         </TableCell>
                         <TableCell className="text-sm font-mono-id">{p.count ?? 0}</TableCell>
                         <TableCell className="text-xs text-muted-foreground">

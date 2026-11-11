@@ -1,11 +1,12 @@
-// Source Monitor (ADR 0012): shared constants and freshness logic for the
-// read-only MonitoredSources views. Rows are written by `hub source-monitor`
-// (src/hub/source_monitor.py) and loaded by `hub ingest`.
+// Source Monitor (ADR 0012, ADR 0013): shared constants and freshness logic for
+// the read-only MonitoredSources views. Rows come from the `source_monitors`
+// federation stream for producers that emit it, and from the hub-side registry
+// reader (`hub source-monitor`) for the others; `hub ingest` merges the two.
 //
-// Freshness is PRODUCER-LEVEL. No producer registry records when each source was
-// last polled, so the only timestamp is the producer's last export package
-// (`producer_last_package_at`). A healthy export can hide a dead feed; per-source
-// freshness needs the deferred `source_monitors` stream.
+// Freshness uses a source's own last success when its producer reports one
+// (last_success_basis RUN_RECEIPT or OUTPUT_DERIVED). Otherwise it falls back to
+// the age of the producer's last export package, which is labelled as such: a
+// healthy export can hide a dead feed.
 import { MODULES } from "@/lib/federation";
 
 export const MONITOR_COLLECTION = "MonitoredSources";
@@ -35,18 +36,41 @@ export function monitorPath(monitorId) {
   return `/source-monitor/${encodeURIComponent(monitorId)}`;
 }
 
-function packageTime(row) {
-  const at = row?.producer_last_package_at ? Date.parse(row.producer_last_package_at) : NaN;
+// Where a source's last-success time comes from, as the producer reports it.
+// Rows read by the hub-side registry reader carry no basis: "Registry only".
+export const SUCCESS_BASIS_LABELS = {
+  RUN_RECEIPT: "Run receipt",
+  OUTPUT_DERIVED: "From outputs",
+  NOT_RECORDED: "Not recorded",
+};
+export const REGISTRY_ONLY = "Registry only";
+export const SUCCESS_BASES = [...Object.values(SUCCESS_BASIS_LABELS), REGISTRY_ONLY];
+
+export function successBasisLabel(row) {
+  return SUCCESS_BASIS_LABELS[row?.last_success_basis] || REGISTRY_ONLY;
+}
+
+function parseTime(value) {
+  const at = value ? Date.parse(value) : NaN;
   return Number.isFinite(at) ? at : null;
 }
 
-// Fresh: export age within the cadence window. Due: past one window. Stale: past
-// two. Static: the source does not recur. Unknown: no export timestamp, or a
-// cadence with no window (event-driven, manual, undeclared).
+// The time freshness is measured from: the source's own last success when the
+// producer reports one, else the producer's last export package.
+export function freshnessReference(row) {
+  const reported = row?.last_success_basis === "RUN_RECEIPT" || row?.last_success_basis === "OUTPUT_DERIVED";
+  const success = reported ? parseTime(row?.last_success_at) : null;
+  if (success !== null) return { at: success, kind: "last_success" };
+  return { at: parseTime(row?.producer_last_package_at), kind: "producer_export" };
+}
+
+// Fresh: age within the cadence window. Due: past one window. Stale: past two.
+// Static: the source does not recur. Unknown: no reference time, or a cadence with
+// no window (event-driven, manual, undeclared).
 export function freshnessState(row, now = Date.now()) {
   if (row?.cadence === "static") return "Static";
   const window = Number(row?.cadence_window_seconds);
-  const at = packageTime(row);
+  const { at } = freshnessReference(row);
   if (at === null || !(window > 0)) return "Unknown";
   const ageSeconds = (now - at) / 1000;
   if (ageSeconds > 2 * window) return "Stale";
@@ -54,10 +78,13 @@ export function freshnessState(row, now = Date.now()) {
   return "Fresh";
 }
 
-export function exportAgeDays(row, now = Date.now()) {
-  const at = packageTime(row);
+export function ageDays(row, now = Date.now()) {
+  const { at } = freshnessReference(row);
   return at === null ? null : Math.max(0, Math.floor((now - at) / 86400000));
 }
+
+// Kept for callers written against the producer-export-only model.
+export const exportAgeDays = ageDays;
 
 // rowMap for EntityLedger: adds the derived, filterable/sortable fields.
 export function withFreshness(now = Date.now()) {
@@ -67,7 +94,9 @@ export function withFreshness(now = Date.now()) {
       ...row,
       freshness,
       freshness_rank: FRESHNESS_RANK[freshness],
-      export_age_days: exportAgeDays(row, now),
+      freshness_kind: freshnessReference(row).kind,
+      age_days: ageDays(row, now),
+      success_basis: successBasisLabel(row),
     };
   };
 }

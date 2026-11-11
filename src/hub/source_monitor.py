@@ -3,9 +3,10 @@
 Each producer keeps its own registry of the sources it monitors, in its own
 shape (a CSV in moneysweep-pr, YAML in skywatcher-pr, JSON families in
 aguayluz-pr, ...). None of that crosses the federation contract: the frozen
-``federation_export_manifest`` carries seven canonical streams and no
-monitoring fields. ADR 0012 records this module as a scoped, temporary
-exception to the artifact-only boundary of ADR 0001:
+``federation_export_manifest`` carried seven canonical streams and no
+monitoring fields until ADR 0013 added the optional ``source_monitors``
+stream. ADR 0012 records this module as a scoped, temporary exception to
+the artifact-only boundary of ADR 0001:
 
 * **Read-only.** It reads registry files from producer checkouts in a
   workspace (the same ``--root`` layout ``hub maintenance`` and
@@ -16,7 +17,11 @@ exception to the artifact-only boundary of ADR 0001:
 * **Hub-derived, not a stream.** The output (``monitored_sources.jsonl`` plus
   ``monitored_sources_summary.json``) lands beside the aggregate and is loaded
   by ``hub ingest`` into the ``MonitoredSources`` collection. It is not added
-  to ``STREAM_TO_COLLECTION`` and no frozen schema changes.
+  to ``STREAM_TO_COLLECTION``.
+* **Superseded per producer (ADR 0013).** A producer that emits the
+  ``source_monitors`` federation stream is read from the stream instead: ingest
+  drops this module's rows for that producer. Remove a producer from
+  ``REGISTRIES`` once it emits the stream; delete this module when all six do.
 
 Freshness here is **producer-level**: the ``created_at`` of the producer's
 export-package manifest, the same field ``hub.federation_status`` reads. No

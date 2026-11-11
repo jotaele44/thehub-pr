@@ -1058,7 +1058,7 @@ test.describe('sky workspace', () => {
   });
 });
 
-// Source Monitor (ADR 0012): read-only MonitoredSources rows written by
+// Source Monitor (ADR 0012, ADR 0013): read-only MonitoredSources rows written by
 // `hub source-monitor` and loaded by `hub ingest`. Timestamps are relative to
 // now because freshness is computed against the viewer's clock.
 const daysAgo = (days) => new Date(Date.now() - days * 86400000).toISOString();
@@ -1134,6 +1134,30 @@ test.describe('source monitor', () => {
     const ovnis = page.getByRole('tabpanel', { name: 'Monitor' });
     await expect(ovnis.locator('tbody tr')).toHaveCount(1);
     await expect(ovnis).toContainText('AARO Case Archive');
+  });
+
+  test('a stream row is measured from its own last success (ADR 0013)', async ({ page }) => {
+    const streamRow = {
+      id: 'aguayluz-pr:nwps_gauges', monitor_id: 'aguayluz-pr:nwps_gauges', producer: 'aguayluz-pr',
+      source_id: 'nwps_gauges', name: 'NWPS river gauges', producer_family: 'HYDROMETEOROLOGY', evidence_tier: null,
+      cadence: 'realtime', cadence_window_seconds: 7200, status: 'unknown', origin: 'stream',
+      producer_last_package_at: daysAgo(30), last_success_basis: 'OUTPUT_DERIVED',
+      last_success_at: new Date(Date.now() - 3600 * 1000).toISOString(),
+      lineage: { registry_path: 'config/hydromet_sources.v1.json', adapter: 'source_monitors stream (producer export)' },
+    };
+    await mockApi(page, {
+      '/entities/MonitoredSources': [streamRow],
+      '/entities/SourceMonitorSummary': [{
+        id: 'source_monitor_summary', total: 1, error_count: 0, generated_at: daysAgo(0), stream_producers: ['aguayluz-pr'],
+        producers: { 'aguayluz-pr': { origin: 'stream', count: 1, package_created_at: daysAgo(30), registries: ['config/hydromet_sources.v1.json'], excluded: {}, errors: [] } },
+      }],
+    });
+    await page.goto('/source-monitor', { waitUntil: 'networkidle' });
+    await expect(page.locator('[data-origin="stream"]')).toHaveText('source_monitors stream');
+    const row = page.locator('table').last().locator('tbody tr').first();
+    // The package is 30 days old, but the source itself succeeded an hour ago.
+    await expect(row).toContainText('Fresh');
+    await expect(row.locator('[data-freshness-kind="last_success"]')).toHaveText('last success · from outputs');
   });
 
   test('a source dropped from its registry is reported, not substituted', async ({ page }) => {

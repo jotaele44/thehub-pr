@@ -22,6 +22,12 @@ const ROWS = [
     source_id: "usaspending_prime", name: "usaspending_prime", producer_family: "federal", evidence_tier: null,
     cadence: "weekly", cadence_window_seconds: 7 * 86400, status: "not_active", producer_last_package_at: ago(30),
   },
+  {
+    id: "aguayluz-pr:nwps_gauges", monitor_id: "aguayluz-pr:nwps_gauges", producer: "aguayluz-pr",
+    source_id: "nwps_gauges", name: "NWPS river gauges", producer_family: "HYDROMETEOROLOGY", evidence_tier: null,
+    cadence: "realtime", cadence_window_seconds: 7200, status: "unknown", producer_last_package_at: ago(30),
+    last_success_basis: "OUTPUT_DERIVED", last_success_at: new Date(NOW - 3600 * 1000).toISOString(), origin: "stream",
+  },
 ];
 
 function Where() {
@@ -60,12 +66,12 @@ describe("SourceMonitorLedger", () => {
     renderLedger();
     const body = screen.getAllByRole("rowgroup")[1];
     const rows = within(body).getAllByRole("row");
-    expect(rows).toHaveLength(2);
+    expect(rows).toHaveLength(3);
     // moneysweep: weekly window, 30 days old -> Stale; ovnis: yearly, 10 days -> Fresh.
     expect(within(rows[0]).getByText("moneysweep-pr")).toBeInTheDocument();
     expect(within(rows[0]).getByText("Stale")).toBeInTheDocument();
     expect(within(rows[0]).getByText("not active")).toBeInTheDocument();
-    expect(within(rows[1]).getByText("Fresh")).toBeInTheDocument();
+    expect(rows.slice(1).every((r) => within(r).queryByText("Fresh"))).toBe(true);
     expect(screen.getByRole("columnheader", { name: /producer$/i })).toBeInTheDocument();
   });
 
@@ -88,5 +94,28 @@ describe("SourceMonitorLedger", () => {
   it("has no detectable accessibility violations", async () => {
     const { container } = renderLedger();
     expect(await axe(container)).toHaveNoViolations();
+  });
+});
+
+
+describe("SourceMonitorLedger per-source freshness", () => {
+  beforeEach(() => {
+    vi.mocked(useEntityData).mockReturnValue({ rows: ROWS, create: vi.fn(), update: vi.fn(), saving: false, isLoading: false });
+  });
+
+  it("measures a stream row from its own last success and says so", () => {
+    renderLedger({ producer: "aguayluz-pr" });
+    const body = screen.getAllByRole("rowgroup")[1];
+    const [row] = within(body).getAllByRole("row");
+    // The package is 30 days old, but the source succeeded an hour ago.
+    expect(within(row).getByText("Fresh")).toBeInTheDocument();
+    expect(within(row).getByText("last success · from outputs")).toBeInTheDocument();
+  });
+
+  it("labels registry-reader rows as measured from the producer export", () => {
+    renderLedger({ producer: "moneysweep-pr" });
+    const body = screen.getAllByRole("rowgroup")[1];
+    const [row] = within(body).getAllByRole("row");
+    expect(within(row).getByText("producer export")).toBeInTheDocument();
   });
 });

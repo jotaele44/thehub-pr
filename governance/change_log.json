@@ -120,6 +120,20 @@
         "tests/test_check_docs_sync.py",
         "governance/change_log.json"
       ]
+    },
+    {
+      "date": "2026-11-11",
+      "summary": "federation_export_manifest 1.0.0 -> 1.1.0 (MINOR, per scripts/federation_contract_guard.py diff): files[].stream gains the optional source_monitors stream, and the new frozen schema federation_source_monitor 1.0.0 defines it (ADR 0013). Each row carries a per-source last_success_at with an explicit basis (RUN_RECEIPT, OUTPUT_DERIVED or NOT_RECORDED; NOT_RECORDED forces null), so the Hub can show per-source freshness instead of the producer-level export-age proxy of ADR 0012. Additive: every producer that does not emit the stream stays valid, and the Hub keeps its hub-side registry reader for those producers until each one emits. prii_export_utils 0.2.0 adds the shared row builder and the committed per-producer source_run_state.json helpers. The export-manifest schema is a federation template: the template and the hub's rendered copy changed together, and producers take it on their next template-drift pin move (aguayluz-pr first, as the stream's first emitter). No producer is re-pinned by this change.",
+      "files": [
+        "schemas/federation_source_monitor.schema.json",
+        "federation-templates/schemas/federation_export_manifest.schema.json",
+        "schemas/federation_export_manifest.schema.json",
+        "schemas/FROZEN.sha256",
+        "governance/contract_versions.json",
+        "governance/contract_fingerprints.json",
+        "governance/change_log.json",
+        "docs/adr/0013-source-monitors-stream.md"
+      ]
     }
   ]
 }
