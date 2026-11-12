@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
+import SourceMonitorLedger from "@/components/sources/SourceMonitorLedger";
 import MoneySweepFeedTab from "@/components/feed/MoneySweepFeedTab";
 import MoneySweepLeaderboardsTab from "@/components/feed/MoneySweepLeaderboardsTab";
 import StatusChip from "@/components/shared/StatusChip";
@@ -88,6 +89,7 @@ export default function MoneySweep() {
           <TabsTrigger value="contracts" className="min-h-11">Contracts</TabsTrigger>
           <TabsTrigger value="vendors" className="min-h-11">Vendors</TabsTrigger>
           <TabsTrigger value="flags" className="min-h-11">Anomaly Flags</TabsTrigger>
+          <TabsTrigger value="sources" className="min-h-11">Monitor</TabsTrigger>
         </TabsList>
         <TabsContent value="feed">
           <MoneySweepFeedTab />
@@ -114,6 +116,9 @@ export default function MoneySweep() {
             addLabel="New Flag" emptyTitle="No anomaly flags"
             emptyDescription="Anomaly detection requires contract/vendor-level enrichment not yet in the canonical federation export — data pending richer MoneySweep-PR intake."
             searchPlaceholder="Search flags…" />
+        </TabsContent>
+        <TabsContent value="sources">
+          <SourceMonitorLedger producer="moneysweep-pr" />
         </TabsContent>
       </Tabs>
     </div>

@@ -125,9 +125,9 @@ jobs:
       - name: Verify audit claims against the code
         run: python3 scripts/verify_audit.py
 
-  # Live cross-repository enforcement. Missing siblings, stale pins, divergent
+  # Immutable cross-repository snapshot. Missing siblings, stale pins, divergent
   # hashes, wrong defaults, or incompatible runtime contracts are hard failures.
-  # The six sibling repositories are public and are checked out read-only.
+  # The six sibling repositories are public and checked out at exact pinned commits.
   audit-claims-federation:
     runs-on: ubuntu-latest
     steps:
@@ -136,17 +136,17 @@ jobs:
         with:
           python-version: "3.12"
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with: { repository: jotaele44/skywatcher-pr, path: _federation/skywatcher-pr }
+        with: { repository: jotaele44/skywatcher-pr, ref: 4def79d5212ff9990e405c65964198401cde9ce0, path: _federation/skywatcher-pr }
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with: { repository: jotaele44/moneysweep-pr, path: _federation/moneysweep-pr }
+        with: { repository: jotaele44/moneysweep-pr, ref: c478c3a00d87d51e062df40f9be126d089416822, path: _federation/moneysweep-pr }
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with: { repository: jotaele44/spiderweb-pr, path: _federation/spiderweb-pr }
+        with: { repository: jotaele44/spiderweb-pr, ref: 0c66e13d14232c0d7cbcbc179b3655904777dc71, path: _federation/spiderweb-pr }
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with: { repository: jotaele44/centinelas-pr, path: _federation/centinelas-pr }
+        with: { repository: jotaele44/centinelas-pr, ref: 5342029030ddb4055c5666f2bfe72dfd3d584ce4, path: _federation/centinelas-pr }
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with: { repository: jotaele44/aguayluz-pr, path: _federation/aguayluz-pr }
+        with: { repository: jotaele44/aguayluz-pr, ref: 942eedf78191c5924a0539322cc063d5369e4637, path: _federation/aguayluz-pr }
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with: { repository: jotaele44/ovnis-pr, path: _federation/ovnis-pr }
+        with: { repository: jotaele44/ovnis-pr, ref: 7cae215582825dd9755c5a38d5b99aba86644759, path: _federation/ovnis-pr }
       - name: Verify audit claims across the federation
         run: python3 scripts/verify_audit.py --root _federation --require-all
       - name: Verify PR grid V2 consumer pin parity
