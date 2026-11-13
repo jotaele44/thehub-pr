@@ -1,0 +1,49 @@
+{
+  "schema": "thehub-landfill-ownership-decision-proposal/1",
+  "status": "PROPOSED",
+  "accepted": false,
+  "policy_authority": "jotaele44/thehub-pr",
+  "candidate_registry_producer": "jotaele44/aguayluz-pr",
+  "proposal_reference": {
+    "repository": "jotaele44/aguayluz-pr",
+    "pull_request": 403,
+    "head_sha": "93725524a4f48a884eef1c34bc78b5e09d218263"
+  },
+  "downstream_integration": {
+    "repository": "jotaele44/aguayluz-pr",
+    "pull_request": 404,
+    "head_sha": "cfaa83968a8bc28738f6bb5e81ded714d343b849",
+    "status": "DEPENDENCY_BLOCKED"
+  },
+  "authority_dependencies": {
+    "thehub_identity_adr_0009": "PROPOSED",
+    "thehub_imagery_adr_0006": "ACCEPTED_SCOPED_THEHUB_SKYWATCHER",
+    "spiderweb_imagery_boundary": "PROVISIONAL_UNADJUDICATED",
+    "solid_waste_denominator": "REGISTERED_NOT_EXHAUSTED"
+  },
+  "candidate_responsibilities": {
+    "landfill_site_registry": "jotaele44/aguayluz-pr",
+    "geospatial_discovery": "jotaele44/spiderweb-pr",
+    "contracts_and_funding": "jotaele44/moneysweep-pr",
+    "cross_producer_coordination": "jotaele44/thehub-pr"
+  },
+  "authorization": {
+    "canonical_promotion": false,
+    "cross_producer_identity_merge": false,
+    "merge": false,
+    "deploy": false,
+    "release": false,
+    "source_ownership_transfer": false
+  },
+  "required_gates": [
+    "HUB_ARCHITECTURE_DISPOSITION",
+    "AUTHORITATIVE_SOURCE_AND_IDENTITY_PROVENANCE",
+    "CRS_TEMPORAL_BYTE_RECEIPTS",
+    "REPOSITORY_SPECIFIC_REVIEWS",
+    "EXACT_HEAD_CI_SECURITY_GUI",
+    "QUALIFIED_MERGED_HEAD_REPLAY",
+    "SIX_CONSUMER_PIN_RECONCILIATION",
+    "THEHUB_LOCKSTEP"
+  ],
+  "certification": "WITHHELD"
+}
