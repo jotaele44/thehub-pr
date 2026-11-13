@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { formatClock, instantFrom, makeObserver, skyState } from '@/sky/astronomy';
@@ -8,6 +8,10 @@ import { ALTITUDE_RINGS, CARDINALS, CHART_RADIUS, chartBodies, chartTrack, kpSpa
 import { loadSpaceWeather } from '@/sky/spaceWeather';
 import SatellitesPanel from './SatellitesPanel';
 import { button, degrees, eventText, field, isoOf } from './format';
+
+// The exclusion engines (stars, SGP4 look-ups, aircraft tracks, terrain, the receipt) are a chunk of their own, read when the
+// Sky tab is opened, so the astronomical readout does not wait for them.
+const ExclusionPanel = lazy(() => import('./ExclusionPanel'));
 
 // The Sky workspace (directive §9; TWIN-008, 111..131): what is above an observer at a chosen UTC instant (Sun,
 // Moon, naked-eye planets, daylight class, rise and set), and the latest space weather. The observer, the time and
@@ -454,6 +458,9 @@ export default function SkyWorkspace() {
             status={satelliteQuery} snapshot={snapshot} passes={passes} tz={tz} shown={shown}
             onShowTrack={(next) => setShownPass(next && { ...next, observerKey, data: satelliteData })} onReload={reloadSatellites} reloadNote={reloadNote}
           />
+          <Suspense fallback={<p data-exclusion-loading className="text-sm text-muted-foreground">Loading the ordinary-explanations check…</p>}>
+            <ExclusionPanel observer={observer} instant={instant} satelliteData={satelliteData} />
+          </Suspense>
           <section data-sky-conventions className="rounded-md border border-border p-3 text-xs text-muted-foreground">
             <h4 className="mb-1 text-sm font-semibold text-foreground">Conventions</h4>
             <ul className="list-disc space-y-0.5 pl-4">
