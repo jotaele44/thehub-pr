@@ -910,7 +910,7 @@
       "classification": "client_only",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "Sky workspace at /skywatcher?view=sky (directive §9; TWIN-008, 029-033, 047-053, 106, 109, 111-115, 119, 120, 122-131; Phase 6, P6-A and P6-B). Computed entirely in the browser with astronomy-engine (held in tests to JPL Horizons and USNO values frozen with their tolerances): the Sun, the Moon and the five naked-eye planets for an explicit UTC instant and observer (default San Juan, labelled; never browser geolocation), rise, transit and set at a stated fixed UTC offset, daylight and twilight class, the Moon's phase, and a 2D all-sky chart (TWIN-120 is partial: no 3D dome). Space weather (Kp, solar-wind speed, IMF Bz) is read directly from NOAA SWPC, which answers cross-origin reads, and shown with its time, age and state; a product that cannot be read is unavailable, never zero. Satellites (P6-B; TWIN-042-046, 054, 055 as geometry only, 116): CelesTrak's current GP element sets (JSON, answers cross-origin reads, no key or credential) for the International Space Station, Hubble and the Chinese space station are read once and kept for two hours, never polled, and propagated in the browser with SGP4 (satellite.js, held in tests to the Vallado verification set and to an independent Skyfield/sgp4 reference): look angles, passes (rise, culmination, set), whether the Sun lights the satellite (cylindrical Earth shadow) and a visible-pass candidate label that is geometry only and never a brightness. The NORAD identity and element epoch are kept and shown with an age policy that lowers confidence and then refuses; an element set that did not load is listed as failed, never placed. The observer and the time live in the URL. No backend, no write, no producer call, no stored data.",
+      "rationale": "Sky workspace at /skywatcher?view=sky (directive §9; TWIN-008, 029-033, 047-053, 106, 109, 111-115, 119, 120, 122-131; Phase 6, P6-A, P6-B and P6-C; TWIN-117 partial, TWIN-118; FDX-032 to FDX-040). Computed entirely in the browser with astronomy-engine (held in tests to JPL Horizons and USNO values frozen with their tolerances): the Sun, the Moon and the five naked-eye planets for an explicit UTC instant and observer (default San Juan, labelled; never browser geolocation), rise, transit and set at a stated fixed UTC offset, daylight and twilight class, the Moon's phase, and a 2D all-sky chart (TWIN-120 is partial: no 3D dome). Space weather (Kp, solar-wind speed, IMF Bz) is read directly from NOAA SWPC, which answers cross-origin reads, and shown with its time, age and state; a product that cannot be read is unavailable, never zero. Satellites (P6-B; TWIN-042-046, 054, 055 as geometry only, 116): CelesTrak's current GP element sets (JSON, answers cross-origin reads, no key or credential) for the International Space Station, Hubble and the Chinese space station are read once and kept for two hours, never polled, and propagated in the browser with SGP4 (satellite.js, held in tests to the Vallado verification set and to an independent Skyfield/sgp4 reference): look angles, passes (rise, culmination, set), whether the Sun lights the satellite (cylindrical Earth shadow) and a visible-pass candidate label that is geometry only and never a brightness. The NORAD identity and element epoch are kept and shown with an age policy that lowers confidence and then refuses; an element set that did not load is listed as failed, never placed. The observer and the time live in the URL. No backend, no write, no producer call, no stored data. \"Rule out the ordinary\" (P6-C): a reported sight line is checked in the browser against the Sun, Moon, planets and 288 catalogue stars (held to the US Naval Observatory), the three satellites above, aircraft tracks the person loads from a CSV or GeoJSON file (read locally, never uploaded, with the source, altitude reference and unit declared), and the terrain horizon from NOAA CUDEM where it covers the observer (read from NOAA's public tiles, bare earth), with every check held to closed forms, to an independent Skyfield reference or to a second algorithm. The result is a sky-exclusion-v1 receipt, NOT_CERTIFIED, that lists geometric coincidences and never identifications, what was not checked, and what such a check can never rule in or out, downloaded as JSON with a recomputable SHA-256 digest. What is typed or loaded is held in the page only: nothing is stored, sent or made a case.",
       "frontend": {
         "routes": [
           "/skywatcher"
@@ -928,7 +928,26 @@
           "server/frontend/src/components/sky/format.js",
           "server/frontend/src/sky/satellites.js",
           "server/frontend/src/sky/satelliteElements.js",
-          "server/frontend/src/sky/satelliteView.js"
+          "server/frontend/src/sky/satelliteView.js",
+          "server/frontend/src/components/sky/ExclusionPanel.jsx",
+          "server/frontend/src/sky/exclusion/aircraftExclusion.js",
+          "server/frontend/src/sky/exclusion/aircraftTracks.js",
+          "server/frontend/src/sky/exclusion/celestialExclusion.js",
+          "server/frontend/src/sky/exclusion/clockAlignment.js",
+          "server/frontend/src/sky/exclusion/exclusionForm.js",
+          "server/frontend/src/sky/exclusion/exclusionView.js",
+          "server/frontend/src/sky/exclusion/frustum.js",
+          "server/frontend/src/sky/exclusion/geometry.js",
+          "server/frontend/src/sky/exclusion/horizon.js",
+          "server/frontend/src/sky/exclusion/lineOfSight.js",
+          "server/frontend/src/sky/exclusion/observation.js",
+          "server/frontend/src/sky/exclusion/reconstruction.js",
+          "server/frontend/src/sky/exclusion/refraction.js",
+          "server/frontend/src/sky/exclusion/runExclusion.js",
+          "server/frontend/src/sky/exclusion/satelliteExclusion.js",
+          "server/frontend/src/sky/exclusion/stars.js",
+          "server/frontend/src/sky/exclusion/terrain.js",
+          "server/frontend/src/sky/exclusion/starCatalog.json"
         ],
         "discoverability": [
           "server/frontend/src/pages/Skywatcher.jsx",
@@ -944,7 +963,26 @@
           "server/frontend/src/sky/satellites.test.js",
           "server/frontend/src/sky/satelliteElements.test.js",
           "server/frontend/src/sky/satelliteView.test.js",
-          "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx"
+          "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+          "server/frontend/src/components/sky/ExclusionPanel.test.jsx",
+          "server/frontend/src/sky/exclusion/aircraftExclusion.test.js",
+          "server/frontend/src/sky/exclusion/aircraftTracks.test.js",
+          "server/frontend/src/sky/exclusion/celestialExclusion.test.js",
+          "server/frontend/src/sky/exclusion/clockAlignment.test.js",
+          "server/frontend/src/sky/exclusion/exclusionForm.test.js",
+          "server/frontend/src/sky/exclusion/exclusionView.test.js",
+          "server/frontend/src/sky/exclusion/frustum.test.js",
+          "server/frontend/src/sky/exclusion/geometry.test.js",
+          "server/frontend/src/sky/exclusion/horizon.test.js",
+          "server/frontend/src/sky/exclusion/lineOfSight.test.js",
+          "server/frontend/src/sky/exclusion/observation.test.js",
+          "server/frontend/src/sky/exclusion/reconstruction.test.js",
+          "server/frontend/src/sky/exclusion/refraction.test.js",
+          "server/frontend/src/sky/exclusion/runExclusion.test.js",
+          "server/frontend/src/sky/exclusion/satelliteExclusion.test.js",
+          "server/frontend/src/sky/exclusion/stars.test.js",
+          "server/frontend/src/sky/exclusion/terrain.test.js",
+          "server/frontend/src/sky/exclusion/terrainIntegration.test.js"
         ],
         "e2e": [
           "server/frontend/tests/visual/gui-parity.spec.js"
@@ -1019,6 +1057,32 @@
         ],
         "e2e": [
           "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "ecpaf-v21-shadow-policy-validator",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Internal read-only CI/governance ledger validator. Evaluates frozen policy and evidence bindings only; no operator endpoint, domain analysis, release authorization or user-facing workflow. This shadow pilot cannot certify or authorize protected operations.",
+      "analysis": {
+        "files": [
+          "scripts/ecpaf_v21.py"
+        ],
+        "symbols": [
+          "scripts/ecpaf_v21.py:ContractError",
+          "scripts/ecpaf_v21.py:canonical_sha",
+          "scripts/ecpaf_v21.py:load_json",
+          "scripts/ecpaf_v21.py:validate_policy",
+          "scripts/ecpaf_v21.py:validate_contract",
+          "scripts/ecpaf_v21.py:evaluate",
+          "scripts/ecpaf_v21.py:main"
+        ]
+      },
+      "tests": {
+        "contract": [
+          "tests/test_ecpaf_v21.py"
         ]
       }
     }

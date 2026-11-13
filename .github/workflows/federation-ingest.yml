@@ -1,8 +1,7 @@
 name: Federation ingest
 
-# Event-driven federation hop 2 (receiver): fires when a producer emits an
-# `<producer>-export` repository_dispatch after processing new upstream data, and
-# once a day on a schedule as a backstop.
+# Event-driven federation hop 2 (receiver): fires when a producer (moneysweep-pr)
+# emits a `moneysweep-export` repository_dispatch after processing new upstream data.
 # Runs the existing Hub CLI pipeline — fetch (clone producers) -> aggregate the
 # committed canonical packages -> correlate -> ingest into data/hub.db — and uploads
 # the aggregate + hub.db as artifacts. No Hub code change: producers are read from
@@ -16,15 +15,9 @@ on:
   repository_dispatch:
     # Any producer that lands a fresh canonical export triggers a Hub re-aggregate,
     # so hazard alerts (seismic, weather, contamination) reach users in minutes
-    # instead of waiting for the daily schedule below. Add new producers' export
-    # events here as they wire up their dispatch step. spiderweb-pr's
-    # centinelas-handoff.yml sends spiderweb-export; it was dropped until it was
-    # listed here.
-    types: [moneysweep-export, aguayluz-export, centinelas-export, spiderweb-export]
-  # Backstop: producers that never dispatch (or whose dispatch fails) still reach
-  # the Hub once a day.
-  schedule:
-    - cron: "41 10 * * *"
+    # instead of waiting for the Hub's own schedule. Add new producers' export
+    # events here as they wire up their dispatch step.
+    types: [moneysweep-export, aguayluz-export, centinelas-export]
   workflow_dispatch: {}
 
 # Wider than this repo's usual `contents: read` because this workflow is the one
@@ -112,38 +105,73 @@ jobs:
           python3 scripts/fixture_drift.py "$RUNNER_TEMP/baseline" data/aggregate \
             >> "$GITHUB_OUTPUT"
 
-      - name: Open or update the fixture-refresh PR
+      - name: Open fixture-refresh review PR with governed publisher
         if: steps.drift.outputs.drift == 'true'
         env:
-          # The built-in token is enough to open the PR, provided the repository
-          # allows it (Settings → Actions → General → "Allow GitHub Actions to
-          # create and approve pull requests"). GitHub deliberately does not run
-          # workflows on a PR that token creates, so that PR arrives without CI.
-          # SYNC_PAT — already this repo's cross-repo write secret — opens it
-          # instead and makes the checks run. Neither is required.
-          GH_TOKEN: ${{ secrets.SYNC_PAT || github.token }}
-          # Presence, not the value — the secret itself never reaches the shell.
+          # Do not fallback to GITHUB_TOKEN, whose bot identity cannot create PRs.
+          GH_TOKEN: ${{ secrets.SYNC_PAT }}
           HAS_SYNC_PAT: ${{ secrets.SYNC_PAT != '' }}
-          # docs-sync is the one check main requires, and nothing else runs it on
-          # this branch's pushes, so the job runs the checker itself and records
-          # the verdict on the head commit with its own token.
           STATUS_TOKEN: ${{ github.token }}
         run: |
-          # One standing branch, force-pushed on every refresh: an open refresh PR
-          # follows it, and a run that cannot open a PR leaves no new branch.
-          branch="fixture-refresh"
-          git config user.name  "prii-federation-bot"
+          # Fail closed before any local or remote branch mutation.
+          if [ "$HAS_SYNC_PAT" != "true" ]; then
+            echo "::error title=Fixture publisher unavailable::SYNC_PAT is absent; no branch was changed."
+            exit 1
+          fi
+          publisher="$(gh api user --jq '.login')" || {
+            echo "::error title=Invalid publisher::SYNC_PAT cannot authenticate; no branch was changed."
+            exit 1
+          }
+          if [ -z "$publisher" ] || [ "$publisher" = "github-actions[bot]" ]; then
+            echo "::error title=Invalid publisher principal::A non-bot authenticated publisher is required."
+            exit 1
+          fi
+          can_push="$(gh api "repos/$GITHUB_REPOSITORY" --jq '.permissions.push // false')" || {
+            echo "::error title=Publisher permission check failed::No branch was changed."
+            exit 1
+          }
+          if [ "$can_push" != "true" ]; then
+            echo "::error title=Publisher lacks push permission::No branch was changed."
+            exit 1
+          fi
+
+          # A failed PR publication must not leak run-specific branches. The
+          # EXIT trap deletes only the branch just pushed by this workflow.
+          # Never force-push an existing review head, particularly PR #401.
+          unpublished_branch=""
+          cleanup_unpublished_branch() {
+            status=$?
+            if [ "$status" -ne 0 ] && [ -n "$unpublished_branch" ]; then
+              git push origin ":refs/heads/$unpublished_branch" || \
+                echo "::warning title=Fixture cleanup required::Could not delete isolated branch $unpublished_branch; operator review required."
+            fi
+          }
+          trap cleanup_unpublished_branch EXIT
+          branch="fixture-refresh/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git config user.name "prii-federation-bot"
           git config user.email "noreply@github.com"
           git checkout -b "$branch"
-          # hub.db is a build artifact and gitignored; only the JSONL the fixture
-          # is rebuilt from, plus its manifest, belong in the commit.
           git add data/aggregate data/fixture.json
           git commit -m "data: refresh the committed federation fixture
 
-          Regenerated by federation-ingest.yml from the producers' own exports.
-          Opened because the record content changed, not merely the per-run
-          timestamps every export rewrites."
-          git push --force origin "HEAD:refs/heads/$branch"
+          Regenerated by federation-ingest.yml from the producers' exports.
+          Only content drift (not timestamp churn) creates this candidate."
+          git push origin "HEAD:refs/heads/$branch"
+          unpublished_branch="$branch"
+
+          body="$(printf '%s\n' \
+            "Review-only fixture refresh from ${GITHUB_WORKFLOW} run ${GITHUB_RUN_ID}, attempt ${GITHUB_RUN_ATTEMPT}." \
+            "" \
+            "Producer exports were re-run and the bounded fixture was rebuilt." \
+            "This candidate uses a unique branch; existing PR heads are unchanged." \
+            "Review data/fixture.json, source identifiers, denominator deltas and collisions." \
+            "No certification or merge is implied.")"
+          # Opening the PR precedes status posting. Any PR authorization failure
+          # leaves only a new isolated branch and never overwrites in-review data.
+          gh pr create --draft --base main --head "$branch" \
+            --title "Review bounded federation fixture refresh (${GITHUB_RUN_ID})" --body "$body"
+          # PR publication succeeded: preserve the branch for review.
+          unpublished_branch=""
 
           sha="$(git rev-parse HEAD)"
           if python3 tools/check_docs_sync.py --base "$GITHUB_SHA" --head "$sha"; then
@@ -156,37 +184,6 @@ jobs:
             -f state="$state" -f context=docs-sync \
             -f description="docs-sync checked by federation-ingest.yml" \
             -f target_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-
-          body="$(printf '%s\n' \
-            "Automated refresh from \`federation-ingest.yml\` (run ${{ github.run_id }})." \
-            "" \
-            "\`hub fetch --root ws --run\` re-ran every producer's \`export_canonical\`," \
-            "then \`scripts/build_hub_fixture.py\` rebuilt the bounded sample." \
-            "" \
-            "Opened because \`scripts/fixture_drift.py\` found a change in record" \
-            "content — the per-run \`created_at\`/\`extracted_at\` stamps are excluded," \
-            "so this is real movement in producer data, not export churn. Later" \
-            "refreshes force-push this branch, so the PR always shows the newest one." \
-            "" \
-            "Review \`data/fixture.json\` first: its collection counts and stream" \
-            "totals summarise what moved." \
-            "" \
-            "---" \
-            "_Generated by [Claude Code](https://claude.ai/code)_")"
-          existing="$(gh pr list --head "$branch" --base main --state open \
-            --json number --jq '.[0].number // empty')"
-          if [ -n "$existing" ]; then
-            gh pr edit "$existing" --body "$body"
-            echo "Updated the open fixture-refresh PR #$existing."
-          else
-            gh pr create --base main --head "$branch" \
-              --title "Refresh the committed federation fixture" --body "$body"
-          fi
-          if [ "$HAS_SYNC_PAT" != "true" ]; then
-            echo "::notice title=PR checks limited to docs-sync::Created with the \
-            built-in GITHUB_TOKEN, which does not trigger workflow runs; this job \
-            recorded docs-sync itself. Set SYNC_PAT to have the other checks run."
-          fi
 
       - name: Note that the fixture was already current
         if: steps.drift.outputs.drift == 'false'

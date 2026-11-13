@@ -53,6 +53,9 @@ export const SATELLITE_CONVENTIONS = Object.freeze({
 });
 
 const MS_PER_DAY = 86400e3;
+// How far below the minimum elevation a sampled peak can be and still hide the top of a pass between two samples: the
+// elevation of a low-Earth-orbit satellite changes by well under half a degree beyond the highest sample at a 20-second step.
+const GRAZING_MARGIN_DEGREES = 2;
 const DEFAULT_PASS_HOURS = 24;
 const MAX_PASS_HOURS = 72;
 
@@ -183,6 +186,14 @@ function geometryAt(element, instant, place) {
   return { ok: true, state, gmst, azimuth: normalizeDegrees(radiansToDegrees(angles.azimuth)), elevation: radiansToDegrees(angles.elevation), rangeKm: angles.rangeSat };
 }
 
+// Where the satellite is in the observer's sky, geometrically, and nothing more: no Sun, no shadow. The cheap call for
+// scanning a window of time (the exclusion engine); lookAt adds the sub-satellite point and the lit state.
+export function directionAt(element, instant, observer) {
+  const geometry = geometryAt(element, instant, makeObserver(observer));
+  if (!geometry.ok) return geometry;
+  return Object.freeze({ ok: true, time: geometry.state.time, azimuth: geometry.azimuth, elevation: geometry.elevation, rangeKm: geometry.rangeKm, age: geometry.state.age });
+}
+
 // Where the satellite is in the observer's sky, and whether the Sun lights it.
 export function lookAt(element, instant, observer) {
   const geometry = geometryAt(element, instant, makeObserver(observer));
@@ -267,14 +278,30 @@ export function findPasses(element, observer, start, { hours = DEFAULT_PASS_HOUR
   const to = (() => { let t = endMs; if (above(t) >= 0) { while (above(t + step) >= 0 && t - endMs < lookback) t += step; t += step; } return t; })();
 
   const crossings = [];
+  const samples = [{ ms: from, elevation: elevationAt(from) }];
   let previous = from;
-  let previousUp = above(previous) >= 0;
+  let previousUp = samples[0].elevation >= minElevation;
   for (let t = from + step; t <= to; t += step) {
-    const up = above(t) >= 0;
+    const elevation = elevationAt(t);
+    samples.push({ ms: t, elevation });
+    const up = elevation >= minElevation;
     if (up !== previousUp) crossings.push({ rising: up, ms: bisect(above, previous, t) });
     previous = t;
     previousUp = up;
   }
+  // A pass that clears the minimum for less than one step can fall between two samples that are both below it, so the
+  // sign test above never sees it. A pass is one hump in the elevation, so a sampled local maximum that is below the
+  // minimum but close to it may hide the top of such a hump: find the true top between its neighbours, and if that clears
+  // the minimum, add the rise and the set around it.
+  for (let i = 1; i + 1 < samples.length; i += 1) {
+    const [before, here, after] = [samples[i - 1], samples[i], samples[i + 1]];
+    if (before.elevation >= minElevation || here.elevation >= minElevation || after.elevation >= minElevation) continue;
+    if (!(here.elevation > before.elevation && here.elevation >= after.elevation)) continue;
+    if (here.elevation < minElevation - GRAZING_MARGIN_DEGREES) continue;
+    const top = peak(elevationAt, before.ms, after.ms);
+    if (above(top) >= 0) crossings.push({ rising: true, ms: bisect(above, before.ms, top) }, { rising: false, ms: bisect(above, top, after.ms) });
+  }
+  crossings.sort((x, y) => x.ms - y.ms);
   if (broken) return broken;
 
   const windows = [];

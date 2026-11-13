@@ -1,0 +1,4184 @@
+{
+  "schema_version": "ecpaf-execution-baseline/2.1",
+  "retrieved_utc": "2026-11-04T15:08:05.197Z",
+  "scope": "Seven canonical core repositories plus adjacent Mucaro AI; no core membership change",
+  "identity_basis": "Authenticated GitHub repository IDs and canonical URLs; exact branch Git objects",
+  "repositories": [
+    {
+      "repo": "spiderweb-pr",
+      "repository_id": "1111911635",
+      "repository_full_name": "jotaele44/spiderweb-pr",
+      "remote_url": "https://github.com/jotaele44/spiderweb-pr.git",
+      "role": "CORE",
+      "head": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+      "tree": "38b92a8f2b0db4ec6c987d974e8d737f792a2e6b",
+      "protected": true,
+      "reported_protection": {
+        "enabled": true,
+        "required_status_checks": {
+          "enforcement_level": "non_admins",
+          "contexts": [
+            "test (3.11)",
+            "test (3.12)",
+            "lint",
+            "release-check",
+            "docs-sync"
+          ],
+          "checks": [
+            {
+              "context": "test (3.11)",
+              "app_id": 15368
+            },
+            {
+              "context": "test (3.12)",
+              "app_id": 15368
+            },
+            {
+              "context": "lint",
+              "app_id": 15368
+            },
+            {
+              "context": "release-check",
+              "app_id": 15368
+            },
+            {
+              "context": "docs-sync",
+              "app_id": 15368
+            }
+          ]
+        }
+      },
+      "branch_count": 62,
+      "branch_inventory_complete": true,
+      "open_pr_count": 23,
+      "open_prs": [
+        {
+          "number": 444,
+          "head": "eb1f8240fbe1daf522544bbbbbbf3d56dfd4ba3b",
+          "draft": true
+        },
+        {
+          "number": 443,
+          "head": "96f2e7a6a28b10d73a11d86f8e3b04c91d1d8d31",
+          "draft": true
+        },
+        {
+          "number": 442,
+          "head": "1fbe06ec3b72cfb51407a2d9a55e7f2163ac31aa",
+          "draft": true
+        },
+        {
+          "number": 439,
+          "head": "27f8ef2179c58cb10d9fdc48aab7d2ea80a90ea7",
+          "draft": true
+        },
+        {
+          "number": 437,
+          "head": "2606f4a6604257dc0588ebe170f38ad9ab02227f",
+          "draft": false
+        },
+        {
+          "number": 436,
+          "head": "f6b0506681414b40d3214af399333dea5a9dacf1",
+          "draft": false
+        },
+        {
+          "number": 435,
+          "head": "c2da18564791a7a25596d1f73e4344384bbf69d9",
+          "draft": true
+        },
+        {
+          "number": 433,
+          "head": "5568992859eead37cb9ac49ec426d6c089bba111",
+          "draft": true
+        },
+        {
+          "number": 430,
+          "head": "0691678c1eeb37ff6a77681e0f218da6f400b692",
+          "draft": true
+        },
+        {
+          "number": 429,
+          "head": "a72d5738c5ead601da54196d5d22472fb7effc23",
+          "draft": true
+        },
+        {
+          "number": 428,
+          "head": "1cf64f4a7f50e21d78254f7ee91622472b7d4c5e",
+          "draft": true
+        },
+        {
+          "number": 426,
+          "head": "a15ffad00a696150604998de14683f0da4f9562a",
+          "draft": true
+        },
+        {
+          "number": 425,
+          "head": "5cddc081c66e6ccd3c7ee732eb501954226c5c76",
+          "draft": false
+        },
+        {
+          "number": 419,
+          "head": "9dd70fe138088ad616e7fd5ceaca7195506e0d1f",
+          "draft": true
+        },
+        {
+          "number": 414,
+          "head": "1d037bdabb2c563fd965bbf325893b6a4baf4a96",
+          "draft": true
+        },
+        {
+          "number": 410,
+          "head": "6a5a80d6d163d25110032a2b9ca035365db59898",
+          "draft": false
+        },
+        {
+          "number": 408,
+          "head": "0a145092618b86888f683eb2feb8834c8e1a7e35",
+          "draft": true
+        },
+        {
+          "number": 387,
+          "head": "de1282ff61c9cfa37b1b002015589a720226794e",
+          "draft": true
+        },
+        {
+          "number": 381,
+          "head": "44be37a7490564148bc6f4c3f3116524ff435cfa",
+          "draft": false
+        },
+        {
+          "number": 380,
+          "head": "72cdff5de9120cee510b3c3261a10be13cf9f9a0",
+          "draft": false
+        },
+        {
+          "number": 379,
+          "head": "ba3fe55de066d4776d98236140366db9e27a9143",
+          "draft": false
+        },
+        {
+          "number": 378,
+          "head": "a63cb2d8530610f3c493ada58dfb4b6ed6211e2a",
+          "draft": false
+        },
+        {
+          "number": 375,
+          "head": "34e36bd1b32ca055cb4e5620261932b56b7e6313",
+          "draft": false
+        }
+      ],
+      "check_run_total": 43,
+      "check_run_returned": 43,
+      "latest_check_summaries": [
+        {
+          "id": 126209307786,
+          "name": "release-check",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126209307786",
+          "started_at": "2026-11-03T21:13:26Z",
+          "completed_at": "2026-11-03T21:13:25Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208480699,
+          "name": "drift",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579810/job/126208480699",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:34Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479629,
+          "name": "lint",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479629",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:59Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479544,
+          "name": "test-gebco (3.12)",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479544",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:13Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479524,
+          "name": "data-policy-lint",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479524",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:08Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479475,
+          "name": "frontend",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479475",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:40Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479424,
+          "name": "lock",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479424",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:10Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479360,
+          "name": "install-matrix (airspace)",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479360",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:33Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479310,
+          "name": "install-matrix (gebco)",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479310",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:36Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479262,
+          "name": "install-matrix (earthgpt)",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479262",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:42Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479257,
+          "name": "test (3.11)",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479257",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:13:25Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479208,
+          "name": "install-matrix (server)",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479208",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:29Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479195,
+          "name": "security-audit",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479195",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:13Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479151,
+          "name": "install-matrix (federation)",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479151",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:27Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479119,
+          "name": "test-gebco (3.11)",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208479119",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:32Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208479090,
+          "name": "spatial-index-gates",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579872/job/126208479090",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:12:13Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126208478773,
+          "name": "test (3.12)",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41719579807/job/126208478773",
+          "started_at": "2026-11-03T21:11:56Z",
+          "completed_at": "2026-11-03T21:13:15Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125612171557,
+          "name": "certify-aguayluz-nwps",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41543186423/job/125612171557",
+          "started_at": "2026-11-02T23:09:43Z",
+          "completed_at": "2026-11-02T23:10:00Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125612171033,
+          "name": "certify-pr-grid-v2",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41543186423/job/125612171033",
+          "started_at": "2026-11-02T23:09:34Z",
+          "completed_at": "2026-11-02T23:10:06Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125612170625,
+          "name": "federation-compatibility",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41543186457/job/125612170625",
+          "started_at": "2026-11-02T23:09:33Z",
+          "completed_at": "2026-11-02T23:09:41Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125612170583,
+          "name": "PRII readiness smoke",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41543186288/job/125612170583",
+          "started_at": "2026-11-02T23:09:33Z",
+          "completed_at": "2026-11-02T23:10:13Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125612170330,
+          "name": "haf-contract",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41543186471/job/125612170330",
+          "started_at": "2026-11-02T23:09:34Z",
+          "completed_at": "2026-11-02T23:09:42Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125612170198,
+          "name": "boundary",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41543186447/job/125612170198",
+          "started_at": "2026-11-02T23:09:33Z",
+          "completed_at": "2026-11-02T23:09:39Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125612170175,
+          "name": "gitleaks",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41543186356/job/125612170175",
+          "started_at": "2026-11-02T23:09:33Z",
+          "completed_at": "2026-11-02T23:09:44Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125612170157,
+          "name": "Analyze python",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41543186340/job/125612170157",
+          "started_at": "2026-11-02T23:09:34Z",
+          "completed_at": "2026-11-02T23:11:08Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125612169749,
+          "name": "Analyze javascript-typescript",
+          "head_sha": "57e9f6a33a0651c966bb097259a4a8cd0786cd7c",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/spiderweb-pr/actions/runs/41543186340/job/125612169749",
+          "started_at": "2026-11-02T23:09:34Z",
+          "completed_at": "2026-11-02T23:11:22Z",
+          "app_id": 15368
+        }
+      ],
+      "check_summary_caveat": "Grouped by app ID and name for display only. Full check-run population and repeated names remain in frozen raw observations; this grouping is not a required gate denominator.",
+      "workflow_paths": [
+        {
+          "path": ".github/workflows/admin-control-plane.yml",
+          "git_blob": "3463ac12b37b420ee7e191d98590fa8bd0d5d09a"
+        },
+        {
+          "path": ".github/workflows/centinelas-handoff.yml",
+          "git_blob": "ec39b92749f2950c9174be1d0a2bea7b0696b278"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "git_blob": "ccb76973a29f100f33f5abc7e9b783dbe052efe5"
+        },
+        {
+          "path": ".github/workflows/codeql.yml",
+          "git_blob": "000ec2728d57ca08bf6078763096de4324fda126"
+        },
+        {
+          "path": ".github/workflows/desktop-build.yml",
+          "git_blob": "9bb8febe3f0e9da752aa5ab110ca3e99cb833d20"
+        },
+        {
+          "path": ".github/workflows/docs-sync.yml",
+          "git_blob": "4c9b31bd828ed13e6c33aa436d8e22ca2e0c23e3"
+        },
+        {
+          "path": ".github/workflows/ex1811-w00247-overlap-v0-1.yml",
+          "git_blob": "03d1cb319393fbed98cbb84b60baaecebe7ea7d7"
+        },
+        {
+          "path": ".github/workflows/federation-compatibility.yml",
+          "git_blob": "9f7c4a142765649127d96d9fec6028f2377d693f"
+        },
+        {
+          "path": ".github/workflows/federation-spatial-index.yml",
+          "git_blob": "ae6b20bbe5d047f798c8b5610d4c26b0aa092919"
+        },
+        {
+          "path": ".github/workflows/foia-canary-intake.yml",
+          "git_blob": "a898a157bda193266698da20889a8df5ddb0f98e"
+        },
+        {
+          "path": ".github/workflows/foia-canary-static.yml",
+          "git_blob": "474cb8f2e2de7912bf98e4d5ed3015fd4bcf3d98"
+        },
+        {
+          "path": ".github/workflows/guayama-bag-crossvalidation-v0-4.yml",
+          "git_blob": "3ebb07ab1a0ff5a304f2a4217fdf737e6197e2a7"
+        },
+        {
+          "path": ".github/workflows/guayama-marine-alternates-v0-3.yml",
+          "git_blob": "1dd8595322313f33aae70918162d6312d68a689a"
+        },
+        {
+          "path": ".github/workflows/guayama-marine-products-v0-2.yml",
+          "git_blob": "bcb51ad69c7beef5118e4139b5a6c5c747790e83"
+        },
+        {
+          "path": ".github/workflows/guayama-second-sensor-v0-5.yml",
+          "git_blob": "cc96ba349ac294f0ee3c4c1e7791b708913aaf66"
+        },
+        {
+          "path": ".github/workflows/gui-runtime-matrix.yml",
+          "git_blob": "6b8e186c147edc9dd7c89ede8d6b6c62452bad62"
+        },
+        {
+          "path": ".github/workflows/haf-contract.yml",
+          "git_blob": "279d34fe81292c936977468e8547afbd01ab3f73"
+        },
+        {
+          "path": ".github/workflows/jp-flood-certification-v3.yml",
+          "git_blob": "710c1d0fe7829b52d9b4b0fd18a454af7c4a23b4"
+        },
+        {
+          "path": ".github/workflows/jp-flood-v3-live-drift.yml",
+          "git_blob": "f06fa9e790acc2d9c4265a96e68f44cfd4de0035"
+        },
+        {
+          "path": ".github/workflows/location-query-runtime-closure.yml",
+          "git_blob": "8354720c6225e9d3951d97ef8d0970454a33d4ca"
+        },
+        {
+          "path": ".github/workflows/maintenance.yml",
+          "git_blob": "3ac4c221f023871d6efe7eafbf57f39fb66ec224"
+        },
+        {
+          "path": ".github/workflows/martin-canary.yml",
+          "git_blob": "c11bb2fcfc6e3c4d074b67ba2fe2f955ce664671"
+        },
+        {
+          "path": ".github/workflows/martin-publication-contract.yml",
+          "git_blob": "b5adee2ffffaa83ea6e21a069231764617a3d175"
+        },
+        {
+          "path": ".github/workflows/pip-audit.yml",
+          "git_blob": "2f6a175c2da0ac40121bf70bfd85d9bde8aad552"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-acquire.yml",
+          "git_blob": "2ad8f57e1ae05627a4be6fb55f9c9cd70936cfd6"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-cusp.yml",
+          "git_blob": "c0d1e8baece156be90a2e8947249addcf3378de1"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-historical.yml",
+          "git_blob": "630241f7c6551602e5e64dc70c1cb5288db092a2"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-noaa-historical-geometry.yml",
+          "git_blob": "ee4d784b6d15d40a20112684c4cc13b67c788514"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-noaa-historical.yml",
+          "git_blob": "083435a12a3061c0fc272d72777f2ffa564fa2e2"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-noaa-project-geometry.yml",
+          "git_blob": "346aa867611f4fbdb3704120f819bee8b5a19fb8"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-noaa-projects.yml",
+          "git_blob": "b490e5bfb378d6995f8d7deb21a6134bd504d5d3"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-nsde-app.yml",
+          "git_blob": "720ef22f80a9993ea2d2e4572b290c077f7cbbdc"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-preserve-evidence.yml",
+          "git_blob": "39166a576df21c887cf8548dbb98d173e0fe6866"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-provider-gates.yml",
+          "git_blob": "0469bd686ab5aca1fad3e120a191934d5c2ed1b5"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-residual.yml",
+          "git_blob": "a0d070cd4d36a60f1ecd388aa4a4654a29e05c36"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-sige-municipality-residual.yml",
+          "git_blob": "c73122d52abc5551cf24cd181f7653caa79e45fe"
+        },
+        {
+          "path": ".github/workflows/pr-archipelago-sige-rest.yml",
+          "git_blob": "5dc34b9655328906c102218fdbaa4a99d1536c7e"
+        },
+        {
+          "path": ".github/workflows/pr-grid-v2-certification.yml",
+          "git_blob": "268da80b9aaf5369ed0c8686e9555d123f7465f9"
+        },
+        {
+          "path": ".github/workflows/pr-hydrography.yml",
+          "git_blob": "039bce70ae4626bfbeeaf2ead6b4f3f9a7750f7e"
+        },
+        {
+          "path": ".github/workflows/prii-smoke.yml",
+          "git_blob": "c3a71397293f69c51a20d02203c554b4218e56c9"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "git_blob": "c2ddf9828d7628cc8745a283fa2cc7e663712a5f"
+        },
+        {
+          "path": ".github/workflows/repo-readiness-policy.yml",
+          "git_blob": "34964d66ac44aa8c4f6bb0ea9609279d88de7f5c"
+        },
+        {
+          "path": ".github/workflows/secret-scan.yml",
+          "git_blob": "fac2f625283d5f4064336a1866b3ce21fc7852d1"
+        },
+        {
+          "path": ".github/workflows/subsurface-santiago-acceptance.yml",
+          "git_blob": "0c8fcce9ddd7b8162f7b03cbd8e46fc6fc5daa85"
+        },
+        {
+          "path": ".github/workflows/template-drift.yml",
+          "git_blob": "b8dcac93456e7b0c432d9a7c4232148a9605d0b6"
+        },
+        {
+          "path": ".github/workflows/unified-skillpack-conformance.yml",
+          "git_blob": "c8ffe7701b3d8abc22826bbf91d596c9af88ccc5"
+        },
+        {
+          "path": ".github/workflows/w00247-bag-v0-1.yml",
+          "git_blob": "b81b2cef39a3cf281b3202841818068c1f5cc05e"
+        }
+      ],
+      "source_tree_complete": true,
+      "security_alert_inventory": "BLOCKED_ENDPOINT_UNSUPPORTED",
+      "protection_details": "NOT_FULLY_VERIFIED",
+      "ruleset_ids": []
+    },
+    {
+      "repo": "moneysweep-pr",
+      "repository_id": "1197338153",
+      "repository_full_name": "jotaele44/moneysweep-pr",
+      "remote_url": "https://github.com/jotaele44/moneysweep-pr.git",
+      "role": "CORE",
+      "head": "c478c3a00d87d51e062df40f9be126d089416822",
+      "tree": "427c941d970b6c2441165362dc7b243fd9d77696",
+      "protected": true,
+      "reported_protection": {
+        "enabled": true,
+        "required_status_checks": {
+          "enforcement_level": "non_admins",
+          "contexts": [
+            "mypy",
+            "ruff",
+            "lock-sync",
+            "test (3.13)",
+            "router-tests (3.13)"
+          ],
+          "checks": [
+            {
+              "context": "mypy",
+              "app_id": 15368
+            },
+            {
+              "context": "ruff",
+              "app_id": 15368
+            },
+            {
+              "context": "lock-sync",
+              "app_id": 15368
+            },
+            {
+              "context": "test (3.13)",
+              "app_id": 15368
+            },
+            {
+              "context": "router-tests (3.13)",
+              "app_id": 15368
+            }
+          ]
+        }
+      },
+      "branch_count": 91,
+      "branch_inventory_complete": true,
+      "open_pr_count": 39,
+      "open_prs": [
+        {
+          "number": 704,
+          "head": "7b859fb61221135c89fa1045ef8e63485080043c",
+          "draft": true
+        },
+        {
+          "number": 703,
+          "head": "ae86076a8b4faa619899c36eac334164251e0f8d",
+          "draft": true
+        },
+        {
+          "number": 702,
+          "head": "a98ddb6b9e5c2bb13fa9366688968ff2c9bb1418",
+          "draft": true
+        },
+        {
+          "number": 701,
+          "head": "eb0bf92a55566811507cc7dee0df42ea55f0fa62",
+          "draft": true
+        },
+        {
+          "number": 699,
+          "head": "e61b4464852167f924fd0848934eef3028eea4dd",
+          "draft": true
+        },
+        {
+          "number": 697,
+          "head": "9685f755048cb1a42cd0111a2d807a34a31db034",
+          "draft": true
+        },
+        {
+          "number": 696,
+          "head": "012d2cea3840d3a42e60da4e59c23b1eb98ced60",
+          "draft": true
+        },
+        {
+          "number": 694,
+          "head": "b590c270dfcba2e2931743fb9b58665e74e34dcb",
+          "draft": true
+        },
+        {
+          "number": 693,
+          "head": "46e1d1315586c02790652b061c6a2876e9f37706",
+          "draft": false
+        },
+        {
+          "number": 692,
+          "head": "b229125d723d12c47b9527222e53c23671a5e4a0",
+          "draft": true
+        },
+        {
+          "number": 691,
+          "head": "e6559f0da264fd7a7a592ee495d01658c6d2e9d1",
+          "draft": false
+        },
+        {
+          "number": 690,
+          "head": "0dda98e655bd2475105649a9cc13e236934dec1d",
+          "draft": true
+        },
+        {
+          "number": 689,
+          "head": "de3b808d3b60e9c8aae60801abec4f892aa20b5b",
+          "draft": true
+        },
+        {
+          "number": 688,
+          "head": "6c4b5e5855b21ef604084a33a61e819694d8c55a",
+          "draft": true
+        },
+        {
+          "number": 687,
+          "head": "f625c2fecbdbc20286dd510e5baed159cb2af81a",
+          "draft": false
+        },
+        {
+          "number": 686,
+          "head": "1b0e546398bf0b504e131ae949640d5bf3aff00d",
+          "draft": true
+        },
+        {
+          "number": 685,
+          "head": "981eed12af8558fbbdba23f731f7582e33cbb2b4",
+          "draft": true
+        },
+        {
+          "number": 684,
+          "head": "73a98ffaacd7c565df25dea5d46d517bdd426dbc",
+          "draft": false
+        },
+        {
+          "number": 681,
+          "head": "1ea7a093787acb821e56e0e6891cfa7d63245476",
+          "draft": true
+        },
+        {
+          "number": 677,
+          "head": "0bbc333139d6e1eb880bebbe3a5899a1996292bb",
+          "draft": true
+        },
+        {
+          "number": 676,
+          "head": "767c5c9d5b33cddbb00fc08ae89a947f9ec72ebf",
+          "draft": true
+        },
+        {
+          "number": 674,
+          "head": "93d4c68d2ab9ecfd95024a6df9da8159b84436dc",
+          "draft": true
+        },
+        {
+          "number": 673,
+          "head": "8dac887fe90a03f9ef22b66c9c50d8a54be560c2",
+          "draft": true
+        },
+        {
+          "number": 672,
+          "head": "3171d5a99701db71c4b1480c4e19a3a008522944",
+          "draft": false
+        },
+        {
+          "number": 661,
+          "head": "db64d396948d1cdc753fc627ab81c57830f49fa6",
+          "draft": true
+        },
+        {
+          "number": 655,
+          "head": "01d683b9d17b740cf7a0a7d1f924be983e0f17b3",
+          "draft": true
+        },
+        {
+          "number": 645,
+          "head": "7c23d7a1bebc0e0bfa75acba63631722aea36356",
+          "draft": true
+        },
+        {
+          "number": 644,
+          "head": "903cde5ad906b82b7a3c259bd4458fa4c92bfc5f",
+          "draft": true
+        },
+        {
+          "number": 639,
+          "head": "68fffd5f2901ca94478c16ca3546c424c7c081a6",
+          "draft": true
+        },
+        {
+          "number": 637,
+          "head": "fc2ec8b8cddf1872e8a771adce1385f2eb009694",
+          "draft": false
+        },
+        {
+          "number": 631,
+          "head": "562c2921edbac2c4b9d681d0cbe2207af42c4187",
+          "draft": true
+        },
+        {
+          "number": 630,
+          "head": "5e5c6564c67b3373eeac95db0ecfc2fd2df6c590",
+          "draft": true
+        },
+        {
+          "number": 622,
+          "head": "67347dad50add69d18f76902bad00a67d278ee7b",
+          "draft": true
+        },
+        {
+          "number": 620,
+          "head": "bf30e7ed893304d80d7feb931ef4ebba7c00a377",
+          "draft": true
+        },
+        {
+          "number": 612,
+          "head": "c7d68ca84fda459b1506c333f0b675794a66220e",
+          "draft": false
+        },
+        {
+          "number": 608,
+          "head": "7ff45cf48d01b3f4d6f8c8a17c444da892cda7e2",
+          "draft": false
+        },
+        {
+          "number": 606,
+          "head": "235e76124735336ace9476baedff2befbe2f0fd8",
+          "draft": false
+        },
+        {
+          "number": 605,
+          "head": "91a2a4aa26f5e6cad510e0d6a60f18d9092632e7",
+          "draft": false
+        },
+        {
+          "number": 602,
+          "head": "29a20506efd382a05381832fd943546f252b52ba",
+          "draft": true
+        }
+      ],
+      "check_run_total": 117,
+      "check_run_returned": 117,
+      "latest_check_summaries": [
+        {
+          "id": 126532248282,
+          "name": "Scan committed dropzones",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41817603836/job/126532248282",
+          "started_at": "2026-11-04T10:57:05Z",
+          "completed_at": "2026-11-04T10:57:34Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126529468581,
+          "name": "Freshness report",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41816799638/job/126529468581",
+          "started_at": "2026-11-04T10:50:03Z",
+          "completed_at": "2026-11-04T10:50:34Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126445632524,
+          "name": "GUI Reachability E2E",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41791453829/job/126445632524",
+          "started_at": "2026-11-04T07:19:38Z",
+          "completed_at": "2026-11-04T07:19:38Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126445551932,
+          "name": "Federation GUI Capability Parity",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41791453829/job/126445551932",
+          "started_at": "2026-11-04T07:19:27Z",
+          "completed_at": "2026-11-04T07:19:38Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237700334,
+          "name": "Guide bounded live freeze (one-shot branch gate)",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "skipped",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994051/job/126237700334",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:38Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237699985,
+          "name": "pre-commit",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994363/job/126237699985",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237699959,
+          "name": "lock-sync",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994159/job/126237699959",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237699851,
+          "name": "drift",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994361/job/126237699851",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237699560,
+          "name": "mypy",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994394/job/126237699560",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237699490,
+          "name": "Diagnostic status and phase locks",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994302/job/126237699490",
+          "started_at": "2026-11-03T22:10:27Z",
+          "completed_at": "2026-11-03T22:11:23Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237699442,
+          "name": "ruff",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994354/job/126237699442",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237698942,
+          "name": "Compile and pytest",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994051/job/126237698942",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237698941,
+          "name": "Regenerate top-form outputs and assert no diff",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994420/job/126237698941",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237698649,
+          "name": "test (3.13)",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994242/job/126237698649",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237698519,
+          "name": "diagnostic-smoke",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994073/job/126237698519",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126237698326,
+          "name": "frontend",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "cancelled",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41727994051/job/126237698326",
+          "started_at": "2026-11-03T22:07:38Z",
+          "completed_at": "2026-11-03T22:07:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125446001192,
+          "name": "Dependabot",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41494563652/job/125446001192",
+          "started_at": "2026-11-02T17:48:23Z",
+          "completed_at": "2026-11-02T17:51:21Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125445242924,
+          "name": "gitleaks",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41494346486/job/125445242924",
+          "started_at": "2026-11-02T17:46:47Z",
+          "completed_at": "2026-11-02T17:46:57Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125445241085,
+          "name": "Analyze javascript-typescript",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41494346701/job/125445241085",
+          "started_at": "2026-11-02T17:46:47Z",
+          "completed_at": "2026-11-02T17:47:53Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125445240772,
+          "name": "Block non-validated master promotion",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41494346673/job/125445240772",
+          "started_at": "2026-11-02T17:46:47Z",
+          "completed_at": "2026-11-02T17:47:00Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125445240656,
+          "name": "Analyze python",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41494346701/job/125445240656",
+          "started_at": "2026-11-02T17:46:47Z",
+          "completed_at": "2026-11-02T17:49:19Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125445239866,
+          "name": "boundary",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41494346485/job/125445239866",
+          "started_at": "2026-11-02T17:46:50Z",
+          "completed_at": "2026-11-02T17:46:59Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125445239726,
+          "name": "federation-compatibility",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41494346559/job/125445239726",
+          "started_at": "2026-11-02T17:46:50Z",
+          "completed_at": "2026-11-02T17:46:59Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125445239607,
+          "name": "haf-contract",
+          "head_sha": "c478c3a00d87d51e062df40f9be126d089416822",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/moneysweep-pr/actions/runs/41494346489/job/125445239607",
+          "started_at": "2026-11-02T17:46:47Z",
+          "completed_at": "2026-11-02T17:47:01Z",
+          "app_id": 15368
+        }
+      ],
+      "check_summary_caveat": "Grouped by app ID and name for display only. Full check-run population and repeated names remain in frozen raw observations; this grouping is not a required gate denominator.",
+      "workflow_paths": [
+        {
+          "path": ".github/workflows/admin-control-plane.yml",
+          "git_blob": "3463ac12b37b420ee7e191d98590fa8bd0d5d09a"
+        },
+        {
+          "path": ".github/workflows/campaign-finance-live-materialization.yml",
+          "git_blob": "d7e593c0ded79d24b5cee75b4bec28ef7822ffe0"
+        },
+        {
+          "path": ".github/workflows/capital-control-sec-materialization.yml",
+          "git_blob": "fe664d2c27b0a6c219278d8073f95e73fa2f2e3f"
+        },
+        {
+          "path": ".github/workflows/centinelas-handoff.yml",
+          "git_blob": "3cda7092de731f4a8134d7062f6678c207124243"
+        },
+        {
+          "path": ".github/workflows/centinelas-intake.yml",
+          "git_blob": "4e21a56f0ce3245d5d9f3379bdae9638de91d588"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "git_blob": "533038abc334adb04dc8ee1c6c7c6da62629fd63"
+        },
+        {
+          "path": ".github/workflows/codeql.yml",
+          "git_blob": "000ec2728d57ca08bf6078763096de4324fda126"
+        },
+        {
+          "path": ".github/workflows/desktop-build.yml",
+          "git_blob": "9935c9cfe3bc6d7075b29f0f080a95b03119859b"
+        },
+        {
+          "path": ".github/workflows/diagnostic-smoke.yml",
+          "git_blob": "70dca8889017ecb31b14b4822b5d02dde4a67610"
+        },
+        {
+          "path": ".github/workflows/docs-sync.yml",
+          "git_blob": "4c9b31bd828ed13e6c33aa436d8e22ca2e0c23e3"
+        },
+        {
+          "path": ".github/workflows/federal-publications.yml",
+          "git_blob": "d094bdc87153dd4d341b6b03d6896d9430296c04"
+        },
+        {
+          "path": ".github/workflows/federation-compatibility.yml",
+          "git_blob": "ac2887ff9e08e2ff1c72057daa86873835b52feb"
+        },
+        {
+          "path": ".github/workflows/federation-export.yml",
+          "git_blob": "3c1934a4b153822304088244809a9c7c2d042399"
+        },
+        {
+          "path": ".github/workflows/foia-canary-intake.yml",
+          "git_blob": "95f154daca0a3fe856b90482700957af1e726b8c"
+        },
+        {
+          "path": ".github/workflows/foia-canary-static.yml",
+          "git_blob": "be581a964a91ff932177cd6f418db91420d14af5"
+        },
+        {
+          "path": ".github/workflows/gui-capability-parity.yml",
+          "git_blob": "d47395ecddc1ea8a40e76b6b2a1e66cbae4970b4"
+        },
+        {
+          "path": ".github/workflows/haf-contract.yml",
+          "git_blob": "4ee0c94270022f3bb50e528c5093cc8026675f6b"
+        },
+        {
+          "path": ".github/workflows/highergov-fetch.yml",
+          "git_blob": "b1667c8db812b9ce7966448a076b07aa2297a712"
+        },
+        {
+          "path": ".github/workflows/intake-delivery.yml",
+          "git_blob": "0d7045cf66653fb808ac8a862036bef2facb69ff"
+        },
+        {
+          "path": ".github/workflows/lint.yml",
+          "git_blob": "29b1b6bbeab6984a8fd311f0b5bd3306a093d7e1"
+        },
+        {
+          "path": ".github/workflows/lockfile.yml",
+          "git_blob": "033bf4f34aac1319aebb1a1f4473a360484ce819"
+        },
+        {
+          "path": ".github/workflows/maintenance.yml",
+          "git_blob": "862efd1e4f0d299e06504c4e1446e06406094fc8"
+        },
+        {
+          "path": ".github/workflows/materialize-sources.yml",
+          "git_blob": "0283a11b5177398fd15211df92de4bc3b86a6199"
+        },
+        {
+          "path": ".github/workflows/moneysweep-federation-design-pilot.yml",
+          "git_blob": "0c245b3d0458280465269081757be5b7db90789d"
+        },
+        {
+          "path": ".github/workflows/mypy.yml",
+          "git_blob": "37e2261d4cef6e871ea15e900892c98aa01988aa"
+        },
+        {
+          "path": ".github/workflows/pip-audit.yml",
+          "git_blob": "fc7e78895ff37431426005b3f055428c76a777e2"
+        },
+        {
+          "path": ".github/workflows/pr-assistance-denominator.yml",
+          "git_blob": "4379dcfb445aed2b6b6a5e92259af2732c47b617"
+        },
+        {
+          "path": ".github/workflows/pr-assistance-format-preview.yml",
+          "git_blob": "701b04db47bb1ea702d1e4b446d2b69f839703c0"
+        },
+        {
+          "path": ".github/workflows/pr-assistance-recovery.yml",
+          "git_blob": "6ea32ca1ed3274db28631284de71b3e405e0660a"
+        },
+        {
+          "path": ".github/workflows/pr-intake-router.yml",
+          "git_blob": "c38d8d0fcccfa815ab11fc0a8fba4749f768aee2"
+        },
+        {
+          "path": ".github/workflows/pre-commit.yml",
+          "git_blob": "a9f16ab4e2397d9bc72c857635a021c4aaff9a23"
+        },
+        {
+          "path": ".github/workflows/production-status-gate.yml",
+          "git_blob": "bd162c852438ff221ca6bdd97e4e5a1c51396277"
+        },
+        {
+          "path": ".github/workflows/promotion-guard.yml",
+          "git_blob": "4ae87012d8675a1f6130a24613bcaa25268be669"
+        },
+        {
+          "path": ".github/workflows/rebuild-prebuilt-dashboard.yml",
+          "git_blob": "480ca17ffaedfa4504d8b43c165e167851fa6cd4"
+        },
+        {
+          "path": ".github/workflows/registry-sync.yml",
+          "git_blob": "8d1c6eb127990dc00f1492766282daa4f6eae141"
+        },
+        {
+          "path": ".github/workflows/release-tag.yml",
+          "git_blob": "9931c40748055281cb4937e3bd1a165c86da8792"
+        },
+        {
+          "path": ".github/workflows/repro.yml",
+          "git_blob": "a1b4914da28acb3b671fee37b65857ba19d161d3"
+        },
+        {
+          "path": ".github/workflows/sam-opportunities-fetch.yml",
+          "git_blob": "216852cd8f22720f34dbe0414851f708729d6c3f"
+        },
+        {
+          "path": ".github/workflows/sec-ownership-golden-data-audit.yml",
+          "git_blob": "17f07182d85e9921d1bfc549859ddca673aed535"
+        },
+        {
+          "path": ".github/workflows/sec-ownership-issuer-certification.yml",
+          "git_blob": "599b8edc6859e1834123ea64fbe5078a250023ac"
+        },
+        {
+          "path": ".github/workflows/secret-scan.yml",
+          "git_blob": "fac2f625283d5f4064336a1866b3ce21fc7852d1"
+        },
+        {
+          "path": ".github/workflows/size-guard.yml",
+          "git_blob": "7ac2b23362ecf000a1053413caab967d7bce6d1b"
+        },
+        {
+          "path": ".github/workflows/skills-validation.yml",
+          "git_blob": "64f0fbaac2d6b170d2e7f74cabc85a8239303096"
+        },
+        {
+          "path": ".github/workflows/source-update-dispatch.yml",
+          "git_blob": "d7cabc6eba3c40dcefaadcc372f69e7d993f52ad"
+        },
+        {
+          "path": ".github/workflows/source-update-drop-scan.yml",
+          "git_blob": "8886863e78d43bce731c12638421f012b4fe91fe"
+        },
+        {
+          "path": ".github/workflows/source-update-freshness.yml",
+          "git_blob": "40c004c82bcfa33c1ea9aa4a310ec777032ab358"
+        },
+        {
+          "path": ".github/workflows/source-update-monthly.yml",
+          "git_blob": "24a19487430bb642381d5cdfb16f026a51a4e963"
+        },
+        {
+          "path": ".github/workflows/source-update-quarterly.yml",
+          "git_blob": "51bd84b05eccea7631f0cb1547a5365198189a5a"
+        },
+        {
+          "path": ".github/workflows/source-update-weekly.yml",
+          "git_blob": "c3fd08af7df73ce74dbcd00708002aabe234daf1"
+        },
+        {
+          "path": ".github/workflows/source-update-yearly.yml",
+          "git_blob": "b22b711440f18e6393dd05675a2849cf6a9022c0"
+        },
+        {
+          "path": ".github/workflows/template-drift.yml",
+          "git_blob": "efd51bcf9cadbcd4845972a7686d8f608ec71fbb"
+        },
+        {
+          "path": ".github/workflows/tests.yml",
+          "git_blob": "2674d288b55f19f04e9fc2c0b5a39dc6066242e7"
+        },
+        {
+          "path": ".github/workflows/unified-skillpack-conformance.yml",
+          "git_blob": "9ed0ea8d61a09f6417d6a05b3c215a462e93f448"
+        },
+        {
+          "path": ".github/workflows/workflow-static-validation.yml",
+          "git_blob": "11abdf3328674790a40a3fce28c09f3f7ad7d8d0"
+        }
+      ],
+      "source_tree_complete": true,
+      "security_alert_inventory": "BLOCKED_ENDPOINT_UNSUPPORTED",
+      "protection_details": "NOT_FULLY_VERIFIED",
+      "ruleset_ids": [
+        19913786
+      ]
+    },
+    {
+      "repo": "ovnis-pr",
+      "repository_id": "1252871400",
+      "repository_full_name": "jotaele44/ovnis-pr",
+      "remote_url": "https://github.com/jotaele44/ovnis-pr.git",
+      "role": "CORE",
+      "head": "7cae215582825dd9755c5a38d5b99aba86644759",
+      "tree": "54063397640e4ec3c0428dc2603cac7755f51174",
+      "protected": true,
+      "reported_protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "branch_count": 41,
+      "branch_inventory_complete": true,
+      "open_pr_count": 16,
+      "open_prs": [
+        {
+          "number": 198,
+          "head": "f4ed51e42492b63f31bc1a5ce522b1a5f57621c1",
+          "draft": true
+        },
+        {
+          "number": 195,
+          "head": "eb1fd04f10eb5632b161e407e337da0c436d5e23",
+          "draft": false
+        },
+        {
+          "number": 193,
+          "head": "d8039c873da3af5fb30f53facd41e2a7790539a6",
+          "draft": false
+        },
+        {
+          "number": 192,
+          "head": "2d14c0e6b1aee9dd5ebac3ae3b652ba5c1cb170d",
+          "draft": false
+        },
+        {
+          "number": 188,
+          "head": "223efe9a83ea72aa9ae92b476ad4739de054dc52",
+          "draft": true
+        },
+        {
+          "number": 186,
+          "head": "397fa8f5bee7462206e9cb18d3ebb4ee8e3cc427",
+          "draft": true
+        },
+        {
+          "number": 185,
+          "head": "ccf1401e3a2d4d06537aa32ecc8c2468a43806fa",
+          "draft": false
+        },
+        {
+          "number": 180,
+          "head": "6aa342b0227aceea11faeee39d1477f548948610",
+          "draft": false
+        },
+        {
+          "number": 177,
+          "head": "08acb1ccbb961d3509724ae299d5195406f86ea2",
+          "draft": true
+        },
+        {
+          "number": 165,
+          "head": "50d96e499c78f5b189896f47d430faadc95e0e46",
+          "draft": true
+        },
+        {
+          "number": 154,
+          "head": "8f87d01061b62c8cced8b5071edcc6b4734662c6",
+          "draft": false
+        },
+        {
+          "number": 153,
+          "head": "902788a1503be6d4f0a67618d50bd5eea2b19a51",
+          "draft": false
+        },
+        {
+          "number": 152,
+          "head": "38db03a96e33fd5637d3bd70ad1eaff984bff265",
+          "draft": false
+        },
+        {
+          "number": 150,
+          "head": "3686a53713219889779496354a94534b5811ebce",
+          "draft": false
+        },
+        {
+          "number": 149,
+          "head": "437bc612bdae2d007fb971b5e0606fddbfc553c4",
+          "draft": false
+        },
+        {
+          "number": 148,
+          "head": "260dfab949a26fefb2dac4195250e27509dc8aff",
+          "draft": false
+        }
+      ],
+      "check_run_total": 23,
+      "check_run_returned": 23,
+      "latest_check_summaries": [
+        {
+          "id": 126446898981,
+          "name": "GUI Reachability E2E",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41791860642/job/126446898981",
+          "started_at": "2026-11-04T07:23:04Z",
+          "completed_at": "2026-11-04T07:24:33Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126446838906,
+          "name": "Federation GUI Capability Parity",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41791860642/job/126446838906",
+          "started_at": "2026-11-04T07:22:54Z",
+          "completed_at": "2026-11-04T07:23:02Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125639194295,
+          "name": "drift",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41551277722/job/125639194295",
+          "started_at": "2026-11-03T00:13:22Z",
+          "completed_at": "2026-11-03T00:13:36Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630986613,
+          "name": "boundary",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548831142/job/125630986613",
+          "started_at": "2026-11-02T23:54:01Z",
+          "completed_at": "2026-11-02T23:54:08Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630985709,
+          "name": "semgrep / semgrep/baseline",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830864/job/125630985709",
+          "started_at": "2026-11-02T23:53:54Z",
+          "completed_at": "2026-11-02T23:54:28Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630984693,
+          "name": "validate (3.12)",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830417/job/125630984693",
+          "started_at": "2026-11-02T23:53:42Z",
+          "completed_at": "2026-11-02T23:54:14Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630984414,
+          "name": "validate (3.10)",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830417/job/125630984414",
+          "started_at": "2026-11-02T23:53:37Z",
+          "completed_at": "2026-11-02T23:54:11Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630984268,
+          "name": "validate (3.11)",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830417/job/125630984268",
+          "started_at": "2026-11-02T23:53:37Z",
+          "completed_at": "2026-11-02T23:54:03Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630984254,
+          "name": "validate",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830333/job/125630984254",
+          "started_at": "2026-11-02T23:54:16Z",
+          "completed_at": "2026-11-02T23:55:19Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630984253,
+          "name": "lint",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830333/job/125630984253",
+          "started_at": "2026-11-02T23:53:36Z",
+          "completed_at": "2026-11-02T23:54:17Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630984247,
+          "name": "lock",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830333/job/125630984247",
+          "started_at": "2026-11-02T23:54:13Z",
+          "completed_at": "2026-11-02T23:54:20Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630984130,
+          "name": "haf-contract",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830360/job/125630984130",
+          "started_at": "2026-11-02T23:53:36Z",
+          "completed_at": "2026-11-02T23:53:42Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630984075,
+          "name": "federation-compatibility",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830409/job/125630984075",
+          "started_at": "2026-11-02T23:53:36Z",
+          "completed_at": "2026-11-02T23:53:42Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630983943,
+          "name": "frontend",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830333/job/125630983943",
+          "started_at": "2026-11-02T23:53:54Z",
+          "completed_at": "2026-11-02T23:54:22Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630983726,
+          "name": "Analyze python",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830198/job/125630983726",
+          "started_at": "2026-11-02T23:53:39Z",
+          "completed_at": "2026-11-02T23:54:51Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630983401,
+          "name": "gitleaks",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830228/job/125630983401",
+          "started_at": "2026-11-02T23:53:36Z",
+          "completed_at": "2026-11-02T23:53:50Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630983372,
+          "name": "federation-lockstep",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830230/job/125630983372",
+          "started_at": "2026-11-02T23:53:36Z",
+          "completed_at": "2026-11-02T23:53:52Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630983300,
+          "name": "Analyze javascript-typescript",
+          "head_sha": "7cae215582825dd9755c5a38d5b99aba86644759",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/ovnis-pr/actions/runs/41548830198/job/125630983300",
+          "started_at": "2026-11-02T23:53:36Z",
+          "completed_at": "2026-11-02T23:54:51Z",
+          "app_id": 15368
+        }
+      ],
+      "check_summary_caveat": "Grouped by app ID and name for display only. Full check-run population and repeated names remain in frozen raw observations; this grouping is not a required gate denominator.",
+      "workflow_paths": [
+        {
+          "path": ".github/workflows/admin-control-plane.yml",
+          "git_blob": "3463ac12b37b420ee7e191d98590fa8bd0d5d09a"
+        },
+        {
+          "path": ".github/workflows/candidate-intake.yml",
+          "git_blob": "e9e7a6d0117b82b35f06b4966d93db85aad0c15a"
+        },
+        {
+          "path": ".github/workflows/centinelas-intake.yml",
+          "git_blob": "c85c3508006d28ad5890b78134e3807ed276a253"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "git_blob": "9faaa236c19fc5b20d36da1924a359d5bd8bca18"
+        },
+        {
+          "path": ".github/workflows/codeql.yml",
+          "git_blob": "000ec2728d57ca08bf6078763096de4324fda126"
+        },
+        {
+          "path": ".github/workflows/desktop-build.yml",
+          "git_blob": "eeb1cd8de9d302dedda794fdd2c2e49ff10645d9"
+        },
+        {
+          "path": ".github/workflows/docs-sync.yml",
+          "git_blob": "4c9b31bd828ed13e6c33aa436d8e22ca2e0c23e3"
+        },
+        {
+          "path": ".github/workflows/federation-compatibility.yml",
+          "git_blob": "e2f7421a532a9d97f8aee204cac3dbed2c3159df"
+        },
+        {
+          "path": ".github/workflows/federation-lockstep.yml",
+          "git_blob": "73d1fb67687a4b44e2c85a8e3d3bb95cc396cb96"
+        },
+        {
+          "path": ".github/workflows/foia-canary-intake.yml",
+          "git_blob": "a3299473d9bcec7859b31b33c2e0ea9fa212c3e7"
+        },
+        {
+          "path": ".github/workflows/foia-canary-static.yml",
+          "git_blob": "52a8099890b47ce7c321b0977d5ff54011162927"
+        },
+        {
+          "path": ".github/workflows/gui-capability-parity.yml",
+          "git_blob": "037da0621db3ffc043269a7f3abd463b4b816dc5"
+        },
+        {
+          "path": ".github/workflows/haf-contract.yml",
+          "git_blob": "279d34fe81292c936977468e8547afbd01ab3f73"
+        },
+        {
+          "path": ".github/workflows/maintenance.yml",
+          "git_blob": "fde53e03638adbc4ee15680c1a2f8c138be8cb78"
+        },
+        {
+          "path": ".github/workflows/pip-audit.yml",
+          "git_blob": "2f6a175c2da0ac40121bf70bfd85d9bde8aad552"
+        },
+        {
+          "path": ".github/workflows/secret-scan.yml",
+          "git_blob": "fac2f625283d5f4064336a1866b3ce21fc7852d1"
+        },
+        {
+          "path": ".github/workflows/semgrep.yml",
+          "git_blob": "e2d31b07e5860b9f2fb8b596ac57a462aff3a178"
+        },
+        {
+          "path": ".github/workflows/template-drift.yml",
+          "git_blob": "3d0cd99474aef0ba2b460d5e13173b4440d9133d"
+        },
+        {
+          "path": ".github/workflows/unified-skillpack-conformance.yml",
+          "git_blob": "e39ac32002de85f194101b5fbc4e2cc162172ab0"
+        },
+        {
+          "path": ".github/workflows/validate.yml",
+          "git_blob": "331f122b256a218eff5af0eb2dc523973420ebd4"
+        }
+      ],
+      "source_tree_complete": true,
+      "security_alert_inventory": "BLOCKED_ENDPOINT_UNSUPPORTED",
+      "protection_details": "NOT_FULLY_VERIFIED",
+      "ruleset_ids": [
+        25200609
+      ]
+    },
+    {
+      "repo": "aguayluz-pr",
+      "repository_id": "1257600730",
+      "repository_full_name": "jotaele44/aguayluz-pr",
+      "remote_url": "https://github.com/jotaele44/aguayluz-pr.git",
+      "role": "CORE",
+      "head": "672a67280e3947b12425ecc53d6d1a3d376b4cb6",
+      "tree": "507d7b0f46c6753274aaf00d1cfa11a42b36d54e",
+      "protected": false,
+      "reported_protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "branch_count": 113,
+      "branch_inventory_complete": true,
+      "open_pr_count": 45,
+      "open_prs": [
+        {
+          "number": 401,
+          "head": "9e25a21d3b4f1870d5c50f6a21209672f257bac7",
+          "draft": true
+        },
+        {
+          "number": 400,
+          "head": "408046501af30f11c31cb775d4751339c8d10c9e",
+          "draft": true
+        },
+        {
+          "number": 398,
+          "head": "2a056fa86d17457f68b937cbee0ffec38c536af3",
+          "draft": true
+        },
+        {
+          "number": 397,
+          "head": "7047c6e509b0dfb95e7444bc67fc1c4fefbceb47",
+          "draft": false
+        },
+        {
+          "number": 394,
+          "head": "0a2f4c0260464af98efba7b9c8b7baf48c9b428b",
+          "draft": true
+        },
+        {
+          "number": 392,
+          "head": "f68616d3a1f3041c331ae80086cfa2cc5db5ee0b",
+          "draft": true
+        },
+        {
+          "number": 391,
+          "head": "9c475752e8a3b156004d2ef6dc60eba5fefa7b95",
+          "draft": true
+        },
+        {
+          "number": 390,
+          "head": "af9c03215cdf7cf475186c5fc58dac347f5a04d8",
+          "draft": true
+        },
+        {
+          "number": 388,
+          "head": "11475f5ca8403830a6835b5d4a9c917153df51f7",
+          "draft": true
+        },
+        {
+          "number": 387,
+          "head": "9dce4a6245ce2544c46147f23b776eae1c7d70fb",
+          "draft": false
+        },
+        {
+          "number": 385,
+          "head": "dd678bea38dc4f46a952f7b8026785e6d4de9cb6",
+          "draft": false
+        },
+        {
+          "number": 384,
+          "head": "364b2bab94cbad9068d68cae3c5582a026d692c6",
+          "draft": true
+        },
+        {
+          "number": 383,
+          "head": "2ba582b5081b3460ca6df17df49595cb3f14e291",
+          "draft": true
+        },
+        {
+          "number": 382,
+          "head": "fb39f6f2119c14e21cf29cce82c2000dbcd29f19",
+          "draft": true
+        },
+        {
+          "number": 381,
+          "head": "9740e7c1cf95efc437984680edff7f0ddc15725f",
+          "draft": true
+        },
+        {
+          "number": 380,
+          "head": "333514b9cc5f8db353b7b0f6864943a4d8a6f5e4",
+          "draft": false
+        },
+        {
+          "number": 378,
+          "head": "b283a01746b3a6c2c1e53eaaeed8e7321077c340",
+          "draft": true
+        },
+        {
+          "number": 376,
+          "head": "cc2a5cd5da0057b48ed1fdac9fc7027afa7f88d2",
+          "draft": false
+        },
+        {
+          "number": 372,
+          "head": "6f605ce75328500fecd568dd9648f67b45bf8a52",
+          "draft": true
+        },
+        {
+          "number": 369,
+          "head": "419a1246816b2bce8f72c7d15eb075a1dab62182",
+          "draft": false
+        },
+        {
+          "number": 368,
+          "head": "e8fe2258866c573915c8d34ca4b8a98845f8458b",
+          "draft": true
+        },
+        {
+          "number": 367,
+          "head": "64e207087149c00a989c0db9aaee19c0b0a5af9f",
+          "draft": true
+        },
+        {
+          "number": 366,
+          "head": "168d033933b409b524899ee66b3d1f707c66611d",
+          "draft": true
+        },
+        {
+          "number": 364,
+          "head": "c0f9665227c619259c0d747242287e2d6aff167d",
+          "draft": false
+        },
+        {
+          "number": 362,
+          "head": "6f05b1e9e4ccb680e8ee0b3a644ca51f50d9af1c",
+          "draft": true
+        },
+        {
+          "number": 361,
+          "head": "1b3e2831b1e2023e60c8b09171f66917385693ab",
+          "draft": true
+        },
+        {
+          "number": 360,
+          "head": "53a21c19643f178d5978b89e8eed695dde8b384d",
+          "draft": true
+        },
+        {
+          "number": 357,
+          "head": "ee7e0967226f3dba948d88a68aff328d368916f4",
+          "draft": true
+        },
+        {
+          "number": 354,
+          "head": "9f1647347e396d175abfb2c49c64d6ae0d302b2b",
+          "draft": false
+        },
+        {
+          "number": 351,
+          "head": "5b25123a2034837691a830fdbb0e55b163c8fe59",
+          "draft": true
+        },
+        {
+          "number": 349,
+          "head": "7c2a2ec8c6a11c9d9f1e43885172240ce0b800ba",
+          "draft": false
+        },
+        {
+          "number": 348,
+          "head": "0d30909e73d2cd6050f9287e6556f6476d95e7cf",
+          "draft": false
+        },
+        {
+          "number": 347,
+          "head": "42a5745042fa0ce40ed2c30d71681993f4625fbc",
+          "draft": false
+        },
+        {
+          "number": 345,
+          "head": "5b10f303affb7b4b61c7eb9af3feb906c597c263",
+          "draft": true
+        },
+        {
+          "number": 341,
+          "head": "25a0ca54dc13ec1f7e0c4aa4cbb4d9b981b5e0f3",
+          "draft": true
+        },
+        {
+          "number": 339,
+          "head": "8dfa4b0b4c5e426dc56e4c3699bf2a1aa17d5993",
+          "draft": false
+        },
+        {
+          "number": 338,
+          "head": "f227dcae50194ef78bd464d97eba3163819d391d",
+          "draft": false
+        },
+        {
+          "number": 329,
+          "head": "74b37dbabef49acc9a38c40c1c4663c4f1577529",
+          "draft": true
+        },
+        {
+          "number": 325,
+          "head": "a7df1b91e7fe32642d1ea2ef19e10e99661a2a55",
+          "draft": true
+        },
+        {
+          "number": 304,
+          "head": "75d84acffe97f94cccfcbbd815a5beb2b51ccd7d",
+          "draft": false
+        },
+        {
+          "number": 290,
+          "head": "29b77d00ee12a462ede9993aa9a3859cce60e348",
+          "draft": false
+        },
+        {
+          "number": 288,
+          "head": "a74457e3536c5283379b9c5dcf51ec5ee26983cc",
+          "draft": false
+        },
+        {
+          "number": 287,
+          "head": "9ad08882ec3f9e79ed85af1f19050ecc70d1cfaf",
+          "draft": false
+        },
+        {
+          "number": 286,
+          "head": "f2f5d57fafaa6f60608166ce39c6387bdd37a383",
+          "draft": false
+        },
+        {
+          "number": 280,
+          "head": "0e916693fbcc3731ec81e032c69181833b623ef0",
+          "draft": false
+        }
+      ],
+      "check_run_total": 2,
+      "check_run_returned": 2,
+      "latest_check_summaries": [
+        {
+          "id": 126652183014,
+          "name": "intake",
+          "head_sha": "672a67280e3947b12425ecc53d6d1a3d376b4cb6",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/aguayluz-pr/actions/runs/41852468975/job/126652183014",
+          "started_at": "2026-11-04T14:55:52Z",
+          "completed_at": "2026-11-04T14:56:02Z",
+          "app_id": 15368
+        }
+      ],
+      "check_summary_caveat": "Grouped by app ID and name for display only. Full check-run population and repeated names remain in frozen raw observations; this grouping is not a required gate denominator.",
+      "workflow_paths": [
+        {
+          "path": ".github/workflows/admin-control-plane.yml",
+          "git_blob": "3463ac12b37b420ee7e191d98590fa8bd0d5d09a"
+        },
+        {
+          "path": ".github/workflows/centinelas-handoff.yml",
+          "git_blob": "5a2f8c8d89a89a167a564680e372f26e538196f3"
+        },
+        {
+          "path": ".github/workflows/centinelas-intake.yml",
+          "git_blob": "8cf547b8843ab5a7eb341d390ebdcf1eae5b1bf0"
+        },
+        {
+          "path": ".github/workflows/codacy.yml",
+          "git_blob": "652f7ffe651b105e0be93d4a1e6a8a92d9a4bb5d"
+        },
+        {
+          "path": ".github/workflows/codeql.yml",
+          "git_blob": "000ec2728d57ca08bf6078763096de4324fda126"
+        },
+        {
+          "path": ".github/workflows/desktop-build.yml",
+          "git_blob": "8a4f54af49d7166bd66c35cd032e9092a8eea26a"
+        },
+        {
+          "path": ".github/workflows/docs-sync.yml",
+          "git_blob": "4c9b31bd828ed13e6c33aa436d8e22ca2e0c23e3"
+        },
+        {
+          "path": ".github/workflows/federation-compatibility.yml",
+          "git_blob": "3bca19f70ca8afb04073f9e30b6582d8306498f6"
+        },
+        {
+          "path": ".github/workflows/foia-canary-intake.yml",
+          "git_blob": "61267658beb06eca051d4d2d38eede66fd44c797"
+        },
+        {
+          "path": ".github/workflows/foia-canary-static.yml",
+          "git_blob": "b4d309443f387b01dd382e97cb24558648095b39"
+        },
+        {
+          "path": ".github/workflows/gui-capability-parity.yml",
+          "git_blob": "037da0621db3ffc043269a7f3abd463b4b816dc5"
+        },
+        {
+          "path": ".github/workflows/haf-contract.yml",
+          "git_blob": "8541b028cb5bc2b30f8210d5f797d3785e857e5b"
+        },
+        {
+          "path": ".github/workflows/hazard-drna-beach-source.yml",
+          "git_blob": "f3384187f9fe89d323eaf78538af21be249ec942"
+        },
+        {
+          "path": ".github/workflows/hazard-nws-hydromet-source.yml",
+          "git_blob": "0165674fae1605b4158c9cddadcc5a2299b34eab"
+        },
+        {
+          "path": ".github/workflows/hazard-salud-sdwis-2025-source-freeze.yml",
+          "git_blob": "4564f56e812bcb9476bc2106d867e92963ec9dfc"
+        },
+        {
+          "path": ".github/workflows/hazard-salud-sdwis-water.yml",
+          "git_blob": "461c6b547b431100cc23d5717feebc07d4b28afe"
+        },
+        {
+          "path": ".github/workflows/jp-flood-consumer-v3.yml",
+          "git_blob": "467f6130e899886665347e21d54c0fff5b2e043d"
+        },
+        {
+          "path": ".github/workflows/laguna-cartagena-field-packet.yml",
+          "git_blob": "52762c66cfe1328b2efb499a6cd3e9b218ee5b83"
+        },
+        {
+          "path": ".github/workflows/laguna-cartagena-live-probe.yml",
+          "git_blob": "652d9ced7cb72d2b863e0ae66a9240de718d756b"
+        },
+        {
+          "path": ".github/workflows/maintenance.yml",
+          "git_blob": "9af9e842568a0d667f4957746d342b16b34ef44d"
+        },
+        {
+          "path": ".github/workflows/neon-live-smoke.yml",
+          "git_blob": "5ab30bbefe38dab66c2f810c16d8f32729e9d503"
+        },
+        {
+          "path": ".github/workflows/pfas-evidence-freeze.yml",
+          "git_blob": "9483310ed4516aa8e56be49bc6f8c07e2bdf1898"
+        },
+        {
+          "path": ".github/workflows/pfas-source-freeze.yml",
+          "git_blob": "c131a15f5ebc44d5c365220c4ef28378304a6715"
+        },
+        {
+          "path": ".github/workflows/pip-audit.yml",
+          "git_blob": "2f6a175c2da0ac40121bf70bfd85d9bde8aad552"
+        },
+        {
+          "path": ".github/workflows/pr-grid-v2-nwps-migration.yml",
+          "git_blob": "72c3b3ff60b848fdfa4de062f6a5b9fb0eea7cfb"
+        },
+        {
+          "path": ".github/workflows/refresh.yml",
+          "git_blob": "53110f8b8f71153b7db54919f243f67d297da613"
+        },
+        {
+          "path": ".github/workflows/secret-scan.yml",
+          "git_blob": "fac2f625283d5f4064336a1866b3ce21fc7852d1"
+        },
+        {
+          "path": ".github/workflows/template-drift.yml",
+          "git_blob": "b125c23877cc716a073f860303156b7d4fa5b9fa"
+        },
+        {
+          "path": ".github/workflows/unified-skillpack-conformance.yml",
+          "git_blob": "c8ffe7701b3d8abc22826bbf91d596c9af88ccc5"
+        },
+        {
+          "path": ".github/workflows/validate.yml",
+          "git_blob": "47ad31f495c9d8a002773da2de6d73ec5c41e004"
+        }
+      ],
+      "source_tree_complete": true,
+      "security_alert_inventory": "BLOCKED_ENDPOINT_UNSUPPORTED",
+      "protection_details": "NOT_FULLY_VERIFIED",
+      "ruleset_ids": []
+    },
+    {
+      "repo": "thehub-pr",
+      "repository_id": "1258897469",
+      "repository_full_name": "jotaele44/thehub-pr",
+      "remote_url": "https://github.com/jotaele44/thehub-pr.git",
+      "role": "CORE",
+      "head": "333a5c099119c1bade3579799b7b036d98bcb4af",
+      "tree": "fd387bfafd958510064b910468a9a69a351dd781",
+      "protected": true,
+      "reported_protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "branch_count": 1322,
+      "branch_inventory_complete": true,
+      "open_pr_count": 35,
+      "open_prs": [
+        {
+          "number": 406,
+          "head": "19a96f35d803bd1340952227e91170b5831889fe",
+          "draft": true
+        },
+        {
+          "number": 405,
+          "head": "c348225080802d7020b607a9808743d8ae47a79b",
+          "draft": true
+        },
+        {
+          "number": 404,
+          "head": "2949051db9081fe12890b250cf8eb26f0e14dc35",
+          "draft": true
+        },
+        {
+          "number": 403,
+          "head": "a066f2ef1284353a2dec890e117a4b41a2a418eb",
+          "draft": true
+        },
+        {
+          "number": 402,
+          "head": "22b08a67c35cef6eae6db91988a19b82ebe10e33",
+          "draft": true
+        },
+        {
+          "number": 401,
+          "head": "fc14be111701670d61059932c5d12ab58861ad86",
+          "draft": true
+        },
+        {
+          "number": 399,
+          "head": "af25c7dd5dd3ce3f4d1a66ddadb13d874911f277",
+          "draft": false
+        },
+        {
+          "number": 397,
+          "head": "ad71959b5b2e3e30a061165b241a8b52ae680ebc",
+          "draft": false
+        },
+        {
+          "number": 394,
+          "head": "608793a564c9da6630767ddf9de7c5060e2936c2",
+          "draft": false
+        },
+        {
+          "number": 392,
+          "head": "8212e11ae2792b287260da16e3194d8aab9183b7",
+          "draft": false
+        },
+        {
+          "number": 391,
+          "head": "afa0245bb0b948b0bb1beecbd081f79d389323c9",
+          "draft": false
+        },
+        {
+          "number": 388,
+          "head": "cc995cdde359a8f5b2342b3d22fefd0342dee49b",
+          "draft": true
+        },
+        {
+          "number": 387,
+          "head": "0105e7b68447e252c89900f2cf21bf024617996c",
+          "draft": true
+        },
+        {
+          "number": 386,
+          "head": "4e2677077c644901b99c4a932018f082a67b2a23",
+          "draft": true
+        },
+        {
+          "number": 385,
+          "head": "4167dd57d702b37c90564ebcbfe7df25c688f880",
+          "draft": true
+        },
+        {
+          "number": 384,
+          "head": "59088da7ec4010f07d5d7f7db7a4d3a13160793b",
+          "draft": true
+        },
+        {
+          "number": 383,
+          "head": "daa94ea947c62d2fa1c71386c023e3df9b4f134a",
+          "draft": true
+        },
+        {
+          "number": 382,
+          "head": "4e980c42c8906708d7f2edcb83e7298bdd25f92d",
+          "draft": false
+        },
+        {
+          "number": 379,
+          "head": "25e470f2a4cf836f582fb5f87e5f0a748ea333ce",
+          "draft": true
+        },
+        {
+          "number": 377,
+          "head": "dad78f00c3e5bb1fdc9ba2c8fda7de151e0954f8",
+          "draft": false
+        },
+        {
+          "number": 375,
+          "head": "0925d6f61f5b12246e636c2a9fa8d57c76c536d6",
+          "draft": false
+        },
+        {
+          "number": 363,
+          "head": "1ddadc43ec6d1ef1f71a059462de568df54516b8",
+          "draft": true
+        },
+        {
+          "number": 357,
+          "head": "dfaaee9ca9401cfc4a2277ece53b16f07a10a47e",
+          "draft": true
+        },
+        {
+          "number": 353,
+          "head": "4ac39c38d13c94e25e754b8301dadc6a25132c6a",
+          "draft": false
+        },
+        {
+          "number": 352,
+          "head": "63ea2b857a759a433e9af0be2713d0ac28d266e9",
+          "draft": false
+        },
+        {
+          "number": 346,
+          "head": "676280121fa5c8636cb10ca8d4e7d07aefd192d1",
+          "draft": true
+        },
+        {
+          "number": 321,
+          "head": "b5d3de1983feb567dc1d5b7c7310183070b08c74",
+          "draft": false
+        },
+        {
+          "number": 320,
+          "head": "c7295d6f65ac0e3e097507903ab913987ee4924d",
+          "draft": false
+        },
+        {
+          "number": 319,
+          "head": "f95393e84776a56b949f21a8e11176df69d392f7",
+          "draft": false
+        },
+        {
+          "number": 318,
+          "head": "db3b737ece452a3039e71289d311083c4f0c7488",
+          "draft": false
+        },
+        {
+          "number": 317,
+          "head": "040692e0d3d42a74137cf801afd3cd92b54f0225",
+          "draft": false
+        },
+        {
+          "number": 304,
+          "head": "8c46d1454689032df5d3ece9f9520d20a176716d",
+          "draft": false
+        },
+        {
+          "number": 303,
+          "head": "b9781688a3454909da28c413fcb2e8fdac037e18",
+          "draft": false
+        },
+        {
+          "number": 302,
+          "head": "733dc7486fa1e00bcd5cf99c500e2d591fc6e12b",
+          "draft": false
+        },
+        {
+          "number": 301,
+          "head": "dcf1ad7c3f9c25aedb937476d64d76358eb91e6a",
+          "draft": false
+        }
+      ],
+      "check_run_total": 31,
+      "check_run_returned": 31,
+      "latest_check_summaries": [
+        {
+          "id": 126495691811,
+          "name": "remote-completion-audit",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41806789883/job/126495691811",
+          "started_at": "2026-11-04T09:21:23Z",
+          "completed_at": "2026-11-04T09:43:29Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126448003431,
+          "name": "GUI Reachability E2E",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41792195798/job/126448003431",
+          "started_at": "2026-11-04T07:26:00Z",
+          "completed_at": "2026-11-04T07:28:04Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126447907744,
+          "name": "Federation GUI Capability Parity",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41792195798/job/126447907744",
+          "started_at": "2026-11-04T07:25:44Z",
+          "completed_at": "2026-11-04T07:25:57Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365627663,
+          "name": "Dependabot",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766386046/job/126365627663",
+          "started_at": "2026-11-04T03:19:27Z",
+          "completed_at": "2026-11-04T03:23:23Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150337,
+          "name": "frontend-visual",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150337",
+          "started_at": "2026-11-04T03:18:43Z",
+          "completed_at": "2026-11-04T03:22:23Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150175,
+          "name": "test (3.9)",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150175",
+          "started_at": "2026-11-04T03:18:47Z",
+          "completed_at": "2026-11-04T03:21:05Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150143,
+          "name": "test (3.12)",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150143",
+          "started_at": "2026-11-04T03:18:49Z",
+          "completed_at": "2026-11-04T03:20:17Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150129,
+          "name": "lock",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150129",
+          "started_at": "2026-11-04T03:18:54Z",
+          "completed_at": "2026-11-04T03:19:08Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150124,
+          "name": "export-utils-package",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150124",
+          "started_at": "2026-11-04T03:18:49Z",
+          "completed_at": "2026-11-04T03:19:14Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150112,
+          "name": "lint",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150112",
+          "started_at": "2026-11-04T03:18:20Z",
+          "completed_at": "2026-11-04T03:18:47Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150103,
+          "name": "test (3.10)",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150103",
+          "started_at": "2026-11-04T03:18:19Z",
+          "completed_at": "2026-11-04T03:19:45Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150091,
+          "name": "maintenance-package",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150091",
+          "started_at": "2026-11-04T03:18:47Z",
+          "completed_at": "2026-11-04T03:19:15Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150086,
+          "name": "test (3.11)",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150086",
+          "started_at": "2026-11-04T03:18:46Z",
+          "completed_at": "2026-11-04T03:20:00Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150067,
+          "name": "audit-claims-federation",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150067",
+          "started_at": "2026-11-04T03:18:15Z",
+          "completed_at": "2026-11-04T03:18:43Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365150048,
+          "name": "frontend",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365150048",
+          "started_at": "2026-11-04T03:18:20Z",
+          "completed_at": "2026-11-04T03:19:41Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149987,
+          "name": "Analyze python",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232965/job/126365149987",
+          "started_at": "2026-11-04T03:18:02Z",
+          "completed_at": "2026-11-04T03:19:34Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149872,
+          "name": "spatial-contract-generation",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766233023/job/126365149872",
+          "started_at": "2026-11-04T03:18:29Z",
+          "completed_at": "2026-11-04T03:18:46Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149762,
+          "name": "audit-claims",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232959/job/126365149762",
+          "started_at": "2026-11-04T03:18:02Z",
+          "completed_at": "2026-11-04T03:18:14Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149746,
+          "name": "Analyze javascript-typescript",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232965/job/126365149746",
+          "started_at": "2026-11-04T03:18:45Z",
+          "completed_at": "2026-11-04T03:19:53Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149732,
+          "name": "gitleaks",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232922/job/126365149732",
+          "started_at": "2026-11-04T03:18:39Z",
+          "completed_at": "2026-11-04T03:18:53Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149663,
+          "name": "workstation-boundary",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232957/job/126365149663",
+          "started_at": "2026-11-04T03:18:12Z",
+          "completed_at": "2026-11-04T03:18:31Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149653,
+          "name": "ios-companion",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232957/job/126365149653",
+          "started_at": "2026-11-04T03:18:06Z",
+          "completed_at": "2026-11-04T03:21:35Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149611,
+          "name": "fixture-matrix",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232894/job/126365149611",
+          "started_at": "2026-11-04T03:18:01Z",
+          "completed_at": "2026-11-04T03:20:49Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149502,
+          "name": "production-proof",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232957/job/126365149502",
+          "started_at": "2026-11-04T03:18:01Z",
+          "completed_at": "2026-11-04T03:18:38Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149494,
+          "name": "drift",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232889/job/126365149494",
+          "started_at": "2026-11-04T03:18:06Z",
+          "completed_at": "2026-11-04T03:18:27Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149411,
+          "name": "verify-six-consumers",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232925/job/126365149411",
+          "started_at": "2026-11-04T03:18:01Z",
+          "completed_at": "2026-11-04T03:18:18Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149388,
+          "name": "certify",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232890/job/126365149388",
+          "started_at": "2026-11-04T03:18:32Z",
+          "completed_at": "2026-11-04T03:18:45Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149349,
+          "name": "haf-contract",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232921/job/126365149349",
+          "started_at": "2026-11-04T03:18:28Z",
+          "completed_at": "2026-11-04T03:18:41Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126365149301,
+          "name": "federation-governance",
+          "head_sha": "333a5c099119c1bade3579799b7b036d98bcb4af",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/thehub-pr/actions/runs/41766232891/job/126365149301",
+          "started_at": "2026-11-04T03:18:01Z",
+          "completed_at": "2026-11-04T03:18:18Z",
+          "app_id": 15368
+        }
+      ],
+      "check_summary_caveat": "Grouped by app ID and name for display only. Full check-run population and repeated names remain in frozen raw observations; this grouping is not a required gate denominator.",
+      "workflow_paths": [
+        {
+          "path": ".github/workflows/admin-control-plane.yml",
+          "git_blob": "b5edf8b49fb572230b6f73fa69d83396b22ccddb"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "git_blob": "aa5f3b9d011228a0fc5959f2c9d769947ffc39c1"
+        },
+        {
+          "path": ".github/workflows/codeql.yml",
+          "git_blob": "000ec2728d57ca08bf6078763096de4324fda126"
+        },
+        {
+          "path": ".github/workflows/desktop-build.yml",
+          "git_blob": "cc8459eea2ffa08210337efb45a3895f9338b4ce"
+        },
+        {
+          "path": ".github/workflows/docs-sync.yml",
+          "git_blob": "4c9b31bd828ed13e6c33aa436d8e22ca2e0c23e3"
+        },
+        {
+          "path": ".github/workflows/federation-completion-gate.yml",
+          "git_blob": "682e3640204672aca4e64dbdf5f3c51cfc33c9fe"
+        },
+        {
+          "path": ".github/workflows/federation-design-release.yml",
+          "git_blob": "9bab78f73999c0c04eb4bc84ad920b821463fdb5"
+        },
+        {
+          "path": ".github/workflows/federation-governance-certify.yml",
+          "git_blob": "ba8bac1c43b18e7c34594ea3ab8c7caa935ea9d2"
+        },
+        {
+          "path": ".github/workflows/federation-governance.yml",
+          "git_blob": "45ed65017c21bbce7e0699bdccfb80b4565c1af1"
+        },
+        {
+          "path": ".github/workflows/federation-gui-backend-parity.yml",
+          "git_blob": "c9f3f2016ec6e7872069c3ab0e74f531a7657793"
+        },
+        {
+          "path": ".github/workflows/federation-gui-fixture-matrix.yml",
+          "git_blob": "6498e80a06af97f63dbdaa10e8a99a9f9f007a0c"
+        },
+        {
+          "path": ".github/workflows/federation-ingest.yml",
+          "git_blob": "d546298d1abd6c16fd8f4dcb333e4ac79d5ee9a8"
+        },
+        {
+          "path": ".github/workflows/federation-lockstep.yml",
+          "git_blob": "b72fe219cf29f8b32f89dfd8a3efc2a0b329e5ba"
+        },
+        {
+          "path": ".github/workflows/federation-pickup.yml",
+          "git_blob": "7000a49b9120619ccf748a4ed3b0f0ea0aaa31bd"
+        },
+        {
+          "path": ".github/workflows/federation-ppp-e2e.yml",
+          "git_blob": "6c019280f1b1c8b7a5e98f02d5f15c6a119bce1a"
+        },
+        {
+          "path": ".github/workflows/federation-runtime-certification.yml",
+          "git_blob": "9f050f33c385e65c69aa5ae132879c461c878a7e"
+        },
+        {
+          "path": ".github/workflows/federation-spatial-contract.yml",
+          "git_blob": "67e6aea6291e0841ac8793990896b89e63228f2f"
+        },
+        {
+          "path": ".github/workflows/federation-template-sync.yml",
+          "git_blob": "4bb9f6538bb5a454ef9d1cd1870a9d44f168a8b8"
+        },
+        {
+          "path": ".github/workflows/foia-canary-intake.yml",
+          "git_blob": "7ae6ebc0f09265063d5d3828cac1e0de5899fd9a"
+        },
+        {
+          "path": ".github/workflows/foia-canary-static.yml",
+          "git_blob": "85052e83c89cd2b8f57be8b6baa5a2cfc9004297"
+        },
+        {
+          "path": ".github/workflows/gis-live-providers.yml",
+          "git_blob": "afa4381306918c2c09600fa637b9923de4a20a61"
+        },
+        {
+          "path": ".github/workflows/gis-live-source-certification.yml",
+          "git_blob": "fd02a7b5d7ade0b1d866a4c2d45c0771f0bac966"
+        },
+        {
+          "path": ".github/workflows/gis-renderer-lock.yml",
+          "git_blob": "402ec394a5cabbc54b0e2812bc4bb775ed165c26"
+        },
+        {
+          "path": ".github/workflows/grid-v2-aguayluz-nwps-l1.yml",
+          "git_blob": "63ee59e6e9beaf918d94ac7c08ddbc45253afdac"
+        },
+        {
+          "path": ".github/workflows/grid-v2-federation-authority.yml",
+          "git_blob": "7c040173b40061618605e6464ce322598a9a8947"
+        },
+        {
+          "path": ".github/workflows/gui-backend-parity-local.yml",
+          "git_blob": "d33ed687850029cdb2e61cf60313e9536d784418"
+        },
+        {
+          "path": ".github/workflows/gui-capability-parity.yml",
+          "git_blob": "e03b936c6ed87b8073104f2ac817eb75b0c6896a"
+        },
+        {
+          "path": ".github/workflows/haf-contract.yml",
+          "git_blob": "279d34fe81292c936977468e8547afbd01ab3f73"
+        },
+        {
+          "path": ".github/workflows/htr-islandwide.yml",
+          "git_blob": "fae03aa9c98ee3894b2675cd53f99afe0111d2db"
+        },
+        {
+          "path": ".github/workflows/htr-river-denominator.yml",
+          "git_blob": "41a60031a9b47710e9c4e1d02e3cb400c61550df"
+        },
+        {
+          "path": ".github/workflows/htr-v2-contract.yml",
+          "git_blob": "59ff597566796b3edd76a682507fe848c4536076"
+        },
+        {
+          "path": ".github/workflows/htr-v3-canal-denominator.yml",
+          "git_blob": "3fdc419e66d66eeafef4e2ed690bbe22cf8e6efd"
+        },
+        {
+          "path": ".github/workflows/htr-v3-denominator.yml",
+          "git_blob": "a0f187259543d8bd928a534c54fddebdb4145f5f"
+        },
+        {
+          "path": ".github/workflows/htr-v3-drna-denominator.yml",
+          "git_blob": "4ee208a74eac13e692dacc6bf53da6dbc4e0b910"
+        },
+        {
+          "path": ".github/workflows/htr-v3-frozen-source-adjudication.yml",
+          "git_blob": "c1722a659d19f5c75b916094f29010f1ed14276d"
+        },
+        {
+          "path": ".github/workflows/htr-v3-historical-source-set.yml",
+          "git_blob": "9da982b66093c685b98b09063da7f3cc827f692a"
+        },
+        {
+          "path": ".github/workflows/htr-v3-road-recurrence-contract.yml",
+          "git_blob": "960d9883c458a50ec492f1463113280e558c23ac"
+        },
+        {
+          "path": ".github/workflows/htr-v3-scope-eligibility.yml",
+          "git_blob": "650d49cb7e87d8619e9c2b4d98d20a9e8889c5b3"
+        },
+        {
+          "path": ".github/workflows/jp-flood-receipt-freshness.yml",
+          "git_blob": "900ba64bd7017623dbf6243be73a78a806bb502a"
+        },
+        {
+          "path": ".github/workflows/maintenance.yml",
+          "git_blob": "181fcc946d8bd54f46421485da3aafaf58a51ead"
+        },
+        {
+          "path": ".github/workflows/mcp-cross-repo-sync.yml",
+          "git_blob": "9a0b2674061481928376618c5fd332bc3584416f"
+        },
+        {
+          "path": ".github/workflows/mcp-registry-drift-schedule.yml",
+          "git_blob": "3656633db2c1279cfcd27615b101167089ba97f3"
+        },
+        {
+          "path": ".github/workflows/mcp-registry-validation.yml",
+          "git_blob": "0e14455ca2f9616462124acc6f14e556bf39b00e"
+        },
+        {
+          "path": ".github/workflows/moneysweep-asg-rendered-qa.yml",
+          "git_blob": "d697ca393f038d446b2f6f82b3c7e9ed6c851597"
+        },
+        {
+          "path": ".github/workflows/moneysweep-full-package-replay.yml",
+          "git_blob": "8b8f28e82cef3d15292e893af2369e8540d14fb1"
+        },
+        {
+          "path": ".github/workflows/ontology-ci.yml",
+          "git_blob": "3652e24916d13d5d549c7d6a7e93efc982d0c060"
+        },
+        {
+          "path": ".github/workflows/pip-audit.yml",
+          "git_blob": "2f6a175c2da0ac40121bf70bfd85d9bde8aad552"
+        },
+        {
+          "path": ".github/workflows/pr180-identity-certification.yml",
+          "git_blob": "b1d4ca8fcb321b39a61e0c67a988a07a27232d47"
+        },
+        {
+          "path": ".github/workflows/project-lead-branch-canary.yml",
+          "git_blob": "6cc7a377e441edcceb250bd5348918ed9342b48a"
+        },
+        {
+          "path": ".github/workflows/secret-scan.yml",
+          "git_blob": "fac2f625283d5f4064336a1866b3ce21fc7852d1"
+        },
+        {
+          "path": ".github/workflows/skills-validation.yml",
+          "git_blob": "0aaddbcf799779ed5c4624900da9cd2f7c0f9976"
+        },
+        {
+          "path": ".github/workflows/template-drift.yml",
+          "git_blob": "34a1e9cce6bb56a73fe5e419f56fcf8846053b42"
+        },
+        {
+          "path": ".github/workflows/unified-skillpack-conformance.yml",
+          "git_blob": "9ed0ea8d61a09f6417d6a05b3c215a462e93f448"
+        }
+      ],
+      "source_tree_complete": true,
+      "security_alert_inventory": "BLOCKED_ENDPOINT_UNSUPPORTED",
+      "protection_details": "BLOCKED_403",
+      "ruleset_ids": [
+        25200587
+      ]
+    },
+    {
+      "repo": "skywatcher-pr",
+      "repository_id": "1261399537",
+      "repository_full_name": "jotaele44/skywatcher-pr",
+      "remote_url": "https://github.com/jotaele44/skywatcher-pr.git",
+      "role": "CORE",
+      "head": "4def79d5212ff9990e405c65964198401cde9ce0",
+      "tree": "8f22a8b42b6ad5b94fd7693deeb5343d833ec6b6",
+      "protected": true,
+      "reported_protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "branch_count": 79,
+      "branch_inventory_complete": true,
+      "open_pr_count": 29,
+      "open_prs": [
+        {
+          "number": 367,
+          "head": "a54dff0ca2ea516ab5563f00d24b6bc71d0b92b3",
+          "draft": true
+        },
+        {
+          "number": 366,
+          "head": "0dcfb9e2f983609495fec50f011a95e6d5d2beec",
+          "draft": true
+        },
+        {
+          "number": 365,
+          "head": "f4e5e2a6ab55c476b729e0bb3225cc2eefb0d8b9",
+          "draft": true
+        },
+        {
+          "number": 360,
+          "head": "da2eb11d5fcb2ceba9af541a6293f0bfb39ace52",
+          "draft": false
+        },
+        {
+          "number": 358,
+          "head": "0ed761a8d3beda8e3b0d54125eb0829dbc2b5067",
+          "draft": true
+        },
+        {
+          "number": 356,
+          "head": "3f61be516b34aa3e717b5d18027d067eb712c72a",
+          "draft": true
+        },
+        {
+          "number": 355,
+          "head": "04fe13ed940a751a0d4b3bd45d20ac97da603cf5",
+          "draft": true
+        },
+        {
+          "number": 354,
+          "head": "5794c5cb7f97c37de8f210570a657d8bfb690aa5",
+          "draft": true
+        },
+        {
+          "number": 353,
+          "head": "5eeffb158a56672f6714b0223f9e21daab797378",
+          "draft": false
+        },
+        {
+          "number": 352,
+          "head": "714b43019db77c7af9b4cd8c4e4719a166bd4cbe",
+          "draft": true
+        },
+        {
+          "number": 349,
+          "head": "1b3adec0f0233cb7a63a704dc005644ec5957e4d",
+          "draft": false
+        },
+        {
+          "number": 347,
+          "head": "6f6d37f7e3935f21fa123af80a577ff37aa175dc",
+          "draft": true
+        },
+        {
+          "number": 342,
+          "head": "b93517d4145452c88fb24ec15f715219fd7f24a4",
+          "draft": true
+        },
+        {
+          "number": 341,
+          "head": "40e85f22c72b6aaf21fcf7caee22232461b6eb55",
+          "draft": true
+        },
+        {
+          "number": 332,
+          "head": "2a6f247e496c9a9ccb58ab61d3e1179ade0d34db",
+          "draft": true
+        },
+        {
+          "number": 331,
+          "head": "1a5168b6e50c9fc74904b39368274472a1a51699",
+          "draft": true
+        },
+        {
+          "number": 324,
+          "head": "ddf46df90b80a2d47f14b855a4a95d8ec24bd225",
+          "draft": false
+        },
+        {
+          "number": 315,
+          "head": "7d8daf196e0fe905544e0f98da33e508b1ab25d1",
+          "draft": false
+        },
+        {
+          "number": 314,
+          "head": "91944e619dcc5d3d27d73ae6c49379d8729963dc",
+          "draft": false
+        },
+        {
+          "number": 313,
+          "head": "16fb663bc1e4818476caad64712a77f9d4928568",
+          "draft": false
+        },
+        {
+          "number": 312,
+          "head": "1a88038f759438d8a866ff0a6b2809e2eac174a8",
+          "draft": false
+        },
+        {
+          "number": 311,
+          "head": "6c84d7df4ba796d35a13741117cd9aad062d47cc",
+          "draft": false
+        },
+        {
+          "number": 310,
+          "head": "9b7b45c20c98352f550a42ba8f67cb2f925ac5a0",
+          "draft": false
+        },
+        {
+          "number": 308,
+          "head": "b1062daf6ce09e7f2ee014634a87b00c18b5a9d6",
+          "draft": false
+        },
+        {
+          "number": 307,
+          "head": "e562433f3083f59728236cb5f793fadfa802a970",
+          "draft": false
+        },
+        {
+          "number": 306,
+          "head": "258f139ea2d24b1c27b1b59174f5fbfdda1a05ef",
+          "draft": false
+        },
+        {
+          "number": 305,
+          "head": "a1af7101485b284e3a97e5b84afc82e0778c8de0",
+          "draft": false
+        },
+        {
+          "number": 304,
+          "head": "742fb1582831e89191a4d93210aab841c4e9af51",
+          "draft": false
+        },
+        {
+          "number": 299,
+          "head": "da9f70048feb5bccd9a99699d53d493c975bfe8c",
+          "draft": false
+        }
+      ],
+      "check_run_total": 179,
+      "check_run_returned": 179,
+      "latest_check_summaries": [
+        {
+          "id": 126647054072,
+          "name": "poll",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41851028960/job/126647054072",
+          "started_at": "2026-11-04T14:47:11Z",
+          "completed_at": "2026-11-04T14:47:29Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126446447544,
+          "name": "GUI Reachability E2E",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41791719405/job/126446447544",
+          "started_at": "2026-11-04T07:21:51Z",
+          "completed_at": "2026-11-04T07:23:36Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126446385163,
+          "name": "Federation GUI Capability Parity",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41791719405/job/126446385163",
+          "started_at": "2026-11-04T07:21:41Z",
+          "completed_at": "2026-11-04T07:21:49Z",
+          "app_id": 15368
+        },
+        {
+          "id": 126003522693,
+          "name": "drift",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41660904711/job/126003522693",
+          "started_at": "2026-11-03T15:09:24Z",
+          "completed_at": "2026-11-03T15:09:38Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630765521,
+          "name": "build-test",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765303/job/125630765521",
+          "started_at": "2026-11-02T23:53:04Z",
+          "completed_at": "2026-11-03T00:03:53Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630765507,
+          "name": "Analyze python",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765335/job/125630765507",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:54:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630765303,
+          "name": "federation-compatibility",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765342/job/125630765303",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:10Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630765218,
+          "name": "gitleaks",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765208/job/125630765218",
+          "started_at": "2026-11-02T23:53:02Z",
+          "completed_at": "2026-11-02T23:53:11Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630765168,
+          "name": "test (3.11)",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765016/job/125630765168",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:59Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630765116,
+          "name": "test-adsb (3.12)",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765016/job/125630765116",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:16Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630765093,
+          "name": "test (3.10)",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765016/job/125630765093",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:55Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630765055,
+          "name": "Analyze javascript-typescript",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765335/job/125630765055",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:54:20Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630765029,
+          "name": "test-adsb (3.11)",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765016/job/125630765029",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:15Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630765015,
+          "name": "test (3.12)",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765016/job/125630765015",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:59Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630764982,
+          "name": "lock",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765016/job/125630764982",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:11Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630764917,
+          "name": "frontend",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765016/job/125630764917",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:40Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630764904,
+          "name": "test-imagery (3.12)",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765016/job/125630764904",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:19Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630764880,
+          "name": "test-imagery (3.11)",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765016/job/125630764880",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:16Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630764699,
+          "name": "lint",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765016/job/125630764699",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:18Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630764617,
+          "name": "boundary",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548765245/job/125630764617",
+          "started_at": "2026-11-02T23:53:03Z",
+          "completed_at": "2026-11-02T23:53:13Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125630764211,
+          "name": "haf-contract",
+          "head_sha": "4def79d5212ff9990e405c65964198401cde9ce0",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/skywatcher-pr/actions/runs/41548764955/job/125630764211",
+          "started_at": "2026-11-02T23:53:02Z",
+          "completed_at": "2026-11-02T23:53:08Z",
+          "app_id": 15368
+        }
+      ],
+      "check_summary_caveat": "Grouped by app ID and name for display only. Full check-run population and repeated names remain in frozen raw observations; this grouping is not a required gate denominator.",
+      "workflow_paths": [
+        {
+          "path": ".github/workflows/admin-control-plane.yml",
+          "git_blob": "3463ac12b37b420ee7e191d98590fa8bd0d5d09a"
+        },
+        {
+          "path": ".github/workflows/adsb-poll.yml",
+          "git_blob": "735ccee5fd47d574024d03655ca1a9ca1050aa36"
+        },
+        {
+          "path": ".github/workflows/centinelas-handoff.yml",
+          "git_blob": "be783b7840cd92d00b58e95abce3bfb6d283329a"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "git_blob": "ada01a0d08269bfd245ec88d678a6fcea7048f18"
+        },
+        {
+          "path": ".github/workflows/codeql.yml",
+          "git_blob": "000ec2728d57ca08bf6078763096de4324fda126"
+        },
+        {
+          "path": ".github/workflows/desktop-build.yml",
+          "git_blob": "9fe018ca8d1c28140ac15338fb170c8c90d651e4"
+        },
+        {
+          "path": ".github/workflows/docs-sync.yml",
+          "git_blob": "4c9b31bd828ed13e6c33aa436d8e22ca2e0c23e3"
+        },
+        {
+          "path": ".github/workflows/federation-compatibility.yml",
+          "git_blob": "28614ac19c6940acaae8e858f5c94597aaac752c"
+        },
+        {
+          "path": ".github/workflows/foia-canary-intake.yml",
+          "git_blob": "92ced4041c6846cb188a40e1e812dc9eb7c418cd"
+        },
+        {
+          "path": ".github/workflows/foia-canary-static.yml",
+          "git_blob": "263f302d954b44d36672019d3be84f70f8d412a7"
+        },
+        {
+          "path": ".github/workflows/gui-capability-parity.yml",
+          "git_blob": "7be45c9566357a2549098392fe0c931faa69c57f"
+        },
+        {
+          "path": ".github/workflows/haf-contract.yml",
+          "git_blob": "279d34fe81292c936977468e8547afbd01ab3f73"
+        },
+        {
+          "path": ".github/workflows/ios-native.yml",
+          "git_blob": "f87788cb9b6f177efe5b4f7860b53627b560cb01"
+        },
+        {
+          "path": ".github/workflows/maintenance.yml",
+          "git_blob": "70192698f45ca41fc8c8428bba6a77a6c12553e6"
+        },
+        {
+          "path": ".github/workflows/openmct-v4-1-0-dependency-receipt.yml",
+          "git_blob": "610a0cc033f69d4381806cb5bd8c8ed466165a43"
+        },
+        {
+          "path": ".github/workflows/pip-audit.yml",
+          "git_blob": "2f6a175c2da0ac40121bf70bfd85d9bde8aad552"
+        },
+        {
+          "path": ".github/workflows/satim-engine-ci.yml",
+          "git_blob": "f4e84a5d4470f49584ac06a78b7f47ebde44ab41"
+        },
+        {
+          "path": ".github/workflows/satim-phase2.yml",
+          "git_blob": "c3bf9298a5fa4796cab08a9638630926e86ff198"
+        },
+        {
+          "path": ".github/workflows/satim-route-findings-ci.yml",
+          "git_blob": "8dd24b6a8b95b0835ae933dfde39b2e1187c82f7"
+        },
+        {
+          "path": ".github/workflows/satim-runtime-smoke-tests.yml",
+          "git_blob": "8e8c9691f5851ccc94170c35a95dd7c4458b46f7"
+        },
+        {
+          "path": ".github/workflows/secret-scan.yml",
+          "git_blob": "fac2f625283d5f4064336a1866b3ce21fc7852d1"
+        },
+        {
+          "path": ".github/workflows/template-drift.yml",
+          "git_blob": "9c725b90baf97725e2af41f88fa64282fdf2007a"
+        }
+      ],
+      "source_tree_complete": true,
+      "security_alert_inventory": "BLOCKED_ENDPOINT_UNSUPPORTED",
+      "protection_details": "NOT_FULLY_VERIFIED",
+      "ruleset_ids": [
+        25200616
+      ]
+    },
+    {
+      "repo": "centinelas-pr",
+      "repository_id": "1284431262",
+      "repository_full_name": "jotaele44/centinelas-pr",
+      "remote_url": "https://github.com/jotaele44/centinelas-pr.git",
+      "role": "CORE",
+      "head": "c33b4d7caaf503b496ab635599452a90107556a1",
+      "tree": "98ec09e4017a1d6beea9e6b0237b7c92024a44b1",
+      "protected": true,
+      "reported_protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "branch_count": 34,
+      "branch_inventory_complete": true,
+      "open_pr_count": 13,
+      "open_prs": [
+        {
+          "number": 190,
+          "head": "505be03d9436d8a33cd1d1fad4e55748ec4cbd89",
+          "draft": true
+        },
+        {
+          "number": 189,
+          "head": "bae3f5ba2cee5f9fdd467ed34f2366bec091b81e",
+          "draft": true
+        },
+        {
+          "number": 187,
+          "head": "b0b28bdda1c6c4738dd268d7e307ccf7cd8c61f7",
+          "draft": false
+        },
+        {
+          "number": 185,
+          "head": "f74933a8aa19ba4cdf43baeefbf823d5a3454c60",
+          "draft": false
+        },
+        {
+          "number": 179,
+          "head": "e98570735b48e4a0b4a39b079bad53c49d0e226b",
+          "draft": true
+        },
+        {
+          "number": 178,
+          "head": "9fc0ef2483f664a81b1b454fd23dbf793b645d27",
+          "draft": false
+        },
+        {
+          "number": 173,
+          "head": "71f555352cfc784eb7244b6f1f8314d6a0ac7af8",
+          "draft": false
+        },
+        {
+          "number": 172,
+          "head": "b1610c2ed24d050027677ca45c16672f8d7d2d01",
+          "draft": false
+        },
+        {
+          "number": 154,
+          "head": "a821c552b889b5bba00a327032efe51ad5674f4e",
+          "draft": false
+        },
+        {
+          "number": 152,
+          "head": "f4ff47445e74f7912c6f0b5654bf3c3fc55c0459",
+          "draft": false
+        },
+        {
+          "number": 151,
+          "head": "d0253559e0d98c61d8cf51facdb581e08c8032a5",
+          "draft": false
+        },
+        {
+          "number": 150,
+          "head": "2043e23406442bcf5af78cb94ac4a7572ab8d6a0",
+          "draft": false
+        },
+        {
+          "number": 148,
+          "head": "78e1138cd4b1db1ba878afa6a929d4a4293cdb6a",
+          "draft": true
+        }
+      ],
+      "check_run_total": 11,
+      "check_run_returned": 11,
+      "latest_check_summaries": [
+        {
+          "id": 126651872237,
+          "name": "monitor",
+          "head_sha": "c33b4d7caaf503b496ab635599452a90107556a1",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/jotaele44/centinelas-pr/actions/runs/41852400389/job/126651872237",
+          "started_at": "2026-11-04T14:55:21Z",
+          "completed_at": "2026-11-04T14:55:50Z",
+          "app_id": 15368
+        }
+      ],
+      "check_summary_caveat": "Grouped by app ID and name for display only. Full check-run population and repeated names remain in frozen raw observations; this grouping is not a required gate denominator.",
+      "workflow_paths": [
+        {
+          "path": ".github/workflows/admin-control-plane.yml",
+          "git_blob": "3463ac12b37b420ee7e191d98590fa8bd0d5d09a"
+        },
+        {
+          "path": ".github/workflows/codeql.yml",
+          "git_blob": "000ec2728d57ca08bf6078763096de4324fda126"
+        },
+        {
+          "path": ".github/workflows/desktop-build.yml",
+          "git_blob": "1bfb265756bd6bf35a1622a3b0a0a1c727ac436f"
+        },
+        {
+          "path": ".github/workflows/dispatch-signals-aguayluz.yml",
+          "git_blob": "951ac11df1639086779393286375e47ff346b615"
+        },
+        {
+          "path": ".github/workflows/dispatch-signals-ovnis.yml",
+          "git_blob": "6a21af58a21688aa53c80e8a31104299c2c4a4a7"
+        },
+        {
+          "path": ".github/workflows/dispatch-signals.yml",
+          "git_blob": "0792f9006ce85212698e603d42a6b966b8f138a1"
+        },
+        {
+          "path": ".github/workflows/docs-sync.yml",
+          "git_blob": "4c9b31bd828ed13e6c33aa436d8e22ca2e0c23e3"
+        },
+        {
+          "path": ".github/workflows/el-yunque-access-monitor.yml",
+          "git_blob": "33d5cbf0218a0d0b5f40d8506b8f0de3213c3975"
+        },
+        {
+          "path": ".github/workflows/federal-records-controlled-canary.yml",
+          "git_blob": "cdf45d3fa2c005b9d28f393d1a2a5fc7eabf6389"
+        },
+        {
+          "path": ".github/workflows/federal-records-limited-metadata-pilot.yml",
+          "git_blob": "a85d4f8ef647f3221d5ece606a29a4c80205b338"
+        },
+        {
+          "path": ".github/workflows/federal-records-remediation-canary.yml",
+          "git_blob": "4b972e39385513f99ec378d118709cf2ff693d59"
+        },
+        {
+          "path": ".github/workflows/federation-compatibility.yml",
+          "git_blob": "83ff6cb56684445dcfefba07d385428ddc94489e"
+        },
+        {
+          "path": ".github/workflows/foia-canary-ack.yml",
+          "git_blob": "e12b00efe3385cc3303dc88abb5b9aa32bb1878d"
+        },
+        {
+          "path": ".github/workflows/foia-canary-dispatch.yml",
+          "git_blob": "6d3aac8e16db907645e79fb57e0c2fe8587c9ee1"
+        },
+        {
+          "path": ".github/workflows/foia-canary-retry.yml",
+          "git_blob": "086e84b6fd6688493cdd690c2af6d003a985f470"
+        },
+        {
+          "path": ".github/workflows/foia-canary-static.yml",
+          "git_blob": "645bdc92f465e77538ed1d0a63e9ee2b0dfc87ce"
+        },
+        {
+          "path": ".github/workflows/gui-backend-parity-local.yml",
+          "git_blob": "dcb1f6832d795735479d157b58f503e799a4fe02"
+        },
+        {
+          "path": ".github/workflows/gui-capability-parity.yml",
+          "git_blob": "eee32acf8be295e3c95c6d5f7746520a3bf29b17"
+        },
+        {
+          "path": ".github/workflows/haf-contract.yml",
+          "git_blob": "279d34fe81292c936977468e8547afbd01ab3f73"
+        },
+        {
+          "path": ".github/workflows/handoff-ack.yml",
+          "git_blob": "6f9d5581d7c055bae3e144187e1fb73eb37fab7f"
+        },
+        {
+          "path": ".github/workflows/just-security-monitor.yml",
+          "git_blob": "637284a47b1a1dfba97f8109b0447afb7cd321ac"
+        },
+        {
+          "path": ".github/workflows/maintenance.yml",
+          "git_blob": "8eaa3f25b4a599f505df2e5fd7953c8eff69b5f1"
+        },
+        {
+          "path": ".github/workflows/pip-audit.yml",
+          "git_blob": "2f6a175c2da0ac40121bf70bfd85d9bde8aad552"
+        },
+        {
+          "path": ".github/workflows/secret-scan.yml",
+          "git_blob": "fac2f625283d5f4064336a1866b3ce21fc7852d1"
+        },
+        {
+          "path": ".github/workflows/signal-ledger-refresh.yml",
+          "git_blob": "187315946b59e862e5fb6a42d4c172b0768c7eaa"
+        },
+        {
+          "path": ".github/workflows/skills-validation.yml",
+          "git_blob": "2e025fbad2ca8f6684bde9f07547f77ecc75024a"
+        },
+        {
+          "path": ".github/workflows/template-drift.yml",
+          "git_blob": "367e4c537cf9887b593b4f4ce962e5ecb2e6479c"
+        },
+        {
+          "path": ".github/workflows/validate.yml",
+          "git_blob": "10026d8651b0c6a9f9ba7180f25e9475d3bddc2c"
+        }
+      ],
+      "source_tree_complete": true,
+      "security_alert_inventory": "BLOCKED_ENDPOINT_UNSUPPORTED",
+      "protection_details": "NOT_FULLY_VERIFIED",
+      "ruleset_ids": [
+        25513496
+      ]
+    },
+    {
+      "repo": "mucaro-ai",
+      "repository_id": "1341170862",
+      "repository_full_name": "jotaele44/mucaro-ai",
+      "remote_url": "https://github.com/jotaele44/mucaro-ai.git",
+      "role": "ADJACENT_EXECUTION_PROFILE",
+      "head": "3f6ce29962e9ceb6a6eed2edafc0da37d6252372",
+      "tree": "53b0f25cd04986b79162c511574bf4090620c9c2",
+      "protected": false,
+      "reported_protection": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "branch_count": 211,
+      "branch_inventory_complete": true,
+      "open_pr_count": 73,
+      "open_prs": [
+        {
+          "number": 331,
+          "head": "766f68454e93c67ec72b0371f23bce5f1bed16ad",
+          "draft": true
+        },
+        {
+          "number": 328,
+          "head": "e13691b238968f621b0a2cca0eb775ecf8e5e076",
+          "draft": true
+        },
+        {
+          "number": 327,
+          "head": "9e0cb9dfcc8a6b380b0ab6c8d172613c9b3a08cd",
+          "draft": true
+        },
+        {
+          "number": 326,
+          "head": "64d1d652ff553b5c07a578d66e9e0b5a97eae3a7",
+          "draft": true
+        },
+        {
+          "number": 324,
+          "head": "5373df74c4db5f30377323f273d1d3d626dad677",
+          "draft": true
+        },
+        {
+          "number": 318,
+          "head": "dbd16291a8b703c86f783c6bfb61b668a706f566",
+          "draft": true
+        },
+        {
+          "number": 308,
+          "head": "ee5c99a6f53e6e7cd21414833268bcf5382fa3f5",
+          "draft": true
+        },
+        {
+          "number": 303,
+          "head": "253209f5fbeeff3ea0498b4d250ec500348935cc",
+          "draft": true
+        },
+        {
+          "number": 283,
+          "head": "e46beef14f987b663255f6d9fb48beaaaa3ed15d",
+          "draft": true
+        },
+        {
+          "number": 280,
+          "head": "28787026ca827c6aa0d407f2b6f3bb05f2592001",
+          "draft": true
+        },
+        {
+          "number": 277,
+          "head": "e671e3aa32c157396670964abb74ee7062efc482",
+          "draft": true
+        },
+        {
+          "number": 276,
+          "head": "dfabc8bf6f3a294754fb0ccb19c471bd93ad3133",
+          "draft": true
+        },
+        {
+          "number": 275,
+          "head": "0a5f22040f5b51e59c3df69c656306c9be9df491",
+          "draft": true
+        },
+        {
+          "number": 271,
+          "head": "a5f75aa438976dacaa24df55b633971e0695259d",
+          "draft": true
+        },
+        {
+          "number": 269,
+          "head": "2ad8bc3b9916bbc1d2bed1775dcce0d1ecafd3f6",
+          "draft": true
+        },
+        {
+          "number": 265,
+          "head": "4d3b5634b8f60481a86bce0bb8bf27f870287d5b",
+          "draft": true
+        },
+        {
+          "number": 264,
+          "head": "5b5fae9557c43f6a9f0176e687a1b116f25ad8b6",
+          "draft": true
+        },
+        {
+          "number": 263,
+          "head": "b8a0bc27d898fed762541c0614924f2a1fbc48bc",
+          "draft": true
+        },
+        {
+          "number": 262,
+          "head": "36c8018a7827f31a7a7eb6a5f2bde56615b41161",
+          "draft": true
+        },
+        {
+          "number": 261,
+          "head": "8c35abd00a9ae492e5f4ac229ba077a2c616f675",
+          "draft": true
+        },
+        {
+          "number": 259,
+          "head": "8ba3f65bb70e9ad18d034bd9a259dffca1b2bf40",
+          "draft": true
+        },
+        {
+          "number": 256,
+          "head": "f35bdc7052daa0de7846bb47194254bb7ad71d51",
+          "draft": true
+        },
+        {
+          "number": 254,
+          "head": "21310446d8243c02739af670ac08963af74b4b68",
+          "draft": true
+        },
+        {
+          "number": 242,
+          "head": "fb793ed1db4b7f9b2cb14dd238a5ebd7d7274075",
+          "draft": true
+        },
+        {
+          "number": 241,
+          "head": "2f09060b92805a6ba9963d977531136b5dd2d3c6",
+          "draft": true
+        },
+        {
+          "number": 240,
+          "head": "1b4c88b4ab0760316100f402551259b4f95ecd4c",
+          "draft": true
+        },
+        {
+          "number": 239,
+          "head": "15483a3e0bde842a4b50282fff3f0bfbe79e5c87",
+          "draft": true
+        },
+        {
+          "number": 235,
+          "head": "3f18989060f779c65f05d9906c377b7821275355",
+          "draft": true
+        },
+        {
+          "number": 229,
+          "head": "2110eac33d4338a606e4e917507664e0a0135e95",
+          "draft": true
+        },
+        {
+          "number": 226,
+          "head": "2b9be4bf7eb3ddf26e912317fc5ebd7c7c4c7aba",
+          "draft": true
+        },
+        {
+          "number": 225,
+          "head": "f87ff4e3fc5ba8eaeffad927bfc77711b87c605a",
+          "draft": true
+        },
+        {
+          "number": 224,
+          "head": "29cdeffaabb32dbca3cf4d7e4a4b389300e5a7af",
+          "draft": true
+        },
+        {
+          "number": 222,
+          "head": "824aa663619f28a811ff1542dc92256f9aa21785",
+          "draft": false
+        },
+        {
+          "number": 215,
+          "head": "12ff170ae8dd2862142c55597f06c6acaac23135",
+          "draft": false
+        },
+        {
+          "number": 214,
+          "head": "040d775ce870ffa3562c22d7f28247714e34fe04",
+          "draft": false
+        },
+        {
+          "number": 212,
+          "head": "ca4ce2e602b8f7252f38d7dc8740be34bf51459a",
+          "draft": true
+        },
+        {
+          "number": 210,
+          "head": "3efaa3f6d772f0ef9ad62523b55a728eb57c6e3e",
+          "draft": true
+        },
+        {
+          "number": 208,
+          "head": "a4d5743180cfdfec183963859a758261eb3d25f2",
+          "draft": true
+        },
+        {
+          "number": 204,
+          "head": "17baea7197f2cab6a03a7a95d2901e83ce2ac185",
+          "draft": false
+        },
+        {
+          "number": 203,
+          "head": "20ea9989bbb1bea98a5e497cdbfbcf8a7aaf8f42",
+          "draft": false
+        },
+        {
+          "number": 202,
+          "head": "3d4e019d778435dbe50e2dacb4bc11c0f2d01813",
+          "draft": false
+        },
+        {
+          "number": 201,
+          "head": "618c2acebf8832a6df6f3cc3703f555ca382c6ab",
+          "draft": false
+        },
+        {
+          "number": 197,
+          "head": "eeea726dfb43944985aa72969d2929fa5af973dd",
+          "draft": true
+        },
+        {
+          "number": 194,
+          "head": "63160ac9e6bb8f36010304836dbded2b3827de81",
+          "draft": false
+        },
+        {
+          "number": 193,
+          "head": "f53243d35d03718a513d1f075f29ec3e76c2a285",
+          "draft": false
+        },
+        {
+          "number": 192,
+          "head": "16df26da8387749687a8c2f11816268053c7a00e",
+          "draft": false
+        },
+        {
+          "number": 191,
+          "head": "9211de36c4662f388b63a27875f1e9d6ee019541",
+          "draft": false
+        },
+        {
+          "number": 190,
+          "head": "163baa4b4cc75ae5be8cb4930501ce1a58bf48cb",
+          "draft": false
+        },
+        {
+          "number": 189,
+          "head": "4f13eabdded13f3b10b50f3d2086f35d1d497cc6",
+          "draft": false
+        },
+        {
+          "number": 188,
+          "head": "cb07fbbbd899f8fa53e89029aee9c25c85c29cfb",
+          "draft": false
+        },
+        {
+          "number": 184,
+          "head": "0bec1651caa0f7890924afec7abad0b75a2ffd26",
+          "draft": false
+        },
+        {
+          "number": 183,
+          "head": "4a84a9edcffba783613588ba641052743e7c20d4",
+          "draft": false
+        },
+        {
+          "number": 182,
+          "head": "f7eed564e9ad899b0de7fb793ff50e47362cb0d3",
+          "draft": false
+        },
+        {
+          "number": 181,
+          "head": "17da8d31192a1beb14ad750fde4de0313eba443c",
+          "draft": false
+        },
+        {
+          "number": 180,
+          "head": "eaf105f9a26407fadb30fb0c4a324b39485f8112",
+          "draft": false
+        },
+        {
+          "number": 179,
+          "head": "2f788ba437c32dd22954d56b1aca8e3d52698e39",
+          "draft": false
+        },
+        {
+          "number": 178,
+          "head": "4123943f4f543ef1dc5ebb28590c4cc93b8a38b5",
+          "draft": false
+        },
+        {
+          "number": 177,
+          "head": "a10d1930b939c17b9c5f462b213328bd9883235a",
+          "draft": true
+        },
+        {
+          "number": 175,
+          "head": "ee62721f34a182be556c1704627618ae832ab310",
+          "draft": false
+        },
+        {
+          "number": 172,
+          "head": "8505200384f851764581e690863765769f265130",
+          "draft": false
+        },
+        {
+          "number": 167,
+          "head": "503841f4c4c7c18dc2132763883e55bcb1bc6c25",
+          "draft": true
+        },
+        {
+          "number": 164,
+          "head": "72c15ad8b7aba348180b3bed4ee238a32c9f7575",
+          "draft": true
+        },
+        {
+          "number": 155,
+          "head": "c2fd1d5512bb43ff4a9d21dfca688ecca578eb98",
+          "draft": true
+        },
+        {
+          "number": 154,
+          "head": "29ec95822f040028dd034984f0c73cede2dfdbf3",
+          "draft": true
+        },
+        {
+          "number": 152,
+          "head": "2894227476e623ea528496e94d117b1f65a3d48b",
+          "draft": true
+        },
+        {
+          "number": 151,
+          "head": "5d67ed587c04b9b51e5f0e6aa10dd1baeec6ef33",
+          "draft": false
+        },
+        {
+          "number": 150,
+          "head": "33f46c610a2bf551a627d116b7834ff7b037a66e",
+          "draft": false
+        },
+        {
+          "number": 148,
+          "head": "2887779fd9eeab3a3f567ed70f63fe1980e0f375",
+          "draft": true
+        },
+        {
+          "number": 147,
+          "head": "dd396535c6441d029efdaf2e98ac9f8198b0fd6b",
+          "draft": true
+        },
+        {
+          "number": 143,
+          "head": "5e652b1703c3b3eee50f2902e431fcd2770e74ce",
+          "draft": true
+        },
+        {
+          "number": 142,
+          "head": "e82b640b44e5ec9de01a4ab777319e5b65c14eff",
+          "draft": true
+        },
+        {
+          "number": 140,
+          "head": "7df500ca04d69406cd064ebe4b9dc98b10e04c53",
+          "draft": false
+        },
+        {
+          "number": 136,
+          "head": "7066af908a66fe35ef7c5004dc34964ba14fbebb",
+          "draft": false
+        }
+      ],
+      "check_run_total": 3,
+      "check_run_returned": 3,
+      "latest_check_summaries": [
+        {
+          "id": 125704707554,
+          "name": "shadow-hardening",
+          "head_sha": "3f6ce29962e9ceb6a6eed2edafc0da37d6252372",
+          "status": "completed",
+          "conclusion": "failure",
+          "details_url": "https://github.com/jotaele44/mucaro-ai/actions/runs/41571348830/job/125704707554",
+          "started_at": "2026-11-03T03:17:51Z",
+          "completed_at": "2026-11-03T03:21:44Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125704706664,
+          "name": "validate",
+          "head_sha": "3f6ce29962e9ceb6a6eed2edafc0da37d6252372",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/mucaro-ai/actions/runs/41571348858/job/125704706664",
+          "started_at": "2026-11-03T03:17:51Z",
+          "completed_at": "2026-11-03T03:21:00Z",
+          "app_id": 15368
+        },
+        {
+          "id": 125704706649,
+          "name": "certify-performance",
+          "head_sha": "3f6ce29962e9ceb6a6eed2edafc0da37d6252372",
+          "status": "completed",
+          "conclusion": "success",
+          "details_url": "https://github.com/jotaele44/mucaro-ai/actions/runs/41571348792/job/125704706649",
+          "started_at": "2026-11-03T03:17:51Z",
+          "completed_at": "2026-11-03T03:18:15Z",
+          "app_id": 15368
+        }
+      ],
+      "check_summary_caveat": "Grouped by app ID and name for display only. Full check-run population and repeated names remain in frozen raw observations; this grouping is not a required gate denominator.",
+      "workflow_paths": [
+        {
+          "path": ".github/workflows/arm64-portable-lifecycle-cert.yml",
+          "git_blob": "6335ea0d7584912ec4ad6c2022fdadbd6bf69952"
+        },
+        {
+          "path": ".github/workflows/arm64-runtime-materialize-cert.yml",
+          "git_blob": "febcef449b049ddb2705d6cdcfcd32a6335d3d0e"
+        },
+        {
+          "path": ".github/workflows/arm64-runtime-source-cert.yml",
+          "git_blob": "dd60eee6723bf237224d1c180155747b7a18f60a"
+        },
+        {
+          "path": ".github/workflows/ci-startup-probe.yml",
+          "git_blob": "056e0b7a0203755c53a0166f68c1f2d99e9a9dc5"
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "git_blob": "6de6d31d2b5ddb8934c198c600bdb358e6ccbfb3"
+        },
+        {
+          "path": ".github/workflows/coding-regression-cert.yml",
+          "git_blob": "8d6671f96da540d2ecc45c826c2b6574437f90c8"
+        },
+        {
+          "path": ".github/workflows/coding-review-cert.yml",
+          "git_blob": "bcecf1cf0b981700ec5c6fdcaf2089c6ca288b2a"
+        },
+        {
+          "path": ".github/workflows/execution-entry-cert.yml",
+          "git_blob": "c40109f55e0aee85e335c00b642514b8e893bf87"
+        },
+        {
+          "path": ".github/workflows/macos-app.yml",
+          "git_blob": "ed2e6df7eca551b8fe4c6f673647edfdca6dfe5e"
+        },
+        {
+          "path": ".github/workflows/matrix010-ingestion-cert.yml",
+          "git_blob": "09b28a2e19e8d1feede29f91ff616254676e1095"
+        },
+        {
+          "path": ".github/workflows/ocr-live-cert.yml",
+          "git_blob": "db680a5124ed1570bcef7de24d8a01098e5fc6f6"
+        },
+        {
+          "path": ".github/workflows/ocr08-structure-cert.yml",
+          "git_blob": "522346d2e85895eeafb51f35123234ba361096df"
+        },
+        {
+          "path": ".github/workflows/one-click-setup.yml",
+          "git_blob": "00bdff05dd4fa028b45fca46e3e9ab6b825fed13"
+        },
+        {
+          "path": ".github/workflows/performance-cert.yml",
+          "git_blob": "1e538bf9230b4c19388bf1d628571879993a6217"
+        },
+        {
+          "path": ".github/workflows/rendered-qa.yml",
+          "git_blob": "08d3ddcbbbd598681a8df1d0697b4f8e69ece081"
+        },
+        {
+          "path": ".github/workflows/rt09-real-world-cert.yml",
+          "git_blob": "36b3f543414281dd1c225d657cc889eeb7bd194b"
+        },
+        {
+          "path": ".github/workflows/rt10-retrieval-scale-cert.yml",
+          "git_blob": "842f8006d45ab2929348c98982ffff0c4d9e012f"
+        },
+        {
+          "path": ".github/workflows/shadow-qa.yml",
+          "git_blob": "720a09737fc39a79586e2e98a871458045c42386"
+        },
+        {
+          "path": ".github/workflows/v16-main-reconciliation-exact-head.yml",
+          "git_blob": "8f31322921c755235105bb85f1dba3b0f206d30b"
+        },
+        {
+          "path": ".github/workflows/web-render-cert.yml",
+          "git_blob": "d373af658e626f58ed4895a6df8593b1746c6513"
+        }
+      ],
+      "source_tree_complete": true,
+      "security_alert_inventory": "BLOCKED_ENDPOINT_UNSUPPORTED",
+      "protection_details": "NOT_FULLY_VERIFIED",
+      "ruleset_ids": []
+    }
+  ],
+  "limitations": [
+    "Connector-delivered decoded API representations; SHA-256 does not claim original HTTP wire bytes.",
+    "Hosted check conclusions do not imply independent security-alert inventory, absence of skipped/not-emitted required gates, feature completeness, or deployed operational readiness.",
+    "Repository user permissions reported admin/push; authenticated app cannot read protected administration endpoint.",
+    "Historical artifacts retained by reference, not substituted for current-head proof."
+  ],
+  "historical_artifacts": [
+    {
+      "library_file_id": "libfile_ac97548968708191afe46adc315cf6d5",
+      "name": "PRII_Federation_MAX_AUTO_Execution_2026-11-03.md",
+      "read_complete": true,
+      "reuse": "Context only; preserves outstanding gates"
+    },
+    {
+      "library_file_id": "libfile_3326d438518c8191b03087217b308e6b",
+      "name": "pr406_publisher_v2_audit.json",
+      "read_complete": true,
+      "reuse": "Historical checkpoint; now superseded check conclusions require revalidation"
+    },
+    {
+      "library_file_id": "libfile_d42851a16cbc81919ec9313341f97894",
+      "name": "federation_pr326_2026-11-03_premerge_audit.json",
+      "read_complete": true,
+      "reuse": "Historical exact-head evidence; approvals and merged-head replay remain open"
+    }
+  ]
+}
