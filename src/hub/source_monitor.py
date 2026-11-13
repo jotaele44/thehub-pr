@@ -1,8 +1,8 @@
 """Hub-side source monitor: normalize producer source registries (ADR 0012).
 
 Each producer keeps its own registry of the sources it monitors, in its own
-shape (a CSV in moneysweep-pr, YAML in skywatcher-pr, JSON families in
-aguayluz-pr, ...). None of that crosses the federation contract: the frozen
+shape (a CSV in moneysweep-pr, YAML in skywatcher-pr, ...). None of that
+crosses the federation contract: the frozen
 ``federation_export_manifest`` carried seven canonical streams and no
 monitoring fields until ADR 0013 added the optional ``source_monitors``
 stream. ADR 0012 records this module as a scoped, temporary exception to
@@ -20,8 +20,9 @@ the artifact-only boundary of ADR 0001:
   to ``STREAM_TO_COLLECTION``.
 * **Superseded per producer (ADR 0013).** A producer that emits the
   ``source_monitors`` federation stream is read from the stream instead: ingest
-  drops this module's rows for that producer. Remove a producer from
-  ``REGISTRIES`` once it emits the stream; delete this module when all six do.
+  drops this module's rows for that producer. Once a producer emits the
+  stream it moves from ``REGISTRIES`` to ``STREAM_PRODUCERS``; delete this
+  module when all six have moved.
 
 Freshness here is **producer-level**: the ``created_at`` of the producer's
 export-package manifest, the same field ``hub.federation_status`` reads. No
@@ -141,32 +142,10 @@ def cadence_from_seconds(seconds: Any) -> str:
     return "realtime"
 
 
-def cadence_from_text(text: Any) -> str:
-    """First word of a free-text cadence ("weekly; records may be revised")."""
-    if not isinstance(text, str) or not text.strip():
-        return "unknown"
-    first = re.split(r"[\s;,.]+", text.strip().lower(), maxsplit=1)[0]
-    return _NAMED_CADENCE.get(first, "unknown")
-
-
 def normalize_status(raw: Any) -> str:
     if raw is None:
         return "unknown"
     return _NAMED_STATUS.get(str(raw).strip().lower(), "unknown")
-
-
-def binding_status(raw: Any) -> str:
-    """aguayluz-pr hazard-family binding state (BOUND…/CERTIFIED…/OPEN…)."""
-    if not isinstance(raw, str) or not raw.strip():
-        return "unknown"
-    s = raw.strip().upper()
-    if s.startswith("OPEN"):
-        return "not_active"
-    if "OPEN" in s or "UNRESOLVED" in s:
-        return "partial"
-    if s.startswith(("BOUND", "CERTIFIED")):
-        return "active"
-    return "unknown"
 
 
 def normalize_tier(raw: Any) -> Optional[str]:
@@ -327,45 +306,6 @@ def _parse_skywatcher(path: Path) -> Iterable[Dict[str, Any]]:
             )
 
 
-def _parse_aguayluz_hydromet(path: Path) -> Iterable[Dict[str, Any]]:
-    for s in _require(_read_json(path), "sources", list):
-        if not isinstance(s, dict) or "source_id" not in s:
-            raise RegistryShapeError("source entry without 'source_id'")
-        cadence = cadence_from_seconds(s.get("cadence_seconds"))
-        declared = s.get("max_age_seconds") or s.get("cadence_seconds")
-        yield _entry(
-            s["source_id"], name=s.get("label"), family=s.get("family"),
-            cadence_raw=f"{s.get('cadence_seconds')} s" if s.get("cadence_seconds") else None,
-            cadence=cadence, window_seconds=_window(cadence, declared), raw=s,
-        )
-
-
-def _family_name(f: Dict[str, Any]) -> str:
-    return f"{f['authority']}: {f['family']}" if f.get("authority") else f["family"]
-
-
-def _parse_aguayluz_hazard(path: Path) -> Iterable[Dict[str, Any]]:
-    for f in _require(_read_json(path), "families", list):
-        if not isinstance(f, dict) or "family" not in f:
-            raise RegistryShapeError("family entry without 'family'")
-        cadence = cadence_from_text(f.get("update_semantics"))
-        yield _entry(
-            f["family"], name=_family_name(f), family=f.get("hazard_family"),
-            cadence_raw=f.get("update_semantics"), cadence=cadence, window_seconds=_window(cadence),
-            status_raw=f.get("status"), status=binding_status(f.get("status")), url=f.get("url"), raw=f,
-        )
-
-
-def _parse_aguayluz_exposure(path: Path) -> Iterable[Dict[str, Any]]:
-    for f in _require(_read_json(path), "families", list):
-        if not isinstance(f, dict) or "family" not in f:
-            raise RegistryShapeError("family entry without 'family'")
-        yield _entry(
-            f["family"], name=_family_name(f), family="ENVIRONMENTAL_EXPOSURE",
-            url=f.get("discovery_locator"), raw=f,
-        )
-
-
 Parser = Callable[[Path], Iterable[Dict[str, Any]]]
 
 # producer program_id -> [(registry path relative to the checkout, parser)].
@@ -379,12 +319,12 @@ REGISTRIES: Dict[str, List[Tuple[str, Parser]]] = {
         ("configs/missing_persons_sources.yaml", _parse_spiderweb_missing_persons),
     ],
     "skywatcher-pr": [("registry/source_registry.yaml", _parse_skywatcher)],
-    "aguayluz-pr": [
-        ("config/hydromet_sources.v1.json", _parse_aguayluz_hydromet),
-        ("config/hazard_advisory_sources.v1.json", _parse_aguayluz_hazard),
-        ("config/environmental_exposure_sources.v1.json", _parse_aguayluz_exposure),
-    ],
 }
+
+# Producers that report their sources in the source_monitors stream (ADR 0013).
+# Their registries are no longer read here; ingest takes their rows from the
+# stream and flags them when an aggregate has none.
+STREAM_PRODUCERS: frozenset = frozenset({"aguayluz-pr"})
 
 
 # ── build ─────────────────────────────────────────────────────────────────────
@@ -429,6 +369,9 @@ def build_monitor(registry: Registry, root: str | Path,
             "errors": [],
         }
         producers[pid] = info
+        if pid in STREAM_PRODUCERS:
+            info["reports_via_stream"] = True
+            continue
         adapters = REGISTRIES.get(pid)
         if not adapters:
             info["errors"].append("no registry adapter for this producer")

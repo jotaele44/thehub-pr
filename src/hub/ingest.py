@@ -661,11 +661,19 @@ def project_source_monitors(
     summary: Dict[str, Any] = (
         json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.exists() else {}
     )
-    producers: Dict[str, Any] = {
-        pid: {**info, "origin": "hub_adapter"}
-        for pid, info in (summary.get("producers") or {}).items()
-        if isinstance(info, dict)
-    }
+    producers: Dict[str, Any] = {}
+    for pid, info in (summary.get("producers") or {}).items():
+        if not isinstance(info, dict):
+            continue
+        if info.get("reports_via_stream"):
+            # The registry reader no longer reads this producer; its rows come
+            # from the stream, so an aggregate without them is a visible gap.
+            producers[pid] = {**info, "origin": "stream", "errors": [
+                *(info.get("errors") or []),
+                "reports through the source_monitors stream, but this aggregate has no rows from it",
+            ]}
+        else:
+            producers[pid] = {**info, "origin": "hub_adapter"}
     for pid, producer_rows in by_producer.items():
         extracted = sorted(str(r.get("extracted_at") or "") for r in producer_rows)
         producers[pid] = {

@@ -15,10 +15,8 @@ from hub.registry import Producer, Registry
 from hub.source_monitor import (
     CADENCES,
     STATUSES,
-    binding_status,
     build_monitor,
     cadence_from_seconds,
-    cadence_from_text,
     normalize_cadence,
     normalize_status,
     normalize_tier,
@@ -86,33 +84,6 @@ maritime:
     mode: periodic_context
     use: port context enrichment
 """
-_AGUAYLUZ_HYDROMET = {
-    "schema_version": "v1",
-    "sources": [
-        {"source_id": "nwps_gauges", "label": "NWPS river gauges", "family": "HYDROMETEOROLOGY",
-         "cadence_seconds": 900, "max_age_seconds": 7200},
-        {"source_id": "stage_iv_pr", "label": "Stage IV rainfall", "family": "HYDROMETEOROLOGY",
-         "cadence_seconds": 86400, "max_age_seconds": 172800},
-    ],
-}
-_AGUAYLUZ_HAZARD = {
-    "schema_version": "v1",
-    "families": [
-        {"family": "FDA_FOOD_ENFORCEMENT", "authority": "FDA", "hazard_family": "FOOD_SAFETY",
-         "url": "https://open.fda.gov/apis/food/enforcement/",
-         "update_semantics": "weekly; historical records may be revised", "status": "BOUND"},
-        {"family": "PR_BEACH_ADVISORIES", "authority": "PREQB", "hazard_family": "RECREATIONAL_WATER",
-         "status": "OPEN_PR_DENOMINATOR"},
-    ],
-}
-_AGUAYLUZ_EXPOSURE = {
-    "schema_version": "v1",
-    "families": [
-        {"family": "SEMS_SUPERFUND", "authority": "EPA", "public_class": "DIGITAL_PUBLIC",
-         "discovery_locator": "https://data.epa.gov/"},
-    ],
-}
-
 _PRODUCERS = ["moneysweep-pr", "centinelas-pr", "ovnis-pr", "spiderweb-pr", "skywatcher-pr", "aguayluz-pr"]
 
 
@@ -144,9 +115,9 @@ def workspace(tmp_path: Path) -> Path:
     _write(ws / "skywatcher-pr/registry/source_registry.yaml", _SKYWATCHER_YAML)
     _write(ws / "skywatcher-pr/exports/federation/manifest.json",
            json.dumps({"created_at": "2026-08-28T00:11:41Z"}))
-    _write(ws / "aguayluz-pr/config/hydromet_sources.v1.json", json.dumps(_AGUAYLUZ_HYDROMET))
-    _write(ws / "aguayluz-pr/config/hazard_advisory_sources.v1.json", json.dumps(_AGUAYLUZ_HAZARD))
-    _write(ws / "aguayluz-pr/config/environmental_exposure_sources.v1.json", json.dumps(_AGUAYLUZ_EXPOSURE))
+    # aguayluz-pr reports through the source_monitors stream (ADR 0013); its
+    # registry files are present but must not be read.
+    _write(ws / "aguayluz-pr/config/hydromet_sources.v1.json", '{"sources": [{"source_id": "x"}]}')
     return ws
 
 
@@ -159,10 +130,14 @@ def test_every_producer_shape_is_normalized(workspace):
     counts = {pid: info["count"] for pid, info in summary["producers"].items()}
     assert counts == {
         "moneysweep-pr": 3, "centinelas-pr": 2, "ovnis-pr": 2,
-        "spiderweb-pr": 3, "skywatcher-pr": 2, "aguayluz-pr": 5,
+        "spiderweb-pr": 3, "skywatcher-pr": 2, "aguayluz-pr": 0,
     }
-    assert summary["total"] == 17 == len(rows)
+    assert summary["total"] == 12 == len(rows)
     assert summary["error_count"] == 0
+    # A stream producer is marked, not read and not reported as an error.
+    aguayluz = summary["producers"]["aguayluz-pr"]
+    assert aguayluz["reports_via_stream"] is True
+    assert (aguayluz["registries"], aguayluz["errors"]) == ([], [])
 
     r = _by_id(rows)
     ms = r["moneysweep-pr:usaspending_prime"]
@@ -192,14 +167,7 @@ def test_every_producer_shape_is_normalized(workspace):
     assert r["skywatcher-pr:public_port_authority_updates"]["cadence"] == "unknown"
     assert r["skywatcher-pr:public_port_authority_updates"]["producer_family"] == "maritime"
 
-    nwps = r["aguayluz-pr:nwps_gauges"]
-    # Declared max_age wins over the nominal bucket window.
-    assert (nwps["cadence"], nwps["cadence_window_seconds"]) == ("realtime", 7200)
-    assert r["aguayluz-pr:stage_iv_pr"]["cadence"] == "daily"
-    fda = r["aguayluz-pr:FDA_FOOD_ENFORCEMENT"]
-    assert (fda["cadence"], fda["status"], fda["name"]) == ("weekly", "active", "FDA: FDA_FOOD_ENFORCEMENT")
-    assert r["aguayluz-pr:PR_BEACH_ADVISORIES"]["status"] == "not_active"
-    assert r["aguayluz-pr:SEMS_SUPERFUND"]["producer_family"] == "ENVIRONMENTAL_EXPOSURE"
+    assert not any(row["producer"] == "aguayluz-pr" for row in rows)
 
     for row in rows:
         assert row["cadence"] in CADENCES and row["status"] in STATUSES
@@ -235,7 +203,7 @@ def test_output_is_deterministic(workspace, tmp_path):
     b = write_monitor(*build_monitor(_registry(), workspace, now=NOW), tmp_path / "b")
     assert [p.read_bytes() for p in a] == [p.read_bytes() for p in b]
     lines = a[0].read_text().splitlines()
-    assert len(lines) == 17 and all(json.loads(line)["monitor_id"] for line in lines)
+    assert len(lines) == 12 and all(json.loads(line)["monitor_id"] for line in lines)
 
 
 def test_missing_file_and_drifted_columns_fail_soft(workspace):
@@ -251,7 +219,7 @@ def test_missing_file_and_drifted_columns_fail_soft(workspace):
     assert summary["error_count"] == 3
     # The other producers are unaffected.
     assert summary["producers"]["moneysweep-pr"]["count"] == 3
-    assert {r["producer"] for r in rows} == {"moneysweep-pr", "spiderweb-pr", "aguayluz-pr"}
+    assert {r["producer"] for r in rows} == {"moneysweep-pr", "spiderweb-pr"}
 
 
 def test_missing_checkout_and_unknown_producer_are_reported(tmp_path):
@@ -299,13 +267,6 @@ def test_cadence_from_seconds(seconds, expected):
     assert cadence_from_seconds(seconds) == expected
 
 
-def test_cadence_from_text_uses_first_word():
-    assert cadence_from_text("weekly; historical records may be revised") == "weekly"
-    assert cadence_from_text("quarterly SDWIS snapshots may revise") == "quarterly"
-    assert cadence_from_text("periodic sampling notifications") == "unknown"
-    assert cadence_from_text(None) == "unknown"
-
-
 @pytest.mark.parametrize("raw,expected", [
     ("fully_materialized", "active"), ("partially_materialized", "partial"),
     ("not_materialized", "not_active"), ("active", "active"), ("manual", "manual"),
@@ -315,17 +276,6 @@ def test_cadence_from_text_uses_first_word():
 ])
 def test_declared_status_table(raw, expected):
     assert normalize_status(raw) == expected
-
-
-@pytest.mark.parametrize("raw,expected", [
-    ("BOUND", "active"), ("CERTIFIED_2026_PUBLICATION_DENOMINATOR", "active"),
-    ("BOUND_PR_SITE_DENOMINATOR_OPEN", "partial"),
-    ("BOUND_2025_RECONCILIATION_MEMBER_AND_ARCHIVE_BYTES_PASS_WITH_UNRESOLVED_ROWS", "partial"),
-    ("OPEN_PR_DENOMINATOR", "not_active"), ("OPEN_ENDPOINT_ENUMERATION", "not_active"),
-    (None, "unknown"),
-])
-def test_binding_status(raw, expected):
-    assert binding_status(raw) == expected
 
 
 @pytest.mark.parametrize("raw,expected", [
@@ -349,9 +299,9 @@ def test_cli_writes_monitor_files(workspace, tmp_path):
     )
     out = tmp_path / "agg"
     assert main(["source-monitor", "--registry", str(reg_path), "--root", str(workspace), "--out", str(out)]) == 0
-    assert len((out / "monitored_sources.jsonl").read_text().splitlines()) == 17
+    assert len((out / "monitored_sources.jsonl").read_text().splitlines()) == 12
     summary = json.loads((out / "monitored_sources_summary.json").read_text())
-    assert summary["schema_version"] == "prii_source_monitor_v1" and summary["total"] == 17
+    assert summary["schema_version"] == "prii_source_monitor_v1" and summary["total"] == 12
 
     empty = tmp_path / "empty-ws"
     empty.mkdir()
