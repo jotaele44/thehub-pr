@@ -26,7 +26,8 @@ no runtime coupling, versioned by tag, bumped one producer at a time.
 (`src/hub/source_monitor.py`) reads each producer's own source registry from a workspace
 checkout, outside the frozen contract, because no federation stream carries monitoring data.
 It is read-only and fail-soft, writes a hub-derived `monitored_sources.jsonl` that is not a
-federation stream, and ends when producers emit the deferred `source_monitors` stream.
+federation stream, and ends producer by producer as each one emits the `source_monitors` stream
+(ADR 0013); `hub ingest` reads a producer from the stream as soon as it emits one.
 
 ## Data flow
 
@@ -50,6 +51,7 @@ exports/…/manifest.json + *.jsonl ─(fetch)──▶ hub.validate.validate_pa
                             data/aggregate/correlations.jsonl  (derived federation_relationship rows)
 
 producer source registries ──(hub source-monitor, ADR 0012)──▶ data/aggregate/monitored_sources.jsonl
+  (for producers that do not emit source_monitors yet; ingest merges both into MonitoredSources)
                                                                  (hub-derived, not a federation stream)
 ```
 
@@ -64,6 +66,7 @@ producer source registries ──(hub source-monitor, ADR 0012)──▶ data/ag
 | `transactions` | `txn_[a-f0-9]{32}` | `federation_transaction.schema.json` | optional |
 | `observations` | producer-defined | producer-specific (e.g. airspace) | optional |
 | `alerts` | `alrt_[a-f0-9]{32}` | `federation_alert.schema.json` | optional |
+| `source_monitors` | `mon_[a-f0-9]{32}` | `federation_source_monitor.schema.json` | optional |
 
 Ids are **deterministic functions of row content**, so the same fact emitted by two producers
 collapses to one aggregated row whose `_producers` list records every contributor.
@@ -218,3 +221,6 @@ Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
 - [ADR 0012 — Source monitor reads producer registries hub-side](docs/adr/0012-source-monitor-registry-adapter.md):
   a read-only, fail-soft adapter normalizes producer source registries for the Source Monitor until
   a `source_monitors` stream exists; freshness is producer-level until then.
+- [ADR 0013 — Producers report monitored sources in a `source_monitors` stream](docs/adr/0013-source-monitors-stream.md):
+  an optional frozen stream (`federation_export_manifest` 1.1.0) with a per-source last success and its
+  basis; producers adopt it one at a time and the ADR 0012 registry reader retires per producer.

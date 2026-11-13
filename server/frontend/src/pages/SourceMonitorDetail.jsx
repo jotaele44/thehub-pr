@@ -9,7 +9,7 @@ import IdCode from "@/components/shared/IdCode";
 import EmptyState from "@/components/shared/EmptyState";
 import { FRESHNESS, MONITOR_STATUS, TIER } from "@/lib/chips";
 import {
-  MONITOR_COLLECTION, PRODUCER_PAGES, exportAgeDays, formatLabel, freshnessState,
+  MONITOR_COLLECTION, PRODUCER_PAGES, ageDays, formatLabel, freshnessReference, freshnessState, successBasisLabel,
 } from "@/lib/sourceMonitor";
 
 function Field({ label, children }) {
@@ -55,7 +55,9 @@ export default function SourceMonitorDetail() {
   }
 
   const freshness = freshnessState(row);
-  const age = exportAgeDays(row);
+  const age = ageDays(row);
+  const reference = freshnessReference(row);
+  const when = (value) => (value ? new Date(value).toLocaleString() : null);
   const raw = Object.entries(row.raw || {});
   const producerPage = PRODUCER_PAGES[row.producer];
 
@@ -63,7 +65,9 @@ export default function SourceMonitorDetail() {
     <div>
       {back}
       <PageHeader icon={Gauge} title={row.name || row.source_id} badge={row.producer}
-        description="Read-only. Normalized from the producer's source registry by hub source-monitor." />
+        description={row.origin === "stream"
+          ? "Read-only. Reported by the producer in its source_monitors stream."
+          : "Read-only. Normalized from the producer's source registry by hub source-monitor."} />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section aria-labelledby="monitor-normalized" className="rounded-xl border border-border bg-card p-4">
@@ -82,14 +86,27 @@ export default function SourceMonitorDetail() {
               <StatusChip map={MONITOR_STATUS} value={formatLabel(row.status)} />
               {row.status_raw ? <span className="ml-2 text-muted-foreground">registry: {row.status_raw}</span> : null}
             </Field>
-            <Field label="Producer export">
+            <Field label="Freshness">
               <StatusChip map={FRESHNESS} value={freshness} />
               <span className="ml-2 text-muted-foreground">
-                {row.producer_last_package_at
-                  ? `${new Date(row.producer_last_package_at).toLocaleString()} (${age}d ago)`
-                  : "no export package found"}
+                {age === null ? "no time to measure from" : `${age}d ago, from the ${
+                  reference.kind === "last_success" ? "last success" : "producer's last export package"}`}
               </span>
             </Field>
+            <Field label="Last success">
+              {when(row.last_success_at)}
+              <span className={row.last_success_at ? "ml-2 text-muted-foreground" : "text-muted-foreground"}>
+                {row.last_success_at ? `(${successBasisLabel(row).toLowerCase()})` : successBasisLabel(row)}
+              </span>
+            </Field>
+            {row.last_attempt_at ? (
+              <Field label="Last attempt">
+                {when(row.last_attempt_at)}
+                {row.last_attempt_status ? <span className="ml-2 text-muted-foreground">({row.last_attempt_status})</span> : null}
+              </Field>
+            ) : null}
+            <Field label="Producer export">{when(row.producer_last_package_at) || <span className="text-muted-foreground">no export package found</span>}</Field>
+            <Field label="Origin">{row.origin === "stream" ? "source_monitors stream" : "hub registry reader"}</Field>
             <Field label="Link">
               {row.url ? (
                 <a href={row.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-status-info-fg break-all">
@@ -99,8 +116,8 @@ export default function SourceMonitorDetail() {
             </Field>
           </dl>
           <p className="mt-3 text-xs text-muted-foreground">
-            Freshness compares the producer&apos;s last export package with this source&apos;s cadence window; no
-            registry records a per-source poll time.
+            Freshness compares this source&apos;s last success with its cadence window when the producer reports one
+            (run receipt or its own outputs); otherwise it uses the producer&apos;s last export package.
           </p>
         </section>
 

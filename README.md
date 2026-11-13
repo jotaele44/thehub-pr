@@ -168,11 +168,15 @@ suits API/CLI callers today.
 `alerts → GovernanceAlerts`, `correlations → CrossoverLinks`); the mapping lives in
 [`src/hub/ingest.py`](src/hub/ingest.py), where `ingest_aggregate` drives the canonical
 streams through `_project_ui` and the `project_*` helpers (`project_producer_collections`,
-`project_crossover_links`, `project_continuity_risks`, `project_livefeed`). It also loads
-`monitored_sources.jsonl` (written by `hub source-monitor` from producer source registries; a
-hub-derived file, not a federation stream, [ADR 0012](docs/adr/0012-source-monitor-registry-adapter.md))
-into `MonitoredSources`, replacing that collection on each run. The read-only Source Monitor
-(`/source-monitor` and a Sources tab on each producer page) reads it. Pages backed by these
+`project_crossover_links`, `project_continuity_risks`, `project_livefeed`). It also builds
+`MonitoredSources` with `project_source_monitors`, replacing that collection on each run: a
+producer that emits the optional `source_monitors` stream
+([ADR 0013](docs/adr/0013-source-monitors-stream.md); canonical rows land in `SourceMonitors`) is
+read from it, with each source's last success and how that time is known, and every other
+producer comes from `monitored_sources.jsonl` (written by `hub source-monitor` from producer
+source registries; a hub-derived file, not a federation stream,
+[ADR 0012](docs/adr/0012-source-monitor-registry-adapter.md)). The read-only Source Monitor
+(`/source-monitor` and a Monitor tab on each producer page) reads it. Pages backed by these
 collections (Sources, the Spiderweb graph, cross-producer links) render live aggregate data;
 domain-heavy pages that need per-domain fields the aggregate does not yet carry (contracts,
 feeds, cases) stay empty until producers emit that data. If `dist/` is not built, the backend

@@ -6,7 +6,7 @@ import IdCode from "@/components/shared/IdCode";
 import { FRESHNESS, MONITOR_STATUS, TIER } from "@/lib/chips";
 import {
   FRESHNESS_STATES, MONITOR_CADENCES, MONITOR_COLLECTION, MONITOR_PRODUCERS,
-  MONITOR_STATUSES, MONITOR_TIERS, formatLabel, monitorPath, withFreshness,
+  MONITOR_STATUSES, MONITOR_TIERS, SUCCESS_BASES, formatLabel, monitorPath, withFreshness,
 } from "@/lib/sourceMonitor";
 
 // One read-only template for monitored sources (ADR 0012). Without `producer` it is
@@ -37,12 +37,17 @@ export default function SourceMonitorLedger({ producer, now }) {
       render: (r) => <StatusChip map={MONITOR_STATUS} value={formatLabel(r.status)} />,
     },
     {
-      key: "freshness_rank", label: "Producer export",
+      key: "freshness_rank", label: "Freshness",
       render: (r) => (
-        <span className="inline-flex items-center gap-2 whitespace-nowrap">
-          <StatusChip map={FRESHNESS} value={r.freshness} />
-          <span className="text-xs text-muted-foreground">
-            {r.export_age_days === null || r.export_age_days === undefined ? "no export" : `${r.export_age_days}d ago`}
+        <span className="inline-flex flex-col gap-0.5 whitespace-nowrap">
+          <span className="inline-flex items-center gap-2">
+            <StatusChip map={FRESHNESS} value={r.freshness} />
+            <span className="text-xs text-muted-foreground">
+              {r.age_days === null || r.age_days === undefined ? "no time" : `${r.age_days}d ago`}
+            </span>
+          </span>
+          <span className="text-[11px] text-muted-foreground" data-freshness-kind={r.freshness_kind}>
+            {r.freshness_kind === "last_success" ? `last success · ${r.success_basis.toLowerCase()}` : "producer export"}
           </span>
         </span>
       ),
@@ -52,6 +57,7 @@ export default function SourceMonitorLedger({ producer, now }) {
   const filterDefs = useMemo(() => [
     ...(producer ? [] : [{ key: "producer", label: "Producer", options: MONITOR_PRODUCERS }]),
     { key: "freshness", label: "Freshness", options: FRESHNESS_STATES },
+    { key: "success_basis", label: "Basis", options: SUCCESS_BASES },
     { key: "status", label: "Status", options: MONITOR_STATUSES },
     { key: "evidence_tier", label: "Tier", options: MONITOR_TIERS },
     { key: "cadence", label: "Cadence", options: MONITOR_CADENCES },
@@ -60,9 +66,10 @@ export default function SourceMonitorLedger({ producer, now }) {
   return (
     <div>
       <p className="mb-3 text-xs text-muted-foreground">
-        Read-only. Sources {producer ? "this producer monitors" : "every producer monitors"}, normalized from
-        producer registries by <code>hub source-monitor</code> and replaced on every hub ingest. Freshness is the
-        age of the producer&apos;s last export package against each source&apos;s cadence, not a per-source poll.
+        Read-only. Sources {producer ? "this producer monitors" : "every producer monitors"}, from the
+        producer&apos;s <code>source_monitors</code> stream where it emits one and otherwise from its registry via{" "}
+        <code>hub source-monitor</code>; replaced on every hub ingest. Freshness uses a source&apos;s own last
+        success when the producer reports one, and otherwise the age of the producer&apos;s last export package.
       </p>
       <EntityLedger
         entityName={MONITOR_COLLECTION}

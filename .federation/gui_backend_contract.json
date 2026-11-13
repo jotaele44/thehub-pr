@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "acc476b3812a889baa2c1fd8b24afecd140738f9",
+  "source_commit": "20728ac8abb4a23114a5357de3d304f022affc6a",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -2092,6 +2092,29 @@
         "server/frontend/src/components/sky/SkyWorkspace.jsx:293",
         "server/frontend/src/sky/spaceWeather.js:11",
         "server/frontend/src/components/sky/SkyWorkspace.test.jsx:271"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/ExclusionPanel\\.jsx:[0-9]+:\\)\\}$",
+      "classification": "CLIENT_STATE",
+      "rationale": "The exclusion form's shared Select element. Its onChange arrives through the spread props, so the scanner sees no handler; its only use is the Azimuth reference field, whose onChange is set('azimuthReference'), which only updates the observation draft held in component state; no backend request.",
+      "evidence": [
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:49",
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:230",
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:325",
+        "server/frontend/src/components/sky/ExclusionPanel.test.jsx:36",
+        "server/frontend/tests/visual/gui-parity.spec.js:1080"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/ExclusionPanel\\.jsx:[0-9]+:Download the receipt \\(JSON\\)$",
+      "classification": "BROWSER_ACTION",
+      "rationale": "This control serializes the already-computed exclusion receipt in the browser (a Blob behind a temporary object URL and download link) and saves it; it performs no Hub backend mutation and requires no separate backend endpoint, like the AOI comparison receipt download.",
+      "evidence": [
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:209",
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:277-287",
+        "server/frontend/src/components/sky/ExclusionPanel.test.jsx:288",
+        "server/frontend/tests/visual/gui-parity.spec.js:1131"
       ]
     }
   ],

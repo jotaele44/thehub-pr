@@ -32,6 +32,29 @@ architecturally different bridge/wrapper around
 `moneysweep.federation.canonical_v1_bridge` with an intentionally different
 serialization contract, independently unit-tested for byte-reproducibility.
 
+## `source_monitors` helpers (0.2.0, ADR 0013)
+
+Producers that emit the `source_monitors` federation stream
+(`schemas/federation_source_monitor.schema.json`) build each row with
+`source_monitor_row(...)`, which checks the vocabularies and the rule that
+`last_success_at` is null exactly when `last_success_basis` is `NOT_RECORDED`, and
+derives `monitor_id` as `fid("mon", producer, source_ref)`.
+
+When a source last succeeded comes from one of two places, combined by
+`resolve_last_success(state_row, derived_at)` (the more recent wins; a tie goes to
+the run receipt):
+
+- **Run receipts:** fetch scripts call `record_run(path, source_id, "success" |
+  "failure" | "partial")`, which overwrites that source's row in the producer's
+  committed `data/source_run_state.json` (`SourceRunState`; atomic write, sorted
+  keys, so a run makes a small, stable diff).
+- **Output-derived:** a timestamp the producer reads from its own outputs, such as
+  the latest retrieval of a source.
+
+Neither is ever inferred from file modification times or git history.
+
+These helpers need a pin at or after the thehub-pr commit that adds them.
+
 ## Installing (git URL, no package index required)
 
 ```

@@ -61,3 +61,24 @@ describe("SourceMonitorDetail", () => {
     expect(await screen.findByText("Monitored source not found")).toBeInTheDocument();
   });
 });
+
+
+describe("SourceMonitorDetail for a stream row", () => {
+  beforeEach(() => vi.mocked(federation.entities.MonitoredSources.get).mockClear());
+
+  it("shows the reported last success, its basis, the last attempt and the stream origin", async () => {
+    vi.mocked(federation.entities.MonitoredSources.get).mockResolvedValue({
+      ...ROW, id: "aguayluz-pr:nwps_gauges", monitor_id: "aguayluz-pr:nwps_gauges", producer: "aguayluz-pr",
+      source_id: "nwps_gauges", name: "NWPS river gauges", origin: "stream",
+      last_success_basis: "RUN_RECEIPT", last_success_at: "2026-11-08T15:47:31Z",
+      last_attempt_at: "2026-11-09T15:47:31Z", last_attempt_status: "failure",
+      producer_last_package_at: "2026-11-10T00:00:00Z",
+    });
+    renderAt("/source-monitor/aguayluz-pr%3Anwps_gauges");
+    expect(await screen.findByRole("heading", { name: "NWPS river gauges" })).toBeInTheDocument();
+    expect(screen.getByText("(run receipt)")).toBeInTheDocument();
+    expect(screen.getByText("(failure)")).toBeInTheDocument();
+    expect(screen.getByText("source_monitors stream")).toBeInTheDocument();
+    expect(screen.getByText(/from the last success$/)).toBeInTheDocument();
+  });
+});
