@@ -1,0 +1,93 @@
+{
+ "manifest": "FEDERATION_PROJECT_RENAME_MANIFEST_V1",
+ "generated_at": "2026-10-06T19:33:17.005927+00:00",
+ "state": "IDENTITY_FROZEN",
+ "effective_timestamp": null,
+ "projects": [
+  {
+   "stable_project_id": "federation.project.thehub_pr",
+   "old_canonical_name": "TheHub-PR",
+   "new_canonical_name": "Batey-PR",
+   "old_slug": "thehub-pr",
+   "new_slug": "batey-pr",
+   "migration_type": "RENAME",
+   "historical_alias_status": "RETAIN",
+   "repo_status": "OPEN",
+   "deployment_status": "OPEN",
+   "db_status": "OPEN",
+   "certification": "OPEN",
+   "rollback_target": "f346c03d191ec332ff771af7370a43c4b226204b"
+  },
+  {
+   "stable_project_id": "federation.project.moneysweep_pr",
+   "old_canonical_name": "MoneySweep-PR",
+   "new_canonical_name": "Chanchullos-PR",
+   "old_slug": "moneysweep-pr",
+   "new_slug": "chanchullos-pr",
+   "migration_type": "RENAME",
+   "historical_alias_status": "RETAIN",
+   "repo_status": "OPEN",
+   "deployment_status": "OPEN",
+   "db_status": "OPEN",
+   "certification": "OPEN",
+   "rollback_target": "905c57fc7368bacad569c3bbe565af6006dc19ee"
+  },
+  {
+   "stable_project_id": "federation.project.centinelas_pr",
+   "old_canonical_name": "Centinelas-PR",
+   "new_canonical_name": "Cronos-PR",
+   "old_slug": "centinelas-pr",
+   "new_slug": "cronos-pr",
+   "migration_type": "RENAME_PLUS_FUNCTIONAL_REBUILD",
+   "historical_alias_status": "RETAIN",
+   "repo_status": "OPEN",
+   "deployment_status": "OPEN",
+   "db_status": "OPEN",
+   "certification": "OPEN",
+   "rollback_target": "1fcf246b9c3b7df0fcab066983347f8e3d5e630a"
+  },
+  {
+   "stable_project_id": "federation.project.skywatcher_pr",
+   "old_canonical_name": "Skywatcher-PR",
+   "new_canonical_name": "Pitirre-PR",
+   "old_slug": "skywatcher-pr",
+   "new_slug": "pitirre-pr",
+   "migration_type": "RENAME",
+   "historical_alias_status": "RETAIN",
+   "repo_status": "OPEN",
+   "deployment_status": "OPEN",
+   "db_status": "OPEN",
+   "certification": "OPEN",
+   "rollback_target": "2100e6527d49abc302b804d3175feea9ce614eb4"
+  },
+  {
+   "stable_project_id": "federation.project.spiderweb_pr",
+   "old_canonical_name": "Spiderweb-PR",
+   "new_canonical_name": "Borikén-PR",
+   "old_slug": "spiderweb-pr",
+   "new_slug": "boriken-pr",
+   "migration_type": "RENAME",
+   "historical_alias_status": "RETAIN",
+   "repo_status": "OPEN",
+   "deployment_status": "OPEN",
+   "db_status": "OPEN",
+   "certification": "OPEN",
+   "rollback_target": "71a345fb9bebaa411761f6d61e6e736cca499b80"
+  }
+ ],
+ "migration_order": [
+  "registry+compat",
+  "spiderweb->Borikén",
+  "moneysweep->Chanchullos",
+  "skywatcher->Pitirre",
+  "centinelas->Cronos",
+  "thehub->Batey",
+  "reconcile"
+ ],
+ "retained_unchanged": [
+  "aguayluz-pr",
+  "ovnis-pr",
+  "mucaro-ai"
+ ],
+ "public_branding": "BLOCKED_PENDING_NAMING_DUE_DILIGENCE"
+}
