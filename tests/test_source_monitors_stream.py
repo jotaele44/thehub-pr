@@ -159,6 +159,32 @@ def test_stream_rows_replace_a_producers_adapter_rows(tmp_path):
     assert summary["total"] == 3
 
 
+def test_a_stream_producer_without_stream_rows_is_flagged_not_dropped(tmp_path):
+    # The registry reader marks producers it no longer reads (STREAM_PRODUCERS);
+    # an aggregate without their stream rows must show the gap, not hide them.
+    agg = tmp_path / "agg"
+    _write_jsonl(agg / "monitored_sources.jsonl", [
+        {"monitor_id": "ovnis-pr:SRC-0001", "producer": "ovnis-pr", "source_id": "SRC-0001"},
+    ])
+    (agg / "monitored_sources_summary.json").write_text(json.dumps({
+        "schema_version": "prii_source_monitor_v1", "generated_at": TS, "total": 1, "error_count": 0,
+        "producers": {
+            "aguayluz-pr": {"count": 0, "errors": [], "excluded": {}, "reports_via_stream": True},
+            "ovnis-pr": {"count": 1, "errors": [], "excluded": {}},
+        },
+    }))
+    _, summary = project_source_monitors(agg, now=TS)
+    gap = summary["producers"]["aguayluz-pr"]
+    assert gap["origin"] == "stream" and gap["count"] == 0
+    assert gap["errors"] == ["reports through the source_monitors stream, but this aggregate has no rows from it"]
+    assert summary["error_count"] == 1 and summary["stream_producers"] == []
+
+    _write_jsonl(agg / "source_monitors.jsonl", [{**_stream_row("nwps_gauges"), "_producers": ["aguayluz-pr"]}])
+    _, summary = project_source_monitors(agg, now=TS)
+    assert summary["producers"]["aguayluz-pr"]["errors"] == [] and summary["error_count"] == 0
+    assert summary["stream_producers"] == ["aguayluz-pr"]
+
+
 def test_stream_only_aggregate_builds_its_own_summary(tmp_path):
     agg = tmp_path / "agg"
     _write_jsonl(agg / "source_monitors.jsonl", [{**_stream_row("nwps_gauges"), "_producers": ["aguayluz-pr"]}])
