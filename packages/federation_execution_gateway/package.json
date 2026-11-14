@@ -1,0 +1,12 @@
+{
+  "name": "federation-execution-gateway-v2",
+  "version": "2.0.0",
+  "private": true,
+  "dependencies": {
+    "pg": "^8.13.1",
+    "@vercel/sandbox": "latest"
+  },
+  "scripts": {
+    "test": "node --test tests/contract.spec.mjs"
+  }
+}

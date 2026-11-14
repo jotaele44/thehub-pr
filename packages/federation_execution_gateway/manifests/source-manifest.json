@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "federation_gateway_source_manifest_v1",
+  "state": "CANDIDATE",
+  "sourceRepository": {
+    "repositoryId": "github:1258897469",
+    "repository": "jotaele44/thehub-pr",
+    "baseRevision": "9adf06d31ddffef1010d3d6461373ca3300f48be"
+  },
+  "canonicalRoot": "packages/federation_execution_gateway",
+  "importedFrom": {
+    "vercelProjectId": "prj_BFTCVns0Pl8qB6AySajZQCK5hFBU",
+    "deploymentId": "dpl_HJcSNFBNUKKKoZC4BofHEHibbGLH",
+    "previewAlias": "federation-execution-gateway-v2-preview.vercel.app",
+    "deploymentSourceFiles": [
+      {
+        "path": "api/index.js",
+        "vercelUid": "4a5805bc9c2995eda3be342768bb9eed797d4212"
+      },
+      {
+        "path": "package.json",
+        "vercelUid": "58bddad556c329d7e486cb507a8a3244cc09b089"
+      },
+      {
+        "path": "vercel.json",
+        "vercelUid": "f8cf0c768429b204572b998a92eb0cfa7d816e34"
+      }
+    ]
+  },
+  "declaredFiles": [
+    "api/index.js",
+    "package.json",
+    "vercel.json",
+    "README.md",
+    "contracts/federation-execution-gateway-v2.json",
+    "manifests/authority-partition.json",
+    "manifests/source-manifest.json",
+    "tests/contract.spec.mjs"
+  ]
+}
