@@ -66,6 +66,11 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Lint
         run: npm run lint
+      # jsconfig.json sets checkJs: false, so this verifies module resolution and
+      # config across the included .js/.jsx, not full type inference. It passes
+      # today; gating it keeps it passing while checkJs is widened.
+      - name: Typecheck
+        run: npm run typecheck
       - name: Tests
         run: npm run test
       - name: Build
@@ -190,3 +195,33 @@ jobs:
         run: mypy packages/prii_export_utils/src
       - name: Tests
         run: pytest packages/prii_export_utils/tests -q
+
+  # One stable check name that summarises this workflow, so `main` can require a
+  # single status instead of every job (and every matrix leg) by name. `if: always()`
+  # matters: a job skipped because a dependency failed reports "skipped", which
+  # GitHub treats as passing for a required check.
+  ci-required:
+    if: always()
+    needs:
+      - test
+      - lock
+      - frontend
+      - frontend-visual
+      - lint
+      - audit-claims
+      - audit-claims-federation
+      - maintenance-package
+      - export-utils-package
+    runs-on: ubuntu-latest
+    steps:
+      - name: All Hub CI jobs succeeded
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "job results: $RESULTS"
+          for result in $RESULTS; do
+            if [ "$result" != "success" ]; then
+              echo "::error::a Hub CI job finished as '$result'"
+              exit 1
+            fi
+          done
