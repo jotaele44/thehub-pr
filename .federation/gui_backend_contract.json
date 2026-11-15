@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "ccb7b757995d75824195bd3025975fd53f0dfe04",
+  "source_commit": "870e5975603c5a2f50778c542cc77d2d792480c9",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -2051,6 +2051,70 @@
       "evidence": [
         "server/frontend/src/components/constellation/NodeDetails.jsx:121",
         "server/frontend/tests/visual/gui-parity.spec.js:503"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/SourceMonitor(?:Detail)?\\.jsx:[0-9]+:unlabeled-control$",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The producer name in the Source Monitor summary table and on a source's detail page links to that producer's Hub page; the target comes from the module registry (PRODUCER_PAGES in lib/sourceMonitor.js, derived from MODULES) and no backend request is made.",
+      "evidence": [
+        "server/frontend/src/pages/SourceMonitor.jsx:65",
+        "server/frontend/src/pages/SourceMonitorDetail.jsx:74",
+        "server/frontend/src/pages/SourceMonitorDetail.test.jsx:51",
+        "server/frontend/src/lib/sourceMonitor.test.js:56"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/SatellitesPanel\\.jsx:[0-9]+:unlabeled-control$",
+      "classification": "CLIENT_STATE",
+      "rationale": "The Show/Hide pass-track button (its label names the satellite and pass, so it is dynamic) calls onShowTrack, which only changes which pass track the Sky workspace draws; no backend request.",
+      "evidence": [
+        "server/frontend/src/components/sky/SatellitesPanel.jsx:87",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx:154"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/SkyWorkspace\\.jsx:[0-9]+:Apply observer$",
+      "classification": "CLIENT_STATE",
+      "rationale": "Submitting the observer form runs applyObserver, which validates the draft coordinates, builds the observer with makeObserver and updates the sky URL state; no backend request.",
+      "evidence": [
+        "server/frontend/src/components/sky/SkyWorkspace.jsx:219",
+        "server/frontend/src/components/sky/SkyWorkspace.jsx:396",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx:170",
+        "server/frontend/tests/visual/gui-parity.spec.js:978"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/SkyWorkspace\\.jsx:[0-9]+:Refresh space weather$",
+      "classification": "BROWSER_ACTION",
+      "rationale": "The button refetches the space-weather query, whose loadSpaceWeather reads NOAA SWPC products (services.swpc.noaa.gov) directly from the browser and keeps them in query state; it is not a Hub backend call.",
+      "evidence": [
+        "server/frontend/src/components/sky/SkyWorkspace.jsx:293",
+        "server/frontend/src/sky/spaceWeather.js:11",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx:271"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/ExclusionPanel\\.jsx:[0-9]+:\\)\\}$",
+      "classification": "CLIENT_STATE",
+      "rationale": "The exclusion form's shared Select element. Its onChange arrives through the spread props, so the scanner sees no handler; its only use is the Azimuth reference field, whose onChange is set('azimuthReference'), which only updates the observation draft held in component state; no backend request.",
+      "evidence": [
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:49",
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:230",
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:325",
+        "server/frontend/src/components/sky/ExclusionPanel.test.jsx:36",
+        "server/frontend/tests/visual/gui-parity.spec.js:1080"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/ExclusionPanel\\.jsx:[0-9]+:Download the receipt \\(JSON\\)$",
+      "classification": "BROWSER_ACTION",
+      "rationale": "This control serializes the already-computed exclusion receipt in the browser (a Blob behind a temporary object URL and download link) and saves it; it performs no Hub backend mutation and requires no separate backend endpoint, like the AOI comparison receipt download.",
+      "evidence": [
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:209",
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:277-287",
+        "server/frontend/src/components/sky/ExclusionPanel.test.jsx:288",
+        "server/frontend/tests/visual/gui-parity.spec.js:1131"
       ]
     }
   ],

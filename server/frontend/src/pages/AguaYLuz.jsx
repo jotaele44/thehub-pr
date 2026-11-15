@@ -2,6 +2,7 @@ import React from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
+import SourceMonitorLedger from "@/components/sources/SourceMonitorLedger";
 import AguaYLuzFeedTab from "@/components/feed/AguaYLuzFeedTab";
 import IntelligenceWorkspace from "@/components/intelligence/IntelligenceWorkspace";
 import StatusChip from "@/components/shared/StatusChip";
@@ -281,6 +282,7 @@ export default function AguaYLuz() {
           <TabsTrigger value="alerts">Operational Alerts</TabsTrigger>
           <TabsTrigger value="risks">Continuity Risks</TabsTrigger>
           <TabsTrigger value="outdoor">Outdoor Conditions</TabsTrigger>
+          <TabsTrigger value="sources">Monitor</TabsTrigger>
         </TabsList>
         <TabsContent value="workspace">
           <IntelligenceWorkspace adapter={INTELLIGENCE_ADAPTERS.aguayluz} />
@@ -340,6 +342,9 @@ export default function AguaYLuz() {
             emptyTitle="No outdoor conditions"
             emptyDescription="No outdoor-condition rows from aguayluz-pr in the current aggregate. Run the Hub aggregate/ingest against an AguaYLuz federation export that includes data/outdoor_conditions.jsonl."
             searchPlaceholder="Search municipios, drivers, alerts…" />
+        </TabsContent>
+        <TabsContent value="sources">
+          <SourceMonitorLedger producer="aguayluz-pr" />
         </TabsContent>
       </Tabs>
     </div>

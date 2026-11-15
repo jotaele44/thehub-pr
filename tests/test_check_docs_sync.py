@@ -784,6 +784,23 @@ def test_staged_broken_reference_is_an_error(tmp_path, capsys):
     assert code == 1 and "README.md points at 'docs/guide.md'" in out
 
 
+def test_staged_skips_an_author_the_committed_manifest_exempts(tmp_path, capsys):
+    repo, _ = make_repo(tmp_path, {**MANIFEST, "exempt_authors": ["release-bot"]})
+    repo.git("mv", "docs/guide.md", "docs/manual.md")
+    code, out = run(capsys, repo, "--staged", "--author", "release-bot")
+    assert code == 0 and "exempt in the base manifest" in out
+    assert run(capsys, repo, "--staged", "--author", "someone-else")[0] == 1
+
+
+def test_staged_does_not_trust_an_exemption_added_in_the_index(tmp_path, capsys):
+    repo, _ = make_repo(tmp_path)
+    repo.set_manifest({**MANIFEST, "exempt_authors": ["mallory"]})
+    repo.git("mv", "docs/guide.md", "docs/manual.md")
+    repo.git("add", "-A")
+    code, out = run(capsys, repo, "--staged", "--author", "mallory")
+    assert code == 1 and "README.md points at 'docs/guide.md'" in out and "skipped" not in out
+
+
 def test_staged_on_a_repo_with_no_commits_is_a_quiet_pass(tmp_path, capsys):
     repo = Repo(tmp_path / "fresh")
     repo.root.mkdir()
