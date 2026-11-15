@@ -297,6 +297,12 @@ const spatial = {
   },
 };
 
+// Federation Constellation: the apps as one code and content graph. Read-only; see
+// server/backend/constellation_api.py.
+const constellation = {
+  get: () => request('/constellation'),
+};
+
 export const federation = {
   app: { id: appParams.appId, programId: appParams.programId },
   auth,
@@ -315,5 +321,6 @@ export const federation = {
   timeline,
   research,
   spatial,
+  constellation,
   request,
 };

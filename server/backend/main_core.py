@@ -688,15 +688,27 @@ _SPA_ROOT_FILES = {
 }
 
 
+# Directories the build emits beside index.html that are served as files: Vite's
+# hashed bundles, and Cesium's runtime (workers, assets, widget CSS), which Cesium
+# fetches by URL from /cesium/ (see cesiumRuntimeAssets in vite.config.js).
+_STATIC_DIRS = ("assets", "cesium")
+
+
 def _spa_file(full_path: str) -> Path:
     candidate = _SPA_ROOT_FILES.get(full_path)
     if candidate is not None and candidate.is_file():
         return candidate
     return _SPA_INDEX
 
+
+def _mount_static_dirs(target: FastAPI, dist: Path) -> None:
+    for name in _STATIC_DIRS:
+        if (dist / name).is_dir():
+            target.mount(f"/{name}", StaticFiles(directory=dist / name), name=name)
+
+
 if DIST.is_dir():
-    if (DIST / "assets").is_dir():
-        app.mount("/assets", StaticFiles(directory=DIST / "assets"), name="assets")
+    _mount_static_dirs(app, DIST)
 
     @app.get("/{full_path:path}")
     def spa(full_path: str):

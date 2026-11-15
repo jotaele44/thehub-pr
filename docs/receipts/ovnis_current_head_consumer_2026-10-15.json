@@ -1,0 +1,91 @@
+{
+  "schema": "thehub.ovnis-current-head-consumer-receipt/v1",
+  "recorded_at": "2026-10-15T19:45:58Z",
+  "result": "PASS",
+  "consumer_scope": "ISOLATED_CURRENT_HEAD_AUTHORITY_PATH_NOT_PRODUCTION_DEPLOYMENT",
+  "authority": {
+    "repository": "jotaele44/thehub-pr",
+    "hub_commit": "60bcdaaa69add1cee1a57b91c8ce4525bda6db88",
+    "workflow_run_id": 38796693932,
+    "workflow_artifact_id": 12001244612,
+    "workflow_artifact_digest": "sha256:ff7e62029472bf870da6a0622dd43c38a7a2592b4ac852b0190cfb1f9882fc9a",
+    "commands": [
+      "hub validate-package",
+      "hub aggregate",
+      "hub correlate",
+      "hub ingest"
+    ]
+  },
+  "producer": {
+    "repository": "jotaele44/ovnis-pr",
+    "commit": "70c1f66383acf59d87cf7ec24ee9a46c48022951",
+    "frozen_created_at": "2026-10-15T19:45:58Z",
+    "package_id": "pkg_f006c7c911425237eea9bf92bf574780",
+    "manifest_sha256": "5497cb35f17d1d70a6d84669f5b1ee5845a44db8cfaca378a3680a96f43f543a",
+    "streams": {
+      "sources": {
+        "rows": 280,
+        "sha256": "854512d27a5c8a0b79ee093d9301b90c1b35678f6930fa047b47b0013978bfe7"
+      },
+      "entities": {
+        "rows": 1266,
+        "sha256": "8ece3530eba370af47f9c4303d034898e80f58443ae8d6f80bf2ea15a044bcbe"
+      },
+      "relationships": {
+        "rows": 1147,
+        "sha256": "a2acf0361292fb31fc96b0127c36e845d8dd25d08cc9532e73d7ba45de23bf01"
+      },
+      "observations": {
+        "rows": 470,
+        "sha256": "ced88345634572bb1100827a5134e217daf036ae8ad571a89be5eb645053fc2c"
+      }
+    }
+  },
+  "aggregate": {
+    "sources": {
+      "rows": 280,
+      "bytes": 200042,
+      "sha256": "06733807fd4875b0815cfc2b66a2705af611a45af6df82a5411eb99fad7cf5e4"
+    },
+    "entities": {
+      "rows": 1266,
+      "bytes": 2581322,
+      "sha256": "da79993c2cf09f0b9bd2aaee7f1f264eea80f853d3adbdefb5953ee6f5d74f0e"
+    },
+    "relationships": {
+      "rows": 1147,
+      "bytes": 912259,
+      "sha256": "9d64b66277870813e552a9bfae377cc5d49bd09e338a52a2b29a812626b2c919"
+    },
+    "observations": {
+      "rows": 470,
+      "bytes": 682536,
+      "sha256": "f9e23cb34a560ba63d6e8387d1fe8f209fd8df01bf6298f5c993de01a445dd58"
+    },
+    "correlations": {
+      "rows": 0,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "isolated_hub_store": {
+    "bytes": 13996032,
+    "sha256": "8d4fc5b9c23fd6695a216b719b42ab8b594a9fe56e284b7ccd5cbe3b52dc93d1"
+  },
+  "logs": {
+    "aggregate_sha256": "4318aa8a267e7634886b6a11929ff4020bd5e1e3c215ee12a0c1fc69805e8e1e",
+    "correlate_sha256": "7c677c236233cf61455abca721d6370ba6f7a6b74492a2cb316ce09e117d5068",
+    "ingest_sha256": "f4f47f51c58b90a0c1398f19e9fff632d25c3d16199b5b2113b88dc9a606e8e1"
+  },
+  "invariants": {
+    "producer_package_byte_identity_asserted_before_validation": true,
+    "validator_passed": true,
+    "aggregate_passed": true,
+    "correlate_passed": true,
+    "ingest_passed": true,
+    "production_store_mutated": false,
+    "committed_fixture_mutated": false,
+    "zero_correlations_interpreted_as_identity_proof": false
+  },
+  "boundary": "This proves byte-identical current-material-head OVNIS package compatibility through TheHub's authoritative isolated validate/aggregate/correlate/ingest path. It is not production deployment or committed-fixture promotion."
+}

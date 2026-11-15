@@ -4,13 +4,16 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { circlePolygon, featureCollection } from '@/gis/propertyMap';
 
 // MapLibre surface for the Property Map. It only draws what it is given: Hub
-// points styled by declared precision, municipio outlines for area references
-// (dashed, never a point) and the Location Intel radius. Clicking a point
+// points styled by declared precision, outlines (municipio area references by
+// default: dashed, never a point; a view may restyle them for documented
+// layers), an optional profile line and the Location Intel radius. Clicking a point
 // selects it; clicking elsewhere picks a location for Location Intel.
 const FEATURES = 'pm-features';
 const SELECTED = 'pm-selected';
 const OUTLINE = 'pm-area-references';
 const INTEL = 'pm-intel';
+const PROFILE = 'pm-profile';
+const DEFAULT_OUTLINE = Object.freeze({ color: '#a78bfa', dashed: true });
 
 function rasterSource(basemap) {
   return { type: 'raster', tiles: [basemap.url], tileSize: 256, attribution: basemap.attribution || '' };
@@ -44,6 +47,15 @@ function addLayers(map) {
     id: `${OUTLINE}-line`, type: 'line', source: OUTLINE,
     paint: { 'line-color': '#a78bfa', 'line-width': 2, 'line-dasharray': [3, 2] },
   });
+  map.addSource(PROFILE, { type: 'geojson', data: empty });
+  map.addLayer({
+    id: `${PROFILE}-line`, type: 'line', source: PROFILE, filter: ['==', ['geometry-type'], 'LineString'],
+    paint: { 'line-color': '#f8fafc', 'line-width': 3 },
+  });
+  map.addLayer({
+    id: `${PROFILE}-end`, type: 'circle', source: PROFILE, filter: ['==', ['geometry-type'], 'Point'],
+    paint: { 'circle-radius': 5, 'circle-color': '#f8fafc', 'circle-stroke-color': '#0f172a', 'circle-stroke-width': 2 },
+  });
   map.addSource(INTEL, { type: 'geojson', data: empty });
   map.addLayer({
     id: `${INTEL}-radius`, type: 'line', source: INTEL, filter: ['==', ['geometry-type'], 'Polygon'],
@@ -61,15 +73,26 @@ function addLayers(map) {
   });
 }
 
+function sameView(a, b) {
+  return Math.abs(a.center[0] - b.center[0]) < 1e-7 && Math.abs(a.center[1] - b.center[1]) < 1e-7
+    && Math.abs(a.zoom - b.zoom) < 1e-4 && Math.abs((a.bearing || 0) - (b.bearing || 0)) < 1e-3;
+}
+
+// Optional `view`/`onViewChange` make the camera controlled, so several panels
+// can follow one shared view (Digital Twin); a view this map just published is
+// never re-applied to it.
 export default function PropertyMapCanvas({
   basemap, initialView, features, paint, outline, selectedId, intelPoint, radiusM, focusPoint, onSelectFeature, onPickPoint,
+  view, onViewChange, outlineStyle = DEFAULT_OUTLINE, profile = null, testId = 'property-map-canvas',
+  label = 'Property Map. Every mapped record is also listed under Mapped records.',
 }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
-  const handlers = useRef({ onSelectFeature, onPickPoint });
+  const applyingRef = useRef(false);
+  const handlers = useRef({ onSelectFeature, onPickPoint, onViewChange });
   const [ready, setReady] = useState(false);
   const [drawn, setDrawn] = useState(0);
-  handlers.current = { onSelectFeature, onPickPoint };
+  handlers.current = { onSelectFeature, onPickPoint, onViewChange };
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return undefined;
@@ -94,8 +117,13 @@ export default function PropertyMapCanvas({
     });
     map.on('click', (event) => {
       const hit = map.getLayer(FEATURES) ? map.queryRenderedFeatures(event.point, { layers: [FEATURES] })[0] : null;
-      if (hit?.properties?.evidence_id) handlers.current.onSelectFeature(hit.properties.evidence_id);
-      else handlers.current.onPickPoint({ lon: event.lngLat.lng, lat: event.lngLat.lat });
+      if (hit?.properties?.evidence_id) handlers.current.onSelectFeature?.(hit.properties.evidence_id);
+      else handlers.current.onPickPoint?.({ lon: event.lngLat.lng, lat: event.lngLat.lat });
+    });
+    map.on('moveend', () => {
+      if (applyingRef.current || !handlers.current.onViewChange) return;
+      const center = map.getCenter();
+      handlers.current.onViewChange({ center: [center.lng, center.lat], zoom: map.getZoom(), bearing: map.getBearing() });
     });
     map.on('mouseenter', FEATURES, () => { map.getCanvas().style.cursor = 'pointer'; });
     map.on('mouseleave', FEATURES, () => { map.getCanvas().style.cursor = ''; });
@@ -122,6 +150,23 @@ export default function PropertyMapCanvas({
   }, [ready, selectedId]);
 
   useEffect(() => {
+    if (!ready || !mapRef.current) return;
+    const map = mapRef.current;
+    // One colour, or a colour per value of a feature property (for example study and control AOIs).
+    const { color, dashed, byProperty } = outlineStyle;
+    const paint = byProperty
+      ? ['match', ['get', byProperty.name], ...Object.entries(byProperty.colors).flat(), color]
+      : color;
+    map.setPaintProperty(`${OUTLINE}-fill`, 'fill-color', paint);
+    map.setPaintProperty(`${OUTLINE}-line`, 'line-color', paint);
+    map.setPaintProperty(`${OUTLINE}-line`, 'line-dasharray', dashed ? [3, 2] : [1, 0]);
+  }, [ready, outlineStyle]);
+
+  useEffect(() => {
+    if (ready) mapRef.current?.getSource(PROFILE).setData(profile || featureCollection([]));
+  }, [ready, profile]);
+
+  useEffect(() => {
     if (ready) mapRef.current?.getSource(INTEL).setData(intelData(intelPoint, radiusM));
   }, [ready, intelPoint, radiusM]);
 
@@ -129,15 +174,26 @@ export default function PropertyMapCanvas({
     if (ready && focusPoint) mapRef.current?.easeTo({ center: [focusPoint.lon, focusPoint.lat] });
   }, [ready, focusPoint]);
 
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!ready || !map || !view) return;
+    const center = map.getCenter();
+    if (sameView(view, { center: [center.lng, center.lat], zoom: map.getZoom(), bearing: map.getBearing() })) return;
+    applyingRef.current = true;
+    // jumpTo fires moveend synchronously, so the reset is registered first.
+    map.once('moveend', () => { applyingRef.current = false; });
+    map.jumpTo({ center: view.center, zoom: view.zoom, bearing: view.bearing || 0 });
+  }, [ready, view]);
+
   return (
     <div
       ref={containerRef}
-      data-testid="property-map-canvas"
+      data-testid={testId}
       data-map-ready={ready ? 'true' : 'false'}
       data-feature-count={features.length}
       data-drawn-count={drawn}
       role="region"
-      aria-label="Property Map. Every mapped record is also listed under Mapped records."
+      aria-label={label}
       className="h-full w-full"
     />
   );

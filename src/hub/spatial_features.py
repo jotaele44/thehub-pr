@@ -16,6 +16,21 @@ kept honest rather than drawn:
 * a REPRESENTATIVE_POINT stays representative (for example a municipio centroid)
   and is labelled as such; it is never promoted.
 
+Each point also carries the ``epistemic_class`` and ``data_stage`` its producer
+declared (None when undeclared), so a view can keep a modelled (INTERPRETIVE)
+record out of the layers that show documented geometry.
+
+Each point also carries its time as recorded: ``observed_at`` at its declared
+precision, any validity window (``valid_from``/``valid_to``), the span that
+precision covers (``time_start``/``time_end``: a year-only date spans its whole
+year) and its ``temporal_state`` at read time. Undated records carry no span and
+are counted, never placed in time.
+
+The served store may be a bounded sample (``data/fixture.json``): ``store_basis``
+reports what the build recorded beside it, so counts and densities computed over
+the store are never read as Puerto Rico totals. A store with no such record is
+"not recorded", which is not the same as complete.
+
 Categories are the record types the producers exported (``entity_type``,
 ``observation_type`` or the alert's ``module``/``alert_type``), so the map's
 symbology comes from Federation data, not from any reference application. A
@@ -25,7 +40,11 @@ is passed through as recorded and counted alongside.
 
 from __future__ import annotations
 
+import json
+from calendar import monthrange
+from datetime import datetime, timedelta, timezone
 from math import asin, cos, radians, sin, sqrt
+from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
 from . import epistemic as ep
@@ -94,7 +113,76 @@ def _record_id(stream: str, row: Mapping[str, Any]) -> str:
     return str(row.get(ID_FIELDS.get(stream, "")) or "")
 
 
-def feature(stream: str, collection: str, row: Mapping[str, Any]) -> Optional[Dict[str, Any]]:
+def _iso(moment: datetime) -> str:
+    """Fixed-width UTC ISO-8601 (millisecond precision), so instants also sort as text."""
+    return moment.astimezone(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
+def time_span(observed_at: Optional[str], precision: str, valid_from: Any = None,
+              valid_to: Any = None) -> Optional[Tuple[datetime, datetime]]:
+    """The UTC interval a record's time covers, at its declared precision, or None.
+
+    A validity window wins; otherwise a date covers its whole day, month or year,
+    and only a full timestamp is an instant. Nothing is narrowed or invented.
+    """
+    window = [moment for moment in (ep.parse_instant(valid_from), ep.parse_instant(valid_to)) if moment is not None]
+    if window:
+        return min(window), max(window)
+    if not observed_at:
+        return None
+    instant = ep.parse_instant(observed_at)
+    if instant is not None:
+        return instant, instant
+    try:
+        year = int(observed_at[:4])
+        if precision == "YEAR_ONLY" or len(observed_at) == 4:
+            begin = datetime(year, 1, 1, tzinfo=timezone.utc)
+            return begin, datetime(year + 1, 1, 1, tzinfo=timezone.utc) - timedelta(microseconds=1)
+        month = int(observed_at[5:7])
+        if precision == "MONTH_YEAR" or len(observed_at) == 7:
+            begin = datetime(year, month, 1, tzinfo=timezone.utc)
+            return begin, begin + timedelta(days=monthrange(year, month)[1]) - timedelta(microseconds=1)
+        begin = datetime(year, month, int(observed_at[8:10]), tzinfo=timezone.utc)
+        return begin, begin + timedelta(days=1) - timedelta(microseconds=1)
+    except (ValueError, IndexError):
+        return None
+
+
+def _time_properties(row: Mapping[str, Any], now: datetime) -> Dict[str, Any]:
+    temporal = ep.temporal_for(row)
+    valid_from, valid_to = row.get("start_at"), row.get("end_at")
+    span = time_span(temporal["observed_at"], temporal["temporal_precision"], valid_from, valid_to)
+    state, state_basis = ep.temporal_state_at(row, now)
+    if span is None:
+        span_basis = "undated"
+    elif ep.parse_instant(valid_from) or ep.parse_instant(valid_to):
+        span_basis = "validity window as recorded"
+    elif span[0] == span[1]:
+        span_basis = "instant as recorded"
+    else:
+        unit = {4: "year", 7: "month"}.get(len(temporal["observed_at"] or ""), "day")
+        span_basis = f"whole {unit} (UTC; the producer declares no time zone)"
+    return {
+        "observed_at": temporal["observed_at"],
+        "temporal_precision": temporal["temporal_precision"],
+        "valid_from": valid_from if isinstance(valid_from, str) else None,
+        "valid_to": valid_to if isinstance(valid_to, str) else None,
+        "time_start": _iso(span[0]) if span else None,
+        "time_end": _iso(span[1]) if span else None,
+        "time_basis": span_basis,
+        "temporal_state": state,
+        "temporal_state_basis": state_basis,
+    }
+
+
+def _declared_text(declared: Mapping[str, Any], key: str) -> Optional[str]:
+    """What the producer declared, verbatim, or None. Never a crosswalk or a guess."""
+    value = declared.get(key)
+    return value if isinstance(value, str) and value else None
+
+
+def feature(stream: str, collection: str, row: Mapping[str, Any],
+            now: Optional[datetime] = None) -> Optional[Dict[str, Any]]:
     """A GeoJSON point feature for a row with declared point precision, else None."""
     declared = ep.declared(row)
     precision = declared.get("geometry_precision")
@@ -118,10 +206,13 @@ def feature(stream: str, collection: str, row: Mapping[str, Any]) -> Optional[Di
             "producers": list(row.get("_producers") or []),
             "geometry_precision": precision,
             "geometry_basis": declared.get("coordinate_method") or declared.get("geometry_precision_basis"),
+            "declared_epistemic_class": _declared_text(declared, "epistemic_class"),
+            "declared_data_stage": _declared_text(declared, "data_stage"),
             "municipality": municipality(row),
             "synthetic": bool(row.get("synthetic", False)),
             "evidence_href": f"/evidence/{collection}/{record_id}",
             "entity_href": f"/entity/{record_id}" if stream == "entities" else None,
+            **_time_properties(row, now or datetime.now(timezone.utc)),
         },
     }
 
@@ -147,6 +238,44 @@ def parse_bbox(text: Optional[str]) -> Optional[Tuple[float, float, float, float
     return values  # type: ignore[return-value]
 
 
+STORE_RECORD = "fixture.json"
+_STREAM_COUNTS = ("sampled", "actual", "closure_added")
+
+
+def store_basis(directory: "Path | str") -> Dict[str, Any]:
+    """How the served store was built, from the record the build wrote beside it.
+
+    ``kind`` is what the build declared (``bounded-sample`` for the committed
+    fixture), ``not_recorded`` when no record sits beside the store, or
+    ``unreadable`` when the record cannot be read. Nothing is inferred: an
+    absent record is never reported as a complete store.
+    """
+    path = Path(directory) / STORE_RECORD
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {"kind": "not_recorded", "basis": f"no {STORE_RECORD} beside the store"}
+    except (OSError, ValueError) as error:
+        return {"kind": "unreadable", "basis": f"{STORE_RECORD} could not be read: {error.__class__.__name__}"}
+    kind = raw.get("kind") if isinstance(raw, dict) else None
+    if not isinstance(kind, str) or not kind:
+        return {"kind": "unreadable", "basis": f"{STORE_RECORD} declares no kind"}
+    streams: Dict[str, Dict[str, int]] = {}
+    declared = raw.get("streams")
+    for name, counts in (declared.items() if isinstance(declared, dict) else ()):
+        if (isinstance(counts, dict) and isinstance(counts.get("sampled"), int)
+                and isinstance(counts.get("actual"), int)):
+            streams[str(name)] = {key: counts[key] for key in _STREAM_COUNTS if isinstance(counts.get(key), int)}
+    cap = raw.get("cap_per_stream")
+    note = raw.get("note")
+    return {
+        "kind": kind,
+        "cap_per_stream": cap if isinstance(cap, int) else None,
+        "streams": dict(sorted(streams.items())),
+        "note": note if isinstance(note, str) else None,
+    }
+
+
 def build_features(
     rows: Iterable[Row],
     *,
@@ -155,6 +284,7 @@ def build_features(
     producers: Sequence[str] = (),
     include_synthetic: bool = False,
     limit: int = DEFAULT_LIMIT,
+    now: Optional[datetime] = None,
 ) -> Dict[str, Any]:
     """The mappable features, plus an account of every row that is not drawn and why.
 
@@ -163,6 +293,7 @@ def build_features(
     sum(not_drawn[*].count)``.
     """
     limit = max(1, min(int(limit), MAX_LIMIT))
+    now = now or datetime.now(timezone.utc)
     wanted_categories, wanted_producers = set(categories), set(producers)
     features: List[Dict[str, Any]] = []
     category_counts: Dict[Tuple[str, str, str], int] = {}
@@ -183,7 +314,7 @@ def build_features(
         if row.get("synthetic") and not include_synthetic:
             excluded_synthetic += 1
             continue
-        item = feature(stream, collection, row)
+        item = feature(stream, collection, row, now)
         if item is not None:
             if not _in_bbox(item["geometry"]["coordinates"], bbox):
                 outside_bbox += 1
@@ -207,6 +338,8 @@ def build_features(
             account["municipality_recorded"] += 1
             _tally(area_refs.setdefault((producer(row), stream, kind, place), {}), object_type(row) or "")
     features.sort(key=lambda f: f["id"])
+    starts = [f["properties"]["time_start"] for f in features if f["properties"]["time_start"]]
+    ends = [f["properties"]["time_end"] for f in features if f["properties"]["time_end"]]
     return {
         "contract": CONTRACT_ID,
         "type": "FeatureCollection",
@@ -221,6 +354,9 @@ def build_features(
         "precision_counts": dict(sorted(precision_counts.items())),
         "excluded_synthetic": excluded_synthetic,
         "outside_bbox": outside_bbox,
+        "time_extent": {"start": min(starts), "end": max(ends)} if starts else None,
+        "undated": len(features) - len(starts),
+        "read_at": _iso(now),
         "coordinates_without_point_precision": dict(sorted(unplaced.items())),
         "not_drawn": [{"producer": p, "stream": st, "category": c, **counts,
                        "object_type_counts": dict(sorted(counts["object_type_counts"].items()))}

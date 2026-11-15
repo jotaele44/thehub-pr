@@ -23,6 +23,8 @@ const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 const Programs = lazy(() => import('@/pages/Programs'));
 const Cases = lazy(() => import('@/pages/Cases'));
 const Sources = lazy(() => import('@/pages/Sources'));
+const SourceMonitor = lazy(() => import('@/pages/SourceMonitor'));
+const SourceMonitorDetail = lazy(() => import('@/pages/SourceMonitorDetail'));
 const Tasks = lazy(() => import('@/pages/Tasks'));
 const Gates = lazy(() => import('@/pages/Gates'));
 const Integrations = lazy(() => import('@/pages/Integrations'));
@@ -46,6 +48,7 @@ const ResearchHub = lazy(() => import('@/pages/ResearchHub'));
 const CaseReconstruction = lazy(() => import('@/pages/CaseReconstruction'));
 const Dictionary = lazy(() => import('@/pages/Dictionary'));
 const AppCenter = lazy(() => import('@/pages/AppCenter'));
+const FederationConstellation = lazy(() => import('@/pages/FederationConstellation'));
 const Operations = lazy(() => import('@/pages/Operations'));
 const GISWorkspace = lazy(() => import('@/pages/GISWorkspace'));
 const OperatorSettings = lazy(() => import('@/pages/OperatorSettings'));
@@ -97,6 +100,8 @@ const AppRoutes = () => {
             <Route path="/operations" element={<Operations />} />
             <Route path="/cases" element={<Cases />} />
             <Route path="/sources" element={<Sources />} />
+            <Route path="/source-monitor" element={<SourceMonitor />} />
+            <Route path="/source-monitor/:monitorId" element={<SourceMonitorDetail />} />
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/gates" element={<Gates />} />
             <Route path="/integrations" element={<Integrations />} />
@@ -105,6 +110,7 @@ const AppRoutes = () => {
             <Route path="/readiness" element={<ModuleReadiness />} />
             <Route path="/transition" element={<TransitionAudit />} />
             <Route path="/crossover" element={<FederationCrossoverWorkspace />} />
+            <Route path="/constellation" element={<FederationConstellation />} />
             <Route path="/anomaly-overlap" element={<AnomalyOverlap />} />
             <Route path="/control" element={<ControlLedgers />} />
             <Route path="/hub" element={<Hub />} />

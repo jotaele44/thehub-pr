@@ -54,26 +54,51 @@
       "classification": "internal",
       "status": "active",
       "requires_terminal": false,
-      "rationale": "Fail-closed federation contract utility for validating PR_GRID_GEOGRAPHIC_V2 consumer pins and stamping immutable grid identity. It is an internal runtime/governance primitive, not a standalone operator workflow; user-facing grid identity is surfaced through the consuming Cell_Profile/API responses rather than through a separate validator GUI.",
+      "rationale": "Fail-closed federation contract/runtime for PR_GRID_GEOGRAPHIC_V2 pins, live authority-byte validation, immutable identity stamping, and read-only cell handoff. It is an internal federation primitive; Spiderweb remains sole geometry authority.",
       "analysis": {
         "files": [
           "scripts/validate_pr_grid_v2_federation.py",
-          "src/hub/grid_v2.py"
+          "src/hub/grid_v2.py",
+          "src/hub/grid_v2_authority.py"
         ],
         "symbols": [
           "scripts/validate_pr_grid_v2_federation.py:main",
           "src/hub/grid_v2.py:GridV2Pin",
           "src/hub/grid_v2.py:GridV2PinError",
+          "src/hub/grid_v2.py:attach_grid_identity",
+          "src/hub/grid_v2.py:build_grid_deep_link",
           "src/hub/grid_v2.py:grid_identity",
           "src/hub/grid_v2.py:load_pin",
+          "src/hub/grid_v2.py:validate_cell_id",
           "src/hub/grid_v2.py:validate_level",
           "src/hub/grid_v2.py:validate_pin_payload",
-          "src/hub/grid_v2.py:validate_pin_set"
+          "src/hub/grid_v2.py:validate_pin_set",
+          "src/hub/grid_v2_authority.py:validate_authority_commit_object",
+          "src/hub/grid_v2_authority.py:validate_authority_root",
+          "src/hub/grid_v2_authority.py:validate_frozen_pin_denominator"
         ]
       },
       "tests": {
         "contract": [
+          "tests/test_grid_v2_authority.py",
+          "tests/test_grid_v2_profiles.py",
           "tests/test_grid_v2_runtime.py"
+        ],
+        "backend": [
+          "tests/test_grid_v2_api.py"
+        ]
+      },
+      "backend": {
+        "files": [
+          "server/backend/grid_v2_api.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /grid/{grid_id}/{grid_version}/{level}/{cell_id}",
+          "GET /api/grid/{grid_id}/{grid_version}/{level}/{cell_id}"
+        ],
+        "symbols": [
+          "server/backend/grid_v2_api.py:cell_handoff"
         ]
       }
     },
@@ -240,6 +265,50 @@
       }
     },
     {
+      "id": "moneysweep-certified-asg-leaderboard",
+      "classification": "analysis",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Read-only federation product surface for the exact MoneySweep-certified ASG emergency-purchase source-native package. TheHub preserves producer-native ASG supplier identifiers, rows, accounting, rank, and scope boundaries; name-only or missing-vendor records remain excluded and the surface fails closed until exact producer hashes are trusted.",
+      "backend": {
+        "files": [
+          "server/backend/moneysweep_asg_leaderboards.py",
+          "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /status",
+          "GET /top"
+        ],
+        "symbols": [
+          "server/backend/moneysweep_asg_leaderboards.py:status",
+          "server/backend/moneysweep_asg_leaderboards.py:top"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/moneysweep"
+        ],
+        "e2e_routes": [
+          "/moneysweep"
+        ],
+        "components": [
+          "server/frontend/src/pages/MoneySweep.jsx",
+          "server/frontend/src/components/feed/MoneySweepLeaderboardsTab.jsx"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/MoneySweep.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_moneysweep_asg_leaderboard_consumer.py"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
       "id": "federated-search",
       "classification": "user",
       "status": "active",
@@ -250,6 +319,9 @@
           "server/backend/search_api.py",
           "src/hub/federated_search.py",
           "server/backend/main.py"
+        ],
+        "endpoints": [
+          "GET /"
         ],
         "symbols": [
           "server/backend/search_api.py:current_index",
@@ -395,6 +467,9 @@
           "src/hub/event_timeline.py",
           "server/backend/main.py"
         ],
+        "endpoints": [
+          "GET /"
+        ],
         "symbols": [
           "server/backend/timeline_api.py:timeline",
           "src/hub/event_timeline.py:TimelineEvent",
@@ -437,6 +512,77 @@
       }
     },
     {
+      "id": "federation-constellation",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Federation Constellation: the seven federation apps as one animated graph. A stage tour (Centinelas intake through Hub ingest) flies the camera under English/Spanish captions and hands it to the viewer on pause. A Code | Content toggle switches between the declared components of each app (registry/constellation.v1.json, CALL/HANDOFF/RESULT edges) and the records they move (graph_summary totals, stored rows, lineage, sample rows and synthetic correlation candidates from the Hub store), with selections carried across lenses through lineage. Read-only.",
+      "backend": {
+        "files": [
+          "server/backend/constellation_api.py",
+          "src/hub/constellation.py",
+          "server/backend/main.py",
+          "registry/constellation.v1.json"
+        ],
+        "endpoints": [
+          "GET /"
+        ],
+        "symbols": [
+          "server/backend/constellation_api.py:constellation",
+          "server/backend/constellation_api.py:store_snapshot",
+          "src/hub/constellation.py:ConstellationSpecError",
+          "src/hub/constellation.py:CorrelationRow",
+          "src/hub/constellation.py:StoreSnapshot",
+          "src/hub/constellation.py:build_constellation",
+          "src/hub/constellation.py:load_spec",
+          "src/hub/constellation.py:sample_view",
+          "src/hub/constellation.py:strategy_for",
+          "src/hub/constellation.py:validate_spec"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/constellation"
+        ],
+        "e2e_routes": [
+          "/constellation"
+        ],
+        "components": [
+          "server/frontend/src/pages/FederationConstellation.jsx",
+          "server/frontend/src/components/constellation/ConstellationCanvas.jsx",
+          "server/frontend/src/components/constellation/ConstellationControls.jsx",
+          "server/frontend/src/components/constellation/ConstellationLegend.jsx",
+          "server/frontend/src/components/constellation/NodeDetails.jsx",
+          "server/frontend/src/components/constellation/StageCaption.jsx",
+          "server/frontend/src/components/constellation/StageOutline.jsx",
+          "server/frontend/src/lib/constellation/model.js",
+          "server/frontend/src/lib/constellation/layout.js",
+          "server/frontend/src/lib/constellation/camera.js",
+          "server/frontend/src/lib/constellation/tour.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/lib/commands.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_constellation_api.py"
+        ],
+        "contract": [
+          "tests/test_constellation.py"
+        ],
+        "unit": [
+          "server/frontend/src/pages/FederationConstellation.test.jsx",
+          "server/frontend/src/lib/constellation/constellation.test.js"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
       "id": "ovnis-research-hub",
       "classification": "user",
       "status": "active",
@@ -449,6 +595,7 @@
           "server/backend/main.py"
         ],
         "endpoints": [
+          "GET /",
           "GET /case/{case_id}",
           "GET /records/{kind}"
         ],
@@ -574,6 +721,368 @@
         ],
         "e2e": [
           "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "digital-twin",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Digital Twin at /gis?view=digital-twin (TWIN-005/057/058/144/150..163, FDX-023/030/031; Phase 5, P5-B): four panels on one shared camera and selection (Cesium perspective over uniform-datum NOAA CUDEM m9525 terrain, PRVD02, bound only because the 3D source gate certifies it, and placed on the ellipsoid through NOAA NGS GEOID18 only while its datum is the one the geoid relates; MapLibre ortho; USGS orthoimagery; details), each maximizable through ?panel= and fullscreen. Time playback over each record's span at its recorded precision (undated records counted, never placed in time), findings and live/current toggles whose counters say why a zero is a zero, the selected record's CUDEM elevation with its datum and source tile, DEM and imagery provenance, and GeoJSON and USD (.usda) exports of exactly what is shown with export provenance (not certified).",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:time_span",
+          "src/hub/spatial_features.py:build_features",
+          "src/hub/spatial_features.py:feature"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/DigitalTwin.jsx",
+          "server/frontend/src/components/gis/DigitalTwinPerspective.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/digitalTwin.js",
+          "server/frontend/src/gis/cudem.js",
+          "server/frontend/src/gis/cudemTerrainProvider.js",
+          "server/frontend/src/gis/geoid.js",
+          "server/frontend/src/gis/advanced3dSourceRegistry.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/digitalTwin.test.js",
+          "server/frontend/src/gis/cudem.test.js",
+          "server/frontend/src/gis/cudemTerrainProvider.test.js",
+          "server/frontend/src/gis/geoid.test.js",
+          "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
+          "server/frontend/src/components/gis/DigitalTwin.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "interpretive-layers",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Subsurface and interpretive layers at /gis?view=interpretive-layers (TWIN-075/076/077/146, FDX-024; Phase 5, P5-C): documented geometry (SIGE karst, aquifer and watershed outlines loaded through the source registry with their gates, counts and hashes, or the provider's failure verbatim; Hub-held USGS mineral occurrences) kept apart from a MODELLED — not observed geometry group that holds only records whose producer declared the INTERPRETIVE class (none today, and it says why), with separate styling that tests keep distinct; and a CUDEM terrain profile along a drawn line with its datum (PRVD02), no-data samples kept as gaps, the documented layers it crosses, a statement that nothing is drawn below the surface (no subsurface model is supplied) and a CSV download. The Hub store's sampling basis is stated.",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:store_basis",
+          "src/hub/spatial_features.py:feature"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/InterpretiveLayers.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/interpretive.js",
+          "server/frontend/src/gis/storeBasis.js",
+          "server/frontend/src/gis/cudem.js",
+          "server/frontend/src/gis/acquisitionFacade.js",
+          "server/frontend/src/lib/download.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/interpretive.test.js",
+          "server/frontend/src/gis/storeBasis.test.js",
+          "server/frontend/src/components/gis/InterpretiveLayers.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "aoi-comparison",
+      "classification": "user",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "AOI comparison with negative controls at /gis?view=aoi-comparison (FDX-028/029; directive §32 and §46; Phase 5, P5-C): a study area (a bounding box or a TIGERweb municipio by recorded name) against one or more control areas that must be disjoint from it and from each other, by records per km² per (producer, stream, category), counting only points whose producer declared a placed position (stand-ins inside an AOI are counted apart as membership not determined; nothing is geocoded). Rate ratio with an exact conditional binomial test and a Clopper-Pearson interval, no ratio below five combined records, the number of comparisons stated (p-values unadjusted), every result labelled BACKGROUND COMPARISON — not a finding, the Hub store's sampling basis (a bounded sample, from the build record) stated before and after the results, and a JSON receipt (NOT_CERTIFIED) with the AOIs, area method, store and method.",
+      "backend": {
+        "files": [
+          "server/backend/spatial_api.py",
+          "src/hub/spatial_features.py"
+        ],
+        "endpoints": [
+          "GET /features"
+        ],
+        "symbols": [
+          "src/hub/spatial_features.py:store_basis"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/gis"
+        ],
+        "e2e_routes": [
+          "/gis"
+        ],
+        "components": [
+          "server/frontend/src/components/gis/AoiComparison.jsx",
+          "server/frontend/src/components/gis/PropertyMapCanvas.jsx",
+          "server/frontend/src/components/gis/GisViewSwitch.jsx",
+          "server/frontend/src/gis/aoiComparison.js",
+          "server/frontend/src/gis/propertyMap.js",
+          "server/frontend/src/gis/storeBasis.js",
+          "server/frontend/src/gis/acquisitionFacade.js",
+          "server/frontend/src/lib/download.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/GISWorkspace.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_spatial_api.py"
+        ],
+        "contract": [
+          "tests/test_spatial_features.py"
+        ],
+        "unit": [
+          "server/frontend/src/gis/aoiComparison.test.js",
+          "server/frontend/src/gis/storeBasis.test.js",
+          "server/frontend/src/components/gis/AoiComparison.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "sky-workspace",
+      "classification": "client_only",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Sky workspace at /skywatcher?view=sky (directive §9; TWIN-008, 029-033, 047-053, 106, 109, 111-115, 119, 120, 122-131; Phase 6, P6-A, P6-B and P6-C; TWIN-117 partial, TWIN-118; FDX-032 to FDX-040). Computed entirely in the browser with astronomy-engine (held in tests to JPL Horizons and USNO values frozen with their tolerances): the Sun, the Moon and the five naked-eye planets for an explicit UTC instant and observer (default San Juan, labelled; never browser geolocation), rise, transit and set at a stated fixed UTC offset, daylight and twilight class, the Moon's phase, and a 2D all-sky chart (TWIN-120 is partial: no 3D dome). Space weather (Kp, solar-wind speed, IMF Bz) is read directly from NOAA SWPC, which answers cross-origin reads, and shown with its time, age and state; a product that cannot be read is unavailable, never zero. Satellites (P6-B; TWIN-042-046, 054, 055 as geometry only, 116): CelesTrak's current GP element sets (JSON, answers cross-origin reads, no key or credential) for the International Space Station, Hubble and the Chinese space station are read once and kept for two hours, never polled, and propagated in the browser with SGP4 (satellite.js, held in tests to the Vallado verification set and to an independent Skyfield/sgp4 reference): look angles, passes (rise, culmination, set), whether the Sun lights the satellite (cylindrical Earth shadow) and a visible-pass candidate label that is geometry only and never a brightness. The NORAD identity and element epoch are kept and shown with an age policy that lowers confidence and then refuses; an element set that did not load is listed as failed, never placed. The observer and the time live in the URL. No backend, no write, no producer call, no stored data. \"Rule out the ordinary\" (P6-C): a reported sight line is checked in the browser against the Sun, Moon, planets and 288 catalogue stars (held to the US Naval Observatory), the three satellites above, aircraft tracks the person loads from a CSV or GeoJSON file (read locally, never uploaded, with the source, altitude reference and unit declared), and the terrain horizon from NOAA CUDEM where it covers the observer (read from NOAA's public tiles, bare earth), with every check held to closed forms, to an independent Skyfield reference or to a second algorithm. The result is a sky-exclusion-v1 receipt, NOT_CERTIFIED, that lists geometric coincidences and never identifications, what was not checked, and what such a check can never rule in or out, downloaded as JSON with a recomputable SHA-256 digest. What is typed or loaded is held in the page only: nothing is stored, sent or made a case.",
+      "frontend": {
+        "routes": [
+          "/skywatcher"
+        ],
+        "e2e_routes": [
+          "/skywatcher"
+        ],
+        "components": [
+          "server/frontend/src/components/sky/SkyWorkspace.jsx",
+          "server/frontend/src/pages/Skywatcher.jsx",
+          "server/frontend/src/sky/astronomy.js",
+          "server/frontend/src/sky/spaceWeather.js",
+          "server/frontend/src/sky/skyChart.js",
+          "server/frontend/src/components/sky/SatellitesPanel.jsx",
+          "server/frontend/src/components/sky/format.js",
+          "server/frontend/src/sky/satellites.js",
+          "server/frontend/src/sky/satelliteElements.js",
+          "server/frontend/src/sky/satelliteView.js",
+          "server/frontend/src/components/sky/ExclusionPanel.jsx",
+          "server/frontend/src/sky/exclusion/aircraftExclusion.js",
+          "server/frontend/src/sky/exclusion/aircraftTracks.js",
+          "server/frontend/src/sky/exclusion/celestialExclusion.js",
+          "server/frontend/src/sky/exclusion/clockAlignment.js",
+          "server/frontend/src/sky/exclusion/exclusionForm.js",
+          "server/frontend/src/sky/exclusion/exclusionView.js",
+          "server/frontend/src/sky/exclusion/frustum.js",
+          "server/frontend/src/sky/exclusion/geometry.js",
+          "server/frontend/src/sky/exclusion/horizon.js",
+          "server/frontend/src/sky/exclusion/lineOfSight.js",
+          "server/frontend/src/sky/exclusion/observation.js",
+          "server/frontend/src/sky/exclusion/reconstruction.js",
+          "server/frontend/src/sky/exclusion/refraction.js",
+          "server/frontend/src/sky/exclusion/runExclusion.js",
+          "server/frontend/src/sky/exclusion/satelliteExclusion.js",
+          "server/frontend/src/sky/exclusion/stars.js",
+          "server/frontend/src/sky/exclusion/terrain.js",
+          "server/frontend/src/sky/exclusion/starCatalog.json"
+        ],
+        "discoverability": [
+          "server/frontend/src/pages/Skywatcher.jsx",
+          "server/frontend/src/lib/nav.js"
+        ]
+      },
+      "tests": {
+        "unit": [
+          "server/frontend/src/sky/astronomy.test.js",
+          "server/frontend/src/sky/spaceWeather.test.js",
+          "server/frontend/src/sky/skyChart.test.js",
+          "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+          "server/frontend/src/sky/satellites.test.js",
+          "server/frontend/src/sky/satelliteElements.test.js",
+          "server/frontend/src/sky/satelliteView.test.js",
+          "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+          "server/frontend/src/components/sky/ExclusionPanel.test.jsx",
+          "server/frontend/src/sky/exclusion/aircraftExclusion.test.js",
+          "server/frontend/src/sky/exclusion/aircraftTracks.test.js",
+          "server/frontend/src/sky/exclusion/celestialExclusion.test.js",
+          "server/frontend/src/sky/exclusion/clockAlignment.test.js",
+          "server/frontend/src/sky/exclusion/exclusionForm.test.js",
+          "server/frontend/src/sky/exclusion/exclusionView.test.js",
+          "server/frontend/src/sky/exclusion/frustum.test.js",
+          "server/frontend/src/sky/exclusion/geometry.test.js",
+          "server/frontend/src/sky/exclusion/horizon.test.js",
+          "server/frontend/src/sky/exclusion/lineOfSight.test.js",
+          "server/frontend/src/sky/exclusion/observation.test.js",
+          "server/frontend/src/sky/exclusion/reconstruction.test.js",
+          "server/frontend/src/sky/exclusion/refraction.test.js",
+          "server/frontend/src/sky/exclusion/runExclusion.test.js",
+          "server/frontend/src/sky/exclusion/satelliteExclusion.test.js",
+          "server/frontend/src/sky/exclusion/stars.test.js",
+          "server/frontend/src/sky/exclusion/terrain.test.js",
+          "server/frontend/src/sky/exclusion/terrainIntegration.test.js"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "source-monitor",
+      "classification": "operator",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Source Monitor (ADR 0012): a read-only view of the sources each producer monitors, normalized from producer source registries by hub source-monitor and loaded by hub ingest into MonitoredSources (replaced on every ingest). The federation-wide page leads with stale sources and reports registry errors per producer; each producer page carries the same table scoped to that producer as its Monitor tab; a detail page shows the normalized fields, the registry fields verbatim and lineage. Producers that emit the source_monitors stream (ADR 0013) replace their registry-reader rows, and their sources are measured from each source's own last success (run receipt or the producer's outputs); other sources fall back to the producer's export-package age, labelled as such. Reads only the generic entity endpoints.",
+      "backend": {
+        "files": [
+          "src/hub/source_monitor.py",
+          "src/hub/ingest.py",
+          "server/backend/main_core.py"
+        ],
+        "endpoints": [
+          "GET /api/entities/{entity_name}",
+          "GET /api/entities/{entity_name}/{entity_id}"
+        ],
+        "symbols": [
+          "src/hub/source_monitor.py:RegistryShapeError",
+          "src/hub/source_monitor.py:build_monitor",
+          "src/hub/source_monitor.py:cadence_from_seconds",
+          "src/hub/source_monitor.py:normalize_cadence",
+          "src/hub/source_monitor.py:normalize_status",
+          "src/hub/source_monitor.py:normalize_tier",
+          "src/hub/source_monitor.py:write_monitor",
+          "src/hub/ingest.py:project_source_monitors"
+        ]
+      },
+      "frontend": {
+        "routes": [
+          "/source-monitor",
+          "/source-monitor/:monitorId"
+        ],
+        "e2e_routes": [
+          "/source-monitor",
+          "/source-monitor/:monitorId"
+        ],
+        "components": [
+          "server/frontend/src/pages/SourceMonitor.jsx",
+          "server/frontend/src/pages/SourceMonitorDetail.jsx",
+          "server/frontend/src/components/sources/SourceMonitorLedger.jsx",
+          "server/frontend/src/lib/sourceMonitor.js",
+          "server/frontend/src/api/federationClient.js"
+        ],
+        "discoverability": [
+          "server/frontend/src/lib/nav.js",
+          "server/frontend/src/pages/AguaYLuz.jsx",
+          "server/frontend/src/pages/Centinelas.jsx",
+          "server/frontend/src/pages/MoneySweep.jsx",
+          "server/frontend/src/pages/Ovnis.jsx",
+          "server/frontend/src/pages/Skywatcher.jsx",
+          "server/frontend/src/pages/Spiderweb.jsx"
+        ]
+      },
+      "tests": {
+        "backend": [
+          "tests/test_ingest.py"
+        ],
+        "contract": [
+          "tests/test_source_monitor.py",
+          "tests/test_source_monitors_stream.py"
+        ],
+        "unit": [
+          "server/frontend/src/lib/sourceMonitor.test.js",
+          "server/frontend/src/components/sources/SourceMonitorLedger.test.jsx",
+          "server/frontend/src/pages/SourceMonitorDetail.test.jsx"
+        ],
+        "e2e": [
+          "server/frontend/tests/visual/gui-parity.spec.js"
+        ]
+      }
+    },
+    {
+      "id": "ecpaf-v21-shadow-policy-validator",
+      "classification": "internal",
+      "status": "active",
+      "requires_terminal": false,
+      "rationale": "Internal read-only CI/governance ledger validator. Evaluates frozen policy and evidence bindings only; no operator endpoint, domain analysis, release authorization or user-facing workflow. This shadow pilot cannot certify or authorize protected operations.",
+      "analysis": {
+        "files": [
+          "scripts/ecpaf_v21.py"
+        ],
+        "symbols": [
+          "scripts/ecpaf_v21.py:ContractError",
+          "scripts/ecpaf_v21.py:canonical_sha",
+          "scripts/ecpaf_v21.py:load_json",
+          "scripts/ecpaf_v21.py:validate_policy",
+          "scripts/ecpaf_v21.py:validate_contract",
+          "scripts/ecpaf_v21.py:evaluate",
+          "scripts/ecpaf_v21.py:main"
+        ]
+      },
+      "tests": {
+        "contract": [
+          "tests/test_ecpaf_v21.py"
         ]
       }
     }

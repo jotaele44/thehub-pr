@@ -114,6 +114,29 @@ def test_spa_file_selection_never_constructs_a_path_from_request_text(tmp_path, 
     assert main_core._spa_file("unknown.txt") == index
 
 
+def test_built_cesium_runtime_is_served_as_files_not_the_spa_shell(tmp_path):
+    # Cesium fetches its workers and assets by URL from /cesium/; answered with the
+    # SPA shell, no 3D view can start when this server serves the build.
+    from fastapi import FastAPI
+    from fastapi.testclient import TestClient
+
+    from server.backend import main_core
+
+    (tmp_path / "assets").mkdir()
+    (tmp_path / "assets" / "index-abc.js").write_text("bundle", encoding="utf-8")
+    (tmp_path / "cesium" / "Assets").mkdir(parents=True)
+    (tmp_path / "cesium" / "Assets" / "approximateTerrainHeights.json").write_text('{"6-0-0": [0, 1]}', encoding="utf-8")
+    (tmp_path / "secret.txt").write_text("outside", encoding="utf-8")
+    served = FastAPI()
+    main_core._mount_static_dirs(served, tmp_path)
+    client = TestClient(served)
+
+    assert client.get("/cesium/Assets/approximateTerrainHeights.json").json() == {"6-0-0": [0, 1]}
+    assert client.get("/assets/index-abc.js").text == "bundle"
+    assert client.get("/cesium/..%2Fsecret.txt").status_code == 404
+    assert client.get("/cesium/Assets/missing.json").status_code == 404
+
+
 def test_main_entrypoint_preserves_core_namespace_and_fresh_runtime_mounts_proxy():
     from server.backend import main, main_core
 

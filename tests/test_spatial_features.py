@@ -12,9 +12,14 @@ bbox are refused.
 
 from __future__ import annotations
 
+import json
+from datetime import datetime, timezone
+
 import pytest
 
 from hub import spatial_features as sf
+
+NOW = datetime(2026, 10, 4, 12, 0, tzinfo=timezone.utc)
 
 
 def _entity(record_id, lat=None, lon=None, precision=None, *, producer="aguayluz-pr", entity_type="utility_asset",
@@ -137,3 +142,110 @@ def test_nearby_orders_by_distance_and_respects_radius():
     assert [p["record_id"] for p in within] == ["near", "mid"]
     assert 10 < within[0]["distance_m"] < 12 and 550 < within[1]["distance_m"] < 560
     assert sf.parse_bbox(None) is None
+
+
+def _observation(record_id, *, precision=None, **fields):
+    row = {"observation_id": record_id, "observation_type": "uap_case", "_producers": ["ovnis-pr"],
+           "location": {"lat": 18.2, "lon": -66.5},
+           "evidence_state": {"geometry_precision": "OBSERVED_POINT", **({"temporal_precision": precision} if precision else {})},
+           **fields}
+    return ("observations", "Observations", row)
+
+
+def test_each_date_spans_its_declared_precision():
+    rows = [
+        _observation("obs_year", precision="YEAR_ONLY", date_local="1952",
+                     observed_at="1952-01-01T00:00:00-04:00"),
+        _observation("obs_month", precision="MONTH_YEAR", date_local="1972-03"),
+        _observation("obs_day", precision="DATE_ONLY", date_local="2001-02-03"),
+        _observation("obs_instant", precision="EXACT_TIMESTAMP", observed_at="2019-10-01T04:00:00Z"),
+        _observation("obs_undated"),
+    ]
+    props = {f["properties"]["record_id"]: f["properties"] for f in sf.build_features(rows, now=NOW)["features"]}
+    year = props["obs_year"]
+    # A year-only case stays a whole year: the producer's padded timestamp is not an instant.
+    assert (year["observed_at"], year["time_start"], year["time_end"]) == (
+        "1952", "1952-01-01T00:00:00.000Z", "1952-12-31T23:59:59.999Z")
+    assert year["time_basis"].startswith("whole year")
+    assert (props["obs_month"]["time_start"], props["obs_month"]["time_end"]) == (
+        "1972-03-01T00:00:00.000Z", "1972-03-31T23:59:59.999Z")
+    assert props["obs_day"]["time_end"] == "2001-02-03T23:59:59.999Z"
+    assert props["obs_instant"]["time_start"] == props["obs_instant"]["time_end"] == "2019-10-01T04:00:00.000Z"
+    assert props["obs_undated"]["time_start"] is None and props["obs_undated"]["time_basis"] == "undated"
+
+
+def test_validity_window_extent_and_undated_count():
+    rows = [
+        ("alerts", "Alerts", {"alert_id": "alrt_1", "module": "CONTAMINATION", "_producers": ["aguayluz-pr"],
+                              "location": {"lat": 18.1, "lon": -66.1}, "start_at": "2019-10-01T00:00:00Z",
+                              "end_at": "2019-12-31T00:00:00Z",
+                              "evidence_state": {"geometry_precision": "REPRESENTATIVE_POINT"}}),
+        _observation("obs_undated"),
+    ]
+    body = sf.build_features(rows, now=NOW)
+    alert = next(f["properties"] for f in body["features"] if f["properties"]["record_id"] == "alrt_1")
+    assert (alert["valid_from"], alert["valid_to"]) == ("2019-10-01T00:00:00Z", "2019-12-31T00:00:00Z")
+    assert alert["time_basis"] == "validity window as recorded"
+    assert alert["temporal_state"] == "HISTORICAL"  # the window closed before NOW
+    assert body["time_extent"] == {"start": "2019-10-01T00:00:00.000Z", "end": "2019-12-31T00:00:00.000Z"}
+    assert body["undated"] == 1 and body["read_at"] == "2026-10-04T12:00:00.000Z"
+
+
+def test_features_carry_the_class_and_stage_their_producer_declared():
+    modelled = _entity("ent_model", 18.2, -66.5, "INTERPRETED_POINT")
+    modelled[2]["evidence_state"].update({"epistemic_class": "INTERPRETIVE", "data_stage": "INTERPRETATION",
+                                          "interpretation_basis": "model of a reported void"})
+    documented = _entity("ent_doc", 18.3, -66.4, "OBSERVED_POINT")
+    documented[2]["evidence_state"].update({"epistemic_class": "CURATED", "data_stage": "CANONICAL"})
+    undeclared = _entity("ent_none", 18.4, -66.3, "OBSERVED_POINT")
+    props = {f["properties"]["record_id"]: f["properties"]
+             for f in sf.build_features([modelled, documented, undeclared], now=NOW)["features"]}
+    assert (props["ent_model"]["declared_epistemic_class"], props["ent_model"]["declared_data_stage"]) == ("INTERPRETIVE", "INTERPRETATION")
+    assert (props["ent_doc"]["declared_epistemic_class"], props["ent_doc"]["declared_data_stage"]) == ("CURATED", "CANONICAL")
+    # Only what the producer declared: nothing is crosswalked or guessed here.
+    assert (props["ent_none"]["declared_epistemic_class"], props["ent_none"]["declared_data_stage"]) == (None, None)
+
+
+def test_store_basis_reports_a_bounded_sample_from_the_build_record(tmp_path):
+    (tmp_path / "fixture.json").write_text(json.dumps({
+        "kind": "bounded-sample", "cap_per_stream": 400, "note": "Records are genuine but truncated.",
+        "streams": {"alerts": {"actual": 4399, "sampled": 400},
+                    "entities": {"actual": 48224, "closure_added": 425, "sampled": 825}},
+        "collections": {"Alerts": 400},
+    }), encoding="utf-8")
+    basis = sf.store_basis(tmp_path)
+    assert basis == {
+        "kind": "bounded-sample", "cap_per_stream": 400, "note": "Records are genuine but truncated.",
+        "streams": {"alerts": {"sampled": 400, "actual": 4399},
+                    "entities": {"sampled": 825, "actual": 48224, "closure_added": 425}},
+    }
+
+
+def test_store_basis_never_assumes_a_complete_store(tmp_path):
+    # No build record: the store's basis is not recorded, which is not the same as complete.
+    assert sf.store_basis(tmp_path)["kind"] == "not_recorded"
+    (tmp_path / "fixture.json").write_text("{not json", encoding="utf-8")
+    assert sf.store_basis(tmp_path)["kind"] == "unreadable"
+    (tmp_path / "fixture.json").write_text(json.dumps({"streams": {}}), encoding="utf-8")
+    assert sf.store_basis(tmp_path) == {"kind": "unreadable", "basis": "fixture.json declares no kind"}
+    (tmp_path / "fixture.json").write_text(json.dumps([1, 2]), encoding="utf-8")
+    assert sf.store_basis(tmp_path)["kind"] == "unreadable"
+    # Malformed stream counts are dropped, not guessed.
+    (tmp_path / "fixture.json").write_text(json.dumps({
+        "kind": "bounded-sample", "cap_per_stream": "many",
+        "streams": {"alerts": {"sampled": "400", "actual": 4399}, "entities": {"sampled": 5, "actual": 9}},
+    }), encoding="utf-8")
+    basis = sf.store_basis(tmp_path)
+    assert basis["cap_per_stream"] is None and basis["streams"] == {"entities": {"sampled": 5, "actual": 9}}
+
+
+def test_live_needs_a_declared_cadence():
+    live = _observation("obs_live", precision="EXACT_TIMESTAMP", observed_at="2026-10-04T11:59:00Z")
+    live[2]["evidence_state"].update({"expected_cadence_seconds": 300, "live_feed": True})
+    undeclared = _observation("obs_recent", precision="EXACT_TIMESTAMP", observed_at="2026-10-04T11:59:00Z")
+    props = {f["properties"]["record_id"]: f["properties"]
+             for f in sf.build_features([live, undeclared], now=NOW)["features"]}
+    assert props["obs_live"]["temporal_state"] == "LIVE"
+    # Recent but without a declared cadence: never called live.
+    assert props["obs_recent"]["temporal_state"] == "HISTORICAL"
+    assert sf.build_features([], now=NOW)["time_extent"] is None

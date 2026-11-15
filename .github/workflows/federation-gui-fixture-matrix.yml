@@ -14,7 +14,9 @@ permissions:
 
 jobs:
   fixture-matrix:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is Ubuntu 26.04, and the fixture lab's playwright
+    # 1.56.1 refuses to install browsers on it.
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     defaults:
       run:

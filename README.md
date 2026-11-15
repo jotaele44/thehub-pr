@@ -61,6 +61,7 @@ hub fetch --run --root ws                    # clone/refresh producers and run e
 hub aggregate --root .. --out data/aggregate # merge discoverable packages
 hub correlate --in data/aggregate            # derive cross-producer relationship edges
 hub project-signs --in data/aggregate --out reports/signs  # render per-project consolidation signs
+hub source-monitor --root .. --out data/aggregate  # normalize producer source registries (ADR 0012)
 hub ingest --in data/aggregate --db data/hub.db  # load the aggregate into the app store
 make federation-status                       # snapshot readiness for the control-plane pages
 make test
@@ -76,9 +77,12 @@ package changes.
 
 `data/aggregate/*.jsonl` is a committed bounded sample, so it goes stale as producers publish.
 `.github/workflows/federation-ingest.yml` closes that loop: on each producer
-`repository_dispatch` it re-runs every producer's `export_canonical`, rebuilds the bounded
+`repository_dispatch` (`moneysweep-export`, `aguayluz-export`, `centinelas-export`,
+`spiderweb-export`), and once a day on a schedule as a backstop, it re-runs every
+producer's `export_canonical`, rebuilds the bounded
 fixture, and **opens a pull request** when the data actually changed. Nothing lands on `main`
-without review.
+without review. Every refresh force-pushes the one `fixture-refresh` branch, so an open
+refresh PR always shows the newest data and a run that cannot open a PR leaves no new branch.
 
 Two details worth knowing before touching that workflow:
 
@@ -93,8 +97,11 @@ Two details worth knowing before touching that workflow:
   when producer data really moved.
 
 No secrets are required — the producer repos are public and the PR is same-repo, so the
-built-in `GITHUB_TOKEN` covers it. GitHub does not run workflows on a PR that token creates;
-if you want CI on fixture-refresh PRs, set the repo's existing `SYNC_PAT` secret and the
+built-in `GITHUB_TOKEN` can open it, provided the repository allows that (Settings → Actions →
+General → *Allow GitHub Actions to create and approve pull requests*). GitHub does not run
+workflows on a PR that token creates, so the workflow runs `tools/check_docs_sync.py` itself
+and records the `docs-sync` status — the one check `main` requires — on the PR's head. If you
+want the rest of CI on fixture-refresh PRs, set the repo's existing `SYNC_PAT` secret and the
 workflow will use it automatically.
 
 ## Desktop app
@@ -119,6 +126,7 @@ React UI, so operators use a single app instead of switching between per-produce
 ```bash
 # 1. Load real federation data into the app store (data/hub.db)
 hub aggregate --root .. --out data/aggregate && hub correlate --in data/aggregate
+hub source-monitor --root .. --out data/aggregate   # optional: the Source Monitor pages
 hub ingest --in data/aggregate --db data/hub.db
 
 # 2. Build the UI once (outputs server/frontend/dist/, git-ignored)
@@ -160,7 +168,15 @@ suits API/CLI callers today.
 `alerts → GovernanceAlerts`, `correlations → CrossoverLinks`); the mapping lives in
 [`src/hub/ingest.py`](src/hub/ingest.py), where `ingest_aggregate` drives the canonical
 streams through `_project_ui` and the `project_*` helpers (`project_producer_collections`,
-`project_crossover_links`, `project_continuity_risks`, `project_livefeed`). Pages backed by these
+`project_crossover_links`, `project_continuity_risks`, `project_livefeed`). It also builds
+`MonitoredSources` with `project_source_monitors`, replacing that collection on each run: a
+producer that emits the optional `source_monitors` stream
+([ADR 0013](docs/adr/0013-source-monitors-stream.md); canonical rows land in `SourceMonitors`) is
+read from it, with each source's last success and how that time is known, and every other
+producer comes from `monitored_sources.jsonl` (written by `hub source-monitor` from producer
+source registries; a hub-derived file, not a federation stream,
+[ADR 0012](docs/adr/0012-source-monitor-registry-adapter.md)). The read-only Source Monitor
+(`/source-monitor` and a Monitor tab on each producer page) reads it. Pages backed by these
 collections (Sources, the Spiderweb graph, cross-producer links) render live aggregate data;
 domain-heavy pages that need per-domain fields the aggregate does not yet carry (contracts,
 feeds, cases) stay empty until producers emit that data. If `dist/` is not built, the backend

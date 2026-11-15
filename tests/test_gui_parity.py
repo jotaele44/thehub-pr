@@ -121,6 +121,35 @@ export default function Items() {
         self.assertLessEqual(endpoint_ids, mapped)
         self.assertLessEqual(route_ids, mapped)
 
+    def test_empty_router_path_is_inventory_root_endpoint(self) -> None:
+        self._write(
+            "server/backend/main.py",
+            """
+from fastapi import APIRouter
+router = APIRouter(prefix="/api/items")
+
+@router.get("")
+def list_items():
+    return []
+""".strip()
+            + "\n",
+        )
+        manifest = self._manifest()
+        manifest["capabilities"][0]["backend"]["endpoints"] = ["GET /"]
+
+        candidates = parity.discover_candidates(self.root, manifest)
+        issues = parity.validate_manifest(self.root, manifest, candidates)
+
+        self.assertEqual([], issues)
+        self.assertIn(
+            "GET /",
+            {
+                item["detail"]
+                for item in candidates
+                if item["kind"] == "backend_endpoint"
+            },
+        )
+
     def test_backend_without_gui_is_rejected(self) -> None:
         manifest = self._manifest()
         manifest["capabilities"][0]["frontend"] = {}

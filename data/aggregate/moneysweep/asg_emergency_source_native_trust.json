@@ -1,0 +1,12 @@
+{
+  "acceptedAt": "2026-10-06T21:55:00Z",
+  "packageSha256": "6ecdad09a48cdbd4ae1076138a9b5017a5be82608b489871a50ce0d599680337",
+  "producer": "moneysweep-pr",
+  "producerCommit": "e963f4258a78c9b30427df7a7e9b4edf83f00692",
+  "receiptSha256": "08eb30bfcc4033640ed215e2ee36f5fec4e93c4d3265f9728f7b262aa67c26ff",
+  "releaseManifestSha256": "15387cce4c12e905d9ed67caad189fd63a3a17c405eaeb8d98205f37f7e91a85",
+  "schemaVersion": "thehub.moneysweep-asg-leaderboard-trust/v1",
+  "scopeId": "moneysweep.leaderboard.asg-emergency-source-native-v1",
+  "scopeSha256": "9b22125120a8a0592050f58b766272f3a25bf0e8308e82cf1df452487682710c",
+  "state": "FROZEN"
+}

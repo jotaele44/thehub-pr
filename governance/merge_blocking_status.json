@@ -1,22 +1,31 @@
 {
   "schema_version":"prii_merge_blocking_status_v1",
   "status":"BLOCKED",
-  "reason":"Branch protection on main was verified via the GitHub API on 2026-09-06: 5 of 7 federation repositories (thehub-pr, aguayluz-pr, ovnis-pr, skywatcher-pr, centinelas-pr) have NO branch protection on main at all. Only moneysweep-pr and spiderweb-pr have main protected. This confirms the prior BLOCKED status with hard evidence instead of an unverified claim.",
+  "reason":"Rulesets and branch protection on main were read via the GitHub API on 2026-10-29. 6 of 7 federation repositories protect main: thehub-pr, ovnis-pr, skywatcher-pr and centinelas-pr require only docs-sync, and moneysweep-pr and spiderweb-pr require their own CI checks plus docs-sync. aguayluz-pr has nothing protecting main. None requires federation-governance, federation-governance-certify or federation-compatibility, so no federation check is merge-blocking anywhere yet.",
   "branch_protection_audit": {
-    "verified_at_utc": "2026-09-06",
-    "method": "GitHub REST API via `GET /repos/{owner}/{repo}/branches` (main.protected)",
-    "limitation": "This API surface reports only the boolean `protected` flag, not which specific status checks (federation-governance, federation-governance-certify, federation-compatibility) are marked required. Confirming the required-checks list itself needs a branch-protection/ruleset-scoped read this session's tooling does not expose (repo admin settings, not repo contents) — that remains unverified even for the two repos that do show `protected: true`.",
+    "verified_at_utc": "2026-10-29",
+    "method": "GitHub REST API: `GET /repos/{owner}/{repo}/rules/branches/main` (rules from every active ruleset) and `GET /repos/{owner}/{repo}/branches/main/protection/required_status_checks` (classic branch protection)",
     "results": {
-      "thehub-pr": {"protected": false},
-      "moneysweep-pr": {"protected": true},
-      "spiderweb-pr": {"protected": true},
-      "aguayluz-pr": {"protected": false},
-      "ovnis-pr": {"protected": false},
-      "skywatcher-pr": {"protected": false},
-      "centinelas-pr": {"protected": false}
+      "thehub-pr": {"protected": true, "via": "ruleset main-required-checks (repository-admin bypass)", "strict": false, "required_checks": ["docs-sync"]},
+      "moneysweep-pr": {"protected": true, "via": "ruleset main-protection (also requires a pull request with 1 approval), plus classic branch protection requiring mypy, ruff, lock-sync, test (3.13) and router-tests (3.13)", "strict": true, "required_checks": ["ruff", "mypy", "test (3.13)", "pre-commit", "lock-sync", "diagnostic-smoke", "Compile and pytest", "size-guard", "gitleaks", "docs-sync"]},
+      "spiderweb-pr": {"protected": true, "via": "classic branch protection", "strict": false, "required_checks": ["test (3.11)", "test (3.12)", "lint", "release-check", "docs-sync"]},
+      "aguayluz-pr": {"protected": false, "required_checks": []},
+      "ovnis-pr": {"protected": true, "via": "ruleset main-required-checks (repository-admin bypass)", "strict": false, "required_checks": ["docs-sync"]},
+      "skywatcher-pr": {"protected": true, "via": "ruleset main-required-checks (repository-admin bypass)", "strict": false, "required_checks": ["docs-sync"]},
+      "centinelas-pr": {"protected": true, "via": "ruleset main-required-checks (repository-admin bypass)", "strict": false, "required_checks": ["docs-sync"]}
     }
   },
   "required_central_checks":["federation-governance","federation-governance-certify"],
   "required_producer_check":"federation-compatibility",
+  "docs_sync_gate": {
+    "adr": "docs/adr/0010-change-coupled-documentation-gate.md",
+    "status": "REQUIRED in 6 of 7 repositories; PROVISIONAL in aguayluz-pr",
+    "required_on_main_in": ["thehub-pr", "moneysweep-pr", "spiderweb-pr", "ovnis-pr", "skywatcher-pr", "centinelas-pr"],
+    "ready_to_require": [],
+    "bot_pushes": {"centinelas-pr": "handoff-ack.yml, signal-ledger-refresh.yml, just-security-monitor.yml and el-yunque-access-monitor.yml push data commits to main through scripts/push_to_main.sh (centinelas-pr #182, merged 2026-10-29): it runs tools/check_docs_sync.py on the exact commit, records the verdict as the docs-sync commit status with the Actions token, and pushes only on success. Verified 2026-10-29: el-yunque commit a40464f and two handoff-ack commits reached main with a docs-sync success status from github-actions[bot], and no GH013"},
+    "held": {"aguayluz-pr": "refresh.yml commits scheduled data refreshes straight to main with the Actions token; a required check would reject those pushes because docs-sync only runs on pull requests, unless refresh.yml first records docs-sync itself as centinelas-pr's scripts/push_to_main.sh does"},
+    "not_adopted": [],
+    "apply_with": "tools/require_docs_sync.py --apply, run by a repository administrator"
+  },
   "certification_rule":"Do not issue CERTIFIED until required status enforcement is evidenced for main on all seven repositories."
 }

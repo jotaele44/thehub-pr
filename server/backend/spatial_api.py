@@ -18,6 +18,7 @@ from fastapi import APIRouter, HTTPException, Query
 from hub import spatial_features as sf
 from hub.ingest import STREAM_TO_COLLECTION
 from server.backend.entity_api import _query
+from server.backend.evidence_api import _core
 
 router = APIRouter(prefix="/api/spatial", tags=["spatial"])
 
@@ -49,8 +50,11 @@ def spatial_features(
         box = sf.parse_bbox(bbox)
     except ValueError as error:
         raise HTTPException(status_code=422, detail=str(error)) from error
-    return sf.build_features(spatial_rows(), bbox=box, categories=tuple(category or ()),
+    body = sf.build_features(spatial_rows(), bbox=box, categories=tuple(category or ()),
                              producers=tuple(producer or ()), include_synthetic=include_synthetic, limit=limit)
+    # What the store is (a bounded sample or not recorded), so counts are never read as totals.
+    body["store"] = sf.store_basis(_core().DB_PATH.parent)
+    return body
 
 
 @router.get("/intel")

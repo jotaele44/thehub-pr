@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "thehub.moneysweep-asg-rendered-qa-checkpoint/v1",
+  "observedAt": "2026-10-16T12:32:00Z",
+  "state": "PASS_WITH_DESKTOP_SCREENSHOT_OPEN",
+  "scopeId": "moneysweep.leaderboard.asg-emergency-source-native-v1",
+  "git": {
+    "thehubMain": "0663bfa77740dceff3eb70855f2164112ce47c44",
+    "moneysweepMain": "5487a75b1417edee25a2acf1b2896c474f3978fd"
+  },
+  "package": {
+    "sha256": "6ecdad09a48cdbd4ae1076138a9b5017a5be82608b489871a50ce0d599680337",
+    "producerConsumerBytesIdentical": true
+  },
+  "federation": {
+    "promotionReceiptSha256": "995a4f077f833e322b5936ad1bca3be8d14c912bca159280f993d6efbce83ae1",
+    "replayReceiptSha256": "0e7ad241eb54a18161f21bd1456596062fe49562742739bb074a2f26631cc746",
+    "wholeSourceClaimAuthorized": false,
+    "consumerMayRecompute": false
+  },
+  "floot": {
+    "projectId": "25976845-0c8b-412f-bbc7-7f417025ec73",
+    "projectVersion": 1792154206343,
+    "runtimeReceiptPath": "static/__dev/docs/moneysweep-asg-floot-runtime-receipt-2026-10-16.json",
+    "previewApi": {
+      "state": "PASS",
+      "statusHttp": 200,
+      "topHttp": 200,
+      "candidateCount": 10,
+      "inputRecords": 1431,
+      "outOfScopeRecords": 1410,
+      "retainedRecords": 21,
+      "metricTotalUsd": 4423664.82
+    },
+    "regression": {
+      "state": "PASS",
+      "specFilesExecuted": 62,
+      "specFilesPassed": 62,
+      "specFilesFailed": 0
+    }
+  },
+  "renderedQa": {
+    "surface": "/federation",
+    "canonicalRankingHome": "MoneySweep /leaderboards",
+    "iphone393": {
+      "state": "PASS_DOM",
+      "viewportWidth": 393,
+      "bodyScrollWidthBeforeFix": 593,
+      "bodyScrollWidthAfterFix": 393,
+      "htmlScrollWidthAfterFix": 393,
+      "horizontalOverflow": false,
+      "panelOverflowCount": 0,
+      "receiptLabelPresent": true,
+      "boundedScopePresent": true,
+      "packageHashPresent": true,
+      "noRecomputePresent": true,
+      "wholeSourceDeniedPresent": true
+    },
+    "resolvedDefect": {
+      "state": "PASS",
+      "description": "Mobile grid/hash overflow repaired with minmax(0,1fr), child min-width:0, and identifier wrapping."
+    },
+    "desktop": {
+      "state": "OPEN_SCREENSHOT_PREVIEW_BACKGROUNDED",
+      "assertsPass": false
+    },
+    "screenshotEvidenceComplete": false
+  },
+  "githubActions": {
+    "state": "WAIVED_BY_USER",
+    "assertsPass": false
+  },
+  "terminalRule": "RENDERED_QA_CERTIFIED remains unauthorized until the desktop screenshot artifact completes. All other ASG rendered/runtime gates represented here are closed."
+}

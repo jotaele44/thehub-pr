@@ -226,3 +226,26 @@ export const SECRET_PRESENCE = {
   absent: AMBER,
   unavailable: RED,
 };
+
+// --- Source Monitor (ADR 0012) ----------------------------------------------
+// Declared status is what a producer registry says about a source, normalized
+// by `hub source-monitor`; it is not a health check. Keyed by display label
+// (formatLabel in lib/sourceMonitor.js turns `not_active` into "not active").
+export const MONITOR_STATUS = {
+  active: GREEN,
+  partial: AMBER,
+  "not active": SLATE,
+  manual: BLUE,
+  inactive: SLATE,
+  unknown: NEUTRAL,
+};
+
+// Freshness is producer-level: the age of the producer's last export package
+// against the source's cadence window (see lib/sourceMonitor.js).
+export const FRESHNESS = {
+  Fresh: GREEN,
+  Due: AMBER,
+  Stale: RED,
+  Static: SLATE,
+  Unknown: NEUTRAL,
+};

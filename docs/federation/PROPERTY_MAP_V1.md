@@ -1,7 +1,10 @@
 # Property Map v1 (candidate)
 
 TheHub's Property Map is the `property-map` view of the GIS workspace, opened at
-`/gis?view=property-map`. It places the records the Hub store holds on a map, but only where a
+`/gis?view=property-map`. The workspace's view switch has five views: the workbench (the default),
+the Property Map, the Digital Twin ([`DIGITAL_TWIN_V1.md`](DIGITAL_TWIN_V1.md)), the subsurface and
+interpretive layers, and the AOI comparison ([`SUBSURFACE_AND_CONTROLS_V1.md`](SUBSURFACE_AND_CONTROLS_V1.md)).
+It places the records the Hub store holds on a map, but only where a
 producer declared how the position was obtained. It answers "what does the Hub hold here" through
 Location Intel. Each layer states its provenance.
 
@@ -47,6 +50,13 @@ case entity and its observation, or two producers, are therefore never summed to
 
 Categories are the record types the producers exported (`entity_type`, `observation_type`, or an
 alert's `module`), never labels from a reference application.
+
+**What the producer declared, and what the store is.** Each feature carries `declared_epistemic_class`
+and `declared_data_stage`, the producer's own declaration verbatim, or `null` when it declared none.
+They are never a crosswalk or a guess; the subsurface view reads the class to decide which records are
+modelled. The collection carries a `store` member that says how the served store was built (a bounded
+sample with its per-stream counts, `not_recorded`, or `unreadable`), so a count is never taken for a
+total. Both are described in [`SUBSURFACE_AND_CONTROLS_V1.md`](SUBSURFACE_AND_CONTROLS_V1.md).
 
 ## How precision is shown
 
@@ -121,7 +131,7 @@ The provenance panel names each layer.
 | Hub records | Contract and counts |
 | Basemap | Provider, attribution and coverage note. A basemap is display context, never an evidence layer |
 | Municipio boundaries | Provider and authority, registry certification, this acquisition's gate status, CRS, retrieval time, and the SHA-256 snapshot and query-receipt hashes |
-| Elevation | "No elevation model is used in this view." Terrain and its DEM provenance arrive with the Digital Twin view |
+| Elevation | "No elevation model is used in this view." Terrain and its DEM provenance are in the Digital Twin view |
 
 Basemaps (`server/frontend/src/gis/basemaps.js`):
 
@@ -148,6 +158,10 @@ The fix is in two files:
 The canvas reports `data-drawn-count`: what MapLibre actually drew in view, not what it was given.
 The E2E asserts that count, so a missing worker fails the test.
 
+`server/frontend/src/components/gis/PropertyMapCanvas.jsx` also takes an optional controlled
+`view` and `onViewChange`. The Digital Twin uses them so its two map panels follow one shared
+camera. A view the canvas has just applied is not published back.
+
 ## Not built in this view
 
 - **Findings on the map.** No finding record carries geometry; the OVNIS findings ledger is empty.
@@ -155,8 +169,8 @@ The E2E asserts that count, so a missing worker fails the test.
   is drawn. Precision classes are styled instead.
 - **A live cursor-coordinate readout.**
 - **Barrio names.** The barrio boundary source is not live-certified in the registry.
-- **Elevation, terrain and the 3D view.** These are Phase 5, P5-B.
-- **Interpretive and subsurface layers, and AOI comparison.** These are Phase 5, P5-C.
+- **Elevation, terrain and the 3D view.** These are in the Digital Twin view (Phase 5, P5-B).
+- **Interpretive and subsurface layers, and AOI comparison.** These are separate views (Phase 5, P5-C); see [`SUBSURFACE_AND_CONTROLS_V1.md`](SUBSURFACE_AND_CONTROLS_V1.md).
 
 ## Tests
 

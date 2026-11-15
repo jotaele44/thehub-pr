@@ -351,9 +351,9 @@
       "existing_equivalent": "spiderweb-pr components/Timeline.tsx (cursor not wired to map)",
       "implementation_status": "EXTEND",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-B): A time slider over the store's time extent with a window (everything up to the cursor, one year, 30 days). Each record spans its recorded precision (a year-only date covers the whole year); records outside the window and undated records are counted, and undated ones are never placed in time. Tests: digitalTwin.test.js, DigitalTwin.test.jsx, gui-parity.spec.js, tests/test_spatial_features.py, tests/test_spatial_api.py."
     },
     {
       "capability_id": "FDX-024",
@@ -366,9 +366,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "PARTIAL_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): A terrain profile along a drawn line (CUDEM, PRVD02, no-data kept as gaps) with the documented layers it crosses and the statement that nothing is drawn below the surface, because no subsurface model is supplied. A 3D subsurface cross-section needs a supplied model with a vertical datum. Tests: server/frontend/src/gis/interpretive.test.js, server/frontend/src/components/gis/InterpretiveLayers.test.jsx, server/frontend/tests/visual/gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-025",
@@ -381,9 +381,9 @@
       "existing_equivalent": "spiderweb-pr source_adapters/ncei_coastal_dem/datum_policy.py; thehub-pr server/frontend/src/gis/advanced3dContracts.js verticalDatum",
       "implementation_status": "EXTEND",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): Every height carries its datum and source, or \"datum not declared\"; heights of different or undeclared datums are refused on one axis. NOAA NGS GEOID18 (the PROJ-data mirror: 1 arc-minute grid, CORS open, ranged reads) relates PRVD02 to NAD83(2011) ellipsoidal heights and corrects the 3D terrain, bound by a check of its own (the terrain's EPSG datum must be the geoid's orthometric datum) beside the unchanged fail-closed 3D gate; an unreadable geoid is stated with its reason. Live check 2026-10-07: the bilinear grid agrees with NGS's own service within 0.0125 m at six points (San Juan -43.132 vs -43.131 m; Cerro de Punta -38.746 vs -38.733 m). Tests: server/frontend/src/gis/geoid.test.js, cudemTerrainProvider.test.js, DigitalTwin.test.jsx, liveProviders.test.js, gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-026",
@@ -426,11 +426,11 @@
       "existing_equivalent": "spiderweb-pr configs/location_query_reference_aois.json (regression AOIs, not controls)",
       "implementation_status": "EXTEND",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [
         "negative-control AOIs"
       ],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): /gis?view=aoi-comparison: a study AOI (a bounding box or a TIGERweb municipio by recorded name) against one or more control AOIs that must be disjoint from it and from each other (crossing, touching or contained areas are refused), by records per km² per (producer, stream, category). Only points whose producer declared a placed position count; stand-ins inside an AOI are counted apart as membership not determined. Every result is labelled BACKGROUND COMPARISON — not a finding, and a JSON receipt (NOT_CERTIFIED) records the AOIs, area method and store. Tests: server/frontend/src/gis/aoiComparison.test.js, server/frontend/src/components/gis/AoiComparison.test.jsx, server/frontend/src/gis/storeBasis.test.js, tests/test_spatial_features.py, tests/test_spatial_api.py, server/frontend/tests/visual/gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-029",
@@ -443,9 +443,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): The comparison normalizes by area and reports a rate ratio with an exact conditional binomial test and a Clopper-Pearson interval (reference values: binom.test(8,10) p = 0.109375, interval 0.4439045-0.9747893), no ratio below five combined records, and the number of comparisons with p-values left unadjusted. It is computed over the served store, which in the committed fixture is a bounded sample (400 per stream; alerts 400 of 4399, entities 825 of 48224): the view and the receipt say so, and that the sample's representativeness is not established. Tests: server/frontend/src/gis/aoiComparison.test.js, server/frontend/src/components/gis/AoiComparison.test.jsx, server/frontend/src/gis/storeBasis.test.js, tests/test_spatial_features.py, tests/test_spatial_api.py, server/frontend/tests/visual/gui-parity.spec.js."
     },
     {
       "capability_id": "FDX-030",
@@ -458,9 +458,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-B): Play steps the time cursor through the extent and stops at its end; every panel, the counters and both exports follow it. Tests: digitalTwin.test.js, DigitalTwin.test.jsx, gui-parity.spec.js, tests/test_spatial_features.py, tests/test_spatial_api.py."
     },
     {
       "capability_id": "FDX-031",
@@ -473,9 +473,9 @@
       "existing_equivalent": "spiderweb-pr src/spatial/runtime/SpatialRuntime.ts (2D/3D toggle)",
       "implementation_status": "EXTEND",
       "phase": 5,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-B): Selecting a record in any panel or in the record list selects it in every panel and in the Details panel. Tests: digitalTwin.test.js, DigitalTwin.test.jsx, gui-parity.spec.js, tests/test_spatial_features.py, tests/test_spatial_api.py."
     },
     {
       "capability_id": "FDX-032",
@@ -488,9 +488,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 6,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "PARTIAL_RUN_2",
       "aliases": [],
-      "notes": "Depends on spiderweb-pr terrain/DEM (gebco/terrain.py)."
+      "notes": "Run 2 (Phase 6, P6-C): the line-of-sight engine (lineOfSight.js) clears a straight sight line between two places over a height field with the Earth's curvature and a declared refraction coefficient, and reports OBSTRUCTED (with where), CLEAR, or UNKNOWN where the terrain has no data. It is held to closed forms (the sea horizon, a ridge over the curve) and to the horizon engine on 600 random targets, and agrees with it on real CUDEM within 0.02 degrees of the boundary. In the workflow it adjudicates whether terrain hides a candidate, using the Hub's own CUDEM reader (Puerto Rico, bare earth), not spiderweb-pr terrain. Not delivered: a standalone point-to-point line-of-sight tool in the page. Tests: lineOfSight.test.js, horizon.test.js, terrainIntegration.test.js, liveProviders.test.js (live, outage tolerant)."
     },
     {
       "capability_id": "FDX-033",
@@ -503,9 +503,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 6,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 6, P6-C): a terrain horizon per azimuth (0.5 degree steps, to 40 km by default) from CUDEM, with curvature and a declared refraction coefficient, held to the closed-form sea horizon and ridge angle, to a second algorithm that scans every grid cell, and to live CUDEM at San Juan and at the island's summit (a test that is outage tolerant). It is drawn on the all-sky chart as a shaded band, with the directions that have no data marked as unknown rather than clear, and is carried in the receipt. Bare earth only (no buildings or trees); water is the water surface. Tests: horizon.test.js, terrain.test.js, exclusionView.test.js, ExclusionPanel.test.jsx, liveProviders.test.js."
     },
     {
       "capability_id": "FDX-034",
@@ -518,9 +518,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 6,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 6, P6-C): the Sun, Moon, naked-eye planets and 288 catalogue stars brighter than V 3.5 (d3-celestial, BSD-3-Clause, with its notice kept) are checked against a reported sight line over its whole time window, with apparent positions and standard refraction. Stars are held to the US Naval Observatory celestial navigation service (336 star observations, largest difference 0.026 degrees, which is a proper motion the catalogue does not apply); the Sun, Moon and planets use the engine already held to JPL Horizons. A body in the sight line is a geometric coincidence, not an identification; Uranus, Neptune, comets and asteroids are not checked, and the page says so. Tests: celestialExclusion.test.js, stars.test.js, observation.test.js, geometry.test.js, frustum.test.js."
     },
     {
       "capability_id": "FDX-035",
@@ -533,9 +533,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 6,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "PARTIAL_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 6, P6-C): the ISS, Hubble and the Chinese space station (not all satellites) are checked against a reported sight line over its time window from the current CelesTrak element sets, with the closest approach to 0.1 s, the moments inside the sight line, whether the Sun lit the satellite and whether the observer's sky was dark, held to the independent Skyfield reference within its measured differences. An object whose elements did not load, or that is more than 14 days from an element epoch, is listed as not checked with the reason. Not delivered: brightness is not estimated, and a past event cannot be reproduced because historical element sets need credentials that are never used. Tests: satelliteExclusion.test.js, terrainIntegration.test.js, ExclusionPanel.test.jsx."
     },
     {
       "capability_id": "FDX-036",
@@ -548,9 +548,9 @@
       "existing_equivalent": "skywatcher-pr config/flight_corpus_v4.json trajectory_eligibility + all-pairs denominator",
       "implementation_status": "EXTEND",
       "phase": 6,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": "TRACK INTERSECTION ≠ TARGETING; a single nearby point never establishes a relationship."
+      "notes": "Run 2 (Phase 6, P6-C): aircraft tracks the person supplies are compared with a reported sight line over its whole time window, not at the nearest point: reports are OBSERVED, a position between two reports no more than the gap length apart is INTERPOLATED on a straight line, a longer interval is a GAP that is never filled in, and nothing is extrapolated before the first report or after the last. The apparent direction is held to Skyfield to 1e-9 degrees, and the closest approach and the entry and exit times to within a few milliseconds of an independent dense scan. Terrain hides an aircraft only if it is nearer than the aircraft. A track in the sight line is a geometric coincidence, not targeting, and a callsign is a label, not an identity. The mirrored eligibility rule is flight_corpus_v4 trajectory_eligibility (two valid observations). Tests: aircraftExclusion.test.js, aircraftTracks.test.js, terrainIntegration.test.js."
     },
     {
       "capability_id": "FDX-037",
@@ -563,9 +563,9 @@
       "existing_equivalent": "skywatcher-pr schemas/flight_session.schema.json track_quality; position_status",
       "implementation_status": "EXTEND",
       "phase": 6,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 6, P6-C): each supplied track gets a quality in the vocabulary of the Skywatcher flight session schema (continuous, gapped, sparse_evidence, single_point, with gap_count) and an eligibility of at least two valid observations, plus its coverage of the observation window in seconds (interpolated, in gaps, outside the track). Skywatcher assigns track_quality from the source and the point count; the gap length (30 s by default) and the speed bound are this workspace's own declared policy and are recorded in the result. It describes coverage only and is never an anomaly score. Tests: aircraftTracks.test.js, aircraftExclusion.test.js."
     },
     {
       "capability_id": "FDX-038",
@@ -578,9 +578,9 @@
       "existing_equivalent": "skywatcher-pr sensor_replay/core.py (skywatcher-multisensor-replay-v1)",
       "implementation_status": "EXTEND",
       "phase": 6,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "PARTIAL_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 6, P6-C): the alignment engine (clockAlignment.js) puts events from several sources on one UTC timeline as skywatcher-multisensor-replay-v1 does (union of timestamps, no interpolation, gaps declared with a reason and overlaps refused), with clock offsets that are declared with their basis and never inferred, and reports which sources cover a window. In the page only a declared clock offset for the tracks file is applied; aligning further sources (a camera, a sensor series) has no form yet. Its digest is not a Skywatcher replay digest. Tests: clockAlignment.test.js, aircraftTracks.test.js."
     },
     {
       "capability_id": "FDX-039",
@@ -593,9 +593,9 @@
       "existing_equivalent": null,
       "implementation_status": "NEW",
       "phase": 6,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "IMPLEMENTED_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 6, P6-C): a reported direction is held either as a tolerance cone or as a camera field of view (horizontal and vertical field, roll), optionally moving along a great circle, and is tested against every body, satellite and aircraft over the window. The geometry is held to Skyfield (40 geodetic cases to 1e-9 degrees) and the field of view to closed forms; the outline is drawn on the all-sky chart. Tests: geometry.test.js, frustum.test.js, observation.test.js, exclusionView.test.js, ExclusionPanel.test.jsx."
     },
     {
       "capability_id": "FDX-040",
@@ -608,9 +608,9 @@
       "existing_equivalent": "skywatcher-pr src/skywatcher/replay/foundation.py (Open MCT, off by default)",
       "implementation_status": "EXTEND",
       "phase": 6,
-      "delivery_state": "DEFERRED",
+      "delivery_state": "PARTIAL_RUN_2",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 6, P6-C): the reported observation is replayed against the ordinary-object candidates over its whole window, and the sky at the reported instant is reconstructed (every body, satellite and aircraft position against the sight line, labelled MODELLED, OBSERVED or INTERPOLATED) and recorded in the sky-exclusion-v1 receipt. Not delivered: there is no time scrubber or animation, so the page shows the instant and the window result, not a moving replay. Tests: reconstruction.test.js, runExclusion.test.js, exclusionView.test.js, ExclusionPanel.test.jsx."
     },
     {
       "capability_id": "FDX-041",
@@ -1066,7 +1066,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): A gazetteer task, not a map task: resolving historical names needs a vetted name source and a rule that never promotes precision. Spiderweb holds the road-name gazetteer ingest; nothing is exported to the Hub for it yet."
     },
     {
       "capability_id": "FDX-071",
@@ -1096,7 +1096,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "aliases": [],
-      "notes": null
+      "notes": "Run 2 (Phase 5, P5-C): Spiderweb's schema defines review_state (UNREVIEWED, REVIEW, ACCEPTED, REJECTED, CERTIFIED), but no row in the Hub store carries it (0 of the entities, observations and alerts), so there is no certified geometry to hand off. Nothing here upgrades approximate geometry: the comparison counts only declared placed points and keeps stand-ins apart."
     },
     {
       "capability_id": "FDX-073",
@@ -1136,9 +1136,9 @@
     "DERIVED_SCHEDULED": 0,
     "DERIVED_ALREADY_PRESENT": 1,
     "DERIVED_BLOCKED": 3,
-    "DERIVED_DEFERRED": 47,
-    "DERIVED_IMPLEMENTED_RUN_2": 7,
-    "DERIVED_PARTIAL_RUN_2": 2,
+    "DERIVED_DEFERRED": 31,
+    "DERIVED_IMPLEMENTED_RUN_2": 18,
+    "DERIVED_PARTIAL_RUN_2": 7,
     "DERIVED_SCHEDULED_RUN_2": 0,
     "by_implementation_status": {
       "BLOCKED": 3,

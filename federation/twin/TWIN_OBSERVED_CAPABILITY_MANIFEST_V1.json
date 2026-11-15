@@ -237,9 +237,19 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/gis/cudem.test.js",
+        "server/frontend/src/gis/cudemTerrainProvider.test.js",
+        "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
+        "server/frontend/src/gis/liveProviders.test.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): /gis?view=digital-twin: a Cesium perspective panel over uniform-datum CUDEM terrain with the Hub's records clamped to the ground and styled by declared precision; one camera and one selection shared with the ortho, overhead-imagery and details panels.",
       "live_bundle_corroboration": {
         "file": "assets/index-D1Tgc0Rg.js",
         "label": "3D VIEW"
@@ -333,9 +343,14 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/sky/skyChart.test.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The Sky tab of the Skywatcher page (/skywatcher?view=sky), with the observer and the time in the link. The reference's separate global Sky item is not duplicated: Skywatcher is its home under ADR 0001.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1098,9 +1113,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "skywatcher-pr schemas/sensor_source_v1.schema.json allows sensor type geomagnetic_timeseries but nothing ingests it.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The planetary K-index read directly from NOAA SWPC (3-hourly, CORS-open), shown with its interval time, age, state (LIVE, STALE or FAILED), station count and the NOAA storm scale from Kp 5.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1139,9 +1158,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): NOAA SWPC noaa-planetary-k-index.json: 63 rows over 7.75 days when measured on 2026-10-18; its time tags carry no Z and are read as UTC; malformed rows are dropped and counted, never read as zero.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1180,9 +1203,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Solar wind from the SWPC summary products (one row each). The retired /products/solar-wind/* files return 404, and the 1-minute /json/rtsw series mixes sources (ACE, IMAP, SOLAR1) and is newest-first, so it is not used.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1221,9 +1248,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Solar-wind speed from solar-wind-speed.json: whole km/s, rounded by the provider, shown with its time, age and state; a failed read is unavailable, never zero.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1262,9 +1293,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): IMF Bz (GSM) and total field from solar-wind-mag-field.json: whole nT, rounded by the provider. The direction is stated (southward is the geoeffective one).",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1527,7 +1562,7 @@
       "phase": 6,
       "delivery_state": "ALREADY_PRESENT",
       "tests": [],
-      "notes": null,
+      "notes": "Phase 6: the Hub's Sky workspace does not read this feed. Its aircraft comparison takes tracks the person loads from a file (TWIN-117); a live read would need an OpenSky OAuth proxy, which is not built (OpenSky answers cross-origin reads only for its own origin, and the Hub does not proxy by decision).",
       "live_bundle_corroboration": null
     },
     {
@@ -1554,7 +1589,7 @@
       "phase": 6,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": "Existing query is bbox-bounded; a radius census must state its coverage denominator. Callsign ≠ aircraft identity.",
+      "notes": "Existing query is bbox-bounded; a radius census must state its coverage denominator. Callsign ≠ aircraft identity. Phase 6: not built in the Hub; it needs the live feed above and a stated coverage denominator, and the Sky workspace compares only tracks the person supplies.",
       "live_bundle_corroboration": null
     },
     {
@@ -1579,9 +1614,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): CelesTrak GP element sets (the JSON form of the orbital elements a two-line set carries) for the ISS, Hubble and the Chinese space station are read in the Sky workspace (/skywatcher?view=sky), validated field by field (SGP4 theory only, value ranges, UTC epoch) and kept with their NORAD catalogue number, international designator, name and epoch, with their age at the chosen instant. A set that cannot be read or validated is listed as failed, never defaulted.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1620,9 +1662,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): The International Space Station (NORAD 25544) from CelesTrak's GP JSON, shown in the Sky workspace (/skywatcher?view=sky). A real CelesTrak answer for the ISS (retrieved 2026-11-03T07:19:14Z, raw-response sha256 recorded) is frozen as the fixture. SGP4 states, look angles, passes and shadow transitions are held to the Vallado verification set (AIAA 2006-6753) and to an independent Rhodes sgp4 / Skyfield reference, within the tolerances the tests state.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1661,9 +1710,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): The Chinese space station is represented by the Tianhe core module (NORAD 48274, 2021-035A, identity read from CelesTrak on 2026-10-20), whose element set is used for the station; docked modules are separate catalogue objects, and the panel says so. A real CelesTrak record for it (epoch 2026-11-03T18:08:45Z, read by the loader on 2026-11-04T01:33:00Z; the hash is of the record's JSON text, the raw bytes were not kept) is frozen as the fixture and held to the independent sgp4/Skyfield reference.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1702,9 +1758,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): The Hubble Space Telescope (NORAD 20580) from CelesTrak's GP JSON, shown in the Sky workspace (/skywatcher?view=sky). A real CelesTrak record for it (epoch 2026-11-03T19:01:49Z, read by the loader on 2026-11-04T01:33:00Z; the hash is of the record's JSON text, the raw bytes were not kept) is frozen as the fixture and held to the independent sgp4/Skyfield reference.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1743,9 +1806,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Orbital objects must keep authoritative NORAD IDs and source epochs (skywatcher-pr README contract).",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): CelesTrak ingestion: one GET per object (an Accept header only, no credential, no token in the address), no retry, a 10 second limit, and the answer must hold exactly one record carrying the requested NORAD number. Orbital objects keep their authoritative NORAD IDs and source epochs (skywatcher-pr README contract). Elements are kept two hours, never polled, and a reload inside a minute is refused, because CelesTrak resets connections after a few requests a minute. No Space-Track and no credential is used.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1785,9 +1855,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Sun azimuth and altitude computed in the browser with astronomy-engine 2.1.19 (apparent topocentric), held to JPL Horizons over 84 instants (7 bodies, 3 sites, 4 times): largest difference 0.35 arcmin (Venus), mean 0.09.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1827,9 +1901,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moon azimuth and altitude, apparent topocentric, held to JPL Horizons over 84 instants (7 bodies, 3 sites, 4 times): largest difference 0.35 arcmin (Venus), mean 0.09.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1869,9 +1947,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Positions of Mercury, Venus, Mars, Jupiter and Saturn (the five naked-eye planets), held to JPL Horizons over 84 instants (7 bodies, 3 sites, 4 times): largest difference 0.35 arcmin (Venus), mean 0.09.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1911,9 +1993,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Rise, upper transit, set and civil twilight at a stated fixed UTC offset: 72 Sun and Moon events within 0.50 minute of USNO (which rounds to whole minutes). A day with no rise or set says so; Tromso at the midnight sun and in the polar night is checked against Horizons.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1953,9 +2039,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moon phase: illuminated fraction within 0.43 points of USNO's whole percent, phase name equal to USNO's on 9 site-days, next quarter named with its UTC time (quarter times differ from USNO by up to 1.32 minutes, a lunar-theory difference worth 0.01 degree of lunar motion).",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -1995,9 +2085,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Apparent magnitude of the Moon and the five planets, within 0.13 magnitude of Horizons.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -2037,9 +2131,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The astronomical ephemerides are computed in the browser with astronomy-engine 2.1.19 (MIT, no dependencies, exactly pinned, lazy-loaded), not fetched; their agreement with Horizons and USNO is measured and frozen with the tolerances.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -2079,9 +2177,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): Passes above 10 degrees in the 24 hours from the chosen instant, for the observer: rise, culmination and set (to about 0.1 s), maximum elevation, azimuths and duration, from SGP4 (satellite.js). Held to the Vallado verification set (33 cases) and to an independent Skyfield reference for all three objects (58 passes; pass times within 1 s, measured 0.22 s; elevation within 0.02 degrees; range within 0.2 km), which proves implementation agreement between two SGP4 programs, not forecast accuracy against sightings.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -2121,9 +2226,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): Geometry only. A pass is a visible-pass candidate when the satellite is above 10 degrees, sunlit (cylindrical Earth shadow, umbra only) and the observer's geometric Sun centre is at or below -6 degrees; otherwise the panel says which condition failed. Brightness, magnitude, weather and obstructions are not estimated, so it is not a prediction that anything will be seen. Elements are current ones: a past event cannot be reproduced without element sets from its own time, which need credentials and are not used.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -2191,9 +2303,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/cudem.test.js",
+        "server/frontend/src/gis/cudemTerrainProvider.test.js",
+        "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
+        "server/frontend/src/gis/liveProviders.test.js",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): The bound DEM is NOAA NCEI CUDEM Puerto Rico 1/9″ topobathy (m9525, 2022), chosen because NOAA's metadata declares one vertical datum across it (PRVD02, EPSG:6641; horizontal NAD83), which the 3D source gate requires. It integrates lidar sources, but USGS 3DEP itself is not bound. Live invariant (2026-10-05): GNIS 1609905 Cerro de Punta summit reads 1322.7 m PRVD02; (-66.9, 18.6) offshore reads -955.1 m. P5-C: the heights are placed on the ellipsoid with GEOID18 (live check 2026-10-07: the bilinear grid is within 0.0125 m of NGS's own service at six points).",
       "live_bundle_corroboration": null
     },
     {
@@ -2219,9 +2337,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Basemap provider choice is Federation-native; ESRI is the Twin reference, not a requirement.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): Federation-native imagery: USGS The National Map orthoimagery (aerial, 6 in to 1 m; not satellite) draped on the terrain and in the overhead panel from zoom 11, the CARTO base below. Esri is not used.",
       "live_bundle_corroboration": null
     },
     {
@@ -2802,9 +2926,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/interpretive.test.js",
+        "server/frontend/src/components/gis/InterpretiveLayers.test.jsx",
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-C): The MODELLED — not observed geometry group exists at /gis?view=interpretive-layers and takes only records whose producer declared the INTERPRETIVE class. The committed store holds none (0 of 542 drawable records; the 313 COMPUTED alerts are threshold alerts, not models), and Spiderweb's committed subsurface models are test fixtures, so nothing is modelled and the group says why. The structure is delivered; its content waits on an exported model.",
       "live_bundle_corroboration": null
     },
     {
@@ -2830,9 +2960,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "MODELLED SUBSURFACE GEOMETRY ≠ OBSERVED VOID.",
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/interpretive.test.js",
+        "server/frontend/src/components/gis/InterpretiveLayers.test.jsx",
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-C): MODELLED SUBSURFACE GEOMETRY ≠ OBSERVED VOID. A reported or modelled void would appear only in the MODELLED group, with its own swatch, colour and a paint expression switched on the group for every circle property; tests pin that it cannot inherit the documented style. No producer exports a reported void yet.",
       "live_bundle_corroboration": null
     },
     {
@@ -2858,9 +2994,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/interpretive.test.js",
+        "server/frontend/src/components/gis/InterpretiveLayers.test.jsx",
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-C): A terrain profile along a drawn line: CUDEM heights on one named datum (PRVD02), up to 200 great-circle samples, no-data samples kept as gaps (never zero), the documented layers the line crosses, a CSV download, and the statement \"No subsurface model supplied — nothing is drawn below the surface.\" Depths below the surface need a supplied model with a vertical datum; none is supplied.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -2899,7 +3041,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5, P5-C): No Hub finding or underground record exists to derive a model from (0 finding rows; no record declares the INTERPRETIVE class). A derived model would be MODELLED and would enter through that group once a producer exports it.",
       "live_bundle_corroboration": null
     },
     {
@@ -3003,7 +3145,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5, P5-C): An anchor-derived layer needs recorded anchors and a defined derivation; none is recorded, and the Hub derives nothing. It would be MODELLED, never documented.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -3994,9 +4136,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Geomagnetic Kp KPI: the latest Kp with its state and age and the NOAA storm scale in words (not colour alone).",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4037,7 +4183,7 @@
       "phase": 6,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Phase 6: deferred. A contact count needs a live aircraft feed (see TWIN-040) and a stated coverage denominator; the Sky workspace compares only tracks the person supplies, and a count of those would say nothing about the airspace.",
       "live_bundle_corroboration": null
     },
     {
@@ -4087,9 +4233,14 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/sky/skyChart.test.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Kp sparkline over the span the provider serves (7.75 days, 63 rows when measured), not the reference's ~3.5 days; time is on the x axis so a gap is a gap, with the Kp 5 (G1) line marked.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4166,9 +4317,15 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/sky/spaceWeather.test.js",
+        "server/frontend/src/sky/skyChart.test.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The Sky workspace: observer and time controls, daylight banner, Sun, Moon and planet cards, an all-sky chart, the conventions in use, and space weather.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4211,9 +4368,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Computed here for an explicit UTC instant; \"Follow the clock\" (opt-in) moves it to now every 30 seconds. Nothing is fetched to compute the sky.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4253,9 +4414,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Sun state: azimuth, altitude (apparent within 1 degree of the horizon or above, geometric below, because refraction has nothing to lift there), twilight times and the daylight class.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4298,9 +4463,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moon state: position, phase, illuminated share, magnitude, next quarter, rise, transit and set.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4340,9 +4509,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Planet state: position, magnitude, elongation, rise and set, above or below the horizon.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4382,9 +4555,16 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/satellites.test.js",
+        "server/frontend/src/sky/satelliteElements.test.js",
+        "server/frontend/src/sky/satelliteView.test.js",
+        "server/frontend/src/sky/skyChart.test.js",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-B): Satellite state at the chosen instant: azimuth, elevation and range, above or below the horizon, sunlit or in the Earth's shadow, the element epoch and its age, and an age policy (normal within 3 days of the epoch, lower to 7, low to 14, refused beyond), drawn on the all-sky chart with a shape of its own, filled when sunlit and hollow in shadow. A satellite whose elements did not load is listed as failed and not placed.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4424,9 +4604,15 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/exclusion/aircraftTracks.test.js",
+        "server/frontend/src/sky/exclusion/aircraftExclusion.test.js",
+        "server/frontend/src/sky/exclusion/runExclusion.test.js",
+        "server/frontend/src/components/sky/ExclusionPanel.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-C): aircraft state from tracks the person supplies, as CSV (time, lat, lon, altitude, optional id and callsign) or GeoJSON, read in the browser and never uploaded. The source, the altitude reference (ellipsoid, mean sea level with a declared geoid separation, or barometric with a declared uncertainty) and the unit must be declared; a row without an altitude is rejected, not read as ground level. Not delivered: the Skywatcher federation export is not consumed (in the Skywatcher repository as read for this change it holds three observations, each one point at a single instant, 2026-07-06T22:50:00Z, georeferenced from a screenshot icon with a 7 km uncertainty: not a trajectory), and no live feed is read (OpenSky answers cross-origin reads only for its own origin, and the Hub does not proxy by decision). A callsign is carried as a label, not an identity.",
       "live_bundle_corroboration": null
     },
     {
@@ -4452,9 +4638,21 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Absence of an identified ordinary explanation is not proof of an extraordinary one.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/exclusion/observation.test.js",
+        "server/frontend/src/sky/exclusion/celestialExclusion.test.js",
+        "server/frontend/src/sky/exclusion/satelliteExclusion.test.js",
+        "server/frontend/src/sky/exclusion/aircraftExclusion.test.js",
+        "server/frontend/src/sky/exclusion/horizon.test.js",
+        "server/frontend/src/sky/exclusion/reconstruction.test.js",
+        "server/frontend/src/sky/exclusion/runExclusion.test.js",
+        "server/frontend/src/sky/exclusion/exclusionForm.test.js",
+        "server/frontend/src/sky/exclusion/exclusionView.test.js",
+        "server/frontend/src/components/sky/ExclusionPanel.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-C): the \"Rule out the ordinary\" section of the Sky workspace (/skywatcher?view=sky). A reported sight line (UTC time with an uncertainty, an observer, an azimuth with a declared true or magnetic reference, and a tolerance or a camera field of view, optionally moving) is checked in the browser against the Sun, Moon, naked-eye planets and 288 stars to V 3.5, the three satellites the workspace tracks, aircraft tracks the person supplies, and the terrain where CUDEM covers it. The answer is a sky-exclusion-v1 receipt, NOT_CERTIFIED, that ends in one of three plain statements (NO ORDINARY CANDIDATE IDENTIFIED, ORDINARY CANDIDATES LISTED each as a geometric coincidence, or NOT ASSESSED), lists what was not checked and eight ordinary explanations this check cannot assess, and is downloaded as JSON with a SHA-256 digest anyone can recompute. Nothing entered is stored, sent or made a case. Bounds, stated in the page: Uranus, Neptune, comets, asteroids and fainter stars are not checked; satellites are three objects from current elements (a past event cannot be reproduced); aircraft come only from a file the person loads; terrain is Puerto Rico only and bare earth. Absence of an identified ordinary explanation is not proof of an extraordinary one.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4494,9 +4692,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The readout: every value with its convention (conventions block) and the UTC instant it is for.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4536,9 +4738,14 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/sky/skyChart.test.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): A 2D all-sky chart (north up, east left as seen looking up, altitude rings at 30 and 60 degrees, a distinct shape and a label per body, bodies below the horizon listed). There is no 3D dome.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4610,9 +4817,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Daylight banner: Daylight, Civil, Nautical or Astronomical twilight, or Night, from the geometric Sun altitude at -0.833, -6, -12 and -18 degrees; checked against Horizons' Sun altitude at every reference instant.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4652,9 +4863,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Sun altitude with both the displayed and the geometric value. JPL Horizons extends its refraction at -1 degree to every depth (a constant +0.6466 degree), so deeper than 1 degree below the horizon the geometric altitude is shown and held to Horizons' airless value.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4694,9 +4909,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Sunrise at the stated UTC offset and in UTC, within 0.50 minute of USNO.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4736,9 +4955,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Sunset at the stated UTC offset and in UTC, within 0.50 minute of USNO.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4778,9 +5001,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moon illuminated share as a percentage, within 0.43 points of USNO and 0.60 points of Horizons (geocentric against Horizons' topocentric).",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4823,9 +5050,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moon-position status: above or below the horizon with its altitude and azimuth, listed on the chart or under \"below the horizon\".",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4868,9 +5099,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Moonrise, upper transit and moonset for the local day, each absent event said to be absent (a lunar day can have no rise or no set).",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4910,9 +5145,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): Darkness classification from the geometric Sun altitude (daylight, civil, nautical, astronomical twilight, night), with the cut-offs in the conventions.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4955,9 +5194,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): The naked-eye planets section: the five classical planets. Uranus and Neptune are not shown.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -4997,9 +5240,13 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/astronomy.test.js",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-A): One card per planet: above or below the horizon, altitude, azimuth, magnitude, elongation from the Sun, rise and set.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -5440,9 +5687,20 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Run 2 (Phase 5): the Property Map uses no elevation model and says so; DEM provenance is delivered with terrain in the Digital Twin view (P5-B).",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/gis/cudem.test.js",
+        "server/frontend/src/gis/cudemTerrainProvider.test.js",
+        "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
+        "server/frontend/src/gis/liveProviders.test.js",
+        "server/frontend/src/gis/geoid.test.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B and P5-C): The Digital Twin's Details panel names the DEM (dataset, NOAA metadata, citation), its vertical datum PRVD02 (EPSG:6641) and horizontal NAD83, its 1/9″ resolution, the CUDEM tiles that supplied heights, and the geoid: NOAA NGS GEOID18 is applied to the 3D heights (h = H + N), or the panel states why it is not. Each elevation readout gives the PRVD02 height and, beside it, the ellipsoidal height with its own datum; NAD83 is used as WGS84 without a transformation (about 1-2 m), stated. The Property Map uses no elevation model and says so.",
       "live_bundle_corroboration": {
         "file": "assets/Map-iZc0VAQO.js",
         "label": "DEM: "
@@ -5503,9 +5761,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Run 2 (Phase 5): deferred to P5-C (interpretive layers): no producer exports an underground category or subsurface geometry yet.",
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/gis/interpretive.test.js",
+        "server/frontend/src/components/gis/InterpretiveLayers.test.jsx",
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-C): Documented karst (SIGE sumideros), aquifer (acuíferos) and watershed (cuencas) layers load on request through the source registry with their gates, counts and hashes, and Hub-held USGS mineral occurrences are drawn at their declared precision. No producer exports an underground category, so no Hub record is categorised underground. sige.pr.gov returned 502 Bad Gateway for these Geologia layers in the live-provider CI runs of 2026-10-06; the view shows the provider's failure verbatim and draws nothing for a layer that did not load.",
       "live_bundle_corroboration": null
     },
     {
@@ -5636,9 +5900,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): Four panels (perspective, ortho, overhead imagery, details), each backed by Federation data; the reference's 12-panel grid is not replicated.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -5678,9 +5948,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): A Findings toggle whose counter says why a zero is a zero: no finding carries geometry (the OVNIS findings ledger records none; the store holds 0 finding rows).",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -5717,9 +5993,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): A Live / current toggle and counter by temporal_state: LIVE needs a producer-declared cadence and CURRENT a declared validity window; neither is guessed from recency. No producer declares a cadence, and the counter says so.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -5756,9 +6038,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "No USD/glTF/3D Tiles export exists; GeoJSON/KML exports exist (integration/kml_export.py).",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): Export USD writes .usda text of exactly the visible records: one Points prim in local east/north metres about the view centre, z = 0 (terrain heights are not exported), with evidence_id, category, producer and geometry_precision as vertex primvars and the export's provenance in customLayerData; NOT_CERTIFIED. Opened with Pixar usd-core 26.08 (538 points). Export GeoJSON carries the same records and provenance.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -5798,9 +6086,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): The Cesium perspective panel, maximizable through ?panel=perspective and fullscreen.",
       "live_bundle_corroboration": null
     },
     {
@@ -5826,9 +6120,20 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Depends on a bounded vertical-datum contract; mixed-datum sources stay fail-closed (thehub-pr server/frontend/src/gis/advanced3dSourceRegistry.js).",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/gis/cudem.test.js",
+        "server/frontend/src/gis/cudemTerrainProvider.test.js",
+        "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
+        "server/frontend/src/gis/liveProviders.test.js",
+        "server/frontend/src/gis/geoid.test.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): CUDEM terrain is bound only because certifyAdvanced3dSource returns READY_FOR_RUNTIME_BINDING for its UNIFORM_BOUND registry entry; the gate is unchanged and mixed-datum sources stay fail-closed. Heights are read in the browser from NOAA's 26 cloud-optimized GeoTIFF tiles by byte range. P5-C: the terrain is placed on the ellipsoid through NOAA NGS GEOID18 (the PROJ-data mirror), only while the terrain's datum is the geoid's orthometric datum; the sea surface follows the geoid, and outside the grid nothing is extrapolated.",
       "live_bundle_corroboration": null
     },
     {
@@ -5854,9 +6159,19 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js",
+        "server/frontend/src/gis/cudem.test.js",
+        "server/frontend/src/gis/cudemTerrainProvider.test.js",
+        "server/frontend/src/gis/advanced3dSourceRegistry.test.js",
+        "server/frontend/src/gis/liveProviders.test.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): USGS orthoimagery is draped over the CUDEM terrain mesh from zoom 11, with the CARTO base below.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -5893,9 +6208,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): The findings overlay and its toggle work on any record with category 'finding'; no finding carries geometry yet, so nothing is drawn and the counter says why.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -5932,9 +6253,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): The Live / current filter keeps only LIVE or CURRENT records. No producer declares a live cadence and no mapped record is inside a current validity window, so there is no live feed to overlay; the counter says so.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -5971,9 +6298,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): Each panel has Maximize (in the page, deep-linked by ?panel=) and Fullscreen (when the browser allows it).",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -6010,9 +6343,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "ORTHOIMAGERY is declared_for_later_waves in spiderweb-pr registry/spatial/capabilities.json.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): A MapLibre top-down panel on the CARTO base with the same records, selection and camera.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -6052,9 +6391,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): An overhead imagery panel: USGS orthoimagery (aerial photography, not satellite) from zoom 11, the CARTO base below.",
       "live_bundle_corroboration": null
     },
     {
@@ -6080,9 +6425,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): One shared view (centre, zoom, bearing), selection, time window and filters drive every panel; a view a panel has just applied is not published back.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -6119,9 +6470,15 @@
       },
       "producer_diagnostic_gui": "spiderweb-pr server/frontend/ (diagnostic, ADR 0001)",
       "phase": 5,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "tests/test_spatial_features.py",
+        "tests/test_spatial_api.py",
+        "server/frontend/src/gis/digitalTwin.test.js",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 5, P5-B): A four-panel grid (one column on narrow screens); any panel maximizes through ?panel=.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -6626,7 +6983,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5, P5-C): No Underground Structures topic is recorded: the OVNIS research ledgers are empty. The Research Hub shows topics as curators record them.",
       "search_terms_without_equivalent": [
         "usd",
         "gltf",
@@ -6665,7 +7022,7 @@
       "phase": 6,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Phase 6: deferred. No signals or electromagnetic finding has been recorded for this to support. The Sky workspace's space-weather readings are context for ruling out ordinary explanations, not finding support, and are not offered as one.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -6707,7 +7064,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5, P5-C): No finding supports a subsurface void: the store holds 0 finding rows. Spiderweb's svt_contract states the non-promotion bases a void claim must respect.",
       "live_bundle_corroboration": null
     },
     {
@@ -7029,7 +7386,7 @@
       "phase": 5,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Run 2 (Phase 5, P5-C): The event timeline's categories come from recorded object types, and no recorded type is an underground category, so there is no filter to offer.",
       "live_bundle_corroboration": null
     },
     {
@@ -8287,11 +8644,11 @@
     "by_delivery_state": {
       "ALREADY_PRESENT": 14,
       "BLOCKED": 4,
-      "DEFERRED": 130,
-      "IMPLEMENTED_RUN_2": 43,
+      "DEFERRED": 66,
+      "IMPLEMENTED_RUN_2": 96,
       "IMPLEMENTED_THIS_RUN": 16,
       "NOT_APPLICABLE": 5,
-      "PARTIAL_RUN_2": 6,
+      "PARTIAL_RUN_2": 17,
       "PARTIAL_THIS_RUN": 5
     },
     "census_closed": true

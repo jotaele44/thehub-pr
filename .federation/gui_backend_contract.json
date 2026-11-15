@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "2631a14ba6832c2dccfd09406d90a404eb9d99be",
+  "source_commit": "870e5975603c5a2f50778c542cc77d2d792480c9",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -35,7 +35,9 @@
       "server/frontend/src/components/layout/Sidebar.jsx",
       "server/frontend/src/components/layout/MobileNav.jsx"
     ],
-    "existing_gui_capability_manifests": []
+    "existing_gui_capability_manifests": [
+      ".federation/gui-capabilities.json"
+    ]
   },
   "authority": {
     "semantic_authority": "federation-control-and-cross-domain-orchestration-only",
@@ -506,6 +508,22 @@
       "evidence": [
         "server/backend/mcp_api.py:133"
       ]
+    },
+    {
+      "pattern": "GET /grid/{grid_id}/{grid_version}/{level}/{cell_id}",
+      "classification": "INTERNAL",
+      "rationale": "Read-only PR Grid V2 federation handoff. It exposes identity/profile references only; no geometry generation or mutation occurs here.",
+      "evidence": [
+        "server/backend/grid_v2_api.py"
+      ]
+    },
+    {
+      "pattern": "GET /api/grid/{grid_id}/{grid_version}/{level}/{cell_id}",
+      "classification": "INTERNAL",
+      "rationale": "Read-only PR Grid V2 federation handoff. It exposes identity/profile references only; no geometry generation or mutation occurs here.",
+      "evidence": [
+        "server/backend/grid_v2_api.py"
+      ]
     }
   ],
   "gui_only_allowlist": [
@@ -638,7 +656,7 @@
       ]
     },
     {
-      "pattern": "server/frontend/src/pages/Operations.jsx:30:!disabled && onSelect(operation)} disabled= aria-disabled= data-operation-id= className= > \u00b7 writes )}",
+      "pattern": "server/frontend/src/pages/Operations.jsx:30:!disabled && onSelect(operation)} disabled= aria-disabled= data-operation-id= className= > · writes )}",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
       "evidence": [
@@ -1542,7 +1560,7 @@
       ]
     },
     {
-      "pattern": "server/frontend/src/pages/Operations\\.jsx:30:!disabled\\ \\&\\&\\ onSelect\\(operation\\)\\}\\ disabled=\\ aria\\-disabled=\\ data\\-operation\\-id=\\ className=\\ >\\ \u00b7\\ writes\\ \\)\\}",
+      "pattern": "server/frontend/src/pages/Operations\\.jsx:30:!disabled\\ \\&\\&\\ onSelect\\(operation\\)\\}\\ disabled=\\ aria\\-disabled=\\ data\\-operation\\-id=\\ className=\\ >\\ ·\\ writes\\ \\)\\}",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
       "evidence": [
@@ -1803,6 +1821,300 @@
       "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
       "evidence": [
         "server/frontend/src/components/notifications/NotificationBell.jsx:20"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/command/CommandPalette\\.jsx:[0-9]+:Search &amp; commands Ctrl K",
+      "classification": "CLIENT_STATE",
+      "rationale": "The context-bound trigger opens the tested command palette and intentionally performs no backend request.",
+      "evidence": [
+        "server/frontend/src/components/command/CommandPalette.jsx:106",
+        "server/frontend/src/components/command/CommandPalette.test.jsx:52"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/DigitalTwin\\.jsx:[0-9]+:.*Maximize.*",
+      "classification": "CLIENT_STATE",
+      "rationale": "The maximize control updates the tested panel query state and does not represent a backend operation.",
+      "evidence": [
+        "server/frontend/src/components/gis/DigitalTwin.jsx:58",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx:155"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/DigitalTwin\\.jsx:[0-9]+:Fullscreen",
+      "classification": "BROWSER_ACTION",
+      "rationale": "The control calls the browser Fullscreen API on the current panel and has no server-side target.",
+      "evidence": [
+        "server/frontend/src/components/gis/DigitalTwin.jsx:48",
+        "server/frontend/src/components/gis/DigitalTwin.jsx:62"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/GisViewSwitch\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "Each GIS view button updates validated URL search parameters for the current internal route.",
+      "evidence": [
+        "server/frontend/src/components/gis/GisViewSwitch.jsx:21",
+        "server/frontend/src/components/gis/DigitalTwin.test.jsx:156"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/PropertyMap\\.jsx:[0-9]+:(?:Provenance|Entity|unlabeled-control)",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "These controls follow evidence and entity deep links supplied by the validated spatial API response.",
+      "evidence": [
+        "server/frontend/src/components/gis/PropertyMap.jsx:251",
+        "server/frontend/src/components/gis/PropertyMap.jsx:317",
+        "server/frontend/src/components/gis/PropertyMap.test.jsx:155"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/intelligence/IntelligenceWorkspace\\.jsx:[0-9]+:Open provenance inspector",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The link opens the canonical evidence route derived from a validated evidence reference.",
+      "evidence": [
+        "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:90",
+        "server/frontend/tests/visual/gui-parity.spec.js:46"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/layout/MobileNav\\.jsx:[0-9]+:Open navigation menu",
+      "classification": "CLIENT_STATE",
+      "rationale": "The Radix Sheet trigger opens tested local navigation state and intentionally has no backend target.",
+      "evidence": [
+        "server/frontend/src/components/layout/MobileNav.jsx:25",
+        "server/frontend/tests/visual/gui-parity.spec.js:29"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/layout/Sidebar\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The reusable sidebar item is a React Router link whose targets come from the tested navigation registry.",
+      "evidence": [
+        "server/frontend/src/components/layout/Sidebar.jsx:12",
+        "server/frontend/src/lib/commands.test.js:9"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/OvnisResearchTabs\\.jsx:[0-9]+:Open report",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The report link navigates to the tested case-reconstruction route using the producer case identifier.",
+      "evidence": [
+        "server/frontend/src/components/research/OvnisResearchTabs.jsx:41",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx:103"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/OvnisResearchTabs\\.jsx:[0-9]+:Primary source",
+      "classification": "EXTERNAL_NAVIGATION",
+      "rationale": "The anchor is emitted only for an explicit HTTP source URL and opens that cited external source.",
+      "evidence": [
+        "server/frontend/src/components/research/OvnisResearchTabs.jsx:66",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx:123"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/research/ResearchRecords\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The shared case link encodes the source-native case identifier into the case-reconstruction route.",
+      "evidence": [
+        "server/frontend/src/components/research/ResearchRecords.jsx:42",
+        "server/frontend/src/pages/ResearchHub.test.jsx:71"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/shared/RecordSheet\\.jsx:[0-9]+:Open provenance inspector",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The optional link opens the canonical evidence route only when a validated evidence reference exists.",
+      "evidence": [
+        "server/frontend/src/components/shared/RecordSheet.jsx:33",
+        "server/frontend/src/components/shared/RecordSheet.jsx:41"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/CaseReconstruction\\.jsx:[0-9]+:(?:Source provenance|Provenance|Case composition)",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "These links preserve API-supplied evidence and entity identifiers when navigating to canonical Hub routes.",
+      "evidence": [
+        "server/frontend/src/pages/CaseReconstruction.jsx:118",
+        "server/frontend/src/pages/CaseReconstruction.test.jsx:51"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/EntityPage\\.jsx:[0-9]+:(?:unlabeled-control|Inspect|Full provenance)",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "Entity, relationship, and evidence links use API-supplied stable identifiers and tested canonical routes.",
+      "evidence": [
+        "server/frontend/src/pages/EntityPage.jsx:71",
+        "server/frontend/src/pages/EntityPage.jsx:121",
+        "server/frontend/src/pages/EntityPage.test.jsx:61"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/EvidenceInspector\\.jsx:[0-9]+:Entity composition",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The evidence inspector links an entity-stream record to its canonical entity-composition route.",
+      "evidence": [
+        "server/frontend/src/pages/EvidenceInspector.jsx:41",
+        "server/frontend/tests/visual/gui-parity.spec.js:292"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Search\\.jsx:[0-9]+:(?:unlabeled-control|Provenance|Entity composition)",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "Search results retain API-supplied evidence and entity deep links, both covered by route tests.",
+      "evidence": [
+        "server/frontend/src/pages/Search.jsx:33",
+        "server/frontend/src/pages/Search.test.jsx:62"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Timeline\\.jsx:[0-9]+:Source$",
+      "classification": "EXTERNAL_NAVIGATION",
+      "rationale": "The source anchor is emitted only for an explicit HTTP URL and opens the cited external record.",
+      "evidence": [
+        "server/frontend/src/pages/Timeline.jsx:66",
+        "server/frontend/src/pages/Timeline.test.jsx:67"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/Timeline\\.jsx:[0-9]+:(?:Source provenance|Provenance|Case composition|Case reconstruction)",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "Timeline links preserve source, evidence, entity, and case identifiers across tested canonical routes.",
+      "evidence": [
+        "server/frontend/src/pages/Timeline.jsx:73",
+        "server/frontend/src/pages/Timeline.test.jsx:68",
+        "server/frontend/src/pages/Timeline.test.jsx:91"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/AoiComparison\\.jsx:136:Download receipt \\(JSON\\)",
+      "classification": "BROWSER_ACTION",
+      "rationale": "This control serializes the already-computed AOI comparison receipt in the browser and passes it to downloadText; it performs no Hub backend mutation and requires no separate backend endpoint.",
+      "evidence": [
+        "server/frontend/src/components/gis/AoiComparison.jsx:136",
+        "server/frontend/src/components/gis/AoiComparison.jsx:252-257",
+        "server/frontend/src/lib/download.js"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/AoiComparison\\.jsx:241:unlabeled-control",
+      "classification": "BROWSER_ACTION",
+      "rationale": "This dynamically labeled control invokes loadBoundary, which acquires the declared TIGERweb municipio boundary source directly through the browser-side acquisition facade and stores the result in local component state; it is not a Hub backend mutation.",
+      "evidence": [
+        "server/frontend/src/components/gis/AoiComparison.jsx:151-160",
+        "server/frontend/src/components/gis/AoiComparison.jsx:241-243",
+        "server/frontend/src/gis/acquisitionFacade.js"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/AoiComparison\\.jsx:244:Compare",
+      "classification": "CLIENT_STATE",
+      "rationale": "This control runs compareAois deterministically over the spatial records already loaded into the page and updates local comparison/error state; it does not call or mutate a backend route.",
+      "evidence": [
+        "server/frontend/src/components/gis/AoiComparison.jsx:162-184",
+        "server/frontend/src/components/gis/AoiComparison.jsx:244"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/gis/InterpretiveLayers\\.jsx:125:Download CSV",
+      "classification": "BROWSER_ACTION",
+      "rationale": "This control serializes the already-computed interpretive profile to CSV and invokes the browser download helper; it has no distinct backend mutation or missing server target.",
+      "evidence": [
+        "server/frontend/src/components/gis/InterpretiveLayers.jsx:125",
+        "server/frontend/src/lib/download.js"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/constellation/ConstellationControls\\.jsx:[0-9]+:(Zoom in|Zoom out|Fit the stage in view)$",
+      "classification": "CLIENT_STATE",
+      "rationale": "Constellation view controls: they move the canvas camera (zoom about the centre, or refit the stage) through the canvas handle and perform no backend request.",
+      "evidence": [
+        "server/frontend/src/components/constellation/ConstellationControls.jsx:62",
+        "server/frontend/src/pages/FederationConstellation.test.jsx:164"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/constellation/NodeDetails\\.jsx:[0-9]+:unlabeled-control$",
+      "classification": "CLIENT_STATE",
+      "rationale": "A connection in the constellation details panel; its visible label is the connected node's name, and it selects that node in the page's tour state without a backend request.",
+      "evidence": [
+        "server/frontend/src/components/constellation/NodeDetails.jsx:59",
+        "server/frontend/src/pages/FederationConstellation.test.jsx:113"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/constellation/NodeDetails\\.jsx:[0-9]+:Provenance$",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "Each constellation sample record links to its Evidence Object route (/evidence/{collection}/{id}), whose data comes from GET /api/evidence.",
+      "evidence": [
+        "server/frontend/src/components/constellation/NodeDetails.jsx:121",
+        "server/frontend/tests/visual/gui-parity.spec.js:503"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/pages/SourceMonitor(?:Detail)?\\.jsx:[0-9]+:unlabeled-control$",
+      "classification": "INTERNAL_NAVIGATION",
+      "rationale": "The producer name in the Source Monitor summary table and on a source's detail page links to that producer's Hub page; the target comes from the module registry (PRODUCER_PAGES in lib/sourceMonitor.js, derived from MODULES) and no backend request is made.",
+      "evidence": [
+        "server/frontend/src/pages/SourceMonitor.jsx:65",
+        "server/frontend/src/pages/SourceMonitorDetail.jsx:74",
+        "server/frontend/src/pages/SourceMonitorDetail.test.jsx:51",
+        "server/frontend/src/lib/sourceMonitor.test.js:56"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/SatellitesPanel\\.jsx:[0-9]+:unlabeled-control$",
+      "classification": "CLIENT_STATE",
+      "rationale": "The Show/Hide pass-track button (its label names the satellite and pass, so it is dynamic) calls onShowTrack, which only changes which pass track the Sky workspace draws; no backend request.",
+      "evidence": [
+        "server/frontend/src/components/sky/SatellitesPanel.jsx:87",
+        "server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx:154"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/SkyWorkspace\\.jsx:[0-9]+:Apply observer$",
+      "classification": "CLIENT_STATE",
+      "rationale": "Submitting the observer form runs applyObserver, which validates the draft coordinates, builds the observer with makeObserver and updates the sky URL state; no backend request.",
+      "evidence": [
+        "server/frontend/src/components/sky/SkyWorkspace.jsx:219",
+        "server/frontend/src/components/sky/SkyWorkspace.jsx:396",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx:170",
+        "server/frontend/tests/visual/gui-parity.spec.js:978"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/SkyWorkspace\\.jsx:[0-9]+:Refresh space weather$",
+      "classification": "BROWSER_ACTION",
+      "rationale": "The button refetches the space-weather query, whose loadSpaceWeather reads NOAA SWPC products (services.swpc.noaa.gov) directly from the browser and keeps them in query state; it is not a Hub backend call.",
+      "evidence": [
+        "server/frontend/src/components/sky/SkyWorkspace.jsx:293",
+        "server/frontend/src/sky/spaceWeather.js:11",
+        "server/frontend/src/components/sky/SkyWorkspace.test.jsx:271"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/ExclusionPanel\\.jsx:[0-9]+:\\)\\}$",
+      "classification": "CLIENT_STATE",
+      "rationale": "The exclusion form's shared Select element. Its onChange arrives through the spread props, so the scanner sees no handler; its only use is the Azimuth reference field, whose onChange is set('azimuthReference'), which only updates the observation draft held in component state; no backend request.",
+      "evidence": [
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:49",
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:230",
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:325",
+        "server/frontend/src/components/sky/ExclusionPanel.test.jsx:36",
+        "server/frontend/tests/visual/gui-parity.spec.js:1080"
+      ]
+    },
+    {
+      "pattern": "server/frontend/src/components/sky/ExclusionPanel\\.jsx:[0-9]+:Download the receipt \\(JSON\\)$",
+      "classification": "BROWSER_ACTION",
+      "rationale": "This control serializes the already-computed exclusion receipt in the browser (a Blob behind a temporary object URL and download link) and saves it; it performs no Hub backend mutation and requires no separate backend endpoint, like the AOI comparison receipt download.",
+      "evidence": [
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:209",
+        "server/frontend/src/components/sky/ExclusionPanel.jsx:277-287",
+        "server/frontend/src/components/sky/ExclusionPanel.test.jsx:288",
+        "server/frontend/tests/visual/gui-parity.spec.js:1131"
       ]
     }
   ],
@@ -2185,7 +2497,7 @@
     },
     {
       "claim_id": "thehub-pr-claim-048",
-      "frontend_pattern": "Barrios 2015 \u00b7 table bound, WFS path not live-certified",
+      "frontend_pattern": "Barrios 2015 · table bound, WFS path not live-certified",
       "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
       "evidence": [
         "server/frontend/src/gis/sourceRegistry.js:51"
@@ -2289,7 +2601,7 @@
     },
     {
       "claim_id": "thehub-pr-claim-061",
-      "frontend_pattern": "No continuity risks in the current aggregate. Risks are derived from AguaYLuz-PR water\u2194power dependencies and asset-anch",
+      "frontend_pattern": "No continuity risks in the current aggregate. Risks are derived from AguaYLuz-PR water↔power dependencies and asset-anch",
       "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
       "evidence": [
         "server/frontend/src/pages/AguaYLuz.jsx:155"
@@ -2305,7 +2617,7 @@
     },
     {
       "claim_id": "thehub-pr-claim-063",
-      "frontend_pattern": ">Device or authoritative online acquisition \u2192 RAW/query/snapshot provenance \u2192 renderer-independent canonical state.</p> ",
+      "frontend_pattern": ">Device or authoritative online acquisition → RAW/query/snapshot provenance → renderer-independent canonical state.</p> ",
       "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
       "evidence": [
         "server/frontend/src/pages/GISWorkspace.jsx:171"
@@ -2425,7 +2737,7 @@
     },
     {
       "claim_id": "thehub-pr-claim-078",
-      "frontend_pattern": "s current export is synthetic-only \u2014 real events populate once it ships a live FR24 capture.",
+      "frontend_pattern": "s current export is synthetic-only — real events populate once it ships a live FR24 capture.",
       "backend_predicate": "The corresponding backend response or local component state is the declared source for this view claim.",
       "evidence": [
         "server/frontend/src/pages/Skywatcher.jsx:80"

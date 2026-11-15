@@ -190,6 +190,30 @@ export function bboxAreaM2([minLon, minLat, maxLon, maxLat]) {
   return EARTH_RADIUS_M ** 2 * toRadians(maxLon - minLon) * Math.abs(Math.sin(toRadians(maxLat)) - Math.sin(toRadians(minLat)));
 }
 
+// Area of a lon/lat ring on the reference sphere (Chamberlain-Duquette: exact for
+// edges along parallels and meridians, and the area the bbox formula gives).
+function ringAreaM2(ring) {
+  let sum = 0;
+  for (let index = 0; index < ring.length - 1; index += 1) {
+    const [lon1, lat1] = ring[index];
+    const [lon2, lat2] = ring[index + 1];
+    sum += toRadians(lon2 - lon1) * (2 + Math.sin(toRadians(lat1)) + Math.sin(toRadians(lat2)));
+  }
+  return Math.abs(sum) * EARTH_RADIUS_M ** 2 / 2;
+}
+
+function polygonAreaFromRings(rings) {
+  if (!rings?.length) return 0;
+  return ringAreaM2(rings[0]) - rings.slice(1).reduce((total, hole) => total + ringAreaM2(hole), 0);
+}
+
+// Area of a Polygon or MultiPolygon in square metres on the reference sphere; 0 for anything else.
+export function polygonAreaM2(geometry) {
+  if (geometry?.type === 'Polygon') return polygonAreaFromRings(geometry.coordinates);
+  if (geometry?.type === 'MultiPolygon') return geometry.coordinates.reduce((total, rings) => total + polygonAreaFromRings(rings), 0);
+  return 0;
+}
+
 // Spherical cap: the exact area of a geodesic circle on the reference sphere.
 export function circleAreaM2(radiusM) {
   return 2 * Math.PI * EARTH_RADIUS_M ** 2 * (1 - Math.cos(radiusM / EARTH_RADIUS_M));
