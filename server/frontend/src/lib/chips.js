@@ -240,8 +240,9 @@ export const MONITOR_STATUS = {
   unknown: NEUTRAL,
 };
 
-// Freshness is producer-level: the age of the producer's last export package
-// against the source's cadence window (see lib/sourceMonitor.js).
+// Freshness compares a source's age with its cadence window, measured from the
+// source's own last success when its producer reports one (ADR 0013) and otherwise
+// from the producer's last export package (see lib/sourceMonitor.js).
 export const FRESHNESS = {
   Fresh: GREEN,
   Due: AMBER,

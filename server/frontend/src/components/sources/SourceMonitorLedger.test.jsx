@@ -40,16 +40,28 @@ function Where() {
   );
 }
 
-function renderLedger(props = {}) {
-  return render(
+function tree(props = {}) {
+  return (
     <MemoryRouter initialEntries={["/source-monitor"]}>
       <Routes>
         <Route path="/source-monitor" element={<SourceMonitorLedger now={NOW} {...props} />} />
         <Route path="/source-monitor/:monitorId" element={<Where />} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 }
+
+function renderLedger(props = {}) {
+  return render(tree(props));
+}
+
+// useEntityData answers by collection name: the monitor rows, or the summary.
+function serve({ rows = ROWS, summaries = [] } = {}) {
+  const result = (data) => ({ rows: data, create: vi.fn(), update: vi.fn(), saving: false, isLoading: false });
+  vi.mocked(useEntityData).mockImplementation((name) => result(name === "SourceMonitorSummary" ? summaries : rows));
+}
+
+const bodyRows = () => within(screen.getAllByRole("rowgroup")[1]).getAllByRole("row");
 
 describe("SourceMonitorLedger", () => {
   let create;
@@ -57,12 +69,20 @@ describe("SourceMonitorLedger", () => {
   beforeEach(() => {
     create = vi.fn();
     update = vi.fn();
-    vi.mocked(useEntityData).mockReturnValue({ rows: ROWS, create, update, saving: false, isLoading: false });
+    vi.mocked(useEntityData).mockReset();
+    vi.mocked(useEntityData).mockImplementation((name) => ({
+      rows: name === "MonitoredSources" ? ROWS : [], create, update, saving: false, isLoading: false,
+    }));
   });
 
   it("reads the MonitoredSources collection and offers no create or edit affordance", () => {
     renderLedger();
     expect(useEntityData).toHaveBeenCalledWith("MonitoredSources");
+    // EntityLedger and the facet both call it with the collection name alone, so
+    // they share one react-query key and one request.
+    const calls = vi.mocked(useEntityData).mock.calls.filter(([name]) => name === "MonitoredSources");
+    expect(calls.length).toBeGreaterThan(1);
+    expect(calls.every((call) => call.length === 1)).toBe(true);
     expect(screen.queryByRole("button", { name: /new/i })).not.toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
@@ -112,9 +132,7 @@ describe("SourceMonitorLedger", () => {
 
 
 describe("SourceMonitorLedger per-source freshness", () => {
-  beforeEach(() => {
-    vi.mocked(useEntityData).mockReturnValue({ rows: ROWS, create: vi.fn(), update: vi.fn(), saving: false, isLoading: false });
-  });
+  beforeEach(() => serve());
 
   it("measures a stream row from its own last success and says so", () => {
     renderLedger({ producer: "aguayluz-pr" });
@@ -130,5 +148,76 @@ describe("SourceMonitorLedger per-source freshness", () => {
     const body = screen.getAllByRole("rowgroup")[1];
     const [row] = within(body).getAllByRole("row");
     expect(within(row).getByText("producer export")).toBeInTheDocument();
+  });
+});
+
+
+describe("SourceMonitorLedger Family filter", () => {
+  beforeEach(() => serve());
+
+  it("offers a Family filter federation-wide and on a producer tab", () => {
+    const { unmount } = renderLedger();
+    expect(screen.getByRole("combobox", { name: "Family" })).toBeInTheDocument();
+    unmount();
+    renderLedger({ producer: "ovnis-pr" });
+    expect(screen.getByRole("combobox", { name: "Family" })).toBeInTheDocument();
+  });
+
+  it("keeps rows that load after the first render visible", () => {
+    // The first render has no rows yet, so the filter has no options; it must
+    // still exist then, or its state would start undefined and hide every row.
+    serve({ rows: [] });
+    const { rerender } = renderLedger();
+    expect(screen.getByRole("combobox", { name: "Family" })).toBeInTheDocument();
+    serve();
+    rerender(tree());
+    expect(bodyRows()).toHaveLength(3);
+  });
+});
+
+
+describe("SourceMonitorLedger list-limit notice", () => {
+  const summary = (total) => ({
+    id: "source_monitor_summary", total,
+    producers: { "ovnis-pr": { count: 40 }, "moneysweep-pr": { count: 1 }, "aguayluz-pr": { count: 1 } },
+  });
+
+  it("warns on a producer tab cut short while the hub holds more than the list loads", () => {
+    serve({ summaries: [summary(501)] });
+    renderLedger({ producer: "ovnis-pr" });
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "The hub holds 40 sources from ovnis-pr but this tab shows 1: the table loads the first 500 of 501",
+    );
+  });
+
+  it("stays quiet at the limit, for a producer with every row loaded, and federation-wide", () => {
+    serve({ summaries: [summary(500)] });
+    const { unmount } = renderLedger({ producer: "ovnis-pr" });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    unmount();
+
+    serve({ summaries: [summary(501)] });
+    const second = renderLedger({ producer: "moneysweep-pr" });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    second.unmount();
+
+    // The Source Monitor page shows its own notice; the federation table adds none.
+    vi.mocked(useEntityData).mockClear();
+    renderLedger();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(useEntityData).not.toHaveBeenCalledWith("SourceMonitorSummary");
+  });
+
+  it("reads the summary row by its id", () => {
+    serve({ summaries: [{ ...summary(501), id: "something_else" }] });
+    renderLedger({ producer: "ovnis-pr" });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("has no detectable accessibility violations with the notice shown", async () => {
+    serve({ summaries: [summary(501)] });
+    const { container } = renderLedger({ producer: "ovnis-pr" });
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

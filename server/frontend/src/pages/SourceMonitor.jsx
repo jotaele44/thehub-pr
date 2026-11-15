@@ -11,7 +11,7 @@ import {
 } from "@/lib/sourceMonitor";
 
 // Federation-wide, read-only Source Monitor (ADR 0012): the operator view. Each
-// producer page carries the same table scoped to that producer as a Sources tab.
+// producer page carries the same table scoped to that producer as a Monitor tab.
 export default function SourceMonitor() {
   const { rows: summaries } = useEntityData(MONITOR_SUMMARY_COLLECTION);
   const summary = summaries.find((s) => s.id === MONITOR_SUMMARY_ID) || summaries[0] || null;
