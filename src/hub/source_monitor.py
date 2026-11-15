@@ -24,10 +24,13 @@ the artifact-only boundary of ADR 0001:
   stream it moves from ``REGISTRIES`` to ``STREAM_PRODUCERS``; delete this
   module when all six have moved.
 
-Freshness here is **producer-level**: the ``created_at`` of the producer's
-export-package manifest, the same field ``hub.federation_status`` reads. No
-registry records a per-source last-successful-poll time; that needs the
-deferred ``source_monitors`` stream (ADR 0012, phase 2).
+Freshness for the producers read here is **producer-level**: the
+``created_at`` of the producer's export-package manifest, the same field
+``hub.federation_status`` reads, because no registry records a per-source
+last-successful-poll time. Producers in ``STREAM_PRODUCERS`` report a
+per-source ``last_success_at`` with its basis in the stream instead (ADR 0013;
+``NOT_RECORDED`` where they keep none), and this module reads none of their
+files.
 
 Producer families are kept verbatim (``producer_family``). There is no shared
 category taxonomy across producers yet, so none is invented here.
@@ -68,20 +71,15 @@ CADENCE_WINDOW_SECONDS: Dict[str, int] = {
     "yearly": 366 * 86400,
 }
 
-# Producer cadence vocabularies -> CADENCES. Keys are lower-cased raw values
-# pinned from the registries as of 2026-11 (see tests/test_source_monitor.py).
-# Anything not listed normalizes to "unknown"; the raw value is always kept.
+# Producer cadence vocabularies -> CADENCES, for the producers in REGISTRIES.
+# Keys are lower-cased raw values pinned from their registries as of 2026-11
+# (see tests/test_source_monitor.py). Anything not listed normalizes to
+# "unknown"; the raw value is always kept.
 _NAMED_CADENCE: Dict[str, str] = {
-    # moneysweep-pr update_cadence / ovnis-pr retrieval_cadence
+    # canonical names, plus moneysweep-pr update_cadence
     "weekly": "weekly", "monthly": "monthly", "quarterly": "quarterly",
-    "yearly": "yearly", "annual": "yearly", "daily": "daily", "hourly": "hourly",
-    "ad_hoc": "event", "on_drop": "event", "on_foia_release": "event",
-    "on_legacy_consolidation": "event", "one_time": "static", "none": "static",
-    "manual": "manual",
-    # spiderweb-pr refresh_policy
-    "pin_by_vintage": "static",
-    "probe_service_then_snapshot_if_changed": "event",
-    "probe_sciencebase_item_then_snapshot_if_changed": "event",
+    "yearly": "yearly", "daily": "daily", "hourly": "hourly", "manual": "manual",
+    "ad_hoc": "event", "on_drop": "event", "one_time": "static",
     # skywatcher-pr mode
     "delayed_or_rate_limited": "realtime", "batch_file": "event",
     "historical_baseline": "static",
@@ -94,25 +92,11 @@ _NAMED_STATUS: Dict[str, str] = {
     "fully_materialized": "active",
     "partially_materialized": "partial",
     "not_materialized": "not_active",
-    # centinelas-pr / ovnis-pr active
-    "active": "active", "manual": "manual", "yes": "active", "no": "inactive",
-    # spiderweb-pr missing-persons status
-    "harvester_landed": "active", "harvester_planned": "not_active",
-    "manual_pull": "manual", "aggregate_only": "partial", "cannot_reach": "inactive",
+    # centinelas-pr active
+    "active": "active", "manual": "manual",
 }
 
 _TIER = re.compile(r"^T[1-4]$")
-
-# Largest-first buckets for cadences declared in seconds/days; a 25% tolerance
-# keeps e.g. 90 days in "quarterly" and 86400 s in "daily".
-_SECOND_BUCKETS: Tuple[Tuple[str, int], ...] = (
-    ("yearly", CADENCE_WINDOW_SECONDS["yearly"]),
-    ("quarterly", CADENCE_WINDOW_SECONDS["quarterly"]),
-    ("monthly", CADENCE_WINDOW_SECONDS["monthly"]),
-    ("weekly", CADENCE_WINDOW_SECONDS["weekly"]),
-    ("daily", CADENCE_WINDOW_SECONDS["daily"]),
-    ("hourly", CADENCE_WINDOW_SECONDS["hourly"]),
-)
 
 
 class RegistryShapeError(ValueError):
@@ -129,19 +113,6 @@ def normalize_cadence(raw: Any) -> str:
     return _NAMED_CADENCE.get(key, "unknown")
 
 
-def cadence_from_seconds(seconds: Any) -> str:
-    try:
-        s = float(seconds)
-    except (TypeError, ValueError):
-        return "unknown"
-    if s <= 0:
-        return "unknown"
-    for name, nominal in _SECOND_BUCKETS:
-        if s * 1.25 >= nominal:
-            return name
-    return "realtime"
-
-
 def normalize_status(raw: Any) -> str:
     if raw is None:
         return "unknown"
@@ -153,18 +124,6 @@ def normalize_tier(raw: Any) -> Optional[str]:
         return None
     value = str(raw).strip().upper()
     return value if _TIER.match(value) else None
-
-
-def _window(cadence: str, declared_seconds: Any = None) -> Optional[int]:
-    """A producer-declared window in seconds wins; otherwise the cadence's nominal one."""
-    try:
-        declared = float(declared_seconds) if declared_seconds is not None else 0.0
-    except (TypeError, ValueError):
-        # A non-numeric declared window is ignored rather than trusted.
-        declared = 0.0
-    if declared > 0:
-        return int(declared)
-    return CADENCE_WINDOW_SECONDS.get(cadence)
 
 
 def _jsonable(value: Any) -> Any:
@@ -194,17 +153,6 @@ def _read_yaml(path: Path) -> Any:
     return yaml.safe_load(path.read_text(encoding="utf-8"))
 
 
-def _read_json(path: Path) -> Any:
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-def _require(container: Any, key: str, kind: type) -> Any:
-    value = container.get(key) if isinstance(container, dict) else None
-    if not isinstance(value, kind):
-        raise RegistryShapeError(f"expected top-level {key!r} {kind.__name__}")
-    return value
-
-
 def _entry(source_id: Any, *, name: Any, family: Any, tier: Any = None,
            cadence_raw: Any = None, cadence: str = "unknown",
            window_seconds: Optional[int] = None, status_raw: Any = None,
@@ -230,7 +178,8 @@ def _parse_moneysweep(path: Path) -> Iterable[Dict[str, Any]]:
         cadence = normalize_cadence(r["update_cadence"])
         yield _entry(
             r["source_id"], name=r["source_id"], family=r["family"],
-            cadence_raw=r["update_cadence"], cadence=cadence, window_seconds=_window(cadence),
+            cadence_raw=r["update_cadence"], cadence=cadence,
+            window_seconds=CADENCE_WINDOW_SECONDS.get(cadence),
             status_raw=r["pipeline_status"], status=normalize_status(r["pipeline_status"]), raw=r,
         )
 
@@ -242,50 +191,6 @@ def _parse_centinelas(path: Path) -> Iterable[Dict[str, Any]]:
         yield _entry(
             r["source_id"], name=r["name"], family=r["source_family"],
             cadence=cadence, status_raw=r["active"], status=normalize_status(r["active"]), raw=r,
-        )
-
-
-def _parse_ovnis(path: Path) -> Iterable[Dict[str, Any]]:
-    cols = ("source_id", "name", "source_family", "reliability_default", "active", "retrieval_cadence")
-    for r in _read_csv(path, cols):
-        cadence = normalize_cadence(r["retrieval_cadence"])
-        yield _entry(
-            r["source_id"], name=r["name"], family=r["source_family"], tier=r["reliability_default"],
-            cadence_raw=r["retrieval_cadence"], cadence=cadence, window_seconds=_window(cadence),
-            status_raw=r["active"], status=normalize_status(r["active"]), raw=r,
-        )
-
-
-def _parse_spiderweb_hydrography(path: Path) -> Iterable[Dict[str, Any]]:
-    cols = ("source_id", "authority", "universe", "refresh_policy", "evidence_tier")
-    for r in _read_csv(path, cols):
-        cadence = normalize_cadence(r["refresh_policy"])
-        yield _entry(
-            r["source_id"], name=f"{r['authority']}: {r['universe']}", family=r["universe"],
-            tier=r["evidence_tier"], cadence_raw=r["refresh_policy"], cadence=cadence,
-            window_seconds=_window(cadence), url=r.get("endpoint"), raw=r,
-        )
-
-
-def _parse_spiderweb_missing_persons(path: Path) -> Iterable[Dict[str, Any]]:
-    sources = _require(_read_yaml(path), "sources", dict)
-    for sid, s in sources.items():
-        if not isinstance(s, dict):
-            raise RegistryShapeError(f"source {sid!r} is not a mapping")
-        # The producer marks these never-federated (raw PII, ToS, stratum C);
-        # the hub does not surface them, it only counts them.
-        if s.get("federation_eligible") is False:
-            yield {"_excluded": "not_federation_eligible"}
-            continue
-        days = s.get("refresh_cadence_days")
-        seconds = float(days) * 86400 if isinstance(days, (int, float)) and days > 0 else None
-        # 0 days marks a one-off dataset or per-event backfill: nothing recurs.
-        cadence = "static" if days == 0 else cadence_from_seconds(seconds)
-        yield _entry(
-            sid, name=s.get("operator"), family="missing_persons",
-            cadence_raw=f"{days} days" if days is not None else None, cadence=cadence,
-            window_seconds=_window(cadence, seconds), status_raw=s.get("status"),
-            status=normalize_status(s.get("status")), url=s.get("url"), raw=s,
         )
 
 
@@ -302,7 +207,8 @@ def _parse_skywatcher(path: Path) -> Iterable[Dict[str, Any]]:
             cadence = normalize_cadence(s.get("mode"))
             yield _entry(
                 s["id"], name=s.get("use"), family=domain, tier=s.get("tier"),
-                cadence_raw=s.get("mode"), cadence=cadence, window_seconds=_window(cadence), raw=s,
+                cadence_raw=s.get("mode"), cadence=cadence,
+                window_seconds=CADENCE_WINDOW_SECONDS.get(cadence), raw=s,
             )
 
 
@@ -313,18 +219,13 @@ Parser = Callable[[Path], Iterable[Dict[str, Any]]]
 REGISTRIES: Dict[str, List[Tuple[str, Parser]]] = {
     "moneysweep-pr": [("reports/source_registry_status.csv", _parse_moneysweep)],
     "centinelas-pr": [("data/reference/source_registry.csv", _parse_centinelas)],
-    "ovnis-pr": [("data/reference/source_registry.csv", _parse_ovnis)],
-    "spiderweb-pr": [
-        ("manifests/pr_hydrography/source_registry.csv", _parse_spiderweb_hydrography),
-        ("configs/missing_persons_sources.yaml", _parse_spiderweb_missing_persons),
-    ],
     "skywatcher-pr": [("registry/source_registry.yaml", _parse_skywatcher)],
 }
 
 # Producers that report their sources in the source_monitors stream (ADR 0013).
 # Their registries are no longer read here; ingest takes their rows from the
 # stream and flags them when an aggregate has none.
-STREAM_PRODUCERS: frozenset = frozenset({"aguayluz-pr"})
+STREAM_PRODUCERS: frozenset = frozenset({"aguayluz-pr", "ovnis-pr", "spiderweb-pr"})
 
 
 # ── build ─────────────────────────────────────────────────────────────────────
@@ -365,6 +266,8 @@ def build_monitor(registry: Registry, root: str | Path,
             "package_created_at": package_at,
             "registries": [],
             "count": 0,
+            # No registry read here excludes sources today; the key stays because
+            # the summary shape (and the Source Monitor page) carries it.
             "excluded": {},
             "errors": [],
         }
@@ -392,10 +295,6 @@ def build_monitor(registry: Registry, root: str | Path,
                 info["errors"].append(f"{rel}: {exc}")
                 continue
             for e in entries:
-                if "_excluded" in e:
-                    reason = e["_excluded"]
-                    info["excluded"][reason] = info["excluded"].get(reason, 0) + 1
-                    continue
                 sid = e.get("source_id")
                 if not sid:
                     info["errors"].append(f"{rel}: row without a source id skipped")

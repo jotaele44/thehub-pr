@@ -119,13 +119,14 @@ def test_package_with_source_monitors_validates_and_bad_rows_fail(tmp_path):
 def _adapter_files(agg: Path):
     _write_jsonl(agg / "monitored_sources.jsonl", [
         {"monitor_id": "aguayluz-pr:nwps_gauges", "producer": "aguayluz-pr", "source_id": "nwps_gauges"},
-        {"monitor_id": "ovnis-pr:SRC-0001", "producer": "ovnis-pr", "source_id": "SRC-0001"},
+        {"monitor_id": "moneysweep-pr:usaspending_prime", "producer": "moneysweep-pr",
+         "source_id": "usaspending_prime"},
     ])
     (agg / "monitored_sources_summary.json").write_text(json.dumps({
         "schema_version": "prii_source_monitor_v1", "generated_at": TS, "total": 2, "error_count": 1,
         "producers": {
             "aguayluz-pr": {"count": 1, "errors": ["config/x.json: file not found"], "excluded": {}},
-            "ovnis-pr": {"count": 1, "errors": [], "excluded": {}},
+            "moneysweep-pr": {"count": 1, "errors": [], "excluded": {}},
         },
     }))
 
@@ -143,19 +144,21 @@ def test_stream_rows_replace_a_producers_adapter_rows(tmp_path):
 
     pairs, summary = project_source_monitors(agg, now=TS)
     rows = dict(pairs)
-    assert sorted(rows) == ["aguayluz-pr:nwps_gauges", "aguayluz-pr:stage_iv_pr", "ovnis-pr:SRC-0001"]
+    assert sorted(rows) == [
+        "aguayluz-pr:nwps_gauges", "aguayluz-pr:stage_iv_pr", "moneysweep-pr:usaspending_prime",
+    ]
     nwps = rows["aguayluz-pr:nwps_gauges"]
     assert nwps["origin"] == "stream" and nwps["source_id"] == "nwps_gauges"
     assert nwps["stream_monitor_id"].startswith("mon_") and nwps["last_success_basis"] == "OUTPUT_DERIVED"
     assert nwps["lineage"]["registry_path"] == "config/hydromet_sources.v1.json"
-    assert rows["ovnis-pr:SRC-0001"]["origin"] == "hub_adapter"
+    assert rows["moneysweep-pr:usaspending_prime"]["origin"] == "hub_adapter"
 
     assert summary["stream_producers"] == ["aguayluz-pr"]
     assert summary["producers"]["aguayluz-pr"]["origin"] == "stream"
     assert summary["producers"]["aguayluz-pr"]["count"] == 2
     # The adapter's error for a producer now read from the stream no longer applies.
     assert summary["producers"]["aguayluz-pr"]["errors"] == [] and summary["error_count"] == 0
-    assert summary["producers"]["ovnis-pr"]["origin"] == "hub_adapter"
+    assert summary["producers"]["moneysweep-pr"]["origin"] == "hub_adapter"
     assert summary["total"] == 3
 
 
@@ -164,13 +167,14 @@ def test_a_stream_producer_without_stream_rows_is_flagged_not_dropped(tmp_path):
     # an aggregate without their stream rows must show the gap, not hide them.
     agg = tmp_path / "agg"
     _write_jsonl(agg / "monitored_sources.jsonl", [
-        {"monitor_id": "ovnis-pr:SRC-0001", "producer": "ovnis-pr", "source_id": "SRC-0001"},
+        {"monitor_id": "moneysweep-pr:usaspending_prime", "producer": "moneysweep-pr",
+         "source_id": "usaspending_prime"},
     ])
     (agg / "monitored_sources_summary.json").write_text(json.dumps({
         "schema_version": "prii_source_monitor_v1", "generated_at": TS, "total": 1, "error_count": 0,
         "producers": {
             "aguayluz-pr": {"count": 0, "errors": [], "excluded": {}, "reports_via_stream": True},
-            "ovnis-pr": {"count": 1, "errors": [], "excluded": {}},
+            "moneysweep-pr": {"count": 1, "errors": [], "excluded": {}},
         },
     }))
     _, summary = project_source_monitors(agg, now=TS)
@@ -208,7 +212,7 @@ def test_aggregate_and_ingest_carry_the_stream_into_both_collections(tmp_path):
     canonical = _rows(db, "SourceMonitors")
     assert all(k.startswith("mon_") for k in canonical)
     monitored = _rows(db, MONITOR_COLLECTION)
-    assert set(monitored) == {"aguayluz-pr:nwps_gauges", "aguayluz-pr:x", "ovnis-pr:SRC-0001"}
+    assert set(monitored) == {"aguayluz-pr:nwps_gauges", "aguayluz-pr:x", "moneysweep-pr:usaspending_prime"}
     assert monitored["aguayluz-pr:x"]["last_success_basis"] == "NOT_RECORDED"
     stored_summary = _rows(db, MONITOR_SUMMARY_COLLECTION)["source_monitor_summary"]
     assert stored_summary["stream_producers"] == ["aguayluz-pr"]
@@ -217,4 +221,4 @@ def test_aggregate_and_ingest_carry_the_stream_into_both_collections(tmp_path):
     _write_jsonl(agg / "source_monitors.jsonl",
                  [{**_stream_row("nwps_gauges"), "_producers": ["aguayluz-pr"]}])
     ingest_aggregate(agg, db)
-    assert set(_rows(db, MONITOR_COLLECTION)) == {"aguayluz-pr:nwps_gauges", "ovnis-pr:SRC-0001"}
+    assert set(_rows(db, MONITOR_COLLECTION)) == {"aguayluz-pr:nwps_gauges", "moneysweep-pr:usaspending_prime"}

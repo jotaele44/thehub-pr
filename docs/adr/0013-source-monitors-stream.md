@@ -64,6 +64,7 @@ After each producer emits, move it from `REGISTRIES` to `STREAM_PRODUCERS` in `s
 Status:
 
 - `aguayluz-pr` emits the stream (aguayluz-pr#408, merged 2026-11-13). A Hub ingest on `main` loaded all 25 of its `MonitoredSources` rows with `origin: stream`, and it has moved to `STREAM_PRODUCERS`.
+- `ovnis-pr` (ovnis-pr#202) and `spiderweb-pr` (spiderweb-pr#454) emit the stream, and both have moved to `STREAM_PRODUCERS`. The evidence is a local reproduction of the Federation ingest steps (`hub fetch --run`, then `scripts/build_hub_fixture.py`) on 2026-11-15, not a CI run. With `ovnis-pr` at `4fd2306` and `spiderweb-pr` at `b2c532f`, ingest loaded 26 and 32 `MonitoredSources` rows with `origin: stream`. Their source ids, names, families, tiers, cadences, windows, declared statuses and URLs matched the registry reader's rows on `main` exactly; the 3 sources `spiderweb-pr` marks never-federated are in neither. All 58 rows are `NOT_RECORDED`: neither producer records a per-source last success yet, so the UI still measures their freshness from the export-package age.
 
 ## Consequences
 
