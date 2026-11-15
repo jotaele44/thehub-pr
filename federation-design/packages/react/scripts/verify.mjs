@@ -1,11 +1,8 @@
 import { createHash } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join, resolve } from 'node:path'
+import { designRoot, pkgRoot, publicExports, readBundledCss } from './sources.mjs'
 
-const here = dirname(fileURLToPath(import.meta.url))
-const pkgRoot = join(here, '..')
-const designRoot = join(pkgRoot, '..', '..')
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'))
 const pkg = readJson(join(pkgRoot, 'package.json'))
 const snapshot = readJson(join(pkgRoot, 'api-snapshot.json'))
@@ -13,8 +10,7 @@ const tokens = readJson(join(designRoot, 'tokens', 'federation.tokens.json'))
 const schema = readJson(join(designRoot, 'tokens', 'federation.tokens.schema.json'))
 const harness = readJson(join(designRoot, 'test-harness', 'test-harness.contract.json'))
 const indexSource = readFileSync(join(pkgRoot, 'src', 'index.jsx'), 'utf8')
-const semanticsSource = readFileSync(join(pkgRoot, 'src', 'semantics.js'), 'utf8')
-const css = ['foundation.css', 'primitives.css', 'states.css'].map((name) => readFileSync(join(designRoot, 'styles', name), 'utf8')).join('\n')
+const css = readBundledCss()
 
 function fail(message) { console.error(`[verify] ${message}`); process.exitCode = 1 }
 function requireCondition(condition, message) { if (!condition) fail(message) }
@@ -26,8 +22,23 @@ requireCondition(Array.isArray(snapshot.exports) && snapshot.exports.length >= 3
 requireCondition(harness.viewports.length === 6, 'test harness must define six certified viewports')
 requireCondition(harness.states.includes('offline') && harness.states.includes('filtered_empty'), 'test harness state matrix is incomplete')
 
-for (const symbol of snapshot.exports) {
-  requireCondition(indexSource.includes(symbol) || semanticsSource.includes(symbol), `API snapshot symbol missing from source: ${symbol}`)
+// The snapshot is checked against what the package really exports, in both
+// directions: a frozen name that is gone is a break, and a new export has to
+// be either frozen or explicitly declared not yet frozen. Before this, only
+// index.jsx and semantics.js were searched (as substrings), so everything
+// re-exported from a subdirectory was invisible to the API contract.
+const actualExports = publicExports()
+const frozen = new Set(snapshot.exports)
+const unfrozen = new Set(snapshot.unfrozenExports || [])
+for (const symbol of frozen) {
+  requireCondition(actualExports.has(symbol), `API snapshot symbol is not exported by the package: ${symbol}`)
+  requireCondition(!unfrozen.has(symbol), `API snapshot lists ${symbol} as both frozen and unfrozen`)
+}
+for (const symbol of unfrozen) {
+  requireCondition(actualExports.has(symbol), `unfrozenExports names something the package does not export: ${symbol}`)
+}
+for (const symbol of actualExports) {
+  requireCondition(frozen.has(symbol) || unfrozen.has(symbol), `export is missing from api-snapshot.json (add it to exports, or to unfrozenExports): ${symbol}`)
 }
 
 for (const fragment of ['role={role}', 'aria-live={live}', 'aria-busy={busy || undefined}', 'requires label or aria-label']) {
