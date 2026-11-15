@@ -50,9 +50,15 @@ jobs:
             package/dist/release-manifest.json \
             package/api-snapshot.json \
             package/src/index.jsx \
-            package/src/semantics.js; do
+            package/src/semantics.js \
+            package/src/shell/index.jsx \
+            package/src/shell/nav.js \
+            package/src/shell/AppShell.jsx \
+            package/CHANGELOG.md; do
             tar -tzf "$tgz" | grep -qx "$required"
           done
+          # The shell stylesheet ships inside the bundled CSS, not beside it.
+          tar -xzOf "$tgz" package/dist/federation.css | grep -q '\.fd-shell'
           sha256sum "$tgz" > SHA256SUMS
       - name: Upload candidate artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

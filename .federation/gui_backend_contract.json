@@ -2116,6 +2116,46 @@
         "server/frontend/src/components/sky/ExclusionPanel.test.jsx:288",
         "server/frontend/tests/visual/gui-parity.spec.js:1131"
       ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/shell/AppShell\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "The skip link moves focus to the main region of the page it is on; it performs no backend request. Rendered and exercised in three browsers by the fixture matrix (skip_link_first, skip_link_reaches_main).",
+      "evidence": [
+        "federation-design/packages/react/src/shell/AppShell.jsx",
+        "federation-design/packages/react/tests/shell-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/shell/InspectorPanel\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "The inspector's close control calls the host's onClose; the design-system component holds no data and makes no backend request. Exercised by the fixture matrix (inspector_closes, inspector_focus_returns).",
+      "evidence": [
+        "federation-design/packages/react/src/shell/InspectorPanel.jsx",
+        "federation-design/packages/react/tests/shell-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/shell/MobileNav\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "The 'More' control opens a client-side dialog listing the navigation entries that do not fit the bottom bar, and its close control dismisses it; neither makes a backend request. Exercised by the fixture matrix (more_opens_and_escape_closes, more_focus_returns).",
+      "evidence": [
+        "federation-design/packages/react/src/shell/MobileNav.jsx",
+        "federation-design/packages/react/tests/shell-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/shell/parts\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "A state-driven navigation entry calls the host's onSelect; the design-system component performs no backend request and the host application binds the behaviour. Exercised by the fixture matrix (sidebar_click_moves_current, sheet_entry_navigates).",
+      "evidence": [
+        "federation-design/packages/react/src/shell/parts.jsx",
+        "federation-design/packages/react/tests/shell-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
     }
   ],
   "state_claims": [

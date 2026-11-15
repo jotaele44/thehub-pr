@@ -18,6 +18,51 @@ The rules for building a GUI on this package are in [`docs/FEDERATION_GUI_STANDA
 | `@pr-federation/react/api-snapshot.json` | Public API freeze |
 | `@pr-federation/react/release-manifest.json` | Deterministic source hashes and expected immutable tag |
 
+## Application shell
+
+`FederationAppShell` is the one shell every federation GUI uses
+(FEDERATION_GUI_STANDARD.md §4). A repository supplies a navigation registry
+and content for the slots; it does not fork or restyle the shell.
+
+```jsx
+import { FederationAppShell, FederationStatusBar, defineFederationNav } from '@pr-federation/react'
+import { Link, useLocation } from 'react-router-dom'
+
+const nav = defineFederationNav([
+  { label: 'Records', items: [
+    { label: 'Cases', path: '/cases', icon: CasesIcon, capabilityId: 'cases' },
+    { label: 'Sources', path: '/sources', icon: SourcesIcon, capabilityId: 'sources' },
+  ] },
+])
+
+function Layout({ children }) {
+  const { pathname } = useLocation()
+  return (
+    <FederationAppShell
+      nav={nav}
+      current={pathname}
+      renderLink={({ item, active, href, ...anchor }) => <Link to={href} {...anchor} />}
+      focusMainOnNavigate
+      header={<Brand />}
+      statusBar={<FederationStatusBar>Backend online</FederationStatusBar>}
+    >
+      {children}
+    </FederationAppShell>
+  )
+}
+```
+
+- The shell knows nothing about routing. `current` is the current path, and
+  `renderLink` draws each link with the host's router. An application without a
+  router gives items an `id` instead of a `path` and handles `onSelect`.
+- Exactly one entry is current: the longest matching path prefix wins. `end`
+  makes an item match exactly; `match` adds prefixes.
+- Below `mobileBelow` (`'tablet'`, 768px, by default; `'desktop'`, 1280px) the
+  sidebar becomes a bottom bar of at most five entries, the fifth being "More".
+- `FederationInspectorPanel`, in the `inspector` slot, is a column beside main
+  at 1280px and above and a modal drawer below.
+- `flattenFederationNav(nav)` lists every entry for a command palette.
+
 ## Semantic model
 
 Applications pass domain meaning, not colors:

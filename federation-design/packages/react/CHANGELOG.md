@@ -16,6 +16,12 @@ removed or changed. Tokens stay at 2.0.0.
   `matchFederationNavItem`, also importable without React from
   `@pr-federation/react/nav`.
 
+- Application shell components: `FederationAppShell`, `FederationModuleNav`,
+  `FederationMobileNav`, `FederationInspectorPanel` and `FederationStatusBar`.
+  The shell is router-agnostic, renders a skip link and landmarks, marks
+  exactly one current page, and switches to a bottom bar of at most five
+  entries below 768px (or 1280px). No dependency is added; overlays are
+  native `<dialog>` elements.
 - `styles/shell.css`, included in `styles.css`. It defines custom properties
   that the tokens had but the CSS did not (`--fd-layout-*`, `--fd-layer-*`,
   `--fd-breakpoint-*`), a legible `--fd-accent-strong`, and the shell layout.

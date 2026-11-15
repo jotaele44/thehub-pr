@@ -305,7 +305,11 @@
   border-radius: 0 0 3px 3px;
   background: var(--fd-accent-strong);
 }
-.fd-mobile-nav__link > .fd-nav__label { max-width: 100%; }
+.fd-mobile-nav__link > .fd-nav__text {
+  flex: none;
+  max-width: 100%;
+  text-align: center;
+}
 .fd-mobile-nav__sheet {
   box-sizing: border-box;
   width: 100%;
