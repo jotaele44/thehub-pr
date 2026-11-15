@@ -72,6 +72,11 @@ spatial layers).
   deleted): each producer frontend carries a "Diagnostic-only surface (ADR 0001,
   Phase 2)" note pointing operators to the Hub as the product surface. This does
   not change any producer runtime, schema, or readiness gate.
+- **Superseded in part (ADR 0014, 2026-11-15):** producer frontends are no longer
+  diagnostic-only. Each is the complete GUI for its domain, built from the shared
+  template and rules in `docs/FEDERATION_GUI_STANDARD.md`; the Hub remains the home
+  of cross-producer views. The banner is removed from each producer README when
+  that repository adopts the template.
 
 **Part 8 — ANOMALOUS intake lane (Centinelas → OVNIS → Hub):**
 - Closed the last producer→producer hop so a sentinel Internet find in the
