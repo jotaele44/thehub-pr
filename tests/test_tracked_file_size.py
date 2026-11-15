@@ -24,19 +24,23 @@ ALLOWED = {
 }
 
 
-def _tracked_files() -> list[str]:
+def _tracked_files() -> list[str] | None:
+    """Tracked paths, or None when this is not a git checkout (e.g. an sdist)."""
     try:
         out = subprocess.run(
             ["git", "ls-files", "-z"], cwd=ROOT, capture_output=True, check=True
         ).stdout
     except (OSError, subprocess.CalledProcessError):
-        pytest.skip("not a git checkout")
+        return None
     return [name for name in out.decode().split("\0") if name]
 
 
 def test_no_tracked_file_exceeds_the_size_limit() -> None:
+    tracked = _tracked_files()
+    if tracked is None:
+        pytest.skip("not a git checkout")
     oversized = []
-    for name in _tracked_files():
+    for name in tracked:
         path = ROOT / name
         if name in ALLOWED or not path.is_file():
             continue
