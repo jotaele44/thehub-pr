@@ -59,10 +59,50 @@ def _producer_base(root: Path, producer: Producer) -> Path:
     return root / producer.repo_name
 
 
-def _staged_capability_count(manifest_path: Path) -> int:
+def _extension_fragments(manifest_path: Path) -> list[Path]:
+    """A producer's capability extension fragments, in the order they merge.
+
+    ``gui-capabilities.json`` -> ``gui-capabilities.extensions/*.json`` beside
+    it, the layout docs/FEDERATION_GUI_STANDARD.md fixes for every repository.
+    """
+    directory = manifest_path.with_name(manifest_path.stem + ".extensions")
+    return sorted(directory.glob("*.json")) if directory.is_dir() else []
+
+
+def _merged_manifest(manifest_path: Path) -> Optional[dict]:
+    """Base manifest plus fragments: the manifest the producer's gate judges.
+
+    Reading only the base manifest under-reports a producer that keeps
+    capabilities in fragments — the skew recorded as F15 in
+    docs/FEDERATION_MAX_AUDIT_2026-09-24.md.
+    """
     try:
         manifest = json.loads(manifest_path.read_text())
     except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(manifest, dict):
+        return None
+    capabilities = list(manifest.get("capabilities") or [])
+    exceptions = list(manifest.get("exceptions") or [])
+    for path in _extension_fragments(manifest_path):
+        try:
+            fragment = json.loads(path.read_text())
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(fragment, dict):
+            continue
+        extra_capabilities = fragment.get("capabilities", [])
+        extra_exceptions = fragment.get("exceptions", [])
+        if isinstance(extra_capabilities, list):
+            capabilities.extend(extra_capabilities)
+        if isinstance(extra_exceptions, list):
+            exceptions.extend(extra_exceptions)
+    return {**manifest, "capabilities": capabilities, "exceptions": exceptions}
+
+
+def _staged_capability_count(manifest_path: Path) -> int:
+    manifest = _merged_manifest(manifest_path)
+    if manifest is None:
         return 0
     return sum(
         1
@@ -71,27 +111,54 @@ def _staged_capability_count(manifest_path: Path) -> int:
     )
 
 
+def _checker_merges_extensions(checker: Path) -> bool:
+    """Whether this checker merges fragments itself (the canonical one does).
+
+    A producer that has not adopted the canonical checker yet has a copy that
+    reads the base manifest alone, so the merged manifest has to be handed to
+    it. Handing it to a checker that already merges would apply every fragment
+    twice and report each id as a duplicate.
+    """
+    try:
+        return "--no-extensions" in checker.read_text(encoding="utf-8", errors="ignore")
+    except OSError:
+        return False
+
+
 def _run_checker(base: Path) -> Tuple[Optional[dict], Optional[str]]:
     """Run a producer's own scripts/check_gui_parity.py; return (report, error).
 
     Runs with the producer's checkout as both cwd and --repo-root, exactly
     how its own CI invokes it, so this reads the same manifest/baseline the
     producer's real gate reads — not a copy or a re-implementation of the
-    check's logic.
+    check's logic. Where the producer keeps capabilities in extension
+    fragments and its checker predates built-in merging, the merged manifest
+    is written to a temporary file and passed with --manifest, which is what
+    that producer's own CI wrapper does.
     """
     checker = base / "scripts" / "check_gui_parity.py"
+    manifest_path = base / ".federation" / "gui-capabilities.json"
     with tempfile.TemporaryDirectory() as tmp:
         report_path = Path(tmp) / "report.json"
+        command = [
+            sys.executable,
+            str(checker),
+            "--report",
+            str(report_path),
+            "--repo-root",
+            str(base),
+        ]
+        if _extension_fragments(manifest_path) and not _checker_merges_extensions(
+            checker
+        ):
+            merged = _merged_manifest(manifest_path)
+            if merged is not None:
+                merged_path = Path(tmp) / "gui-capabilities-merged.json"
+                merged_path.write_text(json.dumps(merged), encoding="utf-8")
+                command += ["--manifest", str(merged_path)]
         try:
             subprocess.run(
-                [
-                    sys.executable,
-                    str(checker),
-                    "--report",
-                    str(report_path),
-                    "--repo-root",
-                    str(base),
-                ],
+                command,
                 cwd=base,
                 capture_output=True,
                 text=True,
