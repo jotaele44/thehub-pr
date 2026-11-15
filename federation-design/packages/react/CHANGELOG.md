@@ -16,6 +16,11 @@ removed or changed. Tokens stay at 2.0.0.
   `matchFederationNavItem`, also importable without React from
   `@pr-federation/react/nav`.
 
+- `styles/shell.css`, included in `styles.css`. It defines custom properties
+  that the tokens had but the CSS did not (`--fd-layout-*`, `--fd-layer-*`,
+  `--fd-breakpoint-*`), a legible `--fd-accent-strong`, and the shell layout.
+  Every rule is scoped to an `.fd-*` class, so existing pages are unaffected.
+
 ### Changed
 
 - The API snapshot is now checked against the package's real exports in both

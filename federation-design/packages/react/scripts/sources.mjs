@@ -12,7 +12,7 @@ export const pkgRoot = join(here, '..')
 export const designRoot = join(pkgRoot, '..', '..')
 
 // Concatenated, in this order, into dist/federation.css (the `./styles.css` export).
-export const BUNDLED_STYLES = ['foundation.css', 'primitives.css', 'states.css']
+export const BUNDLED_STYLES = ['foundation.css', 'primitives.css', 'states.css', 'shell.css']
 // Shipped as their own dist files and package exports; never concatenated.
 export const SEPARATE_STYLES = []
 

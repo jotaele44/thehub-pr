@@ -47,7 +47,7 @@ for (const fragment of ['role={role}', 'aria-live={live}', 'aria-busy={busy || u
 for (const fragment of ['prefers-reduced-motion: reduce', 'animation-duration:.01ms!important', 'transition-duration:.01ms!important', 'scroll-behavior:auto!important']) {
   requireCondition(css.includes(fragment), `reduced-motion contract missing: ${fragment}`)
 }
-for (const className of ['.fd-button', '.fd-icon-button', '.fd-badge', '.fd-source-badge', '.fd-state', '.fd-stat-card']) {
+for (const className of ['.fd-button', '.fd-icon-button', '.fd-badge', '.fd-source-badge', '.fd-state', '.fd-stat-card', '.fd-shell', '.fd-nav', '.fd-mobile-nav', '.fd-inspector', '.fd-status-bar']) {
   requireCondition(css.includes(className), `required CSS primitive missing: ${className}`)
 }
 
