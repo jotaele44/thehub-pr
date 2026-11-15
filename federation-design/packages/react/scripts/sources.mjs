@@ -14,7 +14,7 @@ export const designRoot = join(pkgRoot, '..', '..')
 // Concatenated, in this order, into dist/federation.css (the `./styles.css` export).
 export const BUNDLED_STYLES = ['foundation.css', 'primitives.css', 'states.css', 'shell.css']
 // Shipped as their own dist files and package exports; never concatenated.
-export const SEPARATE_STYLES = []
+export const SEPARATE_STYLES = ['shadcn-bridge.css']
 
 export const stylePath = (name) => join(designRoot, 'styles', name)
 export const readBundledCss = () => BUNDLED_STYLES.map((name) => readFileSync(stylePath(name), 'utf8')).join('\n')

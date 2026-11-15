@@ -11,7 +11,8 @@ The rules for building a GUI on this package are in [`docs/FEDERATION_GUI_STANDA
 | `@pr-federation/react` | React primitives and semantic resolvers |
 | `@pr-federation/react/semantics` | Dependency-free semantic state model |
 | `@pr-federation/react/nav` | Dependency-free navigation registry: validation, active matching, flattening |
-| `@pr-federation/react/styles.css` | Canonical federation CSS |
+| `@pr-federation/react/styles.css` | Canonical federation CSS, including the shell |
+| `@pr-federation/react/shadcn-bridge.css` | Opt-in: shadcn variables as aliases of the federation tokens (read the note below before importing) |
 | `@pr-federation/react/tokens.json` | Token source v2 |
 | `@pr-federation/react/tokens.schema.json` | Draft 2020-12 token schema |
 | `@pr-federation/react/test-harness.json` | Consumer acceptance contract |
@@ -62,6 +63,25 @@ function Layout({ children }) {
 - `FederationInspectorPanel`, in the `inspector` slot, is a column beside main
   at 1280px and above and a modal drawer below.
 - `flattenFederationNav(nav)` lists every entry for a command palette.
+
+## shadcn bridge
+
+`shadcn-bridge.css` makes the shadcn variables (`--background`, `--primary`,
+`--border`, `--sidebar-*`, `--chart-*`, ...) aliases of the federation tokens, so
+an application stops defining its own palette.
+
+It is opt-in and has one hazard. shadcn's older convention stores bare HSL
+channels and wraps them as `hsl(var(--background))`; the bridge provides
+complete colours. **Importing it while the application still wraps the variables
+in `hsl()` makes every one of them invalid.** In the same change:
+
+1. Import it after `styles.css`.
+2. Consume the variables as colours:
+   - Tailwind 4: `@theme inline { --color-background: var(--background); /* ... */ }`
+   - JS config: `background: 'var(--background)'`
+3. Delete the application's own values for those variables.
+
+Fonts are not bridged.
 
 ## Semantic model
 

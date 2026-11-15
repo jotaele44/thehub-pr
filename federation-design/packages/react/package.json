@@ -18,6 +18,7 @@
     "./semantics": "./src/semantics.js",
     "./nav": "./src/shell/nav.js",
     "./styles.css": "./dist/federation.css",
+    "./shadcn-bridge.css": "./dist/shadcn-bridge.css",
     "./tokens.json": "./dist/federation.tokens.json",
     "./tokens.schema.json": "./dist/federation.tokens.schema.json",
     "./test-harness.json": "./dist/test-harness.contract.json",

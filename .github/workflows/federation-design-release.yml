@@ -44,6 +44,7 @@ jobs:
           tar -tzf "$tgz" | sort
           for required in \
             package/dist/federation.css \
+            package/dist/shadcn-bridge.css \
             package/dist/federation.tokens.json \
             package/dist/federation.tokens.schema.json \
             package/dist/test-harness.contract.json \

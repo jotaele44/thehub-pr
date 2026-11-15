@@ -27,6 +27,21 @@ removed or changed. Tokens stay at 2.0.0.
   `--fd-breakpoint-*`), a legible `--fd-accent-strong`, and the shell layout.
   Every rule is scoped to an `.fd-*` class, so existing pages are unaffected.
 
+- `shadcn-bridge.css`, an opt-in export that defines the shadcn variables as
+  aliases of the federation tokens. Not included in `styles.css`. Adopting it
+  requires consuming those variables as colours instead of wrapping them in
+  `hsl()`; see the README.
+
+### Known issues
+
+- The raw repository accent (`--fd-accent`) is below 4.5:1 as text or behind
+  white text for several repositories. The shell and the bridge use
+  `--fd-accent-strong`; `.fd-button--primary` and the default focus outline
+  still use the raw accent.
+- `gis.css` is not part of the packaged `styles.css`.
+- The bridge derives on-accent, destructive and chart colours from existing
+  tokens, and does not bridge fonts. These need real roles in tokens 2.1.
+
 ### Changed
 
 - The API snapshot is now checked against the package's real exports in both
