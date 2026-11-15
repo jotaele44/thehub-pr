@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
-  FRESHNESS_STATES, MONITOR_PRODUCERS, PRODUCER_PAGES, SUCCESS_BASES, ageDays, exportAgeDays,
-  freshnessReference, freshnessState, monitorPath, successBasisLabel, withFreshness,
+  FRESHNESS_STATES, MONITOR_PRODUCERS, MONITOR_TAB, PRODUCER_PAGES, SUCCESS_BASES, ageDays, exportAgeDays,
+  freshnessReference, freshnessState, monitorPath, producerMonitorPath, successBasisLabel, withFreshness,
 } from "./sourceMonitor";
 
 const NOW = Date.parse("2026-11-08T00:00:00Z");
@@ -54,6 +54,23 @@ describe("routing helpers", () => {
       "aguayluz-pr", "centinelas-pr", "moneysweep-pr", "ovnis-pr", "skywatcher-pr", "spiderweb-pr",
     ]);
     expect(PRODUCER_PAGES["moneysweep-pr"]).toBe("/moneysweep");
+  });
+  it("links each producer to its page with the Monitor tab selected", () => {
+    expect(MONITOR_TAB).toBe("sources");
+    expect(Object.fromEntries(MONITOR_PRODUCERS.map((p) => [p, producerMonitorPath(p)]))).toEqual({
+      "aguayluz-pr": "/aguayluz?tab=sources",
+      "centinelas-pr": "/centinelas?tab=sources",
+      "moneysweep-pr": "/moneysweep?tab=sources",
+      "ovnis-pr": "/ovnis?tab=sources",
+      // Skywatcher keeps its tab in ?view=.
+      "skywatcher-pr": "/skywatcher?view=sources",
+      "spiderweb-pr": "/spiderweb?tab=sources",
+    });
+  });
+  it("has no Monitor tab path for an unknown producer", () => {
+    for (const producer of ["thehub-pr", "", undefined, null, "constructor", "__proto__"]) {
+      expect(producerMonitorPath(producer)).toBeNull();
+    }
   });
   it("reports export age in whole days", () => {
     expect(exportAgeDays({ producer_last_package_at: daysAgo(2.5) }, NOW)).toBe(2);

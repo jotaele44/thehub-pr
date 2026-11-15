@@ -77,7 +77,11 @@ export default function SourceMonitorLedger({ producer, now }) {
         readOnly
         rowMap={rowMap}
         rowFilter={rowFilter}
-        onRowClick={(r) => navigate(monitorPath(r.monitor_id || r.id))}
+        onRowClick={(r) => navigate(
+          monitorPath(r.monitor_id || r.id),
+          // The detail page's back link returns to this producer's Monitor tab.
+          producer ? { state: { fromProducer: producer } } : undefined,
+        )}
         initialSort={{ key: "freshness_rank", dir: "asc" }}
         searchKeys={["name", "source_id", "producer_family", "producer"]}
         filterDefs={filterDefs}

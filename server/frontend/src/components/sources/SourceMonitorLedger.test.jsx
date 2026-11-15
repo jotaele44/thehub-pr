@@ -32,7 +32,12 @@ const ROWS = [
 
 function Where() {
   const loc = useLocation();
-  return <div data-testid="where">{loc.pathname}</div>;
+  return (
+    <>
+      <div data-testid="where">{loc.pathname}</div>
+      <div data-testid="state">{JSON.stringify(loc.state)}</div>
+    </>
+  );
 }
 
 function renderLedger(props = {}) {
@@ -88,7 +93,15 @@ describe("SourceMonitorLedger", () => {
     renderLedger();
     fireEvent.click(screen.getByText("AARO Case Archive"));
     expect(screen.getByTestId("where")).toHaveTextContent("/source-monitor/ovnis-pr%3ASRC-0001");
+    expect(screen.getByTestId("state")).toHaveTextContent("null");
     expect(update).not.toHaveBeenCalled();
+  });
+
+  it("tells the detail page which producer tab it was opened from", () => {
+    renderLedger({ producer: "ovnis-pr" });
+    fireEvent.click(screen.getByText("AARO Case Archive"));
+    expect(screen.getByTestId("where")).toHaveTextContent("/source-monitor/ovnis-pr%3ASRC-0001");
+    expect(JSON.parse(screen.getByTestId("state").textContent)).toEqual({ fromProducer: "ovnis-pr" });
   });
 
   it("has no detectable accessibility violations", async () => {

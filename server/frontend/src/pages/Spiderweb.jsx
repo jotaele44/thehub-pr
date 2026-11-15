@@ -1,4 +1,5 @@
 import React from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
@@ -16,8 +17,17 @@ const MODULE = MODULES.find((m) => m.name === "Spiderweb-PR");
 const NODE_TYPES = ["Program", "Case", "Source", "Organization", "Person", "Location", "Event", "Asset", "Vendor"];
 const REL_TYPES = ["RelatedTo", "LocatedAt", "FundedBy", "OperatedBy", "ReportedBy", "CorrelatesWith", "Contradicts", "Supports", "DependsOn"];
 const TIERS = ["T1", "T2", "T3", "T4"];
+const SPIDERWEB_TABS = ["workspace", "nodes", "map", "edges", "sources"];
 
 export default function Spiderweb() {
+  // The tab is URL state, so /spiderweb?tab=sources deep-links the Monitor tab.
+  const [params, setParams] = useSearchParams();
+  const tab = SPIDERWEB_TABS.includes(params.get("tab")) ? params.get("tab") : "workspace";
+  const selectTab = (value) => {
+    const next = new URLSearchParams(params);
+    next.set("tab", value);
+    setParams(next);
+  };
   const nodeFields = [
     { key: "node_id", label: "Node ID", required: true },
     { key: "label", label: "Label", required: true, full: true },
@@ -60,7 +70,7 @@ export default function Spiderweb() {
   return (
     <div>
       <ModulePageHeader module={MODULE} icon={Network} />
-      <Tabs defaultValue="workspace">
+      <Tabs value={tab} onValueChange={selectTab}>
         <TabsList className="mb-4 flex h-auto flex-wrap">
           <TabsTrigger value="workspace">Workspace</TabsTrigger>
           <TabsTrigger value="nodes">Graph Nodes</TabsTrigger>

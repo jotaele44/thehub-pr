@@ -7,7 +7,7 @@ import SourceMonitorLedger from "@/components/sources/SourceMonitorLedger";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useEntityData } from "@/hooks/useEntityData";
 import {
-  MONITOR_LIST_LIMIT, MONITOR_SUMMARY_COLLECTION, MONITOR_SUMMARY_ID, PRODUCER_PAGES,
+  MONITOR_LIST_LIMIT, MONITOR_SUMMARY_COLLECTION, MONITOR_SUMMARY_ID, producerMonitorPath,
 } from "@/lib/sourceMonitor";
 
 // Federation-wide, read-only Source Monitor (ADR 0012): the operator view. Each
@@ -60,10 +60,11 @@ export default function SourceMonitor() {
                 <TableBody>
                   {producers.map(([pid, p]) => {
                     const excluded = Object.entries(p.excluded || {});
+                    const monitorTab = producerMonitorPath(pid);
                     return (
                       <TableRow key={pid} className="border-border">
                         <TableCell className="text-sm font-medium">
-                          {PRODUCER_PAGES[pid] ? <Link to={PRODUCER_PAGES[pid]} className="hover:underline">{pid}</Link> : pid}
+                          {monitorTab ? <Link to={monitorTab} className="hover:underline">{pid}</Link> : pid}
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground" data-origin={p.origin || "hub_adapter"}>
                           {p.origin === "stream" ? "source_monitors stream" : "registry reader"}

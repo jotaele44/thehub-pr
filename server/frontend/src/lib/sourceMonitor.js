@@ -30,7 +30,19 @@ const FRESHNESS_RANK = { Stale: 0, Due: 1, Unknown: 2, Fresh: 3, Static: 4 };
 
 // producer program_id (repo name) -> hub page path, from the module registry.
 export const PRODUCER_PAGES = Object.fromEntries(MODULES.map((m) => [m.repo_name, m.path]));
+export const PRODUCER_NAMES = Object.fromEntries(MODULES.map((m) => [m.repo_name, m.name]));
 export const MONITOR_PRODUCERS = Object.keys(PRODUCER_PAGES).sort();
+
+// The tab value every producer page gives its Monitor tab. Skywatcher keeps its
+// tab in ?view=; the other producer pages keep theirs in ?tab=.
+export const MONITOR_TAB = "sources";
+const TAB_PARAM = { "skywatcher-pr": "view" };
+
+// The producer page with its Monitor tab selected, or null for an unknown producer.
+export function producerMonitorPath(producer) {
+  if (typeof producer !== "string" || !Object.prototype.hasOwnProperty.call(PRODUCER_PAGES, producer)) return null;
+  return `${PRODUCER_PAGES[producer]}?${TAB_PARAM[producer] || "tab"}=${MONITOR_TAB}`;
+}
 
 export function monitorPath(monitorId) {
   return `/source-monitor/${encodeURIComponent(monitorId)}`;
