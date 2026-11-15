@@ -79,6 +79,22 @@
       "why": "Section 12 names what a repository receives on adoption, and section 4 points at the navigation registry as the shape every repository follows."
     },
     {
+      "doc": "docs/FEDERATION_GUI_STANDARD.md",
+      "covers": [
+        "federation-design/packages/react/src/shell/**",
+        "federation-design/styles/shell.css",
+        "federation-design/styles/shadcn-bridge.css"
+      ],
+      "on": ["add", "delete", "rename"],
+      "why": "Section 4 specifies the shell these files implement and section 12 tells adopters to import the bridge."
+    },
+    {
+      "doc": "federation-design/packages/react/CHANGELOG.md",
+      "covers": ["federation-design/packages/react/api-snapshot.json"],
+      "on": ["add", "delete", "rename", "modify"],
+      "why": "The snapshot is the package's public API; a change to it is a change the changelog must record."
+    },
+    {
       "doc": "federation-templates/README.md",
       "covers": ["federation-templates/gui/**"],
       "on": ["add", "delete", "rename"],

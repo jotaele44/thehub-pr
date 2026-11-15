@@ -11,7 +11,7 @@ Status of each part:
 |---|---|
 | Capability manifest, extension fragments, parity checker | Enforced in `thehub-pr`. Rendered into a producer when it adopts (§12). |
 | Tokens (`--fd-*`) | Published in `@pr-federation/react`. Single-source rule applies at adoption. |
-| Shared shell | Contract fixed here (§4). Components ship in `@pr-federation/react` 0.6; not yet released. |
+| Shared shell | Contract fixed here (§4). Implemented in `@pr-federation/react` 0.6.0-rc.1 and proven in three browsers by the fixture matrix; not yet released or adopted. |
 
 ## 1. Scope
 
@@ -80,27 +80,50 @@ side panel for the selected record) and `statusBar`. This is the same
 Toolbar / Workspace / Inspector division as
 [`INTELLIGENCE_UI_ARCHITECTURE_V1.md`](INTELLIGENCE_UI_ARCHITECTURE_V1.md).
 
-**Navigation registry.** The one extension point. A repository exports an array
-of groups in the shape the Hub already uses in `server/frontend/src/lib/nav.js`:
+**Navigation registry.** The one extension point. A repository builds it with
+`defineFederationNav`, in the shape the Hub's `server/frontend/src/lib/nav.js`
+already follows:
 
 ```js
-[{ label, items: [{ label, path, icon, capabilityId }] }]
+defineFederationNav([{ label, items: [{ label, path, icon, capabilityId }] }])
 ```
 
-- Every routed page a person can reach has exactly one registry entry.
-- `capabilityId` names the entry's capability in the manifest (§5).
+- Every page a person can reach has exactly one registry entry.
+- `capabilityId` names the entry's capability in the manifest (§5). It is
+  required; the registry refuses to build without it.
 - `label` may be a string or a function returning one, for translated labels.
+- A routed page has a `path`. An application whose views are not routes gives
+  the entry an `id` instead and handles `onSelect`.
+- Optional per entry: `end` (match the path exactly), `match` (extra path
+  prefixes that also make it current), `accent` (a colour, shown as a dot),
+  `description`, and `mobile: 'primary'` (prefer it for the bottom bar).
 - The registry file is listed in the manifest under `discovery.navigation_files`.
 - Navigation rendered from anywhere other than the registry is not allowed.
 
-**Placement.** Sidebar by default. A top-navigation placement is available for
-repositories whose pages are few and flat. Placement is a shell property, not a
-reason for a second shell.
+**Routing.** The shell does not know the application's router. The application
+passes the current path as `current` and draws links through `renderLink`.
+Exactly one entry is current: the longest matching path prefix.
+
+**Placement.** A sidebar. There is no top-navigation placement: no repository
+uses one, and an option nobody uses is surface to test in three browsers for
+nothing. It can be added without breaking anything if a repository needs it.
 
 **Small screens.** Below the shell breakpoint the navigation becomes a bottom
-bar of at most five entries with an overflow entry for the rest. Interactive
-targets are at least 44 by 44 CSS pixels. No page scrolls horizontally at 390
-pixels wide.
+bar of at most five entries; when there are more, the fifth is "More" and opens
+the rest. The breakpoint is 768px by default and may be set to 1280px
+(`mobileBelow`); those are the token breakpoints, and no other value is
+available. Interactive targets are at least 44 by 44 CSS pixels. No page
+scrolls horizontally, down to 320 pixels wide.
+
+**Accessibility the shell provides.** A skip link as the first stop, landmarks,
+one labelled primary navigation, exactly one `aria-current="page"`, and a main
+region that can take focus after navigation (`focusMainOnNavigate`). A
+repository does not re-implement these.
+
+**Inspector.** `FederationInspectorPanel` in the `inspector` slot is a column
+beside main at 1280px and above and a modal drawer below. A page that needs an
+always-visible detail column inside its own layout may keep one; the slot is
+for the record a person selected.
 
 **Themes.** Light and dark both work. A repository may choose its default; it
 may not ship only one.
@@ -318,8 +341,12 @@ the rest. Per repository:
 5. Run the checker. A new gap is mapped or fixed, never baselined.
 6. Move repository-specific end-to-end assertions into owned specs named in
    `tests.e2e`.
-7. Pin `@pr-federation/react` 0.6 by tarball and checksum; import its
-   stylesheet and the shadcn bridge; delete local colour values.
+7. Pin `@pr-federation/react` 0.6 by tarball and checksum and import its
+   stylesheet. Then, in one change: import the shadcn bridge, switch the
+   application from `hsl(var(--x))` to `var(--x)` for the bridged variables,
+   and delete its own values for them. The bridge supplies complete colours,
+   so importing it while the variables are still wrapped in `hsl()` breaks
+   every colour.
 8. Adopt the shared theme provider and shell; move navigation into a registry
    file.
 9. Delete the frontend's `zip-design` folder and its Playwright config.
