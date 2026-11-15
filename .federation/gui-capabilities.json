@@ -1007,10 +1007,8 @@
         ],
         "symbols": [
           "src/hub/source_monitor.py:RegistryShapeError",
-          "src/hub/source_monitor.py:binding_status",
           "src/hub/source_monitor.py:build_monitor",
           "src/hub/source_monitor.py:cadence_from_seconds",
-          "src/hub/source_monitor.py:cadence_from_text",
           "src/hub/source_monitor.py:normalize_cadence",
           "src/hub/source_monitor.py:normalize_status",
           "src/hub/source_monitor.py:normalize_tier",

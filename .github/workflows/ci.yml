@@ -19,7 +19,9 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is Ubuntu 26.04, which has no Python 3.9 build for
+    # actions/setup-python, and this matrix keeps the 3.9 floor.
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:

@@ -56,10 +56,14 @@ When each source last succeeded is not recorded uniformly today:
 ## Rollout
 
 1. The Hub contract, ingest and UI, plus `prii_export_utils` 0.2.0 (this change).
-2. `aguayluz-pr` emits the stream. Its two hydromet sources start `OUTPUT_DERIVED` from committed manifestations, and its ingest scripts start writing run receipts.
+2. `aguayluz-pr` emits the stream. Its two hydromet sources take their last success from the committed hydromet run receipts (`RUN_RECEIPT`) or, failing that, the committed manifestations (`OUTPUT_DERIVED`).
 3. Then one PR per producer: `centinelas-pr` (signals), `skywatcher-pr` (`retrieved_at`), then `moneysweep-pr` (which first adopts `prii_export_utils`), `ovnis-pr` and `spiderweb-pr` (run receipts only).
 
-After each producer emits, remove it from `REGISTRIES` in `src/hub/source_monitor.py`. When all six emit, delete the registry reader and its CLI, and the ADR 0012 exception ends.
+After each producer emits, move it from `REGISTRIES` to `STREAM_PRODUCERS` in `src/hub/source_monitor.py`. The registry reader then stops reading that producer and marks it `reports_via_stream`; ingest takes its rows from the stream, and flags the producer with an error when an aggregate has no stream rows from it, instead of dropping it silently. When all six emit, delete the registry reader and its CLI, and the ADR 0012 exception ends.
+
+Status:
+
+- `aguayluz-pr` emits the stream (aguayluz-pr#408, merged 2026-11-13). A Hub ingest on `main` loaded all 25 of its `MonitoredSources` rows with `origin: stream`, and it has moved to `STREAM_PRODUCERS`.
 
 ## Consequences
 
