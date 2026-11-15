@@ -39,6 +39,7 @@ def test_no_tracked_file_exceeds_the_size_limit() -> None:
     tracked = _tracked_files()
     if tracked is None:
         pytest.skip("not a git checkout")
+        return
     oversized = []
     for name in tracked:
         path = ROOT / name
