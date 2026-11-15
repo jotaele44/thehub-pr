@@ -10,15 +10,135 @@ const fixtures = [
   'POS_NONEMPTY','POS_EMPTY','POS_FILTERED_ZERO','POS_FACT','POS_COMPUTED','POS_BINDING','POS_UNRESOLVED','POS_SUPERSEDED',
   'NEG_NULL','NEG_UNDEFINED','NEG_EMPTY_STRING','NEG_DUPLICATE_ID','NEG_DUPLICATE_NAME','NEG_LONG_NAME','NEG_UNICODE','NEG_LARGE_CURRENCY','NEG_NEGATIVE_CURRENCY','NEG_INVALID_DATE','NEG_STALE','NEG_PARTIAL','NEG_OFFLINE','NEG_TIMEOUT','NEG_429','NEG_500','NEG_MALFORMED_SCHEMA','NEG_AMBIGUOUS_IDENTITY','NEG_1_TO_N','NEG_N_TO_1','NEG_N_TO_N','NEG_CONTRADICTION','NEG_SOURCE_MISSING','NEG_HASH_MISMATCH',
 ]
+// Shell fixtures live on their own page (shell.html) and carry their own
+// expectations: a shell puts a skip link first, so the "first Tab reaches the
+// footer button" rule above cannot apply to them. `mobileBelow` is the width
+// under which the fixture shows the bottom bar; `more` says whether the
+// registry is large enough to need a "More" entry there.
+const shellFixtures = [
+  { id: 'SHELL_SIDEBAR', mobileBelow: 768, more: true, second: 'Hub' },
+  { id: 'SHELL_SIDEBAR_DARK', mobileBelow: 768, more: true, second: 'Hub' },
+  { id: 'SHELL_STATE_NAV', mobileBelow: 768, more: true, second: 'Map' },
+  { id: 'SHELL_FEW_DESKTOP_BREAK', mobileBelow: 1280, more: false, second: 'Signals' },
+  { id: 'SHELL_INSPECTOR', mobileBelow: 768, more: true, second: 'Hub', inspector: true },
+  { id: 'SHELL_LONG_LABELS', mobileBelow: 768, more: true, second: null },
+]
 const viewports = [320,375,768,1280,1440,1920]
-const engines = { chromium, firefox, webkit }
+const allEngines = { chromium, firefox, webkit }
+// Local runs may not have every browser. CI runs all three; GUI_ENGINES
+// narrows the set, and GUI_CHROMIUM_EXECUTABLE points at a system Chromium.
+const selected = (process.env.GUI_ENGINES || Object.keys(allEngines).join(',')).split(',').map((name) => name.trim()).filter(Boolean)
+for (const name of selected) if (!allEngines[name]) throw new Error(`unknown engine in GUI_ENGINES: ${name}`)
+const engines = Object.fromEntries(selected.map((name) => [name, allEngines[name]]))
+const launchOptions = (engineName) => ({
+  headless: true,
+  ...(engineName === 'chromium' && process.env.GUI_CHROMIUM_EXECUTABLE ? { executablePath: process.env.GUI_CHROMIUM_EXECUTABLE } : {}),
+})
 const results = []
 let failed = false
 
 function push(entry) { results.push(entry); if (entry.status === 'FAIL') failed = true }
 
+const verdict = (condition) => (condition ? 'PASS' : 'FAIL')
+const visibleCount = (page, selector) => page.evaluate((sel) => [...document.querySelectorAll(sel)].filter((node) => node.getClientRects().length > 0).length, selector)
+const noOverflow = (page) => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)
+const focusIs = (page, selector) => page.evaluate((sel) => Boolean(document.activeElement?.matches(sel)), selector)
+
+// One shell fixture at one width. Every value is PASS, FAIL or SKIP; the cell
+// fails if any is FAIL. The checks are the shell's contract
+// (docs/FEDERATION_GUI_STANDARD.md section 4), exercised in a real browser.
+async function runShellChecks(page, fixture, width, engineName) {
+  const mobile = width < fixture.mobileBelow
+  const checks = {}
+  await page.goto(`${BASE_URL}/shell.html?fixture=${fixture.id}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+  await page.locator(`[data-fixture-id="${fixture.id}"]`).waitFor({ timeout: 30000 })
+  await page.screenshot({ path: path.join(OUT, `${engineName}-${width}-${fixture.id}.png`), fullPage: true })
+
+  checks.no_horizontal_overflow = verdict(await noOverflow(page))
+
+  // The skip link is the first stop, and it lands on main.
+  await page.keyboard.press('Tab')
+  let skipFocused = await focusIs(page, '.fd-shell__skip')
+  if (!skipFocused && engineName === 'webkit') {
+    await page.keyboard.press('Alt+Tab')
+    skipFocused = await focusIs(page, '.fd-shell__skip')
+  }
+  checks.skip_link_first = verdict(skipFocused)
+  if (skipFocused) await page.keyboard.press('Enter')
+  checks.skip_link_reaches_main = verdict(skipFocused && await focusIs(page, '#fd-main'))
+
+  // Exactly one primary navigation is exposed, with exactly one current page.
+  checks.one_primary_nav = verdict(await visibleCount(page, 'nav[aria-label="Primary"]') === 1)
+  checks.one_current_page = verdict(await visibleCount(page, 'nav[aria-label="Primary"] [aria-current="page"]') === 1)
+  checks.sidebar_matches_viewport = verdict((await visibleCount(page, '.fd-shell__nav')) === (mobile ? 0 : 1))
+  checks.bottom_bar_matches_viewport = verdict((await visibleCount(page, '.fd-shell__mobile-nav')) === (mobile ? 1 : 0))
+
+  if (mobile) {
+    const bar = await page.evaluate(() => [...document.querySelectorAll('.fd-mobile-nav__list > li > *')].map((node) => {
+      const box = node.getBoundingClientRect()
+      return { width: box.width, height: box.height }
+    }))
+    checks.bar_at_most_five = verdict(bar.length >= 1 && bar.length <= 5)
+    checks.bar_touch_targets = verdict(bar.every((box) => box.width >= 44 && box.height >= 44))
+    const more = page.locator('.fd-mobile-nav__more')
+    checks.more_entry_matches_registry = verdict((await more.count()) === (fixture.more ? 1 : 0))
+    if (fixture.more) {
+      const sheet = page.locator('dialog.fd-mobile-nav__sheet')
+      await more.click()
+      const opened = await sheet.evaluate((node) => node.open && node.matches(':modal'))
+      await page.keyboard.press('Escape')
+      await page.waitForFunction(() => !document.querySelector('dialog.fd-mobile-nav__sheet').open)
+      checks.more_opens_and_escape_closes = verdict(opened)
+      checks.more_focus_returns = verdict(await focusIs(page, '.fd-mobile-nav__more'))
+      // Choosing an entry closes the sheet and makes it the current page,
+      // which the bar reports on "More" because the entry is not on it.
+      await more.click()
+      const before = await page.locator('#page-title').getAttribute('data-current')
+      await sheet.locator('.fd-nav__link').last().click()
+      await page.waitForFunction(() => !document.querySelector('dialog.fd-mobile-nav__sheet').open)
+      const after = await page.locator('#page-title').getAttribute('data-current')
+      checks.sheet_entry_navigates = verdict(after !== before)
+      checks.more_marks_overflow_current = verdict(await more.getAttribute('aria-current') === 'page')
+      checks.no_horizontal_overflow_after_sheet = verdict(await noOverflow(page))
+    }
+  } else {
+    checks.sidebar_touch_targets = verdict(await page.evaluate(() => [...document.querySelectorAll('.fd-shell__nav .fd-nav__link')].every((node) => node.getBoundingClientRect().height >= 44)))
+    if (fixture.second) {
+      await page.locator('.fd-shell__nav .fd-nav__link', { hasText: fixture.second }).first().click()
+      checks.sidebar_click_moves_current = verdict(
+        (await visibleCount(page, 'nav[aria-label="Primary"] [aria-current="page"]')) === 1
+        && (await page.locator('.fd-shell__nav [aria-current="page"]').innerText()).includes(fixture.second),
+      )
+      // focusMainOnNavigate: the new page is announced by moving focus to it.
+      checks.focus_moves_to_main_on_navigate = verdict(await focusIs(page, '#fd-main'))
+    }
+  }
+
+  if (fixture.inspector) {
+    const docked = width >= 1280
+    const panel = page.locator('dialog.fd-inspector')
+    await page.locator('#open-inspector').click()
+    const state = await panel.evaluate((node) => ({ open: node.open, modal: node.matches(':modal') }))
+    checks.inspector_opens = verdict(state.open)
+    checks.inspector_presentation_matches_viewport = verdict(state.modal === !docked)
+    checks.no_horizontal_overflow_with_inspector = verdict(await noOverflow(page))
+    if (docked) {
+      // Docked, it is a side panel: it must not take focus from the opener.
+      checks.inspector_docked_keeps_focus = verdict(await focusIs(page, '#open-inspector'))
+      await panel.locator('.fd-inspector__close').click()
+    } else {
+      checks.inspector_modal_traps_focus = verdict(await page.evaluate(() => document.querySelector('dialog.fd-inspector').contains(document.activeElement)))
+      await page.keyboard.press('Escape')
+    }
+    await page.waitForFunction(() => !document.querySelector('dialog.fd-inspector').open)
+    checks.inspector_closes = 'PASS'
+    checks.inspector_focus_returns = verdict(await focusIs(page, '#open-inspector'))
+  }
+  return checks
+}
+
 for (const [engineName, engine] of Object.entries(engines)) {
-  const browser = await engine.launch({ headless: true })
+  const browser = await engine.launch(launchOptions(engineName))
   try {
     for (const width of viewports) {
       const context = await browser.newContext({ viewport: { width, height: width < 768 ? 844 : 900 } })
@@ -67,11 +187,38 @@ for (const [engineName, engine] of Object.entries(engines)) {
       await context.close()
     }
 
-    for (const fixture of fixtures) {
+    for (const width of viewports) {
+      for (const fixture of shellFixtures) {
+        const context = await browser.newContext({ viewport: { width, height: width < 768 ? 844 : 900 } })
+        const page = await context.newPage()
+        const pageErrors = []
+        page.on('pageerror', (err) => pageErrors.push(String(err)))
+        try {
+          const checks = await runShellChecks(page, fixture, width, engineName)
+          const failures = Object.entries(checks).filter(([, value]) => value === 'FAIL').map(([name]) => name)
+          push({
+            engine: engineName,
+            viewport: width,
+            fixture: fixture.id,
+            suite: 'shell',
+            status: pageErrors.length === 0 && failures.length === 0 ? 'PASS' : 'FAIL',
+            page_errors: pageErrors,
+            failed_checks: failures,
+            ...checks,
+          })
+        } catch (error) {
+          push({ engine: engineName, viewport: width, fixture: fixture.id, suite: 'shell', status: 'FAIL', error: String(error), page_errors: pageErrors })
+        } finally {
+          await context.close()
+        }
+      }
+    }
+
+    for (const fixture of [...fixtures, ...shellFixtures.map((entry) => entry.id)]) {
       const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' })
       const page = await context.newPage()
       try {
-        await page.goto(`${BASE_URL}/?fixture=${fixture}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+        await page.goto(`${BASE_URL}/${fixture.startsWith('SHELL_') ? 'shell.html' : ''}?fixture=${fixture}`, { waitUntil: 'domcontentloaded', timeout: 30000 })
         const matches = await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)
         push({ engine: engineName, viewport: 1280, fixture, mode: 'reduced-motion', status: matches ? 'PASS' : 'FAIL' })
       } catch (error) {
@@ -85,7 +232,8 @@ for (const [engineName, engine] of Object.entries(engines)) {
   }
 }
 
-const baseline = results.filter((r) => !r.mode)
+const baseline = results.filter((r) => !r.mode && r.suite !== 'shell')
+const shell = results.filter((r) => r.suite === 'shell')
 const reduced = results.filter((r) => r.mode === 'reduced-motion')
 const summary = {
   schema_version: '1.0',
@@ -96,7 +244,11 @@ const summary = {
   viewports,
   expected_baseline_cells: fixtures.length * Object.keys(engines).length * viewports.length,
   observed_baseline_cells: baseline.length,
-  expected_reduced_motion_cells: fixtures.length * Object.keys(engines).length,
+  shell_fixtures: shellFixtures.length,
+  expected_shell_cells: shellFixtures.length * Object.keys(engines).length * viewports.length,
+  observed_shell_cells: shell.length,
+  shell_cells_passed: shell.filter((r) => r.status === 'PASS').length,
+  expected_reduced_motion_cells: (fixtures.length + shellFixtures.length) * Object.keys(engines).length,
   observed_reduced_motion_cells: reduced.length,
   keyboard_cells_passed: baseline.filter((r) => r.keyboard_only === 'PASS').length,
   css_zoom_stress_cells_passed: baseline.filter((r) => r.css_200_percent_zoom_stress === 'PASS').length,
@@ -108,6 +260,9 @@ fs.writeFileSync(path.join(OUT, 'summary.json'), JSON.stringify(summary, null, 2
 console.log(JSON.stringify({
   expected_baseline_cells: summary.expected_baseline_cells,
   observed_baseline_cells: summary.observed_baseline_cells,
+  expected_shell_cells: summary.expected_shell_cells,
+  observed_shell_cells: summary.observed_shell_cells,
+  shell_cells_passed: summary.shell_cells_passed,
   expected_reduced_motion_cells: summary.expected_reduced_motion_cells,
   observed_reduced_motion_cells: summary.observed_reduced_motion_cells,
   keyboard_cells_passed: summary.keyboard_cells_passed,
