@@ -15,7 +15,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0", "pytest-cov>=5", "ruff>=0.4", "mypy>=1.10", "types-PyYAML", "httpx2"]
+# ruff and mypy carry upper bounds on purpose: both ship new diagnostics in minor
+# releases, and CI installs this extra with pip (not from uv.lock), so an unbounded
+# range lets an upstream release turn `main` red with no change here. Dependabot
+# raises the bound in a reviewable PR instead.
+dev = ["pytest>=7.0", "pytest-cov>=5", "ruff>=0.4,<0.17", "mypy>=1.10,<2.4", "types-PyYAML", "httpx2"]
 server = ["fastapi>=0.100", "uvicorn[standard]>=0.22", "cryptography>=41"]
 
 [project.scripts]

@@ -366,3 +366,48 @@ def test_ingest_cli_reports_and_errors(valid_package, tmp_path):
     empty = tmp_path / "empty"
     empty.mkdir()
     assert main(["ingest", "--in", str(empty), "--db", str(db)]) == 1
+
+
+def _write_monitor(agg, rows, total=None):
+    agg.mkdir(parents=True, exist_ok=True)
+    (agg / "monitored_sources.jsonl").write_text(
+        "".join(json.dumps(r) + "\n" for r in rows)
+    )
+    (agg / "monitored_sources_summary.json").write_text(
+        json.dumps({"schema_version": "prii_source_monitor_v1", "total": total if total is not None else len(rows)})
+    )
+
+
+def test_ingest_loads_and_replaces_monitored_sources(tmp_path):
+    agg = tmp_path / "agg"
+    db = tmp_path / "hub.db"
+    _write_monitor(agg, [
+        {"monitor_id": "ovnis-pr:SRC-0001", "producer": "ovnis-pr", "source_id": "SRC-0001"},
+        {"monitor_id": "ovnis-pr:SRC-0002", "producer": "ovnis-pr", "source_id": "SRC-0002"},
+    ])
+    summary = ingest_aggregate(agg, db)
+    assert summary["collections"]["MonitoredSources"] == 2
+    assert summary["collections"]["SourceMonitorSummary"] == 1
+    rows = _rows(db, "MonitoredSources")
+    assert set(rows) == {"ovnis-pr:SRC-0001", "ovnis-pr:SRC-0002"}
+    assert rows["ovnis-pr:SRC-0001"]["id"] == "ovnis-pr:SRC-0001"
+    assert _rows(db, "SourceMonitorSummary")["source_monitor_summary"]["total"] == 2
+
+    # A source dropped from the producer registry leaves the hub on the next ingest
+    # (the canonical streams only upsert; this hub-derived collection is replaced).
+    _write_monitor(agg, [{"monitor_id": "ovnis-pr:SRC-0002", "producer": "ovnis-pr", "source_id": "SRC-0002"}])
+    ingest_aggregate(agg, db)
+    assert set(_rows(db, "MonitoredSources")) == {"ovnis-pr:SRC-0002"}
+
+
+def test_ingest_without_monitor_file_keeps_previous_monitor_rows(valid_package, tmp_path):
+    mon = tmp_path / "mon"
+    db = tmp_path / "hub.db"
+    _write_monitor(mon, [{"monitor_id": "ovnis-pr:SRC-0001", "producer": "ovnis-pr", "source_id": "SRC-0001"}])
+    ingest_aggregate(mon, db)
+
+    agg = tmp_path / "agg"
+    aggregate({"moneysweep-pr": valid_package}, agg)
+    summary = ingest_aggregate(agg, db)
+    assert "MonitoredSources" not in summary["collections"]
+    assert set(_rows(db, "MonitoredSources")) == {"ovnis-pr:SRC-0001"}

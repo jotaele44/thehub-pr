@@ -47,7 +47,8 @@ NEW_RULESET = "main-required-checks"
 REGISTRY = Path(__file__).resolve().parents[1] / "registry" / "producers.yaml"
 
 # Repo name -> why requiring a check on main would break it. Remove the entry once
-# the workflow opens a pull request instead of pushing to main.
+# the workflow opens a pull request instead of pushing to main, or records docs-sync
+# on its commit before pushing (centinelas-pr's scripts/push_to_main.sh).
 HELD = {
     "aguayluz-pr": "refresh.yml commits scheduled data refreshes straight to main",
 }

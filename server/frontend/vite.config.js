@@ -56,6 +56,10 @@ export default defineConfig({
       // resolve in-repo. Aliasing the canonical CSS directly is what lets the
       // Hub single-source it instead of keeping a copy in sync.
       '@federation-design': path.resolve(import.meta.dirname, '../../federation-design'),
+      // satellite.js loads an optional WebAssembly bulk-propagation runtime through these two specifiers. The Sky
+      // workspace uses the plain JavaScript SGP4 only, so they resolve to a stub instead of a 309 KB unused module.
+      '#wasm-single-thread': path.resolve(import.meta.dirname, './src/sky/wasmNotUsed.js'),
+      '#wasm-multi-thread': path.resolve(import.meta.dirname, './src/sky/wasmNotUsed.js'),
     },
   },
   server: {

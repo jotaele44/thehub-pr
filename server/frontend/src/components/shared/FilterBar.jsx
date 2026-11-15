@@ -19,7 +19,7 @@ export default function FilterBar({ search, onSearch, searchPlaceholder = "Searc
       <div className="flex flex-wrap items-center gap-2">
         {filters.map((f) => (
           <Select key={f.key} value={f.value} onValueChange={(v) => onFilterChange(f.key, v)}>
-            <SelectTrigger className="w-auto min-w-[130px] bg-card border-border h-9 text-sm">
+            <SelectTrigger aria-label={f.label} className="w-auto min-w-[130px] bg-card border-border h-9 text-sm">
               <SelectValue placeholder={f.label} />
             </SelectTrigger>
             <SelectContent>

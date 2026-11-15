@@ -114,3 +114,22 @@ def test_ingest_gates_its_pr_on_substantive_drift():
     workflow = _ingest_workflow()
     assert "scripts/fixture_drift.py" in workflow
     assert "steps.drift.outputs.drift == 'true'" in workflow
+
+
+def test_ingest_preserves_review_heads_and_cleans_failed_publication():
+    """A unique review branch must not be overwritten or left orphaned on PR failure."""
+    workflow = _ingest_workflow()
+    assert 'branch="fixture-refresh/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"' in workflow
+    assert "git push --force" not in workflow
+    assert "gh pr create --draft" in workflow
+    assert "trap cleanup_unpublished_branch EXIT" in workflow
+    assert 'git push origin ":refs/heads/$unpublished_branch"' in workflow
+    assert 'unpublished_branch=""' in workflow
+
+
+def test_ingest_records_docs_sync_on_its_pr_head():
+    """main requires docs-sync, and a PR the built-in token opens runs no CI."""
+    workflow = _ingest_workflow()
+    assert "statuses: write" in workflow
+    assert "tools/check_docs_sync.py" in workflow
+    assert "-f context=docs-sync" in workflow
