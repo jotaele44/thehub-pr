@@ -1219,7 +1219,8 @@ test.describe('source monitor', () => {
     await expect(page.getByRole('heading', { name: 'usaspending_prime' })).toBeVisible();
     await expect(page.getByText('registry: partially_materialized')).toBeVisible();
     await expect(page.getByText('reports/source_registry_status.csv')).toBeVisible();
-    await page.getByRole('link', { name: 'Source Monitor' }).first().click();
+    // Opened from the federation table, the way back is the federation view.
+    await page.getByRole('link', { name: 'Back to Source Monitor', exact: true }).click();
     await expect(page).toHaveURL(/\/source-monitor$/);
   });
 

@@ -14,12 +14,14 @@ import {
 // The list loads at most MONITOR_LIST_LIMIT rows across every producer, so one
 // producer's tab can be cut short while the federation total is over the limit.
 // Says so when the summary holds more of this producer's sources than loaded.
-function ProducerLimitNotice({ producer, loaded }) {
+// `ready` is false until the first rows arrive: before then every producer would
+// look cut short. The summary is still requested, alongside the rows.
+function ProducerLimitNotice({ producer, loaded, ready }) {
   const { rows: summaries } = useEntityData(MONITOR_SUMMARY_COLLECTION);
   const summary = summaries.find((s) => s.id === MONITOR_SUMMARY_ID);
   const total = Number(summary?.total ?? 0);
   const held = Number(summary?.producers?.[producer]?.count ?? 0);
-  if (!(total > MONITOR_LIST_LIMIT) || !(held > loaded)) return null;
+  if (!ready || !(total > MONITOR_LIST_LIMIT) || !(held > loaded)) return null;
   return (
     <div role="alert" className="mb-4 rounded-lg border border-status-warning/30 bg-status-warning/15 px-4 py-2.5 text-xs text-status-warning-fg">
       The hub holds {held} sources from {producer} but this tab shows {loaded}: the table loads the first{" "}
@@ -30,13 +32,14 @@ function ProducerLimitNotice({ producer, loaded }) {
 
 // One read-only template for monitored sources (ADR 0012). Without `producer` it is
 // the federation-wide operator table; with it, a producer page's Monitor tab.
-// Rows are a projection of producer registries written by `hub source-monitor` and
-// replaced on every `hub ingest`, so there is nothing to edit here.
+// Rows come from each producer's source_monitors stream where it emits one (ADR 0013)
+// and otherwise from its registry via `hub source-monitor`; `hub ingest` replaces them
+// on every run, so there is nothing to edit here.
 export default function SourceMonitorLedger({ producer, now }) {
   const navigate = useNavigate();
   // The same call EntityLedger makes for this collection, so both read one
   // react-query entry (["entity", MONITOR_COLLECTION, "-created_date"]) and one request.
-  const { rows } = useEntityData(MONITOR_COLLECTION);
+  const { rows, isFetching } = useEntityData(MONITOR_COLLECTION);
   const nowMs = useMemo(() => now ?? Date.now(), [now]);
   const rowMap = useMemo(() => withFreshness(nowMs), [nowMs]);
   const rowFilter = useMemo(() => (producer ? (r) => r.producer === producer : undefined), [producer]);
@@ -99,7 +102,9 @@ export default function SourceMonitorLedger({ producer, now }) {
         <code>hub source-monitor</code>; replaced on every hub ingest. Freshness uses a source&apos;s own last
         success when the producer reports one, and otherwise the age of the producer&apos;s last export package.
       </p>
-      {producer ? <ProducerLimitNotice producer={producer} loaded={scoped.length} /> : null}
+      {producer ? (
+        <ProducerLimitNotice producer={producer} loaded={scoped.length} ready={!(isFetching && rows.length === 0)} />
+      ) : null}
       <EntityLedger
         entityName={MONITOR_COLLECTION}
         columns={columns}

@@ -56,9 +56,14 @@ function renderLedger(props = {}) {
 }
 
 // useEntityData answers by collection name: the monitor rows, or the summary.
-function serve({ rows = ROWS, summaries = [] } = {}) {
-  const result = (data) => ({ rows: data, create: vi.fn(), update: vi.fn(), saving: false, isLoading: false });
-  vi.mocked(useEntityData).mockImplementation((name) => result(name === "SourceMonitorSummary" ? summaries : rows));
+// `fetching` is the monitor rows' isFetching (the summary is never fetching here).
+function serve({ rows = ROWS, summaries = [], fetching = false } = {}) {
+  const result = (data, isFetching) => ({
+    rows: data, create: vi.fn(), update: vi.fn(), saving: false, isLoading: false, isFetching,
+  });
+  vi.mocked(useEntityData).mockImplementation((name) => (
+    name === "SourceMonitorSummary" ? result(summaries, false) : result(rows, fetching)
+  ));
 }
 
 const bodyRows = () => within(screen.getAllByRole("rowgroup")[1]).getAllByRole("row");
@@ -206,6 +211,21 @@ describe("SourceMonitorLedger list-limit notice", () => {
     renderLedger();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(useEntityData).not.toHaveBeenCalledWith("SourceMonitorSummary");
+  });
+
+  it("waits for the first rows before comparing them with the summary", () => {
+    // The summary can arrive before the rows; until they do, every producer would
+    // look cut short. The summary is still requested alongside the rows.
+    vi.mocked(useEntityData).mockClear();
+    serve({ rows: [], summaries: [summary(501)], fetching: true });
+    const { rerender } = renderLedger({ producer: "ovnis-pr" });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(useEntityData).toHaveBeenCalledWith("SourceMonitorSummary");
+
+    // A refetch with rows already loaded keeps the notice.
+    serve({ summaries: [summary(501)], fetching: true });
+    rerender(tree({ producer: "ovnis-pr" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("The hub holds 40 sources from ovnis-pr but this tab shows 1");
   });
 
   it("reads the summary row by its id", () => {
