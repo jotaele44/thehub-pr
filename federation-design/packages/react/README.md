@@ -10,6 +10,7 @@ The rules for building a GUI on this package are in [`docs/FEDERATION_GUI_STANDA
 |---|---|
 | `@pr-federation/react` | React primitives and semantic resolvers |
 | `@pr-federation/react/semantics` | Dependency-free semantic state model |
+| `@pr-federation/react/nav` | Dependency-free navigation registry: validation, active matching, flattening |
 | `@pr-federation/react/styles.css` | Canonical federation CSS |
 | `@pr-federation/react/tokens.json` | Token source v2 |
 | `@pr-federation/react/tokens.schema.json` | Draft 2020-12 token schema |

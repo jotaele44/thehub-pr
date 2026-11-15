@@ -10,6 +10,12 @@ this file; their scope is recorded in `docs/FEDERATION_DESIGN_SYSTEM_v0_4_CANDID
 Impact: **minor, additive.** No export, class name or custom property is
 removed or changed. Tokens stay at 2.0.0.
 
+### Added
+
+- Navigation registry: `defineFederationNav`, `flattenFederationNav` and
+  `matchFederationNavItem`, also importable without React from
+  `@pr-federation/react/nav`.
+
 ### Changed
 
 - The API snapshot is now checked against the package's real exports in both
