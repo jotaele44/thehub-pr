@@ -59,6 +59,41 @@
       "why": "Declares how the producers are grouped and connected, which the registry and dependency graph encode."
     },
     {
+      "doc": "docs/FEDERATION_GUI_STANDARD.md",
+      "covers": [
+        "federation-templates/gui/check_gui_parity.py",
+        "federation-templates/gui/core-capabilities.json",
+        "federation-audit/contracts/gui-capabilities.schema.json",
+        "federation-audit/contracts/gui-capabilities-fragment.schema.json"
+      ],
+      "on": ["add", "delete", "rename", "modify"],
+      "why": "States the rules the checker enforces, the reserved capability ids and the manifest and fragment shapes. A change to any of them is a change to the rule."
+    },
+    {
+      "doc": "docs/FEDERATION_GUI_STANDARD.md",
+      "covers": [
+        "federation-templates/gui/**",
+        "server/frontend/src/lib/nav.js"
+      ],
+      "on": ["add", "delete", "rename"],
+      "why": "Section 12 names what a repository receives on adoption, and section 4 points at the navigation registry as the shape every repository follows."
+    },
+    {
+      "doc": "federation-templates/README.md",
+      "covers": ["federation-templates/gui/**"],
+      "on": ["add", "delete", "rename"],
+      "why": "'GUI rules (gui/)' has one table row per rendered GUI template."
+    },
+    {
+      "doc": "docs/GUI_CAPABILITY_PARITY.md",
+      "covers": [
+        ".federation/gui-capabilities.json",
+        ".federation/gui-parity-baseline.json"
+      ],
+      "on": ["add", "delete", "rename"],
+      "why": "Names the files that make up the GUI capability contract. The hub has no extension fragments; add '.federation/gui-capabilities.extensions/**' here with the first one."
+    },
+    {
       "doc": "docs/FEDERATION_STATUS.md",
       "covers": ["governance/merge_blocking_status.json"],
       "on": ["add", "delete", "rename", "modify"],
