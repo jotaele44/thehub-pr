@@ -1052,6 +1052,7 @@
         "unit": [
           "server/frontend/src/lib/sourceMonitor.test.js",
           "server/frontend/src/components/sources/SourceMonitorLedger.test.jsx",
+          "server/frontend/src/pages/SourceMonitor.test.jsx",
           "server/frontend/src/pages/SourceMonitorDetail.test.jsx"
         ],
         "e2e": [

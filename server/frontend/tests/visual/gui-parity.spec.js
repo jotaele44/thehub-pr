@@ -1238,6 +1238,64 @@ test.describe('source monitor', () => {
     await expect(ovnis).toContainText('AARO Case Archive');
   });
 
+  test('each producer deep link opens its Monitor tab', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    // Skywatcher keeps its tab in ?view=; the other producer pages in ?tab=.
+    const links = {
+      '/aguayluz?tab=sources': 'aguayluz-pr',
+      '/centinelas?tab=sources': 'centinelas-pr',
+      '/moneysweep?tab=sources': 'moneysweep-pr',
+      '/ovnis?tab=sources': 'ovnis-pr',
+      '/skywatcher?view=sources': 'skywatcher-pr',
+      '/spiderweb?tab=sources': 'spiderweb-pr',
+    };
+    for (const [link, producer] of Object.entries(links)) {
+      await page.goto(link, { waitUntil: 'networkidle' });
+      await expect(page.getByRole('tab', { name: 'Monitor', exact: true }), link).toHaveAttribute('aria-selected', 'true');
+      const panel = page.getByRole('tabpanel', { name: 'Monitor' });
+      await expect(panel, link).toContainText('Sources this producer monitors');
+      const held = MONITOR_ROWS.filter((r) => r.producer === producer);
+      if (held.length) await expect(panel.locator('tbody tr'), link).toHaveCount(held.length);
+      else await expect(panel, link).toContainText(`No sources from ${producer} in the hub.`);
+    }
+  });
+
+  test('a source opened from a producer Monitor tab leads back to that tab', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Monitor', exact: true }).click();
+    await expect(page).toHaveURL(/\/moneysweep\?tab=sources$/);
+
+    await page.getByRole('tabpanel', { name: 'Monitor' }).locator('tbody tr').first().click();
+    await expect(page).toHaveURL(/\/source-monitor\/moneysweep-pr%3Ausaspending_prime$/);
+    await expect(page.getByRole('heading', { name: 'usaspending_prime' })).toBeVisible();
+    await expect(page.getByRole('main').getByRole('link', { name: 'moneysweep-pr', exact: true }))
+      .toHaveAttribute('href', '/moneysweep?tab=sources');
+
+    await page.getByRole('link', { name: 'Back to the MoneySweep-PR Monitor tab' }).click();
+    await expect(page).toHaveURL(/\/moneysweep\?tab=sources$/);
+    await expect(page.getByRole('tab', { name: 'Monitor', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tabpanel', { name: 'Monitor' }).locator('tbody tr')).toHaveCount(1);
+  });
+
+  test('the Family filter narrows the table to one family', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    await page.goto('/source-monitor', { waitUntil: 'networkidle' });
+    const rows = page.locator('table').last().locator('tbody tr');
+    await expect(rows).toHaveCount(2);
+
+    await page.getByRole('combobox', { name: 'Family' }).click();
+    // The options are the families in the rows, not a fixed list.
+    await expect(page.getByRole('option')).toHaveText(['All Family', 'federal', 'USAF']);
+    await page.getByRole('option', { name: 'federal', exact: true }).click();
+    await expect(rows).toHaveCount(1);
+    await expect(rows.first()).toContainText('usaspending_prime');
+
+    await page.getByRole('combobox', { name: 'Family' }).click();
+    await page.getByRole('option', { name: 'All Family', exact: true }).click();
+    await expect(rows).toHaveCount(2);
+  });
+
   test('a stream row is measured from its own last success (ADR 0013)', async ({ page }) => {
     const streamRow = {
       id: 'aguayluz-pr:nwps_gauges', monitor_id: 'aguayluz-pr:nwps_gauges', producer: 'aguayluz-pr',
