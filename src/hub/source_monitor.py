@@ -1,8 +1,9 @@
 """Hub-side source monitor: normalize producer source registries (ADR 0012).
 
 Each producer keeps its own registry of the sources it monitors, in its own
-shape (a CSV in moneysweep-pr, YAML in skywatcher-pr, ...). None of that
-crosses the federation contract: the frozen
+shape. Only moneysweep-pr's (a CSV) is still read here; the other five
+producers report through the ``source_monitors`` stream. None of those
+registries crosses the federation contract: the frozen
 ``federation_export_manifest`` carried seven canonical streams and no
 monitoring fields until ADR 0013 added the optional ``source_monitors``
 stream. ADR 0012 records this module as a scoped, temporary exception to
@@ -21,16 +22,18 @@ the artifact-only boundary of ADR 0001:
 * **Superseded per producer (ADR 0013).** A producer that emits the
   ``source_monitors`` federation stream is read from the stream instead: ingest
   drops this module's rows for that producer. Once a producer emits the
-  stream it moves from ``REGISTRIES`` to ``STREAM_PRODUCERS``; delete this
-  module when all six have moved.
+  stream it moves from ``REGISTRIES`` to ``STREAM_PRODUCERS``. moneysweep-pr
+  is the last producer in ``REGISTRIES``; when it emits, ADR 0013 deletes this
+  module and its CLI.
 
-Freshness for the producers read here is **producer-level**: the
+Freshness for the producer read here is **producer-level**: the
 ``created_at`` of the producer's export-package manifest, the same field
 ``hub.federation_status`` reads, because no registry records a per-source
 last-successful-poll time. Producers in ``STREAM_PRODUCERS`` report a
 per-source ``last_success_at`` with its basis in the stream instead (ADR 0013;
-``NOT_RECORDED`` where they keep none), and this module reads none of their
-files.
+``NOT_RECORDED`` where they keep none). This module reads none of their
+registries; it still reads their export-package manifest, so the summary keeps
+their ``package_created_at``.
 
 Producer families are kept verbatim (``producer_family``). There is no shared
 category taxonomy across producers yet, so none is invented here.
@@ -43,8 +46,6 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
-
-import yaml
 
 from .federation_status import _producer_base
 from .ingest import MONITOR_SUMMARY_FILE, MONITORED_SOURCES_FILE
@@ -80,20 +81,14 @@ _NAMED_CADENCE: Dict[str, str] = {
     "weekly": "weekly", "monthly": "monthly", "quarterly": "quarterly",
     "yearly": "yearly", "daily": "daily", "hourly": "hourly", "manual": "manual",
     "ad_hoc": "event", "on_drop": "event", "one_time": "static",
-    # skywatcher-pr mode
-    "delayed_or_rate_limited": "realtime", "batch_file": "event",
-    "historical_baseline": "static",
 }
 
-# Declared-status vocabularies -> STATUSES. This is what the producer says about
-# the source, not a health check.
+# Declared-status vocabulary (moneysweep-pr pipeline_status) -> STATUSES. This is
+# what the producer says about the source, not a health check.
 _NAMED_STATUS: Dict[str, str] = {
-    # moneysweep-pr pipeline_status
     "fully_materialized": "active",
     "partially_materialized": "partial",
     "not_materialized": "not_active",
-    # centinelas-pr active
-    "active": "active", "manual": "manual",
 }
 
 _TIER = re.compile(r"^T[1-4]$")
@@ -149,14 +144,10 @@ def _read_csv(path: Path, required: Sequence[str]) -> List[Dict[str, str]]:
         return list(reader)
 
 
-def _read_yaml(path: Path) -> Any:
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
-
-
 def _entry(source_id: Any, *, name: Any, family: Any, tier: Any = None,
            cadence_raw: Any = None, cadence: str = "unknown",
            window_seconds: Optional[int] = None, status_raw: Any = None,
-           status: str = "unknown", url: Any = None,
+           status: str = "unknown",
            raw: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     return {
         "source_id": _text(source_id),
@@ -168,7 +159,9 @@ def _entry(source_id: Any, *, name: Any, family: Any, tier: Any = None,
         "cadence_window_seconds": window_seconds,
         "status_raw": _text(status_raw),
         "status": status,
-        "url": _text(url),
+        # No registry read here records a source URL; the key stays because
+        # MonitoredSources rows from the stream carry one.
+        "url": None,
         "raw": _jsonable(raw or {}),
     }
 
@@ -184,48 +177,20 @@ def _parse_moneysweep(path: Path) -> Iterable[Dict[str, Any]]:
         )
 
 
-def _parse_centinelas(path: Path) -> Iterable[Dict[str, Any]]:
-    # reliability_default is a 0..1 score here, not a T-tier: kept in raw only.
-    for r in _read_csv(path, ("source_id", "name", "source_family", "active", "scrape_method")):
-        cadence = "manual" if r["scrape_method"].strip().lower() == "manual" else "unknown"
-        yield _entry(
-            r["source_id"], name=r["name"], family=r["source_family"],
-            cadence=cadence, status_raw=r["active"], status=normalize_status(r["active"]), raw=r,
-        )
-
-
-def _parse_skywatcher(path: Path) -> Iterable[Dict[str, Any]]:
-    data = _read_yaml(path)
-    if not isinstance(data, dict):
-        raise RegistryShapeError("expected a mapping of domain -> source list")
-    for domain, items in data.items():
-        if not isinstance(items, list):
-            continue
-        for s in items:
-            if not isinstance(s, dict) or "id" not in s:
-                raise RegistryShapeError(f"{domain}: entry without 'id'")
-            cadence = normalize_cadence(s.get("mode"))
-            yield _entry(
-                s["id"], name=s.get("use"), family=domain, tier=s.get("tier"),
-                cadence_raw=s.get("mode"), cadence=cadence,
-                window_seconds=CADENCE_WINDOW_SECONDS.get(cadence), raw=s,
-            )
-
-
 Parser = Callable[[Path], Iterable[Dict[str, Any]]]
 
 # producer program_id -> [(registry path relative to the checkout, parser)].
 # One-spot edit when a producer moves or reshapes its registry.
 REGISTRIES: Dict[str, List[Tuple[str, Parser]]] = {
     "moneysweep-pr": [("reports/source_registry_status.csv", _parse_moneysweep)],
-    "centinelas-pr": [("data/reference/source_registry.csv", _parse_centinelas)],
-    "skywatcher-pr": [("registry/source_registry.yaml", _parse_skywatcher)],
 }
 
 # Producers that report their sources in the source_monitors stream (ADR 0013).
 # Their registries are no longer read here; ingest takes their rows from the
 # stream and flags them when an aggregate has none.
-STREAM_PRODUCERS: frozenset = frozenset({"aguayluz-pr", "ovnis-pr", "spiderweb-pr"})
+STREAM_PRODUCERS: frozenset = frozenset(
+    {"aguayluz-pr", "ovnis-pr", "spiderweb-pr", "skywatcher-pr", "centinelas-pr"}
+)
 
 
 # ── build ─────────────────────────────────────────────────────────────────────
@@ -291,7 +256,7 @@ def build_monitor(registry: Registry, root: str | Path,
                 continue
             try:
                 entries = list(parser(path))
-            except (RegistryShapeError, OSError, ValueError, yaml.YAMLError, KeyError) as exc:
+            except (RegistryShapeError, OSError, ValueError, KeyError) as exc:
                 info["errors"].append(f"{rel}: {exc}")
                 continue
             for e in entries:
