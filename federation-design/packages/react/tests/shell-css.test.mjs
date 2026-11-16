@@ -24,6 +24,25 @@ test('layout, layering and breakpoint properties equal their tokens', () => {
   }
 })
 
+test('every repository accent is addressable by name and equals its token', () => {
+  for (const [repo, value] of Object.entries(tokens.repoAccents)) {
+    assert.equal(declared(`--fd-repo-accent-${repo}`), value, repo)
+  }
+  const foundation = readFileSync(stylePath('foundation.css'), 'utf8')
+  for (const [repo, value] of Object.entries(tokens.repoAccents)) {
+    assert.ok(foundation.includes(`[data-repo="${repo}"]{--fd-accent:${value}}`), `${repo} accent differs from foundation.css`)
+  }
+})
+
+test('the font stack leads with the family the applications actually load', () => {
+  const foundation = readFileSync(stylePath('foundation.css'), 'utf8')
+  const stack = foundation.match(/--fd-font-sans:\s*([^;]+);/)[1]
+  // @fontsource-variable/inter registers "Inter Variable", not "Inter". With
+  // only "Inter" in the stack every application rendered a system fallback.
+  assert.match(stack, /^"Inter Variable", Inter,/)
+  assert.match(tokens.typography.fontFamily, /^Inter Variable, Inter,/)
+})
+
 test('media queries use only the two token breakpoints the shell supports', () => {
   const widths = [...css.matchAll(/@media\s*\((?:max|min)-width:\s*([\d.]+)px\)/g)].map((match) => Number(match[1]))
   assert.ok(widths.length >= 2)

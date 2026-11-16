@@ -32,6 +32,18 @@ removed or changed. Tokens stay at 2.0.0.
   requires consuming those variables as colours instead of wrapping them in
   `hsl()`; see the README.
 
+- `--fd-repo-accent-<repository>` custom properties, one per repository, equal
+  to the `repoAccents` tokens, so an application can show another repository's
+  accent without a literal colour.
+
+### Fixed
+
+- The sans font stack now leads with `"Inter Variable"`, the family
+  `@fontsource-variable/inter` registers. It named only `Inter`, which no
+  application loads, so text rendered in a system fallback. The
+  `typography.fontFamily` token is corrected to match; the token version stays
+  2.0.0 because this corrects a value rather than changing the token set.
+
 ### Known issues
 
 - The raw repository accent (`--fd-accent`) is below 4.5:1 as text or behind
