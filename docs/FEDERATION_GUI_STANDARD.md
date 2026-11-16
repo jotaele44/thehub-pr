@@ -323,7 +323,7 @@ adoption because `AGENTS.md` is repository-specific and not rendered.
    `npm run test:gui-parity`.
 6. Never regenerate `.federation/gui-parity-baseline.json` to make a gate pass.
 
-The full rules are in thehub-pr `docs/FEDERATION_GUI_STANDARD.md`.
+The full rules are in `thehub-pr/docs/FEDERATION_GUI_STANDARD.md`.
 ```
 
 Each repository's `.federation/docs-sync.json` carries this coupling:
