@@ -25,16 +25,50 @@ async function mockApi(page, handlers = {}) {
 }
 
 test.describe('federation shell', () => {
-  test('primary navigation rail is present and marks the active module', async ({ page }) => {
+  test('one primary navigation is exposed and marks exactly the current page', async ({ page }) => {
     await mockApi(page);
     await page.goto('/sources', { waitUntil: 'networkidle' });
-    // Below the lg breakpoint the rail collapses into the responsive mobile menu.
-    const menu = page.getByRole('button', { name: 'Open navigation menu' });
-    if (await menu.isVisible()) await menu.click();
-    const nav = page.locator('nav[aria-label="Primary"]:visible').first();
-    await expect(nav).toBeVisible();
-    const active = nav.getByRole('link', { name: 'Sources' });
-    await expect(active).toHaveClass(/bg-sidebar-accent/);
+    // The shared shell renders the sidebar from 768px up, which covers both
+    // projects, and a bottom bar below that; only one is ever exposed.
+    const navs = page.locator('nav[aria-label="Primary"]:visible');
+    await expect(navs).toHaveCount(1);
+    const current = navs.first().locator('[aria-current="page"]');
+    await expect(current).toHaveCount(1);
+    await expect(current).toHaveAccessibleName('Sources');
+    // /source-monitor shares a prefix with /sources but is its own entry.
+    await page.goto('/source-monitor', { waitUntil: 'networkidle' });
+    await expect(navs.first().locator('[aria-current="page"]')).toHaveAccessibleName('Source Monitor');
+  });
+
+  test('the skip link is the first stop and lands on the page content', async ({ page }) => {
+    await mockApi(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('main')).toBeFocused();
+  });
+
+  test('a phone gets a bottom bar of at most five entries, with the rest behind More', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await mockApi(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    const nav = page.locator('nav[aria-label="Primary"]:visible');
+    await expect(nav).toHaveCount(1);
+    const entries = nav.locator('li');
+    expect(await entries.count()).toBeLessThanOrEqual(5);
+    // Sources is not one of the first four, so More reports the current page.
+    const more = nav.getByRole('button', { name: 'More' });
+    await expect(more).toHaveAttribute('aria-current', 'page');
+    await more.click();
+    const sheet = page.getByRole('dialog', { name: 'More' });
+    await expect(sheet.getByRole('link', { name: 'Sources', exact: true })).toHaveAttribute('aria-current', 'page');
+    // The command palette trigger lives in the sidebar header; on a phone it is here.
+    await expect(sheet.getByRole('button', { name: /Search & commands/ })).toBeVisible();
+    await sheet.getByRole('link', { name: 'Gates', exact: true }).click();
+    await expect(page).toHaveURL(/\/gates$/);
+    await expect(sheet).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   });
 });
 
@@ -371,9 +405,9 @@ const COMPOSITION = {
   limits: { relationships: 200, linked_records: 200 },
 };
 
+// The sidebar is rendered from 768px up, so at both project widths the primary
+// navigation is on screen and needs no opening.
 async function openPrimaryNav(page) {
-  const menu = page.getByRole('button', { name: 'Open navigation menu' });
-  if (await menu.isVisible()) await menu.click();
   return page.locator('nav[aria-label="Primary"]:visible').first();
 }
 
