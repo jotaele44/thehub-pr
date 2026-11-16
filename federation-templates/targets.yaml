@@ -73,10 +73,11 @@ _jsx_frontend: &jsx_frontend
 #                thehub-pr keeps its own (its e2e mocks the API, with no backend
 #                step) and spiderweb-pr keeps its runtime matrix.
 # Adoption order: moneysweep-pr, centinelas-pr, then the rest.
+# Adopted so far: thehub-pr (rules), moneysweep-pr (rules and workflow).
 _gui_rules: &gui_rules
-  [thehub-pr]
+  [moneysweep-pr, thehub-pr]
 _gui_code: &gui_code
-  []
+  [moneysweep-pr]
 
 targets:
   - template: Fix-Gatekeeper.command
