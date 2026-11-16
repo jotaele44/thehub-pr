@@ -41,18 +41,6 @@ _CENTINELAS_CSV = (
     "CENT-SRC-RSS-SPACE-NEWS,SpaceNews,en,space_media,0.8,rss,active,\n"
     "CENT-SRC-MANUAL-GACETA,Gaceta Oficial,es,official_gazette,0.95,manual,manual,\n"
 )
-_SKYWATCHER_YAML = """\
-airspace:
-  - id: adsb_exchange
-    tier: T1
-    mode: delayed_or_rate_limited
-    use: aircraft event ingestion
-maritime:
-  - id: public_port_authority_updates
-    tier: T2
-    mode: periodic_context
-    use: port context enrichment
-"""
 _PRODUCERS = ["moneysweep-pr", "centinelas-pr", "ovnis-pr", "spiderweb-pr", "skywatcher-pr", "aguayluz-pr"]
 
 
@@ -78,15 +66,14 @@ def workspace(tmp_path: Path) -> Path:
     _write(ws / "moneysweep-pr/data/exports/canonical_v1_federation/manifest.json",
            json.dumps({"created_at": "2026-09-01T02:29:04Z"}))
     _write(ws / "centinelas-pr/data/reference/source_registry.csv", _CENTINELAS_CSV)
-    _write(ws / "skywatcher-pr/registry/source_registry.yaml", _SKYWATCHER_YAML)
-    _write(ws / "skywatcher-pr/exports/federation/manifest.json",
-           json.dumps({"created_at": "2026-08-28T00:11:41Z"}))
-    # aguayluz-pr, ovnis-pr and spiderweb-pr report through the source_monitors
-    # stream (ADR 0013); their registry files are present but must not be read.
+    # aguayluz-pr, ovnis-pr, spiderweb-pr and skywatcher-pr report through the
+    # source_monitors stream (ADR 0013); their registry files are present but
+    # must not be read.
     _write(ws / "aguayluz-pr/config/hydromet_sources.v1.json", '{"sources": [{"source_id": "x"}]}')
     _write(ws / "ovnis-pr/data/reference/source_registry.csv", "source_id,name\nSRC-0001,X\n")
     _write(ws / "spiderweb-pr/manifests/pr_hydrography/source_registry.csv", "source_id\nTIGER_PR_BOUNDARY\n")
     _write(ws / "spiderweb-pr/configs/missing_persons_sources.yaml", "sources:\n  namus: {}\n")
+    _write(ws / "skywatcher-pr/registry/source_registry.yaml", "airspace:\n  - id: adsb_exchange\n")
     return ws
 
 
@@ -99,12 +86,12 @@ def test_every_producer_shape_is_normalized(workspace):
     counts = {pid: info["count"] for pid, info in summary["producers"].items()}
     assert counts == {
         "moneysweep-pr": 3, "centinelas-pr": 2, "ovnis-pr": 0,
-        "spiderweb-pr": 0, "skywatcher-pr": 2, "aguayluz-pr": 0,
+        "spiderweb-pr": 0, "skywatcher-pr": 0, "aguayluz-pr": 0,
     }
-    assert summary["total"] == 7 == len(rows)
+    assert summary["total"] == 5 == len(rows)
     assert summary["error_count"] == 0
     # A stream producer is marked, not read and not reported as an error.
-    for pid in ("aguayluz-pr", "ovnis-pr", "spiderweb-pr"):
+    for pid in ("aguayluz-pr", "ovnis-pr", "spiderweb-pr", "skywatcher-pr"):
         info = summary["producers"][pid]
         assert info["reports_via_stream"] is True
         assert (info["registries"], info["errors"]) == ([], [])
@@ -121,12 +108,11 @@ def test_every_producer_shape_is_normalized(workspace):
     # Centinelas reliability is a 0..1 score, never coerced into a T-tier.
     assert cent["evidence_tier"] is None and cent["raw"]["reliability_default"] == "0.95"
     assert (cent["cadence"], cent["status"]) == ("manual", "manual")
-
-    sky = r["skywatcher-pr:adsb_exchange"]
-    assert (sky["cadence"], sky["evidence_tier"]) == ("realtime", "T1")
-    assert sky["cadence_window_seconds"] == 3600
-    assert r["skywatcher-pr:public_port_authority_updates"]["cadence"] == "unknown"
-    assert r["skywatcher-pr:public_port_authority_updates"]["producer_family"] == "maritime"
+    # Centinelas declares no cadence; only a manual scrape method maps to one, so
+    # an RSS source has neither a cadence nor a window.
+    rss = r["centinelas-pr:CENT-SRC-RSS-SPACE-NEWS"]
+    assert (rss["cadence"], rss["cadence_window_seconds"]) == ("unknown", None)
+    assert (rss["producer_family"], rss["status"]) == ("space_media", "active")
 
     assert not any(row["producer"] in STREAM_PRODUCERS for row in rows)
 
@@ -151,6 +137,8 @@ def test_registry_and_stream_producers_partition_the_federation(workspace):
     assert len(federation) == 6 and federation == set(_PRODUCERS)
     assert set(REGISTRIES).isdisjoint(STREAM_PRODUCERS)
     assert set(REGISTRIES) | STREAM_PRODUCERS == federation
+    assert set(REGISTRIES) == {"moneysweep-pr", "centinelas-pr"}
+    assert STREAM_PRODUCERS == {"aguayluz-pr", "ovnis-pr", "spiderweb-pr", "skywatcher-pr"}
 
     rows, summary = build_monitor(_registry(), workspace, now=NOW)
     for pid in STREAM_PRODUCERS:
@@ -166,7 +154,7 @@ def test_freshness_is_producer_level_package_timestamp(workspace):
     rows, summary = build_monitor(_registry(), workspace, now=NOW)
     r = _by_id(rows)
     assert r["moneysweep-pr:usaspending_prime"]["producer_last_package_at"] == "2026-09-01T02:29:04Z"
-    assert r["skywatcher-pr:adsb_exchange"]["producer_last_package_at"] == "2026-08-28T00:11:41Z"
+    assert summary["producers"]["moneysweep-pr"]["package_created_at"] == "2026-09-01T02:29:04Z"
     assert r["centinelas-pr:CENT-SRC-RSS-SPACE-NEWS"]["producer_last_package_at"] is None
     assert summary["producers"]["centinelas-pr"]["package_created_at"] is None
 
@@ -176,31 +164,30 @@ def test_output_is_deterministic(workspace, tmp_path):
     b = write_monitor(*build_monitor(_registry(), workspace, now=NOW), tmp_path / "b")
     assert [p.read_bytes() for p in a] == [p.read_bytes() for p in b]
     lines = a[0].read_text().splitlines()
-    assert len(lines) == 7 and all(json.loads(line)["monitor_id"] for line in lines)
+    assert len(lines) == 5 and all(json.loads(line)["monitor_id"] for line in lines)
 
 
-def test_missing_file_and_drifted_columns_fail_soft(workspace):
+def test_missing_file_fails_soft(workspace):
     (workspace / "centinelas-pr/data/reference/source_registry.csv").unlink()
-    _write(workspace / "moneysweep-pr/reports/source_registry_status.csv", "source_id,title\nX,Y\n")
     rows, summary = build_monitor(_registry(), workspace, now=NOW)
 
     errs = {pid: info["errors"] for pid, info in summary["producers"].items()}
     assert errs["centinelas-pr"] == ["data/reference/source_registry.csv: file not found"]
-    assert "missing column(s)" in errs["moneysweep-pr"][0]
-    assert summary["error_count"] == 2
+    assert summary["error_count"] == 1
     # The other producer is unaffected.
-    assert summary["producers"]["skywatcher-pr"]["count"] == 2
-    assert {r["producer"] for r in rows} == {"skywatcher-pr"}
+    assert summary["producers"]["moneysweep-pr"]["count"] == 3
+    assert {r["producer"] for r in rows} == {"moneysweep-pr"}
 
 
-def test_drifted_shape_fails_soft(workspace):
-    _write(workspace / "skywatcher-pr/registry/source_registry.yaml", "airspace:\n  - tier: T1\n")
+def test_drifted_columns_fail_soft(workspace):
+    _write(workspace / "moneysweep-pr/reports/source_registry_status.csv", "source_id,title\nX,Y\n")
     rows, summary = build_monitor(_registry(), workspace, now=NOW)
 
-    assert "entry without 'id'" in summary["producers"]["skywatcher-pr"]["errors"][0]
+    assert "missing column(s)" in summary["producers"]["moneysweep-pr"]["errors"][0]
     assert summary["error_count"] == 1
-    # The other producers are unaffected.
-    assert {r["producer"] for r in rows} == {"moneysweep-pr", "centinelas-pr"}
+    # The other producer is unaffected.
+    assert summary["producers"]["centinelas-pr"]["count"] == 2
+    assert {r["producer"] for r in rows} == {"centinelas-pr"}
 
 
 def test_missing_checkout_and_unknown_producer_are_reported(tmp_path):
@@ -231,8 +218,7 @@ def test_duplicate_source_ids_within_a_producer_are_skipped(workspace):
     ("weekly", "weekly"), ("monthly", "monthly"), ("quarterly", "quarterly"), ("yearly", "yearly"),
     ("daily", "daily"), ("hourly", "hourly"), ("manual", "manual"),
     ("ad_hoc", "event"), ("one_time", "static"), ("on_drop", "event"),
-    ("delayed_or_rate_limited", "realtime"), ("batch_file", "event"),
-    ("historical_baseline", "static"), ("periodic_context", "unknown"), (None, "unknown"),
+    ("something_new", "unknown"), (None, "unknown"),
 ])
 def test_named_cadence_table(raw, expected):
     assert normalize_cadence(raw) == expected
@@ -268,9 +254,9 @@ def test_cli_writes_monitor_files(workspace, tmp_path):
     )
     out = tmp_path / "agg"
     assert main(["source-monitor", "--registry", str(reg_path), "--root", str(workspace), "--out", str(out)]) == 0
-    assert len((out / "monitored_sources.jsonl").read_text().splitlines()) == 7
+    assert len((out / "monitored_sources.jsonl").read_text().splitlines()) == 5
     summary = json.loads((out / "monitored_sources_summary.json").read_text())
-    assert summary["schema_version"] == "prii_source_monitor_v1" and summary["total"] == 7
+    assert summary["schema_version"] == "prii_source_monitor_v1" and summary["total"] == 5
 
     empty = tmp_path / "empty-ws"
     empty.mkdir()

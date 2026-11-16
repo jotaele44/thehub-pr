@@ -1,8 +1,8 @@
 """Hub-side source monitor: normalize producer source registries (ADR 0012).
 
 Each producer keeps its own registry of the sources it monitors, in its own
-shape (a CSV in moneysweep-pr, YAML in skywatcher-pr, ...). None of that
-crosses the federation contract: the frozen
+shape (a CSV in moneysweep-pr and in centinelas-pr, the two still read here).
+None of that crosses the federation contract: the frozen
 ``federation_export_manifest`` carried seven canonical streams and no
 monitoring fields until ADR 0013 added the optional ``source_monitors``
 stream. ADR 0012 records this module as a scoped, temporary exception to
@@ -44,8 +44,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
-import yaml
-
 from .federation_status import _producer_base
 from .ingest import MONITOR_SUMMARY_FILE, MONITORED_SOURCES_FILE
 from .registry import Producer, Registry
@@ -80,9 +78,6 @@ _NAMED_CADENCE: Dict[str, str] = {
     "weekly": "weekly", "monthly": "monthly", "quarterly": "quarterly",
     "yearly": "yearly", "daily": "daily", "hourly": "hourly", "manual": "manual",
     "ad_hoc": "event", "on_drop": "event", "one_time": "static",
-    # skywatcher-pr mode
-    "delayed_or_rate_limited": "realtime", "batch_file": "event",
-    "historical_baseline": "static",
 }
 
 # Declared-status vocabularies -> STATUSES. This is what the producer says about
@@ -149,10 +144,6 @@ def _read_csv(path: Path, required: Sequence[str]) -> List[Dict[str, str]]:
         return list(reader)
 
 
-def _read_yaml(path: Path) -> Any:
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
-
-
 def _entry(source_id: Any, *, name: Any, family: Any, tier: Any = None,
            cadence_raw: Any = None, cadence: str = "unknown",
            window_seconds: Optional[int] = None, status_raw: Any = None,
@@ -194,24 +185,6 @@ def _parse_centinelas(path: Path) -> Iterable[Dict[str, Any]]:
         )
 
 
-def _parse_skywatcher(path: Path) -> Iterable[Dict[str, Any]]:
-    data = _read_yaml(path)
-    if not isinstance(data, dict):
-        raise RegistryShapeError("expected a mapping of domain -> source list")
-    for domain, items in data.items():
-        if not isinstance(items, list):
-            continue
-        for s in items:
-            if not isinstance(s, dict) or "id" not in s:
-                raise RegistryShapeError(f"{domain}: entry without 'id'")
-            cadence = normalize_cadence(s.get("mode"))
-            yield _entry(
-                s["id"], name=s.get("use"), family=domain, tier=s.get("tier"),
-                cadence_raw=s.get("mode"), cadence=cadence,
-                window_seconds=CADENCE_WINDOW_SECONDS.get(cadence), raw=s,
-            )
-
-
 Parser = Callable[[Path], Iterable[Dict[str, Any]]]
 
 # producer program_id -> [(registry path relative to the checkout, parser)].
@@ -219,13 +192,12 @@ Parser = Callable[[Path], Iterable[Dict[str, Any]]]
 REGISTRIES: Dict[str, List[Tuple[str, Parser]]] = {
     "moneysweep-pr": [("reports/source_registry_status.csv", _parse_moneysweep)],
     "centinelas-pr": [("data/reference/source_registry.csv", _parse_centinelas)],
-    "skywatcher-pr": [("registry/source_registry.yaml", _parse_skywatcher)],
 }
 
 # Producers that report their sources in the source_monitors stream (ADR 0013).
 # Their registries are no longer read here; ingest takes their rows from the
 # stream and flags them when an aggregate has none.
-STREAM_PRODUCERS: frozenset = frozenset({"aguayluz-pr", "ovnis-pr", "spiderweb-pr"})
+STREAM_PRODUCERS: frozenset = frozenset({"aguayluz-pr", "ovnis-pr", "spiderweb-pr", "skywatcher-pr"})
 
 
 # ── build ─────────────────────────────────────────────────────────────────────
@@ -291,7 +263,7 @@ def build_monitor(registry: Registry, root: str | Path,
                 continue
             try:
                 entries = list(parser(path))
-            except (RegistryShapeError, OSError, ValueError, yaml.YAMLError, KeyError) as exc:
+            except (RegistryShapeError, OSError, ValueError, KeyError) as exc:
                 info["errors"].append(f"{rel}: {exc}")
                 continue
             for e in entries:
