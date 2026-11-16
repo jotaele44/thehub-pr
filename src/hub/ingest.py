@@ -62,6 +62,7 @@ STREAM_TO_COLLECTION: Dict[str, str] = {
     "transactions": "Transactions",
     "observations": "Observations",
     "alerts": "Alerts",
+    "source_monitors": "SourceMonitors",
     "correlations": "Correlations",
 }
 
@@ -72,6 +73,22 @@ _ID_FIELD: Dict[str, str] = {**STREAM_ID_FIELD, "correlations": "relationship_id
 # graph_summary.json lands as a single row in this collection (Dashboard counts).
 _SUMMARY_COLLECTION = "FederationSummary"
 _SUMMARY_ID = "graph_summary"
+
+# Source monitor (ADR 0012, ADR 0013). Two inputs feed the MonitoredSources
+# collection the UI reads:
+# * the `source_monitors` federation stream (ADR 0013), which producers emit with a
+#   per-source last_success_at; its canonical rows also land in SourceMonitors via
+#   STREAM_TO_COLLECTION;
+# * monitored_sources.jsonl, written hub-side by `hub source-monitor` from producer
+#   registries (ADR 0012) for producers that do not emit the stream yet.
+# A producer's stream rows replace its hub-adapter rows. MonitoredSources is
+# replaced wholesale on ingest, so a source dropped from a producer leaves the hub.
+SOURCE_MONITORS_STREAM_FILE = "source_monitors.jsonl"
+MONITORED_SOURCES_FILE = "monitored_sources.jsonl"
+MONITOR_SUMMARY_FILE = "monitored_sources_summary.json"
+MONITOR_COLLECTION = "MonitoredSources"
+MONITOR_SUMMARY_COLLECTION = "SourceMonitorSummary"
+MONITOR_SUMMARY_ID = "source_monitor_summary"
 
 # ── Phase 2: frontend-facing CrossoverLinks projection ────────────────────────
 # The Crossover Workspace (server/frontend/src/lib/crossover.js) is explicit-only:
@@ -435,6 +452,128 @@ def project_livefeed(aggregate_dir: str | Path) -> List[Tuple[str, Dict[str, Any
     return out[:_LEDGER_CAP]
 
 
+# The 13 components of an aguayluz `outdoor_condition` (its
+# schemas/outdoor_condition.v1.schema.json). Each one carries its own state —
+# REPORTED, NONE_ACTIVE, STALE, NOT_COVERED, NOT_INGESTED, NOT_CONFIGURED or
+# SOURCE_FAILED — and that state is projected as `<component>_state` for every
+# component, so a blank value cell can always say *why* it is blank.
+_OUTDOOR_COMPONENTS = (
+    "rip_current", "marine_alerts", "sea_state", "beach_water_quality", "uv", "heat",
+    "air_quality", "rainfall_24h", "river_flood", "nws_alerts", "tropical_cyclone",
+    "earthquakes", "access_closures",
+)
+
+
+def _joined(rows: Any, key: str) -> Optional[str]:
+    """``"; "``-joined distinct ``key`` values of a list of dicts, or ``None``."""
+    if not isinstance(rows, list):
+        return None
+    seen: List[str] = []
+    for row in rows:
+        value = row.get(key) if isinstance(row, dict) else None
+        if value and str(value) not in seen:
+            seen.append(str(value))
+    return "; ".join(seen) or None
+
+
+def _surf_ft(period: Dict[str, Any]) -> Optional[str]:
+    lo, hi = period.get("surf_min_ft"), period.get("surf_max_ft")
+    if isinstance(lo, (int, float)) and isinstance(hi, (int, float)):
+        return f"{lo:g}" if lo == hi else f"{lo:g}–{hi:g}"
+    return period.get("surf_height_text")
+
+
+def project_outdoor_conditions(aggregate_dir: str | Path) -> List[Tuple[str, Dict[str, Any]]]:
+    """Project aguayluz `outdoor_condition` entities into ``OutdoorConditions``.
+
+    aguayluz-pr exports one entity per municipio whose ``attributes.components``
+    holds the composed snapshot (rip current, surf, buoy sea state, UV, heat, air
+    quality, beach advisories, river flood, rain, NWS alerts, storms, quakes and
+    El Yunque closures). This flattens the headline value of each component into a
+    ledger column and keeps every component's state beside it; the raw components
+    ride along for detail. A component that is not covered, stale or failed has no
+    value here — never a default that reads as "safe".
+    """
+    agg = Path(aggregate_dir)
+    ent_path = agg / "entities.jsonl"
+    if not ent_path.exists():
+        return []
+    out: List[Tuple[str, Dict[str, Any]]] = []
+    for e in _read_jsonl(ent_path):
+        if e.get("entity_type") != "outdoor_condition" or not _is_aguayluz(e):
+            continue
+        eid = e.get("entity_id")
+        attrs = e.get("attributes")
+        attrs = attrs if isinstance(attrs, dict) else {}
+        comps = attrs.get("components")
+        comps = comps if isinstance(comps, dict) else {}
+
+        def comp(name: str) -> Dict[str, Any]:
+            c = comps.get(name)
+            return c if isinstance(c, dict) else {}
+
+        rip, sea, uv, heat = comp("rip_current"), comp("sea_state"), comp("uv"), comp("heat")
+        aqi, beach, river, rain = comp("air_quality"), comp("beach_water_quality"), comp("river_flood"), comp("rainfall_24h")
+        today_raw = rip.get("today")
+        today: Dict[str, Any] = today_raw if isinstance(today_raw, dict) else {}
+        quakes = comp("earthquakes").get("recent")
+        magnitudes: List[float] = [
+            float(q["magnitude"]) for q in (quakes if isinstance(quakes, list) else [])
+            if isinstance(q, dict) and isinstance(q.get("magnitude"), (int, float))
+        ]
+        closures = comp("access_closures").get("closures")
+        advisories = beach.get("advisories")
+        flooding = river.get("gauges_in_flood")
+        drivers = attrs.get("drivers") if isinstance(attrs.get("drivers"), list) else []
+        loc = e.get("location") or {}
+        row = {
+            "id": str(eid), "condition_id": str(eid),
+            "name": e.get("name"), "title": e.get("name"),
+            "municipality": attrs.get("municipality") or loc.get("municipality"),
+            "geoid": attrs.get("geoid"), "coastal": attrs.get("coastal"),
+            "level": attrs.get("level"),
+            "drivers": drivers,
+            "driver_summary": _joined(drivers, "reason"),
+            "stale_components": attrs.get("stale_components"),
+            "unavailable_components": attrs.get("unavailable_components"),
+            "as_of": attrs.get("as_of"), "composed_at": attrs.get("composed_at"),
+            "scope_note": attrs.get("scope_note"),
+            "latitude": loc.get("lat"), "longitude": loc.get("lon"),
+            # rip current + surf (NWS Surf Zone Forecast, today's period)
+            "rip_current_risk": today.get("rip_current_risk"),
+            "surf_ft": _surf_ft(today) if today else None,
+            "surf_zone": rip.get("zone_name"),
+            "marine_alerts": _joined(comp("marine_alerts").get("alerts"), "event"),
+            # nearest PR buoy (PROXIMITY)
+            "buoy_station": sea.get("station"), "buoy_distance_km": sea.get("distance_km"),
+            "wave_height_ft": sea.get("wave_height_ft"), "dominant_period_s": sea.get("dominant_period_s"),
+            "water_temp_f": sea.get("water_temp_f"), "wind_speed_kt": sea.get("wind_speed_kt"),
+            "uv_index": uv.get("uv_index"), "uv_category": uv.get("uv_category"),
+            "heat_band": heat.get("heat_band_24h"), "heat_index_max_f": heat.get("heat_index_max_f_24h"),
+            "aqi": aqi.get("aqi"), "aqi_category": aqi.get("category"),
+            "aqi_parameter": aqi.get("parameter"), "aqi_area": aqi.get("reporting_area"),
+            "beach_advisories": len(advisories) if isinstance(advisories, list) else None,
+            "beach_advisory_names": _joined(advisories, "beach"),
+            "river_flood_category": river.get("worst_category"),
+            "river_gauges_in_flood": len(flooding) if isinstance(flooding, list) else None,
+            "rain_24h_mean_in": rain.get("obs_mean_in"), "rain_24h_max_in": rain.get("obs_max_in"),
+            "rain_date": rain.get("data_date"),
+            "nws_alerts": _joined(comp("nws_alerts").get("alerts"), "event"),
+            "storms": _joined(comp("tropical_cyclone").get("storms"), "storm"),
+            "quake_max_magnitude": max(magnitudes) if magnitudes else None,
+            "closures": len(closures) if isinstance(closures, list) else None,
+            "closure_assets": _joined(closures, "asset"),
+            "components": comps,
+            "evidence_state": e.get("evidence_state"),
+            "_producers": e.get("_producers"),
+        }
+        for name in _OUTDOOR_COMPONENTS:
+            row[f"{name}_state"] = comp(name).get("state")
+        out.append((str(eid), _nonnull(row)))
+    out.sort(key=lambda pair: str(pair[1].get("municipality") or ""))
+    return out[:_LEDGER_CAP]
+
+
 def _now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -578,6 +717,107 @@ def _project_ui(agg: Path, stream: str, id_field: str,
     return out
 
 
+def _alias_stream_monitor(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """A canonical source_monitors row in the MonitoredSources display shape.
+
+    The display key stays ``<producer>:<source_ref>`` (as for hub-adapter rows) so
+    detail links do not change when a producer starts emitting the stream; the
+    canonical ``mon_…`` id is kept as ``stream_monitor_id``.
+    """
+    producer = _first_producer(row)
+    ref = row.get("source_ref")
+    if not producer or not ref:
+        return None
+    raw_lineage = row.get("lineage")
+    lineage: Dict[str, Any] = raw_lineage if isinstance(raw_lineage, dict) else {}
+    return {
+        **row,
+        "monitor_id": f"{producer}:{ref}",
+        "stream_monitor_id": row.get("monitor_id"),
+        "producer": producer,
+        "source_id": ref,
+        "status": row.get("declared_status"),
+        "url": row.get("source_url"),
+        # Package-level age for the export-age fallback when no per-source success is known.
+        "producer_last_package_at": row.get("extracted_at"),
+        "observed_at": row.get("extracted_at"),
+        "lineage": {**lineage, "registry_path": row.get("registry_path"),
+                    "adapter": "source_monitors stream (producer export)"},
+        "origin": "stream",
+    }
+
+
+def project_source_monitors(
+    aggregate_dir: str | Path, now: Optional[str] = None,
+) -> Optional[Tuple[List[Tuple[str, Dict[str, Any]]], Dict[str, Any]]]:
+    """Merge stream rows and hub-adapter rows into MonitoredSources plus its summary.
+
+    Returns ``None`` when the aggregate holds neither input, so the caller leaves
+    the previous monitor rows in place. A producer with any stream rows is taken
+    wholly from the stream; every other producer keeps its hub-adapter rows.
+    """
+    agg = Path(aggregate_dir)
+    stream_path = agg / SOURCE_MONITORS_STREAM_FILE
+    adapter_path = agg / MONITORED_SOURCES_FILE
+    if not stream_path.exists() and not adapter_path.exists():
+        return None
+
+    by_producer: Dict[str, List[Dict[str, Any]]] = {}
+    if stream_path.exists():
+        for raw in _read_jsonl(stream_path):
+            row = _alias_stream_monitor(raw)
+            if row is not None:
+                by_producer.setdefault(row["producer"], []).append(row)
+
+    rows: Dict[str, Dict[str, Any]] = {}
+    if adapter_path.exists():
+        for raw in _read_jsonl(adapter_path):
+            key = raw.get("monitor_id")
+            if key and raw.get("producer") not in by_producer:
+                rows.setdefault(str(key), {**raw, "origin": "hub_adapter"})
+    for producer_rows in by_producer.values():
+        for row in producer_rows:
+            rows.setdefault(row["monitor_id"], row)
+
+    summary_path = agg / MONITOR_SUMMARY_FILE
+    summary: Dict[str, Any] = (
+        json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.exists() else {}
+    )
+    producers: Dict[str, Any] = {}
+    for pid, info in (summary.get("producers") or {}).items():
+        if not isinstance(info, dict):
+            continue
+        if info.get("reports_via_stream"):
+            # The registry reader no longer reads this producer; its rows come
+            # from the stream, so an aggregate without them is a visible gap.
+            producers[pid] = {**info, "origin": "stream", "errors": [
+                *(info.get("errors") or []),
+                "reports through the source_monitors stream, but this aggregate has no rows from it",
+            ]}
+        else:
+            producers[pid] = {**info, "origin": "hub_adapter"}
+    for pid, producer_rows in by_producer.items():
+        extracted = sorted(str(r.get("extracted_at") or "") for r in producer_rows)
+        producers[pid] = {
+            "origin": "stream",
+            "count": len(producer_rows),
+            "package_created_at": extracted[-1] or None,
+            "registries": sorted({str(r["registry_path"]) for r in producer_rows if r.get("registry_path")}),
+            "excluded": {},
+            "errors": [],
+        }
+    summary = {
+        **summary,
+        "schema_version": summary.get("schema_version", "prii_source_monitor_v1"),
+        "generated_at": summary.get("generated_at") or now,
+        "producers": dict(sorted(producers.items())),
+        "stream_producers": sorted(by_producer),
+        "total": len(rows),
+        "error_count": sum(len(p.get("errors") or []) for p in producers.values()),
+    }
+    return sorted(rows.items()), summary
+
+
 # ── Phase 3: shared producer skeleton ─────────────────────────────────────────
 # Every stage above (canonical streams, CrossoverLinks, per-domain UI aliases)
 # ultimately produces the same shape: a collection name plus a list of
@@ -677,10 +917,22 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
             _ingest_pairs(conn, collection, rows, ts, collections)
 
         # Water-monitoring surfaces derived Hub-side from canonical streams:
-        # Continuity Risks (energized_by relationships + asset-anchored alerts) and
-        # the AguaYLuz live feed (water alerts projected into LiveFeedItems).
+        # Continuity Risks (energized_by relationships + asset-anchored alerts),
+        # the AguaYLuz live feed (water alerts projected into LiveFeedItems) and
+        # the per-municipio outdoor-conditions layer.
         _ingest_pairs(conn, "ContinuityRisks", project_continuity_risks(agg), ts, collections)
         _ingest_pairs(conn, "LiveFeedItems", project_livefeed(agg), ts, collections)
+        _ingest_pairs(conn, "OutdoorConditions", project_outdoor_conditions(agg), ts, collections)
+
+        # Source monitor (ADR 0012/0013): stream rows win per producer, hub-adapter
+        # rows cover the rest. Untouched when the aggregate holds neither input.
+        monitors = project_source_monitors(agg, now=ts)
+        if monitors is not None:
+            monitor_pairs, monitor_summary = monitors
+            conn.execute("DELETE FROM entities WHERE entity_type=?", (MONITOR_COLLECTION,))
+            _ingest_pairs(conn, MONITOR_COLLECTION, monitor_pairs, ts, collections, always=True)
+            _ingest_pairs(conn, MONITOR_SUMMARY_COLLECTION, [(MONITOR_SUMMARY_ID, monitor_summary)],
+                          ts, collections, always=True)
 
         conn.commit()
     finally:

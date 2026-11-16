@@ -61,6 +61,23 @@
     --status-tier: 173 80% 40%;      --status-tier-fg: 174 84% 26%;
     --status-caution: 45 93% 47%;    --status-caution-fg: 32 81% 36%;
     --status-elevated: 25 95% 53%;   --status-elevated-fg: 21 90% 42%;
+
+    /* Federation Constellation stage (/constellation). The stage is a dark media
+       surface in both themes, like a map or a video, so both themes define the
+       same values; the page around it follows the theme. */
+    --constellation-bg: 222 28% 6%;
+    --constellation-bg-glow: 220 16% 13%;
+    --constellation-star: 210 25% 82%;
+    --constellation-grain: 36 30% 72%;
+    --constellation-edge-1: 214 16% 66%;
+    --constellation-edge-2: 262 72% 74%;
+    --constellation-edge-3: 41 64% 58%;
+    --constellation-label-bg: 222 26% 9%;
+    --constellation-label-border: 216 14% 30%;
+    --constellation-label-fg: 210 22% 90%;
+    --constellation-label-muted: 214 12% 60%;
+    --constellation-highlight: 41 64% 58%;
+    --constellation-caption: 210 8% 68%;
   }
 
   .dark {
@@ -107,6 +124,21 @@
     --status-tier: 173.4 80.4% 40%;      --status-tier-fg: 170.6 76.9% 64.3%;
     --status-caution: 45.4 93.4% 47.5%;  --status-caution-fg: 50.4 97.8% 63.5%;
     --status-elevated: 24.6 95% 53.1%;   --status-elevated-fg: 30.7 97.2% 72.4%;
+
+    /* Federation Constellation stage: same values as the light theme (see above). */
+    --constellation-bg: 222 28% 6%;
+    --constellation-bg-glow: 220 16% 13%;
+    --constellation-star: 210 25% 82%;
+    --constellation-grain: 36 30% 72%;
+    --constellation-edge-1: 214 16% 66%;
+    --constellation-edge-2: 262 72% 74%;
+    --constellation-edge-3: 41 64% 58%;
+    --constellation-label-bg: 222 26% 9%;
+    --constellation-label-border: 216 14% 30%;
+    --constellation-label-fg: 210 22% 90%;
+    --constellation-label-muted: 214 12% 60%;
+    --constellation-highlight: 41 64% 58%;
+    --constellation-caption: 210 8% 68%;
   }
 }
 
