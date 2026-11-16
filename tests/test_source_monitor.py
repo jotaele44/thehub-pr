@@ -74,6 +74,8 @@ def workspace(tmp_path: Path) -> Path:
     _write(ws / "spiderweb-pr/manifests/pr_hydrography/source_registry.csv", "source_id\nTIGER_PR_BOUNDARY\n")
     _write(ws / "spiderweb-pr/configs/missing_persons_sources.yaml", "sources:\n  namus: {}\n")
     _write(ws / "skywatcher-pr/registry/source_registry.yaml", "airspace:\n  - id: adsb_exchange\n")
+    _write(ws / "skywatcher-pr/exports/federation/manifest.json",
+           json.dumps({"created_at": "2026-08-28T00:11:41Z"}))
     return ws
 
 
@@ -157,6 +159,9 @@ def test_freshness_is_producer_level_package_timestamp(workspace):
     assert summary["producers"]["moneysweep-pr"]["package_created_at"] == "2026-09-01T02:29:04Z"
     assert r["centinelas-pr:CENT-SRC-RSS-SPACE-NEWS"]["producer_last_package_at"] is None
     assert summary["producers"]["centinelas-pr"]["package_created_at"] is None
+    # A stream producer's registry is not read, but its package age (on the
+    # default export path) is still reported in the summary.
+    assert summary["producers"]["skywatcher-pr"]["package_created_at"] == "2026-08-28T00:11:41Z"
 
 
 def test_output_is_deterministic(workspace, tmp_path):

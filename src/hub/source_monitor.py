@@ -29,8 +29,9 @@ Freshness for the producers read here is **producer-level**: the
 ``hub.federation_status`` reads, because no registry records a per-source
 last-successful-poll time. Producers in ``STREAM_PRODUCERS`` report a
 per-source ``last_success_at`` with its basis in the stream instead (ADR 0013;
-``NOT_RECORDED`` where they keep none), and this module reads none of their
-files.
+``NOT_RECORDED`` where they keep none). This module reads none of their
+registries; it still reads their export-package manifest, so the summary keeps
+their ``package_created_at``.
 
 Producer families are kept verbatim (``producer_family``). There is no shared
 category taxonomy across producers yet, so none is invented here.
