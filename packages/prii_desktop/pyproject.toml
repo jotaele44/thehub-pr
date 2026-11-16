@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "prii-desktop"
-version = "0.2.0"
+version = "0.3.0"
 description = "Shared self-contained desktop runtime with native setup, repair, diagnostics, same-origin ASGI serving, and pywebview."
 readme = "README.md"
 # Intentionally higher than the root repo's `>=3.9` (see UPGRADE_AUDIT.md DEP-3):
