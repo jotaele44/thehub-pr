@@ -23,11 +23,12 @@ git-URL pip dependency — the first time a producer takes a *build-time* depend
 no runtime coupling, versioned by tag, bumped one producer at a time.
 
 **A second scoped exception (ADR 0012): the Source Monitor.** `hub source-monitor`
-(`src/hub/source_monitor.py`) reads each producer's own source registry from a workspace
-checkout, outside the frozen contract, because no federation stream carries monitoring data.
+(`src/hub/source_monitor.py`) reads producers' own source registries from a workspace
+checkout, outside the frozen contract, for the producers listed in its `REGISTRIES`.
 It is read-only and fail-soft, writes a hub-derived `monitored_sources.jsonl` that is not a
 federation stream, and ends producer by producer as each one emits the `source_monitors` stream
-(ADR 0013); `hub ingest` reads a producer from the stream as soon as it emits one.
+(ADR 0013): `hub ingest` reads a producer from the stream as soon as it emits one, and once that
+is confirmed the producer moves to `STREAM_PRODUCERS` and its registry is no longer read.
 
 ## Data flow
 
@@ -219,8 +220,8 @@ Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
   generalize ADR 0004's documentation-drift rule into one shared checker that requires a document
   to change with the paths it covers and forbids new dangling references.
 - [ADR 0012 — Source monitor reads producer registries hub-side](docs/adr/0012-source-monitor-registry-adapter.md):
-  a read-only, fail-soft adapter normalizes producer source registries for the Source Monitor until
-  a `source_monitors` stream exists; freshness is producer-level until then.
+  a read-only, fail-soft adapter normalizes producer source registries for the Source Monitor, with
+  producer-level freshness (the export-package age); ADR 0013 retires it producer by producer.
 - [ADR 0013 — Producers report monitored sources in a `source_monitors` stream](docs/adr/0013-source-monitors-stream.md):
   an optional frozen stream (`federation_export_manifest` 1.1.0) with a per-source last success and its
   basis; producers adopt it one at a time and the ADR 0012 registry reader retires per producer.

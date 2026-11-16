@@ -1,4 +1,5 @@
 import React from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
@@ -18,6 +19,7 @@ import {
 const MODULE = MODULES.find((m) => m.name === "AguaYLuz-PR");
 const ASSET_TYPES = ["Reservoir", "Dam", "PumpStation", "WaterPlant", "PowerPlant", "Substation", "Transmission", "Distribution", "Canal", "Other"];
 const RISK_TYPES = ["Dependency", "Outage", "Maintenance", "Capacity", "DocumentationGap", "SourceGap", "Other"];
+const AGUAYLUZ_TABS = ["workspace", "feed", "assets", "alerts", "risks", "outdoor", "sources"];
 
 // AguaYLuz's alert-system modules (its config/alert_modules.yaml). Continuity Risks
 // covers only the water/power continuity subset, and the Water + Power Feed only the
@@ -94,6 +96,14 @@ function OutdoorAlertsCell({ row }) {
 }
 
 export default function AguaYLuz() {
+  // The tab is URL state, so /aguayluz?tab=sources deep-links the Monitor tab.
+  const [params, setParams] = useSearchParams();
+  const tab = AGUAYLUZ_TABS.includes(params.get("tab")) ? params.get("tab") : "workspace";
+  const selectTab = (value) => {
+    const next = new URLSearchParams(params);
+    next.set("tab", value);
+    setParams(next);
+  };
   const assetFields = [
     { key: "asset_id", label: "Asset ID", required: true },
     { key: "name", label: "Name", required: true, full: true },
@@ -274,7 +284,7 @@ export default function AguaYLuz() {
       <div className="mb-4 rounded-lg border border-border bg-card px-4 py-2.5 text-xs text-muted-foreground">
         Infrastructure summaries are sanitized — no sensitive vulnerability detail is stored.
       </div>
-      <Tabs defaultValue="workspace">
+      <Tabs value={tab} onValueChange={selectTab}>
         <TabsList className="mb-4 flex h-auto flex-wrap">
           <TabsTrigger value="workspace">Workspace</TabsTrigger>
           <TabsTrigger value="feed">Water + Power Feed</TabsTrigger>

@@ -12,8 +12,9 @@ import { MODULES } from "@/lib/federation";
 export const MONITOR_COLLECTION = "MonitoredSources";
 export const MONITOR_SUMMARY_COLLECTION = "SourceMonitorSummary";
 export const MONITOR_SUMMARY_ID = "source_monitor_summary";
-// useEntityData lists at most this many rows; the page warns when the summary
-// total is larger instead of truncating silently.
+// useEntityData lists at most this many rows across every producer. Rather than
+// truncate silently, the Source Monitor page warns when the summary total is
+// larger, and a producer's Monitor tab warns when its own rows were cut.
 export const MONITOR_LIST_LIMIT = 500;
 
 // Vocabularies mirror src/hub/source_monitor.py (CADENCES / STATUSES).
@@ -30,7 +31,19 @@ const FRESHNESS_RANK = { Stale: 0, Due: 1, Unknown: 2, Fresh: 3, Static: 4 };
 
 // producer program_id (repo name) -> hub page path, from the module registry.
 export const PRODUCER_PAGES = Object.fromEntries(MODULES.map((m) => [m.repo_name, m.path]));
+export const PRODUCER_NAMES = Object.fromEntries(MODULES.map((m) => [m.repo_name, m.name]));
 export const MONITOR_PRODUCERS = Object.keys(PRODUCER_PAGES).sort();
+
+// The tab value every producer page gives its Monitor tab. Skywatcher keeps its
+// tab in ?view=; the other producer pages keep theirs in ?tab=.
+export const MONITOR_TAB = "sources";
+const TAB_PARAM = { "skywatcher-pr": "view" };
+
+// The producer page with its Monitor tab selected, or null for an unknown producer.
+export function producerMonitorPath(producer) {
+  if (typeof producer !== "string" || !Object.prototype.hasOwnProperty.call(PRODUCER_PAGES, producer)) return null;
+  return `${PRODUCER_PAGES[producer]}?${TAB_PARAM[producer] || "tab"}=${MONITOR_TAB}`;
+}
 
 export function monitorPath(monitorId) {
   return `/source-monitor/${encodeURIComponent(monitorId)}`;
@@ -102,3 +115,16 @@ export function withFreshness(now = Date.now()) {
 }
 
 export const formatLabel = (value) => (value ? String(value).replaceAll("_", " ") : "—");
+
+// Options for the Family filter: the distinct, non-empty producer_family values in
+// the rows, sorted. Values stay as stored, since the filter matches String(value).
+export function familyOptions(rows) {
+  const families = new Set();
+  for (const row of rows || []) {
+    const family = row?.producer_family;
+    if (family === null || family === undefined) continue;
+    const value = String(family);
+    if (value.trim()) families.add(value);
+  }
+  return [...families].sort((a, b) => a.localeCompare(b));
+}
