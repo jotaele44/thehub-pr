@@ -11,7 +11,7 @@ Status of each part:
 |---|---|
 | Capability manifest, extension fragments, parity checker | Enforced in `thehub-pr`. Rendered into a producer when it adopts (§12). |
 | Tokens (`--fd-*`) | Published in `@pr-federation/react`. Single-source rule applies at adoption. |
-| Shared shell | Contract fixed here (§4). Implemented in `@pr-federation/react` 0.6.0-rc.1 and proven in three browsers by the fixture matrix; not yet released or adopted. |
+| Shared shell | Contract fixed here (§4). Implemented in `@pr-federation/react` 0.6.0-rc.1 and proven in three browsers by the fixture matrix. Adopted by `thehub-pr`, with the token bridge; no producer has adopted it yet, and the package is not yet released. |
 
 ## 1. Scope
 
@@ -190,6 +190,25 @@ feature, and then with exactly this id and classification.
 
 The list is `federation-templates/gui/core-capabilities.json`. Adding to it is
 a change to this document and to the checker.
+
+### Hub navigation without a capability
+
+The registry requires a `capabilityId` on every entry (§4). The Hub's registry
+is built with the migration waiver because most Hub pages predate the manifest:
+9 of its 32 entries name a capability, and these 23 do not yet.
+
+`/`, `/hub`, `/spiderweb`, `/ovnis`, `/centinelas`, `/crossover`,
+`/anomaly-overlap`, `/transition`, `/readiness`, `/control`, `/programs`,
+`/project-signs`, `/apps`, `/operations`, `/cases`, `/sources`, `/tasks`,
+`/gates`, `/exports`, `/dictionary`, `/manifest`, `/integrations`,
+`/operator-settings`
+
+This is debt, not an exemption. Each page is classified and declared under
+this section's rules, with its end-to-end test, and gains its `capabilityId`;
+the waiver is removed when the list is empty. A producer adopting the shell
+does not use the waiver: its registry is built without it. A test in the Hub
+(`server/frontend/src/lib/nav.test.js`) holds every id that is named to a
+capability that really declares that route.
 
 ## 6. Procedure: add a page or capability
 
