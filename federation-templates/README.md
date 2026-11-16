@@ -56,6 +56,43 @@ waive it), then mark `docs-sync` as a required status check for `main`
 (`tools/require_docs_sync.py --apply`, run by a repository administrator). Repository settings
 are outside what a template can set, so until that last step the gate is `PROVISIONAL`.
 
+## GUI rules (gui/)
+
+`gui/` holds the federation GUI rule as rendered files
+([ADR 0014](../docs/adr/0014-spoke-guis-are-complete-domain-apps.md),
+[`docs/FEDERATION_GUI_STANDARD.md`](../docs/FEDERATION_GUI_STANDARD.md)):
+
+| Template | Renders to | Set |
+|---|---|---|
+| `gui/check_gui_parity.py` | `scripts/check_gui_parity.py` | `_gui_rules` |
+| `gui/test_gui_parity.py` | `tests/test_gui_parity.py` | `_gui_rules` |
+| `gui/GUI_CAPABILITY_PARITY.md` | `docs/GUI_CAPABILITY_PARITY.md` | `_gui_rules` |
+| `gui/gui-capability-parity.yml` | `.github/workflows/gui-capability-parity.yml` | `_gui_code` |
+
+`gui/core-capabilities.json` is not rendered. It is the hub-owned list of reserved
+capability ids, mirrored in the checker and kept in step by
+`tests/test_gui_capability_schemas.py`.
+
+Unlike every other target set, `_gui_rules` and `_gui_code` in `targets.yaml` are
+**adoption lists**. Each producer already has its own copy of these files, and its
+manifest may not yet satisfy the canonical checker, so a repository is added to a
+set by the hub change that starts its adoption and not before. A repository that is
+not listed is untouched by rendering, by its drift gate and by the sync workflow.
+
+The frontend Playwright config and the manifest-driven parity spec are not
+templated yet. They differ per repository in ways that need a live backend to
+verify (backend module name, seed and teardown scripts, environment, mobile
+projects), so they are settled in the first producer's adoption change.
+
+Before changing `gui/check_gui_parity.py`, run it read-only against every producer
+checkout and compare with that producer's own result:
+
+```
+python3 federation-templates/gui/check_gui_parity.py --repo-root ../<repo>
+```
+
+A checker change may reduce a producer's gaps. It may not introduce one.
+
 ## Scope note
 
 `desktop-build.yml` / `maintenance.yml` are intentionally **not** templated: they

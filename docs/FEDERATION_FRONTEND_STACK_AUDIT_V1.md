@@ -1,5 +1,10 @@
 # Federation Frontend Stack Audit v1
 
+> **Historical (2026-07-10).** The versions in this audit are out of date: the
+> repositories have since moved to React 19, Vite 8 and Tailwind 4, and the proposed
+> multi-package layout was not built. The current stack and rules are in
+> [`FEDERATION_GUI_STANDARD.md`](FEDERATION_GUI_STANDARD.md).
+
 ## Coverage
 
 This audit is based on repository-default-branch package manifests and indexed frontend entry points available through the GitHub connector on 2026-07-10.

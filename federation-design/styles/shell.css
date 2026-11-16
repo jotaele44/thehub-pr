@@ -1,0 +1,466 @@
+/* Federation application shell (docs/FEDERATION_GUI_STANDARD.md, section 4).
+ *
+ * Every rule below is scoped to an .fd-* class, so this file changes nothing
+ * for a page that does not render the shell. The only global additions are
+ * custom properties.
+ *
+ * Layout, layering and breakpoint values are the ones in
+ * tokens/federation.tokens.json; tests/shell-css.test.mjs keeps them equal.
+ * Media queries cannot read custom properties, so the two shell breakpoints
+ * appear as literals: 768px (tablet) and 1280px (desktop).
+ */
+:root {
+  --fd-layout-content-sm: 48rem;
+  --fd-layout-content-md: 72rem;
+  --fd-layout-content-lg: 90rem;
+  --fd-layout-sidebar-collapsed: 3.5rem;
+  --fd-layout-sidebar-expanded: 14rem;
+  --fd-layout-inspector: 22rem;
+  --fd-layout-header: 3.5rem;
+  --fd-layout-mobile-nav: 4rem;
+  --fd-layout-gutter: 1rem;
+
+  --fd-layer-base: 0;
+  --fd-layer-sticky: 20;
+  --fd-layer-dropdown: 40;
+  --fd-layer-drawer: 50;
+  --fd-layer-modal: 60;
+  --fd-layer-toast: 70;
+  --fd-layer-critical: 80;
+
+  --fd-breakpoint-compact: 360px;
+  --fd-breakpoint-mobile: 430px;
+  --fd-breakpoint-tablet: 768px;
+  --fd-breakpoint-desktop: 1280px;
+  --fd-breakpoint-wide: 1600px;
+}
+
+/* The repository accent is a brand colour, not a text colour: on its own it
+ * falls below 4.5:1 against the surfaces for several repositories. Anything
+ * that must be legible (the current-page marker, focus rings, the bridged
+ * shadcn primary) uses this mix toward the text colour instead. Re-declared
+ * wherever the theme or the repository can change, because a custom property
+ * that references another is resolved where it is declared. */
+:root,
+[data-theme],
+[data-repo] {
+  --fd-accent-strong: color-mix(in srgb, var(--fd-accent) 45%, var(--fd-text));
+}
+
+.fd-shell {
+  display: grid;
+  grid-template-columns: var(--fd-layout-sidebar-expanded) minmax(0, 1fr) auto;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    "nav header header"
+    "nav status status"
+    "nav main inspector";
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--fd-bg);
+  color: var(--fd-text);
+  font-family: var(--fd-font-sans);
+}
+
+.fd-shell__skip {
+  position: absolute;
+  top: .5rem;
+  left: .5rem;
+  z-index: var(--fd-layer-critical);
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--fd-touch-min);
+  padding: 0 1rem;
+  border-radius: var(--fd-radius-md);
+  background: var(--fd-surface);
+  color: var(--fd-text);
+  box-shadow: var(--fd-shadow-2);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.fd-shell__skip:focus {
+  transform: none;
+  outline: var(--fd-focus-width) solid var(--fd-accent-strong);
+  outline-offset: var(--fd-focus-offset);
+}
+
+.fd-shell__nav {
+  grid-area: nav;
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  min-width: 0;
+  overflow-y: auto;
+  background: var(--fd-surface);
+  border-right: 1px solid var(--fd-border);
+}
+.fd-shell__nav-header,
+.fd-shell__nav-footer {
+  flex: none;
+  padding: .75rem;
+}
+.fd-shell__nav-header { border-bottom: 1px solid var(--fd-border); }
+.fd-shell__nav-footer { border-top: 1px solid var(--fd-border); }
+
+.fd-shell__header {
+  grid-area: header;
+  position: sticky;
+  top: 0;
+  z-index: var(--fd-layer-sticky);
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  min-width: 0;
+  min-height: var(--fd-layout-header);
+  padding: 0 var(--fd-layout-gutter);
+  background: var(--fd-surface);
+  border-bottom: 1px solid var(--fd-border);
+}
+.fd-shell__status {
+  grid-area: status;
+  min-width: 0;
+}
+.fd-shell__main {
+  grid-area: main;
+  min-width: 0;
+  padding: var(--fd-layout-gutter);
+}
+/* Focused by the skip link and, optionally, on navigation. It is a region,
+ * not a control, so it takes focus without a ring. */
+.fd-shell__main:focus { outline: none; }
+.fd-shell__inspector {
+  grid-area: inspector;
+  min-width: 0;
+}
+.fd-shell__mobile-nav { display: none; }
+
+.fd-nav {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: .75rem;
+}
+.fd-nav__group { min-width: 0; }
+.fd-nav__group-label {
+  margin: 0 0 .25rem;
+  padding: 0 .75rem;
+  color: var(--fd-text-muted);
+  font-size: .6875rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.fd-nav__list {
+  display: flex;
+  flex-direction: column;
+  gap: .125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fd-nav__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .625rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: var(--fd-touch-min);
+  margin: 0;
+  padding: .25rem .75rem;
+  border: 0;
+  border-radius: var(--fd-radius-md);
+  background: none;
+  color: var(--fd-text-muted);
+  font: inherit;
+  font-size: .875rem;
+  line-height: 1.25;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--fd-motion-fast), color var(--fd-motion-fast);
+}
+.fd-nav__link:hover {
+  background: var(--fd-surface-2);
+  color: var(--fd-text);
+}
+.fd-nav__link:focus-visible,
+.fd-mobile-nav__link:focus-visible,
+.fd-mobile-nav__sheet-close:focus-visible,
+.fd-inspector__close:focus-visible {
+  outline: var(--fd-focus-width) solid var(--fd-accent-strong);
+  outline-offset: calc(var(--fd-focus-width) * -1);
+}
+.fd-nav__link[aria-current="page"] {
+  background: var(--fd-surface-2);
+  color: var(--fd-text);
+  font-weight: 600;
+}
+.fd-nav__link[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  top: .5rem;
+  bottom: .5rem;
+  left: 0;
+  width: 3px;
+  border-radius: 3px;
+  background: var(--fd-accent-strong);
+}
+.fd-nav__icon {
+  flex: none;
+  display: inline-flex;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+.fd-nav__icon > svg {
+  width: 100%;
+  height: 100%;
+}
+.fd-nav__dot {
+  flex: none;
+  width: .5rem;
+  height: .5rem;
+  margin: 0 .3125rem;
+  border-radius: 50%;
+  background: var(--fd-nav-accent, currentColor);
+}
+.fd-nav__text {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.fd-nav__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fd-nav__description {
+  overflow: hidden;
+  color: var(--fd-text-muted);
+  font-size: .75rem;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fd-mobile-nav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--fd-layer-sticky);
+  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  background: var(--fd-surface);
+  border-top: 1px solid var(--fd-border);
+}
+.fd-mobile-nav__list {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fd-mobile-nav__link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .125rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: var(--fd-touch-min);
+  min-height: var(--fd-layout-mobile-nav);
+  margin: 0;
+  padding: .25rem .125rem;
+  border: 0;
+  background: none;
+  color: var(--fd-text-muted);
+  font: inherit;
+  font-size: .6875rem;
+  line-height: 1.2;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+.fd-mobile-nav__link[aria-current="page"] {
+  color: var(--fd-text);
+  font-weight: 600;
+}
+.fd-mobile-nav__link[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 25%;
+  left: 25%;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--fd-accent-strong);
+}
+.fd-mobile-nav__link > .fd-nav__text {
+  flex: none;
+  max-width: 100%;
+  text-align: center;
+}
+.fd-mobile-nav__sheet {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  max-height: 85vh;
+  max-height: 85dvh;
+  margin: auto 0 0;
+  padding: 0 0 env(safe-area-inset-bottom, 0px);
+  overflow-y: auto;
+  border: 0;
+  border-top: 1px solid var(--fd-border);
+  border-radius: var(--fd-radius-lg) var(--fd-radius-lg) 0 0;
+  background: var(--fd-surface);
+  color: var(--fd-text);
+}
+.fd-mobile-nav__sheet::backdrop,
+.fd-inspector::backdrop {
+  background: rgb(0 0 0 / .5);
+}
+.fd-mobile-nav__sheet-header,
+.fd-inspector__header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .25rem .25rem .25rem 1rem;
+  background: var(--fd-surface);
+  border-bottom: 1px solid var(--fd-border);
+}
+.fd-mobile-nav__sheet-title,
+.fd-inspector__title {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: 1rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.fd-mobile-nav__sheet-close,
+.fd-inspector__close {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--fd-touch-min);
+  min-height: var(--fd-touch-min);
+  padding: 0 .75rem;
+  border: 0;
+  border-radius: var(--fd-radius-md);
+  background: none;
+  color: var(--fd-text-muted);
+  font: inherit;
+  font-size: .875rem;
+  cursor: pointer;
+}
+.fd-mobile-nav__sheet-close:hover,
+.fd-inspector__close:hover {
+  background: var(--fd-surface-2);
+  color: var(--fd-text);
+}
+.fd-mobile-nav__sheet-slot { padding: .75rem; }
+
+/* One <dialog>, two presentations. Opened non-modally it is an in-flow
+ * column beside main; opened modally (below the desktop breakpoint) it is a
+ * drawer in the top layer. :modal tells the two apart without a class. */
+.fd-inspector {
+  box-sizing: border-box;
+  padding: 0;
+  border: 0;
+  background: var(--fd-surface);
+  color: var(--fd-text);
+}
+.fd-inspector:not(:modal) {
+  position: sticky;
+  top: var(--fd-layout-header);
+  width: var(--fd-layout-inspector);
+  height: calc(100vh - var(--fd-layout-header));
+  height: calc(100dvh - var(--fd-layout-header));
+  margin: 0;
+  overflow-y: auto;
+  border-left: 1px solid var(--fd-border);
+}
+.fd-inspector:modal {
+  width: min(100%, var(--fd-layout-inspector));
+  max-width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
+  margin: 0 0 0 auto;
+  overflow-y: auto;
+  border-left: 1px solid var(--fd-border);
+}
+.fd-inspector__body { padding: var(--fd-layout-gutter); }
+
+.fd-status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .25rem 1rem;
+  min-width: 0;
+  padding: .375rem var(--fd-layout-gutter);
+  background: var(--fd-surface-2);
+  border-bottom: 1px solid var(--fd-border);
+  color: var(--fd-text-muted);
+  font-size: .8125rem;
+}
+.fd-status-bar__item {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  min-width: 0;
+}
+
+/* Small screens: the sidebar gives way to the bottom bar. An application
+ * picks which token breakpoint that happens at with data-mobile-below. The
+ * two blocks are identical apart from that value. */
+@media (max-width: 767.98px) {
+  .fd-shell[data-mobile-below="tablet"] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "header" "status" "main";
+  }
+  .fd-shell[data-mobile-below="tablet"] > .fd-shell__nav { display: none; }
+  .fd-shell[data-mobile-below="tablet"] > .fd-shell__mobile-nav { display: block; }
+  .fd-shell[data-mobile-below="tablet"] > .fd-shell__main {
+    padding-bottom: calc(var(--fd-layout-gutter) + var(--fd-layout-mobile-nav) + env(safe-area-inset-bottom, 0px));
+  }
+}
+@media (max-width: 1279.98px) {
+  .fd-shell[data-mobile-below="desktop"] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "header" "status" "main";
+  }
+  .fd-shell[data-mobile-below="desktop"] > .fd-shell__nav { display: none; }
+  .fd-shell[data-mobile-below="desktop"] > .fd-shell__mobile-nav { display: block; }
+  .fd-shell[data-mobile-below="desktop"] > .fd-shell__main {
+    padding-bottom: calc(var(--fd-layout-gutter) + var(--fd-layout-mobile-nav) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (forced-colors: active) {
+  .fd-nav__link[aria-current="page"],
+  .fd-mobile-nav__link[aria-current="page"] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+  .fd-nav__link[aria-current="page"]::before,
+  .fd-mobile-nav__link[aria-current="page"]::before {
+    background: Highlight;
+  }
+}

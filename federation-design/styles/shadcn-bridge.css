@@ -1,0 +1,65 @@
+/* shadcn variables as aliases of the federation tokens
+ * (docs/FEDERATION_GUI_STANDARD.md, section 3).
+ *
+ * OPT-IN, and not part of styles.css. Import it after styles.css, in the same
+ * change that makes the application consume these variables as colours:
+ *
+ *   Tailwind 4:   @theme inline { --color-background: var(--background); ... }
+ *   JS config:    background: 'var(--background)'
+ *
+ * shadcn's older convention stores bare HSL channels ("210 40% 98%") and
+ * wraps them as hsl(var(--background)). The federation tokens are colours,
+ * and CSS cannot turn a colour back into channels, so the values below are
+ * complete colours. IMPORTING THIS FILE WHILE STILL WRAPPING THE VARIABLES IN
+ * hsl() MAKES EVERY ONE OF THEM INVALID. Change the consumption and delete
+ * the application's own values for these variables in the same change.
+ *
+ * Every value is a federation token or a mix of tokens; there are no literal
+ * colours here, so theme and repository accent keep working. Where the tokens
+ * have no role for a shadcn variable (the on-accent pair, destructive, the
+ * chart palette) the value is derived from the nearest tokens. Those are
+ * candidates for real roles in the next token version.
+ *
+ * Fonts are deliberately not bridged: --fd-font-sans names a different
+ * family from the one the applications load, and aliasing it would silently
+ * change their typeface.
+ */
+:root,
+[data-theme],
+[data-repo] {
+  --background: var(--fd-bg);
+  --foreground: var(--fd-text);
+  --card: var(--fd-surface);
+  --card-foreground: var(--fd-text);
+  --popover: var(--fd-surface);
+  --popover-foreground: var(--fd-text);
+  --primary: var(--fd-accent-strong);
+  --primary-foreground: var(--fd-surface);
+  --secondary: var(--fd-surface-2);
+  --secondary-foreground: var(--fd-text);
+  --muted: var(--fd-surface-2);
+  --muted-foreground: var(--fd-text-muted);
+  --accent: color-mix(in srgb, var(--fd-accent) 10%, var(--fd-surface));
+  --accent-foreground: var(--fd-text);
+  --destructive: var(--fd-tone-danger-fg);
+  --destructive-foreground: var(--fd-surface);
+  --border: var(--fd-border);
+  --input: var(--fd-border);
+  --ring: var(--fd-accent-strong);
+  --radius: var(--fd-radius-md);
+
+  --chart-1: var(--fd-accent-strong);
+  --chart-2: var(--fd-tone-tier);
+  --chart-3: var(--fd-tone-warning);
+  --chart-4: var(--fd-tone-process);
+  --chart-5: var(--fd-tone-info);
+
+  --sidebar-background: var(--fd-surface);
+  --sidebar-foreground: var(--fd-text-muted);
+  --sidebar-primary: var(--fd-accent-strong);
+  --sidebar-primary-foreground: var(--fd-surface);
+  --sidebar-accent: color-mix(in srgb, var(--fd-accent) 10%, var(--fd-surface));
+  --sidebar-accent-foreground: var(--fd-text);
+  --sidebar-border: var(--fd-border);
+  --sidebar-ring: var(--fd-accent-strong);
+}

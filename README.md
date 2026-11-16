@@ -181,8 +181,10 @@ collections (Sources, the Spiderweb graph, cross-producer links) render live agg
 domain-heavy pages that need per-domain fields the aggregate does not yet carry (contracts,
 feeds, cases) stay empty until producers emit that data. If `dist/` is not built, the backend
 runs API-only and the UI can be served separately with `npm --prefix server/frontend run dev`
-(Vite on :5173). The per-producer `dashboard/`/`frontend/` apps are diagnostic-only; the hub
-app is the product.
+(Vite on :5173). The hub app is where every cross-producer view lives. Each producer's own
+`dashboard/`/`frontend/` app is the complete GUI for its domain, built from the shared
+federation template and rules in [`docs/FEDERATION_GUI_STANDARD.md`](docs/FEDERATION_GUI_STANDARD.md)
+([ADR 0014](docs/adr/0014-spoke-guis-are-complete-domain-apps.md)).
 
 After consolidation, `hub project-signs` groups each project's funding awards (by recipient +
 location) into a public-works style **sign** — project title, location, each funding

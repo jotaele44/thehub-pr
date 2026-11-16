@@ -25,6 +25,9 @@
 #   program_desc — one clause completing "<program_id> is ...", taken from each
 #                  repo's own pyproject description or README lede so the shared
 #                  CONTRIBUTING opens with something true about that repo.
+#   gui_node_version — Node major for the GUI parity workflow (JSX producers).
+#   gui_backend_requirements — pip arguments that install what the backend
+#                  needs to serve the GUI under test in that workflow.
 #   desktop_extra_requirements — optional repo-specific lines appended after the
 #                  shared prii_desktop dependency by requirements-desktop.txt.
 schema_version: prii_federation_template_vars_v1
@@ -35,6 +38,8 @@ producers:
     frontend_dir: dashboard
     npm_dir: /dashboard
     program_id: aguayluz-pr
+    gui_node_version: 22
+    gui_backend_requirements: "-r server/backend/requirements.txt"
     repo_url: https://github.com/jotaele44/aguayluz-pr
     lock_cmd: "uv lock --check"
     desktop_extra_requirements: "\nprii-export-utils @ https://github.com/jotaele44/thehub-pr/archive/7b9759f11a204fa6975a85243d1b5e77d026bcb1.zip#subdirectory=packages/prii_export_utils\n# setup_center.diagnostics() optionally calls into this if installed (see\n# packages/prii_doctor) -- installed here so the frozen desktop bundle\n# exercises that integration for real.\nprii-doctor @ https://github.com/jotaele44/thehub-pr/archive/f2d5a0a742215db00915475e1e494b8329608dbd.zip#subdirectory=packages/prii_doctor\njsonschema>=4.21.0\nPyYAML>=6.0"
@@ -45,6 +50,8 @@ producers:
     frontend_dir: frontend
     npm_dir: /frontend
     program_id: centinelas-pr
+    gui_node_version: 22
+    gui_backend_requirements: "-r server/backend/requirements.txt"
     repo_url: https://github.com/jotaele44/centinelas-pr
     lock_cmd: "uv lock --check"
     desktop_extra_requirements: "\nprii-maintenance @ https://github.com/jotaele44/thehub-pr/archive/f2b81769924689b4d959554928810b1d7b7ef3d6.zip#subdirectory=packages/prii_maintenance\nprii-export-utils @ https://github.com/jotaele44/thehub-pr/archive/f2b81769924689b4d959554928810b1d7b7ef3d6.zip#subdirectory=packages/prii_export_utils"
@@ -55,6 +62,8 @@ producers:
     frontend_dir: dashboard
     npm_dir: /dashboard
     program_id: moneysweep-pr
+    gui_node_version: 22
+    gui_backend_requirements: "-r requirements.txt -r server/backend/requirements.txt"
     repo_url: https://github.com/jotaele44/moneysweep-pr
     lock_cmd: "uv pip compile requirements.in --universal --python-version 3.13 -o requirements.lock"
     desktop_extra_requirements: ""
@@ -65,6 +74,8 @@ producers:
     frontend_dir: dashboard
     npm_dir: /dashboard
     program_id: ovnis-pr
+    gui_node_version: 22
+    gui_backend_requirements: "-r server/backend/requirements.txt"
     repo_url: https://github.com/jotaele44/ovnis-pr
     lock_cmd: "uv pip compile requirements.txt --universal --python-version 3.12 -o requirements.lock"
     desktop_extra_requirements: ""
@@ -75,6 +86,8 @@ producers:
     frontend_dir: frontend
     npm_dir: /frontend
     program_id: skywatcher-pr
+    gui_node_version: 22
+    gui_backend_requirements: "-r server/backend/requirements.txt"
     repo_url: https://github.com/jotaele44/skywatcher-pr
     lock_cmd: "uv lock --check"
     desktop_extra_requirements: ""
