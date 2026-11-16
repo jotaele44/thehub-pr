@@ -1209,7 +1209,7 @@ const MONITOR_SUMMARY = [{
   producers: {
     'moneysweep-pr': { count: 1, package_created_at: daysAgo(30), registries: ['reports/source_registry_status.csv'], excluded: {}, errors: [] },
     'ovnis-pr': { count: 1, package_created_at: daysAgo(10), registries: ['data/reference/source_registry.csv'], excluded: {}, errors: [] },
-    'centinelas-pr': { count: 0, package_created_at: null, registries: ['data/reference/source_registry.csv'], excluded: {}, errors: ['data/reference/source_registry.csv: file not found'] },
+    'centinelas-pr': { origin: 'stream', reports_via_stream: true, count: 0, package_created_at: null, registries: [], excluded: {}, errors: ['reports through the source_monitors stream, but this aggregate has no rows from it'] },
   },
 }];
 // Detail fragment first: mockApi matches the first fragment the URL contains.
@@ -1226,8 +1226,8 @@ test.describe('source monitor', () => {
     await (await openPrimaryNav(page)).getByRole('link', { name: 'Source Monitor', exact: true }).click();
     await expect(page).toHaveURL(/\/source-monitor$/);
     await expect(page.getByRole('heading', { name: 'Source Monitor' })).toBeVisible();
-    // A drifted registry is reported per producer, not hidden.
-    await expect(page.getByText('data/reference/source_registry.csv: file not found')).toBeVisible();
+    // A stream producer missing from the aggregate is reported per producer, not hidden.
+    await expect(page.getByText('reports through the source_monitors stream, but this aggregate has no rows from it')).toBeVisible();
 
     const rows = page.locator('table').last().locator('tbody tr');
     await expect(rows).toHaveCount(2);

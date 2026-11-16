@@ -69,6 +69,9 @@ Status:
   - Reading the committed packages (`hub fetch` without `--run`, then `hub aggregate`, `hub source-monitor` and `hub ingest`), ingest loaded its 4 `MonitoredSources` rows with `origin: stream` and no gap error. `fr24_exports` is `OUTPUT_DERIVED` (last success 2026-07-06T22:50:00Z); the other three are `NOT_RECORDED`.
   - With `hub fetch --run`, as the Federation ingest workflow runs it, `skywatcher-pr`'s `export_canonical` regenerates the package in test mode, and all 4 rows are `NOT_RECORDED`.
   - In both, the source ids, names, families, tiers, cadences, windows, declared statuses and URLs matched the registry reader's rows exactly.
+- `centinelas-pr` emits the stream (centinelas-pr#194, merged as `bfd0ad1`), and it has moved to `STREAM_PRODUCERS`, so `moneysweep-pr` is the only producer the registry reader still reads. Like `aguayluz-pr`, `ovnis-pr` and `spiderweb-pr`, it commits no export package: `hub fetch --run` regenerates it with its `export_canonical` (`scripts/federation_export.py --mode production`), so a workspace fetched without `--run` has no `centinelas-pr` stream rows, and ingest flags that gap. The evidence is a local reproduction on 2026-11-16, not a CI run, with `aguayluz-pr` at `59e8fdb`, `centinelas-pr` at `499cd48` (after `6c1c43e`, which scoped its signal ledger to Puerto Rico), `moneysweep-pr` at `08e1bb2`, `ovnis-pr` at `91b8bb0`, `skywatcher-pr` at `f90c288` and `spiderweb-pr` at `9d09155`:
+  - With `hub fetch --run`, then `hub aggregate`, `hub source-monitor` and `hub ingest`, ingest loaded its 87 `MonitoredSources` rows with `origin: stream` and no gap error. Five RSS sources are `OUTPUT_DERIVED` (last success is their newest `captured_at` in the signal ledger, all 2026-11-16T05:45Z); the other 82 are `NOT_RECORDED`.
+  - The 87 source ids, and their names, families, tiers, cadences, windows, declared statuses and URLs, matched the registry reader's rows exactly.
 
 ## Consequences
 
