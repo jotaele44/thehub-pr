@@ -106,7 +106,22 @@ test('paths are normalized: query, hash and trailing slash do not matter', () =>
   assert.equal(normalizeNavPath('/a/b/?x=1#y'), '/a/b')
   assert.equal(normalizeNavPath('/'), '/')
   assert.equal(normalizeNavPath('/?tab=1'), '/')
+  assert.equal(normalizeNavPath('/a///'), '/a')
+  assert.equal(normalizeNavPath('///'), '/')
+  assert.equal(normalizeNavPath(''), '')
+  assert.equal(normalizeNavPath('a/'), 'a')
+  assert.equal(normalizeNavPath(undefined), '')
   assert.equal(matchFederationNavItem(hub(), '/hub/?q=1#top').path, '/hub')
+})
+
+test('normalizing a hostile path is linear, not quadratic', () => {
+  // 200k slashes followed by a non-slash: the shape that makes /\/+$/ crawl.
+  const hostile = `${'/'.repeat(200_000)}x`
+  const started = performance.now()
+  assert.equal(normalizeNavPath(hostile), hostile)
+  assert.equal(normalizeNavPath(`/a${'/'.repeat(200_000)}`), '/a')
+  assert.ok(performance.now() - started < 250, 'normalizeNavPath took too long')
+  assert.equal(matchFederationNavItem(hub(), hostile), null)
 })
 
 test('matching is segment-aware and the longest claim wins', () => {

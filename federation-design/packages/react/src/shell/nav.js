@@ -25,7 +25,11 @@ function deepFreeze(value) {
 export function normalizeNavPath(value) {
   if (typeof value !== 'string') return ''
   const path = value.split(/[?#]/)[0]
-  return path.length > 1 ? path.replace(/\/+$/, '') || '/' : path
+  // A loop, not /\/+$/: that pattern backtracks quadratically on a long run
+  // of slashes that is not at the end, and paths come from the address bar.
+  let end = path.length
+  while (end > 1 && path.charCodeAt(end - 1) === 47) end -= 1
+  return path.slice(0, end)
 }
 
 /**
