@@ -1,5 +1,11 @@
 # Federation Design System v1
 
+> The rules a GUI change follows, including the shell contract, the token rule and the
+> adoption procedure, are in [`FEDERATION_GUI_STANDARD.md`](FEDERATION_GUI_STANDARD.md)
+> ([ADR 0014](adr/0014-spoke-guis-are-complete-domain-apps.md)). Where this document and
+> the standard differ, the standard governs. This document remains the component and
+> accessibility contract for the design-system package.
+
 ## Mission
 Normalize visual style, formatting, interaction semantics, and accessibility across the seven federation repositories without erasing domain identity.
 
@@ -39,12 +45,13 @@ Components must consume semantic tokens only. Hard-coded repository colors are p
 ## Repository migration order
 
 1. `thehub-pr`: reference implementation and integration contract
-2. `spiderweb-pr`: shared shell and map-control normalization
-3. `skywatcher-pr`: dense operational panels, tables, map timeline
-4. `moneysweep-pr`: tables, status semantics, forms, reports
-5. `centinelas-pr`: alerts, source cards, monitoring states
-6. `aguayluz-pr`: environmental layers and observation panels
-7. `ovnis-pr`: case records, evidence badges, map and timeline
+2. `moneysweep-pr`: first pilot; tables, status semantics, forms, reports
+3. `centinelas-pr`: second pilot; alerts, source cards, monitoring states
+4. `skywatcher-pr`: dense operational panels, tables, map timeline
+5. `aguayluz-pr`: environmental layers and observation panels
+6. `ovnis-pr`: case records, evidence badges, map and timeline
+7. `spiderweb-pr`: rules and tokens only; it keeps its TypeScript stack and workbench
+   layout (FEDERATION_GUI_STANDARD.md §1)
 
 ## Required migration procedure per repository
 

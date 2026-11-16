@@ -1,14 +1,11 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join } from 'node:path'
+import { pkgRoot, publicExports, readBundledCss } from '../scripts/sources.mjs'
 
-const here = dirname(fileURLToPath(import.meta.url))
-const pkgRoot = join(here, '..')
-const designRoot = join(pkgRoot, '..', '..')
 const indexSource = readFileSync(join(pkgRoot, 'src', 'index.jsx'), 'utf8')
-const css = ['foundation.css', 'primitives.css', 'states.css'].map((name) => readFileSync(join(designRoot, 'styles', name), 'utf8')).join('\n')
+const css = readBundledCss()
 const snapshot = JSON.parse(readFileSync(join(pkgRoot, 'api-snapshot.json'), 'utf8'))
 
 test('API snapshot is additive over the complete v0.3 public API', () => {
@@ -51,4 +48,12 @@ test('CSS preserves reduced motion and forced-colors behavior', () => {
   assert.match(css, /prefers-reduced-motion: reduce/)
   assert.match(css, /forced-colors: active/)
   assert.match(css, /scroll-behavior:auto!important/)
+})
+
+test('API snapshot accounts for every public export, and only those', () => {
+  const actual = publicExports()
+  const declared = new Set([...snapshot.exports, ...(snapshot.unfrozenExports || [])])
+  assert.deepEqual([...actual].filter((name) => !declared.has(name)), [], 'exports missing from api-snapshot.json')
+  assert.deepEqual([...declared].filter((name) => !actual.has(name)), [], 'api-snapshot.json names that are not exported')
+  assert.equal(declared.size, snapshot.exports.length + (snapshot.unfrozenExports || []).length, 'a name is listed twice')
 })
