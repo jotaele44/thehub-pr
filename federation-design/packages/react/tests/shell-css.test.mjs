@@ -87,11 +87,32 @@ function selectors(source) {
   return out
 }
 
+// The selectors in a list, split on top-level commas only: the commas inside
+// :where(a, b) or :is(a, b) belong to one selector.
+function selectorList(selector) {
+  const parts = []
+  let depth = 0
+  let current = ''
+  for (const char of selector) {
+    if (char === '(') depth += 1
+    if (char === ')') depth -= 1
+    if (char === ',' && depth === 0) {
+      parts.push(current.trim())
+      current = ''
+    } else {
+      current += char
+    }
+  }
+  parts.push(current.trim())
+  return parts
+}
+
 test('every rule is scoped to the shell, so the stylesheet is inert until used', () => {
   const found = selectors(css)
   assert.ok(found.length > 40, `parsed only ${found.length} rules`)
-  const globals = found.filter((selector) => !selector.split(',').every((part) => part.trim().startsWith('.fd-')))
+  const globals = found.filter((selector) => !selectorList(selector).every((part) => part.startsWith('.fd-')))
   assert.deepEqual(globals.map((selector) => selector.replace(/\s+/g, ' ')), [':root', ':root, [data-theme], [data-repo]'])
+  assert.deepEqual(selectorList('.a :where(b, c), .d'), ['.a :where(b, c)', '.d'])
   // The two global rules may declare custom properties and nothing else.
   for (const selector of [':root {', '[data-repo] {']) {
     const start = css.indexOf(selector)
@@ -109,6 +130,7 @@ test('touch targets, the current-page marker and forced colours are covered', ()
   assert.match(css, /\.fd-nav__link\[aria-current="page"\]/)
   assert.match(css, /@media \(forced-colors: active\)/)
   assert.match(css, /\.fd-inspector:modal/)
+  assert.match(css, /\.fd-shell__header :where\(button, a, \[role="button"\]\) \{[^}]*min-height: var\(--fd-touch-min\)/)
   assert.doesNotMatch(css, /:has\(/, 'the shell must not depend on :has()')
 })
 

@@ -36,6 +36,9 @@ removed or changed. Tokens stay at 2.0.0.
   to the `repoAccents` tokens, so an application can show another repository's
   accent without a literal colour.
 
+- Controls an application places in the shell header are held to the 44px
+  touch-target minimum by the shell stylesheet.
+
 ### Fixed
 
 - The sans font stack now leads with `"Inter Variable"`, the family
