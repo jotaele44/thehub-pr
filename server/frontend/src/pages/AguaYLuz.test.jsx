@@ -57,6 +57,14 @@ function openOutdoor() {
 const rowOf = (panel, municipio) => within(panel).getByText(municipio).closest('tr');
 
 describe('AguaYLuz Outdoor Conditions tab', () => {
+  // The page keeps its tab in ?tab= and only honours values in its allowed list, so a
+  // tab missing from that list would fall back to Workspace when clicked or deep-linked.
+  it('opens from a ?tab=outdoor deep link', () => {
+    render(<MemoryRouter initialEntries={['/aguayluz?tab=outdoor']}><AguaYLuz /></MemoryRouter>);
+    expect(screen.getByRole('tab', { name: 'Outdoor Conditions' })).toHaveAttribute('aria-selected', 'true');
+    expect(within(screen.getByRole('tabpanel')).getByText('San Juan')).toBeInTheDocument();
+  });
+
   it('lists only aguayluz-pr rows with their headline values', () => {
     const panel = openOutdoor();
     expect(within(panel).getByText(/Conditions context, not safety advice/)).toBeInTheDocument();

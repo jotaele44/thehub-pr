@@ -1,4 +1,5 @@
 import React from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
@@ -13,8 +14,17 @@ import { GENERIC_STATUS, CONFIDENCE } from "@/lib/chips";
 const MODULE = MODULES.find((m) => m.name === "Centinelas-PR");
 const MATTER_STATUSES = ["New", "Reviewing", "Routed", "Officialized", "Dismissed"];
 const ROUTE_TARGETS = ["MoneySweep-PR", "Spiderweb-PR", "AguaYLuz-PR", "Ovnis-PR", "Skywatcher-PR", "Hub"];
+const CENTINELAS_TABS = ["matters", "map", "sources"];
 
 export default function Centinelas() {
+  // The tab is URL state, so /centinelas?tab=sources deep-links the Monitor tab.
+  const [params, setParams] = useSearchParams();
+  const tab = CENTINELAS_TABS.includes(params.get("tab")) ? params.get("tab") : "matters";
+  const selectTab = (value) => {
+    const next = new URLSearchParams(params);
+    next.set("tab", value);
+    setParams(next);
+  };
   const matterFields = [
     { key: "matter_id", label: "Matter ID", required: true },
     { key: "title", label: "Title", required: true, full: true },
@@ -39,7 +49,7 @@ export default function Centinelas() {
   return (
     <div>
       <ModulePageHeader module={MODULE} icon={Radio} />
-      <Tabs defaultValue="matters">
+      <Tabs value={tab} onValueChange={selectTab}>
         <TabsList className="mb-4">
           <TabsTrigger value="matters">Public Matters</TabsTrigger>
           <TabsTrigger value="map">Map View</TabsTrigger>

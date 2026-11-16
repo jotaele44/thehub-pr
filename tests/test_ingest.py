@@ -378,36 +378,38 @@ def _write_monitor(agg, rows, total=None):
     )
 
 
+def _adapter_row(source_id):
+    # A registry-reader row (hub source-monitor) from a producer it still reads.
+    return {"monitor_id": f"moneysweep-pr:{source_id}", "producer": "moneysweep-pr", "source_id": source_id}
+
+
 def test_ingest_loads_and_replaces_monitored_sources(tmp_path):
     agg = tmp_path / "agg"
     db = tmp_path / "hub.db"
-    _write_monitor(agg, [
-        {"monitor_id": "ovnis-pr:SRC-0001", "producer": "ovnis-pr", "source_id": "SRC-0001"},
-        {"monitor_id": "ovnis-pr:SRC-0002", "producer": "ovnis-pr", "source_id": "SRC-0002"},
-    ])
+    _write_monitor(agg, [_adapter_row("usaspending_prime"), _adapter_row("usaspending_subawards")])
     summary = ingest_aggregate(agg, db)
     assert summary["collections"]["MonitoredSources"] == 2
     assert summary["collections"]["SourceMonitorSummary"] == 1
     rows = _rows(db, "MonitoredSources")
-    assert set(rows) == {"ovnis-pr:SRC-0001", "ovnis-pr:SRC-0002"}
-    assert rows["ovnis-pr:SRC-0001"]["id"] == "ovnis-pr:SRC-0001"
+    assert set(rows) == {"moneysweep-pr:usaspending_prime", "moneysweep-pr:usaspending_subawards"}
+    assert rows["moneysweep-pr:usaspending_prime"]["id"] == "moneysweep-pr:usaspending_prime"
     assert _rows(db, "SourceMonitorSummary")["source_monitor_summary"]["total"] == 2
 
     # A source dropped from the producer registry leaves the hub on the next ingest
     # (the canonical streams only upsert; this hub-derived collection is replaced).
-    _write_monitor(agg, [{"monitor_id": "ovnis-pr:SRC-0002", "producer": "ovnis-pr", "source_id": "SRC-0002"}])
+    _write_monitor(agg, [_adapter_row("usaspending_subawards")])
     ingest_aggregate(agg, db)
-    assert set(_rows(db, "MonitoredSources")) == {"ovnis-pr:SRC-0002"}
+    assert set(_rows(db, "MonitoredSources")) == {"moneysweep-pr:usaspending_subawards"}
 
 
 def test_ingest_without_monitor_file_keeps_previous_monitor_rows(valid_package, tmp_path):
     mon = tmp_path / "mon"
     db = tmp_path / "hub.db"
-    _write_monitor(mon, [{"monitor_id": "ovnis-pr:SRC-0001", "producer": "ovnis-pr", "source_id": "SRC-0001"}])
+    _write_monitor(mon, [_adapter_row("usaspending_prime")])
     ingest_aggregate(mon, db)
 
     agg = tmp_path / "agg"
     aggregate({"moneysweep-pr": valid_package}, agg)
     summary = ingest_aggregate(agg, db)
     assert "MonitoredSources" not in summary["collections"]
-    assert set(_rows(db, "MonitoredSources")) == {"ovnis-pr:SRC-0001"}
+    assert set(_rows(db, "MonitoredSources")) == {"moneysweep-pr:usaspending_prime"}

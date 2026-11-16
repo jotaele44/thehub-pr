@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Gauge, ExternalLink } from "lucide-react";
 import { federation } from "@/api/federationClient";
@@ -9,7 +9,8 @@ import IdCode from "@/components/shared/IdCode";
 import EmptyState from "@/components/shared/EmptyState";
 import { FRESHNESS, MONITOR_STATUS, TIER } from "@/lib/chips";
 import {
-  MONITOR_COLLECTION, PRODUCER_PAGES, ageDays, formatLabel, freshnessReference, freshnessState, successBasisLabel,
+  MONITOR_COLLECTION, PRODUCER_NAMES, ageDays, formatLabel, freshnessReference, freshnessState, producerMonitorPath,
+  successBasisLabel,
 } from "@/lib/sourceMonitor";
 
 function Field({ label, children }) {
@@ -27,6 +28,11 @@ const rawValue = (v) => (v !== null && typeof v === "object" ? JSON.stringify(v)
 // producer's own registry fields verbatim, and where the row came from.
 export default function SourceMonitorDetail() {
   const { monitorId } = useParams();
+  // A producer Monitor tab passes itself in the navigation state, so the way back
+  // leads there; any other arrival (a link, a reload) leads to the federation view.
+  const fromProducer = useLocation().state?.fromProducer;
+  const producerTab = producerMonitorPath(fromProducer);
+  const backName = producerTab ? `${PRODUCER_NAMES[fromProducer]} Monitor` : "Source Monitor";
   const { data: row, isLoading, error } = useQuery({
     queryKey: ["entity", MONITOR_COLLECTION, "get", monitorId],
     queryFn: () => federation.entities[MONITOR_COLLECTION].get(monitorId),
@@ -34,8 +40,10 @@ export default function SourceMonitorDetail() {
   });
 
   const back = (
-    <Link to="/source-monitor" className="mb-4 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-      <ArrowLeft className="h-3.5 w-3.5" /> Source Monitor
+    <Link to={producerTab || "/source-monitor"}
+      aria-label={producerTab ? `Back to the ${backName} tab` : `Back to ${backName}`}
+      className="mb-4 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
+      <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> {backName}
     </Link>
   );
 
@@ -59,7 +67,7 @@ export default function SourceMonitorDetail() {
   const reference = freshnessReference(row);
   const when = (value) => (value ? new Date(value).toLocaleString() : null);
   const raw = Object.entries(row.raw || {});
-  const producerPage = PRODUCER_PAGES[row.producer];
+  const producerMonitor = producerMonitorPath(row.producer);
 
   return (
     <div>
@@ -75,7 +83,7 @@ export default function SourceMonitorDetail() {
           <dl className="divide-y divide-border">
             <Field label="Source ID"><IdCode>{row.source_id}</IdCode></Field>
             <Field label="Producer">
-              {producerPage ? <Link to={producerPage} className="hover:underline">{row.producer}</Link> : row.producer}
+              {producerMonitor ? <Link to={producerMonitor} className="hover:underline">{row.producer}</Link> : row.producer}
             </Field>
             <Field label="Family">{row.producer_family}</Field>
             <Field label="Evidence tier">{row.evidence_tier ? <StatusChip map={TIER} value={row.evidence_tier} /> : null}</Field>
