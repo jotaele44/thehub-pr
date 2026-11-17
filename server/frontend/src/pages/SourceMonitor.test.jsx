@@ -26,7 +26,7 @@ const ROWS = [
 function summary(overrides = {}) {
   return {
     id: "source_monitor_summary", adapter: "source_monitor_v1", generated_at: "2026-11-08T00:00:00Z",
-    total: 3, error_count: 1, stream_producers: ["aguayluz-pr"],
+    total: 3, error_count: 1, stream_producers: ["aguayluz-pr", "skywatcher-pr"],
     producers: {
       "aguayluz-pr": {
         origin: "stream", count: 1, package_created_at: "2026-11-01T00:00:00Z",
@@ -36,14 +36,16 @@ function summary(overrides = {}) {
         origin: "hub_adapter", count: 1, package_created_at: "2026-10-01T00:00:00Z",
         registries: ["reports/source_registry_status.csv"], excluded: { never_federated: 2 }, errors: [],
       },
+      // A stream producer with no rows in this aggregate (no package, so no
+      // export timestamp either): ingest flags the gap instead of dropping it.
       "centinelas-pr": {
-        origin: "hub_adapter", count: 0, package_created_at: null,
-        registries: ["data/reference/source_registry.csv"], excluded: {},
-        errors: ["data/reference/source_registry.csv: file not found"],
+        origin: "stream", reports_via_stream: true, count: 0, package_created_at: null,
+        registries: [], excluded: {},
+        errors: ["reports through the source_monitors stream, but this aggregate has no rows from it"],
       },
       "skywatcher-pr": {
-        origin: "hub_adapter", count: 1, package_created_at: "2026-11-02T00:00:00Z",
-        registries: ["data/sources.yaml"], excluded: {}, errors: [],
+        origin: "stream", count: 1, package_created_at: "2026-11-02T00:00:00Z",
+        registries: ["registry/source_registry.yaml"], excluded: {}, errors: [],
       },
       // Not a registered producer: listed, but there is no page to link to.
       "retired-pr": { count: 0, package_created_at: "2026-09-01T00:00:00Z", registries: [], excluded: {}, errors: [] },
@@ -87,7 +89,8 @@ describe("SourceMonitor page", () => {
     expect(statCard("Registry errors")).toHaveTextContent("1");
     expect(statCard("Registry errors")).toHaveTextContent("1 producer(s) affected");
     expect(statCard("No export timestamp")).toHaveTextContent("1");
-    expect(within(producerRow("centinelas-pr")).getByText("data/reference/source_registry.csv: file not found"))
+    expect(within(producerRow("centinelas-pr"))
+      .getByText("reports through the source_monitors stream, but this aggregate has no rows from it"))
       .toBeInTheDocument();
     expect(within(producerRow("moneysweep-pr")).getByText("2 excluded: never federated")).toBeInTheDocument();
   });
