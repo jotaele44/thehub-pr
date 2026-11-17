@@ -57,6 +57,11 @@ test('the shell provides a skip link, landmarks and a focusable main', () => {
   assert.match(shell, /<main id=\{mainId\} ref=\{mainRef\} tabIndex=\{-1\}/)
   assert.match(shell, /<header className="fd-shell__header">/)
   assert.match(shell, /if \(focusMainOnNavigate\) mainRef\.current\?\.focus\(\)/)
+  // Focus moves only when `current` changes. A "have I mounted" flag is not
+  // enough: StrictMode runs the effect twice on mount, and the second run
+  // would take focus from the skip link on first load.
+  assert.match(shell, /if \(lastCurrent\.current === current\) return/)
+  assert.doesNotMatch(shell, /mounted\.current/)
   assert.match(shell, /data-mobile-below=\{mobileBelow\}/)
   assert.match(shell, /mobileBelow must be one of/)
   // DOM order is reading order: skip link, navigation, header, main.

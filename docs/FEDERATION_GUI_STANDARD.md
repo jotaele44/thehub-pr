@@ -126,7 +126,9 @@ always-visible detail column inside its own layout may keep one; the slot is
 for the record a person selected.
 
 **Themes.** Light and dark both work. A repository may choose its default; it
-may not ship only one.
+may not ship only one. The theme comes from `FederationThemeProvider`: the
+repository's default is its `defaultTheme`, and a preference a person saved
+always wins over it.
 
 ## 5. Capabilities
 
