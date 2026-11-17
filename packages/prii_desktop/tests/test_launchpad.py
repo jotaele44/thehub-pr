@@ -373,18 +373,32 @@ def _guarded_client(tmp_path, monkeypatch):
 
 def test_guest_guard_blocks_writes_only_in_guest_mode(tmp_path, monkeypatch):
     client = _guarded_client(tmp_path, monkeypatch)
-    assert client.post("/api/items").status_code == 200  # unmanaged: untouched
+
+    def status(method, path):
+        return client.request(method, path).status_code
+
+    unmanaged = status("POST", "/api/items")
+    assert unmanaged == 200  # no session mode: untouched
 
     monkeypatch.setenv(pad.ACCESS_MODE_ENV, "guest")
-    assert client.get("/api/items").status_code == 200
     refused = client.post("/api/items")
+    guest = {
+        "read": status("GET", "/api/items"),
+        "declared read": status("POST", "/api/items/x/filter"),
+        "wrong method": status("PATCH", "/api/items/x/filter"),
+        "** spans segments": status("DELETE", "/api/stub/a/b"),
+    }
     assert refused.status_code == 403 and "read-only" in refused.json()["detail"]
-    assert client.post("/api/items/x/filter").status_code == 200  # declared read
-    assert client.patch("/api/items/x/filter").status_code == 403  # wrong method
-    assert client.delete("/api/stub/a/b").status_code == 200  # ** spans segments
+    assert guest == {
+        "read": 200,
+        "declared read": 200,
+        "wrong method": 403,
+        "** spans segments": 200,
+    }
 
     monkeypatch.setenv(pad.ACCESS_MODE_ENV, "operator")
-    assert client.post("/api/items").status_code == 200
+    operator = status("POST", "/api/items")
+    assert operator == 200
 
 
 def test_single_mode_app_gets_no_guard(tmp_path):
