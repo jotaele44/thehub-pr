@@ -226,9 +226,9 @@ def test_centinelas_desktop_requirements_support_plain_pip_install(tmp_path):
     assert f"prii-maintenance @ {archive}" in requirements
     assert f"prii-export-utils @ {archive}" in requirements
     assert "git+https://github.com/jotaele44/thehub-pr" not in requirements
-    # prii-desktop is pinned to the commit carrying the visible-startup-failure fix.
-    assert f"prii-desktop @ {archive}1313c77aec1a0742c1abb444026284a825af4177.zip" in requirements
-    assert requirements.count("1313c77aec1a0742c1abb444026284a825af4177.zip") == 1
+    # prii-desktop is pinned to the hub commit that carries the Launch Pad (0.3.0).
+    assert f"prii-desktop @ {archive}dc79dc003815432b3f8bfc8f9bff532f6c47e622.zip" in requirements
+    assert requirements.count("dc79dc003815432b3f8bfc8f9bff532f6c47e622.zip") == 1
     # The other two must name the same commits as centinelas-pr's pyproject.toml
     # [tool.uv.sources]: an install that reads both files refuses two different
     # URLs for one package.
