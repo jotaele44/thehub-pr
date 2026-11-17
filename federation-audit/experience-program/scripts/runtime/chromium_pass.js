@@ -9,9 +9,12 @@ const axeSource = fs.readFileSync(axeFile, 'utf8');
 const WIDTHS = [320, 390, 430, 768, 1280, 1440, 1920];
 (async () => {
   const browser = await chromium.launch();
-  const out = { repository: name, base: 'http://127.0.0.1:' + port, axe_version: null, observations: [] };
+  const out = { repository: name, base: 'http://127.0.0.1:' + port, axe_version: null, csp_bypassed_for_scan: process.env.BYPASS_CSP === '1', observations: [] };
   for (const width of WIDTHS) {
-    const context = await browser.newContext({ viewport: { width, height: width < 768 ? 844 : 900 }, colorScheme: 'dark' });
+    // An application with a strict script-src policy refuses the injected axe
+    // source. BYPASS_CSP=1 lifts the policy for this test context only, and the
+    // output records that it was lifted.
+    const context = await browser.newContext({ viewport: { width, height: width < 768 ? 844 : 900 }, colorScheme: 'dark', bypassCSP: process.env.BYPASS_CSP === '1' });
     for (const route of routes) {
       const page = await context.newPage();
       const consoleErrors = [], pageErrors = [], failed = [];

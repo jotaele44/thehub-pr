@@ -31,6 +31,10 @@ someone other than the author of the work.
 | `rc1/special_adjudications.json` | Answers to the per-application questions in the program brief. |
 | `rc1/desktop_conventions.json` | Where recents, pinning, renaming and Dock behaviour exist today (workstream WS-D). |
 | `rc1/RC1_GATE.json` | Gate state, totals and per-application validation. |
+| `scripts/runtime/` | Runtime-pass tooling: serve one audited snapshot, and load its routes in Chromium. |
+| `scripts/rc1_runtime_merge.py` | Tabulates the runtime pass. Decides nothing beyond the rule stated in its header. |
+| `rc1/runtime_observations.json` | Per application and route: what Chromium observed at seven widths. |
+| `rc1/runtime_findings.json` | The blocking axe rules, horizontal overflows and unnamed buttons observed. |
 | `rc2/schemas/*.schema.json` | Federation Experience Contract v1: the contract, actions, settings, navigation and compatibility schemas. |
 | `scripts/rc2_validate.py` | Validates contract documents: the schemas plus the rules that span sections or applications. |
 | `rc2/fixtures/positive/` | Two illustrative contracts that must be accepted, alone and together. |
@@ -68,6 +72,34 @@ someone other than the author of the work.
   `coverage_statement` says, which may be a sample. The denominator is therefore
   closed for routes, workspaces, tabs, navigation, dialogs, settings, contextual
   actions, shortcuts and backend endpoints, and open for in-page controls.
+
+## Reading the runtime pass
+
+After the source inventory, each application was built from its audited snapshot
+and run on its own backend with a fresh temporary workspace. Chromium loaded
+every surface that has its own address, at 320, 390, 430, 768, 1280, 1440 and
+1920 CSS pixels.
+
+- A route is `OBSERVED_RUNTIME` only if, at every width, it answered 200, stayed
+  on the address asked for, rendered text and showed no not-found page. A route
+  that adds its own default query parameters is the same page; a change of path
+  is a redirect and leaves the route `SOURCE_CONFIRMED`.
+- 150 of 155 addressable routes were observed. The five that were not are
+  redirects by design: four sign-in pages in skywatcher-pr that return to `/`
+  when sign-in is off, and one legacy address in centinelas-pr.
+- **Most surfaces were not opened.** Of 518 mounted surfaces, 153 have an
+  address. Dialogs, drawers, in-memory tabs and anything behind a click were not
+  visited, so they remain `SOURCE_CONFIRMED`. mucaro-ai, ovnis-pr and
+  spiderweb-pr hold their views in memory and contribute one address each.
+- Pages were loaded, not operated. No form was submitted and no write was tried.
+- One browser. Firefox and WebKit were not available.
+- An axe scan finds a subset of accessibility failures. It is not a keyboard or
+  screen-reader review, and passing it is not an accessibility pass.
+- mucaro-ai serves a strict `script-src 'self'` policy, which refuses the
+  injected axe source. For that application the scan ran in a test context with
+  the policy lifted, and the output records `csp_bypassed_for_scan: true`. The
+  policy itself is working as intended.
+- Data was whatever a fresh workspace holds, so some pages were seen empty.
 
 ## Reading RC2
 

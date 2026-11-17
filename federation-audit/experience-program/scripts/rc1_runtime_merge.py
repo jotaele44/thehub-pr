@@ -27,11 +27,22 @@ WIDTHS = (320, 390, 430, 768, 1280, 1440, 1920)
 BLOCKING = ("critical", "serious")
 
 
+def same_address(row: dict) -> bool:
+    """True when the page stayed where it was sent.
+
+    A route asked for without a query string may add its own default parameters
+    (``/constellation`` becomes ``/constellation?lens=...``); that is the same
+    page. A change of path is a redirect and is not.
+    """
+    route, final = row.get("route") or "", row.get("final_path") or ""
+    return final == route or ("?" not in route and final.split("?", 1)[0] == route)
+
+
 def observed(row: dict) -> bool:
     return (
         row.get("status") == 200
         and not row.get("error")
-        and row.get("final_path") == row.get("route")
+        and same_address(row)
         and (row.get("rendered_text_chars") or 0) >= 40
         and not row.get("not_found_text")
         and not row.get("page_errors")
@@ -69,11 +80,14 @@ def main() -> int:
                         axe[violation["id"]] = max(axe[violation["id"]], violation["nodes"])
             overflow = sorted({row["width"] for row in group if (row.get("horizontal_overflow_px") or 0) > 1})
             redirected = sorted({row.get("final_path") for row in group
-                                 if row.get("final_path") and row.get("final_path") != route})
+                                 if row.get("final_path") and not same_address(row)})
+            normalised = sorted({row.get("final_path") for row in group
+                                 if same_address(row) and row.get("final_path") != route})
             routes[route] = {
                 "classification": "OBSERVED_RUNTIME" if seen else "SOURCE_CONFIRMED",
                 "widths_observed": sorted(row["width"] for row in group if observed(row)),
                 "redirected_to": redirected,
+                "address_normalised_to": normalised,
                 "errors": sorted({row["error"] for row in group if row.get("error")})[:2],
                 "page_errors": sorted({e for row in group for e in row.get("page_errors") or []})[:2],
                 "failed_requests": sorted({r for row in group for r in row.get("failed_requests") or []})[:6],
@@ -108,6 +122,7 @@ def main() -> int:
         applications[name] = {
             "state": "PROVISIONAL",
             "axe_version": data.get("axe_version"),
+            "csp_bypassed_for_scan": bool(data.get("csp_bypassed_for_scan")),
             "router": survey["frontend"].get("router"),
             "routes_tried": len(routes),
             "routes_observed_runtime": len(seen_routes),
