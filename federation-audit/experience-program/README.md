@@ -31,6 +31,11 @@ someone other than the author of the work.
 | `rc1/special_adjudications.json` | Answers to the per-application questions in the program brief. |
 | `rc1/desktop_conventions.json` | Where recents, pinning, renaming and Dock behaviour exist today (workstream WS-D). |
 | `rc1/RC1_GATE.json` | Gate state, totals and per-application validation. |
+| `rc2/schemas/*.schema.json` | Federation Experience Contract v1: the contract, actions, settings, navigation and compatibility schemas. |
+| `scripts/rc2_validate.py` | Validates contract documents: the schemas plus the rules that span sections or applications. |
+| `rc2/fixtures/positive/` | Two illustrative contracts that must be accepted, alone and together. |
+| `rc2/fixtures/negative/` | One file per rule: a patch on a positive fixture and the finding it must produce. |
+| `rc2/RC2_GATE.json` | Gate state, schema hashes and the checks behind it. |
 
 ## Reading RC0
 
@@ -64,6 +69,35 @@ someone other than the author of the work.
   closed for routes, workspaces, tabs, navigation, dialogs, settings, contextual
   actions, shortcuts and backend endpoints, and open for in-page controls.
 
+## Reading RC2
+
+- The contract fixes interaction **semantics**, not layout. Applications keep
+  their own pages; they agree on what an action, a setting and a navigation
+  entry are.
+- One action definition feeds every surface it appears on: toolbar, item menu,
+  right-click menu, command palette, Dock menu, keyboard. The schema refuses an
+  action whose only surface is right-click or the Dock menu, so no action is
+  mouse-only or macOS-only.
+- A write is never available to a guest and always names an audit event. Only a
+  user-named object can be renamed; an evidence object cannot.
+- Settings carry a scope. A federation-global setting lives in the `federation.`
+  namespace with no owning application; every other setting lives in its
+  application's namespace, so one application cannot overwrite a global value or
+  another application's value. Pins and recents are bounded per-user lists at
+  application scope.
+- Unknown fields are rejected except extension fields named `x-*`. `null` is
+  accepted only where a property declares it.
+- `rc2_validate.canonical()` is the serialization to hash or compare: sorted
+  keys, compact separators, UTF-8. Array order is kept because it is meaningful.
+- **The positive fixtures are not declarations.** They are documents written to
+  exercise the rules and say so in an `x-fixture-note`. No application has
+  adopted the contract, which is why RC2 is `PROVISIONAL`.
+
+A negative fixture is `{"description", "base", "patch", "expect"}`. `base` names
+one or more positive fixtures; each `patch` entry is `set`, `remove` or `copy` on
+a `/`-separated path (`doc` picks which base document, `-` appends to a list);
+`expect` lists finding codes that must appear.
+
 ## Re-running
 
 ```bash
@@ -84,3 +118,8 @@ python federation-audit/experience-program/scripts/rc1_merge.py \
 ```
 
 A snapshot is `git archive <audited commit> | tar -x -C <dir>/<repo>`.
+
+```bash
+python federation-audit/experience-program/scripts/rc2_validate.py <contract.json> [...]
+pytest tests/test_experience_contract.py
+```

@@ -1,0 +1,16 @@
+{
+  "description": "A recent group names the setting that stores it.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/navigation/groups/2/setting_id",
+      "value": "mucaro-ai.navigation.history"
+    }
+  ],
+  "expect": [
+    "nav-setting-unknown"
+  ]
+}
