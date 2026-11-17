@@ -64,6 +64,22 @@ function Layout({ children }) {
   at 1280px and above and a modal drawer below.
 - `flattenFederationNav(nav)` lists every entry for a command palette.
 
+## Theme
+
+`FederationThemeProvider` holds the theme and writes it to the document root
+(`data-theme`, and the `dark` class Tailwind's class-based dark mode reads).
+`useFederationTheme()` returns `theme`, `setTheme` and `toggleTheme`.
+
+- `repo`: the repository id. It sets `data-repo` (the brand accent) and names
+  the saved preference, `fd-theme:<repo>`.
+- `defaultTheme`: where a new visitor starts. A saved preference always wins
+  over it; without it, the operating system's preference decides.
+- `allowedThemes`: defaults to both. An application ships both themes.
+
+The provider applies the theme after the first render. An application that
+must not flash sets `data-theme` in an inline script in its HTML, in the same
+order: saved preference, its default, system.
+
 ## shadcn bridge
 
 `shadcn-bridge.css` makes the shadcn variables (`--background`, `--primary`,

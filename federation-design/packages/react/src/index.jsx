@@ -5,6 +5,7 @@ import {
   federationTone,
   resolveFederationSemantic,
 } from './semantics.js'
+import { resolveFederationTheme } from './theme.js'
 
 export * from './semantics.js'
 export * from './gis/index.jsx'
@@ -15,17 +16,19 @@ function cx(...values) {
 
 const ThemeContext = createContext(null)
 
-function resolveInitialTheme(storageKey) {
-  if (typeof window === 'undefined') return 'light'
-  const stored = window.localStorage.getItem(storageKey)
-  if (stored === 'light' || stored === 'dark') return stored
-  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+function readInitialTheme(storageKey, defaultTheme, allowedThemes) {
+  let stored
+  let prefersDark = false
+  if (typeof window !== 'undefined') {
+    try { stored = window.localStorage.getItem(storageKey) } catch { /* private mode */ }
+    prefersDark = Boolean(window.matchMedia?.('(prefers-color-scheme: dark)').matches)
+  }
+  return resolveFederationTheme({ stored, defaultTheme, prefersDark, allowedThemes })
 }
 
 export function FederationThemeProvider({ repo, defaultTheme, allowedThemes = ['light', 'dark'], children }) {
   const storageKey = `fd-theme:${repo || 'default'}`
-  const initial = defaultTheme || resolveInitialTheme(storageKey)
-  const [theme, setThemeState] = useState(() => allowedThemes.includes(initial) ? initial : allowedThemes[0] || 'light')
+  const [theme, setThemeState] = useState(() => readInitialTheme(storageKey, defaultTheme, allowedThemes))
 
   useEffect(() => {
     const root = document.documentElement

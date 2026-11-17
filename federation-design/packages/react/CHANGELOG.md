@@ -8,7 +8,8 @@ this file; their scope is recorded in `docs/FEDERATION_DESIGN_SYSTEM_v0_4_CANDID
 ## 0.6.0-rc.1 (unreleased)
 
 Impact: **minor, additive.** No export, class name or custom property is
-removed or changed. Tokens stay at 2.0.0.
+removed or changed. Tokens stay at 2.0.0. One behaviour is corrected:
+`FederationThemeProvider`'s `defaultTheme` (see Fixed).
 
 ### Added
 
@@ -46,6 +47,13 @@ removed or changed. Tokens stay at 2.0.0.
   application loads, so text rendered in a system fallback. The
   `typography.fontFamily` token is corrected to match; the token version stays
   2.0.0 because this corrects a value rather than changing the token set.
+
+- `FederationThemeProvider`: a saved theme preference now wins over
+  `defaultTheme`. `defaultTheme` used to override the saved preference on every
+  load, so an application that set a default lost the person's choice at each
+  reload, and one that set none could not choose its own default. The order is
+  now saved preference, then `defaultTheme`, then the operating system's
+  preference. No application used the provider before this release.
 
 ### Known issues
 
