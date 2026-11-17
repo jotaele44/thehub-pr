@@ -75,8 +75,8 @@
    "tree": "after merging origin/main 95c6c99"
   },
   "firefox_webkit_matrix": {
-   "state": "OPEN",
-   "note": "Runs only in CI (federation-gui-fixture-matrix.yml). Not claimed here."
+   "state": "PROVISIONAL",
+   "note": "CI run 44200993532 on head 45482e9: every Firefox and WebKit cell passed (controls 6/6 each, axe 28/28 each, baseline and shell all). The run as a whole failed on one Chromium controls cell, since fixed. Evidence is the CI artifact, not a file in this package; a clean run on the fixed head is still to be confirmed."
   },
   "gui_backend_parity_audit": {
    "state": "PASS",
@@ -109,7 +109,8 @@
  "defects_found_and_fixed_during_rc3": [
   "FederationMenu closed itself on any page scroll, including the scroll that moving focus causes. It now follows its button.",
   "FederationDialog returned focus to its opener when the close event arrived, which could pull focus from where the person had already moved. It now does so only if nothing else has taken focus.",
-  "FederationRenameDialog selected the name before the field held it. The form is now mounted per opening."
+  "FederationRenameDialog selected the name before the field held it. The form is now mounted per opening.",
+  "FederationDialog reopened quickly could be closed by the previous closing's late close event. Found by one Chromium cell in CI (768px) that passed locally; the event is now ignored when the dialog is open again."
  ],
  "effect_on_applications": "Since thehub-pr#432 the Hub renders the shared shell and loads the stylesheet from source, so it picks up the focus-outline colour, the shell changes and any primary button on merge. The other applications pin a released tarball and change only when they move their pin. The package is not published and no release is tagged.",
  "package_version": "0.6.0-rc.1 (unchanged; the plan's bump to rc.2 was dropped because the version is referenced by two lockfiles and the RC1 inventory, and the candidate is unreleased)",

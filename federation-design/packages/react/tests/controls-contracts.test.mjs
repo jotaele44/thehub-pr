@@ -82,6 +82,8 @@ test('the dialog is a native modal that is labelled and returns focus', () => {
   assert.match(source, /aria-labelledby=\{titleId\}/)
   assert.match(source, /aria-describedby=\{description \? descriptionId : undefined\}/)
   assert.match(source, /openerRef\.current = document\.activeElement/)
+  // A late close event must not close a dialog that was opened again.
+  assert.match(source, /if \(dialogRef\.current\?\.open\) return\s*const opener = openerRef\.current/)
   assert.match(source, /if \(adrift && opener\?\.isConnected\) opener\.focus\?\.\(\)/)
   assert.match(source, /active === document\.body \|\| dialogRef\.current\?\.contains\(active\)/)
   assert.match(source, /if \(!dismissible\) event\.preventDefault\(\)/)

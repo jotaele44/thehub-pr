@@ -52,6 +52,10 @@ export function FederationDialog({
   // Fires for Escape as well as for close(). If `open` is still true the
   // person closed it and the host has to be told.
   const handleClose = useCallback(() => {
+    // The event is delivered after close() returns. If the dialog has been
+    // opened again by then, this event belongs to the earlier closing and
+    // must neither close the new one nor move focus out of it.
+    if (dialogRef.current?.open) return
     const opener = openerRef.current
     openerRef.current = null
     // The close event arrives a moment after the dialog closed. Only put
