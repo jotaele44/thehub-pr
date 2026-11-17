@@ -22,6 +22,14 @@ someone other than the author of the work.
 | `rc0/worktree_inventory.json` | Local branches, worktrees, uncommitted files and stashes at capture time. |
 | `rc0/recovery_verification.json` | Result of re-fetching each audited commit into an empty directory. |
 | `rc0/RC0_GATE.json` | Gate state and the checks behind it. |
+| `scripts/rc1_merge.py` | Validates the RC1 surveys and writes the merged RC1 artifacts. Audits nothing itself. |
+| `rc1/surveys/<repo>.json` | One source survey per application, made from a snapshot of its RC0 commit. |
+| `rc1/application_inventory.json` | The surveys merged, with each denominator recomputed from its rows. |
+| `rc1/ui_workflow_matrix.csv` | One row per workflow, plus one per surface that has no workflow. |
+| `rc1/settings_inventory.json`, `rc1/context_actions_inventory.json` | Settings, contextual actions and keyboard shortcuts across applications. |
+| `rc1/accessibility_findings.json` | Accessibility leads read from source. Not scan results. |
+| `rc1/special_adjudications.json` | Answers to the per-application questions in the program brief. |
+| `rc1/RC1_GATE.json` | Gate state, totals and per-application validation. |
 
 ## Reading RC0
 
@@ -37,6 +45,24 @@ someone other than the author of the work.
   moved since, the brief's id is an ancestor of the audited one and is marked
   `SUPERSEDED`.
 
+## Reading RC1
+
+- RC1 is a **source audit**. No application was started for it, so no surface is
+  `OBSERVED_RUNTIME`. The best class a surface can have here is
+  `SOURCE_CONFIRMED`.
+- A surface counts as mounted only where the survey cites the line that mounts or
+  routes to it. A component file existing is not enough.
+- `rc1_merge.py` checks each survey's shape, recomputes its totals from its rows,
+  and checks that every cited `path:line` exists at the audited commit. A citation
+  written as a bare file name is accepted only when exactly one tracked file has
+  that name. Resolving a citation shows the line exists, not that it says what the
+  survey claims; that needs a person or a runtime check.
+- An application with no survey yet is `OPEN`, and so is the gate.
+- Forms, tables and filters inside a page are listed as each survey's
+  `coverage_statement` says, which may be a sample. The denominator is therefore
+  closed for routes, workspaces, tabs, navigation, dialogs, settings, contextual
+  actions, shortcuts and backend endpoints, and open for in-page controls.
+
 ## Re-running
 
 ```bash
@@ -47,3 +73,13 @@ python federation-audit/experience-program/scripts/rc0_baseline.py \
 
 Each checkout needs `origin/main` fetched first. The script fetches only into a
 temporary directory that it deletes.
+
+```bash
+python federation-audit/experience-program/scripts/rc1_merge.py \
+  --surveys federation-audit/experience-program/rc1/surveys \
+  --snapshots <directory holding one export of each audited commit> \
+  --baselines federation-audit/experience-program/rc0/repository_baselines.json \
+  --out federation-audit/experience-program/rc1
+```
+
+A snapshot is `git archive <audited commit> | tar -x -C <dir>/<repo>`.

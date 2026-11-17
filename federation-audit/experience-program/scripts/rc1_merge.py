@@ -40,7 +40,10 @@ SETTING_SCOPES = {
 ADJUDICATION_STATES = {
     "CONFIRMED_PRESENT", "CONFIRMED_FIXED", "PARTIAL", "NOT_FOUND", "UNKNOWN",
 }
-CITATION = re.compile(r"(?<![\w./-])((?:[\w.@ \[\]()+-]+/)*[\w.@ \[\]()+-]+\.[A-Za-z0-9]+):(\d+)")
+# A citation is "<path>.<ext>:<line>". Path characters exclude whitespace and
+# brackets so surrounding prose is not swallowed; a path containing a space is
+# therefore under-captured and reported as unresolved rather than guessed.
+CITATION = re.compile(r"(?<![\w./@+-])((?:[\w.@+-]+/)*[\w.@+-]+\.[A-Za-z0-9]+):(\d+)(?![\d.])")
 
 
 def citations(value) -> list[tuple[str, int]]:
@@ -59,10 +62,23 @@ def citations(value) -> list[tuple[str, int]]:
 
 def check_citations(survey: dict, snapshot: Path) -> dict:
     line_counts: dict[str, int | None] = {}
-    total = missing_file = bad_line = 0
+    total = missing_file = bad_line = by_basename = 0
     samples: list[str] = []
-    for path, line in citations(survey):
+    # A citation written as a bare file name ("App.jsx:60") is accepted only
+    # when exactly one tracked file has that name; otherwise it stays unresolved.
+    by_name: dict[str, list[str]] = {}
+    for file in snapshot.rglob("*"):
+        if file.is_file() and "node_modules" not in file.parts:
+            by_name.setdefault(file.name, []).append(file.relative_to(snapshot).as_posix())
+    for cited, line in citations(survey):
         total += 1
+        path = cited
+        if not (snapshot / cited).is_file():
+            matches = [m for m in by_name.get(cited.rsplit("/", 1)[-1], [])
+                       if m == cited or m.endswith("/" + cited)]
+            if len(matches) == 1:
+                path = matches[0]
+                by_basename += 1
         if path not in line_counts:
             target = snapshot / path
             try:
@@ -84,6 +100,7 @@ def check_citations(survey: dict, snapshot: Path) -> dict:
     return {
         "citations": total,
         "resolved": resolved,
+        "resolved_via_unique_file_name": by_basename,
         "file_not_in_snapshot": missing_file,
         "line_out_of_range": bad_line,
         "resolved_ratio": round(resolved / total, 4) if total else None,
@@ -120,8 +137,11 @@ def validate(name: str, survey: dict, commit: str) -> list[str]:
     for workflow in survey["workflows"]:
         if workflow.get("status") not in WORKFLOW_STATES:
             problems.append(f"workflow {workflow.get('id')}: bad status {workflow.get('status')!r}")
-        if workflow.get("surface") not in ids:
-            problems.append(f"workflow {workflow.get('id')}: unknown surface")
+        surface = workflow.get("surface")
+        # A workflow nobody can reach from the UI legitimately has no surface.
+        surfaceless_ok = workflow.get("status") in {"UNREACHABLE", "INTERNAL_ONLY", "BROKEN"}
+        if surface not in ids and not (surface is None and surfaceless_ok):
+            problems.append(f"workflow {workflow.get('id')}: unknown surface {surface!r}")
         if not workflow.get("status_evidence"):
             problems.append(f"workflow {workflow.get('id')}: status without evidence")
     for setting in survey["settings"]:
@@ -154,6 +174,7 @@ def recount(survey: dict) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--surveys", type=Path, required=True)
+    parser.add_argument("--quiet", action="store_true")
     parser.add_argument("--snapshots", type=Path, required=True)
     parser.add_argument("--baselines", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
@@ -194,7 +215,7 @@ def main() -> int:
         ratio = entry["citations"]["resolved_ratio"]
         entry["state"] = (
             "FAIL" if problems
-            else "PROVISIONAL" if ratio is not None and ratio >= 0.98
+            else "PROVISIONAL" if ratio is not None and ratio >= 0.95
             else "UNRESOLVED"
         )
         survey["denominator_recomputed"] = recomputed

@@ -1,0 +1,994 @@
+{
+  "adjudications": [
+    {
+      "answer": "Fixed. The button now carries aria-label='Open navigation'.",
+      "evidence": [
+        "dashboard/src/components/layout/DashboardLayout.jsx:27-33"
+      ],
+      "question": "1a. Historical (docs/A11Y_AUDIT.md §4.1): mobile hamburger button has no accessible name — cited dashboard/src/components/layout/DashboardLayout.jsx ~line 35",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "Still present. Both SelectTriggers have only className; no aria-label.",
+      "evidence": [
+        "dashboard/src/pages/ReviewPage.jsx:168",
+        "dashboard/src/pages/ReviewPage.jsx:172"
+      ],
+      "question": "1b. Historical (A11Y_AUDIT §4.2): ReviewPage severity/tier Select triggers have no accessible name — cited dashboard/src/pages/ReviewPage.jsx:167-174",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Still present on both.",
+      "evidence": [
+        "dashboard/src/pages/LiveLogsPage.jsx:62",
+        "dashboard/src/components/OutagesPanel.jsx:68"
+      ],
+      "question": "1c. Historical (A11Y_AUDIT §4.2): same missing aria-label on LiveLogsPage.jsx:62 and OutagesPanel.jsx:67",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Still present in source and the component is still unmounted, so it is not user-reachable.",
+      "evidence": [
+        "dashboard/src/components/ReviewQueue.jsx:56",
+        "dashboard/src/components/ReviewQueue.jsx:60"
+      ],
+      "question": "1d. Historical (A11Y_AUDIT §4.2): same defect in orphaned components/ReviewQueue.jsx:56,60",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Fixed. `open` defaults to false, the mobile drawer returns null when closed, there is no scrim, a labelled close button exists and Escape closes the drawer. (The `collapsed` state and collapse chevron cited in the old audit no longer exist.)",
+      "evidence": [
+        "dashboard/src/contexts/SidebarContext.jsx:10",
+        "dashboard/src/components/layout/Sidebar.jsx:141-146",
+        "dashboard/src/components/layout/Sidebar.jsx:148-149",
+        "dashboard/src/components/layout/Sidebar.jsx:170-176"
+      ],
+      "question": "1e. Historical (A11Y_AUDIT §4.3): mobile sidebar renders open by default, scrim blocks the hamburger, no Escape handler — cited contexts/SidebarContext.jsx and DashboardLayout.jsx",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "The cited pattern is still in source, including the exact example caption. Contrast was not re-measured (nothing was run).",
+      "evidence": [
+        "dashboard/src/components/layout/Sidebar.jsx:193",
+        "dashboard/src/components/common/PageHeader.jsx:8",
+        "dashboard/src/components/StatsBar.jsx:16"
+      ],
+      "question": "1f. Historical (A11Y_AUDIT §4.4): systemic color-contrast — text-slate-500/600 on slate-900/950 (example: sidebar 'PR Monitor' caption)",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Still present: both links have colour classes only, no underline.",
+      "evidence": [
+        "dashboard/src/pages/OverviewPage.jsx:155",
+        "dashboard/src/pages/OverviewPage.jsx:158"
+      ],
+      "question": "1g. Historical (A11Y_AUDIT §4.5): link-in-text-block — Overview inline links styled by colour only",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "The cited small-size classes are still in source for every listed control except the sidebar collapse chevron, which was removed. Rendered sizes not re-measured.",
+      "evidence": [
+        "dashboard/src/components/layout/DashboardLayout.jsx:30",
+        "dashboard/src/components/AssetMap.jsx:278",
+        "dashboard/src/pages/ReviewPage.jsx:238-246",
+        "dashboard/src/pages/ReviewPage.jsx:179",
+        "dashboard/src/components/MonitoringCharts.jsx:151",
+        "dashboard/src/components/IncidentOperationsConsole.jsx:68",
+        "dashboard/src/components/AiQueryPanel.jsx:34-36",
+        "dashboard/src/pages/OverviewPage.jsx:181-195"
+      ],
+      "question": "1h. Historical (A11Y_AUDIT §4.6): touch targets below 44px (hamburger p-1.5, map chips, review Accept/Reject h-7, select-all, monitoring range and incident-transition buttons, Ask AI launcher, Overview AI/Send buttons)",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Still present; App.jsx has no /assets/:id route.",
+      "evidence": [
+        "dashboard/src/pages/MunicipioDetailPage.jsx:235-237",
+        "dashboard/src/App.jsx:63"
+      ],
+      "question": "1i. Historical (docs/GUI_AUDIT.md §4.1): MunicipioDetailPage asset rows link to non-existent /assets/:id",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Still present: src='/water-disruption/console', no Vite proxy.",
+      "evidence": [
+        "dashboard/src/pages/WaterDisruption.jsx:11",
+        "dashboard/vite.config.js:60-62"
+      ],
+      "question": "1j. Historical (GUI_AUDIT §4.2): WaterDisruption iframe uses a frontend-relative src and breaks under split-port dev",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Still present: hook sends kind only; backend raises 400 metric_required.",
+      "evidence": [
+        "dashboard/src/pages/OverviewPage.jsx:43",
+        "server/backend/app.py:256-258",
+        "server/backend/main.py:75"
+      ],
+      "question": "1k. Historical (GUI_AUDIT §4.3): Overview 'Reservoir Levels' chart never renders because /readings requires metric for reservoir",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Fixed in source: BASE_STYLE now declares glyphs (served from the external host demotiles.maplibre.org, so labels still depend on network).",
+      "evidence": [
+        "dashboard/src/components/AssetMap.jsx:29"
+      ],
+      "question": "1l. Historical (GUI_AUDIT §4.4): MapLibre style missing `glyphs` so cluster counts do not render",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "Toast is still a plain <div> that spreads all props (toast.jsx:44-52) and use-toast still passes onOpenChange into each toast object (use-toast.jsx:131), which Toaster spreads via {...props} (toaster.jsx:16-18). Whether React 19 still warns was not observed.",
+      "evidence": [
+        "dashboard/src/components/ui/toast.jsx:44-52",
+        "dashboard/src/components/ui/use-toast.jsx:131",
+        "dashboard/src/components/ui/toaster.jsx:16-18"
+      ],
+      "question": "1m. Historical (GUI_AUDIT §4.5): React warning — toast.jsx spreads onOpenChange onto a plain <div>",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Still orphaned; no importer.",
+      "evidence": [
+        "dashboard/src/components/ReviewQueue.jsx:19",
+        "dashboard/src/components/ReviewRecordCard.jsx:10"
+      ],
+      "question": "1n. Historical (GUI_AUDIT §4.6): components/ReviewQueue.jsx is dead/orphaned",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "NAV_GROUPS has 3 groups — Monitor (Overview, Map, Alerts > Outages, Monitoring), Data (Assets, Water & Weather > NWS Hydromet, Aquifer Bands, Water Use, Hydro Inventory; Environment > Cave & Karst; Regulatory > Regulatory Review), Tools (Review Queue, Analytics, Source Intelligence, Live Logs, System & Tools) — 12 rows + 8 sub-links = 20 targets, each matching a route in App.jsx. The 4 parameterised routes (/alerts/:id, /sector/:sector, /events/:id, /municipios/:name) are not in the nav and are reached by in-page links. No nav target lacks a route. One in-page link targets a route that does not exist (/assets/:id). The 'Water & Weather' row label points at /water-disruption, whose page title is 'Water Disruption Validation Console'; 'Regulatory Review' opens a page titled 'Regulatory Link Review'.",
+      "evidence": [
+        "dashboard/src/components/layout/Sidebar.jsx:13-68",
+        "dashboard/src/App.jsx:61-85",
+        "dashboard/src/pages/MunicipioDetailPage.jsx:237",
+        "dashboard/src/pages/WaterDisruption.jsx:5",
+        "dashboard/src/pages/RegulatoryReviewPage.jsx:111"
+      ],
+      "question": "2a. Navigation: sidebar groups and items vs routes",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Below 768px (window.innerWidth/matchMedia) the sidebar is not rendered until the header hamburger (aria-label 'Open navigation') sets open=true. It then renders a full-screen fixed white <aside aria-label='Navigation'> with a role=tablist of the 3 groups, a round close button (aria-label 'Close navigation') and a <nav> listing the active group's rows as large cards with descriptions and sub-links. Clicking any link closes the drawer; Escape closes it; reopening selects the group containing the current path. Gaps: no role=dialog/aria-modal, no focus move/trap/restore, tabs lack tabpanel/aria-controls/arrow keys, and background content remains reachable.",
+      "evidence": [
+        "dashboard/src/hooks/use-mobile.js:3-11",
+        "dashboard/src/components/layout/DashboardLayout.jsx:25-37",
+        "dashboard/src/components/layout/Sidebar.jsx:131-146",
+        "dashboard/src/components/layout/Sidebar.jsx:148-185",
+        "dashboard/tests/mobile-navigation.spec.mjs:41"
+      ],
+      "question": "2b. Navigation: mobile behaviour",
+      "repository": "aguayluz-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "None. No skip-to-content link or equivalent in the layout, index.html or any component (searched 'skip' case-insensitively in dashboard/src and dashboard/index.html; only review 'Skip' controls matched).",
+      "evidence": [
+        "dashboard/src/components/layout/DashboardLayout.jsx:17-45",
+        "dashboard/index.html:11-14"
+      ],
+      "question": "2c. Navigation: skip link",
+      "repository": "aguayluz-pr",
+      "status": "NOT_FOUND"
+    },
+    {
+      "answer": "Desktop: <aside> containing <nav aria-label='Main'> with three <section><h2>; one <main> wrapping the route Outlet. Mobile: <aside aria-label='Navigation'> containing <nav aria-label='<Group> pages'>. No <header>/banner and no <footer>; the mobile header and the StatsBar are <div>s outside <main>; the floating AI panel is outside <main> with no landmark or label. /water-disruption nests a second <main>. Overview and Map have no <h1>; other pages get one from PageHeader or their own markup.",
+      "evidence": [
+        "dashboard/src/components/layout/Sidebar.jsx:188-204",
+        "dashboard/src/components/layout/Sidebar.jsx:152,178",
+        "dashboard/src/components/layout/DashboardLayout.jsx:26,39-44",
+        "dashboard/src/pages/WaterDisruption.jsx:3",
+        "dashboard/src/components/common/PageHeader.jsx:7"
+      ],
+      "question": "2d. Navigation: landmark structure",
+      "repository": "aguayluz-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "The source never sets aria-current explicitly. All nav links are react-router-dom NavLink, which by library default adds aria-current='page' on the active link (library behaviour, not verified at runtime). Visual indication: desktop rows and sub-links get 'bg-sky-500/15 text-sky-400' when active; on mobile, sub-links get font-semibold but top-level rows have no active styling. Parent rows use prefix matching, so /alerts stays 'active' on /alerts/:id; Overview and Regulatory use `end`. On /outages or /monitoring the parent 'Alerts' row is not marked active (prefix does not match).",
+      "evidence": [
+        "dashboard/src/components/layout/Sidebar.jsx:86-102",
+        "dashboard/src/components/layout/Sidebar.jsx:108-121",
+        "dashboard/src/components/layout/Sidebar.jsx:18,47"
+      ],
+      "question": "2e. Navigation: current-page indication (aria-current)",
+      "repository": "aguayluz-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Controls per row: select toggle (button, aria-label 'Select record'/'Deselect record'), AI-suggest (icon-only, title 'Ask AI for a recommendation', no aria-label), Accept (visible text), Reject (visible text), Skip (icon-only, aria-label 'Skip'). Header when rows are selected: 'Approve all', 'Reject all', 'Skip all'; plus 'Select all on page'/'Deselect all'. All are native <button>s, so Tab/Enter/Space work. Global window shortcuts: J/K or arrows move a visual cursor, A/R/S decide the cursor row; ignored only inside input/textarea/combobox/contenteditable. Confirmation: none for single, keyboard or batch decisions; no undo. Optimistic removal with rollback on error (lib/hooks.js:89-101). Failure reporting: a thrown error (401 or network/timeout) shows a destructive toast titled only 'Decision failed' — the error message, which distinguishes 'key missing' from 'key rejected', is discarded. Any other HTTP status is NOT detected: postDecision returns res.json() without checking res.ok, so a 400/404/500 with a JSON body yields the success toast 'Marked <decision>'. Batch reports 'N items processed' regardless of individual failures. Toasts have no live region. Persistence: the backend keeps decisions only in the module-level dict `_decisions` ('survives only until server restart'); nothing is written to outputs/review_queue.json or any ledger, no actor is recorded, and 'skip' is stored but not excluded from GET /review-queue, so a skipped row reappears after the refetch. Authorization: Bearer API_SECRET_KEY when that env var is set, otherwise open.",
+      "evidence": [
+        "dashboard/src/pages/ReviewPage.jsx:60-66",
+        "dashboard/src/pages/ReviewPage.jsx:104-114",
+        "dashboard/src/pages/ReviewPage.jsx:125-139",
+        "dashboard/src/pages/ReviewPage.jsx:148-163",
+        "dashboard/src/pages/ReviewPage.jsx:206-247",
+        "dashboard/src/lib/api.js:149-159",
+        "dashboard/src/lib/hooks.js:85-107",
+        "server/backend/main.py:343-344",
+        "server/backend/main.py:831",
+        "server/backend/main.py:842-849",
+        "dashboard/src/components/ui/toast.jsx:44-52"
+      ],
+      "question": "3a. Review Queue (/review): decision controls, names, keyboard, confirmation, failed-write reporting, persistence",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Controls: decision-state filter Select (aria-label 'Filter by decision state'); candidate list of <button aria-pressed>; form with labelled 'Actor' text input and 'Rationale' textarea; three buttons with visible text — 'Approve', 'Reject' (destructive variant), 'Mark needs review'. All native controls, keyboard operable; no shortcuts. Guards instead of a confirmation dialog: all three are disabled until actor and rationale are non-empty and while submitting; Approve is additionally disabled when the candidate has contradictions (reason exposed only as a title attribute). No confirm step and no undo, but a later decision can overwrite. Failure reporting: postRegulatoryLinkDecision throws on 401 (key missing vs rejected), 422 (lists contradiction details) and any other non-2xx ('Decision failed (status)'), and the page shows a destructive toast 'Decision failed' with err.message; rationale is kept on failure and cleared on success. Network errors also reach the catch. Toast has no live region. Read failures are masked: list fetch failures return an empty list so the page says 'No candidates match the current filter'. Persistence: NOT memory-only — the handler writes the decided row (decision_state, decided_at, decided_by, decision_rationale) through write_regulatory_links, which schema-validates and rewrites the links JSONL. Authorization: Bearer API_SECRET_KEY when set.",
+      "evidence": [
+        "dashboard/src/pages/RegulatoryReviewPage.jsx:89-106",
+        "dashboard/src/pages/RegulatoryReviewPage.jsx:132-133",
+        "dashboard/src/pages/RegulatoryReviewPage.jsx:158-162",
+        "dashboard/src/pages/RegulatoryReviewPage.jsx:252-299",
+        "dashboard/src/lib/regulatory-api.js:69-89",
+        "dashboard/src/lib/regulatory-api.js:21-32",
+        "server/backend/regulatory_api.py:189-219",
+        "src/aguayluz/regulatory_db.py:156-159",
+        "tests/test_regulatory_api.py:187"
+      ],
+      "question": "3b. Regulatory Review (/regulatory/review): decision controls, names, keyboard, confirmation, failed-write reporting, persistence",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Three map surfaces. (1) /map AssetMap — maplibre-gl ^6.11.2, raster basemaps from tile.openstreetmap.org and Esri World Imagery, glyphs from demotiles.maplibre.org, AWS Terrarium DEM, optional NOAA/NWS CloudGIS raster overlays; turf.js for spatial tools. (2) /monitoring HydroMapWorkspace — maplibre-gl with OSM raster and backend GeoJSON sources. (3) Overview MunicipalOverviewMap — hand-built SVG choropleth, no map library, no tiles.",
+      "evidence": [
+        "dashboard/package.json:41",
+        "dashboard/src/components/AssetMap.jsx:2,25-42,364",
+        "dashboard/src/components/HydroMapWorkspace.jsx:2,17,60",
+        "dashboard/src/components/MunicipalOverviewMap.jsx:149-186",
+        "dashboard/src/lib/nws-cloudgis-overlays.js:10"
+      ],
+      "question": "4a. GIS: maps present and library",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "/map: an HTML overlay panel of native <button aria-pressed> chips — Power, Water, Wastewater, Other, Municipios, Barrios, Events (sample), Alerts, River gauges, Terrain, Spatial tools — plus a single-select municipio fill (Off/Drought/Density/Rainfall, aria-pressed), 'Life-safety critical alerts only' (shown when Alerts on), 'Review-needed assets only', two NWS overlay toggles (aria-pressed, with aria-live load status) and basemap Map/Satellite buttons (no aria-pressed). State is React component state, not persisted. /monitoring: 11 native labelled checkboxes in role=group 'Map layers'. Overview: metric button group (aria-pressed) recolours the SVG.",
+      "evidence": [
+        "dashboard/src/components/AssetMap.jsx:272-283",
+        "dashboard/src/components/AssetMap.jsx:304",
+        "dashboard/src/components/AssetMap.jsx:765-783",
+        "dashboard/src/components/AssetMap.jsx:816-847",
+        "dashboard/src/components/NwsOverlayToggles.jsx:22-40",
+        "dashboard/src/components/HydroMapWorkspace.jsx:141-147",
+        "dashboard/src/components/MunicipalOverviewMap.jsx:121-136"
+      ],
+      "question": "4b. GIS: how layers are toggled",
+      "repository": "aguayluz-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "All layer/basemap/tool controls are native buttons, checkboxes or a <select>, so they are in the tab order and operable with Enter/Space. MapLibre's NavigationControl (zoom buttons) is added on both maps and the Map constructor does not disable MapLibre's default keyboard handler (library defaults; not observed at runtime). Not keyboard reachable: selecting an asset/alert/gauge/municipio on the map, hover popups, cluster expansion, and the measure/buffer/nearest tools — all bound to pointer events only. The map container on /map has no role or aria-label (HydroMapWorkspace's has aria-label 'Hydrologic map'). The SVG Overview map is fully keyboard operable (tabIndex=0, role=button, Enter/Space) but suppresses the focus outline.",
+      "evidence": [
+        "dashboard/src/components/AssetMap.jsx:364-366",
+        "dashboard/src/components/AssetMap.jsx:506-558",
+        "dashboard/src/components/AssetMap.jsx:758",
+        "dashboard/src/components/SpatialToolsPanel.jsx:230-252",
+        "dashboard/src/components/HydroMapWorkspace.jsx:66,155",
+        "dashboard/src/components/MunicipalOverviewMap.jsx:163-177"
+      ],
+      "question": "4c. GIS: keyboard access to map controls",
+      "repository": "aguayluz-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Assets: yes — the same page mounts AssetsTable beside the map (keyboard-selectable rows opening the same detail sheet) and /assets offers the full table with an 'unmapped only' filter; the map footer states mapped vs unmapped counts. Alerts: /alerts list. River gauges: /hydromet gauges table. Rainfall fill: /hydromet rainfall table. Municipios: Overview SVG map and /municipios/:name records, but there is no plain municipio list/table and no table of drought category or event density per municipio (the density panel shows only matched/unresolved/total counts). Events: /outages list. Barrios, terrain, NWS radar/warnings overlays: no alternative. Spatial-tool results are text in the tools panel but can only be produced by clicking the map. HydroMapWorkspace layers: /hydro-inventory tables cover aquifers, wells, springs, surface water, infrastructure and wetlands.",
+      "evidence": [
+        "dashboard/src/pages/MapPage.jsx:104-121",
+        "dashboard/src/components/AssetsTable.jsx:267-273",
+        "dashboard/src/pages/AlertsPage.jsx:265",
+        "dashboard/src/pages/HydrometPage.jsx:138,186",
+        "dashboard/src/components/AssetMap.jsx:795-807",
+        "dashboard/src/pages/HydroInventoryPage.jsx:427-437"
+      ],
+      "question": "4d. GIS: non-map alternative for the same data",
+      "repository": "aguayluz-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "/map: no handling for basemap, glyph or terrain tile failure — the only map 'error' listener filters to NWS overlay sources and ignores everything else; there is no offline/blank-basemap message and no try/catch around map construction. Data layers are attached on 'style.load' rather than 'load' so they still draw when raster tiles never arrive (stated in a code comment). NWS overlays do report per-overlay loading/live/error text in an aria-live region, and tile URLs carry a 5-minute cache-busting bucket. Data-fetch failure: event density shows the error with a 'Retry density' button; rainfall error text is passed in as a prop; assets/municipios/alerts/gauges GeoJSON failures silently become empty FeatureCollections (getJSON fallback) and the map just shows fewer features. /monitoring HydroMapWorkspace: construction is wrapped in try/catch ('Map unavailable: …'), every map error (including tile errors) is collected into a role=alert list (max 6), and the offline export shows an explicit placeholder. Overview SVG map: no tiles; shows 'Municipal geometry is unavailable.' when geometry is missing and a contract warning when not exactly 78 features.",
+      "evidence": [
+        "dashboard/src/components/AssetMap.jsx:368-370",
+        "dashboard/src/components/AssetMap.jsx:477-487",
+        "dashboard/src/components/AssetMap.jsx:795-801",
+        "dashboard/src/lib/api.js:100-101,146",
+        "dashboard/src/lib/nws-cloudgis-overlays.js:45-48",
+        "dashboard/src/components/NwsOverlayToggles.jsx:5-9,36",
+        "dashboard/src/components/HydroMapWorkspace.jsx:57-72,150-161",
+        "dashboard/src/components/MunicipalOverviewMap.jsx:101-107,140-145"
+      ],
+      "question": "4e. GIS: tile / network failure handling",
+      "repository": "aguayluz-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Three colour sources exist. (1) --zip-warning / --zip-warning-foreground are defined as HSL in frontend/src/zip-design/tokens.css:47-48 (light) and :104-105 (dark) and are referenced nowhere else in frontend/src; there is no caution token in zip-design, index.css or tailwind.config.js. (2) The warning and caution tones actually rendered come from @pr-federation/react 0.3.0 via federationTone(): ConfidenceBadge medium->warning and low->caution (ConfidenceBadge.jsx:13,15), HandoffStatusBadge watching->warning (HandoffStatusBadge.jsx:19). Those badges render on Monitor/Signals/MatterDetail/EntityDetail via SignalCard.jsx:39,41, Matters.jsx:64-65, MatterDetail.jsx:68-69, SignalsTable.jsx:98-99, Pipeline.jsx:62, PipelineItemDetail.jsx:96, Handoff.jsx:97. (3) Amber Tailwind classes are used for the BLOCKED phase badge (ProgramTimeline.jsx:14) and the Geo/Geology domain badge (DomainBadge.jsx:11). No contrast ratio is given: the snapshot contains no hex foreground/background pair for any of these (zip tokens are HSL and unused, Tailwind palette and the federation stylesheet are not in the snapshot; frontend/node_modules is absent). The recorded failure is docs/A11Y_AUDIT.md:36-45, citing --fd-st-warning-fg:#b45309 and --fd-st-caution-fg:#a16207 in node_modules/@pr-federation/react/dist/federation.css. Those values appear nowhere in the snapshot except that document, so their current existence cannot be confirmed or refuted from source. What is confirmed: the dependency is still pinned to 0.3.0 (frontend/package.json:21) and the local tone mappings are unchanged, so nothing in this repo has changed that would fix it.",
+      "evidence": [
+        "frontend/src/zip-design/tokens.css:47",
+        "frontend/src/zip-design/tokens.css:104",
+        "frontend/src/components/lifecycle/ConfidenceBadge.jsx:13",
+        "frontend/src/components/lifecycle/ConfidenceBadge.jsx:15",
+        "frontend/src/components/lifecycle/HandoffStatusBadge.jsx:19",
+        "frontend/src/components/ProgramTimeline.jsx:14",
+        "frontend/src/components/pipeline/DomainBadge.jsx:11",
+        "frontend/package.json:21",
+        "docs/A11Y_AUDIT.md:43"
+      ],
+      "question": "Shared warning/caution contrast: where defined, where used, ratio, and do the recorded failing values still exist?",
+      "repository": "centinelas-pr",
+      "status": "UNKNOWN"
+    },
+    {
+      "answer": "Pipeline.jsx uses cards, not a table. Container 'max-w-7xl mx-auto px-4 py-8 space-y-8' (:101); stats row 'flex flex-wrap gap-4' (:110); domain chips 'flex flex-wrap gap-2' (:129) so the 8 chips wrap rather than scroll; list 'grid gap-3 md:grid-cols-2' (:157), i.e. one column below Tailwind md (768px) and two above; badges 'flex flex-wrap' (:58). There is no overflow-x handling on the page. The shell collapses at 820px (AppShell.module.css:185-188) and sets min-width:0 on workspace/main (AppShell.module.css:113-115; adaptation.css:4-5). Overflow risk is present by source reading: below md the grid has a single implicit auto track and each card link is a grid item with 'block' but no min-w-0 (:49); the title inside is 'truncate' i.e. nowrap (:53) and the min-w-0 sits on an inner flex child (:52), which does not reduce the grid item's content-based minimum. A long title can therefore widen the track beyond the viewport; at md and above grid-cols-2 uses minmax(0,1fr) and the problem disappears. This matches the mobile-only overflow recorded in docs/A11Y_AUDIT.md:59-61, though that document attributes it to the chip bar, which does wrap. Not run, so this is an inference from CSS rules. PipelineItemDetail also has a 'grid grid-cols-2' metadata block with an unbroken monospace item_id (PipelineItemDetail.jsx:146-147) that can spill at narrow widths.",
+      "evidence": [
+        "frontend/src/pages/Pipeline.jsx:101",
+        "frontend/src/pages/Pipeline.jsx:129",
+        "frontend/src/pages/Pipeline.jsx:157",
+        "frontend/src/pages/Pipeline.jsx:49",
+        "frontend/src/pages/Pipeline.jsx:52",
+        "frontend/src/pages/Pipeline.jsx:53",
+        "frontend/src/zip-design/AppShell.module.css:185",
+        "frontend/src/pages/PipelineItemDetail.jsx:146",
+        "docs/A11Y_AUDIT.md:59"
+      ],
+      "question": "Pipeline page responsiveness at narrow widths; horizontal overflow risk?",
+      "repository": "centinelas-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Labels: each checkbox is wrapped in a <label> with visible text (Handoff.jsx:106-111) inside a fieldset with legend 'Destinos' (:102-103); the legend is identical on every card and does not name the item. Focus management: none; after a successful send, load() flips loading and ListState replaces the list with skeletons, unmounting the focused button (Handoff.jsx:63, :29, :84; ListState.jsx:28-36). Error announcement: POST errors render in a span with role=alert (:131); there is no aria-live for success or partial messages (:132-133), and the success message is keyed to 'delivered', which the backend never returns (dispatch.py:259 returns pending_ack/partial/failed), so a successful send shows nothing. The list-load error branch (:31-33) is unreachable because getHandoffs returns [] on failure (pipelineClient.js:46). Loading is announced through ListState role=status (ListState.jsx:30). Button names: text 'Entregar' / 'Entregando…' (:129), not unique per item; disabled while sending or with no target selected (:127). dry_run: defaults to false on both sides. The client sends dry_run: Boolean(options.dryRun) (pipelineClient.js:63) and Handoff passes no options (Handoff.jsx:61); the backend model default is False (server/backend/main.py:148). There is no dry-run control and no confirmation step, so Entregar performs a live repository dispatch.",
+      "evidence": [
+        "frontend/src/pages/Handoff.jsx:102",
+        "frontend/src/pages/Handoff.jsx:106",
+        "frontend/src/pages/Handoff.jsx:63",
+        "frontend/src/pages/Handoff.jsx:131",
+        "frontend/src/pages/Handoff.jsx:132",
+        "frontend/src/pages/Handoff.jsx:126",
+        "frontend/src/pages/Handoff.jsx:61",
+        "frontend/src/api/pipelineClient.js:63",
+        "server/backend/main.py:148",
+        "src/centinelas/route/dispatch.py:259",
+        "frontend/src/components/ListState.jsx:28"
+      ],
+      "question": "Handoff page accessibility: labels, focus after submit, error announcement, button names, dry_run default",
+      "repository": "centinelas-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Yes. Nothing imports it: a grep for 'Header' across frontend/src, frontend/tests and frontend/index.html returns only its own export (Header.jsx:66) and a comment in i18n/en.js:6. Layout mounts AppShell and Footer only (Layout.jsx:2-5). Header carries a duplicate navItems list (Header.jsx:9-18) with the same eight targets as AppShell.jsx:19-28, the only hamburger/mobile menu in the codebase (Header.jsx:85-102) and the only caller of permitHomeEntry (Header.jsx:72). It also imports '@/assets/icon-64.png?inline' (Header.jsx:6) and frontend/src/assets does not exist in the snapshot, so it could not be bundled if it were imported. docs/A11Y_AUDIT.md:47-49 and docs/GUI_AUDIT.md:31-35 still describe Header.jsx as the live global header.",
+      "evidence": [
+        "frontend/src/components/Header.jsx:66",
+        "frontend/src/components/Header.jsx:9",
+        "frontend/src/components/Header.jsx:6",
+        "frontend/src/components/Header.jsx:72",
+        "frontend/src/components/Layout.jsx:2",
+        "frontend/src/zip-design/AppShell.jsx:19",
+        "docs/A11Y_AUDIT.md:48"
+      ],
+      "question": "Is frontend/src/components/Header.jsx dead code with its own nav list?",
+      "repository": "centinelas-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Confirmed, exactly six, in this order in the WORKSPACES registry: Chat -> ChatView; Workbench -> WorkbenchWorkspace; Sources -> SourcesWorkspace; Memory -> MemoryWorkspace; Provenance -> ProvenanceWorkspace; Settings -> SettingsWorkspace. Each is rendered only when health.state is 'ok' and view equals its id. 'Background tasks' is a seventh item in the same nav list but opens a drawer, not a workspace. While the service wants a token, TokenGate replaces all six.",
+      "evidence": [
+        "frontend/src/App.jsx:13-20",
+        "frontend/src/App.jsx:324",
+        "frontend/src/App.jsx:338",
+        "frontend/src/App.jsx:339",
+        "frontend/src/App.jsx:340",
+        "frontend/src/App.jsx:341",
+        "frontend/src/App.jsx:342",
+        "frontend/src/App.jsx:262-264",
+        "frontend/src/App.jsx:323"
+      ],
+      "question": "1. Six workspaces: exact list and mounted component for each",
+      "repository": "mucaro-ai",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Functional but read-only and narrow; not presentational. It has no props, no buttons, inputs, links or handlers of its own: the only controls are one native <details>/<summary> 'Record' per tool call. On mount it makes two calls. GET /tools/summary returns counts by status computed from the stored tool-call records plus a live verification of the hash-chained audit log; the UI shows 'Verified (N events)' or the broken status and reason in error styling. GET /tools/requests returns every stored tool call; the UI lists them newest first with status, tool name, created time and, behind the disclosure, requested_by, approved_by, denied_by, argument digest, run id and raw arguments/result JSON. Both are real persisted data. Limits: loaded once (no refresh, filter, pagination, loading state or link to the run); the audit events themselves (GET /tools/audit) are never shown; 'who decided' is the constant 'api' for every GUI decision and 'policy:auto-local-read-only' for auto approvals; it shows nothing about source provenance, message-edit originals (which the chat UI says are 'preserved in provenance') or execution-entry receipts. Acceptance ledger is _architecture/release/acceptance_ledger_v1.json. TGT-032 'Provenance inspection' (IMPLEMENTED / PASS, note 'Verified audit chain, per-action records behind disclosure') matches the component exactly; its positive gate is a rendered check that waits for 'Verified (N events)' and then records a literal true. TGT-014 'Governed tool execution' lists the component and is supported by a rendered check that the Record shows requested_by 'model'. TGT-003 'Specialized workspaces' (PARTIAL / OPEN) says 'Sources/Memory/Settings exist; GIS/OCR/Code/Provenance/Artifacts surfaces absent': stale and contradicted by current source and by TGT-032, since Provenance and Workbench are both mounted. INV-018 'Provenance' (PARTIAL / PROVISIONAL) is about backend provenance records on ingested sources, not this workspace; those records are shown in the Evidence sheet and Sources detail, not here. MATRIX-015 lists provenance among 70 rendered checks; no axe run covers the Provenance view. No acceptance or ledger entries about Provenance were found in .mucaro/ or qa/ other than the rendered script.",
+      "evidence": [
+        "frontend/src/components/workspaces/ProvenanceWorkspace.jsx:5-17",
+        "frontend/src/components/workspaces/ProvenanceWorkspace.jsx:27-36",
+        "frontend/src/components/workspaces/ProvenanceWorkspace.jsx:37-59",
+        "frontend/src/api.js:287-288",
+        "backend/app/main.py:1159-1161",
+        "backend/app/main.py:1222-1225",
+        "backend/app/main.py:1227-1229",
+        "backend/app/tools.py:1064-1082",
+        "backend/app/tools.py:1120-1126",
+        "backend/app/main.py:1180",
+        "backend/app/main.py:1197",
+        "backend/app/work_runs.py:852",
+        "frontend/src/components/ChatView.jsx:368",
+        "_architecture/release/acceptance_ledger_v1.json:1702",
+        "_architecture/release/acceptance_ledger_v1.json:1258",
+        "_architecture/release/acceptance_ledger_v1.json:987",
+        "_architecture/release/acceptance_ledger_v1.json:802",
+        "_architecture/release/acceptance_ledger_v1.json:2220",
+        "qa/rendered/rendered_qa.mjs:493-495",
+        "qa/rendered/rendered_qa.mjs:920-925"
+      ],
+      "question": "2. Provenance workspace: fully functional, partial or presentational; ledger reconciliation",
+      "repository": "mucaro-ai",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Three media rules. (a) max-width 760px: single-column shell, off-canvas sidebar, top bar with hamburger, tighter paddings, execution-entry buttons stretch to 44px, user bubble 92% wide, and every Sheet becomes a bottom sheet (full width, max-height 88vh, rounded top). (b) max-width 900px or pointer:coarse: 16px form fields and 44px minimum control height. (c) prefers-reduced-motion. Safe-area insets are applied to sidebar, top bar, composer and sheet body. The native window minimum (420x560) is below 760px, so the desktop app shows the phone layout when narrowed. The workspace switcher has no separate mobile form: it is the same six buttons inside the off-canvas sidebar, reached through the hamburger; picking one closes the panel. Background tasks is a button in that panel (and in the conversation menu); on a narrow screen it opens as a bottom sheet over the page, with focus trap, Escape and backdrop close from Sheet. No workspace has its own breakpoint rules; they rely on flex wrapping. Gaps: the closed panel stays focusable (see accessibility findings), no Escape or close button for the panel, composer Enter inserts a newline on coarse pointers by design. Rendered evidence exists for 390x844 and 393/430/720 widths only; nothing renders at 420x560, and the ledger marks software-keyboard avoidance OPEN (MOB-F01).",
+      "evidence": [
+        "frontend/src/styles.css:1213-1297",
+        "frontend/src/styles.css:1317-1331",
+        "frontend/src/styles.css:1299",
+        "frontend/src/styles.css:149",
+        "frontend/src/styles.css:905",
+        "frontend/src/styles.css:1035",
+        "scripts/native_window.py:25",
+        "backend/app/desktop_shell.py:271",
+        "frontend/src/App.jsx:247-265",
+        "frontend/src/App.jsx:297-315",
+        "frontend/src/components/TasksDrawer.jsx:52",
+        "frontend/src/components/Composer.jsx:7",
+        "qa/rendered/rendered_qa.mjs:1886",
+        "_architecture/release/acceptance_ledger_v1.json:2432"
+      ],
+      "question": "3. Mobile: breakpoints and narrow-viewport behaviour (window min 420x560); workspace switcher and background-tasks drawer",
+      "repository": "mucaro-ai",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Shortcuts are local only (listed in keyboard_shortcuts); there are no global accelerators and none for switching workspace. Composer: Enter sends, Shift+Enter is a newline, Cmd/Ctrl+Enter always sends; on a coarse pointer Enter is a newline and only the button or Cmd/Ctrl+Enter sends. IME safe: the handler returns early when event.nativeEvent.isComposing is true or keyCode is 229. Empty text cannot be sent; focus returns to the textarea after sending. Focus order follows the DOM: skip link, sidebar (New chat, six workspaces, Background tasks, filter, conversations), then main (hamburger on narrow screens, service banner Retry, workspace content); in Chat: Model, Repository, conversation menu, feed controls, queued items, textarea, Mode, Stop, Send. All six workspaces and the tasks drawer are native buttons, so every workspace is reachable by keyboard alone at desktop width. At <=760px they are still reachable, but through an off-screen panel whose focus is invisible unless the hamburger is pressed first. View changes do not move focus.",
+      "evidence": [
+        "frontend/src/components/Composer.jsx:93-116",
+        "frontend/src/components/Composer.jsx:176",
+        "frontend/src/components/MessageActions.jsx:201-209",
+        "frontend/src/components/Sheet.jsx:28-45",
+        "frontend/src/App.jsx:238-296",
+        "frontend/src/styles.css:1218-1231",
+        "frontend/src/components/ChatView.jsx:400-431"
+      ],
+      "question": "4. Keyboard: shortcuts, composer behaviour, focus order, reachability",
+      "repository": "mucaro-ai",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Eleven overlays, all built on one Sheet component: Background tasks, Tool activity, Evidence [n] (right drawers / bottom sheets); Rename conversation, Delete conversation?, Remove this source?, Delete this memory?, Revoke folder access?, Save answer, Execution receipt, Adjust goal / Revise plan (centred). Sheet gives each role=dialog, aria-modal=true, aria-labelledby pointing at its h2 title, a labelled close button, initial focus on a data-autofocus field or the dialog itself, a Tab/Shift+Tab trap, Escape to close, backdrop mousedown to close, and focus return to the element focused at mount. Confirm sheets focus the cancel button and ignore close while busy. Weaknesses: the background is not inert; the trap selector omits summary and can pick hidden elements; focus return fails when the opener was a menu item that has unmounted. Three overlays are not dialogs: the mobile navigation panel, the conversation menu (role=menu) and the mode picker (role=listbox); none has Escape, a trap or focus return. The inline 'Confirm Directory Access' block is not a dialog.",
+      "evidence": [
+        "frontend/src/components/Sheet.jsx:11-66",
+        "frontend/src/components/ConfirmSheet.jsx:24-32",
+        "frontend/src/App.jsx:344",
+        "frontend/src/components/RunBlock.jsx:170",
+        "frontend/src/components/EvidencePanel.jsx:21",
+        "frontend/src/components/ChatView.jsx:63",
+        "frontend/src/components/ChatView.jsx:82",
+        "frontend/src/components/workspaces/SourcesWorkspace.jsx:121",
+        "frontend/src/components/workspaces/MemoryWorkspace.jsx:106",
+        "frontend/src/components/DirectoryIntake.jsx:186",
+        "frontend/src/components/MessageActions.jsx:42",
+        "frontend/src/components/ExecutionEntryCard.jsx:155",
+        "frontend/src/components/ExecutionEntryCard.jsx:176",
+        "frontend/src/components/ChatView.jsx:51-61",
+        "frontend/src/components/Composer.jsx:146-169",
+        "frontend/src/components/DirectoryIntake.jsx:152-166"
+      ],
+      "question": "5. Modals/drawers: role, aria-modal, labelling, focus trap, Escape, focus return",
+      "repository": "mucaro-ai",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Rendering: the client reads server-sent events with fetch, de-duplicates by seq and concatenates text_delta events into the answer, rendered as inert text with fenced code blocks; the run article is aria-busy while RUNNING and the feed auto-scrolls only when already near the bottom. The streaming text is not a live region; 'Answer complete.' is announced at the end. Save and Share appear only on terminal runs; Copy and Edit are offered while still streaming. Cancel: Stop calls POST /work-runs/{id}/stop. Waiting runs stop at once; a running run is flagged and stops at the next phase boundary, but the answer phase has no checkpoint, so Stop does not interrupt text that is already streaming and the run still ends COMPLETED. Model/provider error mid-answer: the backend records error and final(FAILED) events; text_delta events already written stay in the log, so the partial text remains above an alert showing category, status and detail, and 'The turn failed.' is announced. Disconnect: a stream that fails, closes without an end event or is silent for 25 s is retried with backoff (reloading the run from the event log each time); after 10 failures a 'Live updates paused' notice with Resume appears; the app-level banner shows 'Reconnecting…' from the 15 s health poll, and returning to the page or regaining network forces a re-follow. Partial output is preserved because events are persisted server-side. A service restart marks running runs INTERRUPTED. Defect by source reading: runs with more than 500 events are reloaded truncated to the first 500 (see workflow stream-answer).",
+      "evidence": [
+        "frontend/src/api.js:171-226",
+        "frontend/src/components/ChatView.jsx:133-183",
+        "frontend/src/feed.js:83-85",
+        "frontend/src/components/RunBlock.jsx:273",
+        "frontend/src/components/RunBlock.jsx:339-351",
+        "frontend/src/components/RunBlock.jsx:368-379",
+        "frontend/src/components/ChatView.jsx:263-273",
+        "frontend/src/components/ChatView.jsx:314-323",
+        "backend/app/work_runs.py:581-614",
+        "backend/app/work_runs.py:763-774",
+        "backend/app/work_runs.py:1217-1240",
+        "backend/app/work_runs.py:734-745",
+        "backend/app/work_runs.py:1401-1434",
+        "frontend/src/components/ChatView.jsx:510-517",
+        "frontend/src/App.jsx:316-321",
+        "backend/app/work_runs.py:652",
+        "frontend/src/api.js:280",
+        "backend/app/main.py:1051"
+      ],
+      "question": "6. Streaming: rendering, cancel, mid-stream error or disconnect, partial output",
+      "repository": "mucaro-ai",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Tool-request approval is complete. The card is a labelled region ('Permission request for <tool>') showing the tool, who asked, arguments (patches as a diff) and the argument digest, with native Deny and Allow once buttons. They POST /tools/requests/{id}/approve or /deny with arguments_sha256. The backend refuses a non-pending call or a digest mismatch, stores status with approved_by/denied_by and a timestamp on the tool-call record, appends a hash-chained audit event, and resumes the run. Both buttons work from the keyboard; the waiting state is announced ('Waiting for your approval.') and the decision is announced ('Allowed/Denied <tool>.') through the polite live region, and the conversation list shows 'Needs your approval'. Focus is not moved to the card and is lost when it disappears. The actor recorded is the constant 'api'. The Planning-to-Execution Gate named in README and docs/EXECUTION_GATE.md (POST /plan, POST /approve) has no GUI: the Workbench only compiles a plan with approval NOT_REQUESTED and states that nothing is executed. The GUI gate that does exist is the execution-entry card: Proceed/Execute and Adjust/Revise post a decision bound to artifact, revision, expected version, source commit and an idempotency key; the decision and receipt hashes are persisted and shown in the Execution receipt sheet. The primary button is natively disabled with an aria-describedby reason until the entry is ready and the source identity is current, it activates from the keyboard, and 'Execution started.' is announced. But the GUI can neither create an entry nor mark one ready, so this gate is usable only for entries prepared through the API.",
+      "evidence": [
+        "frontend/src/components/RunBlock.jsx:24-63",
+        "frontend/src/api.js:285-286",
+        "backend/app/main.py:1170-1202",
+        "backend/app/tools.py:1194-1260",
+        "backend/app/tools.py:1042-1061",
+        "frontend/src/components/ChatView.jsx:268-273",
+        "frontend/src/threadActivity.js:6",
+        "README.md:3",
+        "docs/EXECUTION_GATE.md:1",
+        "backend/app/main.py:528-532",
+        "backend/app/main.py:630-637",
+        "frontend/src/components/workspaces/WorkbenchWorkspace.jsx:61",
+        "frontend/src/components/ExecutionEntryCard.jsx:63-148",
+        "frontend/src/components/ChatView.jsx:334-347",
+        "backend/app/main.py:417",
+        "backend/app/main.py:453",
+        "backend/app/main.py:472-494",
+        "backend/app/execution_entry.py:859",
+        "qa/rendered/rendered_qa.mjs:592",
+        "qa/rendered/rendered_qa.mjs:697",
+        "qa/rendered/rendered_qa.mjs:633-637",
+        "qa/rendered/rendered_qa.mjs:711-714"
+      ],
+      "question": "7. Approval workflows: Planning-to-Execution Gate and tool-request approval",
+      "repository": "mucaro-ai",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Fixed in current source. Below 860px Dashboard renders a separate mobile shell (one view at a time plus a bottom nav); the 440px aside exists only in the desktop branch. The breakpoint is shared by useIsMobile and the shell-mobile/shell-desktop CSS variants, and html/body/#root are capped at max-width 100%. Layout was not rendered in this audit.",
+      "evidence": [
+        "dashboard/src/pages/Dashboard.jsx:70",
+        "dashboard/src/pages/Dashboard.jsx:101",
+        "dashboard/src/hooks/use-mobile.jsx:5",
+        "dashboard/src/index.css:14",
+        "dashboard/src/index.css:201",
+        "dashboard/tests/gui-parity-mobile.spec.mjs:153"
+      ],
+      "question": "1a. Historical mobile defect: fixed 440px side pane overflows a 390px viewport and squeezes the map to 0px (docs/A11Y_AUDIT.md:128-151, citing Dashboard.jsx <aside w-[440px]>). Doc records a later repair: yes (docs/A11Y_AUDIT.md:120-126).",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "Fixed in current source: both triggers carry aria-label (Period / Tier), the page-size trigger uses aria-labelledby, and the mobile layout adds visible captions.",
+      "evidence": [
+        "dashboard/src/components/CaseGrid.jsx:111",
+        "dashboard/src/components/CaseGrid.jsx:123",
+        "dashboard/src/components/CaseGrid.jsx:213",
+        "dashboard/src/components/CaseGrid.jsx:144"
+      ],
+      "question": "1b. Historical mobile/desktop defect: axe button-name on the decade and tier Select triggers (docs/A11Y_AUDIT.md:153-172, citing CaseGrid.jsx). Doc records a later repair: yes (docs/A11Y_AUDIT.md:120-123).",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "Same root cause as 1a and fixed with it. A Playwright spec asserts no horizontal overflow at 430x932 and 844x390; it was not executed here.",
+      "evidence": [
+        "dashboard/src/pages/Dashboard.jsx:53",
+        "dashboard/src/index.css:201",
+        "dashboard/tests/gui-parity-mobile.spec.mjs:153",
+        "dashboard/tests/gui-parity-mobile.spec.mjs:165"
+      ],
+      "question": "1c. Historical defect: horizontal overflow at 390px on all four scripted states (docs/A11Y_AUDIT.md:102-107,140-142). Doc records a later repair: yes, as part of finding 1 (docs/A11Y_AUDIT.md:120-126).",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "Partly fixed. Fixed on mobile: tab triggers are replaced by a 56px bottom nav, Select triggers and search are h-11, chips min-h-11, pager buttons 44px, sheet Close 44x44, map layer buttons min-h-11. Still present: MapLibre's zoom control has no size override, and newer controls have no mobile minimum (timeline filter/sort min-h-9, spatial-tool buttons, 'Clear date filter' ×, 'Retry density', QueryState Retry).",
+      "evidence": [
+        "dashboard/src/components/MobileNav.jsx:21",
+        "dashboard/src/components/CaseGrid.jsx:96",
+        "dashboard/src/components/ui/sheet.jsx:52",
+        "dashboard/src/components/CaseMap.jsx:379",
+        "dashboard/src/components/CaseMap.jsx:158",
+        "dashboard/src/components/ProgramTimeline.jsx:43",
+        "dashboard/src/components/SpatialToolsPanel.jsx:302",
+        "dashboard/src/components/CaseMap.jsx:442",
+        "dashboard/src/components/QueryState.jsx:52"
+      ],
+      "question": "1d. Historical defect: touch targets under 44px - tab triggers, MapLibre zoom buttons, Select triggers (28px), sheet Close (33px) (docs/A11Y_AUDIT.md:210-223). Doc records a later repair: no (the 2026-10-25 status note covers findings 1 and 2 only).",
+      "repository": "ovnis-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Still present in source: the list scroll container and the Table wrapper are overflow-auto without tabindex. Pagination (12 rows by default) reduces how often it overflows; 100 per page is still selectable. On mobile the cards are buttons, so focus can enter the region there; on desktop the rows are not focusable.",
+      "evidence": [
+        "dashboard/src/components/CaseGrid.jsx:183",
+        "dashboard/src/components/ui/table.jsx:6",
+        "dashboard/src/components/CaseGrid.jsx:22"
+      ],
+      "question": "1e. Historical defect: scrollable-region-focusable on the case table scroll container, both viewports (docs/A11Y_AUDIT.md:186-193, citing CaseGrid.jsx). Doc records a later repair: no.",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Not adjudicable from source. No .maplibregl-ctrl-attrib override exists in index.css (grep), so nothing in the app changes the third-party link styling; whether axe still flags it requires a run. On mobile the map is now visible, so the rule could now apply there too.",
+      "evidence": [
+        "dashboard/src/index.css:1",
+        "dashboard/src/main.jsx:11"
+      ],
+      "question": "1f. Historical defect: link-in-text-block on MapLibre's attribution link, desktop viewport only (docs/A11Y_AUDIT.md:174-184). Doc records a later repair: no.",
+      "repository": "ovnis-pr",
+      "status": "UNKNOWN"
+    },
+    {
+      "answer": "Root cause removed in source: index.css now uses native '@import \"tailwindcss\"' with an @theme block, its comment names this exact failure, and dashboard/tailwind.config.js no longer exists. The list is also paginated instead of rendering 470 rows. Compiled CSS was not built or inspected.",
+      "evidence": [
+        "dashboard/src/index.css:1",
+        "dashboard/src/index.css:4",
+        "dashboard/src/index.css:76",
+        "dashboard/src/components/CaseGrid.jsx:70"
+      ],
+      "question": "1g. Historical layout defect: Cases tab forces the page to ~11,300px and the map renders as a sliver because Tailwind 4 dropped zero-value utilities under the legacy @config shim (docs/GUI_AUDIT.md:168-205, 129-133). Doc records a later repair: no (the 2026-10-25 note at docs/GUI_AUDIT.md:10-16 describes control changes only).",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "Root cause removed as in 1g and the viewport now positions itself above the mobile bottom nav. Still dormant: nothing calls toast().",
+      "evidence": [
+        "dashboard/src/components/ui/toast.jsx:18",
+        "dashboard/src/App.jsx:29"
+      ],
+      "question": "1h. Historical latent defect: Toaster viewport would be mispositioned by the same missing utilities (docs/GUI_AUDIT.md:437-441). Doc records a later repair: no.",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "No longer true: a light token set and a dark/light/system toggle exist. Light-theme contrast has not been audited by any document found.",
+      "evidence": [
+        "dashboard/src/index.css:137",
+        "dashboard/src/lib/theme.js:5",
+        "dashboard/src/components/TopControls.jsx:11"
+      ],
+      "question": "1i. Historical scope note: no light theme exists (docs/A11Y_AUDIT.md:79-86).",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "Root cause removed in source (see 1g). The sheet variants still use inset-y-0/right-0 and inset-x-0/bottom-0, which now compile under native Tailwind 4. A Playwright spec asserts the mobile bottom sheet settles against the viewport bottom; no spec asserts the desktop right-hand drawer's position, and nothing was run here.",
+      "evidence": [
+        "dashboard/src/index.css:1",
+        "dashboard/src/components/ui/sheet.jsx:33",
+        "dashboard/src/components/CaseDetail.jsx:26",
+        "dashboard/tests/gui-parity-mobile.spec.mjs:76"
+      ],
+      "question": "2a. Case-detail defect: drawer renders entirely off-screen, Close and click-outside unreachable, only Escape works (docs/GUI_AUDIT.md:225-253, citing CaseDetail.jsx and ui/sheet.jsx). Doc records a later repair: no.",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "Not adjudicable from source. The sheet is a stock Radix Dialog portal with no custom aria-hidden handling; whether a focusable background node remains inside an aria-hidden ancestor is a runtime property. No automated axe check covers the open case sheet (vitest-axe covers CaseGrid, MobileNav and TopControls only).",
+      "evidence": [
+        "dashboard/src/components/ui/sheet.jsx:47",
+        "dashboard/src/components/CaseGrid.test.jsx:163"
+      ],
+      "question": "2b. Case-detail defect: axe aria-hidden-focus while the sheet is open (docs/A11Y_AUDIT.md:195-208). Doc records a later repair: no.",
+      "repository": "ovnis-pr",
+      "status": "UNKNOWN"
+    },
+    {
+      "answer": "Fixed for the mobile shell (44x44 under shell-mobile); unchanged icon-sized target on desktop.",
+      "evidence": [
+        "dashboard/src/components/ui/sheet.jsx:52",
+        "dashboard/tests/gui-parity-mobile.spec.mjs:53"
+      ],
+      "question": "2c. Case-detail defect: sheet Close button below 44px (docs/A11Y_AUDIT.md:216-218). Doc records a later repair: no.",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_FIXED"
+    },
+    {
+      "answer": "Three triggers, all setting one in-memory 'selected' object: desktop table row click, mobile card button, map point click. Detail is rendered from the row already in memory; GET /cases/{case_id} is never called. The desktop table row is not keyboard operable, so on desktop there is no keyboard route to the detail view.",
+      "evidence": [
+        "dashboard/src/pages/Dashboard.jsx:28",
+        "dashboard/src/components/CaseGrid.jsx:321",
+        "dashboard/src/components/CaseGrid.jsx:270",
+        "dashboard/src/components/CaseMap.jsx:229",
+        "dashboard/src/pages/Dashboard.jsx:41"
+      ],
+      "question": "2d. Current source: how a case is opened.",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Radix Dialog (role=dialog, modal) with SheetTitle '{case_id} · {date_raw}' and SheetDescription (location). Close via the built-in Close button, Escape, or overlay click, all routed through onOpenChange. Focus trapping and return are Radix defaults; CaseDetail sets no onCloseAutoFocus, and on desktop the opener is not focusable, so focus is not returned to a meaningful element. The Close label is the hard-coded English 'Close'.",
+      "evidence": [
+        "dashboard/src/components/CaseDetail.jsx:21",
+        "dashboard/src/components/CaseDetail.jsx:42",
+        "dashboard/src/components/ui/sheet.jsx:51",
+        "dashboard/src/components/ui/sheet.jsx:54",
+        "dashboard/src/components/MobileNav.jsx:63"
+      ],
+      "question": "2e. Current source: dialog/panel semantics, focus handling and close behaviour.",
+      "repository": "ovnis-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "The sheet scrolls vertically (overflow-y-auto; max 85dvh on mobile). The source link uses break-all and the non-link source label break-words. Description, English gloss and contradictions paragraphs have no break utility, so they rely on normal wrapping; behaviour with a long unbroken token was not rendered. The longest description in the ledger is 1,250 characters and the longest source_url 555. The title has no reserved space for the absolutely positioned Close button.",
+      "evidence": [
+        "dashboard/src/components/CaseDetail.jsx:28",
+        "dashboard/src/components/CaseDetail.jsx:63",
+        "dashboard/src/components/CaseDetail.jsx:69",
+        "dashboard/src/components/CaseDetail.jsx:47",
+        "dashboard/src/components/CaseDetail.jsx:84",
+        "dashboard/src/components/ui/sheet.jsx:52"
+      ],
+      "question": "2f. Current source: long-text overflow in the case detail.",
+      "repository": "ovnis-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Witness and evidence type fall back to an em dash, the source falls back to 'Source not supplied' with a 'No URL' badge, and agency and contradictions are omitted when absent. The provenance line is not guarded: it interpolates reviewer_action, promoted_from, promoted_at and promoted_by directly, and in the current ledger candidate_id is null on all 470 rows and promoted_by is not a ledger key, so it renders as 'promote · from  · 2026-06-23 · ' with dangling separators. Tier, confidence and decade badges render empty if their value is missing. The existing test only asserts that at least one em dash appears.",
+      "evidence": [
+        "dashboard/src/components/CaseDetail.jsx:53",
+        "dashboard/src/components/CaseDetail.jsx:55",
+        "dashboard/src/lib/ovnis-format.js:48",
+        "dashboard/src/components/CaseDetail.jsx:87",
+        "server/backend/main.py:148",
+        "server/backend/main.py:150",
+        "dashboard/src/components/CaseDetail.jsx:38",
+        "dashboard/src/components/CaseDetail.test.jsx:131"
+      ],
+      "question": "2g. Current source: missing-field rendering in the case detail.",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Evidence tier (T1-T4) is the only tier: a colour badge in the table, card, detail header and map point colour, with a legend that labels T1 'highest confidence' and T4 'lowest confidence'. There is no witness tier; witness is one plain-text line built from witness_type, count and name. 'Confidence' is a second unlabelled badge whose value is the first present of case_confidence, chronology_confidence, source_reliability - a number in the ledger - while the colour map expects high/medium/low words, so it is always slate. source_reliability, chronology_confidence, location_confidence, dedupe_status and translation_status are not displayed. Source is a citation/family/URL label, linked only for http(s) URLs, with a 'No URL' flag otherwise; source_family appears as an 'Agency involvement' badge tinted amber for military families. Review state on a master case is the review_action word inside the muted provenance line (it is 'promote' on all 470 rows). Candidates show review_status as a federation tone badge plus an evidence-tier badge.",
+      "evidence": [
+        "dashboard/src/lib/format.js:22",
+        "dashboard/src/components/CaseDetail.jsx:38",
+        "dashboard/src/components/CaseDetail.jsx:39",
+        "dashboard/src/lib/ovnis-format.js:8",
+        "server/backend/main.py:117",
+        "dashboard/src/components/CaseDetail.jsx:53",
+        "dashboard/src/components/CaseDetail.jsx:56",
+        "dashboard/src/lib/ovnis-format.js:55",
+        "dashboard/src/components/CaseDetail.jsx:87",
+        "dashboard/src/components/CandidateReview.jsx:14",
+        "dashboard/src/components/CandidateReview.jsx:46",
+        "dashboard/src/components/CaseMap.jsx:87"
+      ],
+      "question": "3a. How source tiers, witness tiers and review state are shown on a case.",
+      "repository": "ovnis-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "There is no case chronology or timeline visualisation in the dashboard. The 'Activity' view is a programme-workflow list of five hard-coded items; it is already text (phase, title, detail, category) but is built from <div> grids rather than a list or table. Time appears elsewhere only as a Date column in the cases table (no sort control, ledger order), the Period filter, the map date-range filter, and the 'Cases by decade' bar chart, which has no table equivalent.",
+      "evidence": [
+        "dashboard/src/pages/Dashboard.jsx:16",
+        "dashboard/src/components/ProgramTimeline.jsx:55",
+        "dashboard/src/components/CaseGrid.jsx:341",
+        "dashboard/src/components/CaseMap.jsx:420",
+        "dashboard/src/components/StatsPanel.jsx:38"
+      ],
+      "question": "3b. Whether the chronology/timeline has a non-visual (list/table) equivalent.",
+      "repository": "ovnis-pr",
+      "status": "NOT_FOUND"
+    },
+    {
+      "answer": "Confirmed. The router declares only '/' and '*'. The mobile view is useState('cases'); the desktop view is an uncontrolled Radix Tabs with defaultValue 'cases' (a separate state from the mobile one, so crossing 860px resets it); the open case is a useState object; filters, page and page size are CaseGrid-local state. No file in dashboard/src uses useParams, useSearchParams or useNavigate. A view deep link would require one shared view value bound to the URL (search parameter or path segment) driving both a controlled Tabs and MobileNav, and working under HashRouter for the offline export. A case deep link would require a case id in the URL resolved either from the loaded /cases array or through GET /cases/{case_id}, which exists in the backend and as an unused client function; the offline snapshot has no per-case keys, so offline it must resolve from the /cases list. It also needs a not-found state for an unknown id, and SPA fallback for non-root paths in the desktop server, which lives in the external prii_desktop package and was not available to inspect.",
+      "evidence": [
+        "dashboard/src/App.jsx:24",
+        "dashboard/src/pages/Dashboard.jsx:28",
+        "dashboard/src/pages/Dashboard.jsx:29",
+        "dashboard/src/pages/Dashboard.jsx:102",
+        "dashboard/src/components/CaseGrid.jsx:57",
+        "dashboard/src/lib/api.js:65",
+        "server/backend/main.py:330",
+        "dashboard/src/lib/api.js:35",
+        "dashboard/src/App.jsx:9",
+        "desktop/launch.py:8"
+      ],
+      "question": "4. Views are in-memory state with no URL: confirm, and state what a deep link to a view or to a single case would require.",
+      "repository": "ovnis-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "CONFIRMED in current source. The toggle is the <button> at Layout.jsx:30-35 inside the md:hidden header bar. Classes 'flex h-8 w-8 ...' => 2rem x 2rem = 32x32 CSS px at default root size (icon h-4 w-4 = 16px). Accessible name: NONE - no aria-label, no title, no visible text, no sr-only span; its only child is a lucide Menu/X svg. aria-expanded: absent. aria-controls: absent. Also no type attribute. The adjacent 'Skywatcher-PR' span (line 36) is a sibling, not a label. The overlay it opens (Layout.jsx:19-26) has no dialog semantics.",
+      "evidence": [
+        "frontend/src/components/skywatcher/Layout.jsx:30-35",
+        "frontend/src/components/skywatcher/Layout.jsx:19-26",
+        "frontend/src/components/skywatcher/Layout.jsx:36"
+      ],
+      "question": "Mobile navigation: currently unlabeled 32px navigation toggle",
+      "repository": "skywatcher-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "MOUNTED, all hand-rolled (no shared primitive): (1) SideDrawer, used by 7 drawers via DrawerHub (Observation, Aircraft, Capture, Route, Asset, Export, Review) - role=dialog: NO; native <dialog>: NO; aria-modal: NO; aria-labelledby/label: NO (title is a plain h2 with no id); focus trap: NO; Escape: YES (window keydown, SideDrawer.jsx:5-9); focus return: NO; initial focus move: NO; backdrop click closes; close button unlabeled. (2) Mobile nav overlay (Layout.jsx:19-26) - role=dialog NO, aria-modal NO, label NO, focus trap NO, Escape NO, focus return NO. NOT dialogs: Sky Cameras 'Contribute' and 'Review' are inline disclosure panels with aria-expanded (SkyCameras.jsx:438-453); toasts via ui/toaster. UNMOUNTED shared primitives present in the tree but imported by no page/feature component: ui/dialog.jsx (Radix Dialog), ui/alert-dialog.jsx (Radix AlertDialog), ui/sheet.jsx (Radix Dialog as sheet), ui/drawer.jsx (vaul), ui/command.jsx (cmdk in Dialog) - these would supply role/aria-modal/trap/Escape/return but are unused. No confirm dialog exists for destructive actions (e.g. 'Take down', SkyCameras.jsx:363).",
+      "evidence": [
+        "frontend/src/components/skywatcher/SideDrawer.jsx:4-34",
+        "frontend/src/components/skywatcher/drawers/DrawerHub.jsx:46-52",
+        "frontend/src/components/skywatcher/Layout.jsx:19-26",
+        "frontend/src/pages/SkyCameras.jsx:438-453",
+        "frontend/src/components/ui/dialog.jsx:9",
+        "frontend/src/components/ui/sheet.jsx:9",
+        "frontend/src/components/ui/drawer.jsx:12",
+        "frontend/src/components/ui/alert-dialog.jsx:7",
+        "frontend/src/components/ui/command.jsx:6"
+      ],
+      "question": "Dialog semantics: every dialog/modal/drawer/sheet in the frontend",
+      "repository": "skywatcher-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "No backend route exists for any of the following (all backend decorators enumerated in main.py, console/router.py, spacetrack_router.py, cameras_router.py). NOT invoked by any UI code: entities.bulkCreate POST /entities/{e}/bulk (:109); entities.delete DELETE /entities/{e}/{id} (:111); functions.invoke (:154); integrations.Core.InvokeLLM (:159), SendEmail (:160), ExtractDataFromUploadedFile (:161), UploadFile -> /files/upload (:166); agents.listConversations/getConversation/createConversation/addMessage/subscribeToConversation (:172-182); connectors.getConnection (:192); auth.logout -> /auth/logout (:145, reachable only through AuthContext.logout which no component calls). INVOKED by UI but only on auth pages that mount when authRequired (App.jsx:82-88; default backend reports requires_auth=false, main.py:1106): auth.loginViaEmailPassword (Login.jsx:22), auth.loginWithProvider (Login.jsx:32, Register.jsx:70), auth.register (Register.jsx:31), auth.verifyOtp (Register.jsx:44), auth.resendOtp (Register.jsx:59), auth.resetPasswordRequest (ForgotPassword.jsx:19), auth.resetPassword (ResetPassword.jsx:28) - all would 404. auth.me (:119) HAS a backend route but it unconditionally raises 401 (main.py:1148-1150). Additionally, client methods with a backend route but no UI caller: entities.filter, entities.get, flightCorpusV4.artifactMembers, spaceTrack.objects, spaceTrack.reentry.",
+      "evidence": [
+        "frontend/src/api/federationClient.js:109",
+        "frontend/src/api/federationClient.js:111",
+        "frontend/src/api/federationClient.js:118-151",
+        "frontend/src/api/federationClient.js:153-155",
+        "frontend/src/api/federationClient.js:157-169",
+        "frontend/src/api/federationClient.js:171-189",
+        "frontend/src/api/federationClient.js:191-193",
+        "frontend/src/pages/Login.jsx:22",
+        "frontend/src/pages/Register.jsx:31",
+        "frontend/src/pages/ForgotPassword.jsx:19",
+        "frontend/src/pages/ResetPassword.jsx:28",
+        "frontend/src/App.jsx:82-95",
+        "server/backend/main.py:1148-1150"
+      ],
+      "question": "federationClient.js client calls with no backend route (bulk, auth/*, functions, integrations, files/upload, agents/*) and whether UI invokes them",
+      "repository": "skywatcher-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Storage: window.localStorage key 'federation_write_token' (federationClient.js:13,18-27), plus an in-memory copy appParams.writeToken captured at module load (app-params.js:84). The only way it gets set is the URL query parameter ?write_token=..., which getParamValue writes to localStorage under federation_write_token and then strips from the URL via history.replaceState (app-params.js:35-49,84); ?clear_write_token=true removes it (app-params.js:64-66). It is sent as 'Authorization: Bearer' only when no access token is present (federationClient.js:65-66,72-74). UI entry: NONE - there is no input, form or settings surface for the token; setWriteToken is exported but has no caller (grep setWriteToken in src: definition only). The backend exposes public_settings.write_token_required (main.py:1108) but the frontend never reads it, so the UI cannot prompt; the only user-facing hint is the Review-queue 401/403 message 'Reviewing needs write access (a local network, or the PRII write token).' (SkyCameras.jsx:305). Token persists in localStorage in plaintext with no expiry. The backend comment at main.py:309-312 ('browser UI has no write-credential input ... sources only the federation access token') is partly stale: the client now does source a separate write token, but still offers no input.",
+      "evidence": [
+        "frontend/src/api/federationClient.js:13-27",
+        "frontend/src/api/federationClient.js:65-66",
+        "frontend/src/lib/app-params.js:64-66",
+        "frontend/src/lib/app-params.js:78-84",
+        "server/backend/main.py:1101-1109",
+        "server/backend/main.py:309-312",
+        "frontend/src/pages/SkyCameras.jsx:305"
+      ],
+      "question": "Write-token handling: where the frontend stores the write token and whether any UI lets the user enter it",
+      "repository": "skywatcher-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "The reported defect (Finance filter comparing only raw foreign keys) is fixed: a custom globalFilterFn builds its haystack from contract id, raw agency/vendor/site ids AND agency code/name, vendor name, site name, formatted amount, status and tier, and has tests. Residual mismatches of the same family remain in current source: (a) Finance column SORT still uses the raw accessor values for Agency, Vendor and Site while the cells render code/name, so header sorting orders by V-/A-/S- ids, not by the visible text; (b) the Nearest tool's result label prefers properties.id over properties.name, and the Sites target supplies both, so the user is shown a raw site id; (c) CSV export and the evidence-brief contracts table emit raw vendor/agency/site ids where the table shows names; (d) inspector linked-contract/anomaly lists and the watchlist show ids only. The ProgramTimeline search compares against the same title/detail/category/phase strings it renders (no mismatch). The Finance KPI cards and EXPORT CSV ignore the active filter.",
+      "evidence": [
+        "server/frontend/src/modules/FinanceIntelligence.tsx:108-132",
+        "server/frontend/src/modules/FinanceIntelligence.tsx:67-78",
+        "server/frontend/src/modules/FinanceIntelligence.test.tsx:40-66",
+        "server/frontend/src/modules/SpatialToolsPanel.tsx:152-158",
+        "server/frontend/src/modules/SpatialIntelligence.tsx:573-576",
+        "server/frontend/src/export/csvExport.ts:23-27",
+        "server/frontend/src/export/evidenceBrief.ts:43",
+        "server/frontend/src/components/ProgramTimeline.tsx:45-51",
+        "docs/GUI_AUDIT.md:133 (lead)"
+      ],
+      "question": "1. Display-name filtering against raw identifiers",
+      "repository": "spiderweb-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "The mechanism named in the old audit (whenStyleReady gated on map.isStyleLoaded) no longer exists; the runtime now resolves `ready` on the style.load event and layer hooks add sources directly. Loading is set at SI:255 (GeoJSON layers) and SI:326 (Martin vector layer); it is cleared by 'source-ready' (263/342), 'loaded' (267/352), 'error' (270/355, and 320 for tile errors) and 'idle' when toggled off (246/313). Paths on which it is NOT cleared: (1) hung request — both hooks use bare fetch with an AbortSignal but no timeout (257, 328), so a backend that accepts the connection and never answers leaves 'loading…' indefinitely; (2) abort/cancel — the catch and the post-await guards return without writing a status (260, 264, 269 / 341, 343, 354); when the cleanup is caused by a 2D→3D switch or a runtime reboot the effect re-runs with mapRef.current === null and returns at 236/303 before any onStatus call, so the last status ('loading…', 'source ready' or 'rendered') stays on the button for as long as 3D is active, and the layer buttons are still rendered in 3D (867-883) while the failure banner is 2D-only (848); (3) 'source-ready' is terminal if map.getSource(sourceId) is already true at 264/343; (4) two hooks write the same 'municipios' key: with Martin delivery the vector hook sets 'loading' and the disabled GeoJSON hook then sets 'idle' in the same commit (313 vs 246, declared at 477-496), so the button reads 'on' rather than 'loading…' until the fetch settles; (5) empty result — an empty FeatureCollection (backend returns one for any allowed layer with no file, main.py:472) is reported as 'rendered' with no empty indication; (6) vector layer 'loaded' is set when the source is added, not when tiles arrive, so missing tiles show 'rendered' unless MapLibre raises an error event carrying sourceId. Unmount is safe (state is discarded; cleanup aborts and removes layers, 275-279). Related flags with the same no-timeout weakness: gazetteer density (614-617) and the ERI catalog (spatial/imagery/eriApi.ts:65) which also suppresses URL-hash writes while loading (useImageryController.ts:135). Access-point registries use fetchWithTimeout but 'Records received; drawing…' never advances when the map is not ready (e.g. WebGL unavailable: activeMode stays 'maplibre' with ready=false, useSpatialRuntime.ts:60-70, so the panel is shown and the draw effect returns at useAccessPointsController.ts:121).",
+      "evidence": [
+        "server/frontend/src/modules/SpatialIntelligence.tsx:234-281",
+        "server/frontend/src/modules/SpatialIntelligence.tsx:301-367",
+        "server/frontend/src/modules/SpatialIntelligence.tsx:455",
+        "server/frontend/src/modules/SpatialIntelligence.tsx:472-507",
+        "server/frontend/src/modules/SpatialIntelligence.tsx:848-883",
+        "server/frontend/src/spatial/runtime/useSpatialRuntime.ts:60-70",
+        "server/frontend/src/spatial/runtime/useSpatialRuntime.ts:121-129",
+        "server/frontend/src/spatial/runtime/MapLibreRuntime.ts:37-56",
+        "server/frontend/src/modules/SpatialIntelligence.tsx:609-628",
+        "server/frontend/src/spatial/imagery/eriApi.ts:64-68",
+        "server/frontend/src/spatial/accessPoints/useAccessPointsController.ts:106-136",
+        "server/backend/main.py:472",
+        "docs/GUI_AUDIT.md:284-287 (lead)"
+      ],
+      "question": "2. Map layer loading that can remain stuck",
+      "repository": "spiderweb-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "The silent-blank case is fixed in the client and covered by four tests: HTTP error → 'RAG backend returned <status>'; no body → 'returned no response stream'; done event with non-zero rc → 'RAG backend exited with code N'; rc 0 with no data lines → 'completed without producing output'; stream closed without a done event → 'ended without terminal status'; malformed done payload → 'invalid terminal status'; transport error/8 s header timeout → the exception text. Each calls onError then onDone, and QueryLayer renders a role=alert 'Query failed' card with the message plus a hint to switch to STUB; partial output stays visible below it. query_llm.py now exists at the repo root as a wrapper. What is still not useful: (a) the backend opens the subprocess with stderr=PIPE and never reads it, so the reason for a non-zero exit (traceback, missing model/dependency) never reaches the user — only the exit code does; an unread stderr pipe can also fill and block the child, in which case no done event is ever sent; (b) while pending and before the first token the panel shows nothing at all — no response card (needs streamLines.length > 0), no 'No query run yet' card (needs !pending) — only the button reading STOP; there is no overall timeout on the stream; (c) STOP/unmount only sets a cancelled flag: the fetch is not aborted and the generator has no cleanup to terminate the subprocess; (d) query_llm prints progress lines ('Loading model…', 'Retrieving relevant posts…', '====') to stdout, which are streamed to the user as answer text, and any one such line satisfies the 'produced output' check; (e) the error card persists after switching back to STUB until the next run.",
+      "evidence": [
+        "server/frontend/src/api/client.ts:249-341",
+        "server/frontend/src/modules/QueryLayer.tsx:42-50",
+        "server/frontend/src/modules/QueryLayer.tsx:125-142",
+        "server/frontend/src/modules/QueryLayer.tsx:175-185",
+        "server/backend/main.py:689-710",
+        "query_llm.py:9-13",
+        "llm/query_llm.py:56",
+        "llm/query_llm.py:138-139",
+        "server/frontend/src/api/rag-client.test.ts:33-66",
+        "docs/GUI_AUDIT.md:191 (lead)"
+      ],
+      "question": "3. RAG stream termination without useful feedback",
+      "repository": "spiderweb-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "Exhaustive list of deferral points in non-test source: (1) six React.lazy module chunks in App.tsx — CommandCenter, FinanceIntelligence (defers @tanstack/react-table), SpatialIntelligence (defers maplibre-gl JS, the @turf/* packages, Zod-based imagery/access-point clients via its static imports), AnomalyWorkbench, InvestigationGraph, QueryLayer — rendered inside one Suspense with a 'Loading module…' fallback and a per-module ErrorBoundary; (2) one dynamic import, RuntimeFactory.createCesiumRuntime → './CesiumRegionalRuntime', which is the only file importing 'cesium' and 'cesium/Build/Cesium/Widgets/widgets.css', so Cesium JS+CSS load only when 3D is requested; (3) MapLibre's worker is imported with ?worker&url so it is a separate emitted asset; (4) Cesium Workers/Assets/ThirdParty/Widgets are copied to public/cesium by the postinstall script and fetched at runtime via CESIUM_BASE_URL='/cesium/'. There is NO manualChunks or any build/rollupOptions block in vite.config.ts — chunking is whatever Rollup derives from the dynamic imports. Caveats that affect what 'lazy' currently means: main.tsx statically imports 'maplibre-gl/dist/maplibre-gl.css' and ten @fontsource CSS files, so MapLibre's CSS is in the entry CSS; InvestigationGraph statically imports AccessPointRelationships → accessPointsApi (Zod), and api/client.ts (entry) imports schemas/priis (Zod), so Zod is in the entry chunk; there is no graph library to defer — both graphs are hand-written SVG. Access-point relationships, the control cross-section, registry features and evidence are lazy at the data level (fetched on demand), not code-split.",
+      "evidence": [
+        "server/frontend/src/App.tsx:13-20",
+        "server/frontend/src/App.tsx:287-291",
+        "server/frontend/src/spatial/runtime/RuntimeFactory.ts:20-23",
+        "server/frontend/src/spatial/runtime/CesiumRegionalRuntime.ts:1-8",
+        "server/frontend/src/spatial/runtime/CesiumRegionalRuntime.ts:20",
+        "server/frontend/src/spatial/runtime/MapLibreRuntime.ts:1-6",
+        "server/frontend/package.json:15",
+        "server/frontend/scripts/copy-cesium-assets.mjs:1",
+        "server/frontend/vite.config.ts:4-16",
+        "server/frontend/src/main.tsx:3-16",
+        "server/frontend/src/modules/SpatialIntelligence.tsx:3-25",
+        "server/frontend/src/modules/FinanceIntelligence.tsx:2-15",
+        "server/frontend/src/modules/InvestigationGraph.tsx:4"
+      ],
+      "question": "4. Lazy-loading of heavy dependencies (must be preserved)",
+      "repository": "spiderweb-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Confirmed. ModuleId is the union command|finance|spatial|anomaly|graph|query; App holds it in useState initialised to 'command' and changes it only through setModule calls from the tab strip, the left rail, the command-bar submit (→ query), Command Center's OPEN QUERY LAYER button and its anomaly cards (→ anomaly). A grep of non-test source for location/history/URLSearchParams/hashchange/popstate finds no code that derives the module from the URL and no hashchange/popstate listener anywhere; the module is not persisted to localStorage either. The only URL consumers are in the Spatial imagery controller: it parses window.location.hash once at mount for map=zoom/lat/lng, eri, op, cmp, fp, base; rewrites the fragment with history.replaceState on moveend and on imagery state changes (skipped while the catalog is loading); and copies window.location.href for 'Copy link'. formatViewHash deletes only its own six keys and preserves any other fragment keys, and the viewHash header states the fragment is free because the app has no router — so a module key in the fragment would survive, but the Spatial controller only runs while the Spatial tab is mounted and its fragment remains in the address bar after leaving the tab. eriApi also reads window.location.origin, and the root ErrorBoundary calls window.location.reload().",
+      "evidence": [
+        "server/frontend/src/types/priis.ts:3",
+        "server/frontend/src/App.tsx:22-29",
+        "server/frontend/src/App.tsx:49",
+        "server/frontend/src/App.tsx:209-216",
+        "server/frontend/src/App.tsx:227",
+        "server/frontend/src/App.tsx:264",
+        "server/frontend/src/components/LeftRail.tsx:33",
+        "server/frontend/src/modules/CommandCenter.tsx:22",
+        "server/frontend/src/modules/CommandCenter.tsx:49",
+        "server/frontend/src/spatial/imagery/useImageryController.ts:47",
+        "server/frontend/src/spatial/imagery/useImageryController.ts:129-159",
+        "server/frontend/src/spatial/imagery/useImageryController.ts:179",
+        "server/frontend/src/spatial/imagery/viewHash.ts:1-10",
+        "server/frontend/src/spatial/imagery/viewHash.ts:25",
+        "server/frontend/src/spatial/imagery/viewHash.ts:58-75",
+        "server/frontend/src/spatial/imagery/eriApi.ts:51",
+        "server/frontend/src/components/ErrorBoundary.tsx:59"
+      ],
+      "question": "5. Six modules; nothing reads the URL to select one; existing use of location.hash",
+      "repository": "spiderweb-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "One place: fetchPriisDataWithFallback catches any rejection from fetchPriisData (network error, 8 s timeout, or any non-2xx on any of the nine entity endpoints) and returns the bundled priisData with live=false. App also seeds its initial state with the same mock object before the fetch resolves. The only indicator is the command-bar text LIVE vs DEMO; the classification banner says DEMO in both cases. A Zod-invalid row is dropped by parseArray rather than triggering fallback, and an empty-but-reachable backend yields live=true with empty tables. Nothing else falls back to fixtures: spatial layers, imagery, access points, RAG and pipeline surface errors instead (spatial/accessPoints/fixtures.ts is imported only by tests).",
+      "evidence": [
+        "server/frontend/src/api/client.ts:100-108",
+        "server/frontend/src/api/client.ts:7",
+        "server/frontend/src/App.tsx:3",
+        "server/frontend/src/App.tsx:45-46",
+        "server/frontend/src/App.tsx:87-97",
+        "server/frontend/src/data/mockData.ts:1",
+        "server/frontend/src/components/CommandBar.tsx:73",
+        "server/frontend/src/App.tsx:222"
+      ],
+      "question": "Where the frontend falls back to built-in mock data",
+      "repository": "spiderweb-pr",
+      "status": "CONFIRMED_PRESENT"
+    }
+  ],
+  "audited_commits": {
+    "aguayluz-pr": "6e3a4f67de20889abc3d0a48e0b514a4f7087f7a",
+    "centinelas-pr": "893a06f4a50655bcfae90469e15677c5f665d7a6",
+    "moneysweep-pr": "956bb498796c698230d2a2de722d316945777f62",
+    "mucaro-ai": "593bdd813686048a881cb3af61f4fbb9d211a52d",
+    "ovnis-pr": "a8225db5d226232037c455daf6e941e50d86d136",
+    "skywatcher-pr": "a2176990606048a6b918daacdb8bce027e58a903",
+    "spiderweb-pr": "9d6af728b48b7bbde5167d8abaacf51f34a0acaa",
+    "thehub-pr": "4f5c660801b6380ad4b64d39518fa778c9d25c76"
+  },
+  "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
+  "generated_at": "2026-11-17T13:38:28+00:00",
+  "schema": "federation.experience-program.special-adjudications/1"
+}

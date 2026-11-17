@@ -1,0 +1,713 @@
+{
+  "audited_commits": {
+    "aguayluz-pr": "6e3a4f67de20889abc3d0a48e0b514a4f7087f7a",
+    "centinelas-pr": "893a06f4a50655bcfae90469e15677c5f665d7a6",
+    "moneysweep-pr": "956bb498796c698230d2a2de722d316945777f62",
+    "mucaro-ai": "593bdd813686048a881cb3af61f4fbb9d211a52d",
+    "ovnis-pr": "a8225db5d226232037c455daf6e941e50d86d136",
+    "skywatcher-pr": "a2176990606048a6b918daacdb8bce027e58a903",
+    "spiderweb-pr": "9d6af728b48b7bbde5167d8abaacf51f34a0acaa",
+    "thehub-pr": "4f5c660801b6380ad4b64d39518fa778c9d25c76"
+  },
+  "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
+  "generated_at": "2026-11-17T13:38:28+00:00",
+  "schema": "federation.experience-program.settings-inventory/1",
+  "settings": [
+    {
+      "evidence": "dashboard/src/lib/api.js:20-39; dashboard/src/pages/SystemPage.jsx:200-240",
+      "id": "api-key",
+      "label": "API key (API secret key)",
+      "repository": "aguayluz-pr",
+      "scope": "SECRET",
+      "storage": "sessionStorage key 'aguayluz_api_key'"
+    },
+    {
+      "evidence": "dashboard/src/components/programActivityEvent.js:3,51-75; dashboard/src/components/ProgramTimeline.jsx:19",
+      "id": "program-activity-events",
+      "label": null,
+      "repository": "aguayluz-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage key 'federation.programActivity.v1.<producerId>' (read-only from the UI)"
+    },
+    {
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:24-39",
+      "id": "review-filters-url",
+      "label": "Review severity / tier / offset",
+      "repository": "aguayluz-pr",
+      "scope": "SESSION",
+      "storage": "none — URL query params sev, tier, offset"
+    },
+    {
+      "evidence": "dashboard/src/components/AssetsTable.jsx:40-62",
+      "id": "asset-filters-url",
+      "label": "Asset filters",
+      "repository": "aguayluz-pr",
+      "scope": "SESSION",
+      "storage": "none — URL query params type, subtype, status, review, unmapped, q (only on /assets; component state on /map)"
+    },
+    {
+      "evidence": "dashboard/src/pages/AlertsPage.jsx:25-46",
+      "id": "alert-filters-url",
+      "label": "Alert filters",
+      "repository": "aguayluz-pr",
+      "scope": "SESSION",
+      "storage": "none — URL query params module, status, review, tier, critical, q"
+    },
+    {
+      "evidence": "dashboard/src/pages/LiveLogsPage.jsx:14-20",
+      "id": "logs-type-url",
+      "label": "Live log event type",
+      "repository": "aguayluz-pr",
+      "scope": "SESSION",
+      "storage": "none — URL query param type"
+    },
+    {
+      "evidence": "dashboard/src/components/AssetMap.jsx:304-313",
+      "id": "map-layer-state",
+      "label": "Map layers / fill mode / basemap / terrain / NWS overlays",
+      "repository": "aguayluz-pr",
+      "scope": "SESSION",
+      "storage": "none — React state, reset on navigation"
+    },
+    {
+      "evidence": "dashboard/src/components/HydroMapWorkspace.jsx:50",
+      "id": "hydro-map-layer-state",
+      "label": "Hydrologic map layers",
+      "repository": "aguayluz-pr",
+      "scope": "SESSION",
+      "storage": "none — React state"
+    },
+    {
+      "evidence": "dashboard/src/main.jsx:14-15; dashboard/index.html:2",
+      "id": "theme",
+      "label": null,
+      "repository": "aguayluz-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "none — hard-coded dark (data-theme='dark'), no toggle"
+    },
+    {
+      "evidence": "dashboard/src/lib/api.js:5",
+      "id": "vite-api-base",
+      "label": null,
+      "repository": "aguayluz-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env VITE_API_BASE (build time; default http://localhost:8000)"
+    },
+    {
+      "evidence": "dashboard/src/App.jsx:10-11; dashboard/src/lib/api.js:9; dashboard/package.json:9",
+      "id": "vite-offline",
+      "label": null,
+      "repository": "aguayluz-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env VITE_OFFLINE=1 (HashRouter + embedded snapshot)"
+    },
+    {
+      "evidence": "dashboard/src/main.jsx:17-28",
+      "id": "vite-sentry-dsn",
+      "label": null,
+      "repository": "aguayluz-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env VITE_SENTRY_DSN (session replay with maskAllText:false when set)"
+    },
+    {
+      "evidence": "server/backend/main.py:163-174",
+      "id": "backend-api-secret-key",
+      "label": null,
+      "repository": "aguayluz-pr",
+      "scope": "SECRET",
+      "storage": "env API_SECRET_KEY (backend)"
+    },
+    {
+      "evidence": "server/backend/main.py:149-160",
+      "id": "backend-allowed-origins",
+      "label": null,
+      "repository": "aguayluz-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env ALLOWED_ORIGINS (backend CORS)"
+    },
+    {
+      "evidence": "server/backend/main.py:460-461; dashboard/src/pages/OverviewPage.jsx:88; dashboard/src/pages/SystemPage.jsx:99-101",
+      "id": "backend-ai-and-notify-channels",
+      "label": null,
+      "repository": "aguayluz-pr",
+      "scope": "SECRET",
+      "storage": "env ANTHROPIC_API_KEY, SLACK_WEBHOOK_URL, NTFY_TOPIC, SMTP_* (backend); surfaced read-only as booleans on System page"
+    },
+    {
+      "evidence": "desktop/config.py:20",
+      "id": "desktop-data-home",
+      "label": null,
+      "repository": "aguayluz-pr",
+      "scope": "GLOBAL_USER",
+      "storage": "env AGUAYLUZ_DATA_HOME (desktop wrapper)"
+    },
+    {
+      "evidence": "frontend/src/lib/ThemeContext.jsx:3",
+      "id": "theme",
+      "label": "Change theme / Cambiar tema",
+      "repository": "centinelas-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage centinelas_theme"
+    },
+    {
+      "evidence": "frontend/src/lib/LanguageContext.jsx:4",
+      "id": "language",
+      "label": "Change language / Cambiar idioma",
+      "repository": "centinelas-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage centinelas_lang"
+    },
+    {
+      "evidence": "frontend/src/lib/homeEntryGuard.js:4",
+      "id": "home-entry-permit",
+      "label": null,
+      "repository": "centinelas-pr",
+      "scope": "SESSION",
+      "storage": "sessionStorage prii:federation-home-permit:v1 and prii:federation-cold-home-consumed:v1"
+    },
+    {
+      "evidence": "frontend/src/api/appClient.js:10",
+      "id": "local-data-store",
+      "label": null,
+      "repository": "centinelas-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage centinelas_local_store_v1 (seeded from frontend/src/data/seedData.js; no UI to reset)"
+    },
+    {
+      "evidence": "frontend/src/components/programActivityEvent.js:3",
+      "id": "program-activity-live-events",
+      "label": null,
+      "repository": "centinelas-pr",
+      "scope": "GLOBAL_USER",
+      "storage": "localStorage federation.programActivity.v1.centinelas-pr (read only by UI)"
+    },
+    {
+      "evidence": "frontend/src/api/pipelineClient.js:11",
+      "id": "api-base",
+      "label": null,
+      "repository": "centinelas-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env VITE_API_BASE (build time)"
+    },
+    {
+      "evidence": "server/backend/auth.py:10",
+      "id": "write-token",
+      "label": null,
+      "repository": "centinelas-pr",
+      "scope": "SECRET",
+      "storage": "env CENTINELAS_WRITE_TOKEN"
+    },
+    {
+      "evidence": "src/centinelas/route/dispatch.py:216",
+      "id": "dispatch-token",
+      "label": null,
+      "repository": "centinelas-pr",
+      "scope": "SECRET",
+      "storage": "env FEDERATION_DISPATCH_TOKEN or CENTINELAS_GITHUB_TOKEN"
+    },
+    {
+      "evidence": "server/backend/main.py:26",
+      "id": "data-dir",
+      "label": null,
+      "repository": "centinelas-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env CENTINELAS_DATA_DIR"
+    },
+    {
+      "evidence": "server/backend/main.py:36",
+      "id": "allowed-origins",
+      "label": null,
+      "repository": "centinelas-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env ALLOWED_ORIGINS"
+    },
+    {
+      "evidence": "server/backend/water_disruption_api.py:90",
+      "id": "water-consumer-origins",
+      "label": null,
+      "repository": "centinelas-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env CENTINELAS_WATER_DISRUPTION_CONSUMER_ORIGINS"
+    },
+    {
+      "evidence": "frontend/src/App.jsx:58, frontend/src/App.jsx:227, frontend/src/components/workspaces/SettingsWorkspace.jsx:30-35",
+      "id": "default-model",
+      "label": "Default model for new chats (provider, model, allow_live, agent)",
+      "repository": "mucaro-ai",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage 'mucaro.options'"
+    },
+    {
+      "evidence": "frontend/src/components/workspaces/SettingsWorkspace.jsx:42",
+      "id": "retrieval-strategy",
+      "label": "Retrieval > Strategy",
+      "repository": "mucaro-ai",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage 'mucaro.options'"
+    },
+    {
+      "evidence": "frontend/src/App.jsx:21",
+      "id": "top-k",
+      "label": null,
+      "repository": "mucaro-ai",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage 'mucaro.options' (default 5, no UI control)"
+    },
+    {
+      "evidence": "frontend/src/components/ChatView.jsx:372-384, backend/app/main.py:789",
+      "id": "chat-model",
+      "label": "Model for this chat",
+      "repository": "mucaro-ai",
+      "scope": "WORKSPACE",
+      "storage": "backend (PUT /conversations/{id}/model)"
+    },
+    {
+      "evidence": "frontend/src/components/ModelSetup.jsx:196",
+      "id": "allow-live",
+      "label": "Allow sending my questions and source excerpts to this server",
+      "repository": "mucaro-ai",
+      "scope": "WORKSPACE",
+      "storage": "part of the chat model / 'mucaro.options'"
+    },
+    {
+      "evidence": "frontend/src/components/ModelSetup.jsx:203",
+      "id": "agent-actions",
+      "label": "Let the model propose actions…",
+      "repository": "mucaro-ai",
+      "scope": "WORKSPACE",
+      "storage": "part of the chat model / 'mucaro.options'"
+    },
+    {
+      "evidence": "frontend/src/components/ModelSetup.jsx:96-98, backend/app/main.py:952",
+      "id": "model-server-url",
+      "label": "Server address (local / remote)",
+      "repository": "mucaro-ai",
+      "scope": "GLOBAL_USER",
+      "storage": "backend (PUT /models/settings)"
+    },
+    {
+      "evidence": "frontend/src/components/ModelSetup.jsx:97, frontend/src/components/ModelSetup.jsx:162",
+      "id": "remote-api-key",
+      "label": "API key",
+      "repository": "mucaro-ai",
+      "scope": "SECRET",
+      "storage": "backend (PUT /models/settings); never echoed, only api_key_configured"
+    },
+    {
+      "evidence": "frontend/src/components/ChatView.jsx:386-395, backend/app/main.py:762",
+      "id": "chat-repository",
+      "label": "Repository for this chat (folder, container image, GitHub repo)",
+      "repository": "mucaro-ai",
+      "scope": "WORKSPACE",
+      "storage": "backend (PUT /conversations/{id}/repo)"
+    },
+    {
+      "evidence": "frontend/src/api.js:4-6, frontend/src/api.js:233-247, frontend/src/components/workspaces/SettingsWorkspace.jsx:60, frontend/src/components/TokenGate.jsx:83",
+      "id": "operator-token",
+      "label": "Local access token / Access token",
+      "repository": "mucaro-ai",
+      "scope": "SECRET",
+      "storage": "sessionStorage 'mucaro.sessionToken' (default), localStorage 'mucaro.operatorToken' (remember), sessionStorage 'mucaro.launchToken' (from #token= fragment)"
+    },
+    {
+      "evidence": "frontend/src/components/ChatView.jsx:100, frontend/src/components/Composer.jsx:3",
+      "id": "execution-mode",
+      "label": "Mode: Plan / Ask first / Auto (local read-only)",
+      "repository": "mucaro-ai",
+      "scope": "SESSION",
+      "storage": "none (React state, resets to 'ask')"
+    },
+    {
+      "evidence": "frontend/src/App.jsx:53, frontend/src/App.jsx:205",
+      "id": "active-conversation",
+      "label": null,
+      "repository": "mucaro-ai",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage 'mucaro.activeConversation'"
+    },
+    {
+      "evidence": "frontend/src/App.jsx:52, frontend/src/App.jsx:213",
+      "id": "seen-results",
+      "label": null,
+      "repository": "mucaro-ai",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage 'mucaro.seenResults'"
+    },
+    {
+      "evidence": "frontend/src/components/Composer.jsx:57-84",
+      "id": "composer-draft",
+      "label": null,
+      "repository": "mucaro-ai",
+      "scope": "WORKSPACE",
+      "storage": "localStorage 'mucaro.draft.<conversationId|new>'"
+    },
+    {
+      "evidence": "frontend/src/App.jsx:47",
+      "id": "active-view",
+      "label": null,
+      "repository": "mucaro-ai",
+      "scope": "SESSION",
+      "storage": "none (React state; not persisted, not in URL)"
+    },
+    {
+      "evidence": "frontend/src/components/workspaces/MemoryWorkspace.jsx:96",
+      "id": "memory-enabled",
+      "label": "On / Off per memory",
+      "repository": "mucaro-ai",
+      "scope": "APPLICATION_USER",
+      "storage": "backend (PATCH /memory/{id})"
+    },
+    {
+      "evidence": "frontend/src/components/DirectoryIntake.jsx:51-107",
+      "id": "directory-grants",
+      "label": "Granted Directories",
+      "repository": "mucaro-ai",
+      "scope": "ADMINISTRATIVE",
+      "storage": "backend (/permissions/directories/*)"
+    },
+    {
+      "evidence": "frontend/src/api.js:3",
+      "id": "api-base",
+      "label": null,
+      "repository": "mucaro-ai",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env VITE_API_BASE at build time"
+    },
+    {
+      "evidence": "dashboard/src/lib/theme.js:9",
+      "id": "theme",
+      "label": "Theme (dark / light / system)",
+      "repository": "ovnis-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage ovnis.theme"
+    },
+    {
+      "evidence": "dashboard/src/lib/locale.js:130",
+      "id": "locale",
+      "label": "Language (en / es)",
+      "repository": "ovnis-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage ovnis.locale"
+    },
+    {
+      "evidence": "dashboard/src/components/programActivityEvent.js:3",
+      "id": "program-activity-live",
+      "label": null,
+      "repository": "ovnis-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage federation.programActivity.v1.ovnis-pr (read only; no writer in this app)"
+    },
+    {
+      "evidence": "dashboard/src/components/CaseGrid.jsx:57",
+      "id": "case-list-view-state",
+      "label": "Search, period, tier, page, per page",
+      "repository": "ovnis-pr",
+      "scope": "SESSION",
+      "storage": "none (component state; lost on reload)"
+    },
+    {
+      "evidence": "dashboard/src/components/CaseMap.jsx:130",
+      "id": "map-view-state",
+      "label": "Heatmap, terrain, density, date range, spatial tool",
+      "repository": "ovnis-pr",
+      "scope": "SESSION",
+      "storage": "none (component state; lost when the mobile map view unmounts)"
+    },
+    {
+      "evidence": "dashboard/src/lib/api.js:5",
+      "id": "api-base",
+      "label": null,
+      "repository": "ovnis-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env VITE_API_BASE (build time)"
+    },
+    {
+      "evidence": "dashboard/src/lib/api.js:9",
+      "id": "offline-mode",
+      "label": null,
+      "repository": "ovnis-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env VITE_OFFLINE (build time)"
+    },
+    {
+      "evidence": "server/backend/main.py:34",
+      "id": "cors-origins",
+      "label": null,
+      "repository": "ovnis-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env ALLOWED_ORIGINS (backend)"
+    },
+    {
+      "evidence": "frontend/src/lib/app-params.js:84",
+      "id": "write-token",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "SECRET",
+      "storage": "localStorage key federation_write_token (set only from ?write_token= URL param); cleared by ?clear_write_token=true"
+    },
+    {
+      "evidence": "frontend/src/api/federationClient.js:29-39",
+      "id": "access-token",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "SECRET",
+      "storage": "localStorage keys federation_access_token and access_token (from ?access_token= or auth responses)"
+    },
+    {
+      "evidence": "frontend/src/lib/app-params.js:74-76",
+      "id": "api-base-url",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "localStorage key federation_api_base_url (from ?api_base_url= or VITE_SKYWATCHER_API_BASE_URL / VITE_FEDERATION_API_BASE_URL, default /api). Note: a URL query parameter can repoint all API calls (and the bearer token) to another origin"
+    },
+    {
+      "evidence": "frontend/src/lib/app-params.js:72",
+      "id": "app-id",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "localStorage key federation_app_id"
+    },
+    {
+      "evidence": "frontend/src/lib/app-params.js:85",
+      "id": "from-url",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "SESSION",
+      "storage": "localStorage key federation_from_url"
+    },
+    {
+      "evidence": "frontend/src/lib/app-params.js:87",
+      "id": "require-auth",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env VITE_FEDERATION_REQUIRE_AUTH (build time)"
+    },
+    {
+      "evidence": "frontend/src/console/viewportState.js:1",
+      "id": "console-viewport",
+      "label": "Viewport State",
+      "repository": "skywatcher-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage key skywatcher.console.viewport.v1"
+    },
+    {
+      "evidence": "frontend/src/pages/Console.jsx:27",
+      "id": "console-basemap",
+      "label": "Basemap",
+      "repository": "skywatcher-pr",
+      "scope": "SESSION",
+      "storage": "none (component state)"
+    },
+    {
+      "evidence": "frontend/src/pages/Console.jsx:30",
+      "id": "console-layer-visibility",
+      "label": "Layer Registry",
+      "repository": "skywatcher-pr",
+      "scope": "SESSION",
+      "storage": "none (component state)"
+    },
+    {
+      "evidence": "frontend/src/lib/skyFavorites.js:10",
+      "id": "sky-favorites",
+      "label": "Favorites",
+      "repository": "skywatcher-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage key skywatcher.sky-favorites.v1"
+    },
+    {
+      "evidence": "frontend/src/pages/SkyTargetFinder.jsx:39",
+      "id": "sky-observer",
+      "label": "Observer location",
+      "repository": "skywatcher-pr",
+      "scope": "SESSION",
+      "storage": "none (component state; default San Juan)"
+    },
+    {
+      "evidence": "frontend/src/pages/SkyCameras.jsx:9",
+      "id": "sky-cameras-show-players",
+      "label": "Embedded players toggle",
+      "repository": "skywatcher-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage key skywatcher.skyCameras.showPlayers"
+    },
+    {
+      "evidence": "frontend/src/components/programActivityEvent.js:3",
+      "id": "program-activity",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "GLOBAL_USER",
+      "storage": "localStorage key federation.programActivity.v1.<producerId> (read by timeline; appendProgramActivityEvent has no UI caller)"
+    },
+    {
+      "evidence": "frontend/src/main.jsx:15",
+      "id": "theme",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "none - dark theme hardcoded, no user toggle"
+    },
+    {
+      "evidence": "server/backend/main.py:315",
+      "id": "backend-write-token",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "SECRET",
+      "storage": "env PRII_WRITE_TOKEN"
+    },
+    {
+      "evidence": "server/backend/cameras_router.py:52-74",
+      "id": "backend-sky-cameras-limits",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env SKYWATCHER_SKY_CAMERAS_MAX_UPLOAD_MB / _SUBMISSIONS_PER_HOUR / _ROOT / _CATALOG_DIR"
+    },
+    {
+      "evidence": "server/backend/main.py:78-79",
+      "id": "backend-db-paths",
+      "label": null,
+      "repository": "skywatcher-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env SKYWATCHER_DB, SKYWATCHER_CORPUS_IMPORT_MAX_BYTES"
+    },
+    {
+      "evidence": "server/frontend/src/theme.ts:3",
+      "id": "theme",
+      "label": "◐ LIGHT / ◑ DARK",
+      "repository": "spiderweb-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage spiderweb_theme"
+    },
+    {
+      "evidence": "server/frontend/src/App.tsx:124",
+      "id": "left-rail-collapsed",
+      "label": "Toggle left rail",
+      "repository": "spiderweb-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage priis_left_collapsed"
+    },
+    {
+      "evidence": "server/frontend/src/App.tsx:128",
+      "id": "inspector-collapsed",
+      "label": "Toggle inspector",
+      "repository": "spiderweb-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage priis_right_collapsed"
+    },
+    {
+      "evidence": "server/frontend/src/App.tsx:116",
+      "id": "active-investigation",
+      "label": "Investigations",
+      "repository": "spiderweb-pr",
+      "scope": "WORKSPACE",
+      "storage": "localStorage priis_investigation"
+    },
+    {
+      "evidence": "server/frontend/src/App.tsx:120",
+      "id": "temporal-cursor",
+      "label": "cursor",
+      "repository": "spiderweb-pr",
+      "scope": "WORKSPACE",
+      "storage": "localStorage priis_cursor"
+    },
+    {
+      "evidence": "server/frontend/src/App.tsx:100",
+      "id": "storage-version",
+      "label": null,
+      "repository": "spiderweb-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage priis_storage_version"
+    },
+    {
+      "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:755",
+      "id": "spatial-mode",
+      "label": "2D / 3D (regional preview)",
+      "repository": "spiderweb-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage priis_spatial_mode"
+    },
+    {
+      "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:747",
+      "id": "layer-panel-collapsed",
+      "label": "Show layers / Hide layers",
+      "repository": "spiderweb-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage spiderweb_layer_collapsed"
+    },
+    {
+      "evidence": "server/frontend/src/components/programActivityEvent.ts:61",
+      "id": "program-activity-live",
+      "label": null,
+      "repository": "spiderweb-pr",
+      "scope": "WORKSPACE",
+      "storage": "localStorage federation.programActivity.v1.spiderweb-pr (read only by UI)"
+    },
+    {
+      "evidence": "server/frontend/src/spatial/imagery/useImageryController.ts:148",
+      "id": "map-view-hash",
+      "label": "Copy link to this view",
+      "repository": "spiderweb-pr",
+      "scope": "SESSION",
+      "storage": "URL fragment #map=&eri=&op=&cmp=&fp=&base= (history.replaceState)"
+    },
+    {
+      "evidence": "server/frontend/src/modules/QueryLayer.tsx:26",
+      "id": "rag-mode",
+      "label": "STUB / RAG LIVE",
+      "repository": "spiderweb-pr",
+      "scope": "SESSION",
+      "storage": "none (component state, resets on tab switch)"
+    },
+    {
+      "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:459",
+      "id": "layer-visibility",
+      "label": "Layer control",
+      "repository": "spiderweb-pr",
+      "scope": "SESSION",
+      "storage": "none (component state, resets on tab switch)"
+    },
+    {
+      "evidence": "server/frontend/src/config.ts:11",
+      "id": "api-base",
+      "label": null,
+      "repository": "spiderweb-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "build env VITE_API_BASE"
+    },
+    {
+      "evidence": "server/frontend/src/config.ts:22",
+      "id": "martin-base",
+      "label": null,
+      "repository": "spiderweb-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "build env VITE_MARTIN_BASE"
+    },
+    {
+      "evidence": "server/frontend/src/config.ts:26",
+      "id": "municipios-delivery",
+      "label": null,
+      "repository": "spiderweb-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "build env VITE_MUNICIPIOS_DELIVERY"
+    },
+    {
+      "evidence": "server/frontend/src/config.ts:49",
+      "id": "tile-url",
+      "label": null,
+      "repository": "spiderweb-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "build env VITE_TILE_URL / VITE_TILE_ATTRIBUTION"
+    },
+    {
+      "evidence": "desktop/config.py:24",
+      "id": "desktop-data-home",
+      "label": null,
+      "repository": "spiderweb-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env SPIDERWEB_DATA_HOME"
+    }
+  ]
+}
