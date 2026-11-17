@@ -155,6 +155,10 @@ application was changed.
   application, because the application's class is what colours it.
 - The browser matrix receipt is Chromium only. Firefox and WebKit run in CI
   and are not claimed in these files.
+- `main` moved during RC3: thehub-pr#432 put the Hub on the shared shell and
+  deleted the Hub's own sidebar, where its most frequent contrast failures
+  were. The thehub-pr rows of the element list describe the commit audited in
+  RC0 and are superseded for the shell; the Hub has not been re-scanned.
 - The gate is `PROVISIONAL`: nothing has adopted the components, nothing was
   used with a screen reader or on a touch device, and the author is the only
   reviewer.

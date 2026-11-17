@@ -55,16 +55,17 @@ to the sans font stack, which named a family no application loads.
 
 ## Compatibility
 
-All 0.5 exports, classes and custom properties remain. The shell stylesheet is
-part of `styles.css` but inert for a page that does not render the shell: it
-adds custom properties and `.fd-*`-scoped rules only, which a test enforces,
-and no federation frontend uses any of the new names. Two changes are not
-inert: the primary button and the default focus outline change colour for any
-page that loads the stylesheet. The Hub frontend loads it from source, so it
-shows that change as soon as this is merged; the other repositories pin a
-released tarball and are unaffected until they move their pin. The bridge changes
-nothing until an application imports it. React 18 and 19 are supported; no
-dependency is added.
+All 0.5 exports, classes and custom properties remain. The shell and control
+stylesheets are part of `styles.css` but inert for a page that does not render
+their components: they add custom properties and `.fd-*`-scoped rules only,
+which tests enforce. Two changes are not inert: the primary button and the
+default focus outline change colour for any page that loads the stylesheet.
+
+The Hub frontend renders the shell and loads the stylesheet from source, so it
+shows those changes as soon as they are merged. The other repositories pin a
+released tarball and are unaffected until they move their pin. The bridge
+changes nothing until an application imports it. React 18 and 19 are
+supported; no dependency is added.
 
 Browser floor: `<dialog>` with `:modal`, and `color-mix()`. That is Firefox
 113, Safari 16.2 and Chrome 111, below the floor Tailwind 4 already sets.
