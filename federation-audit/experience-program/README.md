@@ -29,6 +29,7 @@ someone other than the author of the work.
 | `rc1/settings_inventory.json`, `rc1/context_actions_inventory.json` | Settings, contextual actions and keyboard shortcuts across applications. |
 | `rc1/accessibility_findings.json` | Accessibility leads read from source. Not scan results. |
 | `rc1/special_adjudications.json` | Answers to the per-application questions in the program brief. |
+| `rc1/desktop_conventions.json` | Where recents, pinning, renaming and Dock behaviour exist today (workstream WS-D). |
 | `rc1/RC1_GATE.json` | Gate state, totals and per-application validation. |
 
 ## Reading RC0
