@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "29222d6ef6cdd7796d160e8b556e56dab85fc019",
+  "source_commit": "be4a4ae61cfc2ed39d6d2a2dd5d0e8e17f989321",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -32,8 +32,7 @@
     "navigation_files": [
       "server/frontend/src/App.jsx",
       "server/frontend/src/lib/nav.js",
-      "server/frontend/src/components/layout/Sidebar.jsx",
-      "server/frontend/src/components/layout/MobileNav.jsx"
+      "server/frontend/src/components/layout/AppLayout.jsx"
     ],
     "existing_gui_capability_manifests": [
       ".federation/gui-capabilities.json"
@@ -1088,30 +1087,6 @@
       ]
     },
     {
-      "pattern": "server/frontend/src/components/layout/Sidebar.jsx:11:unlabeled-control",
-      "classification": "PRESENTATION_ONLY",
-      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
-      "evidence": [
-        "server/frontend/src/components/layout/Sidebar.jsx:11"
-      ]
-    },
-    {
-      "pattern": "server/frontend/src/components/layout/MobileNav.jsx:25:Open navigation menu",
-      "classification": "PRESENTATION_ONLY",
-      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
-      "evidence": [
-        "server/frontend/src/components/layout/MobileNav.jsx:25"
-      ]
-    },
-    {
-      "pattern": "server/frontend/src/components/layout/MobileNav.jsx:35:setOpen(false)} className= >",
-      "classification": "PRESENTATION_ONLY",
-      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
-      "evidence": [
-        "server/frontend/src/components/layout/MobileNav.jsx:35"
-      ]
-    },
-    {
       "pattern": "server/frontend/src/components/cases/BriefTemplateDialog.jsx:34:setSelected(t.id)} className= `} >",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
@@ -1664,14 +1639,6 @@
       ]
     },
     {
-      "pattern": "server/frontend/src/components/layout/MobileNav\\.jsx:35:setOpen\\(false\\)\\}\\ className=\\ >",
-      "classification": "PRESENTATION_ONLY",
-      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
-      "evidence": [
-        "server/frontend/src/components/layout/MobileNav.jsx:35"
-      ]
-    },
-    {
       "pattern": "server/frontend/src/components/cases/BriefTemplateDialog\\.jsx:34:setSelected\\(t\\.id\\)\\}\\ className=\\ `\\}\\ >",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
@@ -1876,24 +1843,6 @@
       "evidence": [
         "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:90",
         "server/frontend/tests/visual/gui-parity.spec.js:46"
-      ]
-    },
-    {
-      "pattern": "server/frontend/src/components/layout/MobileNav\\.jsx:[0-9]+:Open navigation menu",
-      "classification": "CLIENT_STATE",
-      "rationale": "The Radix Sheet trigger opens tested local navigation state and intentionally has no backend target.",
-      "evidence": [
-        "server/frontend/src/components/layout/MobileNav.jsx:25",
-        "server/frontend/tests/visual/gui-parity.spec.js:29"
-      ]
-    },
-    {
-      "pattern": "server/frontend/src/components/layout/Sidebar\\.jsx:[0-9]+:unlabeled-control",
-      "classification": "INTERNAL_NAVIGATION",
-      "rationale": "The reusable sidebar item is a React Router link whose targets come from the tested navigation registry.",
-      "evidence": [
-        "server/frontend/src/components/layout/Sidebar.jsx:12",
-        "server/frontend/src/lib/commands.test.js:9"
       ]
     },
     {

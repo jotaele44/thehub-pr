@@ -25,6 +25,15 @@ property is removed or changed. Tokens stay at 2.0.0.
   variables as aliases of the federation tokens.
 - A changelog, `federation-design/packages/react/CHANGELOG.md`.
 
+## Adopted by
+
+`thehub-pr` uses the shell, the token bridge and the named repository accents
+for its own layout (`server/frontend/src/components/layout/AppLayout.jsx`,
+`server/frontend/src/lib/nav.js`), and no longer carries the imported
+`zip-design` layer or a palette of its own. That migration added two things to
+this candidate: `--fd-repo-accent-<repository>` custom properties, and a fix
+to the sans font stack, which named a family no application loads.
+
 ## Changed
 
 - The API snapshot is checked against the package's real exports in both

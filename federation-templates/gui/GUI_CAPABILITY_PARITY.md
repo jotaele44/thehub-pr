@@ -6,7 +6,7 @@
 
 {{PROGRAM_ID}} follows the federation rule that a human-facing capability is not
 complete until it is usable through this repository's own GUI. The full rule set
-is thehub-pr `docs/FEDERATION_GUI_STANDARD.md`; this page is the working summary.
+is `thehub-pr/docs/FEDERATION_GUI_STANDARD.md`; this page is the working summary.
 
 ## Completion boundary
 

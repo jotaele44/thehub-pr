@@ -35,8 +35,7 @@
     ],
     "navigation_files": [
       "server/frontend/src/lib/nav.js",
-      "server/frontend/src/components/layout/Sidebar.jsx",
-      "server/frontend/src/components/layout/MobileNav.jsx"
+      "server/frontend/src/components/layout/AppLayout.jsx"
     ],
     "implicit_routes": [],
     "exclude": [
@@ -440,7 +439,6 @@
           "server/frontend/src/gis/deepLinkView.js"
         ],
         "discoverability": [
-          "server/frontend/src/components/layout/Sidebar.jsx",
           "server/frontend/src/components/layout/AppLayout.jsx"
         ]
       },

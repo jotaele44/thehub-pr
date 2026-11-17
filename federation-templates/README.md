@@ -79,6 +79,11 @@ manifest may not yet satisfy the canonical checker, so a repository is added to 
 set by the hub change that starts its adoption and not before. A repository that is
 not listed is untouched by rendering, by its drift gate and by the sync workflow.
 
+Listed today: `thehub-pr` in `_gui_rules`, and `moneysweep-pr` in both sets. Being
+listed does not change a producer by itself: its drift gate renders from the hub
+commit it has pinned, so the rendered files reach it only when its own adoption
+change moves that pin to a commit that lists it.
+
 The frontend Playwright config and the manifest-driven parity spec are not
 templated yet. They differ per repository in ways that need a live backend to
 verify (backend module name, seed and teardown scripts, environment, mobile
