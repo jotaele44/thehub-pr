@@ -226,11 +226,18 @@ def test_centinelas_desktop_requirements_support_plain_pip_install(tmp_path):
     assert f"prii-maintenance @ {archive}" in requirements
     assert f"prii-export-utils @ {archive}" in requirements
     assert "git+https://github.com/jotaele44/thehub-pr" not in requirements
-    # prii-desktop is pinned to the commit carrying the visible-startup-failure fix;
-    # the other two shared packages stay on their original immutable pin.
+    # prii-desktop is pinned to the commit carrying the visible-startup-failure fix.
     assert f"prii-desktop @ {archive}1313c77aec1a0742c1abb444026284a825af4177.zip" in requirements
     assert requirements.count("1313c77aec1a0742c1abb444026284a825af4177.zip") == 1
-    assert requirements.count("f2b81769924689b4d959554928810b1d7b7ef3d6.zip") == 2
+    # The other two must name the same commits as centinelas-pr's pyproject.toml
+    # [tool.uv.sources]: an install that reads both files refuses two different
+    # URLs for one package.
+    maintenance = "f2b81769924689b4d959554928810b1d7b7ef3d6"
+    export_utils = "0f62e4bdde10b5ac82787a329d6f15481ab9c7f0"
+    assert f"prii-maintenance @ {archive}{maintenance}.zip" in requirements
+    assert f"prii-export-utils @ {archive}{export_utils}.zip" in requirements
+    assert requirements.count(f"{maintenance}.zip") == 1
+    assert requirements.count(f"{export_utils}.zip") == 1
 
 
 def test_every_producer_declares_an_app_title():

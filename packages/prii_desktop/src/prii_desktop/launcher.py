@@ -14,6 +14,9 @@ Flags (from ``sys.argv``):
   --no-window   serve only; print the URL and block (Ctrl+C to stop)
   --browser     skip pywebview and open the default browser
   --route PATH  open the window/browser on a client route (e.g. /launcher)
+  --launchpad   show the Launch Pad even when it was set to be skipped
+  --skip-launchpad  open straight into the app with the stored choices
+  --guest / --operator  access mode for --browser and --no-window starts
   --setup       open the native Setup & Diagnostics center
   --repair      open Setup & Diagnostics with the existing workspace selected
   --smoke       start, verify health, exit 0 (used by CI and setup checks)
@@ -35,6 +38,18 @@ from pathlib import Path
 
 from .appserver import make_desktop_app
 from .config import DesktopConfig
+from .launchpad import (
+    DesktopBridge,
+    Session,
+    apply_session,
+    headless_session,
+    launchpad_spec,
+    render_launchpad_html,
+    route_from_argv,
+    session_url,
+    should_show,
+    stored_session,
+)
 from .setup_center import (
     SetupBridge,
     application_support_dir,
@@ -144,9 +159,16 @@ def clear_lock(lock_file: Path) -> None:
     lock_file.unlink(missing_ok=True)
 
 
-def restart_process(lock_file: Path, argv: list[str]) -> None:
+def restart_process(
+    lock_file: Path, argv: list[str], extra: tuple[str, ...] = ()
+) -> None:
     """Restart from the signed app after setup or repair changes."""
-    clean_args = [arg for arg in argv if arg not in {"--setup", "--repair"}]
+    clean_args = [
+        arg
+        for arg in argv
+        if arg not in {"--setup", "--repair", "--launchpad", "--skip-launchpad"}
+    ]
+    clean_args.extend(extra)
 
     def restart() -> None:
         time.sleep(0.25)
@@ -158,6 +180,15 @@ def restart_process(lock_file: Path, argv: list[str]) -> None:
         os.execv(sys.executable, exec_args)
 
     threading.Thread(target=restart, name="app-restart", daemon=True).start()
+
+
+def reopen_launchpad(lock_file: Path, argv: list[str]) -> None:
+    """Restart on the Launch Pad (the in-app "Launch Pad" control).
+
+    Options are environment variables read when the backend is imported, so
+    changing them, or the access mode, takes a fresh process.
+    """
+    restart_process(lock_file, argv, extra=("--launchpad",))
 
 
 def finish(server, lock_file: Path) -> None:
@@ -306,8 +337,13 @@ def start_app(
     window,
     argv: list[str],
     runtime: dict[str, object],
+    session: Session | None = None,
 ) -> None:
     """Start the backend and load it, always leaving the window in a visible state.
+
+    ``session`` carries the Launch Pad choices; it is applied to the environment
+    before the producer backend is imported, which is the whole point of asking
+    first.
 
     The splash is shown before any slow work (importing the producer backend can
     take a while), and every failure -- including an exception raised while the
@@ -324,7 +360,7 @@ def start_app(
         apply_environment(config)
         port = free_port()
         base = f"http://127.0.0.1:{port}"
-        url = display_url(base, argv)
+        url = _session_target(config, base, argv, session)
         bridge.set_app_url(url)
         write_lock(lock_file, base, base + config.health_path)
         server = start_server(config, port)
@@ -350,8 +386,22 @@ def start_app(
         )
 
 
+def _session_target(
+    config: DesktopConfig,
+    base: str,
+    argv: list[str],
+    session: Session | None,
+) -> str:
+    """Apply ``session`` to the environment and return the URL to open."""
+    spec = launchpad_spec(config)
+    if spec is None or session is None:
+        return display_url(base, argv)
+    query = apply_session(spec, session)
+    return session_url(base, session.start_route, query)
+
+
 def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None:
-    """Run first-launch setup and the producer in one native window."""
+    """Run first-launch setup, the Launch Pad, and the producer in one window."""
     import webview
 
     show_setup = (
@@ -359,13 +409,23 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
         or "--setup" in argv
         or "--repair" in argv
     )
-    bridge = SetupBridge(
+    spec = launchpad_spec(config)
+    show_pad = should_show(config, argv)
+    bridge = DesktopBridge(
         config,
+        argv=argv,
         restart_app=lambda: restart_process(lock_file, argv),
+        reopen_launchpad=(
+            (lambda: reopen_launchpad(lock_file, argv)) if spec is not None else None
+        ),
     )
+    if show_pad:
+        bridge.await_launch()
     initial_html = (
         render_setup_html(config)
         if show_setup
+        else render_launchpad_html(config)
+        if show_pad
         else _splash_html(config.app_title, config.brand_accent)
     )
     window = webview.create_window(
@@ -383,6 +443,7 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
     def on_closed() -> None:
         window_closed.set()
         bridge.completed.set()
+        bridge.launch_requested.set()
 
     window.events.closed += on_closed
 
@@ -391,7 +452,19 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
             bridge.completed.wait()
             if window_closed.is_set():
                 return
-        start_app(config, lock_file, bridge, window, argv, runtime)
+        session = None
+        if show_pad:
+            # Setup's "Save" already returned the window to the Launch Pad.
+            bridge.launch_requested.wait()
+            if window_closed.is_set():
+                return
+            session = bridge.session()
+        elif spec is not None:
+            session = stored_session(config, spec)
+            requested = route_from_argv(argv)
+            if requested:
+                session.start_route = requested
+        start_app(config, lock_file, bridge, window, argv, runtime, session)
 
     webview.start(on_ready)
     server = runtime.get("server")
@@ -442,6 +515,16 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
     port = free_port()
     base = f"http://127.0.0.1:{port}"
     url = display_url(base, argv)
+    headless = headless_session(config, argv)
+    if headless is not None:
+        # No page to ask on: honour stored options, and an explicit
+        # --guest/--operator. An exported shell variable still wins.
+        spec, session = headless
+        query = apply_session(spec, session, override=False)
+        if "--route" not in args:
+            url = session_url(base, session.start_route, query)
+        elif query:
+            url = session_url(url, "/", query)
     if not (args & {"--smoke", "--no-window"}):
         write_lock(lock_file, base, base + config.health_path)
     server = start_server(config, port)
