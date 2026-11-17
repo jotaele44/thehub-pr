@@ -1431,19 +1431,19 @@
       ]
     },
     {
-      "pattern": "federation-design/packages/react/src/index.jsx:57:unlabeled-control",
+      "pattern": "federation-design/packages/react/src/index.jsx:60:unlabeled-control",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
       "evidence": [
-        "federation-design/packages/react/src/index.jsx:57"
+        "federation-design/packages/react/src/index.jsx:60"
       ]
     },
     {
-      "pattern": "federation-design/packages/react/src/index.jsx:74:unlabeled-control",
+      "pattern": "federation-design/packages/react/src/index.jsx:77:unlabeled-control",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
       "evidence": [
-        "federation-design/packages/react/src/index.jsx:74"
+        "federation-design/packages/react/src/index.jsx:77"
       ]
     },
     {
