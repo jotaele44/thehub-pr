@@ -49,7 +49,16 @@ const WIDTHS = [320, 390, 430, 768, 1280, 1440, 1920];
         await page.addScriptTag({ content: axeSource });
         const axe = await page.evaluate(async () => {
           const r = await window.axe.run(document, { resultTypes: ['violations'] });
-          return { version: window.axe.version, violations: r.violations.map(v => ({ id: v.id, impact: v.impact, nodes: v.nodes.length })) };
+          // For the rules a fix has to be traced to a component, keep what
+          // identifies each failing element: selector, markup and, for contrast,
+          // the colours axe measured.
+          const DETAIL = ['color-contrast', 'button-name', 'scrollable-region-focusable', 'label-content-name-mismatch'];
+          const detail = v => v.nodes.slice(0, 80).map(n => {
+            const d = ((n.any || []).find(c => c.data && c.data.fgColor) || {}).data;
+            return Object.assign({ target: n.target.join(' '), html: n.html.slice(0, 200) },
+              d ? { fg: d.fgColor, bg: d.bgColor, ratio: d.contrastRatio, expected: d.expectedContrastRatio, font_size: d.fontSize, font_weight: d.fontWeight } : {});
+          });
+          return { version: window.axe.version, violations: r.violations.map(v => Object.assign({ id: v.id, impact: v.impact, nodes: v.nodes.length }, DETAIL.includes(v.id) ? { detail: detail(v) } : {})) };
         });
         out.axe_version = axe.version; row.axe = axe.violations;
       } catch (e) { row.error = String(e).slice(0, 200); }
