@@ -18,6 +18,26 @@ The **first run** needs an internet connection once: it creates a private
 Python 3.10+ and Node.js to be installed). Every later run starts instantly
 and **works offline**.
 
+## The Launch Pad
+
+After the first-run setup, TheHub opens on its **Launch Pad** instead of going
+straight to the dashboard. Nothing is running yet at that point. It shows:
+
+- **Readiness**: the workspace, how many records the store holds, and which
+  producer checkouts sit next to TheHub.
+- **Guest or Operator.** Guest is read-only. Operator turns on administrative
+  writes for that session: the launcher sets `PRII_WRITE_TOKEN` to a one-time
+  value and hands it to the window, so there is nothing to paste. You can
+  protect Operator with a passphrase.
+- **Open on**: the page the window starts on.
+- **Launch options**: the Grid V2 profile folder.
+- **Next time**: skip the Launch Pad and reuse these choices.
+
+Press **Launch** to start. To change the mode or options later, use the
+**Launch Pad** button in the corner of the app (next to the Setup gear); it
+restarts on this page. Guest and the passphrase keep a shared desktop tidy;
+they do not stop someone who can already run programs under your account.
+
 The launcher opens TheHub with an **empty** database — `data/hub.db` is
 gitignored and created fresh on first run. That's expected, not a setup
 failure: populating it with real federation data is a separate, optional
@@ -35,9 +55,16 @@ distribution channel, not a replacement for the launcher above.
   same origin (no CORS, one process).
 - `desktop/launcher_api.py` / `desktop/launcher.html` back the `/launcher`
   federation-launcher page that `PRII-FEDERATION.*` opens directly.
-- `desktop/launch.py` picks a free port, starts uvicorn, and opens a native
+- `desktop/launch.py` shows the Launch Pad, then picks a free port, starts
+  uvicorn, and opens the app in the same native
   [pywebview](https://pywebview.flowrl.com/) window (falls back to the
-  default browser). Flags: `--no-window`, `--browser`, `--route <path>`.
+  default browser, where there is no Launch Pad and stored options apply).
+  Flags: `--no-window`, `--browser`, `--route <path>`, `--launchpad`,
+  `--skip-launchpad`, `--guest`, `--operator`.
+- `LAUNCHPAD` in `desktop/config.py` is TheHub's Launch Pad content: its
+  summary, readiness check, start pages, the read-only POSTs a guest may call,
+  and its options. The screen itself lives in the shared runtime
+  ([`packages/prii_desktop`](../packages/prii_desktop/README.md#the-launch-pad)).
 - `desktop/setup.py` is idempotent one-time setup (`--force` to redo).
 
 ## Command line
@@ -46,6 +73,8 @@ distribution channel, not a replacement for the launcher above.
 python desktop/setup.py          # one-time setup
 .venv/bin/python desktop/launch.py              # native window
 .venv/bin/python desktop/launch.py --route /launcher  # federation launcher page
+.venv/bin/python desktop/launch.py --skip-launchpad    # straight into the app
+.venv/bin/python desktop/launch.py --no-window --operator  # server only, writes enabled
 .venv/bin/python desktop/launch.py --no-window  # server only
 ```
 

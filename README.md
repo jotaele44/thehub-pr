@@ -113,7 +113,10 @@ installs dependencies, later runs work offline):
 - `PRII-THEHUB.bat` (Windows)
 - `PRII-THEHUB.sh` (Linux)
 
-See [`desktop/README.md`](desktop/README.md) for details. The launcher opens
+See [`desktop/README.md`](desktop/README.md) for details. The app opens on its
+**Launch Pad**, where you choose Guest (read-only) or Operator (writes enabled
+for that session), the starting page and the launch options before anything
+runs. The launcher opens
 the hub app with an empty database — the manual steps below (`hub aggregate`,
 `hub correlate`, `hub ingest`) are how you populate it with real federation
 data; they aren't a prerequisite for the app to open.
@@ -159,9 +162,10 @@ writes) are guarded:
 
 Reads are never affected. **Set the token before writes are needed** — without it, there is
 no fallback that lets any caller (including loopback or the Docker bridge address under
-`docker compose up`) through. Caveat: with the token set the
-browser UI cannot currently supply it (see `docs/MATURITY_AUDIT.md`), so token mode
-suits API/CLI callers today.
+`docker compose up`) through. The browser UI supplies the token in one of three ways: the
+desktop Launch Pad's Operator mode sets a one-time token and passes it to the window; loading
+the app with `?write_token=<token>`; or pasting it under Operator Settings. All three keep it
+in tab-scoped session storage (see [`server/frontend/README.md`](server/frontend/README.md)).
 
 `hub ingest` maps the canonical aggregate streams onto the collections the UI reads
 (`sources → UnifiedSources`, `entities → GraphNodes`, `relationships → GraphEdges`,
