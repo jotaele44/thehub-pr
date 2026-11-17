@@ -55,6 +55,11 @@ removed or changed. Tokens stay at 2.0.0. One behaviour is corrected:
   now saved preference, then `defaultTheme`, then the operating system's
   preference. No application used the provider before this release.
 
+- `FederationAppShell` with `focusMainOnNavigate`: focus moves to main only
+  when `current` changes. Under React StrictMode the effect ran twice on mount
+  and the second run focused main on first load, so the skip link was no
+  longer the first stop. Production builds were unaffected.
+
 ### Known issues
 
 - The raw repository accent (`--fd-accent`) is below 4.5:1 as text or behind

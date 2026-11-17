@@ -43,15 +43,15 @@ export function FederationAppShell({
     throw new Error(`FederationAppShell mobileBelow must be one of: ${Object.keys(FEDERATION_SHELL_BREAKPOINTS).join(', ')}`)
   }
   const mainRef = useRef(null)
-  const mounted = useRef(false)
+  const lastCurrent = useRef(current)
 
   // After a navigation, a keyboard or screen-reader user is otherwise left
   // on the link they just activated, with nothing announcing the new page.
+  // Only a change of `current` is a navigation: not the first render, not an
+  // effect React runs twice (StrictMode), not the option being switched on.
   useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true
-      return
-    }
+    if (lastCurrent.current === current) return
+    lastCurrent.current = current
     if (focusMainOnNavigate) mainRef.current?.focus()
   }, [current, focusMainOnNavigate])
 
