@@ -44,7 +44,7 @@
     }
   ],
   "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
-  "generated_at": "2026-11-17T13:38:28+00:00",
+  "generated_at": "2026-11-17T13:40:31+00:00",
   "keyboard_shortcuts": [
     {
       "action": "Move review cursor down",
@@ -129,6 +129,20 @@
       "keys": "Enter",
       "repository": "aguayluz-pr",
       "scope": "ai-query-panel"
+    },
+    {
+      "action": "Open contract detail sheet from a focused row",
+      "evidence": "dashboard/src/components/ContractsTable.jsx:80",
+      "keys": "Enter / Space",
+      "repository": "moneysweep-pr",
+      "scope": "contracts-table"
+    },
+    {
+      "action": "Open entity detail sheet from a focused row",
+      "evidence": "dashboard/src/components/EntitiesTable.jsx:79",
+      "keys": "Enter / Space",
+      "repository": "moneysweep-pr",
+      "scope": "entities-table"
     },
     {
       "action": "Send the message (hardware keyboard only)",

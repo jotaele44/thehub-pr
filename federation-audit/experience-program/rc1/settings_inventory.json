@@ -10,7 +10,7 @@
     "thehub-pr": "4f5c660801b6380ad4b64d39518fa778c9d25c76"
   },
   "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
-  "generated_at": "2026-11-17T13:38:28+00:00",
+  "generated_at": "2026-11-17T13:40:31+00:00",
   "schema": "federation.experience-program.settings-inventory/1",
   "settings": [
     {
@@ -228,6 +228,94 @@
       "repository": "centinelas-pr",
       "scope": "ADMINISTRATIVE",
       "storage": "env CENTINELAS_WATER_DISRUPTION_CONSUMER_ORIGINS"
+    },
+    {
+      "evidence": "dashboard/src/pages/Dashboard.jsx:37",
+      "id": "active-tab",
+      "label": "Selected tab",
+      "repository": "moneysweep-pr",
+      "scope": "SESSION",
+      "storage": "URL query param ?tab= (replace navigation, not persisted)"
+    },
+    {
+      "evidence": "server/backend/api_keys.py:38",
+      "id": "pipeline-api-keys",
+      "label": "API Keys (per-key value)",
+      "repository": "moneysweep-pr",
+      "scope": "SECRET",
+      "storage": "backend: local .env file via scripts.manage_api_keys.set_key"
+    },
+    {
+      "evidence": "server/backend/materialization.py:195",
+      "id": "vault-credentials",
+      "label": "API credentials (Save to vault / Remove)",
+      "repository": "moneysweep-pr",
+      "scope": "SECRET",
+      "storage": "backend: operating-system credential vault"
+    },
+    {
+      "evidence": "dashboard/src/components/programActivityEvent.js:3",
+      "id": "program-activity-live-events",
+      "label": null,
+      "repository": "moneysweep-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage key federation.programActivity.v1.moneysweep-pr (read only by the app; no writer in dashboard/src)"
+    },
+    {
+      "evidence": "dashboard/src/lib/api.js:5",
+      "id": "api-base",
+      "label": null,
+      "repository": "moneysweep-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "build-time env VITE_API_BASE (default http://localhost:8000; '' for desktop builds, desktop/setup.py:194)"
+    },
+    {
+      "evidence": "dashboard/src/lib/api.js:7",
+      "id": "offline-mode",
+      "label": null,
+      "repository": "moneysweep-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "build-time env VITE_OFFLINE"
+    },
+    {
+      "evidence": "server/backend/main.py:48",
+      "id": "cors-origins",
+      "label": null,
+      "repository": "moneysweep-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env MONEYSWEEP_CORS_ORIGINS"
+    },
+    {
+      "evidence": "desktop/config.py:37",
+      "id": "workspace-root",
+      "label": "Workspace (Setup & Diagnostics)",
+      "repository": "moneysweep-pr",
+      "scope": "GLOBAL_USER",
+      "storage": "env MONEYSWEEP_WORKSPACE_ROOT / saved state in external prii_desktop setup center (UI not in snapshot)"
+    },
+    {
+      "evidence": "server/backend/case_manager_auth.py:43",
+      "id": "case-manager-identities",
+      "label": null,
+      "repository": "moneysweep-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "data/case_manager_identities.json (SHA-256 token hashes) or env MONEYSWEEP_CASE_IDENTITIES; no GUI"
+    },
+    {
+      "evidence": "dashboard/src/main.jsx:16",
+      "id": "theme",
+      "label": null,
+      "repository": "moneysweep-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "none - hard-coded dark, no user setting"
+    },
+    {
+      "evidence": "dashboard/src/components/CampaignFinance.jsx:119",
+      "id": "view-filters",
+      "label": "Filters, sort order, campaign-finance view/source, leaderboard category",
+      "repository": "moneysweep-pr",
+      "scope": "SESSION",
+      "storage": "none - React component state only, reset on tab switch/reload"
     },
     {
       "evidence": "frontend/src/App.jsx:58, frontend/src/App.jsx:227, frontend/src/components/workspaces/SettingsWorkspace.jsx:30-35",

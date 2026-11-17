@@ -386,6 +386,124 @@
       "status": "CONFIRMED_PRESENT"
     },
     {
+      "answer": "Current source has exactly eleven tab triggers, in this order: Activity, Contracts, Top Entities, Entities, Gov Changes, Relationships, Municipios, Campaign Finance, Data Sources, API Keys, Ownership (values activity, contracts, leaderboards, entities, government-changes, graph, municipios, campaign-finance, data-sources, api-keys, ownership). Data Sources and API Keys are omitted when VITE_OFFLINE=1 (nine tabs). Default tab is Contracts. Accessibility artefacts found: (a) docs/A11Y_AUDIT.md (dated 2026-08-24) - a one-off manual axe/overflow/touch-target/focus pass covering six tab states only: Contracts, Entities, Gov Changes, Relationships, Municipios, Campaign Finance, at 390x844 and 1280x800, dark theme; its driver script was a deleted throwaway (lines 34-37), so it is not repeatable from the repo. (b) docs/a11y-evidence/*.png - 8 screenshots: Contracts (badge, clear-filters, contract sheet), Entities (select button-name) and the tab bar. (c) docs/design-system-usage.json:90 repeats the '6 tabs, grid-cols-6' description. (d) dashboard/scripts/run-federation-pilot-visual-checks.mjs (npm run test:visual; CI job .github/workflows/moneysweep-federation-design-pilot.yml:50-55) - the only automated axe run; it loads federation-pilot-atlas.html (a fixture rendering QueryBoundary states and stat cards), not the dashboard, so it covers zero real tabs. (e) dashboard/src/test/setup.js registers vitest-axe matchers but no unit test uses them. (f) dashboard/tests/zip-design.spec.mjs:28-33 clicks every tab at 390px and asserts aria-selected, and lines 13-27 assert no horizontal overflow on the default (Contracts) view at 390/1440 with the backend blocked - reachability/overflow only, no axe. (g) dashboard/tests/hud-drgr-audit.spec.mjs runs the Data Sources HUD panel at 390 and 1440px - functional only. Tabs with NO accessibility test coverage of any kind (manual report or automation): Activity, Top Entities, Data Sources, API Keys, Ownership. Tabs with NO automated accessibility (axe) coverage today: all eleven. The six tabs in the 2026-08 report have only that historical manual pass, taken when the tab bar was a 6-column grid.",
+      "evidence": [
+        "dashboard/src/pages/Dashboard.jsx:30",
+        "dashboard/src/pages/Dashboard.jsx:62",
+        "dashboard/src/pages/Dashboard.jsx:72",
+        "docs/A11Y_AUDIT.md:11",
+        "docs/A11Y_AUDIT.md:34",
+        "docs/A11Y_AUDIT.md:72",
+        "docs/design-system-usage.json:90",
+        "dashboard/scripts/run-federation-pilot-visual-checks.mjs:14",
+        "dashboard/scripts/run-federation-pilot-visual-checks.mjs:93",
+        "dashboard/federation-pilot-atlas.html:11",
+        "dashboard/src/test/setup.js:2",
+        "dashboard/tests/zip-design.spec.mjs:28",
+        ".github/workflows/moneysweep-federation-design-pilot.yml:50"
+      ],
+      "question": "1. Navigation areas: confirm the list; which tabs each accessibility report/test covers; tabs with no accessibility test coverage today.",
+      "repository": "moneysweep-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "References: the exception itself at .federation/gui-capabilities.json:1747-1768 (owner jotaele44, tracking jotaele44/thehub-pr#56, expires 2027-01-31, renewed 2026-11-15; candidate_ids are GET /{case_id}, GET /{case_id}/{collection}, POST /{case_id}/claims, POST /{case_id}/claims/{claim_id}/evidence-relations); a copy in the generated artifacts/gui-capabilities-merged.json:2256; and one mention in .federation/gui-capabilities.extensions/case-manager-authorization-boundary.json:9. The same manifest classifies the rest as internal capability 'case-manager-backend' (line 644). Docs: docs/CASE_MANAGER_PHASE_1_API_CONTRACT.md:10 (run on port 8001), docs/GUI_AUDIT.md:36, docs/GAP_ANALYSIS_AND_OPTIMIZATION_2026-09.md:337-338 ('router remains unmounted on the main app'). Backend that exists: server/backend/case_manager_api.py - APIRouter prefix /cases with 3 GET routes (list, get, collection: evidence/claims/contradictions/events/leads/findings/snapshots/audit-events) and 11 POST command routes (create case, evidence-links, claims, claim evidence-relations, contradictions, contradiction resolution, leads, lead closure, findings, finding acceptance, snapshots); no PATCH/DELETE. server/backend/case_manager_auth.py - X-Case-Token verified against SHA-256 hashes in data/case_manager_identities.json, plus loopback. server/backend/case_manager_app.py - a separate FastAPI app (v0.13.0) that includes the router and adds GET /health. Domain layer in moneysweep/case_manager/ (SQLite, migrations/001_case_manager_v1.sql). Mounted in the desktop app: NO. desktop_app.py only adds the materialization router to main.app (line 26), and main.py includes api_keys, campaign_finance, government_changes, leaderboards and ownership routers (286-290). The only include of the case router is server/backend/case_manager_app.py:20; nothing launches that app (desktop/config.py:18 points at desktop_app; grep for case_manager_app finds only tests, docs and the manifest). Dashboard callers: NONE. grep for 'cases', 'case_manager', 'case-manager', 'X-Case' in dashboard/src, dashboard/tests and desktop/ returns no match; lib/api.js has no case function. Exact gap: the whole Case Manager is GUI-less and not served by the shipped desktop process. The exception names only the claim and evidence-relation workflows (4 endpoints), but in source all 14 /cases routes lack a UI, there is no place in the UI to supply the X-Case-Token, and the service would have to be started by hand with uvicorn on another port. So closing the gap needs (1) mounting or launching the service, (2) a token/identity entry path, and (3) screens for cases, evidence, claims, evidence relations, contradictions, leads, findings and snapshots.",
+      "evidence": [
+        ".federation/gui-capabilities.json:1747",
+        ".federation/gui-capabilities.json:644",
+        ".federation/gui-capabilities.extensions/case-manager-authorization-boundary.json:9",
+        "server/backend/case_manager_api.py:47",
+        "server/backend/case_manager_api.py:163",
+        "server/backend/case_manager_api.py:200",
+        "server/backend/case_manager_api.py:246",
+        "server/backend/case_manager_auth.py:127",
+        "server/backend/case_manager_app.py:12",
+        "server/backend/case_manager_app.py:20",
+        "server/backend/desktop_app.py:26",
+        "server/backend/main.py:286",
+        "desktop/config.py:18",
+        "docs/CASE_MANAGER_PHASE_1_API_CONTRACT.md:10",
+        "docs/GAP_ANALYSIS_AND_OPTIMIZATION_2026-09.md:337",
+        "dashboard/src/lib/api.js:1"
+      ],
+      "question": "2. case-manager-phase-1-gui-gap: references, backend, mounting, dashboard callers, exact gap.",
+      "repository": "moneysweep-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "References: the exception at .federation/gui-capabilities.json:1770-1787 (same owner/tracking/expiry; candidate_id cli_surface:moneysweep/forensics/cli.py) and its copy in artifacts/gui-capabilities-merged.json:2279; the engine is declared as capability 'contract-forensics-engine' at .federation/gui-capabilities.json:741. No extension fragment mentions it. In docs/, 'forensics' appears only as a package name in docs/BACKEND_ASSESSMENT_AND_DEVELOPMENT_PLAN.md:45. Backend that exists: NO HTTP backend. There is no server/backend/forensics* file and grep 'forensic' over server/, dashboard/src, dashboard/tests and desktop/ returns nothing. What exists is a library + CLI: moneysweep/forensics/{core,adapters,candidate,pipeline,seed,cli}.py over a DuckDB ledger at data/forensics/contract_forensics.duckdb with migrations/forensics, JSON schemas in schemas/forensics/ (20 files), an agent skill in moneysweep/forensics/skill/, and tests in tests/forensics/ (4 files). The CLI (prog 'contract-forensics') has subcommands init, status, export, coverage <entity_id>, proposals. Mounted in the desktop app: NO. The desktop self-test only imports duckdb and pyarrow to prove they are packaged (desktop/launch.py:50-53); no route exposes the ledger. Dashboard callers: NONE. Exact gap: unlike the Case Manager, there is not even an API to call. Closing it requires designing an HTTP boundary over ForensicsLedger first (status, coverage per entity, proposals, export, plus whatever acquisition controls are intended), then a dashboard workflow. Today the capability is terminal-only.",
+      "evidence": [
+        ".federation/gui-capabilities.json:1770",
+        ".federation/gui-capabilities.json:741",
+        "moneysweep/forensics/cli.py:8",
+        "moneysweep/forensics/cli.py:16",
+        "desktop/launch.py:50",
+        "docs/BACKEND_ASSESSMENT_AND_DEVELOPMENT_PLAN.md:45",
+        "tests/forensics/test_engine.py:21",
+        "server/backend/main.py:286"
+      ],
+      "question": "3. forensics-gui-gap: references, backend, mounting, dashboard callers, exact gap.",
+      "repository": "moneysweep-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "CONTRACTS. One monetary field: awardAmount (from CSV column award_amount, server/backend/main.py:143). Table header label 'Amount' (dashboard/src/components/ContractsTable.jsx:69); detail sheet label 'Award amount' (line 109). Null handling: backend _num maps blank/unparseable to null (server/backend/main.py:82-90); fmtMoney(null/undefined) renders an em dash '—' (dashboard/src/lib/cs-format.js:5-6); a real 0 renders '$0'. Formatting is whole dollars, always USD - the row's currency field is returned (server/backend/main.py:144) but never displayed or used. Other blanks: awarding/contractor/municipio '—' (lines 84-86), period '?' (110), other sheet rows '—' (dashboard/src/components/DetailRow.jsx:6). StatsBar prints 'award amounts not populated in Tranche A' when no contract has an amount (dashboard/src/lib/cs-format.js:50-51, dashboard/src/components/StatsBar.jsx:43-45). TOP ENTITIES. One column, header 'Value' (dashboard/src/components/FinancialLeaderboards.jsx:99), showing row.metricValue as USD currency or '<number> <currency>' for non-USD (line 100). The measure name is not in the column header; it is shown as ranking.metricType in the caption 'Top N · ties included · <metricType> · N candidates' (line 98) and as definition.metric_type in the box above (line 92). Measures by category (config/financial_category_ontology.json): contract_award=AWARDED (sum of award_amount, server/backend/leaderboard_adapters.py:218,237,247); debt_issuance=DEBT_ISSUED_PAR; asg_emergency_purchase_source_native=ASG_EMERGENCY_PURCHASE_COST; federal_obligation / federal_grant / disaster_assistance / federal_assistance=OBLIGATED (sum of obligated_amount, lines 773,784); campaign_contribution_received=CONTRIBUTIONS_RECEIVED (sum of amount, lines 933,947); 13 further categories (PAID, FUNDED, LOAN_PRINCIPAL, GUARANTEED, etc.) have no adapter and return zero rows. There is no 'disbursement' or 'payment' ranking with data. Null handling: records with a missing amount are excluded and counted under 'Excluded' in the Reconciliation panel (adapters 219-221; UI line 109); missing currency -> 'Unresolved'; a category with no rows shows the sentence 'No certifiable ranking rows for this category. Missing adapters or source manifestations remain explicit rather than becoming false zero rankings.' (line 101), not a zero. Missing state badges render 'UNKNOWN' (line 14); candidateCount and snapshot count default to 0 (lines 98, 105). CAMPAIGN FINANCE. (i) Tile 'Signed amount' = summary.totalContributionAmount (dashboard/src/components/CampaignFinance.jsx:137); '—' if null, but the backend always returns a number (0 when nothing is materialized). (ii) Contributions table column 'Amount' = row.amount via fmtMoney (lines 36, 47): FEC contribution_receipt_amount or CEE/OCE amount (server/backend/campaign_finance.py:162,181). (iii) Entities table column 'Amount' = row.amount (lines 67, 78), which the backend sets only for recipient rows, from total_disbursements (server/backend/campaign_finance.py:269); candidate and committee rows carry no amount and render '—'. (iv) 'Federal outflows' tile is a row COUNT of FEC disbursements + independent expenditures, not money (line 140; server/backend/campaign_finance.py:121); 'Contribution rows', 'FEC', 'CEE + OCE' are also counts (default 0). Missing text fields render '—'. OWNERSHIP. No monetary field is displayed. Columns are Shares (integer), '% issuer' (percent_issuer_shares_computed) and '13F portfolio %' (percent_13f_reportable_value) (dashboard/src/components/OwnershipDeepDive.jsx:92-94, 108-110); null -> '—' via fmtInt/fmtPct (lines 15-23). market_value exists in the payload builder (moneysweep/capital_control/deep_dive.py:290) but is not rendered. Metric tiles are counts/states, defaulting to 0 or '—' (lines 59-64). PLACES WHERE DIFFERENT KINDS OF AMOUNT SHARE A LABEL OR ARE SUMMED (reported, not judged): (a) Campaign Finance uses the single label 'Amount' for contribution receipts in the Contributions view and for recipients' total_disbursements in the Entities view (dashboard/src/components/CampaignFinance.jsx:36 vs 67; server/backend/campaign_finance.py:162/181 vs 269). (b) 'Signed amount' adds FEC receipts + CEE amounts + OCE amounts into one figure across three sources (server/backend/campaign_finance.py:103-105, 120). (c) In the contributions feed a blank or unparseable amount is coerced to 0 by _amount (server/backend/campaign_finance.py:58-62) before reaching the UI, so a missing contribution amount displays as '$0', not '—'; the same coercion feeds the 'Signed amount' sum. This differs from Contracts, where blank stays null and shows '—'. (d) Top Entities shows awarded, obligated, debt-par, purchase-cost and contributions-received values under one 'Value' header, one category at a time; nothing in the UI sums across categories, and the measure is named in the caption. (e) The ASG emergency-purchase adapter reads a column named obligation_amount and reports it with metricType ASG_EMERGENCY_PURCHASE_COST (server/backend/leaderboard_adapters.py:406, 467, 480). (f) federal_assistance and disaster_assistance pool several source programmes (grants, fema_pa, fema_hmgp, cdbg_dr, hud, ...) into one OBLIGATED total per UEI (server/backend/leaderboard_adapters.py:840-871); fema_pa/fema_hmgp/cdbg_dr records are counted in both categories. (g) Outside the four views asked about: Municipios shows an unlabelled dollar figure that is the sum of award_amount per municipio, '—' when none are populated (dashboard/src/components/MunicipalityAggregates.jsx:51; server/backend/main.py:239-245), and Relationships shows an unlabelled edge amount only when non-null (dashboard/src/components/RelationshipGraph.jsx:42).",
+      "evidence": [
+        "dashboard/src/components/ContractsTable.jsx:69",
+        "dashboard/src/components/ContractsTable.jsx:87",
+        "dashboard/src/components/ContractsTable.jsx:109",
+        "dashboard/src/lib/cs-format.js:5",
+        "server/backend/main.py:82",
+        "server/backend/main.py:143",
+        "dashboard/src/components/FinancialLeaderboards.jsx:98",
+        "dashboard/src/components/FinancialLeaderboards.jsx:99",
+        "dashboard/src/components/FinancialLeaderboards.jsx:100",
+        "dashboard/src/components/FinancialLeaderboards.jsx:101",
+        "dashboard/src/components/FinancialLeaderboards.jsx:109",
+        "server/backend/leaderboard_adapters.py:218",
+        "server/backend/leaderboard_adapters.py:406",
+        "server/backend/leaderboard_adapters.py:480",
+        "server/backend/leaderboard_adapters.py:773",
+        "server/backend/leaderboard_adapters.py:840",
+        "server/backend/leaderboard_adapters.py:947",
+        "dashboard/src/components/CampaignFinance.jsx:36",
+        "dashboard/src/components/CampaignFinance.jsx:47",
+        "dashboard/src/components/CampaignFinance.jsx:67",
+        "dashboard/src/components/CampaignFinance.jsx:78",
+        "dashboard/src/components/CampaignFinance.jsx:137",
+        "dashboard/src/components/CampaignFinance.jsx:140",
+        "server/backend/campaign_finance.py:58",
+        "server/backend/campaign_finance.py:120",
+        "server/backend/campaign_finance.py:162",
+        "server/backend/campaign_finance.py:269",
+        "dashboard/src/components/OwnershipDeepDive.jsx:15",
+        "dashboard/src/components/OwnershipDeepDive.jsx:92",
+        "dashboard/src/components/OwnershipDeepDive.jsx:108",
+        "moneysweep/capital_control/deep_dive.py:290",
+        "dashboard/src/components/MunicipalityAggregates.jsx:51",
+        "dashboard/src/components/RelationshipGraph.jsx:42"
+      ],
+      "question": "4. Financial semantics in Contracts, Top Entities, Campaign Finance and Ownership: fields, labels, null rendering, mixed amounts.",
+      "repository": "moneysweep-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Recently opened items: NONE FOUND. Pinned items: NONE FOUND. User rename of any object: NONE FOUND. The only browser storage the app touches is one localStorage key prefix, federation.programActivity.v1.<producerId> (dashboard/src/components/programActivityEvent.js:3), read by readLiveProgramActivity (line 51) to merge activity events into the Activity tab. Its writer appendProgramActivityEvent (line 64) has no caller in dashboard/src outside its test. It holds activity events, not a recents or pins list. The prebuilt desktop bundle (desktop/prebuilt-dashboard/bundle/assets/index-xHPKZVps.js) contains the same key and no other localStorage key. No sessionStorage or IndexedDB use was found. Desktop: the only remembered user choice is the single workspace folder picked in the external Setup & Diagnostics centre. It is applied from saved state at launch (desktop/launch.py:33-43; desktop/config.py:34-37). It is one saved value, not a list of recent workspaces, and its UI lives in the external prii_desktop package, which is not in the snapshot. Rename: there are no PATCH routes on any backend, and the case manager has only create/command POSTs (server/backend/case_manager_api.py:200-374), with case_id derived deterministically from title/type/scope (server/backend/case_manager_api.py:203), so a case title cannot be renamed. The dashboard has no rename or edit-label control. Searched (case-insensitive): localStorage|sessionStorage|indexedDB and recent|pinned|pin|favorite|favourite|bookmark|rename over dashboard/src, desktop/*.py, desktop/prebuilt-dashboard bundle and server/backend/*.py. Every match outside the program-activity module was in a test (programActivityEvent.test.js, cs-format.test.js), and the 'renamed' match there is test data for an event title.",
+      "evidence": [
+        "dashboard/src/components/programActivityEvent.js:3",
+        "dashboard/src/components/programActivityEvent.js:51",
+        "dashboard/src/components/programActivityEvent.js:64",
+        "desktop/launch.py:33",
+        "desktop/config.py:34",
+        "server/backend/case_manager_api.py:200",
+        "server/backend/case_manager_api.py:203",
+        "server/backend/materialization.py:195"
+      ],
+      "question": "5. Desktop conventions: recently opened items, pinned items, user rename.",
+      "repository": "moneysweep-pr",
+      "status": "NOT_FOUND"
+    },
+    {
       "answer": "Confirmed, exactly six, in this order in the WORKSPACES registry: Chat -> ChatView; Workbench -> WorkbenchWorkspace; Sources -> SourcesWorkspace; Memory -> MemoryWorkspace; Provenance -> ProvenanceWorkspace; Settings -> SettingsWorkspace. Each is rendered only when health.state is 'ok' and view equals its id. 'Background tasks' is a seventh item in the same nav list but opens a drawer, not a workspace. While the service wants a token, TokenGate replaces all six.",
       "evidence": [
         "frontend/src/App.jsx:13-20",
@@ -989,6 +1107,6 @@
     "thehub-pr": "4f5c660801b6380ad4b64d39518fa778c9d25c76"
   },
   "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
-  "generated_at": "2026-11-17T13:38:28+00:00",
+  "generated_at": "2026-11-17T13:40:31+00:00",
   "schema": "federation.experience-program.special-adjudications/1"
 }

@@ -2,20 +2,54 @@
   "schema": "federation.experience-program.desktop-conventions/1",
   "workstream": "WS-D",
   "source_of_requirement": "Operator screen recording, 2026-11-17 09:02 (20 s). Read frame by frame. It shows another desktop application; nothing in it is a federation application.",
-  "evidence_class": "SOURCE_CONFIRMED by search of each audited snapshot, with the cited lines read. No application was run. thehub-pr and moneysweep-pr are OPEN until their RC1 surveys land.",
+  "evidence_class": "SOURCE_CONFIRMED by search of each audited snapshot, with the cited lines read. No application was run. moneysweep-pr is taken from its RC1 survey. thehub-pr is OPEN until its survey lands.",
   "capabilities_shown": [
-    {"id": "D1", "name": "Dock icon menu: current window title, Recent list, More submenu", "kind": "native macOS, supplied by the app"},
-    {"id": "D2", "name": "Dock Options (Keep in Dock, Open at Login, Show in Finder), Show All Windows, Hide, Quit", "kind": "native macOS, supplied by the system for a bundled .app"},
-    {"id": "D3", "name": "Navigation groups: Pinned and Recents", "kind": "in-app"},
-    {"id": "D4", "name": "Per-item status mark (idle, running, attention)", "kind": "in-app"},
-    {"id": "D5", "name": "Per-item menu button", "kind": "in-app"},
-    {"id": "D6", "name": "Rename dialog: title, one line of guidance, prefilled field, Cancel, Save", "kind": "in-app"}
+    {
+      "id": "D1",
+      "name": "Dock icon menu: current window title, Recent list, More submenu",
+      "kind": "native macOS, supplied by the app"
+    },
+    {
+      "id": "D2",
+      "name": "Dock Options (Keep in Dock, Open at Login, Show in Finder), Show All Windows, Hide, Quit",
+      "kind": "native macOS, supplied by the system for a bundled .app"
+    },
+    {
+      "id": "D3",
+      "name": "Navigation groups: Pinned and Recents",
+      "kind": "in-app"
+    },
+    {
+      "id": "D4",
+      "name": "Per-item status mark (idle, running, attention)",
+      "kind": "in-app"
+    },
+    {
+      "id": "D5",
+      "name": "Per-item menu button",
+      "kind": "in-app"
+    },
+    {
+      "id": "D6",
+      "name": "Rename dialog: title, one line of guidance, prefilled field, Cancel, Save",
+      "kind": "in-app"
+    }
   ],
   "search_terms": "recent*, pinned, pin<Word>, favorit*, rename*, setTitle, dockMenu; test files excluded",
   "search_caveat": "Matches on the lucide icon names MapPinned and MapPinOff, and on 'Recent Observations' or 'recentEvents' as a data-recency label, were read and excluded: they are not user pins or user recents.",
   "applications": {
-    "aguayluz-pr": {"recents": "none found", "pins": "none found", "rename": "none found", "evidence": []},
-    "centinelas-pr": {"recents": "none found", "pins": "none found", "rename": "none found", "evidence": []},
+    "aguayluz-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": []
+    },
+    "centinelas-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": []
+    },
     "mucaro-ai": {
       "recents": "The active conversation is remembered per browser; the conversation list is the natural recents source. No separate recents list.",
       "pins": "none found",
@@ -27,16 +61,37 @@
         "backend/app/main.py:805"
       ]
     },
-    "ovnis-pr": {"recents": "none found", "pins": "none found", "rename": "none found", "evidence": []},
+    "ovnis-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": []
+    },
     "skywatcher-pr": {
       "recents": "none found",
       "pins": "Sky Target Finder keeps user favorites in this browser's localStorage. It is the only pin-like feature in the six audited applications.",
       "rename": "none found",
-      "evidence": ["frontend/src/lib/skyFavorites.js:1", "frontend/src/lib/skyFavorites.js:41"]
+      "evidence": [
+        "frontend/src/lib/skyFavorites.js:1",
+        "frontend/src/lib/skyFavorites.js:41"
+      ]
     },
-    "spiderweb-pr": {"recents": "none found", "pins": "none found", "rename": "none found", "evidence": []},
-    "moneysweep-pr": {"state": "OPEN"},
-    "thehub-pr": {"state": "OPEN"}
+    "spiderweb-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": []
+    },
+    "moneysweep-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": [],
+      "source": "rc1/surveys/moneysweep-pr.json special adjudication 5"
+    },
+    "thehub-pr": {
+      "state": "OPEN"
+    }
   },
   "shared_runtime": {
     "dock_menu": "none found in packages/prii_desktop (searched dock, NSApp, CFBundle)",

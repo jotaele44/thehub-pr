@@ -333,6 +333,118 @@
     },
     {
       "confidence": "high",
+      "evidence": "dashboard/src/components/SortHead.jsx:11",
+      "finding": "Sortable column headers are <th> elements with an onClick only: no tabIndex, no inner <button>, no key handler. Sorting in Contracts and Entities is pointer-only. aria-sort is set correctly.",
+      "id": "sort-headers-not-keyboard-operable",
+      "repository": "moneysweep-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/TypeFilterSelect.jsx:16",
+      "finding": "TypeFilterSelect renders a Radix SelectTrigger with no aria-label and no associated label; used on Entities and Relationships. This is the button-name finding from docs/A11Y_AUDIT.md:105-114 and is still present in current source.",
+      "id": "type-filter-select-unnamed",
+      "repository": "moneysweep-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/Dashboard.jsx:47",
+      "finding": "Dashboard root is a <div> with a <header>; there is no <main> element or role=main anywhere in the shipped app (grep '<main' in dashboard/src matches only the visual-test atlas).",
+      "id": "no-main-landmark",
+      "repository": "moneysweep-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/CampaignFinance.jsx:31",
+      "finding": "Campaign Finance (3 tables), Ownership and Gov Changes build their header rows from TableCell (<td>) instead of TableHead (<th>), so columns have no header semantics. The change-candidates table has no header row at all.",
+      "id": "table-headers-are-td",
+      "repository": "moneysweep-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/OwnershipDeepDive.jsx:89",
+      "finding": "Same issue in the ownership holders table and the government-changes table (dashboard/src/components/GovernmentChanges.jsx:29-34); dashboard/src/components/GovernmentChangeCandidates.jsx:11-20 has body rows only.",
+      "id": "table-headers-are-td-ownership",
+      "repository": "moneysweep-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/components/ContractsTable.jsx:77",
+      "finding": "Contract and entity rows are <tr role=\"button\" tabIndex=0>, which replaces row semantics for assistive tech, and use focus:outline-hidden with only a background tint as the focus indicator. Keyboard activation (Enter/Space) is implemented.",
+      "id": "row-as-button",
+      "repository": "moneysweep-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/ProgramTimeline.jsx:49",
+      "finding": "Activity search input sits in a <label> containing only an icon, so its accessible name comes from the placeholder alone; outline is removed (outline-hidden). Phase filter buttons expose selection by colour only (no aria-pressed).",
+      "id": "activity-search-placeholder-only",
+      "repository": "moneysweep-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/FinancialLeaderboards.jsx:100",
+      "finding": "Every ranking row has a button named just 'Inspect' (no entity in the name) at min-h-9 (36px, under the 44px target the federation harness requires); the ranking <table> has no caption and its <th> cells no scope.",
+      "id": "leaderboard-inspect-buttons-ambiguous",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/CampaignFinance.jsx:174",
+      "finding": "Filter inputs/selects and the API-key Save button use h-7 (28px) heights: dashboard/src/components/ContractsTable.jsx:50, dashboard/src/components/EntitiesTable.jsx:50, dashboard/src/components/CampaignFinance.jsx:174,185,203, dashboard/src/components/OwnershipDeepDive.jsx:41, dashboard/src/components/ApiKeysPanel.jsx:48,53, dashboard/src/components/TypeFilterSelect.jsx:16.",
+      "id": "small-filter-controls",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/ApiKeysPanel.jsx:60",
+      "finding": "API-key save failure is rendered as a plain <p> with no role=alert/aria-live.",
+      "id": "api-key-save-error-not-announced",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/FinancialLeaderboards.jsx:94",
+      "finding": "Top Entities 'Loading ranking…' text has no role=status/aria-live (its error does have role=alert at line 93).",
+      "id": "leaderboards-loading-not-announced",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/main.jsx:16",
+      "finding": "Theme is hard-coded to dark at boot and in index.html; no theme toggle or light theme in the shipped app.",
+      "id": "dark-theme-only",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/components/MunicipalityAggregates.jsx:33",
+      "finding": "recharts BarChart has no accessible name/description; the same counts are available as text in the list directly below (lines 47-53).",
+      "id": "chart-without-text-alternative",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/scripts/run-federation-pilot-visual-checks.mjs:14",
+      "finding": "No automated accessibility check runs against any real dashboard tab. The only axe run targets the fixture page federation-pilot-atlas.html; vitest-axe matchers are registered (dashboard/src/test/setup.js:2-5) but no test calls axe()/toHaveNoViolations (grep in dashboard/src returns nothing).",
+      "id": "tab-coverage-gap-in-a11y-automation",
+      "repository": "moneysweep-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
       "evidence": "frontend/src/styles.css:1218-1231, frontend/src/App.jsx:239, frontend/src/App.jsx:295-306",
       "finding": "At <=760px (which the 420px-wide desktop window reaches) the closed navigation panel is only translated off-screen; it is not display:none, visibility:hidden or inert. Its ~10+ buttons stay in the tab order and the accessibility tree, so keyboard focus disappears off-screen before reaching the page content. When open it is not a dialog: no focus move into it, no focus trap, no Escape, no close button, and the toggle keeps the label 'Open navigation'.",
       "id": "a11y-mobile-nav-not-hidden",
@@ -764,7 +876,7 @@
       "severity": "minor"
     }
   ],
-  "generated_at": "2026-11-17T13:38:28+00:00",
+  "generated_at": "2026-11-17T13:40:31+00:00",
   "method": "Source reading only. No axe scan, screen reader or device was used for these rows; each is a lead to confirm at runtime.",
   "schema": "federation.experience-program.accessibility-findings/1"
 }

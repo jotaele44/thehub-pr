@@ -68,8 +68,34 @@
       "survey_present": true
     },
     "moneysweep-pr": {
-      "state": "OPEN",
-      "survey_present": false
+      "citations": {
+        "citations": 562,
+        "file_not_in_snapshot": 0,
+        "line_out_of_range": 0,
+        "note": "Resolved means the cited file exists at the audited commit and has that line. It does not prove the line says what the survey claims.",
+        "resolved": 562,
+        "resolved_ratio": 1.0,
+        "resolved_via_unique_file_name": 0,
+        "unresolved_samples": []
+      },
+      "denominator_matches_survey": true,
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 0,
+          "COMPLETE": 29,
+          "INTERNAL_ONLY": 1,
+          "PARTIAL": 4,
+          "UNREACHABLE": 2
+        },
+        "surfaces_mounted": 56,
+        "surfaces_total": 61,
+        "workflows_that_write": 9,
+        "workflows_total": 36,
+        "workflows_with_test": 22
+      },
+      "problems": [],
+      "state": "PROVISIONAL",
+      "survey_present": true
     },
     "mucaro-ai": {
       "citations": {
@@ -201,15 +227,15 @@
     }
   },
   "gate": "RC1",
-  "generated_at": "2026-11-17T13:38:28+00:00",
+  "generated_at": "2026-11-17T13:40:31+00:00",
   "schema": "federation.experience-program.gate/1",
   "state": "OPEN",
   "totals": {
-    "surfaces_mounted": 337,
-    "surfaces_total": 355,
-    "workflows_that_write": 82,
-    "workflows_total": 279,
-    "workflows_with_test": 191
+    "surfaces_mounted": 393,
+    "surfaces_total": 416,
+    "workflows_that_write": 91,
+    "workflows_total": 315,
+    "workflows_with_test": 213
   },
   "why_not_pass": "The inventory is a source audit of eight commits. No surface was observed at runtime, no survey row was independently re-checked beyond citation resolution and a manual sample, and forms, tables and filters inside pages are enumerated as stated in each survey's coverage_statement, which may be sampled."
 }
