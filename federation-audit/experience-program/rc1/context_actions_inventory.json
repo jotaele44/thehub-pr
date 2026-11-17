@@ -44,7 +44,7 @@
     }
   ],
   "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
-  "generated_at": "2026-11-17T13:40:31+00:00",
+  "generated_at": "2026-11-17T13:53:39+00:00",
   "keyboard_shortcuts": [
     {
       "action": "Move review cursor down",
@@ -283,6 +283,90 @@
       "keys": "ArrowLeft / ArrowRight (Shift = 10%), Home, End",
       "repository": "spiderweb-pr",
       "scope": "spatial-compare-overlay"
+    },
+    {
+      "action": "Toggle command palette",
+      "evidence": "server/frontend/src/hooks/useGlobalShortcut.js:4",
+      "keys": "Ctrl+K / Cmd+K",
+      "repository": "thehub-pr",
+      "scope": "global"
+    },
+    {
+      "action": "Move/run palette command",
+      "evidence": "server/frontend/src/components/command/CommandPalette.jsx:33",
+      "keys": "ArrowUp/ArrowDown/Home/End/Enter",
+      "repository": "thehub-pr",
+      "scope": "command-palette"
+    },
+    {
+      "action": "Close palette (Radix Dialog)",
+      "evidence": "server/frontend/src/components/command/CommandPalette.jsx:55",
+      "keys": "Escape",
+      "repository": "thehub-pr",
+      "scope": "command-palette"
+    },
+    {
+      "action": "Play/pause constellation tour",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:87",
+      "keys": "Space",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Next/previous constellation stage",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:88",
+      "keys": "ArrowRight / ArrowLeft",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Switch constellation lens",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:90",
+      "keys": "L",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Zoom constellation",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:92",
+      "keys": "+ / = / -",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Fit constellation",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:95",
+      "keys": "F",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Clear constellation selection",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:97",
+      "keys": "Escape",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Send chat message",
+      "evidence": "server/frontend/src/components/research/ModuleChat.jsx:239",
+      "keys": "Enter (Shift+Enter newline)",
+      "repository": "thehub-pr",
+      "scope": "research-assistant-tab-chat"
+    },
+    {
+      "action": "Send operator message",
+      "evidence": "server/frontend/src/components/research/OperatorChat.jsx:198",
+      "keys": "Enter (Shift+Enter newline)",
+      "repository": "thehub-pr",
+      "scope": "research-assistant-tab-operator"
+    },
+    {
+      "action": "Load readiness for owner",
+      "evidence": "server/frontend/src/pages/ModuleReadiness.jsx:80",
+      "keys": "Enter",
+      "repository": "thehub-pr",
+      "scope": "route-module-readiness"
     }
   ],
   "schema": "federation.experience-program.context-actions-inventory/1"

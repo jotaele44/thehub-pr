@@ -2,7 +2,7 @@
   "schema": "federation.experience-program.desktop-conventions/1",
   "workstream": "WS-D",
   "source_of_requirement": "Operator screen recording, 2026-11-17 09:02 (20 s). Read frame by frame. It shows another desktop application; nothing in it is a federation application.",
-  "evidence_class": "SOURCE_CONFIRMED by search of each audited snapshot, with the cited lines read. No application was run. moneysweep-pr is taken from its RC1 survey. thehub-pr is OPEN until its survey lands.",
+  "evidence_class": "SOURCE_CONFIRMED by search of each audited snapshot, with the cited lines read; moneysweep-pr and thehub-pr are taken from their RC1 surveys. No application was run.",
   "capabilities_shown": [
     {
       "id": "D1",
@@ -90,7 +90,11 @@
       "source": "rc1/surveys/moneysweep-pr.json special adjudication 5"
     },
     "thehub-pr": {
-      "state": "OPEN"
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": [],
+      "source": "rc1/surveys/thehub-pr.json special adjudication 6 (status NOT_FOUND)"
     }
   },
   "shared_runtime": {

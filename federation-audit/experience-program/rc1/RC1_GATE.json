@@ -222,20 +222,46 @@
       "survey_present": true
     },
     "thehub-pr": {
-      "state": "OPEN",
-      "survey_present": false
+      "citations": {
+        "citations": 630,
+        "file_not_in_snapshot": 0,
+        "line_out_of_range": 0,
+        "note": "Resolved means the cited file exists at the audited commit and has that line. It does not prove the line says what the survey claims.",
+        "resolved": 630,
+        "resolved_ratio": 1.0,
+        "resolved_via_unique_file_name": 0,
+        "unresolved_samples": []
+      },
+      "denominator_matches_survey": true,
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 10,
+          "COMPLETE": 24,
+          "INTERNAL_ONLY": 3,
+          "PARTIAL": 6,
+          "UNREACHABLE": 1
+        },
+        "surfaces_mounted": 125,
+        "surfaces_total": 133,
+        "workflows_that_write": 17,
+        "workflows_total": 44,
+        "workflows_with_test": 33
+      },
+      "problems": [],
+      "state": "PROVISIONAL",
+      "survey_present": true
     }
   },
   "gate": "RC1",
-  "generated_at": "2026-11-17T13:40:31+00:00",
+  "generated_at": "2026-11-17T13:53:39+00:00",
   "schema": "federation.experience-program.gate/1",
-  "state": "OPEN",
+  "state": "PROVISIONAL",
   "totals": {
-    "surfaces_mounted": 393,
-    "surfaces_total": 416,
-    "workflows_that_write": 91,
-    "workflows_total": 315,
-    "workflows_with_test": 213
+    "surfaces_mounted": 518,
+    "surfaces_total": 549,
+    "workflows_that_write": 108,
+    "workflows_total": 359,
+    "workflows_with_test": 246
   },
   "why_not_pass": "The inventory is a source audit of eight commits. No surface was observed at runtime, no survey row was independently re-checked beyond citation resolution and a manual sample, and forms, tables and filters inside pages are enumerated as stated in each survey's coverage_statement, which may be sampled."
 }

@@ -874,9 +874,89 @@
       "id": "a11y-timeline-valuetext",
       "repository": "spiderweb-pr",
       "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/shared/SearchableTable.jsx:58",
+      "finding": "SearchableTable rows open the edit sheet via onClick on <tr> with no tabIndex, role or key handler, so editing any ledger record (Programs, Cases, Sources, Gates, Integrations, Dictionary, Manifest, every EntityLedger tab) is impossible by keyboard.",
+      "id": "table-rows-mouse-only",
+      "repository": "thehub-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/shared/RecordSheet.jsx:29",
+      "finding": "Entity create/update promises are neither awaited by RecordSheet nor caught by EntityLedger/page handlers; a 401/503 from the write guard produces no visible or announced error.",
+      "id": "write-errors-silent",
+      "repository": "thehub-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/layout/Sidebar.jsx:47",
+      "finding": "The only pointer trigger for the command palette is in the sidebar, which is hidden below lg; MobileNav and HubHeader have none, so on narrow/touch layouts the palette (and its coordinate/evidence-ref commands) needs a hardware keyboard.",
+      "id": "palette-no-touch-trigger",
+      "repository": "thehub-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/notifications/NotificationBell.jsx:20",
+      "finding": "Notification bell toggles a popover without aria-expanded/aria-controls, Escape handling or focus management; dismissal is a click-only full-screen backdrop div.",
+      "id": "notification-popover-semantics",
+      "repository": "thehub-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/hooks/useEntityData.js:13",
+      "finding": "useEntityData seeds initialData: [] so isLoading is never true and isError is not rendered by ledger tables; users see 'No records' while loading or when the API fails.",
+      "id": "loading-masked-as-empty",
+      "repository": "thehub-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/shared/SearchableTable.jsx:47",
+      "finding": "Sortable column headers are plain buttons with icon-only direction; no aria-sort on the header cell.",
+      "id": "sort-state-not-exposed",
+      "repository": "thehub-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+      "finding": "/control renders its PageHeader h1 and then a whole page component with its own PageHeader h1.",
+      "id": "duplicate-h1-control-ledgers",
+      "repository": "thehub-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/zip-design/HubHeader.jsx:9",
+      "finding": "At >=lg two ThemeToggle buttons (HubHeader and Sidebar) and two navigation regions with overlapping links are rendered.",
+      "id": "duplicate-theme-toggles",
+      "repository": "thehub-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "server/frontend/src/pages/Operations.jsx:319",
+      "finding": "Deleting a stored operation secret fires immediately with no confirmation.",
+      "id": "secret-delete-no-confirm",
+      "repository": "thehub-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "server/frontend/src/components/notifications/NotificationBell.jsx:30",
+      "finding": "Notification badge uses bg-red-600/bg-blue-600 instead of federation tone tokens; criticality is colour-only on the badge.",
+      "id": "hardcoded-badge-colours",
+      "repository": "thehub-pr",
+      "severity": "minor"
     }
   ],
-  "generated_at": "2026-11-17T13:40:31+00:00",
+  "generated_at": "2026-11-17T13:53:39+00:00",
   "method": "Source reading only. No axe scan, screen reader or device was used for these rows; each is a lead to confirm at runtime.",
   "schema": "federation.experience-program.accessibility-findings/1"
 }

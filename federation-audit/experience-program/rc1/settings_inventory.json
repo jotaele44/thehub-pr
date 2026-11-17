@@ -10,7 +10,7 @@
     "thehub-pr": "4f5c660801b6380ad4b64d39518fa778c9d25c76"
   },
   "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
-  "generated_at": "2026-11-17T13:40:31+00:00",
+  "generated_at": "2026-11-17T13:53:39+00:00",
   "schema": "federation.experience-program.settings-inventory/1",
   "settings": [
     {
@@ -796,6 +796,150 @@
       "repository": "spiderweb-pr",
       "scope": "ADMINISTRATIVE",
       "storage": "env SPIDERWEB_DATA_HOME"
+    },
+    {
+      "evidence": "server/frontend/src/lib/theme.jsx:11",
+      "id": "theme",
+      "label": "Theme (light/dark)",
+      "repository": "thehub-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "localStorage fd-theme:thehub-pr"
+    },
+    {
+      "evidence": "server/frontend/src/api/federationClient.js:13",
+      "id": "write-token",
+      "label": "Administrative write token (PRII_WRITE_TOKEN)",
+      "repository": "thehub-pr",
+      "scope": "SECRET",
+      "storage": "sessionStorage federation_write_token (also accepted via ?write_token=)"
+    },
+    {
+      "evidence": "server/frontend/src/api/federationClient.js:44",
+      "id": "access-token",
+      "label": "Federation access token",
+      "repository": "thehub-pr",
+      "scope": "SECRET",
+      "storage": "localStorage federation_access_token + access_token"
+    },
+    {
+      "evidence": "server/frontend/src/lib/app-params.js:58",
+      "id": "api-base-url",
+      "label": "API base URL",
+      "repository": "thehub-pr",
+      "scope": "SESSION",
+      "storage": "localStorage federation_api_base_url (URL ?api_base_url= wins; otherwise env default overwrites)"
+    },
+    {
+      "evidence": "server/frontend/src/lib/app-params.js:56",
+      "id": "app-id",
+      "label": "App id",
+      "repository": "thehub-pr",
+      "scope": "SESSION",
+      "storage": "localStorage federation_app_id"
+    },
+    {
+      "evidence": "server/frontend/src/lib/app-params.js:72",
+      "id": "from-url",
+      "label": "Origin URL",
+      "repository": "thehub-pr",
+      "scope": "SESSION",
+      "storage": "localStorage federation_from_url"
+    },
+    {
+      "evidence": "server/backend/main_core.py:370",
+      "id": "notif-default",
+      "label": "Notification default delivery (channels + timing)",
+      "repository": "thehub-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "backend SQLite via NotificationStore, subscriber 'operator'"
+    },
+    {
+      "evidence": "server/frontend/src/pages/OperatorSettings.jsx:452",
+      "id": "notif-domain-overrides",
+      "label": "Notification per-domain overrides",
+      "repository": "thehub-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "backend (same PUT /api/notifications/preferences)"
+    },
+    {
+      "evidence": "server/frontend/src/pages/OperatorSettings.jsx:430",
+      "id": "notif-targets",
+      "label": "Delivery targets (SMS number, push endpoint)",
+      "repository": "thehub-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "backend (targets)"
+    },
+    {
+      "evidence": "server/backend/main_core.py:351",
+      "id": "notif-cursor",
+      "label": "Notifications last-seen cursor",
+      "repository": "thehub-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "backend"
+    },
+    {
+      "evidence": "server/frontend/src/components/manager/managerClient.js:13",
+      "id": "manager-session",
+      "label": "Native manager session token",
+      "repository": "thehub-pr",
+      "scope": "SECRET",
+      "storage": "sessionStorage prii.manager.session"
+    },
+    {
+      "evidence": "server/backend/federation_manager_api.py:426",
+      "id": "manager-secrets",
+      "label": "Per-app operation secrets",
+      "repository": "thehub-pr",
+      "scope": "SECRET",
+      "storage": "backend secrets broker (presence only returned)"
+    },
+    {
+      "evidence": "server/backend/main_core.py:65",
+      "id": "env-write-token",
+      "label": "PRII_WRITE_TOKEN",
+      "repository": "thehub-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env"
+    },
+    {
+      "evidence": "server/frontend/src/lib/app-params.js:74",
+      "id": "env-require-auth",
+      "label": "VITE_FEDERATION_REQUIRE_AUTH / VITE_HUB_API_BASE_URL",
+      "repository": "thehub-pr",
+      "scope": "ADMINISTRATIVE",
+      "storage": "env (build time)"
+    },
+    {
+      "evidence": "server/backend/federation_manager_api.py:55",
+      "id": "env-manager-nonce",
+      "label": "PRII_MANAGER_BOOTSTRAP_NONCE",
+      "repository": "thehub-pr",
+      "scope": "SECRET",
+      "storage": "env"
+    },
+    {
+      "evidence": "packages/prii_desktop/src/prii_desktop/launchpad.py:389",
+      "id": "desktop-launchpad-prefs",
+      "label": "Launch Pad mode / start page / options / skip",
+      "repository": "thehub-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "launchpad.json in app support dir"
+    },
+    {
+      "evidence": "packages/prii_desktop/src/prii_desktop/launchpad.py:91",
+      "id": "desktop-operator-passphrase",
+      "label": "Operator passphrase",
+      "repository": "thehub-pr",
+      "scope": "SECRET",
+      "storage": "operator-lock.json (PBKDF2 hash)"
+    },
+    {
+      "evidence": "desktop/config.py:194",
+      "id": "desktop-grid-profile-root",
+      "label": "Grid V2 profile folder",
+      "repository": "thehub-pr",
+      "scope": "APPLICATION_USER",
+      "storage": "env PRII_GRID_V2_PROFILE_ROOT set by launch pad"
     }
   ]
 }

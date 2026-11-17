@@ -1094,6 +1094,98 @@
       "question": "Where the frontend falls back to built-in mock data",
       "repository": "spiderweb-pr",
       "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Yes. CommandPaletteProvider wraps the shell (server/frontend/src/components/layout/AppLayout.jsx:11); Ctrl/Cmd+K toggles it (server/frontend/src/hooks/useGlobalShortcut.js:4,15) and a 'Search & commands' button in the desktop sidebar opens it (server/frontend/src/components/layout/Sidebar.jsx:47; server/frontend/src/components/command/CommandPalette.jsx:119-135). Registry is server/frontend/src/lib/commands.js: navigation commands derived from NAV_GROUPS (server/frontend/src/lib/commands.js:21-32) plus query commands (search, lat/lon map jump, Collection/id provenance, ent_ id) (server/frontend/src/lib/commands.js:34-57). Every command is a navigate. Pointer users can click options; but the trigger is only in the sidebar, which is hidden below lg (server/frontend/src/components/layout/Sidebar.jsx:35) and MobileNav has none, so on narrow/touch layouts the palette cannot be opened without a keyboard. Nav commands remain reachable through MobileNav; the search command through /search; the coordinate jump and typed evidence/entity-id commands have no other UI entry.",
+      "evidence": [
+        "server/frontend/src/components/command/CommandPalette.jsx:106",
+        "server/frontend/src/hooks/useGlobalShortcut.js:4",
+        "server/frontend/src/lib/commands.js:21",
+        "server/frontend/src/components/layout/Sidebar.jsx:47",
+        "server/frontend/src/components/layout/Sidebar.jsx:35",
+        "server/frontend/src/components/layout/MobileNav.jsx:16"
+      ],
+      "question": "Command palette: existence, keys, registry, non-keyboard reachability",
+      "repository": "thehub-pr",
+      "status": "PARTIAL"
+    },
+    {
+      "answer": "All 32 NAV_GROUPS paths have routes. Routes with no nav entry: /activity (alias of /), the four param detail routes (/source-monitor/:monitorId, /research/case/:caseId, /evidence/:collection/:id, /entity/:id), the four auth routes, and the * catch-all. No nav entry lacks a route. Drift elsewhere: HubHeader keeps a separate hard-coded 5-link nav (server/frontend/src/zip-design/HubHeader.jsx:4); /control?tab= duplicates 10 standalone routes; desktop launchpad lists /launcher which only exists under the desktop app server.",
+      "evidence": [
+        "server/frontend/src/lib/nav.js:27",
+        "server/frontend/src/App.jsx:96",
+        "server/frontend/src/App.jsx:97",
+        "server/frontend/src/App.jsx:104",
+        "server/frontend/src/App.jsx:119",
+        "server/frontend/src/App.jsx:123",
+        "server/frontend/src/App.jsx:125",
+        "server/frontend/src/zip-design/HubHeader.jsx:4",
+        "desktop/config.py:152"
+      ],
+      "question": "Navigation: nav.js vs App.jsx routes",
+      "repository": "thehub-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Four panels: (1) Administrative write access - write token kept in sessionStorage 'federation_write_token' (server/frontend/src/pages/OperatorSettings.jsx:46; server/frontend/src/api/federationClient.js:23-30); (2) File upload - POST /api/files/upload, backend is a diagnostic stub so nothing is stored (server/frontend/src/pages/OperatorSettings.jsx:120; server/backend/main_core.py:610); (3) Connections - read-only checks of 6 connectors via GET /api/connectors/{name}/connection, backend always 'not_connected', nothing stored (server/frontend/src/pages/OperatorSettings.jsx:11-18,192; server/backend/main_core.py:615); (4) Notification preferences - default channels/timing, delivery targets (SMS/push) and per-domain overrides stored in the backend SQLite via PUT /api/notifications/preferences for subscriber 'operator' (server/frontend/src/pages/OperatorSettings.jsx:326; server/backend/main_core.py:362-383). Theme is not on this page (ThemeToggle in shell, localStorage fd-theme:thehub-pr).",
+      "evidence": [
+        "server/frontend/src/pages/OperatorSettings.jsx:522",
+        "server/frontend/src/pages/OperatorSettings.jsx:523",
+        "server/frontend/src/pages/OperatorSettings.jsx:524",
+        "server/frontend/src/pages/OperatorSettings.jsx:526",
+        "server/frontend/src/api/federationClient.js:26",
+        "server/backend/main_core.py:370"
+      ],
+      "question": "Operator Settings panels and storage",
+      "repository": "thehub-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "From @pr-federation/react the hub imports only FederationEmptyState (server/frontend/src/components/shared/EmptyState.jsx:3) and FederationConfidenceBadge, FederationFreshnessBadge, FederationProvenanceBadge, FederationSourceBadge (server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:2-7); it also imports the canonical CSS federation-design/styles/federation.css directly via a Vite alias (server/frontend/src/main.jsx:11; server/frontend/vite.config.js:58). Local duplicates: ui/button.jsx vs FederationButton/FederationIconButton; ui/card.jsx vs FederationPanel; ui/skeleton.jsx vs FederationLoadingState; ui/table.jsx vs FederationDatasetGrid; shared/StatCard.jsx vs FederationStatCard; shared/StatusChip.jsx vs FederationStatusBadge; lib/theme.jsx is a vendored copy of FederationThemeProvider (server/frontend/src/lib/theme.jsx:4-6). AppLayout is its own shell (Sidebar + zip-design HubHeader + MobileNav), not FederationAppShell/FederationModuleNav/FederationMobileNav.",
+      "evidence": [
+        "server/frontend/src/components/shared/EmptyState.jsx:3",
+        "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:2",
+        "server/frontend/src/main.jsx:11",
+        "server/frontend/src/components/layout/AppLayout.jsx:9",
+        "server/frontend/src/lib/theme.jsx:4",
+        "server/frontend/package.json:26"
+      ],
+      "question": "Shared design components used by the hub",
+      "repository": "thehub-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "Exports (src/index.jsx + re-exports): FederationThemeProvider, useFederationTheme, FederationButton, FederationIconButton, FederationPanel, FEDERATION_STATUS_ROLES, federationStatusRole, federationTone, FederationSemanticBadge, FederationStatusBadge, FederationEvidenceTierBadge, FederationConfidenceBadge, FederationProvenanceBadge, FederationFreshnessBadge, FederationSourceBadge, FederationEmptyState, FederationLoadingState, FederationErrorState, FederationFilteredEmptyState, FederationOfflineState, FederationDegradedState, FederationPartialDataState, FederationStaleDataState, FederationAsyncState, FederationStatCard; semantics constants (FEDERATION_PRESENTATION_TONES, _OPERATIONAL_STATES, _WORKFLOW_STATES, _EVIDENCE_TIERS, _CONFIDENCE_LEVELS, _PROVENANCE_STATES, _FRESHNESS_STATES, _ASYNC_STATES, _EPISTEMIC_STATES, _CERTIFICATION_STATES, FEDERATION_SEMANTIC_DEFINITIONS, resolveFederationSemantic); GIS: createDatasetMapBridge, FederationDatasetGrid, FederationExportMenu, FederationBasemapSelector, FederationMapWorkspace, FederationDatasetWorkspace; shell: defineFederationNav, flattenFederationNav, matchFederationNavItem, FederationAppShell, FederationModuleNav, FederationMobileNav, FederationInspectorPanel, FederationStatusBar. Tokens: federation-design/tokens/federation.tokens.json (typography, spacing, radius, elevation, layout, breakpoints, density, touch, focus, layering, motion, semantic, repoAccents, iconography), shipped as ./tokens.json from dist. No contextual-menu primitive (only FederationExportMenu, a role=menu dropdown for exports) and no settings-navigation primitive. Accent and semantic colours are CSS custom properties in federation-design/styles/foundation.css (--fd-accent :10, per-repo [data-repo] accents :70-76, --fd-tone-* :23-31, dark :59+) mirrored in tokens repoAccents. Font tokens: --fd-font-sans 'Inter, ...' and --fd-font-mono 'JetBrains Mono, ...' (federation-design/styles/foundation.css:2-3); the package loads no fonts. The hub loads @fontsource-variable/inter (family 'Inter Variable') and @fontsource/jetbrains-mono (server/frontend/src/main.jsx:4-5), so the package's 'Inter' token does not name the loaded variable family (hub server/frontend/src/index.css:14-16 works around this with 'Inter Variable'); zip-design server/frontend/src/zip-design/tokens.css:54-57 also declare IBM Plex Sans/Mono and Newsreader, which are never loaded (partly overridden at :117). gis.css is NOT packaged: federation-design/packages/react/scripts/sources.mjs BUNDLED_STYLES omits it (:15-17) and federation-design/packages/react/CHANGELOG.md:41 says so; it is only reachable via federation-design/styles/federation.css @import (:5), which the hub aliases directly. Axe: none in the package's own node --test suite (7 files); package components are only axe-checked indirectly (hub vitest-axe on EmptyState, server/frontend/src/components/shared/a11y.test.jsx:17) and by federation-design/test-harness Playwright+axe against a running app.",
+      "evidence": [
+        "federation-design/packages/react/package.json:3",
+        "federation-design/packages/react/src/index.jsx:250",
+        "federation-design/packages/react/src/shell/index.jsx:4",
+        "federation-design/packages/react/src/gis/index.jsx:29",
+        "federation-design/styles/foundation.css:2",
+        "federation-design/styles/foundation.css:10",
+        "federation-design/styles/foundation.css:70",
+        "federation-design/packages/react/scripts/sources.mjs:15",
+        "federation-design/packages/react/CHANGELOG.md:41",
+        "federation-design/styles/federation.css:5",
+        "federation-design/test-harness/tests/federation-smoke.spec.js:10",
+        "server/frontend/src/main.jsx:4",
+        "server/frontend/src/zip-design/tokens.css:54"
+      ],
+      "question": "Design package @pr-federation/react 0.6.0-rc.1",
+      "repository": "thehub-pr",
+      "status": "CONFIRMED_PRESENT"
+    },
+    {
+      "answer": "No recently-opened or pinned list found in the SPA, backend, desktop/ or packages/prii_desktop. The nearest thing is the Launch Pad's single last-used start_route/mode in launchpad.json (packages/prii_desktop/src/prii_desktop/launchpad.py:389-401). localStorage keys found: fd-theme:thehub-pr, federation_access_token/access_token, federation_api_base_url/app_id/from_url, federation.programActivity.v1.<producer> (an event log, not recents). No rename command for any object; records can only be edited field-by-field in RecordSheet (e.g. a program's name). Searched with grep -i for recent(ly)?_(open|item|file|project), pinned, pin, favorite, rename, localStorage, sessionStorage across server/frontend/src, server/backend, desktop, packages/prii_desktop/src, federation-design/packages/react/src.",
+      "evidence": [
+        "packages/prii_desktop/src/prii_desktop/launchpad.py:389",
+        "server/frontend/src/components/programActivityEvent.js:3",
+        "server/frontend/src/lib/theme.jsx:11",
+        "server/frontend/src/lib/app-params.js:18"
+      ],
+      "question": "Desktop conventions: recents, pinned items, rename",
+      "repository": "thehub-pr",
+      "status": "NOT_FOUND"
     }
   ],
   "audited_commits": {
@@ -1107,6 +1199,6 @@
     "thehub-pr": "4f5c660801b6380ad4b64d39518fa778c9d25c76"
   },
   "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
-  "generated_at": "2026-11-17T13:40:31+00:00",
+  "generated_at": "2026-11-17T13:53:39+00:00",
   "schema": "federation.experience-program.special-adjudications/1"
 }

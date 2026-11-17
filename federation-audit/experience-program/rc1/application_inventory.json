@@ -17108,6 +17108,3877 @@
           "writes": true
         }
       ]
+    },
+    {
+      "accessibility_source_findings": [
+        {
+          "confidence": "high",
+          "evidence": "server/frontend/src/components/shared/SearchableTable.jsx:58",
+          "finding": "SearchableTable rows open the edit sheet via onClick on <tr> with no tabIndex, role or key handler, so editing any ledger record (Programs, Cases, Sources, Gates, Integrations, Dictionary, Manifest, every EntityLedger tab) is impossible by keyboard.",
+          "id": "table-rows-mouse-only",
+          "severity": "serious"
+        },
+        {
+          "confidence": "high",
+          "evidence": "server/frontend/src/components/shared/RecordSheet.jsx:29",
+          "finding": "Entity create/update promises are neither awaited by RecordSheet nor caught by EntityLedger/page handlers; a 401/503 from the write guard produces no visible or announced error.",
+          "id": "write-errors-silent",
+          "severity": "serious"
+        },
+        {
+          "confidence": "high",
+          "evidence": "server/frontend/src/components/layout/Sidebar.jsx:47",
+          "finding": "The only pointer trigger for the command palette is in the sidebar, which is hidden below lg; MobileNav and HubHeader have none, so on narrow/touch layouts the palette (and its coordinate/evidence-ref commands) needs a hardware keyboard.",
+          "id": "palette-no-touch-trigger",
+          "severity": "moderate"
+        },
+        {
+          "confidence": "high",
+          "evidence": "server/frontend/src/components/notifications/NotificationBell.jsx:20",
+          "finding": "Notification bell toggles a popover without aria-expanded/aria-controls, Escape handling or focus management; dismissal is a click-only full-screen backdrop div.",
+          "id": "notification-popover-semantics",
+          "severity": "moderate"
+        },
+        {
+          "confidence": "high",
+          "evidence": "server/frontend/src/hooks/useEntityData.js:13",
+          "finding": "useEntityData seeds initialData: [] so isLoading is never true and isError is not rendered by ledger tables; users see 'No records' while loading or when the API fails.",
+          "id": "loading-masked-as-empty",
+          "severity": "moderate"
+        },
+        {
+          "confidence": "high",
+          "evidence": "server/frontend/src/components/shared/SearchableTable.jsx:47",
+          "finding": "Sortable column headers are plain buttons with icon-only direction; no aria-sort on the header cell.",
+          "id": "sort-state-not-exposed",
+          "severity": "moderate"
+        },
+        {
+          "confidence": "medium",
+          "evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "finding": "/control renders its PageHeader h1 and then a whole page component with its own PageHeader h1.",
+          "id": "duplicate-h1-control-ledgers",
+          "severity": "minor"
+        },
+        {
+          "confidence": "high",
+          "evidence": "server/frontend/src/zip-design/HubHeader.jsx:9",
+          "finding": "At >=lg two ThemeToggle buttons (HubHeader and Sidebar) and two navigation regions with overlapping links are rendered.",
+          "id": "duplicate-theme-toggles",
+          "severity": "minor"
+        },
+        {
+          "confidence": "medium",
+          "evidence": "server/frontend/src/pages/Operations.jsx:319",
+          "finding": "Deleting a stored operation secret fires immediately with no confirmation.",
+          "id": "secret-delete-no-confirm",
+          "severity": "moderate"
+        },
+        {
+          "confidence": "medium",
+          "evidence": "server/frontend/src/components/notifications/NotificationBell.jsx:30",
+          "finding": "Notification badge uses bg-red-600/bg-blue-600 instead of federation tone tokens; criticality is colour-only on the badge.",
+          "id": "hardcoded-badge-colours",
+          "severity": "minor"
+        }
+      ],
+      "audited_commit": "4f5c660801b6380ad4b64d39518fa778c9d25c76",
+      "backend": {
+        "app_object": "server/backend/main_core.py:101",
+        "endpoint_count": {
+          "DELETE": 5,
+          "GET": 46,
+          "PATCH": 3,
+          "POST": 18,
+          "PUT": 3
+        },
+        "endpoints_not_called_by_frontend": [
+          "GET /health (desktop health probe)",
+          "GET /api/health",
+          "GET /api/admin-companion/capabilities",
+          "POST /api/entities/{entity_name}/bulk",
+          "GET /api/agents/{path} (listConversations/getConversation unused)",
+          "GET /api/federation-manager/apps/{app_id}",
+          "GET /api/federation-manager/runs/{run_id}/receipt",
+          "GET /api/federation-manager/receipts",
+          "POST /api/federation-manager/session (called only by the console snippet in scripts/run_manager_host.py:191)",
+          "POST /api/federation-manager/files/slots",
+          "DELETE /api/federation-manager/files/slots/{file_token}",
+          "GET /healthz",
+          "GET /readyz",
+          "GET /mcp/metrics",
+          "GET /mcp/capabilities",
+          "POST /mcp/route",
+          "GET /grid/{grid_id}/{grid_version}/{level}/{cell_id}",
+          "GET /api/grid/{grid_id}/{grid_version}/{level}/{cell_id}"
+        ],
+        "framework": "FastAPI",
+        "frontend_calls_with_no_backend_route": [
+          "POST /api/auth/login (server/frontend/src/api/federationClient.js:135)",
+          "GET /api/auth/{provider}/login (navigation, server/frontend/src/api/federationClient.js:142)",
+          "POST /api/auth/register (server/frontend/src/api/federationClient.js:144)",
+          "POST /api/auth/verify-otp (server/frontend/src/api/federationClient.js:146)",
+          "POST /api/auth/resend-otp (server/frontend/src/api/federationClient.js:150)",
+          "POST /api/auth/password/reset-request (server/frontend/src/api/federationClient.js:151)",
+          "POST /api/auth/password/reset (server/frontend/src/api/federationClient.js:152)",
+          "GET /api/auth/logout (navigation, server/frontend/src/api/federationClient.js:157)",
+          "GET /api/federation-manager/repositories (server/frontend/src/components/manager/managerClient.js:61) - only exists when scripts/run_manager_host.py:245 installs it"
+        ]
+      },
+      "context_actions": [],
+      "denominator": {
+        "by_workflow_status": {
+          "BROKEN": 10,
+          "COMPLETE": 24,
+          "INTERNAL_ONLY": 3,
+          "PARTIAL": 6,
+          "UNREACHABLE": 1
+        },
+        "coverage_statement": "Exhaustive: App.jsx routes, NAV_GROUPS items, URL-addressed tabs/views on module, research, control and GIS pages, all Dialog/Sheet usages (grep for <Dialog|<Sheet), Operator Settings panels, keyboard handlers (grep onKeyDown/addEventListener key*), context menus (grep onContextMenu/contextmenu/long-press: none found), backend route decorators in server/backend and desktop/launcher_api.py. Sampled: forms, tables, charts and filters inside pages (significant ones listed; per-tab EntityLedger tables are represented by their tab surfaces), and workflow tracing of individual GIS/sky computations. Backend handlers were traced to the route line, not every helper. Manager GET/Origin breakage is reasoned from the Fetch spec, not observed. Endpoint counts expand api_route(methods=[5]) for /api/agents and /api/integrations per method, include the conditional GET /repositories, and exclude the SPA catch-all and desktop-only /launcher + /api/local/* (3 GET-or-POST: GET /launcher, GET /api/local/federation, GET /api/local/federation/icon/{repo}, POST /api/local/launch/{repo}).",
+        "surfaces_mounted": 125,
+        "surfaces_total": 133,
+        "workflows_total": 44
+      },
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 10,
+          "COMPLETE": 24,
+          "INTERNAL_ONLY": 3,
+          "PARTIAL": 6,
+          "UNREACHABLE": 1
+        },
+        "surfaces_mounted": 125,
+        "surfaces_total": 133,
+        "workflows_that_write": 17,
+        "workflows_total": 44,
+        "workflows_with_test": 33
+      },
+      "entry_points": [
+        {
+          "id": "spa",
+          "kind": "web",
+          "note": "React root; App routes in App.jsx.",
+          "path": "server/frontend/src/main.jsx:20"
+        },
+        {
+          "id": "api",
+          "kind": "server",
+          "note": "Mounts extension routers onto main_core.app then aliases module to core (server/backend/main.py:104).",
+          "path": "server/backend/main.py:15"
+        },
+        {
+          "id": "spa-static",
+          "kind": "server",
+          "note": "SPA catch-all when server/frontend/dist exists.",
+          "path": "server/backend/main_core.py:713"
+        },
+        {
+          "id": "manager-host",
+          "kind": "cli",
+          "note": "Opt-in manager runtime; prints the session bootstrap console snippet.",
+          "path": "scripts/run_manager_host.py:202"
+        },
+        {
+          "id": "desktop",
+          "kind": "launcher",
+          "note": "prii_desktop shared runtime; app server desktop/app_server.py adds /launcher and /api/local/*.",
+          "path": "desktop/launch.py:15"
+        },
+        {
+          "id": "launchers",
+          "kind": "launcher",
+          "note": "Also PRII-THEHUB.sh/.bat/.app and PRII-FEDERATION.*; not traced.",
+          "path": "PRII-THEHUB.command:1"
+        }
+      ],
+      "frontend": {
+        "dir": "server/frontend",
+        "framework": "React 19 + Vite 8 + Tailwind 4 + TanStack Query",
+        "language": "js",
+        "router": "url",
+        "router_file": "server/frontend/src/App.jsx:5",
+        "shared_design_package": "@pr-federation/react@0.6.0-rc.1 (file: dep, server/frontend/package.json:26; version federation-design/packages/react/package.json:3)"
+      },
+      "keyboard_shortcuts": [
+        {
+          "action": "Toggle command palette",
+          "evidence": "server/frontend/src/hooks/useGlobalShortcut.js:4",
+          "keys": "Ctrl+K / Cmd+K",
+          "scope": "global"
+        },
+        {
+          "action": "Move/run palette command",
+          "evidence": "server/frontend/src/components/command/CommandPalette.jsx:33",
+          "keys": "ArrowUp/ArrowDown/Home/End/Enter",
+          "scope": "command-palette"
+        },
+        {
+          "action": "Close palette (Radix Dialog)",
+          "evidence": "server/frontend/src/components/command/CommandPalette.jsx:55",
+          "keys": "Escape",
+          "scope": "command-palette"
+        },
+        {
+          "action": "Play/pause constellation tour",
+          "evidence": "server/frontend/src/pages/FederationConstellation.jsx:87",
+          "keys": "Space",
+          "scope": "route-constellation"
+        },
+        {
+          "action": "Next/previous constellation stage",
+          "evidence": "server/frontend/src/pages/FederationConstellation.jsx:88",
+          "keys": "ArrowRight / ArrowLeft",
+          "scope": "route-constellation"
+        },
+        {
+          "action": "Switch constellation lens",
+          "evidence": "server/frontend/src/pages/FederationConstellation.jsx:90",
+          "keys": "L",
+          "scope": "route-constellation"
+        },
+        {
+          "action": "Zoom constellation",
+          "evidence": "server/frontend/src/pages/FederationConstellation.jsx:92",
+          "keys": "+ / = / -",
+          "scope": "route-constellation"
+        },
+        {
+          "action": "Fit constellation",
+          "evidence": "server/frontend/src/pages/FederationConstellation.jsx:95",
+          "keys": "F",
+          "scope": "route-constellation"
+        },
+        {
+          "action": "Clear constellation selection",
+          "evidence": "server/frontend/src/pages/FederationConstellation.jsx:97",
+          "keys": "Escape",
+          "scope": "route-constellation"
+        },
+        {
+          "action": "Send chat message",
+          "evidence": "server/frontend/src/components/research/ModuleChat.jsx:239",
+          "keys": "Enter (Shift+Enter newline)",
+          "scope": "research-assistant-tab-chat"
+        },
+        {
+          "action": "Send operator message",
+          "evidence": "server/frontend/src/components/research/OperatorChat.jsx:198",
+          "keys": "Enter (Shift+Enter newline)",
+          "scope": "research-assistant-tab-operator"
+        },
+        {
+          "action": "Load readiness for owner",
+          "evidence": "server/frontend/src/pages/ModuleReadiness.jsx:80",
+          "keys": "Enter",
+          "scope": "route-module-readiness"
+        }
+      ],
+      "navigation": {
+        "dead_or_unlinked_routes": [
+          "/activity (alias of /, no own nav entry; active-matched by server/frontend/src/lib/nav.js:78)",
+          "/source-monitor/:monitorId, /research/case/:caseId, /evidence/:collection/:id, /entity/:id (detail routes reached by in-page links, by design)",
+          "/login, /register, /forgot-password, /reset-password (redirect to / in default config, server/frontend/src/App.jsx:87-90)",
+          "Nav entries with no route: none found (all 32 NAV_GROUPS paths are in server/frontend/src/App.jsx:96-132)",
+          "Desktop launchpad start page /launcher (desktop/config.py:152) is not an SPA route; only desktop/app_server.py:30 serves it",
+          "Orphan component server/frontend/src/components/shared/MapView.jsx:6 (never imported)"
+        ],
+        "items": [
+          {
+            "label": "Recent Activity",
+            "target": "/"
+          },
+          {
+            "label": "Hub",
+            "target": "/hub"
+          },
+          {
+            "label": "Search",
+            "target": "/search"
+          },
+          {
+            "label": "Timeline",
+            "target": "/timeline"
+          },
+          {
+            "label": "Spiderweb-PR",
+            "target": "/spiderweb"
+          },
+          {
+            "label": "Ovnis-PR",
+            "target": "/ovnis"
+          },
+          {
+            "label": "AguaYLuz-PR",
+            "target": "/aguayluz"
+          },
+          {
+            "label": "MoneySweep-PR",
+            "target": "/moneysweep"
+          },
+          {
+            "label": "Skywatcher-PR",
+            "target": "/skywatcher"
+          },
+          {
+            "label": "Centinelas-PR",
+            "target": "/centinelas"
+          },
+          {
+            "label": "Constellation",
+            "target": "/constellation"
+          },
+          {
+            "label": "Crossover",
+            "target": "/crossover"
+          },
+          {
+            "label": "Anomaly Overlap",
+            "target": "/anomaly-overlap"
+          },
+          {
+            "label": "Transition Audit",
+            "target": "/transition"
+          },
+          {
+            "label": "Module Readiness",
+            "target": "/readiness"
+          },
+          {
+            "label": "Control Ledgers",
+            "target": "/control"
+          },
+          {
+            "label": "Programs",
+            "target": "/programs"
+          },
+          {
+            "label": "Project Signs",
+            "target": "/project-signs"
+          },
+          {
+            "label": "App Center",
+            "target": "/apps"
+          },
+          {
+            "label": "Operations",
+            "target": "/operations"
+          },
+          {
+            "label": "Cases",
+            "target": "/cases"
+          },
+          {
+            "label": "Sources",
+            "target": "/sources"
+          },
+          {
+            "label": "Source Monitor",
+            "target": "/source-monitor"
+          },
+          {
+            "label": "Tasks",
+            "target": "/tasks"
+          },
+          {
+            "label": "Gates",
+            "target": "/gates"
+          },
+          {
+            "label": "Exports",
+            "target": "/exports"
+          },
+          {
+            "label": "Dictionary",
+            "target": "/dictionary"
+          },
+          {
+            "label": "Manifest",
+            "target": "/manifest"
+          },
+          {
+            "label": "GIS Workspace",
+            "target": "/gis"
+          },
+          {
+            "label": "Research",
+            "target": "/research"
+          },
+          {
+            "label": "Integrations",
+            "target": "/integrations"
+          },
+          {
+            "label": "Operator Settings",
+            "target": "/operator-settings"
+          }
+        ],
+        "mobile_navigation": "Below lg the sidebar is hidden (server/frontend/src/components/layout/Sidebar.jsx:35) and MobileNav shows a hamburger that opens a left Sheet listing the same NAV_GROUPS (server/frontend/src/components/layout/MobileNav.jsx:25-30). The zip-design HubHeader quick nav (5 hard-coded links, server/frontend/src/zip-design/HubHeader.jsx:4) is visible at all widths. No command-palette button below lg.",
+        "registry_file": "server/frontend/src/lib/nav.js:27"
+      },
+      "performance_protections": [
+        {
+          "evidence": "server/frontend/src/App.jsx:19",
+          "what": "lazy route code-splitting for every page"
+        },
+        {
+          "evidence": "server/frontend/src/pages/Skywatcher.jsx:17",
+          "what": "lazy SkyWorkspace inside Skywatcher"
+        },
+        {
+          "evidence": "server/frontend/src/hooks/useEntityData.js:18",
+          "what": "polling paused while tab hidden"
+        },
+        {
+          "evidence": "server/frontend/src/hooks/useNotifications.js:17",
+          "what": "notification poll 30s, paused when hidden"
+        },
+        {
+          "evidence": "server/frontend/src/components/shared/MunicipiosLayer.jsx:8",
+          "what": "municipios GeoJSON fetched once and cached"
+        },
+        {
+          "evidence": "server/frontend/vite.config.js:61",
+          "what": "satellite.js WASM runtime stubbed out of bundle"
+        },
+        {
+          "evidence": "server/frontend/src/lib/commands.js:15",
+          "what": "palette results capped at 50"
+        },
+        {
+          "evidence": "server/frontend/src/api/federationClient.js:247",
+          "what": "cursor pagination for search/timeline/research"
+        },
+        {
+          "evidence": "server/backend/main_core.py:390",
+          "what": "entity list bounded server-side (limit<=2000, client asks 500)"
+        },
+        {
+          "evidence": "server/frontend/package.json:23",
+          "what": "no list virtualization found (no react-window/virtual deps)"
+        }
+      ],
+      "repository": "thehub-pr",
+      "settings": [
+        {
+          "evidence": "server/frontend/src/lib/theme.jsx:11",
+          "id": "theme",
+          "label": "Theme (light/dark)",
+          "scope": "APPLICATION_USER",
+          "storage": "localStorage fd-theme:thehub-pr"
+        },
+        {
+          "evidence": "server/frontend/src/api/federationClient.js:13",
+          "id": "write-token",
+          "label": "Administrative write token (PRII_WRITE_TOKEN)",
+          "scope": "SECRET",
+          "storage": "sessionStorage federation_write_token (also accepted via ?write_token=)"
+        },
+        {
+          "evidence": "server/frontend/src/api/federationClient.js:44",
+          "id": "access-token",
+          "label": "Federation access token",
+          "scope": "SECRET",
+          "storage": "localStorage federation_access_token + access_token"
+        },
+        {
+          "evidence": "server/frontend/src/lib/app-params.js:58",
+          "id": "api-base-url",
+          "label": "API base URL",
+          "scope": "SESSION",
+          "storage": "localStorage federation_api_base_url (URL ?api_base_url= wins; otherwise env default overwrites)"
+        },
+        {
+          "evidence": "server/frontend/src/lib/app-params.js:56",
+          "id": "app-id",
+          "label": "App id",
+          "scope": "SESSION",
+          "storage": "localStorage federation_app_id"
+        },
+        {
+          "evidence": "server/frontend/src/lib/app-params.js:72",
+          "id": "from-url",
+          "label": "Origin URL",
+          "scope": "SESSION",
+          "storage": "localStorage federation_from_url"
+        },
+        {
+          "evidence": "server/backend/main_core.py:370",
+          "id": "notif-default",
+          "label": "Notification default delivery (channels + timing)",
+          "scope": "ADMINISTRATIVE",
+          "storage": "backend SQLite via NotificationStore, subscriber 'operator'"
+        },
+        {
+          "evidence": "server/frontend/src/pages/OperatorSettings.jsx:452",
+          "id": "notif-domain-overrides",
+          "label": "Notification per-domain overrides",
+          "scope": "ADMINISTRATIVE",
+          "storage": "backend (same PUT /api/notifications/preferences)"
+        },
+        {
+          "evidence": "server/frontend/src/pages/OperatorSettings.jsx:430",
+          "id": "notif-targets",
+          "label": "Delivery targets (SMS number, push endpoint)",
+          "scope": "ADMINISTRATIVE",
+          "storage": "backend (targets)"
+        },
+        {
+          "evidence": "server/backend/main_core.py:351",
+          "id": "notif-cursor",
+          "label": "Notifications last-seen cursor",
+          "scope": "ADMINISTRATIVE",
+          "storage": "backend"
+        },
+        {
+          "evidence": "server/frontend/src/components/manager/managerClient.js:13",
+          "id": "manager-session",
+          "label": "Native manager session token",
+          "scope": "SECRET",
+          "storage": "sessionStorage prii.manager.session"
+        },
+        {
+          "evidence": "server/backend/federation_manager_api.py:426",
+          "id": "manager-secrets",
+          "label": "Per-app operation secrets",
+          "scope": "SECRET",
+          "storage": "backend secrets broker (presence only returned)"
+        },
+        {
+          "evidence": "server/backend/main_core.py:65",
+          "id": "env-write-token",
+          "label": "PRII_WRITE_TOKEN",
+          "scope": "ADMINISTRATIVE",
+          "storage": "env"
+        },
+        {
+          "evidence": "server/frontend/src/lib/app-params.js:74",
+          "id": "env-require-auth",
+          "label": "VITE_FEDERATION_REQUIRE_AUTH / VITE_HUB_API_BASE_URL",
+          "scope": "ADMINISTRATIVE",
+          "storage": "env (build time)"
+        },
+        {
+          "evidence": "server/backend/federation_manager_api.py:55",
+          "id": "env-manager-nonce",
+          "label": "PRII_MANAGER_BOOTSTRAP_NONCE",
+          "scope": "SECRET",
+          "storage": "env"
+        },
+        {
+          "evidence": "packages/prii_desktop/src/prii_desktop/launchpad.py:389",
+          "id": "desktop-launchpad-prefs",
+          "label": "Launch Pad mode / start page / options / skip",
+          "scope": "APPLICATION_USER",
+          "storage": "launchpad.json in app support dir"
+        },
+        {
+          "evidence": "packages/prii_desktop/src/prii_desktop/launchpad.py:91",
+          "id": "desktop-operator-passphrase",
+          "label": "Operator passphrase",
+          "scope": "SECRET",
+          "storage": "operator-lock.json (PBKDF2 hash)"
+        },
+        {
+          "evidence": "desktop/config.py:194",
+          "id": "desktop-grid-profile-root",
+          "label": "Grid V2 profile folder",
+          "scope": "APPLICATION_USER",
+          "storage": "env PRII_GRID_V2_PROFILE_ROOT set by launch pad"
+        }
+      ],
+      "special_adjudications": [
+        {
+          "answer": "Yes. CommandPaletteProvider wraps the shell (server/frontend/src/components/layout/AppLayout.jsx:11); Ctrl/Cmd+K toggles it (server/frontend/src/hooks/useGlobalShortcut.js:4,15) and a 'Search & commands' button in the desktop sidebar opens it (server/frontend/src/components/layout/Sidebar.jsx:47; server/frontend/src/components/command/CommandPalette.jsx:119-135). Registry is server/frontend/src/lib/commands.js: navigation commands derived from NAV_GROUPS (server/frontend/src/lib/commands.js:21-32) plus query commands (search, lat/lon map jump, Collection/id provenance, ent_ id) (server/frontend/src/lib/commands.js:34-57). Every command is a navigate. Pointer users can click options; but the trigger is only in the sidebar, which is hidden below lg (server/frontend/src/components/layout/Sidebar.jsx:35) and MobileNav has none, so on narrow/touch layouts the palette cannot be opened without a keyboard. Nav commands remain reachable through MobileNav; the search command through /search; the coordinate jump and typed evidence/entity-id commands have no other UI entry.",
+          "evidence": [
+            "server/frontend/src/components/command/CommandPalette.jsx:106",
+            "server/frontend/src/hooks/useGlobalShortcut.js:4",
+            "server/frontend/src/lib/commands.js:21",
+            "server/frontend/src/components/layout/Sidebar.jsx:47",
+            "server/frontend/src/components/layout/Sidebar.jsx:35",
+            "server/frontend/src/components/layout/MobileNav.jsx:16"
+          ],
+          "question": "Command palette: existence, keys, registry, non-keyboard reachability",
+          "status": "PARTIAL"
+        },
+        {
+          "answer": "All 32 NAV_GROUPS paths have routes. Routes with no nav entry: /activity (alias of /), the four param detail routes (/source-monitor/:monitorId, /research/case/:caseId, /evidence/:collection/:id, /entity/:id), the four auth routes, and the * catch-all. No nav entry lacks a route. Drift elsewhere: HubHeader keeps a separate hard-coded 5-link nav (server/frontend/src/zip-design/HubHeader.jsx:4); /control?tab= duplicates 10 standalone routes; desktop launchpad lists /launcher which only exists under the desktop app server.",
+          "evidence": [
+            "server/frontend/src/lib/nav.js:27",
+            "server/frontend/src/App.jsx:96",
+            "server/frontend/src/App.jsx:97",
+            "server/frontend/src/App.jsx:104",
+            "server/frontend/src/App.jsx:119",
+            "server/frontend/src/App.jsx:123",
+            "server/frontend/src/App.jsx:125",
+            "server/frontend/src/zip-design/HubHeader.jsx:4",
+            "desktop/config.py:152"
+          ],
+          "question": "Navigation: nav.js vs App.jsx routes",
+          "status": "CONFIRMED_PRESENT"
+        },
+        {
+          "answer": "Four panels: (1) Administrative write access - write token kept in sessionStorage 'federation_write_token' (server/frontend/src/pages/OperatorSettings.jsx:46; server/frontend/src/api/federationClient.js:23-30); (2) File upload - POST /api/files/upload, backend is a diagnostic stub so nothing is stored (server/frontend/src/pages/OperatorSettings.jsx:120; server/backend/main_core.py:610); (3) Connections - read-only checks of 6 connectors via GET /api/connectors/{name}/connection, backend always 'not_connected', nothing stored (server/frontend/src/pages/OperatorSettings.jsx:11-18,192; server/backend/main_core.py:615); (4) Notification preferences - default channels/timing, delivery targets (SMS/push) and per-domain overrides stored in the backend SQLite via PUT /api/notifications/preferences for subscriber 'operator' (server/frontend/src/pages/OperatorSettings.jsx:326; server/backend/main_core.py:362-383). Theme is not on this page (ThemeToggle in shell, localStorage fd-theme:thehub-pr).",
+          "evidence": [
+            "server/frontend/src/pages/OperatorSettings.jsx:522",
+            "server/frontend/src/pages/OperatorSettings.jsx:523",
+            "server/frontend/src/pages/OperatorSettings.jsx:524",
+            "server/frontend/src/pages/OperatorSettings.jsx:526",
+            "server/frontend/src/api/federationClient.js:26",
+            "server/backend/main_core.py:370"
+          ],
+          "question": "Operator Settings panels and storage",
+          "status": "CONFIRMED_PRESENT"
+        },
+        {
+          "answer": "From @pr-federation/react the hub imports only FederationEmptyState (server/frontend/src/components/shared/EmptyState.jsx:3) and FederationConfidenceBadge, FederationFreshnessBadge, FederationProvenanceBadge, FederationSourceBadge (server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:2-7); it also imports the canonical CSS federation-design/styles/federation.css directly via a Vite alias (server/frontend/src/main.jsx:11; server/frontend/vite.config.js:58). Local duplicates: ui/button.jsx vs FederationButton/FederationIconButton; ui/card.jsx vs FederationPanel; ui/skeleton.jsx vs FederationLoadingState; ui/table.jsx vs FederationDatasetGrid; shared/StatCard.jsx vs FederationStatCard; shared/StatusChip.jsx vs FederationStatusBadge; lib/theme.jsx is a vendored copy of FederationThemeProvider (server/frontend/src/lib/theme.jsx:4-6). AppLayout is its own shell (Sidebar + zip-design HubHeader + MobileNav), not FederationAppShell/FederationModuleNav/FederationMobileNav.",
+          "evidence": [
+            "server/frontend/src/components/shared/EmptyState.jsx:3",
+            "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:2",
+            "server/frontend/src/main.jsx:11",
+            "server/frontend/src/components/layout/AppLayout.jsx:9",
+            "server/frontend/src/lib/theme.jsx:4",
+            "server/frontend/package.json:26"
+          ],
+          "question": "Shared design components used by the hub",
+          "status": "CONFIRMED_PRESENT"
+        },
+        {
+          "answer": "Exports (src/index.jsx + re-exports): FederationThemeProvider, useFederationTheme, FederationButton, FederationIconButton, FederationPanel, FEDERATION_STATUS_ROLES, federationStatusRole, federationTone, FederationSemanticBadge, FederationStatusBadge, FederationEvidenceTierBadge, FederationConfidenceBadge, FederationProvenanceBadge, FederationFreshnessBadge, FederationSourceBadge, FederationEmptyState, FederationLoadingState, FederationErrorState, FederationFilteredEmptyState, FederationOfflineState, FederationDegradedState, FederationPartialDataState, FederationStaleDataState, FederationAsyncState, FederationStatCard; semantics constants (FEDERATION_PRESENTATION_TONES, _OPERATIONAL_STATES, _WORKFLOW_STATES, _EVIDENCE_TIERS, _CONFIDENCE_LEVELS, _PROVENANCE_STATES, _FRESHNESS_STATES, _ASYNC_STATES, _EPISTEMIC_STATES, _CERTIFICATION_STATES, FEDERATION_SEMANTIC_DEFINITIONS, resolveFederationSemantic); GIS: createDatasetMapBridge, FederationDatasetGrid, FederationExportMenu, FederationBasemapSelector, FederationMapWorkspace, FederationDatasetWorkspace; shell: defineFederationNav, flattenFederationNav, matchFederationNavItem, FederationAppShell, FederationModuleNav, FederationMobileNav, FederationInspectorPanel, FederationStatusBar. Tokens: federation-design/tokens/federation.tokens.json (typography, spacing, radius, elevation, layout, breakpoints, density, touch, focus, layering, motion, semantic, repoAccents, iconography), shipped as ./tokens.json from dist. No contextual-menu primitive (only FederationExportMenu, a role=menu dropdown for exports) and no settings-navigation primitive. Accent and semantic colours are CSS custom properties in federation-design/styles/foundation.css (--fd-accent :10, per-repo [data-repo] accents :70-76, --fd-tone-* :23-31, dark :59+) mirrored in tokens repoAccents. Font tokens: --fd-font-sans 'Inter, ...' and --fd-font-mono 'JetBrains Mono, ...' (federation-design/styles/foundation.css:2-3); the package loads no fonts. The hub loads @fontsource-variable/inter (family 'Inter Variable') and @fontsource/jetbrains-mono (server/frontend/src/main.jsx:4-5), so the package's 'Inter' token does not name the loaded variable family (hub server/frontend/src/index.css:14-16 works around this with 'Inter Variable'); zip-design server/frontend/src/zip-design/tokens.css:54-57 also declare IBM Plex Sans/Mono and Newsreader, which are never loaded (partly overridden at :117). gis.css is NOT packaged: federation-design/packages/react/scripts/sources.mjs BUNDLED_STYLES omits it (:15-17) and federation-design/packages/react/CHANGELOG.md:41 says so; it is only reachable via federation-design/styles/federation.css @import (:5), which the hub aliases directly. Axe: none in the package's own node --test suite (7 files); package components are only axe-checked indirectly (hub vitest-axe on EmptyState, server/frontend/src/components/shared/a11y.test.jsx:17) and by federation-design/test-harness Playwright+axe against a running app.",
+          "evidence": [
+            "federation-design/packages/react/package.json:3",
+            "federation-design/packages/react/src/index.jsx:250",
+            "federation-design/packages/react/src/shell/index.jsx:4",
+            "federation-design/packages/react/src/gis/index.jsx:29",
+            "federation-design/styles/foundation.css:2",
+            "federation-design/styles/foundation.css:10",
+            "federation-design/styles/foundation.css:70",
+            "federation-design/packages/react/scripts/sources.mjs:15",
+            "federation-design/packages/react/CHANGELOG.md:41",
+            "federation-design/styles/federation.css:5",
+            "federation-design/test-harness/tests/federation-smoke.spec.js:10",
+            "server/frontend/src/main.jsx:4",
+            "server/frontend/src/zip-design/tokens.css:54"
+          ],
+          "question": "Design package @pr-federation/react 0.6.0-rc.1",
+          "status": "CONFIRMED_PRESENT"
+        },
+        {
+          "answer": "No recently-opened or pinned list found in the SPA, backend, desktop/ or packages/prii_desktop. The nearest thing is the Launch Pad's single last-used start_route/mode in launchpad.json (packages/prii_desktop/src/prii_desktop/launchpad.py:389-401). localStorage keys found: fd-theme:thehub-pr, federation_access_token/access_token, federation_api_base_url/app_id/from_url, federation.programActivity.v1.<producer> (an event log, not recents). No rename command for any object; records can only be edited field-by-field in RecordSheet (e.g. a program's name). Searched with grep -i for recent(ly)?_(open|item|file|project), pinned, pin, favorite, rename, localStorage, sessionStorage across server/frontend/src, server/backend, desktop, packages/prii_desktop/src, federation-design/packages/react/src.",
+          "evidence": [
+            "packages/prii_desktop/src/prii_desktop/launchpad.py:389",
+            "server/frontend/src/components/programActivityEvent.js:3",
+            "server/frontend/src/lib/theme.jsx:11",
+            "server/frontend/src/lib/app-params.js:18"
+          ],
+          "question": "Desktop conventions: recents, pinned items, rename",
+          "status": "NOT_FOUND"
+        }
+      ],
+      "surfaces": [
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/layout/AppLayout.jsx:9",
+          "id": "app-shell",
+          "kind": "workspace",
+          "label": "INTSYS-PR / THEHUB shell",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:95",
+          "notes": "Hand-built shell (Sidebar + zip-design HubHeader + MobileNav + fixed NotificationBell); not FederationAppShell.",
+          "parent": null,
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/layout/Sidebar.jsx:31",
+          "id": "sidebar",
+          "kind": "sidebar",
+          "label": "Primary",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/components/layout/AppLayout.jsx:13",
+          "notes": "hidden below lg (server/frontend/src/components/layout/Sidebar.jsx:35); holds the only pointer trigger for the command palette (:47).",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/zip-design/HubHeader.jsx:5",
+          "id": "hub-header",
+          "kind": "toolbar",
+          "label": "Quick navigation",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/components/layout/AppLayout.jsx:15",
+          "notes": "Second, hard-coded nav list of 5 links (server/frontend/src/zip-design/HubHeader.jsx:4) not derived from nav.js; also renders a ThemeToggle.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/layout/MobileNav.jsx:11",
+          "id": "mobile-nav",
+          "kind": "drawer",
+          "label": "Open navigation menu",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/components/layout/AppLayout.jsx:16",
+          "notes": "Radix Sheet listing NAV_GROUPS below lg; no command-palette trigger.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/command/CommandPalette.jsx:18",
+          "id": "command-palette",
+          "kind": "dialog",
+          "label": "Command palette",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/components/command/CommandPalette.jsx:114",
+          "notes": "Opened by Ctrl/Cmd+K (server/frontend/src/hooks/useGlobalShortcut.js:15) or sidebar trigger; navigation only.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/notifications/NotificationBell.jsx:8",
+          "id": "notification-popover",
+          "kind": "notification",
+          "label": "Notifications",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/components/layout/AppLayout.jsx:24",
+          "notes": "Polls GET /api/notifications every 30s; opening it POSTs ack (write-guarded).",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "*",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/lib/PageNotFound.jsx:6",
+          "id": "page-not-found",
+          "kind": "route",
+          "label": "Page not found",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:136",
+          "notes": "",
+          "parent": null,
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/login",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Login.jsx:11",
+          "id": "route-login",
+          "kind": "route",
+          "label": "Login",
+          "mounted": false,
+          "mounted_evidence": "server/frontend/src/App.jsx:80",
+          "notes": "Only routed when authRequired (server/frontend/src/App.jsx:67-69); backend public-settings returns requires_auth:false (server/backend/main_core.py:278) so these paths redirect to / (server/frontend/src/App.jsx:87-90). Backend has no /api/auth/login|register|verify-otp|password routes.",
+          "parent": null,
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/register",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Register.jsx:13",
+          "id": "route-register",
+          "kind": "route",
+          "label": "Register",
+          "mounted": false,
+          "mounted_evidence": "server/frontend/src/App.jsx:81",
+          "notes": "Only routed when authRequired (server/frontend/src/App.jsx:67-69); backend public-settings returns requires_auth:false (server/backend/main_core.py:278) so these paths redirect to / (server/frontend/src/App.jsx:87-90). Backend has no /api/auth/login|register|verify-otp|password routes.",
+          "parent": null,
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/forgot-password",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ForgotPassword.jsx:10",
+          "id": "route-forgot-password",
+          "kind": "route",
+          "label": "Forgot password",
+          "mounted": false,
+          "mounted_evidence": "server/frontend/src/App.jsx:82",
+          "notes": "Only routed when authRequired (server/frontend/src/App.jsx:67-69); backend public-settings returns requires_auth:false (server/backend/main_core.py:278) so these paths redirect to / (server/frontend/src/App.jsx:87-90). Backend has no /api/auth/login|register|verify-otp|password routes.",
+          "parent": null,
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/reset-password",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResetPassword.jsx:10",
+          "id": "route-reset-password",
+          "kind": "route",
+          "label": "Reset password",
+          "mounted": false,
+          "mounted_evidence": "server/frontend/src/App.jsx:83",
+          "notes": "Only routed when authRequired (server/frontend/src/App.jsx:67-69); backend public-settings returns requires_auth:false (server/backend/main_core.py:278) so these paths redirect to / (server/frontend/src/App.jsx:87-90). Backend has no /api/auth/login|register|verify-otp|password routes.",
+          "parent": null,
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/RecentActivity.jsx:136",
+          "id": "route-recent-activity",
+          "kind": "route",
+          "label": "Recent Activity",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:96",
+          "notes": "Also mounted at /activity (server/frontend/src/App.jsx:97). Polls 3 entity lists; loading flags never true due to initialData.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": true,
+            "offline": false,
+            "stale": true
+          }
+        },
+        {
+          "address": "/programs",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Programs.jsx:32",
+          "id": "route-programs",
+          "kind": "route",
+          "label": "Programs",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:98",
+          "notes": "useEntityData seeds initialData:[] (server/frontend/src/hooks/useEntityData.js:13) so list loading/failure render as the SearchableTable empty state; no loading or error branch. Rows open the edit sheet by mouse click only.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/apps",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/AppCenter.jsx:218",
+          "id": "route-app-center",
+          "kind": "route",
+          "label": "App Center",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:99",
+          "notes": "Falls back to a static read-only catalog when the manager session is absent; lifecycle buttons permanently disabled (server/frontend/src/pages/AppCenter.jsx:178-181).",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/operations",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Operations.jsx:60",
+          "id": "route-operations",
+          "kind": "route",
+          "label": "Operations",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:100",
+          "notes": "Loopback manager operations plane; needs sessionStorage prii.manager.session.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/cases",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Cases.jsx:21",
+          "id": "route-cases",
+          "kind": "route",
+          "label": "Cases",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:101",
+          "notes": "useEntityData seeds initialData:[] (server/frontend/src/hooks/useEntityData.js:13) so list loading/failure render as the SearchableTable empty state; no loading or error branch. Rows open the edit sheet by mouse click only.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/sources",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Sources.jsx:17",
+          "id": "route-sources",
+          "kind": "route",
+          "label": "Sources",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:102",
+          "notes": "useEntityData seeds initialData:[] (server/frontend/src/hooks/useEntityData.js:13) so list loading/failure render as the SearchableTable empty state; no loading or error branch. Rows open the edit sheet by mouse click only.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/source-monitor",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/SourceMonitor.jsx:15",
+          "id": "route-source-monitor",
+          "kind": "route",
+          "label": "Source Monitor",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:103",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": false,
+            "offline": false,
+            "stale": true
+          }
+        },
+        {
+          "address": "/source-monitor/:monitorId",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/SourceMonitorDetail.jsx:29",
+          "id": "route-source-monitor-detail",
+          "kind": "route",
+          "label": null,
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:104",
+          "notes": "Reached via monitorPath links (server/frontend/src/lib/sourceMonitor.js:48).",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": true
+          }
+        },
+        {
+          "address": "/tasks",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Tasks.jsx:24",
+          "id": "route-tasks",
+          "kind": "route",
+          "label": "Tasks",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:105",
+          "notes": "4 views (grouped/urgency/flat/board) held in component state; no loading/error branch.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/gates",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Gates.jsx:16",
+          "id": "route-gates",
+          "kind": "route",
+          "label": "Gates",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:106",
+          "notes": "useEntityData seeds initialData:[] (server/frontend/src/hooks/useEntityData.js:13) so list loading/failure render as the SearchableTable empty state; no loading or error branch. Rows open the edit sheet by mouse click only.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/integrations",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Integrations.jsx:16",
+          "id": "route-integrations",
+          "kind": "route",
+          "label": "Integrations",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:107",
+          "notes": "useEntityData seeds initialData:[] (server/frontend/src/hooks/useEntityData.js:13) so list loading/failure render as the SearchableTable empty state; no loading or error branch. Rows open the edit sheet by mouse click only.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/operator-settings",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/OperatorSettings.jsx:513",
+          "id": "route-operator-settings",
+          "kind": "route",
+          "label": "Operator Settings",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:108",
+          "notes": "4 panels; see settings.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/exports",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Exports.jsx:32",
+          "id": "route-exports",
+          "kind": "route",
+          "label": "Exports",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:109",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/readiness",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ModuleReadiness.jsx:21",
+          "id": "route-module-readiness",
+          "kind": "route",
+          "label": "Module Readiness",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:110",
+          "notes": "Backend is the diagnostic functions stub; see workflow module-readiness-github.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/transition",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/TransitionAudit.jsx:16",
+          "id": "route-transition-audit",
+          "kind": "route",
+          "label": "Transition Audit",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:111",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/crossover",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:17",
+          "id": "route-crossover",
+          "kind": "route",
+          "label": "Crossover",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:112",
+          "notes": "Builds crossovers client-side from 19 entity lists (server/frontend/src/hooks/useCrossover.js:20-38).",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/constellation",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/FederationConstellation.jsx:193",
+          "id": "route-constellation",
+          "kind": "route",
+          "label": "Constellation",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:113",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/anomaly-overlap",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/AnomalyOverlap.jsx:10",
+          "id": "route-anomaly-overlap",
+          "kind": "route",
+          "label": "Anomaly Overlap",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:114",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:30",
+          "id": "route-control-ledgers",
+          "kind": "route",
+          "label": "Control Ledgers",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:115",
+          "notes": "?tab= embeds whole pages (Programs..Manifest) that are also standalone routes; each embedded page renders its own h1.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/hub",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Hub.jsx:39",
+          "id": "route-hub",
+          "kind": "route",
+          "label": "Hub",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:116",
+          "notes": "Renders Dashboard (server/frontend/src/pages/Hub.jsx:42) plus workspace launcher cards.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/project-signs",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ProjectSigns.jsx:77",
+          "id": "route-project-signs",
+          "kind": "route",
+          "label": "Project Signs",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:117",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/research",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResearchHub.jsx:115",
+          "id": "route-research",
+          "kind": "route",
+          "label": "Research",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:118",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/research/case/:caseId",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/CaseReconstruction.jsx:71",
+          "id": "route-case-reconstruction",
+          "kind": "route",
+          "label": null,
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:119",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/dictionary",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Dictionary.jsx:18",
+          "id": "route-dictionary",
+          "kind": "route",
+          "label": "Dictionary",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:120",
+          "notes": "useEntityData seeds initialData:[] (server/frontend/src/hooks/useEntityData.js:13) so list loading/failure render as the SearchableTable empty state; no loading or error branch. Rows open the edit sheet by mouse click only.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/manifest",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Manifest.jsx:17",
+          "id": "route-manifest",
+          "kind": "route",
+          "label": "Manifest",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:121",
+          "notes": "useEntityData seeds initialData:[] (server/frontend/src/hooks/useEntityData.js:13) so list loading/failure render as the SearchableTable empty state; no loading or error branch. Rows open the edit sheet by mouse click only.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/gis",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/GISWorkspace.jsx:35",
+          "id": "route-gis",
+          "kind": "route",
+          "label": "GIS Workspace",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:122",
+          "notes": "?view= selects workbench/property-map/digital-twin/interpretive-layers/aoi-comparison.",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/evidence/:collection/:id",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/EvidenceInspector.jsx:12",
+          "id": "route-evidence-inspector",
+          "kind": "route",
+          "label": null,
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:123",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/search",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Search.jsx:68",
+          "id": "route-search",
+          "kind": "route",
+          "label": "Search",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:124",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/entity/:id",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/EntityPage.jsx:92",
+          "id": "route-entity",
+          "kind": "route",
+          "label": null,
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:125",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/timeline",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Timeline.jsx:105",
+          "id": "route-timeline",
+          "kind": "route",
+          "label": "Timeline",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:126",
+          "notes": "",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/spiderweb",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Spiderweb.jsx:22",
+          "id": "route-spiderweb",
+          "kind": "route",
+          "label": "Spiderweb-PR",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:127",
+          "notes": "?tab=",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/ovnis",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Ovnis.jsx:18",
+          "id": "route-ovnis",
+          "kind": "route",
+          "label": "Ovnis-PR",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:128",
+          "notes": "?tab=",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/aguayluz",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/AguaYLuz.jsx:98",
+          "id": "route-aguayluz",
+          "kind": "route",
+          "label": "AguaYLuz-PR",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:129",
+          "notes": "?tab=",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": true
+          }
+        },
+        {
+          "address": "/moneysweep",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/MoneySweep.jsx:22",
+          "id": "route-moneysweep",
+          "kind": "route",
+          "label": "MoneySweep-PR",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:130",
+          "notes": "?tab=",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/skywatcher",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Skywatcher.jsx:27",
+          "id": "route-skywatcher",
+          "kind": "route",
+          "label": "Skywatcher-PR",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:131",
+          "notes": "?view= (not ?tab=).",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/centinelas",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Centinelas.jsx:19",
+          "id": "route-centinelas",
+          "kind": "route",
+          "label": "Centinelas-PR",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/App.jsx:132",
+          "notes": "?tab=",
+          "parent": "app-shell",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/aguayluz?tab=workspace",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/AguaYLuz.jsx:297",
+          "id": "aguayluz-tab-workspace",
+          "kind": "tab",
+          "label": "Workspace",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/AguaYLuz.jsx:297",
+          "notes": "",
+          "parent": "route-aguayluz",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/aguayluz?tab=feed",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/AguaYLuz.jsx:300",
+          "id": "aguayluz-tab-feed",
+          "kind": "tab",
+          "label": "Water + Power Feed",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/AguaYLuz.jsx:300",
+          "notes": "",
+          "parent": "route-aguayluz",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/aguayluz?tab=assets",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/AguaYLuz.jsx:303",
+          "id": "aguayluz-tab-assets",
+          "kind": "tab",
+          "label": "Infrastructure Assets",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/AguaYLuz.jsx:303",
+          "notes": "",
+          "parent": "route-aguayluz",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/aguayluz?tab=alerts",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/AguaYLuz.jsx:309",
+          "id": "aguayluz-tab-alerts",
+          "kind": "tab",
+          "label": "Operational Alerts",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/AguaYLuz.jsx:309",
+          "notes": "",
+          "parent": "route-aguayluz",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/aguayluz?tab=risks",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/AguaYLuz.jsx:327",
+          "id": "aguayluz-tab-risks",
+          "kind": "tab",
+          "label": "Continuity Risks",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/AguaYLuz.jsx:327",
+          "notes": "",
+          "parent": "route-aguayluz",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/aguayluz?tab=outdoor",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/AguaYLuz.jsx:335",
+          "id": "aguayluz-tab-outdoor",
+          "kind": "tab",
+          "label": "Outdoor Conditions",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/AguaYLuz.jsx:335",
+          "notes": "",
+          "parent": "route-aguayluz",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/aguayluz?tab=sources",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/AguaYLuz.jsx:356",
+          "id": "aguayluz-tab-sources",
+          "kind": "tab",
+          "label": "Monitor",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/AguaYLuz.jsx:356",
+          "notes": "",
+          "parent": "route-aguayluz",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/moneysweep?tab=feed",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/MoneySweep.jsx:104",
+          "id": "moneysweep-tab-feed",
+          "kind": "tab",
+          "label": "Procurement + Funding Feed",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/MoneySweep.jsx:104",
+          "notes": "",
+          "parent": "route-moneysweep",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/moneysweep?tab=leaderboards",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/MoneySweep.jsx:107",
+          "id": "moneysweep-tab-leaderboards",
+          "kind": "tab",
+          "label": "Leaderboards",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/MoneySweep.jsx:107",
+          "notes": "",
+          "parent": "route-moneysweep",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/moneysweep?tab=contracts",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/MoneySweep.jsx:110",
+          "id": "moneysweep-tab-contracts",
+          "kind": "tab",
+          "label": "Contracts",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/MoneySweep.jsx:110",
+          "notes": "",
+          "parent": "route-moneysweep",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/moneysweep?tab=vendors",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/MoneySweep.jsx:116",
+          "id": "moneysweep-tab-vendors",
+          "kind": "tab",
+          "label": "Vendors",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/MoneySweep.jsx:116",
+          "notes": "",
+          "parent": "route-moneysweep",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/moneysweep?tab=flags",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/MoneySweep.jsx:122",
+          "id": "moneysweep-tab-flags",
+          "kind": "tab",
+          "label": "Anomaly Flags",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/MoneySweep.jsx:122",
+          "notes": "",
+          "parent": "route-moneysweep",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/moneysweep?tab=sources",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/MoneySweep.jsx:130",
+          "id": "moneysweep-tab-sources",
+          "kind": "tab",
+          "label": "Monitor",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/MoneySweep.jsx:130",
+          "notes": "",
+          "parent": "route-moneysweep",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/spiderweb?tab=workspace",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Spiderweb.jsx:81",
+          "id": "spiderweb-tab-workspace",
+          "kind": "tab",
+          "label": "Workspace",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Spiderweb.jsx:81",
+          "notes": "",
+          "parent": "route-spiderweb",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/spiderweb?tab=nodes",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Spiderweb.jsx:84",
+          "id": "spiderweb-tab-nodes",
+          "kind": "tab",
+          "label": "Graph Nodes",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Spiderweb.jsx:84",
+          "notes": "",
+          "parent": "route-spiderweb",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/spiderweb?tab=map",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Spiderweb.jsx:90",
+          "id": "spiderweb-tab-map",
+          "kind": "tab",
+          "label": "Map View",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Spiderweb.jsx:90",
+          "notes": "",
+          "parent": "route-spiderweb",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/spiderweb?tab=edges",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Spiderweb.jsx:102",
+          "id": "spiderweb-tab-edges",
+          "kind": "tab",
+          "label": "Graph Edges",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Spiderweb.jsx:102",
+          "notes": "",
+          "parent": "route-spiderweb",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/spiderweb?tab=sources",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Spiderweb.jsx:108",
+          "id": "spiderweb-tab-sources",
+          "kind": "tab",
+          "label": "Monitor",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Spiderweb.jsx:108",
+          "notes": "",
+          "parent": "route-spiderweb",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/skywatcher?view=workspace",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Skywatcher.jsx:91",
+          "id": "skywatcher-tab-workspace",
+          "kind": "tab",
+          "label": "Workspace",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Skywatcher.jsx:91",
+          "notes": "",
+          "parent": "route-skywatcher",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/skywatcher?view=sky",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Skywatcher.jsx:94",
+          "id": "skywatcher-tab-sky",
+          "kind": "tab",
+          "label": "Sky",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Skywatcher.jsx:94",
+          "notes": "",
+          "parent": "route-skywatcher",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/skywatcher?view=events",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Skywatcher.jsx:99",
+          "id": "skywatcher-tab-events",
+          "kind": "tab",
+          "label": "Airspace Events",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Skywatcher.jsx:99",
+          "notes": "",
+          "parent": "route-skywatcher",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/skywatcher?view=map",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Skywatcher.jsx:107",
+          "id": "skywatcher-tab-map",
+          "kind": "tab",
+          "label": "Map View",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Skywatcher.jsx:107",
+          "notes": "",
+          "parent": "route-skywatcher",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/skywatcher?view=corr",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Skywatcher.jsx:119",
+          "id": "skywatcher-tab-corr",
+          "kind": "tab",
+          "label": "Correlation Reviews",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Skywatcher.jsx:119",
+          "notes": "",
+          "parent": "route-skywatcher",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/skywatcher?view=sources",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Skywatcher.jsx:127",
+          "id": "skywatcher-tab-sources",
+          "kind": "tab",
+          "label": "Monitor",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Skywatcher.jsx:127",
+          "notes": "",
+          "parent": "route-skywatcher",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/centinelas?tab=matters",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Centinelas.jsx:58",
+          "id": "centinelas-tab-matters",
+          "kind": "tab",
+          "label": "Public Matters",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Centinelas.jsx:58",
+          "notes": "",
+          "parent": "route-centinelas",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/centinelas?tab=map",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Centinelas.jsx:66",
+          "id": "centinelas-tab-map",
+          "kind": "tab",
+          "label": "Map View",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Centinelas.jsx:66",
+          "notes": "",
+          "parent": "route-centinelas",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/centinelas?tab=sources",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Centinelas.jsx:78",
+          "id": "centinelas-tab-sources",
+          "kind": "tab",
+          "label": "Monitor",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Centinelas.jsx:78",
+          "notes": "",
+          "parent": "route-centinelas",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/ovnis?tab=patterns",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Ovnis.jsx:74",
+          "id": "ovnis-tab-patterns",
+          "kind": "tab",
+          "label": "Pattern Observations",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Ovnis.jsx:74",
+          "notes": "",
+          "parent": "route-ovnis",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/ovnis?tab=witness",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Ovnis.jsx:80",
+          "id": "ovnis-tab-witness",
+          "kind": "tab",
+          "label": "Witness Reports",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Ovnis.jsx:80",
+          "notes": "",
+          "parent": "route-ovnis",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/ovnis?tab=reports",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Ovnis.jsx:88",
+          "id": "ovnis-tab-reports",
+          "kind": "tab",
+          "label": "Reports",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Ovnis.jsx:88",
+          "notes": "",
+          "parent": "route-ovnis",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/ovnis?tab=showlog",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Ovnis.jsx:91",
+          "id": "ovnis-tab-showlog",
+          "kind": "tab",
+          "label": "Show Log",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Ovnis.jsx:91",
+          "notes": "",
+          "parent": "route-ovnis",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/ovnis?tab=sources",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Ovnis.jsx:94",
+          "id": "ovnis-tab-sources",
+          "kind": "tab",
+          "label": "Monitor",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Ovnis.jsx:94",
+          "notes": "",
+          "parent": "route-ovnis",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control?tab=programs",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:17",
+          "id": "control-tab-programs",
+          "kind": "tab",
+          "label": "Programs",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "notes": "Duplicates a standalone route; renders the same page component.",
+          "parent": "route-control-ledgers",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control?tab=cases",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:17",
+          "id": "control-tab-cases",
+          "kind": "tab",
+          "label": "Unified Cases",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "notes": "Duplicates a standalone route; renders the same page component.",
+          "parent": "route-control-ledgers",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control?tab=sources",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:17",
+          "id": "control-tab-sources",
+          "kind": "tab",
+          "label": "Unified Sources",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "notes": "Duplicates a standalone route; renders the same page component.",
+          "parent": "route-control-ledgers",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control?tab=dictionary",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:17",
+          "id": "control-tab-dictionary",
+          "kind": "tab",
+          "label": "Dictionary",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "notes": "Duplicates a standalone route; renders the same page component.",
+          "parent": "route-control-ledgers",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control?tab=tasks",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:17",
+          "id": "control-tab-tasks",
+          "kind": "tab",
+          "label": "Federation Tasks",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "notes": "Duplicates a standalone route; renders the same page component.",
+          "parent": "route-control-ledgers",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control?tab=gates",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:17",
+          "id": "control-tab-gates",
+          "kind": "tab",
+          "label": "Validation Gates",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "notes": "Duplicates a standalone route; renders the same page component.",
+          "parent": "route-control-ledgers",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control?tab=integrations",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:17",
+          "id": "control-tab-integrations",
+          "kind": "tab",
+          "label": "Integrations",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "notes": "Duplicates a standalone route; renders the same page component.",
+          "parent": "route-control-ledgers",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control?tab=exports",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:17",
+          "id": "control-tab-exports",
+          "kind": "tab",
+          "label": "Exports",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "notes": "Duplicates a standalone route; renders the same page component.",
+          "parent": "route-control-ledgers",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control?tab=readiness",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:17",
+          "id": "control-tab-readiness",
+          "kind": "tab",
+          "label": "Module Readiness",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "notes": "Duplicates a standalone route; renders the same page component.",
+          "parent": "route-control-ledgers",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/control?tab=manifest",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ControlLedgers.jsx:17",
+          "id": "control-tab-manifest",
+          "kind": "tab",
+          "label": "Manifest",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+          "notes": "Duplicates a standalone route; renders the same page component.",
+          "parent": "route-control-ledgers",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/research?tab=topics",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResearchHub.jsx:153",
+          "id": "research-tab-topics",
+          "kind": "tab",
+          "label": "Topics",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ResearchHub.jsx:153",
+          "notes": "",
+          "parent": "route-research",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/research?tab=hypotheses",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResearchHub.jsx:155",
+          "id": "research-tab-hypotheses",
+          "kind": "tab",
+          "label": "Hypotheses",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ResearchHub.jsx:155",
+          "notes": "",
+          "parent": "route-research",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/research?tab=contradictions",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResearchHub.jsx:170",
+          "id": "research-tab-contradictions",
+          "kind": "tab",
+          "label": "Contradictions",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ResearchHub.jsx:170",
+          "notes": "",
+          "parent": "route-research",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/research?tab=candidates",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResearchHub.jsx:193",
+          "id": "research-tab-candidates",
+          "kind": "tab",
+          "label": "Duplicate candidates",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ResearchHub.jsx:193",
+          "notes": "",
+          "parent": "route-research",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/research?tab=queue",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResearchHub.jsx:215",
+          "id": "research-tab-queue",
+          "kind": "tab",
+          "label": "Queue",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ResearchHub.jsx:215",
+          "notes": "",
+          "parent": "route-research",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/research?tab=assistant",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResearchHub.jsx:230",
+          "id": "research-tab-assistant",
+          "kind": "tab",
+          "label": "Assistant",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ResearchHub.jsx:230",
+          "notes": "",
+          "parent": "route-research",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResearchAssistant.jsx:142",
+          "id": "research-assistant-tab-chat",
+          "kind": "tab",
+          "label": "Module Chat Sessions",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ResearchHub.jsx:231",
+          "notes": "In-memory Radix tab (no URL). Backend is the diagnostic LLM/agents stub.",
+          "parent": "research-tab-assistant",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResearchAssistant.jsx:135",
+          "id": "research-assistant-tab-operator",
+          "kind": "tab",
+          "label": "Research Operator",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ResearchHub.jsx:231",
+          "notes": "In-memory Radix tab (no URL). Backend is the diagnostic LLM/agents stub.",
+          "parent": "research-tab-assistant",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ResearchAssistant.jsx:181",
+          "id": "research-assistant-tab-query",
+          "kind": "tab",
+          "label": "Structured Research",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ResearchHub.jsx:231",
+          "notes": "In-memory Radix tab (no URL). Backend is the diagnostic LLM/agents stub.",
+          "parent": "research-tab-assistant",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/gis",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/GISWorkspace.jsx:201",
+          "id": "gis-view-workbench",
+          "kind": "map",
+          "label": "Workbench",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/GISWorkspace.jsx:201",
+          "notes": "",
+          "parent": "route-gis",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/gis?view=property-map",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/GISWorkspace.jsx:198",
+          "id": "gis-view-property-map",
+          "kind": "map",
+          "label": "Property Map",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/GISWorkspace.jsx:198",
+          "notes": "",
+          "parent": "route-gis",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/gis?view=digital-twin",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/GISWorkspace.jsx:195",
+          "id": "gis-view-digital-twin",
+          "kind": "map",
+          "label": "Digital Twin",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/GISWorkspace.jsx:195",
+          "notes": "",
+          "parent": "route-gis",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/gis?view=interpretive-layers",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/GISWorkspace.jsx:196",
+          "id": "gis-view-interpretive-layers",
+          "kind": "map",
+          "label": "Subsurface & interpretive",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/GISWorkspace.jsx:196",
+          "notes": "",
+          "parent": "route-gis",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/gis?view=aoi-comparison",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/GISWorkspace.jsx:197",
+          "id": "gis-view-aoi-comparison",
+          "kind": "map",
+          "label": "AOI comparison",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/GISWorkspace.jsx:197",
+          "notes": "",
+          "parent": "route-gis",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:61",
+          "id": "crossover-tab-matrix",
+          "kind": "tab",
+          "label": "Matrix",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:61",
+          "notes": "In-memory tab (defaultValue), no URL.",
+          "parent": "route-crossover",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:66",
+          "id": "crossover-tab-pairs",
+          "kind": "tab",
+          "label": "Pairwise Panels",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:66",
+          "notes": "In-memory tab (defaultValue), no URL.",
+          "parent": "route-crossover",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:70",
+          "id": "crossover-tab-convergence",
+          "kind": "tab",
+          "label": "3+ Module Convergence",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:70",
+          "notes": "In-memory tab (defaultValue), no URL.",
+          "parent": "route-crossover",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:74",
+          "id": "crossover-tab-ilap",
+          "kind": "tab",
+          "label": "ILAP / POIs",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:74",
+          "notes": "In-memory tab (defaultValue), no URL.",
+          "parent": "route-crossover",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:78",
+          "id": "crossover-tab-all",
+          "kind": "tab",
+          "label": "All Crossovers",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:78",
+          "notes": "In-memory tab (defaultValue), no URL.",
+          "parent": "route-crossover",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ModuleReadiness.jsx:114",
+          "id": "readiness-tab-issues",
+          "kind": "tab",
+          "label": "Issues",
+          "mounted": false,
+          "mounted_evidence": "server/frontend/src/pages/ModuleReadiness.jsx:109",
+          "notes": "Rendered only when data is non-null; the functions stub never returns data, so unreachable in this build.",
+          "parent": "route-module-readiness",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ModuleReadiness.jsx:121",
+          "id": "readiness-tab-pulls",
+          "kind": "tab",
+          "label": "Pull Requests",
+          "mounted": false,
+          "mounted_evidence": "server/frontend/src/pages/ModuleReadiness.jsx:109",
+          "notes": "Rendered only when data is non-null; the functions stub never returns data, so unreachable in this build.",
+          "parent": "route-module-readiness",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/shared/RecordSheet.jsx:13",
+          "id": "record-sheet",
+          "kind": "drawer",
+          "label": "New/Edit <record>",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/components/shared/EntityLedger.jsx:56",
+          "notes": "Shared create/edit sheet for every ledger page and EntityLedger tab; save errors are not caught or shown (server/frontend/src/components/shared/RecordSheet.jsx:22-30).",
+          "parent": null,
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/cases/BriefTemplateDialog.jsx:11",
+          "id": "case-brief-dialog",
+          "kind": "dialog",
+          "label": "Case brief",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Cases.jsx:95",
+          "notes": "Client-side jsPDF export.",
+          "parent": "route-cases",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/github/NewIssueDialog.jsx:9",
+          "id": "new-issue-dialog",
+          "kind": "dialog",
+          "label": "New Issue",
+          "mounted": false,
+          "mounted_evidence": "server/frontend/src/pages/ModuleReadiness.jsx:131",
+          "notes": "Trigger button only renders when data is set (server/frontend/src/pages/ModuleReadiness.jsx:74); unreachable while functions are stubbed.",
+          "parent": "route-module-readiness",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/ProjectSigns.jsx:154",
+          "id": "project-sign-preview",
+          "kind": "dialog",
+          "label": "Project sign preview",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/ProjectSigns.jsx:154",
+          "notes": "iframe of GET /api/project-signs/{id}/html.",
+          "parent": "route-project-signs",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/dashboard/VerificationGatePanel.jsx:29",
+          "id": "hub-verification-gate",
+          "kind": "panel",
+          "label": "Federation verification gate",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Dashboard.jsx:112",
+          "notes": "Verify/Reject are broken; see workflow hub-verification-gate.",
+          "parent": "route-hub",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Dashboard.jsx:29",
+          "id": "hub-dashboard",
+          "kind": "panel",
+          "label": "Dashboard",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Hub.jsx:42",
+          "notes": "Dashboard has no route of its own.",
+          "parent": "route-hub",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/dashboard/RiskHeatmap.jsx:25",
+          "id": "risk-heatmap",
+          "kind": "chart",
+          "label": "Risk heatmap",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Dashboard.jsx:109",
+          "notes": "",
+          "parent": "hub-dashboard",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/ProgramTimeline.jsx:18",
+          "id": "program-timeline",
+          "kind": "timeline",
+          "label": "Program timeline",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Dashboard.jsx:50",
+          "notes": "Merges static PROGRAM_TIMELINE with localStorage federation.programActivity.v1.thehub-pr.",
+          "parent": "hub-dashboard",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/OperatorSettings.jsx:46",
+          "id": "settings-write-token",
+          "kind": "settings",
+          "label": "Administrative write access",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/OperatorSettings.jsx:522",
+          "notes": "",
+          "parent": "route-operator-settings",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/OperatorSettings.jsx:120",
+          "id": "settings-file-upload",
+          "kind": "settings",
+          "label": "File upload",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/OperatorSettings.jsx:523",
+          "notes": "",
+          "parent": "route-operator-settings",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/OperatorSettings.jsx:192",
+          "id": "settings-connections",
+          "kind": "settings",
+          "label": "Connections",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/OperatorSettings.jsx:524",
+          "notes": "",
+          "parent": "route-operator-settings",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/OperatorSettings.jsx:326",
+          "id": "settings-notifications",
+          "kind": "settings",
+          "label": "Notification preferences",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/OperatorSettings.jsx:526",
+          "notes": "",
+          "parent": "route-operator-settings",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/exports/LedgerExportRow.jsx:10",
+          "id": "export-ledgers",
+          "kind": "export",
+          "label": "Ledger exports",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Exports.jsx:101",
+          "notes": "",
+          "parent": "route-exports",
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/crossover/CrossoverFilters.jsx:21",
+          "id": "crossover-filters",
+          "kind": "filter",
+          "label": "Crossover filters",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:49",
+          "notes": "",
+          "parent": "route-crossover",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/tasks/TaskFilterBar.jsx:8",
+          "id": "task-filter-bar",
+          "kind": "filter",
+          "label": "Task filters",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Tasks.jsx:125",
+          "notes": "",
+          "parent": "route-tasks",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/search?q=",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/pages/Search.jsx:101",
+          "id": "search-form",
+          "kind": "search",
+          "label": "Search",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Search.jsx:101",
+          "notes": "",
+          "parent": "route-search",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/manager/RunConsole.jsx:14",
+          "id": "operations-run-console",
+          "kind": "panel",
+          "label": "Run console",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Operations.jsx:348",
+          "notes": "",
+          "parent": "route-operations",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/manager/SecretPresencePanel.jsx:14",
+          "id": "operations-secret-presence",
+          "kind": "form",
+          "label": "Secrets",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/Operations.jsx:309",
+          "notes": "Delete secret has no confirmation step (server/frontend/src/pages/Operations.jsx:319-321).",
+          "parent": "route-operations",
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/sky/ExclusionPanel.jsx:219",
+          "id": "sky-exclusion-panel",
+          "kind": "form",
+          "label": "Check against ordinary explanations",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/components/sky/SkyWorkspace.jsx:462",
+          "notes": "",
+          "parent": "skywatcher-tab-sky",
+          "states_handled": {
+            "empty": false,
+            "error": true,
+            "loading": true,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/feed/MoneySweepLeaderboardsTab.jsx:34",
+          "id": "moneysweep-leaderboards",
+          "kind": "table",
+          "label": "Leaderboards",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/pages/MoneySweep.jsx:108",
+          "notes": "",
+          "parent": "moneysweep-tab-leaderboards",
+          "states_handled": {
+            "empty": true,
+            "error": true,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/feed/StagingQueue.jsx:19",
+          "id": "staging-queue",
+          "kind": "table",
+          "label": "Staging queue",
+          "mounted": true,
+          "mounted_evidence": "server/frontend/src/components/feed/AguaYLuzFeedTab.jsx:147",
+          "notes": "Also mounted at server/frontend/src/components/feed/MoneySweepFeedTab.jsx:147.",
+          "parent": null,
+          "states_handled": {
+            "empty": true,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": "/launcher",
+          "classification": "SOURCE_CONFIRMED",
+          "component": "desktop/launcher.html:1",
+          "id": "desktop-launcher-page",
+          "kind": "route",
+          "label": "Federation launcher",
+          "mounted": true,
+          "mounted_evidence": "desktop/app_server.py:30",
+          "notes": "Static HTML served only by the desktop app server; not an SPA route (on the plain server /launcher hits the SPA 404).",
+          "parent": null,
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        },
+        {
+          "address": null,
+          "classification": "SOURCE_CONFIRMED",
+          "component": "server/frontend/src/components/shared/MapView.jsx:6",
+          "id": "orphan-map-view",
+          "kind": "map",
+          "label": null,
+          "mounted": false,
+          "mounted_evidence": "none: no importer found (grep of server/frontend/src for 'shared/MapView')",
+          "notes": "Unreferenced component (dead code).",
+          "parent": null,
+          "states_handled": {
+            "empty": false,
+            "error": false,
+            "loading": false,
+            "offline": false,
+            "stale": false
+          }
+        }
+      ],
+      "tests": {
+        "accessibility_automation": "vitest-axe in 20 hub test files (e.g. server/frontend/src/components/shared/a11y.test.jsx:11, server/frontend/src/components/command/CommandPalette.test.jsx); @axe-core/playwright only in federation-design/test-harness/tests/*.spec.js (run against a live app URL). No Playwright axe in server/frontend/tests/visual.",
+        "backend": "153 tests/test_*.py files (~1692 test functions, many cover federation tooling not the API), pytest",
+        "frontend_e2e": "7 Playwright specs: 6 in server/frontend/tests/visual (46 test() calls total incl. tests/zip-design.spec.mjs) via server/frontend/playwright.config.js, plus tests/zip-design.spec.mjs via zip-design.playwright.config.mjs; API mocked",
+        "frontend_unit": "93 *.test.js/jsx files under server/frontend/src, Vitest (server/frontend/package.json:16)"
+      },
+      "unknowns": [
+        "Whether a browser actually omits Origin on the manager's same-origin GETs in the desktop webview (spec says yes for basic-tainted GET); not run.",
+        "prii_desktop guest_guard runtime behaviour beyond the allowlist in desktop/config.py:175-187 was not traced.",
+        "Contents of PRII-*.command/.sh/.bat launchers not read.",
+        "GIS proxy allowlist/handler internals and Cesium renderer paths not traced line by line.",
+        "Security observation outside the schema: ?api_base_url= from the URL overrides the API base for the page load (server/frontend/src/lib/app-params.js:28-30,58) and requests then carry the bearer access/write token to that origin (server/frontend/src/api/federationClient.js:77-85).",
+        "Stale doc comment: server/backend/main_core.py:59-62 says the browser UI has no write-credential input, but Operator Settings now provides one (server/frontend/src/pages/OperatorSettings.jsx:46)."
+      ],
+      "workflows": [
+        {
+          "authorization": "none",
+          "backend_endpoint": null,
+          "backend_handler": null,
+          "frontend_handler": "server/frontend/src/components/command/CommandPalette.jsx:27",
+          "has_test": true,
+          "id": "palette-navigate",
+          "name": "Command palette navigation",
+          "status": "COMPLETE",
+          "status_evidence": "Commands from NAV_GROUPS + query parsers (server/frontend/src/lib/commands.js:21-71); run() navigates (server/frontend/src/components/command/CommandPalette.jsx:30).",
+          "surface": "command-palette",
+          "test": "server/frontend/src/components/command/CommandPalette.test.jsx:1",
+          "ui_action": "Ctrl/Cmd+K or sidebar trigger, type, Enter/click",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/search",
+          "backend_handler": "server/backend/search_api.py:63",
+          "frontend_handler": "server/frontend/src/pages/Search.jsx:104",
+          "has_test": true,
+          "id": "federated-search",
+          "name": "Federated search",
+          "status": "COMPLETE",
+          "status_evidence": "federation.search.query (server/frontend/src/api/federationClient.js:245) -> router mounted server/backend/main.py:53; results render with evidence/entity links (server/frontend/src/pages/Search.jsx:33-41).",
+          "surface": "route-search",
+          "test": "server/frontend/src/pages/Search.test.jsx:1",
+          "ui_action": "Submit query, filter by type, page",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/timeline",
+          "backend_handler": "server/backend/timeline_api.py:67",
+          "frontend_handler": "server/frontend/src/pages/Timeline.jsx:111",
+          "has_test": true,
+          "id": "timeline",
+          "name": "Event timeline",
+          "status": "COMPLETE",
+          "status_evidence": "Query in URL params; cursor paging (server/frontend/src/pages/Timeline.jsx:200).",
+          "surface": "route-timeline",
+          "test": "server/frontend/src/pages/Timeline.test.jsx:1",
+          "ui_action": "Sort/filter categories, page",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/entity/{record_id}",
+          "backend_handler": "server/backend/entity_api.py:83",
+          "frontend_handler": "server/frontend/src/pages/EntityPage.jsx:96",
+          "has_test": true,
+          "id": "entity-composition",
+          "name": "Open entity composition",
+          "status": "COMPLETE",
+          "status_evidence": "Read-only render with provenance link (server/frontend/src/pages/EntityPage.jsx:121).",
+          "surface": "route-entity",
+          "test": "server/frontend/src/pages/EntityPage.test.jsx:1",
+          "ui_action": "Follow entity link",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/evidence/{collection}/{record_id}",
+          "backend_handler": "server/backend/evidence_api.py:74",
+          "frontend_handler": "server/frontend/src/pages/EvidenceInspector.jsx:16",
+          "has_test": true,
+          "id": "evidence-inspector",
+          "name": "Inspect provenance",
+          "status": "COMPLETE",
+          "status_evidence": "ProvenanceInspector renders result.",
+          "surface": "route-evidence-inspector",
+          "test": "tests/test_evidence_api.py:42",
+          "ui_action": "Follow Provenance link",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/research ; GET /api/research/records/{kind}",
+          "backend_handler": "server/backend/research_api.py:65",
+          "frontend_handler": "server/frontend/src/pages/ResearchHub.jsx:121",
+          "has_test": true,
+          "id": "research-records",
+          "name": "Browse research ledger",
+          "status": "COMPLETE",
+          "status_evidence": "Overview + per-kind lists (server/frontend/src/pages/ResearchHub.jsx:33).",
+          "surface": "route-research",
+          "test": "server/frontend/src/pages/ResearchHub.test.jsx:1",
+          "ui_action": "Switch research tabs",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/research/case/{case_id}",
+          "backend_handler": "server/backend/research_api.py:88",
+          "frontend_handler": "server/frontend/src/pages/CaseReconstruction.jsx:75",
+          "has_test": true,
+          "id": "case-reconstruction",
+          "name": "Case reconstruction",
+          "status": "COMPLETE",
+          "status_evidence": "Read-only.",
+          "surface": "route-case-reconstruction",
+          "test": "server/frontend/src/pages/CaseReconstruction.test.jsx:1",
+          "ui_action": "Open a case link",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/constellation",
+          "backend_handler": "server/backend/constellation_api.py:130",
+          "frontend_handler": "server/frontend/src/pages/FederationConstellation.jsx:197",
+          "has_test": true,
+          "id": "constellation",
+          "name": "Federation constellation",
+          "status": "COMPLETE",
+          "status_evidence": "Canvas + keyboard controls (server/frontend/src/pages/FederationConstellation.jsx:85-102).",
+          "surface": "route-constellation",
+          "test": "server/frontend/src/pages/FederationConstellation.test.jsx:1",
+          "ui_action": "Play stages, switch lens, select nodes",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/spatial/features ; GET /api/spatial/intel",
+          "backend_handler": "server/backend/spatial_api.py:41",
+          "frontend_handler": "server/frontend/src/components/gis/PropertyMap.jsx:362",
+          "has_test": true,
+          "id": "property-map",
+          "name": "Property map + Location Intel",
+          "status": "COMPLETE",
+          "status_evidence": "intel at server/frontend/src/components/gis/PropertyMap.jsx:263 -> server/backend/spatial_api.py:60.",
+          "surface": "gis-view-property-map",
+          "test": "server/frontend/src/components/gis/PropertyMap.test.jsx:1",
+          "ui_action": "Pan map, click a point for intel",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/gis/proxy",
+          "backend_handler": "server/backend/gis_proxy.py:138",
+          "frontend_handler": "server/frontend/src/pages/GISWorkspace.jsx:115",
+          "has_test": true,
+          "id": "gis-online-acquisition",
+          "name": "Fetch online GIS layer via proxy",
+          "status": "COMPLETE",
+          "status_evidence": "Proxy URL built in server/frontend/src/gis/transport.js:3; route mounted server/backend/main.py:26-37. Handler body not traced line-by-line.",
+          "surface": "gis-view-workbench",
+          "test": "tests/test_gis_proxy.py:37",
+          "ui_action": "Choose provider/dataset, Fetch and add layer",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": null,
+          "backend_handler": null,
+          "frontend_handler": "server/frontend/src/pages/GISWorkspace.jsx:84",
+          "has_test": false,
+          "id": "gis-device-geojson",
+          "name": "Load GeoJSON from device",
+          "status": "COMPLETE",
+          "status_evidence": "Client-only canonicalization; file input at server/frontend/src/pages/GISWorkspace.jsx:221.",
+          "surface": "gis-view-workbench",
+          "test": null,
+          "ui_action": "Choose file",
+          "writes": false
+        },
+        {
+          "authorization": "token (PRII_WRITE_TOKEN bearer via server/backend/main_core.py:68-86; fails closed 503 when unset)",
+          "backend_endpoint": "POST /api/entities/{entity_name} ; PATCH /api/entities/{entity_name}/{entity_id}",
+          "backend_handler": "server/backend/main_core.py:408",
+          "frontend_handler": "server/frontend/src/components/shared/EntityLedger.jsx:39",
+          "has_test": true,
+          "id": "ledger-create-edit",
+          "name": "Create/edit ledger records",
+          "status": "PARTIAL",
+          "status_evidence": "Works only when PRII_WRITE_TOKEN is set server-side and entered in Operator Settings; failures are unhandled (no catch in server/frontend/src/components/shared/EntityLedger.jsx:39-43 or server/frontend/src/components/shared/RecordSheet.jsx:22-30) so the user sees no error. Same pattern on Programs/Cases/Sources/Gates/Integrations/Dictionary/Manifest (e.g. server/frontend/src/pages/Programs.jsx:45-46). Edit reachable only by mouse row click (server/frontend/src/components/shared/SearchableTable.jsx:58-61).",
+          "surface": "record-sheet",
+          "test": "tests/test_entity_api.py:1",
+          "ui_action": "New <record> button or click a table row, fill sheet, Save",
+          "writes": true
+        },
+        {
+          "authorization": "token (PRII_WRITE_TOKEN bearer via server/backend/main_core.py:68-86; fails closed 503 when unset)",
+          "backend_endpoint": "POST/PATCH /api/entities/FederationTasks",
+          "backend_handler": "server/backend/main_core.py:450",
+          "frontend_handler": "server/frontend/src/pages/Tasks.jsx:105",
+          "has_test": false,
+          "id": "task-status",
+          "name": "Create/edit tasks, change lifecycle status",
+          "status": "PARTIAL",
+          "status_evidence": "Same unguarded write path as ledgers (server/frontend/src/pages/Tasks.jsx:101-106); role from auth.me always falls back to 'user' (server/frontend/src/pages/Tasks.jsx:33).",
+          "surface": "route-tasks",
+          "test": null,
+          "ui_action": "Edit task / change status in grouped, urgency or board view",
+          "writes": true
+        },
+        {
+          "authorization": "token (PRII_WRITE_TOKEN bearer via server/backend/main_core.py:68-86; fails closed 503 when unset)",
+          "backend_endpoint": "PATCH /api/entities/LiveFeedItems/{id}",
+          "backend_handler": "server/backend/main_core.py:450",
+          "frontend_handler": "server/frontend/src/components/dashboard/VerificationGatePanel.jsx:32",
+          "has_test": true,
+          "id": "hub-verification-gate",
+          "name": "Verify / reject feed items on Hub dashboard",
+          "status": "BROKEN",
+          "status_evidence": "useVerificationGate calls update(item.id, {...}) (server/frontend/src/hooks/useVerificationGate.js:33,42) but useEntityData's mutation expects ({id, data}) (server/frontend/src/hooks/useEntityData.js:35), so id/data are undefined. Verify also requires auth.me email (server/frontend/src/lib/reviewerIdentity.js:4) and /api/auth/me always 401s (server/backend/main_core.py:308-310). The hook test mocks useEntityData and asserts the wrong call shape (server/frontend/src/hooks/useVerificationGate.test.js:44).",
+          "surface": "hub-verification-gate",
+          "test": "server/frontend/src/hooks/useVerificationGate.test.js:38",
+          "ui_action": "Click Verify or Reject",
+          "writes": true
+        },
+        {
+          "authorization": "token (PRII_WRITE_TOKEN bearer via server/backend/main_core.py:68-86; fails closed 503 when unset)",
+          "backend_endpoint": "PATCH /api/entities/LiveFeedItems/{id} ; POST /api/entities/{InfrastructureAssets|Contracts}",
+          "backend_handler": "server/backend/main_core.py:450",
+          "frontend_handler": "server/frontend/src/components/feed/AguaYLuzFeedTab.jsx:57",
+          "has_test": true,
+          "id": "feed-verify-promote",
+          "name": "Verify then promote feed items (AguaYLuz / MoneySweep feeds)",
+          "status": "BROKEN",
+          "status_evidence": "Verify needs requireReviewerEmail -> /api/auth/me which always 401s in this backend (server/backend/main_core.py:308-310); Promote is disabled until Verified (server/frontend/src/components/feed/StagingQueue.jsx:47). Error is toasted. Same in server/frontend/src/components/feed/MoneySweepFeedTab.jsx:63.",
+          "surface": "staging-queue",
+          "test": "server/frontend/src/pages/AguaYLuz.test.jsx:1",
+          "ui_action": "Verify, then Promote",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "POST /api/functions/refetchUSASpending/invoke",
+          "backend_handler": "server/backend/main_core.py:593",
+          "frontend_handler": "server/frontend/src/components/feed/MoneySweepFeedTab.jsx:38",
+          "has_test": false,
+          "id": "moneysweep-refetch",
+          "name": "Refetch USASpending",
+          "status": "BROKEN",
+          "status_evidence": "Backend returns diagnostic not_implemented stub (server/backend/main_core.py:593-595); handler reads res.data (undefined) and toasts 'Fetched undefined · undefined new' as success (server/frontend/src/components/feed/MoneySweepFeedTab.jsx:41-45).",
+          "surface": "moneysweep-tab-feed",
+          "test": null,
+          "ui_action": "Click refetch",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/moneysweep/leaderboards/status|top ; GET /api/moneysweep/asg-leaderboards/status|top",
+          "backend_handler": "server/backend/moneysweep_leaderboards.py:335",
+          "frontend_handler": "server/frontend/src/components/feed/MoneySweepLeaderboardsTab.jsx:43",
+          "has_test": true,
+          "id": "moneysweep-leaderboards",
+          "name": "MoneySweep leaderboards",
+          "status": "COMPLETE",
+          "status_evidence": "ASG handler server/backend/moneysweep_asg_leaderboards.py:411.",
+          "surface": "moneysweep-leaderboards",
+          "test": "tests/test_moneysweep_leaderboard_consumer.py:1",
+          "ui_action": "Open Leaderboards tab",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "POST /api/functions/githubModuleReadiness/invoke",
+          "backend_handler": "server/backend/main_core.py:593",
+          "frontend_handler": "server/frontend/src/pages/ModuleReadiness.jsx:31",
+          "has_test": false,
+          "id": "module-readiness-github",
+          "name": "GitHub module readiness (list issues/PRs, create/toggle issue)",
+          "status": "BROKEN",
+          "status_evidence": "Diagnostic stub returns {status:not_implemented,result:null}; handler does setData(res.data) -> null with no error (server/frontend/src/pages/ModuleReadiness.jsx:36-38), so the Issues/PRs tabs and New Issue dialog never render.",
+          "surface": "route-module-readiness",
+          "test": null,
+          "ui_action": "Enter owner, Load; New Issue",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "POST /api/integrations/llm/invoke",
+          "backend_handler": "server/backend/main_core.py:605",
+          "frontend_handler": "server/frontend/src/components/research/ModuleChat.jsx:45",
+          "has_test": true,
+          "id": "research-module-chat",
+          "name": "Module chat sessions",
+          "status": "BROKEN",
+          "status_evidence": "integrations stub returns not_implemented; requireImplementedResponse throws (server/frontend/src/api/federationClient.js:32-38), error is shown.",
+          "surface": "research-assistant-tab-chat",
+          "test": "server/frontend/src/components/research/ModuleChat.test.jsx:1",
+          "ui_action": "Type message, Enter",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "POST /api/agents/conversations",
+          "backend_handler": "server/backend/main_core.py:598",
+          "frontend_handler": "server/frontend/src/components/research/OperatorChat.jsx:107",
+          "has_test": true,
+          "id": "research-operator-chat",
+          "name": "Research operator agent",
+          "status": "BROKEN",
+          "status_evidence": "agents stub (server/backend/main_core.py:598-602); error surfaced via requireImplementedResponse.",
+          "surface": "research-assistant-tab-operator",
+          "test": "server/frontend/src/components/research/OperatorChat.test.jsx:1",
+          "ui_action": "Start conversation, send",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "POST /api/integrations/llm/invoke",
+          "backend_handler": "server/backend/main_core.py:605",
+          "frontend_handler": "server/frontend/src/pages/ResearchAssistant.jsx:82",
+          "has_test": true,
+          "id": "research-structured-query",
+          "name": "Structured research query",
+          "status": "BROKEN",
+          "status_evidence": "LLM stub.",
+          "surface": "research-assistant-tab-query",
+          "test": "server/frontend/src/pages/ResearchAssistant.test.jsx:1",
+          "ui_action": "Run query",
+          "writes": false
+        },
+        {
+          "authorization": "token (PRII_WRITE_TOKEN bearer via server/backend/main_core.py:68-86; fails closed 503 when unset)",
+          "backend_endpoint": "POST /api/entities/Exports ; POST /api/entities/AuditLog",
+          "backend_handler": "server/backend/main_core.py:408",
+          "frontend_handler": "server/frontend/src/components/exports/LedgerExportRow.jsx:21",
+          "has_test": false,
+          "id": "ledger-export",
+          "name": "Export ledger CSV/GeoJSON + record audit",
+          "status": "PARTIAL",
+          "status_evidence": "File download is client-side and completes; the Exports/AuditLog writes (server/frontend/src/pages/Exports.jsx:45,62) need the write token and are not caught.",
+          "surface": "export-ledgers",
+          "test": null,
+          "ui_action": "Click CSV / GeoJSON",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": null,
+          "backend_handler": null,
+          "frontend_handler": "server/frontend/src/pages/FederationCrossoverWorkspace.jsx:28",
+          "has_test": false,
+          "id": "crossover-export",
+          "name": "Export crossovers CSV",
+          "status": "COMPLETE",
+          "status_evidence": "Client-side CSV via server/frontend/src/lib/crossover-export.js.",
+          "surface": "route-crossover",
+          "test": null,
+          "ui_action": "Export CSV button",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": null,
+          "backend_handler": null,
+          "frontend_handler": "server/frontend/src/components/cases/BriefTemplateDialog.jsx:7",
+          "has_test": false,
+          "id": "case-brief-pdf",
+          "name": "Generate case brief PDF",
+          "status": "COMPLETE",
+          "status_evidence": "Client-side jsPDF.",
+          "surface": "case-brief-dialog",
+          "test": null,
+          "ui_action": "Brief button on a case row",
+          "writes": false
+        },
+        {
+          "authorization": "token (PRII_WRITE_TOKEN bearer via server/backend/main_core.py:68-86; fails closed 503 when unset)",
+          "backend_endpoint": "GET /api/project-signs ; GET /api/project-signs/{id}/html ; POST /api/project-signs/generate",
+          "backend_handler": "server/backend/main_core.py:636",
+          "frontend_handler": "server/frontend/src/pages/ProjectSigns.jsx:91",
+          "has_test": true,
+          "id": "project-signs",
+          "name": "List, preview and generate project signs",
+          "status": "COMPLETE",
+          "status_evidence": "Generate failures are toasted (server/frontend/src/pages/ProjectSigns.jsx:101-106).",
+          "surface": "route-project-signs",
+          "test": "tests/test_project_signs_api.py:79",
+          "ui_action": "Generate signs / preview",
+          "writes": true
+        },
+        {
+          "authorization": "token (PRII_WRITE_TOKEN bearer via server/backend/main_core.py:68-86; fails closed 503 when unset)",
+          "backend_endpoint": "GET /api/notifications ; POST /api/notifications/ack",
+          "backend_handler": "server/backend/main_core.py:351",
+          "frontend_handler": "server/frontend/src/components/notifications/NotificationBell.jsx:12",
+          "has_test": true,
+          "id": "notifications",
+          "name": "Notification digest and mark-read",
+          "status": "PARTIAL",
+          "status_evidence": "List works; ack is write-guarded and the mutation has no error handling (server/frontend/src/hooks/useNotifications.js:25-28), so without a write token the badge never clears.",
+          "surface": "notification-popover",
+          "test": "tests/test_notifications.py:20",
+          "ui_action": "Open bell",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": null,
+          "backend_handler": null,
+          "frontend_handler": "server/frontend/src/pages/OperatorSettings.jsx:51",
+          "has_test": true,
+          "id": "settings-write-token",
+          "name": "Save/clear write token",
+          "status": "COMPLETE",
+          "status_evidence": "sessionStorage federation_write_token (server/frontend/src/api/federationClient.js:23-30); attached as bearer only when no access token (server/frontend/src/api/federationClient.js:77-78).",
+          "surface": "settings-write-token",
+          "test": "server/frontend/src/pages/OperatorSettings.test.jsx:1",
+          "ui_action": "Paste token, Save",
+          "writes": false
+        },
+        {
+          "authorization": "token (PRII_WRITE_TOKEN bearer via server/backend/main_core.py:68-86; fails closed 503 when unset)",
+          "backend_endpoint": "POST /api/files/upload",
+          "backend_handler": "server/backend/main_core.py:610",
+          "frontend_handler": "server/frontend/src/pages/OperatorSettings.jsx:126",
+          "has_test": true,
+          "id": "settings-file-upload",
+          "name": "Operator file upload",
+          "status": "BROKEN",
+          "status_evidence": "Backend returns the diagnostic stub (server/backend/main_core.py:610-612); UI correctly reports it as unavailable (server/frontend/src/pages/OperatorSettings.jsx:144-145).",
+          "surface": "settings-file-upload",
+          "test": "tests/test_diagnostic_stubs.py:81",
+          "ui_action": "Choose file, Upload",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/connectors/{name}/connection",
+          "backend_handler": "server/backend/main_core.py:615",
+          "frontend_handler": "server/frontend/src/pages/OperatorSettings.jsx:196",
+          "has_test": true,
+          "id": "settings-connections",
+          "name": "Connection checks",
+          "status": "PARTIAL",
+          "status_evidence": "Backend always answers {status:'not_connected'} (server/backend/main_core.py:616-617).",
+          "surface": "settings-connections",
+          "test": "tests/test_operator_settings_api.py:113",
+          "ui_action": "Check / Check all",
+          "writes": false
+        },
+        {
+          "authorization": "token (PRII_WRITE_TOKEN bearer via server/backend/main_core.py:68-86; fails closed 503 when unset)",
+          "backend_endpoint": "GET/PUT /api/notifications/preferences",
+          "backend_handler": "server/backend/main_core.py:370",
+          "frontend_handler": "server/frontend/src/pages/OperatorSettings.jsx:374",
+          "has_test": true,
+          "id": "settings-notification-prefs",
+          "name": "Notification preferences",
+          "status": "COMPLETE",
+          "status_evidence": "Load/save with explicit success/error states (server/frontend/src/pages/OperatorSettings.jsx:405-411,497).",
+          "surface": "settings-notifications",
+          "test": "tests/test_operator_settings_api.py:25",
+          "ui_action": "Edit channels/timing/targets/overrides, Save",
+          "writes": true
+        },
+        {
+          "authorization": "loopback + Origin allowlist + manager session bearer (server/backend/federation_manager_api.py:146-160)",
+          "backend_endpoint": "GET /api/federation-manager/apps",
+          "backend_handler": "server/backend/federation_manager_api.py:215",
+          "frontend_handler": "server/frontend/src/pages/AppCenter.jsx:50",
+          "has_test": true,
+          "id": "app-center-inventory",
+          "name": "Native app inventory",
+          "status": "PARTIAL",
+          "status_evidence": "Token must be placed in sessionStorage by pasting a console snippet printed by scripts/run_manager_host.py:256-259; _origin requires an Origin header (server/backend/federation_manager_api.py:139-143) that browsers normally omit on same-origin GET, so the page likely stays on the static catalog. Install/Validate buttons are always disabled.",
+          "surface": "route-app-center",
+          "test": "server/frontend/src/pages/AppCenter.test.jsx:1",
+          "ui_action": "Open App Center",
+          "writes": false
+        },
+        {
+          "authorization": "loopback + Origin allowlist + manager session bearer (server/backend/federation_manager_api.py:146-160)",
+          "backend_endpoint": "GET /api/federation-manager/operations ; POST .../operations/{id}/plan ; POST .../operations/{id}/run ; POST .../runs/{id}/cancel ; POST .../secrets",
+          "backend_handler": "server/backend/federation_manager_api.py:324",
+          "frontend_handler": "server/frontend/src/pages/Operations.jsx:131",
+          "has_test": true,
+          "id": "operations-plan-run",
+          "name": "Plan/run/cancel declared operations, stream logs, manage secrets",
+          "status": "BROKEN",
+          "status_evidence": "Initial load issues GETs (server/frontend/src/pages/Operations.jsx:81) that _origin rejects without an Origin header (server/backend/federation_manager_api.py:139-143; browsers omit Origin on same-origin GET - spec reasoning, not run); session token only via manual console snippet; /repositories exists only when run_manager_host installs it (scripts/run_manager_host.py:245); runtime None -> 503 otherwise (server/backend/federation_manager_api.py:162-167). Backend tests always send Origin explicitly (tests/test_federation_operations_api.py:130).",
+          "surface": "route-operations",
+          "test": "tests/test_federation_operations_api.py:139",
+          "ui_action": "Select operation, Plan, Run, Cancel",
+          "writes": true
+        },
+        {
+          "authorization": "loopback/session",
+          "backend_endpoint": "POST /api/federation-manager/files/slots",
+          "backend_handler": "server/backend/federation_manager_api.py:463",
+          "frontend_handler": "server/frontend/src/pages/Operations.jsx:301",
+          "has_test": false,
+          "id": "operations-file-pick",
+          "name": "Select input file for an operation",
+          "status": "BROKEN",
+          "status_evidence": "In the browser the handler only sets an error saying the native picker is required (server/frontend/src/pages/Operations.jsx:301-303); no SPA caller of files/slots.",
+          "surface": "route-operations",
+          "test": null,
+          "ui_action": "Choose file…",
+          "writes": false
+        },
+        {
+          "authorization": "loopback + same-origin (desktop/launcher_api.py:78-111)",
+          "backend_endpoint": "POST /api/local/launch/{repo}",
+          "backend_handler": "desktop/launcher_api.py:195",
+          "frontend_handler": "desktop/launcher.html:118",
+          "has_test": true,
+          "id": "desktop-launch-app",
+          "name": "Launch sibling federation app",
+          "status": "COMPLETE",
+          "status_evidence": "Spawns sibling launcher (desktop/launcher_api.py:241-249).",
+          "surface": "desktop-launcher-page",
+          "test": "tests/test_desktop_launcher_api.py:54",
+          "ui_action": "Click Launch",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": null,
+          "backend_handler": null,
+          "frontend_handler": "server/frontend/src/lib/theme.jsx:40",
+          "has_test": false,
+          "id": "theme-toggle",
+          "name": "Toggle light/dark theme",
+          "status": "COMPLETE",
+          "status_evidence": "localStorage fd-theme:thehub-pr (server/frontend/src/lib/theme.jsx:11,37).",
+          "surface": "app-shell",
+          "test": null,
+          "ui_action": "ThemeToggle button",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/entities/{monitor collections} ; GET /api/entities/{c}/{id}",
+          "backend_handler": "server/backend/main_core.py:386",
+          "frontend_handler": "server/frontend/src/components/sources/SourceMonitorLedger.jsx:42",
+          "has_test": true,
+          "id": "source-monitor",
+          "name": "Source monitor ledger and detail",
+          "status": "COMPLETE",
+          "status_evidence": "Detail at server/frontend/src/pages/SourceMonitorDetail.jsx:38.",
+          "surface": "route-source-monitor",
+          "test": "server/frontend/src/pages/SourceMonitor.test.jsx:1",
+          "ui_action": "Open monitor, follow detail link",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/entities/{primary|related}",
+          "backend_handler": "server/backend/main_core.py:386",
+          "frontend_handler": "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:175",
+          "has_test": true,
+          "id": "intelligence-workspace",
+          "name": "Producer intelligence workspace",
+          "status": "COMPLETE",
+          "status_evidence": "Polls every 60s; also mounted for aguayluz and skywatcher.",
+          "surface": "spiderweb-tab-workspace",
+          "test": "server/frontend/tests/visual/intelligence-workspace.spec.js:1",
+          "ui_action": "Search/select records, view map",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/entities/{name}",
+          "backend_handler": "server/backend/main_core.py:386",
+          "frontend_handler": "server/frontend/src/hooks/useCrossover.js:20",
+          "has_test": false,
+          "id": "read-only-federation-views",
+          "name": "Crossover / anomaly overlap / transition audit / recent activity reads",
+          "status": "COMPLETE",
+          "status_evidence": "Client-side aggregation of entity lists.",
+          "surface": "route-crossover",
+          "test": null,
+          "ui_action": "Open page, filter",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": null,
+          "backend_handler": null,
+          "frontend_handler": "server/frontend/src/components/sky/SkyWorkspace.jsx:290",
+          "has_test": true,
+          "id": "sky-workspace",
+          "name": "Sky chart, satellites and space weather",
+          "status": "COMPLETE",
+          "status_evidence": "Fetches NOAA SWPC and CelesTrak directly from the browser (server/frontend/src/components/sky/SkyWorkspace.jsx:290,379); no backend.",
+          "surface": "skywatcher-tab-sky",
+          "test": "server/frontend/src/components/sky/SkyWorkspace.test.jsx:1",
+          "ui_action": "Set observer/time; refresh",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": null,
+          "backend_handler": null,
+          "frontend_handler": "server/frontend/src/components/sky/ExclusionPanel.jsx:282",
+          "has_test": true,
+          "id": "sky-exclusion",
+          "name": "Exclusion check and receipt download",
+          "status": "COMPLETE",
+          "status_evidence": "Client-only computation and JSON download.",
+          "surface": "sky-exclusion-panel",
+          "test": "server/frontend/src/components/sky/ExclusionPanel.test.jsx:1",
+          "ui_action": "Check against ordinary explanations; Download receipt",
+          "writes": false
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "POST /api/auth/login (and register, verify-otp, resend-otp, password/*)",
+          "backend_handler": null,
+          "frontend_handler": "server/frontend/src/pages/Login.jsx:22",
+          "has_test": false,
+          "id": "auth-login-register",
+          "name": "Email login / register / OTP / password reset",
+          "status": "UNREACHABLE",
+          "status_evidence": "Routes redirect to / unless auth is required (server/frontend/src/App.jsx:78-91); backend defines no /api/auth/login etc. (only /api/auth/me, server/backend/main_core.py:308). If VITE_FEDERATION_REQUIRE_AUTH=true, /api/auth/me always 401s so every protected route would bounce to a login that cannot succeed.",
+          "surface": "route-login",
+          "test": null,
+          "ui_action": "Submit auth forms",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/grid/{grid_id}/{grid_version}/{level}/{cell_id}",
+          "backend_handler": "server/backend/grid_v2_api.py:42",
+          "frontend_handler": "none",
+          "has_test": true,
+          "id": "grid-v2-cell",
+          "name": "Grid V2 cell lookup",
+          "status": "INTERNAL_ONLY",
+          "status_evidence": "No frontend reference to /grid/ found.",
+          "surface": null,
+          "test": "tests/test_grid_v2_api.py:1",
+          "ui_action": "none (no UI caller)",
+          "writes": false
+        },
+        {
+          "authorization": "token (write_authorizer=require_write_access, server/backend/main_core.py:671-676)",
+          "backend_endpoint": "POST /mcp/route",
+          "backend_handler": "server/backend/mcp_api.py:137",
+          "frontend_handler": "none",
+          "has_test": true,
+          "id": "mcp-route",
+          "name": "MCP federation router",
+          "status": "INTERNAL_ONLY",
+          "status_evidence": "No frontend caller.",
+          "surface": null,
+          "test": "tests/test_mcp_server.py:37",
+          "ui_action": "none (API clients)",
+          "writes": true
+        },
+        {
+          "authorization": "none",
+          "backend_endpoint": "GET /api/admin-companion/capabilities",
+          "backend_handler": "server/backend/main_core.py:285",
+          "frontend_handler": "none",
+          "has_test": true,
+          "id": "admin-companion-capabilities",
+          "name": "iOS admin-companion capability contract",
+          "status": "INTERNAL_ONLY",
+          "status_evidence": "Consumed by iOS companion, not the SPA.",
+          "surface": null,
+          "test": "tests/test_admin_companion_api.py:14",
+          "ui_action": "none (iOS client)",
+          "writes": false
+        }
+      ]
     }
   ],
   "audited_commits": {
@@ -17121,6 +20992,6 @@
     "thehub-pr": "4f5c660801b6380ad4b64d39518fa778c9d25c76"
   },
   "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
-  "generated_at": "2026-11-17T13:40:31+00:00",
+  "generated_at": "2026-11-17T13:53:39+00:00",
   "schema": "federation.experience-program.application-inventory/1"
 }
