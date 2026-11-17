@@ -1,0 +1,109 @@
+{
+ "schema": "federation.experience-program.gate/1",
+ "gate": "RC3",
+ "state": "PROVISIONAL",
+ "why_not_pass": "The shared design-system changes are implemented and tested by their author only. No application has adopted them, Firefox and WebKit results come from CI and are not recorded here, nothing was used with a screen reader or on a touch device, and nobody independent has reviewed the work.",
+ "scope": "Shared design system only (thehub-pr/federation-design). No application code was changed.",
+ "premise_correction": {
+  "claim_class": "COMPUTED",
+  "statement": "None of the contrast, unnamed-button, scroll-region or label-mismatch failures observed in the eight applications is on an element styled by the shared design system.",
+  "evidence": "rc3/runtime_element_detail.json",
+  "distinct_failing_elements": {
+   "color-contrast": {
+    "shared": 0,
+    "application": 252,
+    "total": 252
+   },
+   "button-name": {
+    "shared": 0,
+    "application": 11,
+    "total": 11
+   },
+   "scrollable-region-focusable": {
+    "shared": 0,
+    "application": 22,
+    "total": 22
+   },
+   "label-content-name-mismatch": {
+    "shared": 0,
+    "application": 14,
+    "total": 14
+   }
+  },
+  "consequence": "A change to the shared tokens cannot clear the application failures. They are application fixes for RC4 to RC7; this file's element list is their work list.",
+  "supersedes": "The RC3 recommendation in the RC2 checkpoint, which assumed shared colour tokens were the cause."
+ },
+ "workstreams": {
+  "RC3-A accent contrast": {
+   "state": "PROVISIONAL",
+   "change": "Primary button and default focus outline use --fd-accent-strong, --fd-accent-contrast and --fd-focus-ring instead of the raw repository accent; the dataset grid follows the theme.",
+   "evidence": [
+    "federation-design/packages/react/tests/shell-css.test.mjs",
+    "rc3/chromium_matrix_receipt.json (controls_axe_cells: 7 repositories x 2 themes x 2 widths x 3 states)"
+   ],
+   "deviation_from_plan": "No per-repository values were added to federation.tokens.json. Both roles are aliases of --fd-accent-strong, whose contrast for every repository and theme an existing test already measures, so the token file and its 2.0.0 version are unchanged."
+  },
+  "RC3-B names and scroll regions": {
+   "state": "PROVISIONAL",
+   "change": "FederationScrollRegion and FederationResponsiveLabel added; FederationDatasetGrid becomes a tab stop while it scrolls.",
+   "deviation_from_plan": "The plan listed the module nav, the More sheet and the inspector for a scroll region. Each already holds focusable content, which is what makes a scrolling box keyboard-reachable, so they were left unchanged. FederationButton was not given a new option because audit exceptions are pinned to its line numbers; the label is a separate component."
+  },
+  "RC3-C desktop conventions D3-D6": {
+   "state": "PROVISIONAL",
+   "change": "FederationDialog, FederationTextField, FederationRenameDialog, FederationMenu, FederationItemMenu, FederationStatusMark; pinned and recent navigation groups fed through collections; FederationExportMenu rebuilt on FederationMenu.",
+   "deviation_from_plan": "Overflow 'more-submenu' is drawn as an inline disclosure (\"More (n)\"), not a flyout submenu, so entries stay links."
+  },
+  "WS-D D1-D2 Dock menu and app identity": {
+   "state": "BLOCKED",
+   "reason": "macOS only; belongs to the Python desktop runtime and needs a Mac."
+  }
+ },
+ "checks": {
+  "package_tests": {
+   "state": "PASS",
+   "command": "npm run verify (federation-design/packages/react)",
+   "tests": 77
+  },
+  "chromium_matrix": {
+   "state": "PASS",
+   "evidence": "rc3/chromium_matrix_receipt.json",
+   "failures": 0,
+   "controls_cells": "6/6",
+   "controls_axe_cells": "28/28",
+   "existing_cells_unchanged": "baseline 192/192, shell 36/36"
+  },
+  "firefox_webkit_matrix": {
+   "state": "OPEN",
+   "note": "Runs only in CI (federation-gui-fixture-matrix.yml). Not claimed here."
+  },
+  "gui_backend_parity_audit": {
+   "state": "PASS",
+   "note": "Two new controls classified CLIENT_STATE in .federation/gui_backend_contract.json; audit returns PASS with zero residue."
+  },
+  "screen_reader": {
+   "state": "BLOCKED"
+  },
+  "touch_devices": {
+   "state": "BLOCKED"
+  },
+  "application_adoption": {
+   "state": "OPEN",
+   "note": "RC4 to RC7. Five applications pin releases 0.3.0 to 0.4.1; two do not depend on the package."
+  },
+  "independent_review": {
+   "state": "BLOCKED"
+  }
+ },
+ "defects_found_and_fixed_during_rc3": [
+  "FederationMenu closed itself on any page scroll, including the scroll that moving focus causes. It now follows its button.",
+  "FederationDialog returned focus to its opener when the close event arrived, which could pull focus from where the person had already moved. It now does so only if nothing else has taken focus.",
+  "FederationRenameDialog selected the name before the field held it. The form is now mounted per opening."
+ ],
+ "effect_on_applications": "TheHub's frontend loads the stylesheet from source, so its default focus outline changes colour when this is merged. The other applications pin a released tarball and change only when they move their pin. The package is not published and no release is tagged.",
+ "package_version": "0.6.0-rc.1 (unchanged; the plan's bump to rc.2 was dropped because the version is referenced by two lockfiles and the RC1 inventory, and the candidate is unreleased)",
+ "artifacts_sha256": {
+  "rc3/runtime_element_detail.json": "9d83a06f4540e4ece31ad53672ad540572444d57977689df133cbcb4df512140",
+  "rc3/chromium_matrix_receipt.json": "af8c7b65b4ea53d5f8668daec698aa9c8f506c54adedb14917ce1d1da606d8b3"
+ },
+ "certification": "WITHHELD"
+}

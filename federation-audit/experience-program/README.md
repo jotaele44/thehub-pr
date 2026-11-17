@@ -40,6 +40,10 @@ someone other than the author of the work.
 | `rc2/fixtures/positive/` | Two illustrative contracts that must be accepted, alone and together. |
 | `rc2/fixtures/negative/` | One file per rule: a patch on a positive fixture and the finding it must produce. |
 | `rc2/RC2_GATE.json` | Gate state, schema hashes and the checks behind it. |
+| `scripts/rc3_runtime_detail.py` | Tabulates the failing elements the runtime pass recorded, per application and rule. |
+| `rc3/runtime_element_detail.json` | Each distinct failing element: markup, routes, widths, measured colours, and whether a shared or an application style draws it. |
+| `rc3/chromium_matrix_receipt.json` | Counts and per-cell results of the design-system browser matrix, Chromium only. |
+| `rc3/RC3_GATE.json` | Gate state for the design-system changes, what differs from the plan, and what is still open or blocked. |
 
 ## Reading RC0
 
@@ -130,6 +134,31 @@ one or more positive fixtures; each `patch` entry is `set`, `remove` or `copy` o
 a `/`-separated path (`doc` picks which base document, `-` appends to a list);
 `expect` lists finding codes that must appear.
 
+## Reading RC3
+
+RC3 changes the shared design system only (`federation-design/`). No
+application was changed.
+
+- The runtime pass was repeated keeping each failing element's markup and, for
+  contrast, the colours measured. Of 299 distinct failing elements across the
+  eight applications (252 contrast, 11 unnamed buttons, 22 scroll regions, 14
+  label mismatches), none is drawn by a shared design-system class. The
+  application failures are therefore application fixes, and
+  `rc3/runtime_element_detail.json` is their work list. This corrects the
+  assumption, made before RC3, that shared colour tokens were the cause.
+- What RC3 did fix is the shared package's own accent defect, and it added the
+  components the applications lack: a named scroll region, a label that stays
+  a button's name on small screens, a dialog, a rename dialog, a menu, an item
+  menu, a status mark, and pinned and recent navigation groups.
+- "Shared" and "application" in the element list are read off the element's
+  own class list. An application element inside a shared panel counts as
+  application, because the application's class is what colours it.
+- The browser matrix receipt is Chromium only. Firefox and WebKit run in CI
+  and are not claimed in these files.
+- The gate is `PROVISIONAL`: nothing has adopted the components, nothing was
+  used with a screen reader or on a touch device, and the author is the only
+  reviewer.
+
 ## Re-running
 
 ```bash
@@ -155,3 +184,17 @@ A snapshot is `git archive <audited commit> | tar -x -C <dir>/<repo>`.
 python federation-audit/experience-program/scripts/rc2_validate.py <contract.json> [...]
 pytest tests/test_experience_contract.py
 ```
+
+```bash
+python federation-audit/experience-program/scripts/rc3_runtime_detail.py \
+  <directory holding the runtime pass's out-<repository>.json files> \
+  federation-audit/experience-program/rc3/runtime_element_detail.json
+```
+
+```bash
+cd federation-design/packages/react && npm run verify
+cd ../../fixture-lab && npm ci && npm run dev &
+GUI_ENGINES=chromium node tests/runtime-matrix.mjs
+```
+
+`GUI_SUITES=controls` limits the matrix to the control fixtures.
