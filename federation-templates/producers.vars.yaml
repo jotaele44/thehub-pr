@@ -54,7 +54,7 @@ producers:
     gui_backend_requirements: "-r server/backend/requirements.txt"
     repo_url: https://github.com/jotaele44/centinelas-pr
     lock_cmd: "uv lock --check"
-    desktop_extra_requirements: "\nprii-maintenance @ https://github.com/jotaele44/thehub-pr/archive/f2b81769924689b4d959554928810b1d7b7ef3d6.zip#subdirectory=packages/prii_maintenance\nprii-export-utils @ https://github.com/jotaele44/thehub-pr/archive/f2b81769924689b4d959554928810b1d7b7ef3d6.zip#subdirectory=packages/prii_export_utils"
+    desktop_extra_requirements: "\nprii-maintenance @ https://github.com/jotaele44/thehub-pr/archive/f2b81769924689b4d959554928810b1d7b7ef3d6.zip#subdirectory=packages/prii_maintenance\nprii-export-utils @ https://github.com/jotaele44/thehub-pr/archive/0f62e4bdde10b5ac82787a329d6f15481ab9c7f0.zip#subdirectory=packages/prii_export_utils"
     program_desc: the universal online intelligence monitor and routing engine
   moneysweep-pr:
     app_slug: MONEYSWEEP
