@@ -139,11 +139,15 @@ def main() -> int:
         },
         "limits": [
             "Chromium only. Firefox and WebKit were not available.",
-            "Only surfaces with their own address were visited. Dialogs, drawers, tabs held "
-            "in memory and anything behind a click were not opened.",
+            (
+                "Only surfaces with their own address were visited. Dialogs, drawers, tabs "
+                "held in memory and anything behind a click were not opened."
+            ),
             "Pages were loaded, not operated: no form was submitted and no write was attempted.",
-            "An axe scan finds a subset of accessibility failures. It is not a keyboard or "
-            "screen-reader review.",
+            (
+                "An axe scan finds a subset of accessibility failures. It is not a keyboard "
+                "or screen-reader review."
+            ),
             "Data was whatever a fresh workspace holds, so empty and loaded states are mixed.",
         ],
         "totals": {
