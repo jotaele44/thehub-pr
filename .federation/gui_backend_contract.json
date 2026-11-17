@@ -1472,19 +1472,11 @@
       ]
     },
     {
-      "pattern": "federation-design/packages/react/src/gis/index.jsx:7:unlabeled-control",
+      "pattern": "federation-design/packages/react/src/gis/index\\.jsx:[0-9]+:unlabeled-control",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
       "evidence": [
-        "federation-design/packages/react/src/gis/index.jsx:7"
-      ]
-    },
-    {
-      "pattern": "federation-design/packages/react/src/gis/index.jsx:35:}>",
-      "classification": "PRESENTATION_ONLY",
-      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
-      "evidence": [
-        "federation-design/packages/react/src/gis/index.jsx:35"
+        "federation-design/packages/react/src/gis/index.jsx"
       ]
     },
     {
@@ -2154,6 +2146,26 @@
       "evidence": [
         "federation-design/packages/react/src/shell/parts.jsx",
         "federation-design/packages/react/tests/shell-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/controls/Dialog\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "The dialog's close control calls the host's onClose; the design-system component holds no data and makes no backend request. Exercised by the fixture matrix (dialog_is_modal, dialog_escape_returns_focus).",
+      "evidence": [
+        "federation-design/packages/react/src/controls/Dialog.jsx",
+        "federation-design/packages/react/tests/controls-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/controls/RenameDialog\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "Cancel calls the host's onClose and Save submits the form to the host's onRename; the design-system component stores nothing and makes no backend request, and the host application binds the write. Exercised by the fixture matrix (rename_saves_trimmed_name, rename_escape_cancels, rename_reports_failed_save_and_stays_open).",
+      "evidence": [
+        "federation-design/packages/react/src/controls/RenameDialog.jsx",
+        "federation-design/packages/react/tests/controls-contracts.test.mjs",
         "federation-design/fixture-lab/tests/runtime-matrix.mjs"
       ]
     }

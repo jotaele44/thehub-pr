@@ -120,6 +120,15 @@ one labelled primary navigation, exactly one `aria-current="page"`, and a main
 region that can take focus after navigation (`focusMainOnNavigate`). A
 repository does not re-implement these.
 
+**Pinned and recent.** A registry group with `kind: 'pinned'` or
+`kind: 'recent'` holds entries the application supplies at render time through
+`collections` (what a person pinned, what they opened last). Such a group
+declares no items, so its entries need no `capabilityId`; each must lead to a
+page or view that a registry entry already covers. The shell stores nothing:
+the application owns the lists and the actions on them. An open entry is marked
+`aria-current="true"` and is never a second current page. On a small screen
+these groups sit behind "More". The package README has the full shape.
+
 **Inspector.** `FederationInspectorPanel` in the `inspector` slot is a column
 beside main at 1280px and above and a modal drawer below. A page that needs an
 always-visible detail column inside its own layout may keep one; the slot is

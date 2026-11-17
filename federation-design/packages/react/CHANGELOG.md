@@ -32,12 +32,47 @@ removed or changed. Tokens stay at 2.0.0.
   requires consuming those variables as colours instead of wrapping them in
   `hsl()`; see the README.
 
+- Control primitives, exported as unfrozen (their API may still change before
+  0.6.0): `FederationDialog`, `FederationRenameDialog`, `FederationTextField`,
+  `FederationMenu`, `FederationItemMenu`, `FederationStatusMark`,
+  `FederationScrollRegion` and `FederationResponsiveLabel`. Hand-written on
+  native elements; no dependency is added. They store nothing and make no
+  request: the host passes the data and performs the writes.
+- Pinned and recent navigation groups. `defineFederationNav` accepts a group
+  with `kind: 'pinned'` or `kind: 'recent'` (`maxItems`, `overflow`) and no
+  items; `FederationAppShell`, `FederationModuleNav` and `FederationMobileNav`
+  take the entries at render time through `collections`. An entry may carry a
+  status mark and a menu of actions.
+- `styles/controls.css`, included in `styles.css`. Every rule is scoped to an
+  `.fd-*` class.
+- Two custom properties beside `--fd-accent-strong`: `--fd-accent-contrast`
+  (text on a solid accent fill) and `--fd-focus-ring`.
+
+### Fixed
+
+- `.fd-button--primary` and the default focus outline no longer draw with the
+  raw repository accent, which was below 4.5:1 behind white text and below 3:1
+  as a ring for several repositories. The button is now `--fd-accent-strong`
+  with `--fd-accent-contrast` text and the ring is `--fd-focus-ring`. A test
+  holds every repository and theme to those ratios. **Visible change:** the
+  primary button is darker than the brand accent in the light theme and
+  lighter in the dark theme, for every repository.
+- `FederationExportMenu` is built on `FederationMenu`. It gains arrow keys,
+  Home and End, Escape, close on an outside click and focus return. Its class
+  names inside the open menu changed (`fd-menu__list`, `fd-menu__item`).
+- `FederationDatasetGrid` becomes a tab stop while it has rows to scroll, so
+  it can be scrolled from the keyboard, and its colours follow the theme.
+
 ### Known issues
 
-- The raw repository accent (`--fd-accent`) is below 4.5:1 as text or behind
-  white text for several repositories. The shell and the bridge use
-  `--fd-accent-strong`; `.fd-button--primary` and the default focus outline
-  still use the raw accent.
+- The raw repository accent (`--fd-accent`) is below 4.5:1 as text for several
+  repositories. Nothing in the packaged stylesheet draws with it any more; an
+  application that uses it directly for text is still affected.
+- A pinned or recent entry removed by one of its own actions leaves focus on
+  the page body; the host decides where focus goes next.
+- The control primitives have been driven from the keyboard in three browser
+  engines by the fixture matrix. They have not been used with a screen reader
+  or on a touch device.
 - `gis.css` is not part of the packaged `styles.css`.
 - The bridge derives on-accent, destructive and chart colours from existing
   tokens, and does not bridge fonts. These need real roles in tokens 2.1.

@@ -1,5 +1,6 @@
 import React from 'react'
 import { resolveNavLabel } from './nav.js'
+import { FederationStatusMark } from '../controls/StatusMark.jsx'
 
 export function cx(...values) {
   return values.filter(Boolean).join(' ')
@@ -10,7 +11,9 @@ export function cx(...values) {
 // state-driven item (no path) is a button. Both carry the same class, the
 // same current-page marker and the same content, so the shell and the bottom
 // bar cannot drift apart.
-export function NavEntry({ item, active, className, onSelect, onNavigate, renderLink, labelContext }) {
+// `open` marks a pinned or recent entry that is the thing currently open; it
+// is not the current page, which only a registry item can be.
+export function NavEntry({ item, active, open, className, onSelect, onNavigate, renderLink, labelContext }) {
   const Icon = item.icon
   const label = resolveNavLabel(item.label, labelContext)
   const children = (
@@ -25,6 +28,7 @@ export function NavEntry({ item, active, className, onSelect, onNavigate, render
         <span className="fd-nav__label" title={typeof label === 'string' ? label : undefined}>{label}</span>
         {item.description ? <span className="fd-nav__description">{item.description}</span> : null}
       </span>
+      {item.status ? <FederationStatusMark {...item.status} /> : null}
     </>
   )
   const shared = {
@@ -32,6 +36,10 @@ export function NavEntry({ item, active, className, onSelect, onNavigate, render
     'aria-current': active ? 'page' : undefined,
     'data-active': active || undefined,
     'data-nav-id': item.id,
+  }
+  if (open && !active) {
+    shared['aria-current'] = 'true'
+    shared['data-active'] = true
   }
   if (item.path === undefined) {
     return (
