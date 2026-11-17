@@ -9,6 +9,10 @@ import '@/index.css'
 // Canonical federation layer, imported straight from the design-system source.
 // There is no local copy to drift from, so no sync guard is needed.
 import '@federation-design/styles/federation.css'
+// shadcn variables (--background, --primary, --border, ...) as aliases of the
+// federation tokens, so this app defines no palette of its own. Imported from
+// source, like federation.css. tailwind.config.js consumes them as colours.
+import '@federation-design/styles/shadcn-bridge.css'
 
 // Repo accent for the shared federation.css.
 document.documentElement.dataset.repo = 'thehub-pr'
@@ -20,7 +24,3 @@ applyTheme(resolveInitialTheme())
 ReactDOM.createRoot(document.getElementById('root')).render(
   <App />
 )
-
-// Archive design is isolated from the existing backend and semantic tokens.
-import "./zip-design/tokens.css";
-import "./zip-design/adaptation.css";

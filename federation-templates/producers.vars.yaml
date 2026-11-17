@@ -25,7 +25,9 @@
 #   program_desc — one clause completing "<program_id> is ...", taken from each
 #                  repo's own pyproject description or README lede so the shared
 #                  CONTRIBUTING opens with something true about that repo.
-#   gui_node_version — Node major for the GUI parity workflow (JSX producers).
+#   gui_node_version — Node version for the GUI parity workflow (JSX producers):
+#                  the major, or the exact version where the repository pins
+#                  one in its other workflows (moneysweep-pr does).
 #   gui_backend_requirements — pip arguments that install what the backend
 #                  needs to serve the GUI under test in that workflow.
 #   desktop_extra_requirements — optional repo-specific lines appended after the
@@ -62,7 +64,7 @@ producers:
     frontend_dir: dashboard
     npm_dir: /dashboard
     program_id: moneysweep-pr
-    gui_node_version: 22
+    gui_node_version: "22.22.2"
     gui_backend_requirements: "-r requirements.txt -r server/backend/requirements.txt"
     repo_url: https://github.com/jotaele44/moneysweep-pr
     lock_cmd: "uv pip compile requirements.in --universal --python-version 3.13 -o requirements.lock"

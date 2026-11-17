@@ -47,6 +47,12 @@ removed or changed. Tokens stay at 2.0.0.
   `.fd-*` class.
 - Two custom properties beside `--fd-accent-strong`: `--fd-accent-contrast`
   (text on a solid accent fill) and `--fd-focus-ring`.
+- `--fd-repo-accent-<repository>` custom properties, one per repository, equal
+  to the `repoAccents` tokens, so an application can show another repository's
+  accent without a literal colour.
+
+- Controls an application places in the shell header are held to the 44px
+  touch-target minimum by the shell stylesheet.
 
 ### Fixed
 
@@ -62,6 +68,11 @@ removed or changed. Tokens stay at 2.0.0.
   names inside the open menu changed (`fd-menu__list`, `fd-menu__item`).
 - `FederationDatasetGrid` becomes a tab stop while it has rows to scroll, so
   it can be scrolled from the keyboard, and its colours follow the theme.
+- The sans font stack now leads with `"Inter Variable"`, the family
+  `@fontsource-variable/inter` registers. It named only `Inter`, which no
+  application loads, so text rendered in a system fallback. The
+  `typography.fontFamily` token is corrected to match; the token version stays
+  2.0.0 because this corrects a value rather than changing the token set.
 
 ### Known issues
 
@@ -70,9 +81,8 @@ removed or changed. Tokens stay at 2.0.0.
   application that uses it directly for text is still affected.
 - A pinned or recent entry removed by one of its own actions leaves focus on
   the page body; the host decides where focus goes next.
-- The control primitives have been driven from the keyboard in three browser
-  engines by the fixture matrix. They have not been used with a screen reader
-  or on a touch device.
+- The fixture matrix drives the control primitives from the keyboard. They
+  have not been used with a screen reader or on a touch device.
 - `gis.css` is not part of the packaged `styles.css`.
 - The bridge derives on-accent, destructive and chart colours from existing
   tokens, and does not bridge fonts. These need real roles in tokens 2.1.

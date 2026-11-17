@@ -33,6 +33,18 @@
   --fd-breakpoint-tablet: 768px;
   --fd-breakpoint-desktop: 1280px;
   --fd-breakpoint-wide: 1600px;
+
+  /* Every repository's accent, addressable by name. --fd-accent is the accent
+   * of the application you are in; these are for the one place an application
+   * shows the others side by side (the Hub's navigation). Brand colours, for
+   * marks and dots only: several are not legible as text. */
+  --fd-repo-accent-thehub-pr: #0529a8;
+  --fd-repo-accent-spiderweb-pr: #ca0c02;
+  --fd-repo-accent-skywatcher-pr: #0573e4;
+  --fd-repo-accent-moneysweep-pr: #16a34a;
+  --fd-repo-accent-centinelas-pr: #df630d;
+  --fd-repo-accent-aguayluz-pr: #0de3d8;
+  --fd-repo-accent-ovnis-pr: #7c3aed;
 }
 
 /* The repository accent is a brand colour, not a text colour: on its own it
@@ -124,6 +136,13 @@
   padding: 0 var(--fd-layout-gutter);
   background: var(--fd-surface);
   border-bottom: 1px solid var(--fd-border);
+}
+/* Whatever control an application puts in the header meets the touch-target
+ * minimum without each one having to remember to. :where() keeps this at
+ * zero specificity, so a control that sets its own larger size wins. */
+.fd-shell__header :where(button, a, [role="button"]) {
+  min-width: var(--fd-touch-min);
+  min-height: var(--fd-touch-min);
 }
 .fd-shell__status {
   grid-area: status;
