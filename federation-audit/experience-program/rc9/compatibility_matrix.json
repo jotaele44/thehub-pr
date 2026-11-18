@@ -370,7 +370,6 @@
     "platforms_named": {
      "macos-15": 4,
      "ubuntu-24.04": 3,
-     "ubuntu-26.04": 3,
      "ubuntu-latest": 17,
      "windows-11-arm": 1,
      "windows-latest": 1

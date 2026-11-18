@@ -86,7 +86,7 @@ def ci(root: Path) -> dict:
     for workflow in workflows:
         text = workflow.read_text()
         for value in RUNNER_LINE.findall(text):
-            for platform in PLATFORM.findall(value):
+            for platform in PLATFORM.findall(value.split("#")[0]):
                 platforms.setdefault(platform.rstrip(".,"), set()).add(workflow.name)
         # Only a workflow that installs or selects a browser counts.
         if re.search(r"playwright|GUI_ENGINES|browser", text, re.I):

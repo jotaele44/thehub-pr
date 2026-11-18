@@ -15,7 +15,7 @@ const [,, name, port, routesFile, outDir, label] = process.argv;
 const routes = JSON.parse(fs.readFileSync(routesFile))[name].routes;
 const WIDTHS = [390, 1280];
 const RUNS = Number(process.env.PERF_RUNS || 3);
-const SETTLE_MS = 1200;
+const SETTLE_MS = 800;
 
 (async () => {
   const browser = await chromium.launch();
@@ -43,7 +43,9 @@ const SETTLE_MS = 1200;
         try {
           const response = await page.goto(out.base + route, { waitUntil: 'load', timeout: 30000 });
           sample.status = response ? response.status() : null;
-          await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => { sample.network_idle = false; });
+          // Pages that poll never go idle; the wait is bounded so they are still
+          // measured, and the sample records that the network did not settle.
+          await page.waitForLoadState('networkidle', { timeout: 3000 }).catch(() => { sample.network_idle = false; });
           await page.waitForTimeout(SETTLE_MS);
           Object.assign(sample, await page.evaluate(() => {
             const nav = performance.getEntriesByType('navigation')[0];
