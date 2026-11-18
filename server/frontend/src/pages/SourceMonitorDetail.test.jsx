@@ -14,10 +14,10 @@ vi.mock("@/api/federationClient", () => ({
 const ROW = {
   id: "spiderweb-pr:namus", monitor_id: "spiderweb-pr:namus", producer: "spiderweb-pr", source_id: "namus",
   name: "NIJ", producer_family: "missing_persons", evidence_tier: null, cadence: "quarterly",
-  cadence_raw: "90 days", cadence_window_seconds: 7776000, status: "active", status_raw: "harvester_landed",
+  cadence_window_seconds: 7776000, status: "active", origin: "stream",
+  last_success_basis: "NOT_RECORDED", last_success_at: null,
   url: "https://namus.nij.ojp.gov", producer_last_package_at: null,
-  raw: { stratum: "A", classes: ["missing_juvenile"] },
-  lineage: { registry_path: "configs/missing_persons_sources.yaml", adapter: "source_monitor_v1" },
+  lineage: { registry_path: "configs/missing_persons_sources.yaml", adapter: "source_monitors stream (producer export)" },
   observed_at: "2026-11-08T00:00:00Z",
 };
 
@@ -39,15 +39,16 @@ describe("SourceMonitorDetail", () => {
     vi.mocked(federation.entities.MonitoredSources.get).mockClear();
   });
 
-  it("decodes the route id and renders normalized, raw and lineage fields read-only", async () => {
+  it("decodes the route id and renders the monitoring and lineage fields read-only", async () => {
     vi.mocked(federation.entities.MonitoredSources.get).mockResolvedValue(ROW);
     const { container } = renderAt("/source-monitor/spiderweb-pr%3Anamus");
     expect(await screen.findByRole("heading", { name: "NIJ" })).toBeInTheDocument();
     expect(federation.entities.MonitoredSources.get).toHaveBeenCalledWith("spiderweb-pr:namus");
-    expect(screen.getByText("registry: harvester_landed")).toBeInTheDocument();
+    expect(screen.getByText("Read-only. Reported by the producer in its source_monitors stream.")).toBeInTheDocument();
     expect(screen.getByText("no export package found")).toBeInTheDocument();
-    expect(screen.getByText('["missing_juvenile"]')).toBeInTheDocument();
     expect(screen.getByText("configs/missing_persons_sources.yaml")).toBeInTheDocument();
+    expect(screen.getByText("source_monitors stream (producer export)")).toBeInTheDocument();
+    expect(screen.queryByText(/Registry fields/)).not.toBeInTheDocument();
     // The producer links to its page with the Monitor tab selected.
     expect(screen.getByRole("link", { name: "spiderweb-pr" })).toHaveAttribute("href", "/spiderweb?tab=sources");
     expect(screen.getByRole("link", { name: "Back to Source Monitor" })).toHaveAttribute("href", "/source-monitor");
@@ -61,6 +62,15 @@ describe("SourceMonitorDetail", () => {
     );
     renderAt("/source-monitor/ovnis-pr%3AGONE");
     expect(await screen.findByText("Monitored source not found")).toBeInTheDocument();
+  });
+
+  it("labels a legacy row the retired registry reader loaded", async () => {
+    vi.mocked(federation.entities.MonitoredSources.get).mockResolvedValue(
+      { ...ROW, origin: "hub_adapter", last_success_basis: undefined });
+    renderAt("/source-monitor/spiderweb-pr%3Anamus");
+    expect(await screen.findByRole("heading", { name: "NIJ" })).toBeInTheDocument();
+    expect(screen.getByText("legacy registry reader (retired)")).toBeInTheDocument();
+    expect(screen.getByText("Not recorded")).toBeInTheDocument();
   });
 });
 

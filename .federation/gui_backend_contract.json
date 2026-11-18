@@ -2007,10 +2007,10 @@
       "classification": "INTERNAL_NAVIGATION",
       "rationale": "The producer name in the Source Monitor summary table and on a source's detail page links to that producer's Hub page; the target comes from the module registry (PRODUCER_PAGES in lib/sourceMonitor.js, derived from MODULES) and no backend request is made.",
       "evidence": [
-        "server/frontend/src/pages/SourceMonitor.jsx:65",
-        "server/frontend/src/pages/SourceMonitorDetail.jsx:74",
-        "server/frontend/src/pages/SourceMonitorDetail.test.jsx:51",
-        "server/frontend/src/lib/sourceMonitor.test.js:56"
+        "server/frontend/src/pages/SourceMonitor.jsx:66",
+        "server/frontend/src/pages/SourceMonitorDetail.jsx:84",
+        "server/frontend/src/pages/SourceMonitorDetail.test.jsx:53",
+        "server/frontend/src/lib/sourceMonitor.test.js:57"
       ]
     },
     {

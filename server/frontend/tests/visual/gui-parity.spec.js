@@ -1216,34 +1216,34 @@ test.describe('sky workspace', () => {
   });
 });
 
-// Source Monitor (ADR 0012, ADR 0013): read-only MonitoredSources rows written by
-// `hub source-monitor` and loaded by `hub ingest`. Timestamps are relative to
-// now because freshness is computed against the viewer's clock.
+// Source Monitor (ADR 0013): read-only MonitoredSources rows projected by
+// `hub ingest` from each producer's source_monitors stream. Timestamps are relative
+// to now because freshness is computed against the viewer's clock.
 const daysAgo = (days) => new Date(Date.now() - days * 86400000).toISOString();
+const STREAM_ADAPTER = 'source_monitors stream (producer export)';
 const MONITOR_ROWS = [
   {
     id: 'ovnis-pr:SRC-0001', monitor_id: 'ovnis-pr:SRC-0001', producer: 'ovnis-pr', source_id: 'SRC-0001',
-    name: 'AARO Case Archive', producer_family: 'USAF', evidence_tier: 'T1', cadence: 'yearly', cadence_raw: 'annual',
-    cadence_window_seconds: 366 * 86400, status: 'active', status_raw: 'yes', producer_last_package_at: daysAgo(10),
-    raw: { source_family: 'USAF', retrieval_cadence: 'annual' },
-    lineage: { registry_path: 'data/reference/source_registry.csv', adapter: 'source_monitor_v1' }, observed_at: daysAgo(0),
+    name: 'AARO Case Archive', producer_family: 'USAF', evidence_tier: 'T1', cadence: 'yearly',
+    cadence_window_seconds: 366 * 86400, status: 'active', origin: 'stream',
+    last_success_basis: 'NOT_RECORDED', last_success_at: null, producer_last_package_at: daysAgo(10),
+    lineage: { registry_path: 'data/reference/source_registry.csv', adapter: STREAM_ADAPTER }, observed_at: daysAgo(10),
   },
   {
     id: 'moneysweep-pr:usaspending_prime', monitor_id: 'moneysweep-pr:usaspending_prime', producer: 'moneysweep-pr',
     source_id: 'usaspending_prime', name: 'usaspending_prime', producer_family: 'federal', evidence_tier: null,
-    cadence: 'weekly', cadence_raw: 'weekly', cadence_window_seconds: 7 * 86400, status: 'partial',
-    status_raw: 'partially_materialized', producer_last_package_at: daysAgo(30),
-    raw: { family: 'federal', pipeline_status: 'partially_materialized' },
-    lineage: { registry_path: 'reports/source_registry_status.csv', adapter: 'source_monitor_v1' }, observed_at: daysAgo(0),
+    cadence: 'weekly', cadence_window_seconds: 7 * 86400, status: 'partial', origin: 'stream',
+    last_success_basis: 'NOT_RECORDED', last_success_at: null, producer_last_package_at: daysAgo(30),
+    lineage: { registry_path: 'reports/source_registry_status.csv', adapter: STREAM_ADAPTER }, observed_at: daysAgo(30),
   },
 ];
 const MONITOR_SUMMARY = [{
-  id: 'source_monitor_summary', schema_version: 'prii_source_monitor_v1', adapter: 'source_monitor_v1',
-  generated_at: daysAgo(0), total: 2, error_count: 1,
+  id: 'source_monitor_summary', schema_version: 'prii_source_monitor_v1',
+  generated_at: daysAgo(0), total: 2, error_count: 1, stream_producers: ['moneysweep-pr', 'ovnis-pr'],
   producers: {
-    'moneysweep-pr': { count: 1, package_created_at: daysAgo(30), registries: ['reports/source_registry_status.csv'], excluded: {}, errors: [] },
-    'ovnis-pr': { count: 1, package_created_at: daysAgo(10), registries: ['data/reference/source_registry.csv'], excluded: {}, errors: [] },
-    'centinelas-pr': { origin: 'stream', reports_via_stream: true, count: 0, package_created_at: null, registries: [], excluded: {}, errors: ['reports through the source_monitors stream, but this aggregate has no rows from it'] },
+    'moneysweep-pr': { origin: 'stream', count: 1, package_created_at: daysAgo(30), registries: ['reports/source_registry_status.csv'], excluded: {}, errors: [] },
+    'ovnis-pr': { origin: 'stream', count: 1, package_created_at: daysAgo(10), registries: ['data/reference/source_registry.csv'], excluded: {}, errors: [] },
+    'centinelas-pr': { origin: 'stream', count: 0, package_created_at: null, registries: [], excluded: {}, errors: ['reports through the source_monitors stream, but this aggregate has no rows from it'] },
   },
 }];
 // Detail fragment first: mockApi matches the first fragment the URL contains.
@@ -1260,7 +1260,7 @@ test.describe('source monitor', () => {
     await (await openPrimaryNav(page)).getByRole('link', { name: 'Source Monitor', exact: true }).click();
     await expect(page).toHaveURL(/\/source-monitor$/);
     await expect(page.getByRole('heading', { name: 'Source Monitor' })).toBeVisible();
-    // A stream producer missing from the aggregate is reported per producer, not hidden.
+    // An expected producer missing from the aggregate is reported per producer, not hidden.
     await expect(page.getByText('reports through the source_monitors stream, but this aggregate has no rows from it')).toBeVisible();
 
     const rows = page.locator('table').last().locator('tbody tr');
@@ -1273,7 +1273,8 @@ test.describe('source monitor', () => {
     await rows.first().click();
     await expect(page).toHaveURL(/\/source-monitor\/moneysweep-pr%3Ausaspending_prime$/);
     await expect(page.getByRole('heading', { name: 'usaspending_prime' })).toBeVisible();
-    await expect(page.getByText('registry: partially_materialized')).toBeVisible();
+    await expect(page.getByText('Reported by the producer in its source_monitors stream.', { exact: false })).toBeVisible();
+    await expect(page.getByText('source_monitors stream', { exact: true })).toBeVisible();
     await expect(page.getByText('reports/source_registry_status.csv')).toBeVisible();
     // Opened from the federation table, the way back is the federation view.
     await page.getByRole('link', { name: 'Back to Source Monitor', exact: true }).click();
@@ -1377,7 +1378,7 @@ test.describe('source monitor', () => {
     await expect(row.locator('[data-freshness-kind="last_success"]')).toHaveText('last success · from outputs');
   });
 
-  test('a source dropped from its registry is reported, not substituted', async ({ page }) => {
+  test('a source dropped from its stream is reported, not substituted', async ({ page }) => {
     await mockApi(page, { '/entities/MonitoredSources/ovnis-pr': { __status: 404, detail: 'MonitoredSources/ovnis-pr:GONE not found' } });
     await page.goto('/source-monitor/ovnis-pr%3AGONE', { waitUntil: 'networkidle' });
     await expect(page.getByText('Monitored source not found')).toBeVisible();

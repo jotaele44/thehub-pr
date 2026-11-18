@@ -61,7 +61,6 @@ hub fetch --run --root ws                    # clone/refresh producers and run e
 hub aggregate --root .. --out data/aggregate # merge discoverable packages
 hub correlate --in data/aggregate            # derive cross-producer relationship edges
 hub project-signs --in data/aggregate --out reports/signs  # render per-project consolidation signs
-hub source-monitor --root .. --out data/aggregate  # normalize producer source registries (ADR 0012)
 hub ingest --in data/aggregate --db data/hub.db  # load the aggregate into the app store
 make federation-status                       # snapshot readiness for the control-plane pages
 make test
@@ -129,7 +128,6 @@ React UI, so operators use a single app instead of switching between per-produce
 ```bash
 # 1. Load real federation data into the app store (data/hub.db)
 hub aggregate --root .. --out data/aggregate && hub correlate --in data/aggregate
-hub source-monitor --root .. --out data/aggregate   # optional: the Source Monitor pages
 hub ingest --in data/aggregate --db data/hub.db
 
 # 2. Build the UI once (outputs server/frontend/dist/, git-ignored)
@@ -173,13 +171,12 @@ in tab-scoped session storage (see [`server/frontend/README.md`](server/frontend
 [`src/hub/ingest.py`](src/hub/ingest.py), where `ingest_aggregate` drives the canonical
 streams through `_project_ui` and the `project_*` helpers (`project_producer_collections`,
 `project_crossover_links`, `project_continuity_risks`, `project_livefeed`). It also builds
-`MonitoredSources` with `project_source_monitors`, replacing that collection on each run: a
-producer that emits the optional `source_monitors` stream
-([ADR 0013](docs/adr/0013-source-monitors-stream.md); canonical rows land in `SourceMonitors`) is
-read from it, with each source's last success and how that time is known, and every other
-producer comes from `monitored_sources.jsonl` (written by `hub source-monitor` from producer
-source registries; a hub-derived file, not a federation stream,
-[ADR 0012](docs/adr/0012-source-monitor-registry-adapter.md)). The read-only Source Monitor
+`MonitoredSources` with `project_source_monitors`, replacing that collection on each run, from
+the `source_monitors` stream every producer emits
+([ADR 0013](docs/adr/0013-source-monitors-stream.md); canonical rows land in `SourceMonitors`),
+with each source's last success and how that time is known. A producer whose stream rows are
+missing from the aggregate is reported as a gap, not dropped silently. (The ADR 0012 hub-side
+registry reader, `hub source-monitor`, is retired.) The read-only Source Monitor
 (`/source-monitor` and a Monitor tab on each producer page) reads it. Pages backed by these
 collections (Sources, the Spiderweb graph, cross-producer links) render live aggregate data;
 domain-heavy pages that need per-domain fields the aggregate does not yet carry (contracts,

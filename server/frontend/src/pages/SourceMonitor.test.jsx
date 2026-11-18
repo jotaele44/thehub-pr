@@ -18,28 +18,29 @@ const ROWS = [
   {
     id: "moneysweep-pr:usaspending_prime", monitor_id: "moneysweep-pr:usaspending_prime", producer: "moneysweep-pr",
     source_id: "usaspending_prime", name: "usaspending_prime", producer_family: "federal", evidence_tier: null,
-    cadence: "weekly", cadence_window_seconds: 7 * 86400, status: "partial", origin: "hub_adapter",
+    cadence: "weekly", cadence_window_seconds: 7 * 86400, status: "partial", origin: "stream",
+    last_success_basis: "NOT_RECORDED", last_success_at: null,
     producer_last_package_at: "2026-10-01T00:00:00Z",
   },
 ];
 
 function summary(overrides = {}) {
   return {
-    id: "source_monitor_summary", adapter: "source_monitor_v1", generated_at: "2026-11-08T00:00:00Z",
-    total: 3, error_count: 1, stream_producers: ["aguayluz-pr", "skywatcher-pr"],
+    id: "source_monitor_summary", schema_version: "prii_source_monitor_v1", generated_at: "2026-11-08T00:00:00Z",
+    total: 3, error_count: 1, stream_producers: ["aguayluz-pr", "moneysweep-pr", "skywatcher-pr"],
     producers: {
       "aguayluz-pr": {
         origin: "stream", count: 1, package_created_at: "2026-11-01T00:00:00Z",
         registries: ["config/hydromet_sources.v1.json"], excluded: {}, errors: [],
       },
       "moneysweep-pr": {
-        origin: "hub_adapter", count: 1, package_created_at: "2026-10-01T00:00:00Z",
-        registries: ["reports/source_registry_status.csv"], excluded: { never_federated: 2 }, errors: [],
+        origin: "stream", count: 1, package_created_at: "2026-10-01T00:00:00Z",
+        registries: ["reports/source_registry_status.csv"], excluded: {}, errors: [],
       },
-      // A stream producer with no rows in this aggregate (no package, so no
-      // export timestamp either): ingest flags the gap instead of dropping it.
+      // An expected producer with no stream rows in this aggregate (no package, so
+      // no export timestamp either): ingest flags the gap instead of dropping it.
       "centinelas-pr": {
-        origin: "stream", reports_via_stream: true, count: 0, package_created_at: null,
+        origin: "stream", count: 0, package_created_at: null,
         registries: [], excluded: {},
         errors: ["reports through the source_monitors stream, but this aggregate has no rows from it"],
       },
@@ -47,7 +48,8 @@ function summary(overrides = {}) {
         origin: "stream", count: 1, package_created_at: "2026-11-02T00:00:00Z",
         registries: ["registry/source_registry.yaml"], excluded: {}, errors: [],
       },
-      // Not a registered producer: listed, but there is no page to link to.
+      // Not a registered producer, from a legacy summary with no origin: listed,
+      // but there is no page to link to.
       "retired-pr": { count: 0, package_created_at: "2026-09-01T00:00:00Z", registries: [], excluded: {}, errors: [] },
     },
     ...overrides,
@@ -81,28 +83,31 @@ describe("SourceMonitor page", () => {
     serve();
   });
 
-  it("summarizes sources, producers, registry errors and missing export timestamps", () => {
+  it("summarizes sources, producers, producer errors and missing export timestamps", () => {
     renderPage();
     expect(screen.getByRole("heading", { name: "Source Monitor" })).toBeInTheDocument();
     expect(statCard("Monitored sources")).toHaveTextContent("3");
     expect(statCard("Producers")).toHaveTextContent("5");
-    expect(statCard("Registry errors")).toHaveTextContent("1");
-    expect(statCard("Registry errors")).toHaveTextContent("1 producer(s) affected");
+    expect(statCard("Producer errors")).toHaveTextContent("1");
+    expect(statCard("Producer errors")).toHaveTextContent("1 producer(s) affected");
     expect(statCard("No export timestamp")).toHaveTextContent("1");
     expect(within(producerRow("centinelas-pr"))
       .getByText("reports through the source_monitors stream, but this aggregate has no rows from it"))
       .toBeInTheDocument();
-    expect(within(producerRow("moneysweep-pr")).getByText("2 excluded: never federated")).toBeInTheDocument();
+    expect(within(producerRow("moneysweep-pr")).getByText("—")).toBeInTheDocument();
+    expect(screen.getByText((_, el) => el?.tagName === "P"
+      && /by hub ingest from the source_monitors stream\.$/.test(el.textContent))).toBeInTheDocument();
+    expect(screen.queryByText(/hub source-monitor/)).not.toBeInTheDocument();
   });
 
-  it("says whether each producer is read from its stream or by the registry reader", () => {
+  it("reads every producer from its stream and labels a legacy summary entry", () => {
     renderPage();
-    const stream = within(producerRow("aguayluz-pr")).getByText("source_monitors stream");
-    expect(stream).toHaveAttribute("data-origin", "stream");
-    const reader = within(producerRow("moneysweep-pr")).getByText("registry reader");
-    expect(reader).toHaveAttribute("data-origin", "hub_adapter");
-    // A summary entry without an origin is a registry-reader producer.
-    expect(within(producerRow("retired-pr")).getByText("registry reader")).toHaveAttribute("data-origin", "hub_adapter");
+    for (const pid of ["aguayluz-pr", "moneysweep-pr", "centinelas-pr", "skywatcher-pr"]) {
+      expect(within(producerRow(pid)).getByText("source_monitors stream")).toHaveAttribute("data-origin", "stream");
+    }
+    // A summary entry without an origin predates ADR 0013's completion.
+    expect(within(producerRow("retired-pr")).getByText("legacy registry reader"))
+      .toHaveAttribute("data-origin", "hub_adapter");
   });
 
   it("links each registered producer to its page's Monitor tab", () => {

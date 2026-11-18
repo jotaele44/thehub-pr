@@ -30,10 +30,9 @@ function ProducerLimitNotice({ producer, loaded, ready }) {
   );
 }
 
-// One read-only template for monitored sources (ADR 0012). Without `producer` it is
+// One read-only template for monitored sources (ADR 0013). Without `producer` it is
 // the federation-wide operator table; with it, a producer page's Monitor tab.
-// Rows come from each producer's source_monitors stream where it emits one (ADR 0013)
-// and otherwise from its registry via `hub source-monitor`; `hub ingest` replaces them
+// Rows come from each producer's source_monitors stream; `hub ingest` replaces them
 // on every run, so there is nothing to edit here.
 export default function SourceMonitorLedger({ producer, now }) {
   const navigate = useNavigate();
@@ -98,8 +97,7 @@ export default function SourceMonitorLedger({ producer, now }) {
     <div>
       <p className="mb-3 text-xs text-muted-foreground">
         Read-only. Sources {producer ? "this producer monitors" : "every producer monitors"}, from the
-        producer&apos;s <code>source_monitors</code> stream where it emits one and otherwise from its registry via{" "}
-        <code>hub source-monitor</code>; replaced on every hub ingest. Freshness uses a source&apos;s own last
+        producer&apos;s <code>source_monitors</code> stream; replaced on every hub ingest. Freshness uses a source&apos;s own last
         success when the producer reports one, and otherwise the age of the producer&apos;s last export package.
       </p>
       {producer ? (
@@ -122,8 +120,8 @@ export default function SourceMonitorLedger({ producer, now }) {
         emptyTitle="No monitored sources"
         emptyDescription={
           producer
-            ? `No sources from ${producer} in the hub. If it emits the source_monitors stream, they arrive with \`hub aggregate\` and then \`hub ingest\`; otherwise run \`hub source-monitor\` against a workspace holding its checkout, then \`hub ingest\`.`
-            : "Producers that emit the source_monitors stream load with `hub aggregate` and then `hub ingest`. For the others, run `hub source-monitor --root <workspace>` and then `hub ingest` to read their source registries."
+            ? `No sources from ${producer} in the hub. They arrive from its source_monitors stream with \`hub aggregate\` and then \`hub ingest\`.`
+            : "Every producer reports its sources in the source_monitors stream; they load with `hub aggregate` and then `hub ingest`."
         }
         searchPlaceholder="Search sources…"
       />

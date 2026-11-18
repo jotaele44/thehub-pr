@@ -22,10 +22,9 @@ function Field({ label, children }) {
   );
 }
 
-const rawValue = (v) => (v !== null && typeof v === "object" ? JSON.stringify(v) : String(v ?? ""));
-
-// One monitored source, read-only (ADR 0012). Shows the normalized fields, the
-// producer's own registry fields verbatim, and where the row came from.
+// One monitored source, read-only (ADR 0013). Shows the fields the producer reports
+// in its source_monitors stream and where the row came from.
+const isStream = (row) => row.origin === "stream";
 export default function SourceMonitorDetail() {
   const { monitorId } = useParams();
   // A producer Monitor tab passes itself in the navigation state, so the way back
@@ -56,7 +55,7 @@ export default function SourceMonitorDetail() {
         {back}
         <div className="rounded-xl border border-border bg-card">
           <EmptyState title="Monitored source not found"
-            description={`No ${MONITOR_COLLECTION} row with id ${monitorId}. It may have been dropped from its producer registry on the last ingest.`} />
+            description={`No ${MONITOR_COLLECTION} row with id ${monitorId}. It may have been dropped from its producer's source_monitors stream on the last ingest.`} />
         </div>
       </div>
     );
@@ -66,16 +65,15 @@ export default function SourceMonitorDetail() {
   const age = ageDays(row);
   const reference = freshnessReference(row);
   const when = (value) => (value ? new Date(value).toLocaleString() : null);
-  const raw = Object.entries(row.raw || {});
   const producerMonitor = producerMonitorPath(row.producer);
 
   return (
     <div>
       {back}
       <PageHeader icon={Gauge} title={row.name || row.source_id} badge={row.producer}
-        description={row.origin === "stream"
+        description={isStream(row)
           ? "Read-only. Reported by the producer in its source_monitors stream."
-          : "Read-only. Normalized from the producer's source registry by hub source-monitor."} />
+          : "Read-only. Loaded by the retired hub-side registry reader (legacy); the next ingest of a source_monitors stream replaces it."} />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section aria-labelledby="monitor-normalized" className="rounded-xl border border-border bg-card p-4">
@@ -88,11 +86,10 @@ export default function SourceMonitorDetail() {
             <Field label="Family">{row.producer_family}</Field>
             <Field label="Evidence tier">{row.evidence_tier ? <StatusChip map={TIER} value={row.evidence_tier} /> : null}</Field>
             <Field label="Cadence">
-              {formatLabel(row.cadence)}{row.cadence_raw ? <span className="text-muted-foreground"> (registry: {row.cadence_raw})</span> : null}
+              {formatLabel(row.cadence)}
             </Field>
             <Field label="Declared status">
               <StatusChip map={MONITOR_STATUS} value={formatLabel(row.status)} />
-              {row.status_raw ? <span className="ml-2 text-muted-foreground">registry: {row.status_raw}</span> : null}
             </Field>
             <Field label="Freshness">
               <StatusChip map={FRESHNESS} value={freshness} />
@@ -114,7 +111,7 @@ export default function SourceMonitorDetail() {
               </Field>
             ) : null}
             <Field label="Producer export">{when(row.producer_last_package_at) || <span className="text-muted-foreground">no export package found</span>}</Field>
-            <Field label="Origin">{row.origin === "stream" ? "source_monitors stream" : "hub registry reader"}</Field>
+            <Field label="Origin">{isStream(row) ? "source_monitors stream" : "legacy registry reader (retired)"}</Field>
             <Field label="Link">
               {row.url ? (
                 <a href={row.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-status-info-fg break-all">
@@ -129,14 +126,8 @@ export default function SourceMonitorDetail() {
           </p>
         </section>
 
-        <section aria-labelledby="monitor-raw" className="rounded-xl border border-border bg-card p-4">
-          <h2 id="monitor-raw" className="mb-2 text-sm font-semibold">Registry fields (verbatim)</h2>
-          {raw.length ? (
-            <dl className="divide-y divide-border">
-              {raw.map(([k, v]) => <Field key={k} label={k.replaceAll("_", " ")}>{rawValue(v)}</Field>)}
-            </dl>
-          ) : <p className="text-sm text-muted-foreground">No registry fields.</p>}
-          <h2 className="mb-2 mt-4 text-sm font-semibold">Lineage</h2>
+        <section aria-labelledby="monitor-lineage" className="rounded-xl border border-border bg-card p-4">
+          <h2 id="monitor-lineage" className="mb-2 text-sm font-semibold">Lineage</h2>
           <dl className="divide-y divide-border">
             <Field label="Registry file"><code>{row.lineage?.registry_path}</code></Field>
             <Field label="Adapter">{row.lineage?.adapter}</Field>
