@@ -49,7 +49,9 @@ someone other than the author of the work.
 | `rc4/RC4_PLAN_INPUT.json` | Per application: distinct failing elements per rule, style signatures, design-system pin, and whether the evidence is still current `main`. |
 | `scripts/rc4_pilot_compare.py` | Compares two runtime passes of one application, before and after a pilot. |
 | `rc4/skywatcher_pilot.json` | skywatcher-pr before and after its pilot: the targeted rules per distinct element, and every critical or serious rule. |
-| `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the pilot result and what it does not show. |
+| `rc4/aguayluz_pilot.json` | aguayluz-pr before and after its fixes, in the same form. |
+| `rc4/aguayluz_water_use_before_after.png` | One AguaYLuz page before (above) and after (below) the dim-text change. |
+| `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the results for both applications and what they do not show. |
 
 ## Reading RC0
 
@@ -171,8 +173,9 @@ application was changed.
 
 ## Reading RC4
 
-RC4 has its evidence step and one pilot, skywatcher-pr, fixed in that
-application's own code (skywatcher-pr#375). No other application is changed.
+RC4 has its evidence step and two applications fixed in their own code:
+skywatcher-pr (skywatcher-pr#375) and aguayluz-pr (aguayluz-pr#420). No other
+application is changed.
 
 - thehub-pr was re-scanned on `main` after thehub-pr#432. Contrast failures
   went from 86 routes to 1. Unnamed buttons and unfocusable scroll regions are
@@ -190,8 +193,14 @@ application's own code (skywatcher-pr#375). No other application is changed.
   0, label mismatches 7 to 0, counted as distinct elements over the same 22
   routes and seven widths. One other rule, `link-in-text-block`, still fires on
   two routes; it was not in scope.
-- That is a scan result. Pages were loaded, not operated, in Chromium only. It
-  is not a keyboard or screen-reader review of Skywatcher.
+- AguaYLuz: contrast 222 to 0, unnamed buttons 1 to 0, unfocusable scroll
+  regions 6 to 0, as distinct elements over the same 20 routes and seven
+  widths. Dim text was raised to the shade the app already used for muted
+  text, so the two are now the same grey. `link-in-text-block` and
+  `svg-img-alt` still fire and were not in scope.
+- These are scan results. Pages were loaded, not operated, in Chromium only.
+  They are not keyboard or screen-reader reviews, and the AguaYLuz scan ran on
+  a workspace with little data on most pages.
 
 ## Re-running
 

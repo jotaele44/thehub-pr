@@ -78,7 +78,7 @@
    "mucaro-ai, ovnis-pr": "One addressable route each; the scan says little about them."
   },
   "decision_needed": "The pilot application is the user's choice.",
-  "status": "Skywatcher chosen by the user and done. AguaYLuz remains the recommended second; not started."
+  "status": "Skywatcher and AguaYLuz done. No further application started."
  },
  "blocked": [
   "independent QA",
@@ -88,10 +88,12 @@
  "artifacts_sha256": {
   "rc4/thehub_rescan.json": "8649de2f6762cf7feee513a15b884e5db09fef795c9e315c3abe64db6dc4ef9a",
   "rc4/RC4_PLAN_INPUT.json": "17e80dbdefbcc720a7d9a3e6ce9b499dbdaf71416cc2ce68a9d800782a31587b",
-  "rc4/skywatcher_pilot.json": "567d29b7361dc45b0fa13a19b430f07da7be1d3f3886cbeadec5a97c6213b38d"
+  "rc4/skywatcher_pilot.json": "567d29b7361dc45b0fa13a19b430f07da7be1d3f3886cbeadec5a97c6213b38d",
+  "rc4/aguayluz_pilot.json": "f1042aa0aa9611a735f407caedd4466107591171987f44d4ec4adb1c264579d2",
+  "rc4/aguayluz_water_use_before_after.png": "b7e1c47b8a50bf323d7d2deef12731b6b3197ee4d8e780e786673725a6f7d98d"
  },
  "certification": "WITHHELD",
- "why_not_pass": "One pilot application is fixed and measured in Chromium by the author. Pages were loaded, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the application; the pilot is unmerged; nobody independent has reviewed it; seven applications are untouched.",
+ "why_not_pass": "Two applications are fixed and measured in Chromium by the author. Pages were loaded, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the applications; neither change is merged; nobody independent has reviewed them; six applications are untouched.",
  "pilot": {
   "repository": "skywatcher-pr",
   "pull_request": "https://github.com/jotaele44/skywatcher-pr/pull/375",
@@ -129,5 +131,47 @@
    "One parity-baseline entry was updated because the toggle's fingerprint changed; a full baseline regeneration was tried and reverted as too broad."
   ],
   "deviation_from_plan": "The plan said the Sky Target Finder change would have no visible effect; rows are 4px taller. The plan named a ScrollRegion component; a ref helper was used so only opening tags change."
+ },
+ "second_application": {
+  "repository": "aguayluz-pr",
+  "pull_request": "https://github.com/jotaele44/aguayluz-pr/pull/420",
+  "user_decisions": [
+   "Raise the failing dim text to slate-400.",
+   "Fix all scanned failures, not contrast only."
+  ],
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/aguayluz_pilot.json",
+  "commits": {
+   "before": "6e3a4f67de20889abc3d0a48e0b514a4f7087f7a",
+   "after": "c60587e210e813a29318ebe761eb7b9c2f281370"
+  },
+  "coverage": "20 routes at 7 widths, 140 page loads, before and after. No route redirects.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "222 -> 0",
+   "button-name": "1 -> 0",
+   "scrollable-region-focusable": "6 -> 0",
+   "label-content-name-mismatch": "0 -> 0"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "button-name": "21 -> 0",
+   "color-contrast": "129 -> 0",
+   "link-in-text-block": "14 -> 14",
+   "scrollable-region-focusable": "25 -> 0",
+   "svg-img-alt": "7 -> 7"
+  },
+  "not_fixed": "link-in-text-block (14 page loads on 3 routes) and svg-img-alt (7 page loads on 1 route), both unchanged. Neither was in scope.",
+  "no_regression_observed": "Horizontal overflow 0 before and after; page errors 0; controls under 24px unchanged (4096 summed over page loads); console errors on 7 page loads before and after.",
+  "changes": [
+   "312 uses of text-slate-500/600/700 in 40 files now use text-slate-400; a test keeps the failing shades from returning as text colours.",
+   "Live log timestamps: opacity-50 removed.",
+   "Selected range button: sky-600 to sky-700, plus aria-pressed.",
+   "Six unnamed filter select boxes named (the scan saw one; the other five had the same defect).",
+   "lib/scrollRegion.js applied to all 44 app-authored scrolling containers."
+  ],
+  "visible_change": "Dim text is the same grey as muted text across the app. rc4/aguayluz_water_use_before_after.png shows one page, before above and after below.",
+  "tests": "277 unit tests pass, eslint clean, GUI parity ratchet passes, three Python test files that read the dashboard source pass.",
+  "ci": "On the code head c60587e every check passed. On the following head 9131d38 (a test-stub change) one job, certify-source-product-denominators, failed with a DNS resolution error while fetching a remote source; it passed on the two previous heads. Not re-run.",
+  "limits": "The scan ran on a workspace with little data on most pages. Text that appears only with data is covered by the class replacement and its test, not by the scan.",
+  "deviation_from_plan": "The helper was not copied unchanged: it gained an optional second argument for an element that already has a ref. One parity-baseline entry was updated because a control's class changed. A code-scanning note about the helper led to a change in an unrelated test's ResizeObserver stub."
  }
 }
