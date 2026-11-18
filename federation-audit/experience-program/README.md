@@ -47,7 +47,9 @@ someone other than the author of the work.
 | `scripts/rc4_pilot_input.py` | Sets a re-scan of thehub-pr beside the RC3 element list and builds the per-application table a pilot choice rests on. |
 | `rc4/thehub_rescan.json` | thehub-pr before and after thehub-pr#432, per rule and for horizontal overflow. |
 | `rc4/RC4_PLAN_INPUT.json` | Per application: distinct failing elements per rule, style signatures, design-system pin, and whether the evidence is still current `main`. |
-| `rc4/RC4_GATE.json` | RC4 state (`OPEN`), what the re-scan showed, and the pilot recommendation, which is an inference and not a decision. |
+| `scripts/rc4_pilot_compare.py` | Compares two runtime passes of one application, before and after a pilot. |
+| `rc4/skywatcher_pilot.json` | skywatcher-pr before and after its pilot: the targeted rules per distinct element, and every critical or serious rule. |
+| `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the pilot result and what it does not show. |
 
 ## Reading RC0
 
@@ -169,7 +171,8 @@ application was changed.
 
 ## Reading RC4
 
-RC4 has only its evidence step. No application is changed.
+RC4 has its evidence step and one pilot, skywatcher-pr, fixed in that
+application's own code (skywatcher-pr#375). No other application is changed.
 
 - thehub-pr was re-scanned on `main` after thehub-pr#432. Contrast failures
   went from 86 routes to 1. Unnamed buttons and unfocusable scroll regions are
@@ -183,7 +186,12 @@ RC4 has only its evidence step. No application is changed.
 - spiderweb-pr's frontend changed on `main` after its evidence was taken, so
   its row is not current.
 - The pilot recommendation in `RC4_GATE.json` is an inference from this table.
-  Choosing the pilot is not done here.
+- Skywatcher pilot: unnamed buttons 1 to 0, unfocusable scroll regions 10 to
+  0, label mismatches 7 to 0, counted as distinct elements over the same 22
+  routes and seven widths. One other rule, `link-in-text-block`, still fires on
+  two routes; it was not in scope.
+- That is a scan result. Pages were loaded, not operated, in Chromium only. It
+  is not a keyboard or screen-reader review of Skywatcher.
 
 ## Re-running
 
@@ -236,3 +244,10 @@ python federation-audit/experience-program/scripts/rc4_pilot_input.py \
 
 `main_drift.json` maps each repository to its audited commit and whether its
 frontend changed on `main` since; `pins.json` maps it to its design-system pin.
+
+```bash
+python federation-audit/experience-program/scripts/rc4_pilot_compare.py \
+  --before <out-<repository>.json before> --after <out-<repository>.json after> \
+  --before-commit <sha> --after-commit <sha> \
+  --out federation-audit/experience-program/rc4/<repository>_pilot.json
+```

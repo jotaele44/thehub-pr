@@ -1,8 +1,7 @@
 {
  "schema": "federation.experience-program.gate/1",
  "gate": "RC4",
- "state": "OPEN",
- "why_open": "Only the evidence step is done. No pilot application is chosen and no application code is changed.",
+ "state": "PROVISIONAL",
  "thehub_rescan": {
   "claim_class": "COMPUTED",
   "evidence": "rc4/thehub_rescan.json",
@@ -78,7 +77,8 @@
    "spiderweb-pr": "Its frontend changed on main since the evidence was taken, and it has one addressable route.",
    "mucaro-ai, ovnis-pr": "One addressable route each; the scan says little about them."
   },
-  "decision_needed": "The pilot application is the user's choice."
+  "decision_needed": "The pilot application is the user's choice.",
+  "status": "Skywatcher chosen by the user and done. AguaYLuz remains the recommended second; not started."
  },
  "blocked": [
   "independent QA",
@@ -87,7 +87,47 @@
  ],
  "artifacts_sha256": {
   "rc4/thehub_rescan.json": "8649de2f6762cf7feee513a15b884e5db09fef795c9e315c3abe64db6dc4ef9a",
-  "rc4/RC4_PLAN_INPUT.json": "17e80dbdefbcc720a7d9a3e6ce9b499dbdaf71416cc2ce68a9d800782a31587b"
+  "rc4/RC4_PLAN_INPUT.json": "17e80dbdefbcc720a7d9a3e6ce9b499dbdaf71416cc2ce68a9d800782a31587b",
+  "rc4/skywatcher_pilot.json": "567d29b7361dc45b0fa13a19b430f07da7be1d3f3886cbeadec5a97c6213b38d"
  },
- "certification": "WITHHELD"
+ "certification": "WITHHELD",
+ "why_not_pass": "One pilot application is fixed and measured in Chromium by the author. Pages were loaded, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the application; the pilot is unmerged; nobody independent has reviewed it; seven applications are untouched.",
+ "pilot": {
+  "repository": "skywatcher-pr",
+  "pull_request": "https://github.com/jotaele44/skywatcher-pr/pull/375",
+  "scope": "App-local fixes only, as chosen: no shared-package release, no pin move.",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/skywatcher_pilot.json",
+  "commits": {
+   "before": "a2176990606048a6b918daacdb8bce027e58a903",
+   "after": "13015707067dfff519c5daaaf40785d5f84fb167"
+  },
+  "coverage": "22 routes at 7 widths, 154 page loads, before and after. Four sign-in routes redirect to / by design, before and after.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "0 -> 0",
+   "button-name": "1 -> 0",
+   "scrollable-region-focusable": "10 -> 0",
+   "label-content-name-mismatch": "7 -> 0"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "button-name": "66 -> 0",
+   "label-content-name-mismatch": "6 -> 0",
+   "link-in-text-block": "13 -> 13",
+   "scrollable-region-focusable": "100 -> 0"
+  },
+  "not_fixed": "link-in-text-block: 13 page loads on 2 routes, unchanged. It was not in the pilot's scope.",
+  "no_regression_observed": "Horizontal overflow 0 before and after; page errors 0; console errors 0; controls under 24px unchanged (870 summed over page loads).",
+  "changes": [
+   "Mobile navigation toggle: accessible name that follows state, aria-expanded, 44px target.",
+   "lib/scrollRegion.js applied to every app-authored scrolling container (32 places), not only the 10 the scan caught.",
+   "Sky Target Finder rows: the button holds only the target name; the detail line is its description; click area unchanged."
+  ],
+  "tests": "141 unit tests pass (9 new), eslint clean, GUI parity ratchet passes, 26 of 26 CI checks on head 1301570.",
+  "corrections_during_the_pilot": [
+   "Dropping the target buttons' aria-label broke seven existing tests that rely on the exact name; the row was restructured instead.",
+   "The first restructure left the name button 20px tall; the scan counted it under the 24px minimum and it was raised to 24px. Rows are 4px taller.",
+   "One parity-baseline entry was updated because the toggle's fingerprint changed; a full baseline regeneration was tried and reverted as too broad."
+  ],
+  "deviation_from_plan": "The plan said the Sky Target Finder change would have no visible effect; rows are 4px taller. The plan named a ScrollRegion component; a ref helper was used so only opening tags change."
+ }
 }
