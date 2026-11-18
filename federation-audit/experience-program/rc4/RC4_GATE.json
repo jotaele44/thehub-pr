@@ -170,7 +170,7 @@
   ],
   "visible_change": "Dim text is the same grey as muted text across the app. rc4/aguayluz_water_use_before_after.png shows one page, before above and after below.",
   "tests": "277 unit tests pass, eslint clean, GUI parity ratchet passes, three Python test files that read the dashboard source pass.",
-  "ci": "On the code head c60587e every check passed. On the following head 9131d38 (a test-stub change) one job, certify-source-product-denominators, failed with a DNS resolution error while fetching a remote source; it passed on the two previous heads. Not re-run.",
+  "ci": "Not fully green. On the code head c60587e, 24 checks passed and 4 were cancelled by the next push. On the following head 9131d38 (a test-stub change), 24 passed and one job, certify-source-product-denominators, failed with a DNS resolution error while fetching a remote source; that job passed on the two previous heads. It has not been re-run.",
   "limits": "The scan ran on a workspace with little data on most pages. Text that appears only with data is covered by the class replacement and its test, not by the scan.",
   "deviation_from_plan": "The helper was not copied unchanged: it gained an optional second argument for an element that already has a ref. One parity-baseline entry was updated because a control's class changed. A code-scanning note about the helper led to a change in an unrelated test's ResizeObserver stub."
  }
