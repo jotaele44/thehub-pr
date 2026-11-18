@@ -44,6 +44,10 @@ someone other than the author of the work.
 | `rc3/runtime_element_detail.json` | Each distinct failing element: markup, routes, widths, measured colours, and whether a shared or an application style draws it. |
 | `rc3/chromium_matrix_receipt.json` | Counts and per-cell results of the design-system browser matrix, Chromium only. |
 | `rc3/RC3_GATE.json` | Gate state for the design-system changes, what differs from the plan, and what is still open or blocked. |
+| `scripts/rc4_pilot_input.py` | Sets a re-scan of thehub-pr beside the RC3 element list and builds the per-application table a pilot choice rests on. |
+| `rc4/thehub_rescan.json` | thehub-pr before and after thehub-pr#432, per rule and for horizontal overflow. |
+| `rc4/RC4_PLAN_INPUT.json` | Per application: distinct failing elements per rule, style signatures, design-system pin, and whether the evidence is still current `main`. |
+| `rc4/RC4_GATE.json` | RC4 state (`OPEN`), what the re-scan showed, and the pilot recommendation, which is an inference and not a decision. |
 
 ## Reading RC0
 
@@ -158,10 +162,28 @@ application was changed.
 - `main` moved during RC3: thehub-pr#432 put the Hub on the shared shell and
   deleted the Hub's own sidebar, where its most frequent contrast failures
   were. The thehub-pr rows of the element list describe the commit audited in
-  RC0 and are superseded for the shell; the Hub has not been re-scanned.
+  RC0 and are superseded for the shell. The re-scan is in `rc4/`.
 - The gate is `PROVISIONAL`: nothing has adopted the components, nothing was
   used with a screen reader or on a touch device, and the author is the only
   reviewer.
+
+## Reading RC4
+
+RC4 has only its evidence step. No application is changed.
+
+- thehub-pr was re-scanned on `main` after thehub-pr#432. Contrast failures
+  went from 86 routes to 1. Unnamed buttons and unfocusable scroll regions are
+  unchanged. Seven routes now overflow horizontally at 768 pixels where none
+  did before; the cause is not established.
+- "Style signatures" counts distinct tag-and-class combinations among an
+  application's failing elements. It is a proxy for how many places a fix
+  touches, not a count of source files.
+- An application with one addressable route was scanned on that route only. A
+  low count there describes the coverage, not the application.
+- spiderweb-pr's frontend changed on `main` after its evidence was taken, so
+  its row is not current.
+- The pilot recommendation in `RC4_GATE.json` is an inference from this table.
+  Choosing the pilot is not done here.
 
 ## Re-running
 
@@ -202,3 +224,15 @@ GUI_ENGINES=chromium node tests/runtime-matrix.mjs
 ```
 
 `GUI_SUITES=controls` limits the matrix to the control fixtures.
+
+```bash
+python federation-audit/experience-program/scripts/rc4_pilot_input.py \
+  --rc3 federation-audit/experience-program/rc3/runtime_element_detail.json \
+  --rescan <directory holding the re-scan's out-thehub-pr.json> \
+  --audited-raw <out-thehub-pr.json of the audited commit> \
+  --rescan-commit <commit re-scanned> --drift <main_drift.json> --pins <pins.json> \
+  --out federation-audit/experience-program/rc4
+```
+
+`main_drift.json` maps each repository to its audited commit and whether its
+frontend changed on `main` since; `pins.json` maps it to its design-system pin.

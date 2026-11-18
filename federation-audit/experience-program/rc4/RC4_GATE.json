@@ -1,0 +1,93 @@
+{
+ "schema": "federation.experience-program.gate/1",
+ "gate": "RC4",
+ "state": "OPEN",
+ "why_open": "Only the evidence step is done. No pilot application is chosen and no application code is changed.",
+ "thehub_rescan": {
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/thehub_rescan.json",
+  "commits": {
+   "audited": "4f5c660801b6380ad4b64d39518fa778c9d25c76",
+   "rescanned": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3"
+  },
+  "coverage": "86 routes, 602 page loads, Chromium, every route answered and rendered at every width.",
+  "contrast": "Routes failing went from 86 to 1; distinct failing elements from 26 to 1. thehub-pr#432 removed the Hub's own sidebar, which held them.",
+  "unchanged": "Unnamed buttons (8 elements on 12 routes) and unfocusable scroll regions (3 elements on 3 routes) are the same before and after.",
+  "horizontal_overflow": {
+   "audited": {
+    "320": 17,
+    "390": 14,
+    "430": 14,
+    "1280": 6
+   },
+   "rescanned": {
+    "320": 17,
+    "390": 14,
+    "430": 14,
+    "768": 7
+   },
+   "reading": "The 12px overflow on six routes at 1280px is gone. Seven routes now overflow at 768px (/crossover and the six /ovnis tabs), where none did before. Overflow at 320 to 430px is unchanged. The new 768px overflow appeared between the two commits; which change caused it is not established here."
+  }
+ },
+ "hypothesis_check": {
+  "stated_before_the_rescan": "TheHub's contrast failures drop sharply after #432.",
+  "result": "Confirmed by the rescan."
+ },
+ "evidence_currency": {
+  "aguayluz-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "centinelas-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "moneysweep-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "mucaro-ai": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "ovnis-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "skywatcher-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "spiderweb-pr": {
+   "evidence_is_current_main": false,
+   "frontend_changed_on_main_since_evidence": "14 files changed, 247 insertions(+), 31 deletions(-)"
+  },
+  "thehub-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  }
+ },
+ "pilot_recommendation": {
+  "claim_class": "INFERENCE",
+  "first": "skywatcher-pr",
+  "why": "Its evidence is on current main. It has 18 distinct failing elements in 10 style signatures, and three of them fail on all 22 routes (the unnamed mobile menu button and the scrolling status strip), so a small change is verifiable on every route. It pins release 0.3.0, so the pilot also exercises moving a pin, which every other producer will need.",
+  "second": "aguayluz-pr",
+  "why_second": "The largest gain: 222 distinct contrast elements on 19 of 20 routes. They fall into 57 style signatures and 32 colour pairs, so it is a larger and more repetitive change, better done after the adoption path is proven once.",
+  "not_recommended_first": {
+   "thehub-pr": "After #432 it has 12 distinct failing elements left and a new 768px overflow that should be understood first.",
+   "spiderweb-pr": "Its frontend changed on main since the evidence was taken, and it has one addressable route.",
+   "mucaro-ai, ovnis-pr": "One addressable route each; the scan says little about them."
+  },
+  "decision_needed": "The pilot application is the user's choice."
+ },
+ "blocked": [
+  "independent QA",
+  "screen reader and touch devices",
+  "macOS Dock menu and app identity"
+ ],
+ "artifacts_sha256": {
+  "rc4/thehub_rescan.json": "8649de2f6762cf7feee513a15b884e5db09fef795c9e315c3abe64db6dc4ef9a",
+  "rc4/RC4_PLAN_INPUT.json": "17e80dbdefbcc720a7d9a3e6ce9b499dbdaf71416cc2ce68a9d800782a31587b"
+ },
+ "certification": "WITHHELD"
+}

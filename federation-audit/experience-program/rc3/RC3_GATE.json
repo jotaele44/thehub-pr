@@ -75,8 +75,8 @@
    "tree": "after merging origin/main 95c6c99"
   },
   "firefox_webkit_matrix": {
-   "state": "PROVISIONAL",
-   "note": "CI run 44200993532 on head 45482e9: every Firefox and WebKit cell passed (controls 6/6 each, axe 28/28 each, baseline and shell all). The run as a whole failed on one Chromium controls cell, since fixed. Evidence is the CI artifact, not a file in this package; a clean run on the fixed head is still to be confirmed."
+   "state": "PASS",
+   "note": "CI run of federation-gui-fixture-matrix.yml on head c057f37: fixture-matrix concluded success with Chromium, Firefox and WebKit, as did all 41 checks on that head. The preceding run (head 45482e9) passed every Firefox and WebKit cell and failed one Chromium controls cell, which the dialog fix in c057f37 addresses. Evidence is the CI run and its artifact, not a file in this package."
   },
   "gui_backend_parity_audit": {
    "state": "PASS",
@@ -102,8 +102,8 @@
    "tree": "after merging origin/main 95c6c99"
   },
   "hub_runtime_remeasure_after_432": {
-   "state": "OPEN",
-   "note": "The Hub has not been re-scanned in a browser since #432."
+   "state": "PASS",
+   "evidence": "rc4/thehub_rescan.json"
   }
  },
  "defects_found_and_fixed_during_rc3": [
