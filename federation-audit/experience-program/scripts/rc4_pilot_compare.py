@@ -111,10 +111,9 @@ def main() -> None:
             for rule in sorted(set(before_rules) | set(after_rules))
         },
     }
-    for rule, value in document["targeted_rules"].items():
-        for side in ("before", "after"):
-            if side == "before":
-                value[side] = {key: item for key, item in value[side].items() if key != "elements"}
+    # The elements of the "before" side are already in rc3/runtime_element_detail.json.
+    for value in document["targeted_rules"].values():
+        value["before"] = {key: item for key, item in value["before"].items() if key != "elements"}
     Path(args.out).write_text(json.dumps(document, indent=1, ensure_ascii=False) + "\n")
     for rule, value in document["targeted_rules"].items():
         print(rule, value["before"]["distinct_elements"], "->", value["after"]["distinct_elements"])
