@@ -1,0 +1,772 @@
+{
+ "schema": "federation.experience-program.compatibility-matrix/1",
+ "claim_classes": {
+  "toolchain, design_system, desktop_runtime, ci_configuration": "FACT (read from the tree)",
+  "browser_floor_from_build.features": "COMPUTED (pattern scan of the built CSS and JS)",
+  "browser_floor_from_build.floor": "ASSUMPTION (browser versions written from memory, unchecked)",
+  "observed_runs": "FACT (each names who ran it and what)"
+ },
+ "reading": [
+  "ci_configuration lists platforms and engines that workflow files name. It does not say those jobs ran or passed.",
+  "observed_runs lists runs that were actually made. An engine or operating system absent from it was not run against that application.",
+  "The RC2 compatibility schema describes a declaration an application makes when it adopts the contract. None has, so no row here is, or can be validated as, such a declaration."
+ ],
+ "feature_first_versions_assumed": {
+  "css color-mix()": {
+   "chromium": 111,
+   "firefox": 113,
+   "safari": 16.2
+  },
+  "css oklch()/oklab()": {
+   "chromium": 111,
+   "firefox": 113,
+   "safari": 15.4
+  },
+  "css @layer": {
+   "chromium": 99,
+   "firefox": 97,
+   "safari": 15.4
+  },
+  "css :has()": {
+   "chromium": 105,
+   "firefox": 121,
+   "safari": 15.4
+  },
+  "css @container": {
+   "chromium": 105,
+   "firefox": 110,
+   "safari": 16.0
+  },
+  "css @property": {
+   "chromium": 85,
+   "firefox": 128,
+   "safari": 16.4
+  },
+  "css dynamic viewport units": {
+   "chromium": 108,
+   "firefox": 101,
+   "safari": 15.4
+  },
+  "css :modal": {
+   "chromium": 105,
+   "firefox": 103,
+   "safari": 15.6
+  },
+  "dialog.showModal()": {
+   "chromium": 37,
+   "firefox": 98,
+   "safari": 15.4
+  }
+ },
+ "applications": [
+  {
+   "repository": "aguayluz-pr",
+   "commit": "16d3cb0257b51f4b1d714bc773da9f2ece19802b",
+   "toolchain": {
+    "frontend_packages": {
+     "react": "^19.2.8",
+     "react-dom": "^19.2.8",
+     "react-router-dom": "^7.18.3",
+     "tailwindcss": "^4.3.3",
+     "vite": "^6.1.0",
+     "@pr-federation/react": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.4.0/pr-federation-react-0.4.0.tgz"
+    },
+    "node_engines": null,
+    "python_requires": ">=3.10",
+    "python_version_file": "3.10"
+   },
+   "design_system": {
+    "pin": "release",
+    "version": "0.4.0",
+    "spec": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.4.0/pr-federation-react-0.4.0.tgz"
+   },
+   "desktop_runtime": {
+    "file": "requirements-desktop.txt",
+    "pins": [
+     {
+      "name": "prii-desktop",
+      "source": "thehub-pr",
+      "ref": "1313c77aec1a0742c1abb444026284a825af4177"
+     },
+     {
+      "name": "prii-export-utils",
+      "source": "thehub-pr",
+      "ref": "7b9759f11a204fa6975a85243d1b5e77d026bcb1"
+     },
+     {
+      "name": "prii-doctor",
+      "source": "thehub-pr",
+      "ref": "f2d5a0a742215db00915475e1e494b8329608dbd"
+     }
+    ]
+   },
+   "experience_contract": {
+    "adopted": false,
+    "note": "No application has declared a contract; the RC2 schemas are unadopted."
+   },
+   "browser_floor_from_build": {
+    "build": "scanned",
+    "features": [
+     "css color-mix()",
+     "css oklch()/oklab()",
+     "css @layer",
+     "css :has()",
+     "css @container",
+     "css @property",
+     "css :modal"
+    ],
+    "floor": {
+     "chromium": 111,
+     "firefox": 128,
+     "safari": 16.4
+    }
+   },
+   "ci_configuration": {
+    "workflows": 32,
+    "platforms_named": {
+     "macos-latest": 1,
+     "ubuntu-latest": 32,
+     "windows-latest": 1
+    },
+    "browser_engines_named": {
+     "chromium": [
+      "desktop-build.yml",
+      "gui-capability-parity.yml"
+     ]
+    },
+    "python_versions_named": [
+     "3.10",
+     "3.11",
+     "3.12"
+    ],
+    "node_versions_named": [
+     "20",
+     "22"
+    ]
+   },
+   "observed_runs": [
+    {
+     "engine": "chromium",
+     "os": "linux (container)",
+     "what": "20 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
+     "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    }
+   ]
+  },
+  {
+   "repository": "centinelas-pr",
+   "commit": "6df08e3a5ff388379d00ce5232bdcdb1e79acd6c",
+   "toolchain": {
+    "frontend_packages": {
+     "react": "^19.2.8",
+     "react-dom": "^19.2.8",
+     "react-router-dom": "^7.18.0",
+     "tailwindcss": "^3.4.17",
+     "vite": "^8.2.2",
+     "typescript": "^7.0.2",
+     "@pr-federation/react": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.3.0/pr-federation-react-0.3.0.tgz"
+    },
+    "node_engines": null,
+    "python_requires": ">=3.10",
+    "python_version_file": "3.10"
+   },
+   "design_system": {
+    "pin": "release",
+    "version": "0.3.0",
+    "spec": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.3.0/pr-federation-react-0.3.0.tgz"
+   },
+   "desktop_runtime": {
+    "file": "requirements-desktop.txt",
+    "pins": [
+     {
+      "name": "prii-desktop",
+      "source": "thehub-pr",
+      "ref": "1313c77aec1a0742c1abb444026284a825af4177"
+     },
+     {
+      "name": "prii-maintenance",
+      "source": "thehub-pr",
+      "ref": "f2b81769924689b4d959554928810b1d7b7ef3d6"
+     },
+     {
+      "name": "prii-export-utils",
+      "source": "thehub-pr",
+      "ref": "f2b81769924689b4d959554928810b1d7b7ef3d6"
+     }
+    ]
+   },
+   "experience_contract": {
+    "adopted": false,
+    "note": "No application has declared a contract; the RC2 schemas are unadopted."
+   },
+   "browser_floor_from_build": {
+    "build": "scanned",
+    "features": [
+     "css color-mix()",
+     "css @container"
+    ],
+    "floor": {
+     "chromium": 111,
+     "firefox": 113,
+     "safari": 16.2
+    }
+   },
+   "ci_configuration": {
+    "workflows": 28,
+    "platforms_named": {
+     "macos-latest": 1,
+     "ubuntu-24.04": 4,
+     "ubuntu-latest": 24,
+     "windows-latest": 1
+    },
+    "browser_engines_named": {
+     "chromium": [
+      "desktop-build.yml",
+      "gui-capability-parity.yml"
+     ]
+    },
+    "python_versions_named": [
+     "3.10",
+     "3.11",
+     "3.12"
+    ],
+    "node_versions_named": [
+     "20",
+     "22"
+    ]
+   },
+   "observed_runs": [
+    {
+     "engine": "chromium",
+     "os": "linux (container)",
+     "what": "12 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
+     "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    }
+   ]
+  },
+  {
+   "repository": "moneysweep-pr",
+   "commit": "c8e7430c694a2dcf2bc20cfc243fbc547c42fbb9",
+   "toolchain": {
+    "frontend_packages": {
+     "react": "^19.2.0",
+     "react-dom": "^19.2.8",
+     "react-router-dom": "^7.18.2",
+     "tailwindcss": "^4.3.3",
+     "vite": "^8.2.2",
+     "@pr-federation/react": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.4.1/pr-federation-react-0.4.1.tgz"
+    },
+    "node_engines": "^22.22.2 || ^24.15.0 || >=26.0.0",
+    "python_requires": null,
+    "python_version_file": "3.11"
+   },
+   "design_system": {
+    "pin": "release",
+    "version": "0.4.1",
+    "spec": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.4.1/pr-federation-react-0.4.1.tgz"
+   },
+   "desktop_runtime": {
+    "file": "requirements-desktop.txt",
+    "pins": [
+     {
+      "name": "prii-desktop",
+      "source": "thehub-pr",
+      "ref": "1313c77aec1a0742c1abb444026284a825af4177"
+     }
+    ]
+   },
+   "experience_contract": {
+    "adopted": false,
+    "note": "No application has declared a contract; the RC2 schemas are unadopted."
+   },
+   "browser_floor_from_build": {
+    "build": "scanned",
+    "features": [
+     "css color-mix()",
+     "css @layer",
+     "css :has()",
+     "css @container",
+     "css @property",
+     "css dynamic viewport units",
+     "css :modal"
+    ],
+    "floor": {
+     "chromium": 111,
+     "firefox": 128,
+     "safari": 16.4
+    }
+   },
+   "ci_configuration": {
+    "workflows": 56,
+    "platforms_named": {
+     "macos-latest": 1,
+     "ubuntu-24.04": 1,
+     "ubuntu-latest": 55,
+     "windows-latest": 1
+    },
+    "browser_engines_named": {
+     "chromium": [
+      "gui-capability-parity.yml",
+      "moneysweep-federation-design-pilot.yml"
+     ]
+    },
+    "python_versions_named": [
+     "3.11",
+     "3.12",
+     "3.13"
+    ],
+    "node_versions_named": [
+     "22.22.2"
+    ]
+   },
+   "observed_runs": [
+    {
+     "engine": "chromium",
+     "os": "linux (container)",
+     "what": "12 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
+     "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    }
+   ]
+  },
+  {
+   "repository": "mucaro-ai",
+   "commit": "3963fbd8fee904c1f1b2130c2652c6836a01a0d1",
+   "toolchain": {
+    "frontend_packages": {
+     "react": "19.2.1",
+     "react-dom": "19.2.1",
+     "vite": "7.3.7"
+    },
+    "node_engines": null,
+    "python_requires": ">=3.11",
+    "python_version_file": null
+   },
+   "design_system": {
+    "pin": "none",
+    "version": null,
+    "spec": null
+   },
+   "desktop_runtime": {
+    "file": null,
+    "pins": []
+   },
+   "experience_contract": {
+    "adopted": false,
+    "note": "No application has declared a contract; the RC2 schemas are unadopted."
+   },
+   "browser_floor_from_build": {
+    "build": "scanned",
+    "features": [
+     "css color-mix()"
+    ],
+    "floor": {
+     "chromium": 111,
+     "firefox": 113,
+     "safari": 16.2
+    }
+   },
+   "ci_configuration": {
+    "workflows": 24,
+    "platforms_named": {
+     "macos-15": 4,
+     "ubuntu-24.04": 3,
+     "ubuntu-26.04": 3,
+     "ubuntu-latest": 17,
+     "windows-11-arm": 1,
+     "windows-latest": 1
+    },
+    "browser_engines_named": {
+     "chromium": [
+      "rendered-qa.yml",
+      "shadow-qa.yml",
+      "web-render-cert.yml"
+     ],
+     "webkit": [
+      "rendered-qa.yml",
+      "shadow-qa.yml"
+     ]
+    },
+    "python_versions_named": [
+     "3.11",
+     "3.12"
+    ],
+    "node_versions_named": [
+     "22"
+    ]
+   },
+   "observed_runs": [
+    {
+     "engine": "chromium",
+     "os": "linux (container)",
+     "what": "1 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
+     "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    }
+   ]
+  },
+  {
+   "repository": "ovnis-pr",
+   "commit": "a8225db5d226232037c455daf6e941e50d86d136",
+   "toolchain": {
+    "frontend_packages": {
+     "react": "^19.2.8",
+     "react-dom": "^19.2.8",
+     "react-router-dom": "^7.18.3",
+     "tailwindcss": "^4.3.3",
+     "vite": "^8.2.2",
+     "@pr-federation/react": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.3.0/pr-federation-react-0.3.0.tgz"
+    },
+    "node_engines": null,
+    "python_requires": null,
+    "python_version_file": "3.11"
+   },
+   "design_system": {
+    "pin": "release",
+    "version": "0.3.0",
+    "spec": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.3.0/pr-federation-react-0.3.0.tgz"
+   },
+   "desktop_runtime": {
+    "file": "requirements-desktop.txt",
+    "pins": [
+     {
+      "name": "prii-desktop",
+      "source": "thehub-pr",
+      "ref": "1313c77aec1a0742c1abb444026284a825af4177"
+     }
+    ]
+   },
+   "experience_contract": {
+    "adopted": false,
+    "note": "No application has declared a contract; the RC2 schemas are unadopted."
+   },
+   "browser_floor_from_build": {
+    "build": "scanned",
+    "features": [
+     "css color-mix()",
+     "css oklch()/oklab()",
+     "css @layer",
+     "css :has()",
+     "css @container",
+     "css @property",
+     "css dynamic viewport units",
+     "css :modal"
+    ],
+    "floor": {
+     "chromium": 111,
+     "firefox": 128,
+     "safari": 16.4
+    }
+   },
+   "ci_configuration": {
+    "workflows": 20,
+    "platforms_named": {
+     "macos-latest": 1,
+     "ubuntu-latest": 19,
+     "windows-latest": 1
+    },
+    "browser_engines_named": {
+     "chromium": [
+      "gui-capability-parity.yml"
+     ]
+    },
+    "python_versions_named": [
+     "3.10",
+     "3.11",
+     "3.12"
+    ],
+    "node_versions_named": [
+     "20",
+     "22"
+    ]
+   },
+   "observed_runs": [
+    {
+     "engine": "chromium",
+     "os": "linux (container)",
+     "what": "1 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
+     "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    }
+   ]
+  },
+  {
+   "repository": "skywatcher-pr",
+   "commit": "a2176990606048a6b918daacdb8bce027e58a903",
+   "toolchain": {
+    "frontend_packages": {
+     "react": "^18.2.0",
+     "react-dom": "^18.2.0",
+     "react-router-dom": "^7.18.2",
+     "tailwindcss": "^4.3.3",
+     "vite": "^6.1.0",
+     "typescript": "^5.8.2",
+     "@pr-federation/react": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.3.0/pr-federation-react-0.3.0.tgz"
+    },
+    "node_engines": null,
+    "python_requires": ">=3.10",
+    "python_version_file": "3.11"
+   },
+   "design_system": {
+    "pin": "release",
+    "version": "0.3.0",
+    "spec": "https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.3.0/pr-federation-react-0.3.0.tgz"
+   },
+   "desktop_runtime": {
+    "file": "requirements-desktop.txt",
+    "pins": [
+     {
+      "name": "prii-desktop",
+      "source": "thehub-pr",
+      "ref": "1313c77aec1a0742c1abb444026284a825af4177"
+     }
+    ]
+   },
+   "experience_contract": {
+    "adopted": false,
+    "note": "No application has declared a contract; the RC2 schemas are unadopted."
+   },
+   "browser_floor_from_build": {
+    "build": "scanned",
+    "features": [
+     "css color-mix()",
+     "css oklch()/oklab()",
+     "css @layer",
+     "css :has()",
+     "css @container",
+     "css @property",
+     "css dynamic viewport units"
+    ],
+    "floor": {
+     "chromium": 111,
+     "firefox": 128,
+     "safari": 16.4
+    }
+   },
+   "ci_configuration": {
+    "workflows": 22,
+    "platforms_named": {
+     "macos-15": 1,
+     "macos-latest": 1,
+     "ubuntu-24.04": 1,
+     "ubuntu-latest": 20,
+     "windows-latest": 1
+    },
+    "browser_engines_named": {
+     "chromium": [
+      "desktop-build.yml",
+      "gui-capability-parity.yml"
+     ]
+    },
+    "python_versions_named": [
+     "3.10",
+     "3.11",
+     "3.12"
+    ],
+    "node_versions_named": [
+     "20",
+     "22"
+    ]
+   },
+   "observed_runs": [
+    {
+     "engine": "chromium",
+     "os": "linux (container)",
+     "what": "22 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
+     "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    }
+   ]
+  },
+  {
+   "repository": "spiderweb-pr",
+   "commit": "278eb9a8a1e43b906ee0cb83ffc0aa2c9a15c8e6",
+   "toolchain": {
+    "frontend_packages": {
+     "react": "latest",
+     "react-dom": "latest",
+     "vite": "latest",
+     "typescript": "latest"
+    },
+    "node_engines": null,
+    "python_requires": ">=3.11",
+    "python_version_file": "3.11"
+   },
+   "design_system": {
+    "pin": "none",
+    "version": null,
+    "spec": null
+   },
+   "desktop_runtime": {
+    "file": "requirements-desktop.txt",
+    "pins": [
+     {
+      "name": "prii-desktop",
+      "source": "thehub-pr",
+      "ref": "f2b81769924689b4d959554928810b1d7b7ef3d6"
+     }
+    ]
+   },
+   "experience_contract": {
+    "adopted": false,
+    "note": "No application has declared a contract; the RC2 schemas are unadopted."
+   },
+   "browser_floor_from_build": {
+    "build": "scanned",
+    "features": [
+     "css color-mix()",
+     "css @property"
+    ],
+    "floor": {
+     "chromium": 111,
+     "firefox": 128,
+     "safari": 16.4
+    }
+   },
+   "ci_configuration": {
+    "workflows": 47,
+    "platforms_named": {
+     "macos-latest": 1,
+     "ubuntu-24.04": 1,
+     "ubuntu-latest": 46,
+     "windows-latest": 1
+    },
+    "browser_engines_named": {
+     "chromium": [
+      "desktop-build.yml",
+      "gui-runtime-matrix.yml"
+     ],
+     "firefox": [
+      "gui-runtime-matrix.yml"
+     ],
+     "webkit": [
+      "gui-runtime-matrix.yml"
+     ]
+    },
+    "python_versions_named": [
+     "3.11",
+     "3.12"
+    ],
+    "node_versions_named": [
+     "22"
+    ]
+   },
+   "observed_runs": [
+    {
+     "engine": "chromium",
+     "os": "linux (container)",
+     "what": "1 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
+     "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    }
+   ]
+  },
+  {
+   "repository": "thehub-pr",
+   "commit": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3",
+   "toolchain": {
+    "frontend_packages": {
+     "react": "^19.3.1",
+     "react-dom": "^19.3.1",
+     "react-router-dom": "^6.26.0",
+     "tailwindcss": "^4.3.3",
+     "vite": "^8.3.6",
+     "typescript": "^7.0.2",
+     "@pr-federation/react": "file:../../federation-design/packages/react"
+    },
+    "node_engines": ">=22",
+    "python_requires": ">=3.9",
+    "python_version_file": "3.10"
+   },
+   "design_system": {
+    "pin": "source",
+    "version": null,
+    "spec": "file:../../federation-design/packages/react"
+   },
+   "desktop_runtime": {
+    "file": "requirements-desktop.txt",
+    "pins": [
+     {
+      "name": "prii_desktop",
+      "source": "this repository",
+      "ref": "editable"
+     },
+     {
+      "name": "prii_doctor",
+      "source": "this repository",
+      "ref": "editable"
+     }
+    ]
+   },
+   "experience_contract": {
+    "adopted": false,
+    "note": "No application has declared a contract; the RC2 schemas are unadopted."
+   },
+   "browser_floor_from_build": {
+    "build": "scanned",
+    "features": [
+     "css color-mix()",
+     "css oklch()/oklab()",
+     "css @layer",
+     "css :has()",
+     "css @container",
+     "css @property",
+     "css dynamic viewport units",
+     "css :modal",
+     "dialog.showModal()"
+    ],
+    "floor": {
+     "chromium": 111,
+     "firefox": 128,
+     "safari": 16.4
+    }
+   },
+   "ci_configuration": {
+    "workflows": 53,
+    "platforms_named": {
+     "macos-15": 1,
+     "macos-latest": 1,
+     "ubuntu-24.04": 16,
+     "ubuntu-latest": 38,
+     "windows-latest": 1
+    },
+    "browser_engines_named": {
+     "chromium": [
+      "ci.yml",
+      "desktop-build.yml",
+      "federation-gui-fixture-matrix.yml",
+      "federation-runtime-certification.yml",
+      "gis-live-providers.yml",
+      "gis-live-source-certification.yml",
+      "gui-capability-parity.yml",
+      "moneysweep-asg-rendered-qa.yml"
+     ],
+     "firefox": [
+      "federation-gui-fixture-matrix.yml"
+     ],
+     "webkit": [
+      "federation-gui-fixture-matrix.yml"
+     ]
+    },
+    "python_versions_named": [
+     "3.9",
+     "3.10",
+     "3.11",
+     "3.12"
+    ],
+    "node_versions_named": [
+     "22"
+    ]
+   },
+   "observed_runs": [
+    {
+     "engine": "chromium",
+     "os": "linux (container)",
+     "what": "86 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
+     "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    },
+    {
+     "engine": "chromium, firefox, webkit",
+     "os": "ubuntu-24.04 (CI)",
+     "what": "design-system fixture pages only, not the application: federation-gui-fixture-matrix.yml, concluded success on thehub-pr#435 head c057f37",
+     "by": "repository CI"
+    }
+   ]
+  }
+ ]
+}
