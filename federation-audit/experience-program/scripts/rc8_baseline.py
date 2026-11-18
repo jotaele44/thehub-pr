@@ -200,8 +200,14 @@ def tabulate(args: argparse.Namespace) -> None:
         label = target["label"]
         row = dict(target)
         cold = json.loads((source / f"coldstart-{label}.json").read_text())
-        row["cold_start_ms"] = summary(cold["runs_ms"])
-        row["cold_start_ms"]["failed_runs"] = cold["failed_runs"]
+        # The first start of a tree that has never run pays for compiling Python
+        # bytecode and a cold file cache; later starts do not. They are different
+        # quantities, so they are reported apart and never averaged together.
+        row["cold_start_ms"] = {
+            "first_run": cold["runs_ms"][0],
+            "later_runs": summary(cold["runs_ms"][1:]),
+            "failed_runs": cold["failed_runs"],
+        }
         build = json.loads((source / f"sizes-{label}.json").read_text())
         row["build"] = {key: build[key] for key in ("js", "css", "largest_files")}
         row["page_load"] = page_loads(source / f"perf-{label}.json")
@@ -220,8 +226,11 @@ def tabulate(args: argparse.Namespace) -> None:
             "Measured in a Linux container over loopback. The numbers compare applications and commits with "
             "each other. They are not device timings and say nothing about macOS startup.",
             "Fresh workspaces hold little data, so data-heavy pages load faster here than in real use.",
-            "Cold start is a first start on an empty workspace. A start on an existing workspace skips "
-            "the first-run setup and was not measured.",
+            "Every cold-start run is on an empty workspace, so each includes the application's first-run "
+            "setup. A start on an existing workspace was not measured.",
+            "first_run is one observation per tree, not a distribution. For a tree that had never been run "
+            "it includes compiling Python bytecode and reading files for the first time; "
+            "tree_previously_run says which trees that applies to.",
             "Chromium only.",
             f"A timing whose runs differ by more than {int(MAX_RELATIVE_SPREAD * 100)}% of the median is "
             "listed as unreliable for that cell.",
@@ -234,8 +243,10 @@ def tabulate(args: argparse.Namespace) -> None:
         wide = row["page_load"]["across_routes"]["1280"]
         print(
             row["label"],
-            "cold",
-            row["cold_start_ms"].get("median"),
+            "first start",
+            row["cold_start_ms"]["first_run"],
+            "later",
+            row["cold_start_ms"]["later_runs"].get("median"),
             "js initial gz",
             row["build"]["js"]["initial"]["gzip_bytes"],
             "lcp",

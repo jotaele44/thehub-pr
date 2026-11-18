@@ -52,6 +52,12 @@ someone other than the author of the work.
 | `rc4/aguayluz_pilot.json` | aguayluz-pr before and after its fixes, in the same form. |
 | `rc4/aguayluz_water_use_before_after.png` | One AguaYLuz page before (above) and after (below) the dim-text change. |
 | `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the results for both applications and what they do not show. |
+| `scripts/rc8_baseline.py`, `scripts/runtime/perf_pass.js` | Measure a backend's first start, a built frontend's size and per-route page-load timing, and tabulate them. |
+| `rc8/performance_baselines.json` | Per application at `main`, and for the two RC4 branches: start time, build size, and page-load figures per route. |
+| `rc8/RC8_GATE.json` | What the baseline shows, the RC4 branches against `main`, and a set of budgets that is proposed and not adopted. |
+| `scripts/rc9_matrix.py` | Reads each application's tree for its toolchain, pins, browser features and the platforms its CI names. |
+| `rc9/compatibility_matrix.json` | One row per application: what it declares, what its build relies on, and the runs that were actually made. |
+| `rc9/RC9_GATE.json` | What differs between the applications, and what the matrix cannot establish. |
 
 ## Reading RC0
 
@@ -202,6 +208,42 @@ application is changed.
   They are not keyboard or screen-reader reviews, and the AguaYLuz scan ran on
   a workspace with little data on most pages.
 
+## Reading RC8
+
+RC8 is a baseline. It measures and records; nothing was optimised and no
+application was changed.
+
+- Timings come from a Linux container over loopback, in Chromium, on nearly
+  empty workspaces. They compare applications and commits with each other.
+  They are not what a person sees on their own machine, and they do not
+  address a startup delay on macOS.
+- Every figure is a median with its minimum, maximum and relative spread. A
+  timing whose runs differ by more than half the median is flagged for that
+  cell and should not be quoted on its own.
+- `cold_start_ms.first_run` is one observation of a tree that had never been
+  run; `later_runs` summarises the next four. They are different quantities.
+- "Initial" JavaScript is what `index.html` references; the rest loads later.
+- No performance budget has been agreed, so nothing passes or fails. The
+  budgets in `RC8_GATE.json` are a proposal, marked as not adopted, with the
+  applications that would sit outside them today.
+- The two RC4 branches are measured beside their `main`. Build size and
+  transfer are unchanged; timing differences are inside the run-to-run spread.
+
+## Reading RC9
+
+- `toolchain`, `design_system`, `desktop_runtime` and `ci_configuration` are
+  read from each application's tree at its `main`.
+- `ci_configuration` lists the platforms and browser engines workflow files
+  name. It does not say those jobs ran or passed.
+- `observed_runs` lists runs that were actually made. An engine or operating
+  system missing from it was not run against that application.
+- `browser_floor_from_build.features` is a pattern scan of the built CSS and
+  JavaScript. The `floor` derived from it uses browser versions written from
+  memory and is an assumption until that table is checked.
+- The matrix is not validated against the RC2 compatibility schema. That
+  schema is a declaration an application makes when it adopts the contract,
+  and none has.
+
 ## Re-running
 
 ```bash
@@ -260,3 +302,16 @@ python federation-audit/experience-program/scripts/rc4_pilot_compare.py \
   --before-commit <sha> --after-commit <sha> \
   --out federation-audit/experience-program/rc4/<repository>_pilot.json
 ```
+
+```bash
+P=federation-audit/experience-program/scripts
+python $P/rc8_baseline.py coldstart --snapshots <dir of exports> --repository <name> --label <label> --port 9500 --out <raw>/coldstart-<label>.json
+python $P/rc8_baseline.py sizes --dist <export>/<frontend>/dist --repository <name> --label <label> --out <raw>/sizes-<label>.json
+python $P/runtime/serve_snapshot.py <dir of exports> <name> 9500 &
+node $P/runtime/perf_pass.js <name> 9500 <routes.json> <raw> <label>
+python $P/rc8_baseline.py tabulate --raw <raw> --targets <targets.json> --out federation-audit/experience-program/rc8/performance_baselines.json
+python $P/rc9_matrix.py --targets <targets.json> --observed <observed.json> --out federation-audit/experience-program/rc9/compatibility_matrix.json
+```
+
+Run the measurements one application at a time; parallel runs disturb each
+other's timings.
