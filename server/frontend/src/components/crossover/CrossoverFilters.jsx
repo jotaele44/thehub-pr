@@ -10,7 +10,7 @@ const TYPES = ["Geography", "Agency", "Vendor", "InfrastructureAdjacency", "Land
 function FSelect({ value, onChange, placeholder, options }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="h-8 w-auto min-w-[130px] text-xs"><SelectValue placeholder={placeholder} /></SelectTrigger>
+      <SelectTrigger aria-label={placeholder} className="h-8 w-auto min-w-[130px] text-xs"><SelectValue placeholder={placeholder} /></SelectTrigger>
       <SelectContent>
         {options.map((o) => <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>)}
       </SelectContent>

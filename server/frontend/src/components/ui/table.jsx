@@ -1,14 +1,19 @@
 import * as React from "react"
 
+import { FederationScrollRegion } from "@pr-federation/react"
+
 import { cn } from "@/lib/utils"
 
-const Table = React.forwardRef(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
+// The wrapper scrolls. FederationScrollRegion makes it a tab stop while it
+// overflows and holds nothing focusable, so a wide table can be scrolled from
+// the keyboard. `scrollLabel` names it; pass one where a page has several.
+const Table = React.forwardRef(({ className, scrollLabel = "Table", ...props }, ref) => (
+  <FederationScrollRegion label={scrollLabel} role="group" className="relative w-full">
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}
       {...props} />
-  </div>
+  </FederationScrollRegion>
 ))
 Table.displayName = "Table"
 

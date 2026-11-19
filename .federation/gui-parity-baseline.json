@@ -3424,8 +3424,8 @@
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
     {
-      "detail": "button#ba1d70d5f7f9",
-      "id": "gui_control:server/frontend/src/components/feed/LiveIndicator.jsx:button#ba1d70d5f7f9",
+      "detail": "button#4c296686fd9f",
+      "id": "gui_control:server/frontend/src/components/feed/LiveIndicator.jsx:button#4c296686fd9f",
       "kind": "gui_control",
       "line": 54,
       "path": "server/frontend/src/components/feed/LiveIndicator.jsx",
@@ -3640,8 +3640,8 @@
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
     {
-      "detail": "button#97c302ce51a8",
-      "id": "gui_control:server/frontend/src/components/research/MemoryPanel.jsx:button#97c302ce51a8",
+      "detail": "button#0e0d5b6fd3c3",
+      "id": "gui_control:server/frontend/src/components/research/MemoryPanel.jsx:button#0e0d5b6fd3c3",
       "kind": "gui_control",
       "line": 36,
       "path": "server/frontend/src/components/research/MemoryPanel.jsx",
@@ -3672,10 +3672,10 @@
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
     {
-      "detail": "button#296cc403c382",
-      "id": "gui_control:server/frontend/src/components/research/ModuleChat.jsx:button#296cc403c382",
+      "detail": "button#195ddb1914d6",
+      "id": "gui_control:server/frontend/src/components/research/ModuleChat.jsx:button#195ddb1914d6",
       "kind": "gui_control",
-      "line": 213,
+      "line": 243,
       "path": "server/frontend/src/components/research/ModuleChat.jsx",
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
@@ -3696,10 +3696,10 @@
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
     {
-      "detail": "button#11521a741aa3",
-      "id": "gui_control:server/frontend/src/components/research/OperatorChat.jsx:button#11521a741aa3",
+      "detail": "button#c8c9601f6159",
+      "id": "gui_control:server/frontend/src/components/research/OperatorChat.jsx:button#c8c9601f6159",
       "kind": "gui_control",
-      "line": 203,
+      "line": 204,
       "path": "server/frontend/src/components/research/OperatorChat.jsx",
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
@@ -3864,8 +3864,8 @@
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
     {
-      "detail": "button#bbc667578b7f",
-      "id": "gui_control:server/frontend/src/components/tasks/ViewToggle.jsx:button#bbc667578b7f",
+      "detail": "button#cf562b2661a4",
+      "id": "gui_control:server/frontend/src/components/tasks/ViewToggle.jsx:button#cf562b2661a4",
       "kind": "gui_control",
       "line": 19,
       "path": "server/frontend/src/components/tasks/ViewToggle.jsx",

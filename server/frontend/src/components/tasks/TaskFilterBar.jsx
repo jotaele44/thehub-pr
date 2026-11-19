@@ -20,7 +20,7 @@ export default function TaskFilterBar({ filters, setFilter, defs, onClear, hasAc
       <div className="flex flex-wrap items-center gap-2">
         {defs.map((f) => (
           <Select key={f.key} value={filters[f.key] || "all"} onValueChange={(v) => setFilter(f.key, v)}>
-            <SelectTrigger className="w-auto min-w-[120px] bg-card border-border h-9 text-sm">
+            <SelectTrigger aria-label={f.label} className="w-auto min-w-[120px] bg-card border-border h-9 text-sm">
               <SelectValue placeholder={f.label} />
             </SelectTrigger>
             <SelectContent>

@@ -1383,7 +1383,7 @@
       ]
     },
     {
-      "pattern": "server/frontend/src/components/feed/LiveIndicator.jsx:54:unlabeled-control",
+      "pattern": "server/frontend/src/components/feed/LiveIndicator.jsx:54:Refresh now",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
       "evidence": [
