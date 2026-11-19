@@ -86,7 +86,9 @@ function PassTable({ item, result, tz, shown, onShowTrack }) {
                 <td className="py-1">
                   <button
                     type="button" className={button} aria-pressed={isShown}
-                    aria-label={`${isShown ? 'Hide' : 'Show'} the ${item.id} track for the pass rising at ${isoOf(pass.aos)}`}
+                    // The name starts with the visible text, so speech control ("click Show
+                    // track") matches what is on screen; the rest says which pass it is.
+                    aria-label={`${isShown ? 'Hide' : 'Show'} track: ${item.id}, pass rising at ${isoOf(pass.aos)}`}
                     onClick={() => onShowTrack(isShown ? null : { id: item.id, pass })}
                   >
                     {isShown ? 'Hide track' : 'Show track'}
