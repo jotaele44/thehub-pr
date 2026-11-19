@@ -78,7 +78,7 @@
    "mucaro-ai, ovnis-pr": "One addressable route each; the scan says little about them."
   },
   "decision_needed": "The pilot application is the user's choice.",
-  "status": "Skywatcher, AguaYLuz, MoneySweep and Centinelas measured; thehub-pr fixed, scan pending at the time of this record."
+  "status": "Skywatcher, AguaYLuz, MoneySweep, Centinelas and TheHub done. OVNIS, Spiderweb and Múcaro not started."
  },
  "blocked": [
   "independent QA",
@@ -92,10 +92,11 @@
   "rc4/aguayluz_pilot.json": "f1042aa0aa9611a735f407caedd4466107591171987f44d4ec4adb1c264579d2",
   "rc4/aguayluz_water_use_before_after.png": "b7e1c47b8a50bf323d7d2deef12731b6b3197ee4d8e780e786673725a6f7d98d",
   "rc4/moneysweep_pilot.json": "dedf61a76c716624ef953b6fa740fa6a32d5d867241fa23d0b64660df8cc9c40",
-  "rc4/centinelas_pilot.json": "fbfd76cb94cdd9a39ff4b48d876ecdf4a12fc7c871ac754fbce56712ac3f08f2"
+  "rc4/centinelas_pilot.json": "fbfd76cb94cdd9a39ff4b48d876ecdf4a12fc7c871ac754fbce56712ac3f08f2",
+  "rc4/thehub_pilot.json": "54f85b71cf3593ebf319d91eb029f35e36db789f6f8043010eda175ad8168ed1"
  },
  "certification": "WITHHELD",
- "why_not_pass": "Four applications are fixed and measured in Chromium by the author; a fifth, thehub-pr, is fixed and its scan is recorded separately. Pages were loaded, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the applications; no change is merged; nobody independent has reviewed them.",
+ "why_not_pass": "Five applications are fixed and measured in Chromium by the author. Pages were loaded, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the applications; surfaces that depend on live external data were seen only when that data happened to load; no change is merged; nobody independent has reviewed them.",
  "pilot": {
   "repository": "skywatcher-pr",
   "pull_request": "https://github.com/jotaele44/skywatcher-pr/pull/375",
@@ -230,5 +231,46 @@
   "not_from_this_change": "Undersized controls summed over page loads rose from 2732 to 2788, all on /handoff, where the page also rendered more text than at the audited commit (20,049 against 19,645 characters at 1280px). The fix did not touch that page; the scanned branch carries more commits than the audited main. The cause was not traced further.",
   "light_theme": "The pill fix covers the light theme by reasoning from the shades; only the dark theme was scanned.",
   "tests": "50 unit tests pass, eslint clean, GUI parity ratchet passes; the GUI contract is re-bound to the fix commit."
+ },
+ "fifth_application": {
+  "repository": "thehub-pr",
+  "pull_request": "https://github.com/jotaele44/thehub-pr/pull/435",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/thehub_pilot.json",
+  "commits": {
+   "before": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3",
+   "after": "978007b7812ecf9ef33c26e005231f9a877e005f"
+  },
+  "coverage": "86 routes at 7 widths, 602 page loads, before (main after #432) and after.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "1 -> 0",
+   "button-name": "8 -> 0",
+   "scrollable-region-focusable": "3 -> 0",
+   "label-content-name-mismatch": "0 -> 3"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "aria-valid-attr-value": "77 -> 77",
+   "button-name": "84 -> 0",
+   "color-contrast": "7 -> 0",
+   "label": "7 -> 7",
+   "label-content-name-mismatch": "0 -> 2",
+   "link-in-text-block": "35 -> 35",
+   "scrollable-region-focusable": "15 -> 0"
+  },
+  "changes": [
+   "13 select boxes named (the scan caught 5).",
+   "Icon-only buttons named: feed refresh, two send buttons, memory panel close, GitHub link; the tasks view toggle keeps its label as the name below 640px.",
+   "Three scroll containers, including the shared Table wrapper, use FederationScrollRegion: the first application use of the RC3 control primitives.",
+   "Launcher note colour raised to 7:1."
+  ],
+  "exposed_by_the_scan": {
+   "what": "Three label-content-name-mismatch elements on /skywatcher?view=sky: the satellite pass buttons showed 'Show track' but were named 'Show the ISS track for the pass rising at ...'. Not caused by this change; that file was not touched.",
+   "why_new": "The buttons exist only when the browser has fetched satellite elements from CelesTrak. This sandbox reached CelesTrak intermittently: the before-scan saw no passes, the after-scan saw them at 2 of 7 widths.",
+   "fixed_in": "commit cce4832: the name starts with the visible text ('Show track: ISS, pass rising at ...').",
+   "verified_by": "The sky unit tests (54 pass), which render the pass buttons from fixture elements and select them by the new name. A targeted browser re-scan was attempted and found no pass buttons on the page in either run, so it confirms nothing and is not counted.",
+   "state": "PROVISIONAL"
+  },
+  "frame": "Page loads with an unnamed button 28 -> 7; overflow, errors and undersized controls unchanged.",
+  "tests": "Frontend 830 pass, eslint clean, GUI parity ratchet and GUI/backend audit pass; design-system package tests 79 pass."
  }
 }

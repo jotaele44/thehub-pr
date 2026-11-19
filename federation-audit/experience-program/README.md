@@ -209,6 +209,11 @@ are not changed.
 - MoneySweep: unnamed buttons 1 to 0, unfocusable scroll regions 2 to 0.
   Centinelas: contrast 2 to 0, label mismatches 2 to 0; only its dark theme was
   scanned.
+- TheHub: contrast 1 to 0, unnamed buttons 8 to 0, unfocusable scroll regions
+  3 to 0. The after-scan also caught three satellite pass buttons whose names
+  did not contain their visible text; they appear only when live satellite
+  data loads, so the earlier scan missed them. They are fixed and covered by
+  unit tests, not by a browser scan.
 - TheHub is the first application to use the RC3 control primitives
   (`FederationScrollRegion`), because it consumes the shared package from
   source.
