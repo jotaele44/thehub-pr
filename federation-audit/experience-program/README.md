@@ -50,6 +50,7 @@ someone other than the author of the work.
 | `scripts/rc4_pilot_compare.py` | Compares two runtime passes of one application, before and after a pilot. |
 | `rc4/skywatcher_pilot.json` | skywatcher-pr before and after its pilot: the targeted rules per distinct element, and every critical or serious rule. |
 | `rc4/aguayluz_pilot.json` | aguayluz-pr before and after its fixes, in the same form. |
+| `rc4/moneysweep_pilot.json`, `rc4/centinelas_pilot.json`, `rc4/thehub_pilot.json` | The same before/after comparison for those three applications. |
 | `rc4/aguayluz_water_use_before_after.png` | One AguaYLuz page before (above) and after (below) the dim-text change. |
 | `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the results for both applications and what they do not show. |
 | `scripts/rc8_baseline.py`, `scripts/runtime/perf_pass.js` | Measure a backend's first start, a built frontend's size and per-route page-load timing, and tabulate them. |
@@ -179,9 +180,10 @@ application was changed.
 
 ## Reading RC4
 
-RC4 has its evidence step and two applications fixed in their own code:
-skywatcher-pr (skywatcher-pr#375) and aguayluz-pr (aguayluz-pr#420). No other
-application is changed.
+RC4 has its evidence step and five applications fixed in their own code:
+skywatcher-pr (#375), aguayluz-pr (#420), moneysweep-pr (#719), centinelas-pr
+(#198) and thehub-pr (this pull request). ovnis-pr, spiderweb-pr and mucaro-ai
+are not changed.
 
 - thehub-pr was re-scanned on `main` after thehub-pr#432. Contrast failures
   went from 86 routes to 1. Unnamed buttons and unfocusable scroll regions are
@@ -204,6 +206,12 @@ application is changed.
   widths. Dim text was raised to the shade the app already used for muted
   text, so the two are now the same grey. `link-in-text-block` and
   `svg-img-alt` still fire and were not in scope.
+- MoneySweep: unnamed buttons 1 to 0, unfocusable scroll regions 2 to 0.
+  Centinelas: contrast 2 to 0, label mismatches 2 to 0; only its dark theme was
+  scanned.
+- TheHub is the first application to use the RC3 control primitives
+  (`FederationScrollRegion`), because it consumes the shared package from
+  source.
 - These are scan results. Pages were loaded, not operated, in Chromium only.
   They are not keyboard or screen-reader reviews, and the AguaYLuz scan ran on
   a workspace with little data on most pages.
@@ -223,9 +231,11 @@ application was changed.
 - `cold_start_ms.first_run` is one observation of a tree that had never been
   run; `later_runs` summarises the next four. They are different quantities.
 - "Initial" JavaScript is what `index.html` references; the rest loads later.
-- No performance budget has been agreed, so nothing passes or fails. The
-  budgets in `RC8_GATE.json` are a proposal, marked as not adopted, with the
-  applications that would sit outside them today.
+- Six budgets were adopted after the baseline was taken; `RC8_GATE.json`
+  lists them and each application's result. They are bounds for this harness,
+  not device targets. Five applications exceed at least one. The gate stays
+  `PROVISIONAL`: nothing was optimised, and the first-start figure is a single
+  observation per application.
 - The two RC4 branches are measured beside their `main`. Build size and
   transfer are unchanged; timing differences are inside the run-to-run spread.
 

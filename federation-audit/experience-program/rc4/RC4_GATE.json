@@ -78,7 +78,7 @@
    "mucaro-ai, ovnis-pr": "One addressable route each; the scan says little about them."
   },
   "decision_needed": "The pilot application is the user's choice.",
-  "status": "Skywatcher and AguaYLuz done. No further application started."
+  "status": "Skywatcher, AguaYLuz, MoneySweep and Centinelas measured; thehub-pr fixed, scan pending at the time of this record."
  },
  "blocked": [
   "independent QA",
@@ -90,10 +90,12 @@
   "rc4/RC4_PLAN_INPUT.json": "17e80dbdefbcc720a7d9a3e6ce9b499dbdaf71416cc2ce68a9d800782a31587b",
   "rc4/skywatcher_pilot.json": "567d29b7361dc45b0fa13a19b430f07da7be1d3f3886cbeadec5a97c6213b38d",
   "rc4/aguayluz_pilot.json": "f1042aa0aa9611a735f407caedd4466107591171987f44d4ec4adb1c264579d2",
-  "rc4/aguayluz_water_use_before_after.png": "b7e1c47b8a50bf323d7d2deef12731b6b3197ee4d8e780e786673725a6f7d98d"
+  "rc4/aguayluz_water_use_before_after.png": "b7e1c47b8a50bf323d7d2deef12731b6b3197ee4d8e780e786673725a6f7d98d",
+  "rc4/moneysweep_pilot.json": "dedf61a76c716624ef953b6fa740fa6a32d5d867241fa23d0b64660df8cc9c40",
+  "rc4/centinelas_pilot.json": "fbfd76cb94cdd9a39ff4b48d876ecdf4a12fc7c871ac754fbce56712ac3f08f2"
  },
  "certification": "WITHHELD",
- "why_not_pass": "Two applications are fixed and measured in Chromium by the author. Pages were loaded, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the applications; neither change is merged; nobody independent has reviewed them; six applications are untouched.",
+ "why_not_pass": "Four applications are fixed and measured in Chromium by the author; a fifth, thehub-pr, is fixed and its scan is recorded separately. Pages were loaded, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the applications; no change is merged; nobody independent has reviewed them.",
  "pilot": {
   "repository": "skywatcher-pr",
   "pull_request": "https://github.com/jotaele44/skywatcher-pr/pull/375",
@@ -173,5 +175,60 @@
   "ci": "Not fully green. On the code head c60587e, 24 checks passed and 4 were cancelled by the next push. On the following head 9131d38 (a test-stub change), 24 passed and one job, certify-source-product-denominators, failed with a DNS resolution error while fetching a remote source; that job passed on the two previous heads. It has not been re-run.",
   "limits": "The scan ran on a workspace with little data on most pages. Text that appears only with data is covered by the class replacement and its test, not by the scan.",
   "deviation_from_plan": "The helper was not copied unchanged: it gained an optional second argument for an element that already has a ref. One parity-baseline entry was updated because a control's class changed. A code-scanning note about the helper led to a change in an unrelated test's ResizeObserver stub."
+ },
+ "third_application": {
+  "repository": "moneysweep-pr",
+  "pull_request": "https://github.com/jotaele44/moneysweep-pr/pull/719",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/moneysweep_pilot.json",
+  "commits": {
+   "before": "956bb498796c698230d2a2de722d316945777f62",
+   "after": "6c9a0fe54ff17ca07344f55528bcb036c9e9e706"
+  },
+  "coverage": "12 routes at 7 widths, 84 page loads, before and after.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "0 -> 0",
+   "button-name": "1 -> 0",
+   "scrollable-region-focusable": "2 -> 0",
+   "label-content-name-mismatch": "0 -> 0"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "button-name": "14 -> 0",
+   "scrollable-region-focusable": "54 -> 0"
+  },
+  "changes": [
+   "TypeFilterSelect takes a label; both callers name it.",
+   "lib/scrollRegion.js applied to all 16 app-authored scrolling containers."
+  ],
+  "no_regression_observed": "Every frame measure is identical before and after (overflow, errors, undersized controls, console errors).",
+  "tests": "98 unit tests pass (8 new), eslint clean, GUI parity ratchet and template-boundary test pass."
+ },
+ "fourth_application": {
+  "repository": "centinelas-pr",
+  "pull_request": "https://github.com/jotaele44/centinelas-pr/pull/198",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/centinelas_pilot.json",
+  "commits": {
+   "before": "893a06f4a50655bcfae90469e15677c5f665d7a6",
+   "after": "d96863d1e8ae0df32874a1519acd86f50b25e173"
+  },
+  "coverage": "12 routes at 7 widths, 84 page loads, before and after.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "2 -> 0",
+   "button-name": "0 -> 0",
+   "scrollable-region-focusable": "0 -> 0",
+   "label-content-name-mismatch": "2 -> 0"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "color-contrast": "7 -> 0",
+   "label-content-name-mismatch": "84 -> 0"
+  },
+  "changes": [
+   "Phase pills: a passing shade per theme (700 on light, 400 on dark).",
+   "Brand link named by its visible text; language toggle's name starts with the code it shows."
+  ],
+  "not_from_this_change": "Undersized controls summed over page loads rose from 2732 to 2788, all on /handoff, where the page also rendered more text than at the audited commit (20,049 against 19,645 characters at 1280px). The fix did not touch that page; the scanned branch carries more commits than the audited main. The cause was not traced further.",
+  "light_theme": "The pill fix covers the light theme by reasoning from the shades; only the dark theme was scanned.",
+  "tests": "50 unit tests pass, eslint clean, GUI parity ratchet passes; the GUI contract is re-bound to the fix commit."
  }
 }

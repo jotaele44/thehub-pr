@@ -2,7 +2,7 @@
  "schema": "federation.experience-program.gate/1",
  "gate": "RC8",
  "state": "PROVISIONAL",
- "why_not_pass": "This is a baseline, not a verdict. No performance budget has been agreed, so nothing can pass or fail. The numbers come from a Linux container over loopback on nearly empty workspaces, in Chromium only, and were measured by the author alone.",
+ "why_not_pass": "Budgets are adopted and five applications exceed at least one in this harness, so RC8 cannot be PASS. It is not recorded as FAIL either: the first-start figure is one observation per application, the workspaces were nearly empty, and nothing has been measured on real hardware. The gate stays PROVISIONAL until the exceeding values are either confirmed on a device or brought inside the budgets.",
  "evidence": "rc8/performance_baselines.json",
  "coverage": {
   "targets": 10,
@@ -62,45 +62,6 @@
   },
   "across_route_lcp": "The spread of per-route LCP medians within an application is wide (relative spread above 1 for four applications), so an application-level LCP median hides slow routes; the per-route rows are the evidence."
  },
- "proposed_budgets_for_decision": {
-  "claim_class": "HYPOTHESIS",
-  "status": "NOT ADOPTED. Offered for the user to accept, change or reject. Nothing in this package is judged against them.",
-  "budgets": {
-   "first_start_ms": 3000,
-   "later_start_ms": 1500,
-   "initial_js_gzip_bytes": 200000,
-   "route_lcp_ms_at_1280": 1000,
-   "route_transferred_bytes_at_1280": 5000000,
-   "route_cls_at_1280": 0.1
-  },
-  "basis": "Chosen so that most applications sit inside them today and the outliers named in the observations sit outside. They are bounds for this harness, not device targets.",
-  "if_adopted_today_would_exceed": {
-   "aguayluz-pr": {
-    "first_start_ms": 9383.2,
-    "routes_over_lcp": "3 of 20",
-    "routes_over_bytes": "20 of 20",
-    "routes_over_cls": "2 of 20"
-   },
-   "centinelas-pr": "within every proposed budget",
-   "moneysweep-pr": {
-    "first_start_ms": 9506.3,
-    "initial_js_gzip_bytes": 259059,
-    "routes_over_lcp": "1 of 12",
-    "routes_over_cls": "1 of 12"
-   },
-   "mucaro-ai": "within every proposed budget",
-   "ovnis-pr": {
-    "initial_js_gzip_bytes": 500160
-   },
-   "skywatcher-pr": {
-    "initial_js_gzip_bytes": 582240
-   },
-   "spiderweb-pr": "within every proposed budget",
-   "thehub-pr": {
-    "routes_over_bytes": "1 of 86"
-   }
-  }
- },
  "checks": {
   "numbers_recomputed_from_raw": {
    "state": "PASS",
@@ -112,7 +73,8 @@
    "failed": 0
   },
   "budgets_agreed": {
-   "state": "OPEN"
+   "state": "PASS",
+   "note": "Adopted as proposed."
   },
   "device_timings": {
    "state": "BLOCKED",
@@ -126,10 +88,87 @@
   },
   "independent_review": {
    "state": "BLOCKED"
+  },
+  "applications_within_budgets": {
+   "state": "OPEN",
+   "within": [
+    "centinelas-pr",
+    "mucaro-ai",
+    "spiderweb-pr"
+   ],
+   "exceeds": [
+    "aguayluz-pr",
+    "moneysweep-pr",
+    "ovnis-pr",
+    "skywatcher-pr",
+    "thehub-pr"
+   ]
   }
  },
  "artifacts_sha256": {
   "rc8/performance_baselines.json": "f81c654e0d9505dc39e13f65b340a0b0db3723a36cb256ca6f92c30a0c058e96"
  },
- "certification": "WITHHELD"
+ "certification": "WITHHELD",
+ "budgets": {
+  "status": "ADOPTED",
+  "decided_by": "the user, on 2026-11-18, as proposed",
+  "claim_class": "BINDING",
+  "budgets": {
+   "first_start_ms": 3000,
+   "later_start_ms": 1500,
+   "initial_js_gzip_bytes": 200000,
+   "route_lcp_ms_at_1280": 1000,
+   "route_transferred_bytes_at_1280": 5000000,
+   "route_cls_at_1280": 0.1
+  },
+  "scope": "Bounds for this test harness (Linux container, loopback, Chromium, nearly empty workspaces). They are not device targets.",
+  "results_at_main": {
+   "aguayluz-pr": {
+    "result": "EXCEEDS",
+    "exceeds": {
+     "first_start_ms": 9383.2,
+     "routes_over_lcp": "3 of 20",
+     "routes_over_bytes": "20 of 20",
+     "routes_over_cls": "2 of 20"
+    }
+   },
+   "centinelas-pr": {
+    "result": "WITHIN"
+   },
+   "moneysweep-pr": {
+    "result": "EXCEEDS",
+    "exceeds": {
+     "first_start_ms": 9506.3,
+     "initial_js_gzip_bytes": 259059,
+     "routes_over_lcp": "1 of 12",
+     "routes_over_cls": "1 of 12"
+    }
+   },
+   "mucaro-ai": {
+    "result": "WITHIN"
+   },
+   "ovnis-pr": {
+    "result": "EXCEEDS",
+    "exceeds": {
+     "initial_js_gzip_bytes": 500160
+    }
+   },
+   "skywatcher-pr": {
+    "result": "EXCEEDS",
+    "exceeds": {
+     "initial_js_gzip_bytes": 582240
+    }
+   },
+   "spiderweb-pr": {
+    "result": "WITHIN"
+   },
+   "thehub-pr": {
+    "result": "EXCEEDS",
+    "exceeds": {
+     "routes_over_bytes": "1 of 86"
+    }
+   }
+  },
+  "reading": "EXCEEDS means the measured value in rc8/performance_baselines.json is above the budget in this harness. first_start_ms is a single observation per application. No optimisation has been done or is implied by this record."
+ }
 }
