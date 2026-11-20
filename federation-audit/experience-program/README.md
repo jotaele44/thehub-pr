@@ -51,6 +51,7 @@ someone other than the author of the work.
 | `rc4/skywatcher_pilot.json` | skywatcher-pr before and after its pilot: the targeted rules per distinct element, and every critical or serious rule. |
 | `rc4/aguayluz_pilot.json` | aguayluz-pr before and after its fixes, in the same form. |
 | `rc4/moneysweep_pilot.json`, `rc4/centinelas_pilot.json`, `rc4/thehub_pilot.json` | The same before/after comparison for those three applications. |
+| `rc4/thehub_overflow.json` | thehub-pr horizontal overflow per width, before and after the tab bar fix. |
 | `rc4/aguayluz_water_use_before_after.png` | One AguaYLuz page before (above) and after (below) the dim-text change. |
 | `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the results for both applications and what they do not show. |
 | `scripts/rc8_baseline.py`, `scripts/runtime/perf_pass.js` | Measure a backend's first start, a built frontend's size and per-route page-load timing, and tabulate them. |
@@ -214,6 +215,10 @@ are not changed.
   did not contain their visible text; they appear only when live satellite
   data loads, so the earlier scan missed them. They are fixed and covered by
   unit tests, not by a browser scan.
+- TheHub's shell migration made seven routes overflow at 768 px, because the
+  shared sidebar appears from that width and the tab bar could not shrink.
+  The tab bar now scrolls; overflow at 768 px went from 7 routes to 0, and at
+  any width from 17 routes to 7.
 - TheHub is the first application to use the RC3 control primitives
   (`FederationScrollRegion`), because it consumes the shared package from
   source.
