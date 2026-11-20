@@ -5,11 +5,17 @@ import { cn } from "@/lib/utils"
 
 const Tabs = TabsPrimitive.Root
 
+// The tab bar never grows wider than its container: when its tabs do not fit
+// on one row it scrolls sideways instead of widening the page. Every tab is a
+// button, so the keyboard reaches each one and the focused tab scrolls into
+// view. `safe center` keeps the tabs centred when they fit and starts them at
+// the left edge when they do not, so the first tab is never cut off; a browser
+// without it keeps plain centring. Callers that pass flex-wrap still wrap.
 const TabsList = React.forwardRef(({ className, ...props }, ref) => (
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      "inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground",
+      "inline-flex h-9 max-w-full items-center justify-center overflow-x-auto rounded-lg bg-muted p-1 text-muted-foreground [justify-content:safe_center]",
       className
     )}
     {...props} />
