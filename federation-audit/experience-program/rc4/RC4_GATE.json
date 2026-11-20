@@ -93,7 +93,8 @@
   "rc4/aguayluz_water_use_before_after.png": "b7e1c47b8a50bf323d7d2deef12731b6b3197ee4d8e780e786673725a6f7d98d",
   "rc4/moneysweep_pilot.json": "dedf61a76c716624ef953b6fa740fa6a32d5d867241fa23d0b64660df8cc9c40",
   "rc4/centinelas_pilot.json": "fbfd76cb94cdd9a39ff4b48d876ecdf4a12fc7c871ac754fbce56712ac3f08f2",
-  "rc4/thehub_pilot.json": "54f85b71cf3593ebf319d91eb029f35e36db789f6f8043010eda175ad8168ed1"
+  "rc4/thehub_pilot.json": "54f85b71cf3593ebf319d91eb029f35e36db789f6f8043010eda175ad8168ed1",
+  "rc4/thehub_overflow.json": "4b74ad2dcf772b4ff4379dede50b505a86c1911afd6aa1aa623a033a144f3519"
  },
  "certification": "WITHHELD",
  "why_not_pass": "Five applications are fixed and measured in Chromium by the author. Pages were loaded, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the applications; surfaces that depend on live external data were seen only when that data happened to load; no change is merged; nobody independent has reviewed them.",
@@ -272,5 +273,14 @@
   },
   "frame": "Page loads with an unnamed button 28 -> 7; overflow, errors and undersized controls unchanged.",
   "tests": "Frontend 830 pass, eslint clean, GUI parity ratchet and GUI/backend audit pass; design-system package tests 79 pass."
+ },
+ "layout_regression": {
+  "repository": "thehub-pr",
+  "evidence": "rc4/thehub_overflow.json",
+  "claim_class": "COMPUTED",
+  "result": "Overflow at 768px: 7 routes -> 0. Routes overflowing at any width: 17 -> 7. Page loads with overflow: 52 -> 19.",
+  "fix": "The shared tab bar (server/frontend/src/components/ui/tabs.jsx) scrolls sideways instead of widening the page.",
+  "no_regression_observed": "Every critical or serious accessibility rule is unchanged or lower; errors 0 before and after.",
+  "not_attributable": "label-content-name-mismatch on /skywatcher?view=sky was 2 page loads in the previous scan and 0 in this one. The pass-button fix is in this build, but those buttons appear only when live satellite data loads, so the 0 is not counted as evidence of the fix."
  }
 }

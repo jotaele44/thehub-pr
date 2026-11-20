@@ -1,0 +1,334 @@
+{
+ "schema": "federation.experience-program.overflow-comparison/1",
+ "claim_class": "COMPUTED",
+ "repository": "thehub-pr",
+ "commits": {
+  "before": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3",
+  "after": "d2fa3e32bff7cb4db49f2b647bf160dd123a6d3c"
+ },
+ "method": "Chromium, 86 routes at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels; horizontal overflow is document scrollWidth minus clientWidth.",
+ "cause": "Confirmed in a browser before the change: on /crossover and /ovnis the last tabs of the tab bar set the page width. The shared TabsList could not shrink, and since #432 the shell sidebar takes 14rem from 768px.",
+ "before": {
+  "page_loads": 602,
+  "routes_overflowing": 17,
+  "page_loads_by_width": {
+   "320": 17,
+   "390": 14,
+   "430": 14,
+   "768": 7
+  },
+  "by_width": {
+   "320": [
+    {
+     "route": "/crossover",
+     "px": 377
+    },
+    {
+     "route": "/ovnis",
+     "px": 245
+    },
+    {
+     "route": "/ovnis?tab=patterns",
+     "px": 245
+    },
+    {
+     "route": "/ovnis?tab=witness",
+     "px": 245
+    },
+    {
+     "route": "/ovnis?tab=reports",
+     "px": 245
+    },
+    {
+     "route": "/ovnis?tab=showlog",
+     "px": 245
+    },
+    {
+     "route": "/ovnis?tab=sources",
+     "px": 245
+    },
+    {
+     "route": "/research?tab=assistant",
+     "px": 188
+    },
+    {
+     "route": "/gis",
+     "px": 172
+    },
+    {
+     "route": "/gis?view=property-map",
+     "px": 172
+    },
+    {
+     "route": "/gis?view=interpretive-layers",
+     "px": 172
+    },
+    {
+     "route": "/gis?view=aoi-comparison",
+     "px": 172
+    },
+    {
+     "route": "/gis?view=digital-twin",
+     "px": 171
+    },
+    {
+     "route": "/apps",
+     "px": 113
+    },
+    {
+     "route": "/aguayluz?tab=feed",
+     "px": 40
+    },
+    {
+     "route": "/moneysweep",
+     "px": 17
+    },
+    {
+     "route": "/moneysweep?tab=feed",
+     "px": 17
+    }
+   ],
+   "390": [
+    {
+     "route": "/crossover",
+     "px": 307
+    },
+    {
+     "route": "/ovnis",
+     "px": 175
+    },
+    {
+     "route": "/ovnis?tab=patterns",
+     "px": 175
+    },
+    {
+     "route": "/ovnis?tab=witness",
+     "px": 175
+    },
+    {
+     "route": "/ovnis?tab=reports",
+     "px": 175
+    },
+    {
+     "route": "/ovnis?tab=showlog",
+     "px": 175
+    },
+    {
+     "route": "/ovnis?tab=sources",
+     "px": 175
+    },
+    {
+     "route": "/research?tab=assistant",
+     "px": 118
+    },
+    {
+     "route": "/gis",
+     "px": 102
+    },
+    {
+     "route": "/gis?view=property-map",
+     "px": 102
+    },
+    {
+     "route": "/gis?view=interpretive-layers",
+     "px": 102
+    },
+    {
+     "route": "/gis?view=aoi-comparison",
+     "px": 102
+    },
+    {
+     "route": "/gis?view=digital-twin",
+     "px": 101
+    },
+    {
+     "route": "/apps",
+     "px": 43
+    }
+   ],
+   "430": [
+    {
+     "route": "/crossover",
+     "px": 267
+    },
+    {
+     "route": "/ovnis",
+     "px": 135
+    },
+    {
+     "route": "/ovnis?tab=patterns",
+     "px": 135
+    },
+    {
+     "route": "/ovnis?tab=witness",
+     "px": 135
+    },
+    {
+     "route": "/ovnis?tab=reports",
+     "px": 135
+    },
+    {
+     "route": "/ovnis?tab=showlog",
+     "px": 135
+    },
+    {
+     "route": "/ovnis?tab=sources",
+     "px": 135
+    },
+    {
+     "route": "/research?tab=assistant",
+     "px": 78
+    },
+    {
+     "route": "/gis",
+     "px": 62
+    },
+    {
+     "route": "/gis?view=property-map",
+     "px": 62
+    },
+    {
+     "route": "/gis?view=interpretive-layers",
+     "px": 62
+    },
+    {
+     "route": "/gis?view=aoi-comparison",
+     "px": 62
+    },
+    {
+     "route": "/gis?view=digital-twin",
+     "px": 61
+    },
+    {
+     "route": "/apps",
+     "px": 3
+    }
+   ],
+   "768": [
+    {
+     "route": "/crossover",
+     "px": 161
+    },
+    {
+     "route": "/ovnis",
+     "px": 29
+    },
+    {
+     "route": "/ovnis?tab=patterns",
+     "px": 29
+    },
+    {
+     "route": "/ovnis?tab=witness",
+     "px": 29
+    },
+    {
+     "route": "/ovnis?tab=reports",
+     "px": 29
+    },
+    {
+     "route": "/ovnis?tab=showlog",
+     "px": 29
+    },
+    {
+     "route": "/ovnis?tab=sources",
+     "px": 29
+    }
+   ]
+  }
+ },
+ "after": {
+  "page_loads": 602,
+  "routes_overflowing": 7,
+  "page_loads_by_width": {
+   "320": 7,
+   "390": 6,
+   "430": 6
+  },
+  "by_width": {
+   "320": [
+    {
+     "route": "/gis",
+     "px": 172
+    },
+    {
+     "route": "/gis?view=property-map",
+     "px": 172
+    },
+    {
+     "route": "/gis?view=interpretive-layers",
+     "px": 172
+    },
+    {
+     "route": "/gis?view=aoi-comparison",
+     "px": 172
+    },
+    {
+     "route": "/gis?view=digital-twin",
+     "px": 171
+    },
+    {
+     "route": "/apps",
+     "px": 113
+    },
+    {
+     "route": "/crossover",
+     "px": 11
+    }
+   ],
+   "390": [
+    {
+     "route": "/gis",
+     "px": 102
+    },
+    {
+     "route": "/gis?view=property-map",
+     "px": 102
+    },
+    {
+     "route": "/gis?view=interpretive-layers",
+     "px": 102
+    },
+    {
+     "route": "/gis?view=aoi-comparison",
+     "px": 102
+    },
+    {
+     "route": "/gis?view=digital-twin",
+     "px": 101
+    },
+    {
+     "route": "/apps",
+     "px": 43
+    }
+   ],
+   "430": [
+    {
+     "route": "/gis",
+     "px": 62
+    },
+    {
+     "route": "/gis?view=property-map",
+     "px": 62
+    },
+    {
+     "route": "/gis?view=interpretive-layers",
+     "px": 62
+    },
+    {
+     "route": "/gis?view=aoi-comparison",
+     "px": 62
+    },
+    {
+     "route": "/gis?view=digital-twin",
+     "px": 61
+    },
+    {
+     "route": "/apps",
+     "px": 3
+    }
+   ]
+  }
+ },
+ "remaining": "At 320-430px: /gis and its four views (about 172px; the view switcher, logged earlier), /apps (113px) and /crossover (11px at 320px only). Not caused by tab bars; not fixed here.",
+ "visual_check": "At 1280px, all 63 tab bars on the 86 routes have the same size and position before and after; their screenshots differ by at most 1 of 255 in one channel on 9 pixels."
+}
