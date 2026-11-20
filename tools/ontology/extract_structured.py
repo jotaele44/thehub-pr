@@ -59,7 +59,7 @@ class StructuredScannerMixin:
     def _scan_toml(self, path: Path, text: str) -> None:
         try:
             import tomllib  # type: ignore[attr-defined]
-        except ImportError:  # pragma: no cover - Python 3.9 CI
+        except ImportError:  # pragma: no cover - Python 3.10 has no tomllib
             try:
                 import tomli as tomllib  # type: ignore[no-redef]
             except ImportError:

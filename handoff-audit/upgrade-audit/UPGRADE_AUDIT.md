@@ -5,6 +5,16 @@
 **Status: Phase 1 + Phase 2 applied 2026-09-06 (see below). Phase 3 + Phase 4 remain
 RECOMMENDATIONS ONLY — HOLD is retained for those.**
 
+## Status update (2026-11-20) — DEP-2 and DEP-3 closed
+
+The root `requires-python` is now `>=3.10`, `ci.yml`'s test matrix is 3.10–3.12 on
+`ubuntu-latest`, and ruff targets `py310`. This takes the second fix that DEP-2 named
+below. mypy's `python_version = "3.10"` now matches the floor, so the gap is gone.
+DEP-3 is closed by the same change, because the three `packages/*` floors (`>=3.10`)
+now equal the root's. The trigger was the `ubuntu-latest` runner image moving to
+Ubuntu 26.04, which `actions/setup-python` has no Python 3.9 build for. Every hub
+sub-package and every producer already required 3.10 or later.
+
 ## Status update (2026-09-06) — Phase 1 + Phase 2 closure
 
 Applied on `claude/federation-gap-closure-audit-o7wao8` as part of a federation-wide

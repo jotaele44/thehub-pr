@@ -545,19 +545,3 @@ def test_phase_one_read_surface_still_works_without_the_runtime(client, monkeypa
     assert response.status_code == 200
     assert len(response.json()) == 7
 
-
-# ── Python 3.9 floor ────────────────────────────────────────────────────────
-
-
-def test_no_pep604_unions_in_route_signatures():
-    """CI runs 3.9; a `str | None` in a FastAPI signature fails at import there."""
-    import inspect
-
-    for name in dir(api):
-        candidate = getattr(api, name)
-        if callable(candidate) and getattr(candidate, "__module__", "") == api.__name__:
-            try:
-                signature = str(inspect.signature(candidate))
-            except (TypeError, ValueError):
-                continue
-            assert " | " not in signature, f"{name}{signature}"
