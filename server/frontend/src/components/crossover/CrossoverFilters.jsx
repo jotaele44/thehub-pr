@@ -63,11 +63,11 @@ export default function CrossoverFilters({ filters, setFilters, resetFilters, mu
           { value: "all", label: "Any vendor" }, ...vendorsList.map((m) => ({ value: m, label: m })),
         ]} />
       )}
-      <div className="flex items-center gap-1">
-        <span className="text-[11px] text-muted-foreground">Date</span>
-        <Input type="date" value={filters.dateFrom} onChange={(e) => set("dateFrom")(e.target.value)} className="h-8 w-[130px] text-xs" />
-        <span className="text-[11px] text-muted-foreground">–</span>
-        <Input type="date" value={filters.dateTo} onChange={(e) => set("dateTo")(e.target.value)} className="h-8 w-[130px] text-xs" />
+      <div className="flex flex-wrap items-center gap-1">
+        <span className="text-[11px] text-muted-foreground" aria-hidden="true">Date</span>
+        <Input type="date" aria-label="From date" value={filters.dateFrom} onChange={(e) => set("dateFrom")(e.target.value)} className="h-8 w-[130px] text-xs" />
+        <span className="text-[11px] text-muted-foreground" aria-hidden="true">–</span>
+        <Input type="date" aria-label="To date" value={filters.dateTo} onChange={(e) => set("dateTo")(e.target.value)} className="h-8 w-[130px] text-xs" />
       </div>
       <Button variant="ghost" size="sm" className="h-8 text-xs" onClick={resetFilters}>
         <X className="h-3 w-3 mr-1" /> Reset

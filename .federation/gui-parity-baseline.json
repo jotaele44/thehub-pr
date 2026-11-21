@@ -3336,8 +3336,8 @@
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
     {
-      "detail": "input#9eaa2d2bfab9",
-      "id": "gui_control:server/frontend/src/components/crossover/CrossoverFilters.jsx:input#9eaa2d2bfab9",
+      "detail": "input#774d89d9e0c4",
+      "id": "gui_control:server/frontend/src/components/crossover/CrossoverFilters.jsx:input#774d89d9e0c4",
       "kind": "gui_control",
       "line": 68,
       "path": "server/frontend/src/components/crossover/CrossoverFilters.jsx",
@@ -3352,8 +3352,8 @@
       "signal": "GUI_NOT_BACKEND_WIRED"
     },
     {
-      "detail": "input#f33065509b66",
-      "id": "gui_control:server/frontend/src/components/crossover/CrossoverFilters.jsx:input#f33065509b66",
+      "detail": "input#742460da2de6",
+      "id": "gui_control:server/frontend/src/components/crossover/CrossoverFilters.jsx:input#742460da2de6",
       "kind": "gui_control",
       "line": 70,
       "path": "server/frontend/src/components/crossover/CrossoverFilters.jsx",
