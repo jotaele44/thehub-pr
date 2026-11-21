@@ -21,6 +21,7 @@ const ROWS = [
     id: "moneysweep-pr:usaspending_prime", monitor_id: "moneysweep-pr:usaspending_prime", producer: "moneysweep-pr",
     source_id: "usaspending_prime", name: "usaspending_prime", producer_family: "federal", evidence_tier: null,
     cadence: "weekly", cadence_window_seconds: 7 * 86400, status: "not_active", producer_last_package_at: ago(30),
+    last_success_basis: "NOT_RECORDED", last_success_at: null, origin: "stream",
   },
   {
     id: "aguayluz-pr:nwps_gauges", monitor_id: "aguayluz-pr:nwps_gauges", producer: "aguayluz-pr",
@@ -148,7 +149,7 @@ describe("SourceMonitorLedger per-source freshness", () => {
     expect(within(row).getByText("last success · from outputs")).toBeInTheDocument();
   });
 
-  it("labels registry-reader rows as measured from the producer export", () => {
+  it("labels rows with no recorded success as measured from the producer export", () => {
     renderLedger({ producer: "moneysweep-pr" });
     const body = screen.getAllByRole("rowgroup")[1];
     const [row] = within(body).getAllByRole("row");

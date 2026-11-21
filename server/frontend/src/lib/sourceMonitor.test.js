@@ -94,8 +94,8 @@ describe("per-source last success (ADR 0013)", () => {
 
   it("falls back to the producer export when the success is not recorded or not reported", () => {
     const notRecorded = { ...base, last_success_basis: "NOT_RECORDED", last_success_at: null };
-    const registryOnly = { ...base };
-    for (const row of [notRecorded, registryOnly]) {
+    const legacy = { ...base }; // a pre-ADR 0013 row with no basis
+    for (const row of [notRecorded, legacy]) {
       expect(freshnessReference(row).kind).toBe("producer_export");
       expect(freshnessState(row, NOW)).toBe("Stale");
       expect(ageDays(row, NOW)).toBe(10);
@@ -107,12 +107,12 @@ describe("per-source last success (ADR 0013)", () => {
     expect(freshnessReference(row).kind).toBe("producer_export");
   });
 
-  it("labels every basis, including rows from the registry reader", () => {
+  it("labels every basis, reading a legacy row without one as not recorded", () => {
     expect(successBasisLabel({ last_success_basis: "RUN_RECEIPT" })).toBe("Run receipt");
     expect(successBasisLabel({ last_success_basis: "OUTPUT_DERIVED" })).toBe("From outputs");
     expect(successBasisLabel({ last_success_basis: "NOT_RECORDED" })).toBe("Not recorded");
-    expect(successBasisLabel({})).toBe("Registry only");
-    expect(SUCCESS_BASES).toEqual(["Run receipt", "From outputs", "Not recorded", "Registry only"]);
+    expect(successBasisLabel({})).toBe("Not recorded");
+    expect(SUCCESS_BASES).toEqual(["Run receipt", "From outputs", "Not recorded"]);
     const mapped = withFreshness(NOW)({ ...base, last_success_basis: "OUTPUT_DERIVED", last_success_at: daysAgo(3) });
     expect([mapped.freshness, mapped.freshness_kind, mapped.success_basis, mapped.age_days])
       .toEqual(["Stale", "last_success", "From outputs", 3]);

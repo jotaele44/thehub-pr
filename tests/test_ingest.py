@@ -368,25 +368,18 @@ def test_ingest_cli_reports_and_errors(valid_package, tmp_path):
     assert main(["ingest", "--in", str(empty), "--db", str(db)]) == 1
 
 
-def _write_monitor(agg, rows, total=None):
+def _write_monitor(agg, refs):
+    # source_monitors stream rows (ADR 0013) from moneysweep-pr, one per source ref.
     agg.mkdir(parents=True, exist_ok=True)
-    (agg / "monitored_sources.jsonl").write_text(
-        "".join(json.dumps(r) + "\n" for r in rows)
-    )
-    (agg / "monitored_sources_summary.json").write_text(
-        json.dumps({"schema_version": "prii_source_monitor_v1", "total": total if total is not None else len(rows)})
-    )
-
-
-def _adapter_row(source_id):
-    # A registry-reader row (hub source-monitor) from a producer it still reads.
-    return {"monitor_id": f"moneysweep-pr:{source_id}", "producer": "moneysweep-pr", "source_id": source_id}
+    rows = [{"monitor_id": f"mon_{i:032x}", "source_ref": ref, "_producers": ["moneysweep-pr"],
+             "extracted_at": "2026-11-17T00:00:00Z"} for i, ref in enumerate(refs)]
+    (agg / "source_monitors.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
 
 
 def test_ingest_loads_and_replaces_monitored_sources(tmp_path):
     agg = tmp_path / "agg"
     db = tmp_path / "hub.db"
-    _write_monitor(agg, [_adapter_row("usaspending_prime"), _adapter_row("usaspending_subawards")])
+    _write_monitor(agg, ["usaspending_prime", "usaspending_subawards"])
     summary = ingest_aggregate(agg, db)
     assert summary["collections"]["MonitoredSources"] == 2
     assert summary["collections"]["SourceMonitorSummary"] == 1
@@ -395,9 +388,9 @@ def test_ingest_loads_and_replaces_monitored_sources(tmp_path):
     assert rows["moneysweep-pr:usaspending_prime"]["id"] == "moneysweep-pr:usaspending_prime"
     assert _rows(db, "SourceMonitorSummary")["source_monitor_summary"]["total"] == 2
 
-    # A source dropped from the producer registry leaves the hub on the next ingest
+    # A source dropped from the producer's stream leaves the hub on the next ingest
     # (the canonical streams only upsert; this hub-derived collection is replaced).
-    _write_monitor(agg, [_adapter_row("usaspending_subawards")])
+    _write_monitor(agg, ["usaspending_subawards"])
     ingest_aggregate(agg, db)
     assert set(_rows(db, "MonitoredSources")) == {"moneysweep-pr:usaspending_subawards"}
 
@@ -405,7 +398,7 @@ def test_ingest_loads_and_replaces_monitored_sources(tmp_path):
 def test_ingest_without_monitor_file_keeps_previous_monitor_rows(valid_package, tmp_path):
     mon = tmp_path / "mon"
     db = tmp_path / "hub.db"
-    _write_monitor(mon, [_adapter_row("usaspending_prime")])
+    _write_monitor(mon, ["usaspending_prime"])
     ingest_aggregate(mon, db)
 
     agg = tmp_path / "agg"

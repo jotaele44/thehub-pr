@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "be4a4ae61cfc2ed39d6d2a2dd5d0e8e17f989321",
+  "source_commit": "f1ddb65509283f12ef0c0513f7fc498ca75a3e40",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -2007,10 +2007,10 @@
       "classification": "INTERNAL_NAVIGATION",
       "rationale": "The producer name in the Source Monitor summary table and on a source's detail page links to that producer's Hub page; the target comes from the module registry (PRODUCER_PAGES in lib/sourceMonitor.js, derived from MODULES) and no backend request is made.",
       "evidence": [
-        "server/frontend/src/pages/SourceMonitor.jsx:65",
-        "server/frontend/src/pages/SourceMonitorDetail.jsx:74",
-        "server/frontend/src/pages/SourceMonitorDetail.test.jsx:51",
-        "server/frontend/src/lib/sourceMonitor.test.js:56"
+        "server/frontend/src/pages/SourceMonitor.jsx:66",
+        "server/frontend/src/pages/SourceMonitorDetail.jsx:84",
+        "server/frontend/src/pages/SourceMonitorDetail.test.jsx:53",
+        "server/frontend/src/lib/sourceMonitor.test.js:57"
       ]
     },
     {

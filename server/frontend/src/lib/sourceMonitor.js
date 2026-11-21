@@ -1,7 +1,8 @@
-// Source Monitor (ADR 0012, ADR 0013): shared constants and freshness logic for
-// the read-only MonitoredSources views. Rows come from the `source_monitors`
-// federation stream for producers that emit it, and from the hub-side registry
-// reader (`hub source-monitor`) for the others; `hub ingest` merges the two.
+// Source Monitor (ADR 0013): shared constants and freshness logic for the
+// read-only MonitoredSources views. Rows come from each producer's
+// `source_monitors` federation stream; `hub ingest` projects them into
+// MonitoredSources. (ADR 0012's hub-side registry reader is retired; a hub.db not
+// re-ingested since may still hold its rows, which these views tolerate.)
 //
 // Freshness uses a source's own last success when its producer reports one
 // (last_success_basis RUN_RECEIPT or OUTPUT_DERIVED). Otherwise it falls back to
@@ -17,7 +18,8 @@ export const MONITOR_SUMMARY_ID = "source_monitor_summary";
 // larger, and a producer's Monitor tab warns when its own rows were cut.
 export const MONITOR_LIST_LIMIT = 500;
 
-// Vocabularies mirror src/hub/source_monitor.py (CADENCES / STATUSES).
+// Vocabularies mirror the enums in schemas/federation_source_monitor.schema.json
+// (cadence / declared_status / evidence_tier).
 export const MONITOR_STATUSES = ["active", "partial", "not_active", "manual", "inactive", "unknown"];
 export const MONITOR_CADENCES = [
   "realtime", "hourly", "daily", "weekly", "monthly", "quarterly", "yearly",
@@ -50,17 +52,17 @@ export function monitorPath(monitorId) {
 }
 
 // Where a source's last-success time comes from, as the producer reports it.
-// Rows read by the hub-side registry reader carry no basis: "Registry only".
+// The stream requires a basis; a legacy row without one (from the retired
+// registry reader) recorded no success either, so it reads "Not recorded".
 export const SUCCESS_BASIS_LABELS = {
   RUN_RECEIPT: "Run receipt",
   OUTPUT_DERIVED: "From outputs",
   NOT_RECORDED: "Not recorded",
 };
-export const REGISTRY_ONLY = "Registry only";
-export const SUCCESS_BASES = [...Object.values(SUCCESS_BASIS_LABELS), REGISTRY_ONLY];
+export const SUCCESS_BASES = Object.values(SUCCESS_BASIS_LABELS);
 
 export function successBasisLabel(row) {
-  return SUCCESS_BASIS_LABELS[row?.last_success_basis] || REGISTRY_ONLY;
+  return SUCCESS_BASIS_LABELS[row?.last_success_basis] || SUCCESS_BASIS_LABELS.NOT_RECORDED;
 }
 
 function parseTime(value) {

@@ -74,21 +74,33 @@ _ID_FIELD: Dict[str, str] = {**STREAM_ID_FIELD, "correlations": "relationship_id
 _SUMMARY_COLLECTION = "FederationSummary"
 _SUMMARY_ID = "graph_summary"
 
-# Source monitor (ADR 0012, ADR 0013). Two inputs feed the MonitoredSources
-# collection the UI reads:
-# * the `source_monitors` federation stream (ADR 0013), which producers emit with a
-#   per-source last_success_at; its canonical rows also land in SourceMonitors via
-#   STREAM_TO_COLLECTION;
-# * monitored_sources.jsonl, written hub-side by `hub source-monitor` from producer
-#   registries (ADR 0012) for producers that do not emit the stream yet.
-# A producer's stream rows replace its hub-adapter rows. MonitoredSources is
-# replaced wholesale on ingest, so a source dropped from a producer leaves the hub.
+# Source monitor (ADR 0013). Every producer reports its sources in the
+# `source_monitors` federation stream with a per-source last_success_at. The
+# canonical rows land in SourceMonitors via STREAM_TO_COLLECTION, and
+# project_source_monitors() projects them into the MonitoredSources collection the
+# UI reads. MonitoredSources is replaced wholesale on ingest, so a source dropped
+# from a producer leaves the hub. (ADR 0012's hub-side registry reader, `hub
+# source-monitor`, was retired once the last producer emitted the stream.)
 SOURCE_MONITORS_STREAM_FILE = "source_monitors.jsonl"
-MONITORED_SOURCES_FILE = "monitored_sources.jsonl"
-MONITOR_SUMMARY_FILE = "monitored_sources_summary.json"
 MONITOR_COLLECTION = "MonitoredSources"
 MONITOR_SUMMARY_COLLECTION = "SourceMonitorSummary"
 MONITOR_SUMMARY_ID = "source_monitor_summary"
+MONITOR_SUMMARY_SCHEMA_VERSION = "prii_source_monitor_v1"
+
+# Producers expected to report through the source_monitors stream. Hub-owned, so a
+# producer missing from an aggregate's stream is a visible gap rather than a silent
+# absence. Keep in step with registry/producers.yaml.
+MONITOR_STREAM_PRODUCERS: Tuple[str, ...] = (
+    "aguayluz-pr",
+    "centinelas-pr",
+    "moneysweep-pr",
+    "ovnis-pr",
+    "skywatcher-pr",
+    "spiderweb-pr",
+)
+MONITOR_STREAM_GAP_ERROR = (
+    "reports through the source_monitors stream, but this aggregate has no rows from it"
+)
 
 # ── Phase 2: frontend-facing CrossoverLinks projection ────────────────────────
 # The Crossover Workspace (server/frontend/src/lib/crossover.js) is explicit-only:
@@ -720,9 +732,9 @@ def _project_ui(agg: Path, stream: str, id_field: str,
 def _alias_stream_monitor(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """A canonical source_monitors row in the MonitoredSources display shape.
 
-    The display key stays ``<producer>:<source_ref>`` (as for hub-adapter rows) so
-    detail links do not change when a producer starts emitting the stream; the
-    canonical ``mon_…`` id is kept as ``stream_monitor_id``.
+    The display key is ``<producer>:<source_ref>`` (the key ADR 0012's registry
+    reader used) so detail links stayed stable when producers moved to the stream;
+    the canonical ``mon_…`` id is kept as ``stream_monitor_id``.
     """
     producer = _first_producer(row)
     ref = row.get("source_ref")
@@ -750,52 +762,40 @@ def _alias_stream_monitor(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
 def project_source_monitors(
     aggregate_dir: str | Path, now: Optional[str] = None,
 ) -> Optional[Tuple[List[Tuple[str, Dict[str, Any]]], Dict[str, Any]]]:
-    """Merge stream rows and hub-adapter rows into MonitoredSources plus its summary.
+    """Project the source_monitors stream into MonitoredSources plus its summary.
 
-    Returns ``None`` when the aggregate holds neither input, so the caller leaves
-    the previous monitor rows in place. A producer with any stream rows is taken
-    wholly from the stream; every other producer keeps its hub-adapter rows.
+    Returns ``None`` when the aggregate has no stream file, so the caller leaves
+    the previous monitor rows in place. Every producer in
+    MONITOR_STREAM_PRODUCERS that has no stream rows gets a zero-count summary
+    entry carrying a gap error.
     """
     agg = Path(aggregate_dir)
     stream_path = agg / SOURCE_MONITORS_STREAM_FILE
-    adapter_path = agg / MONITORED_SOURCES_FILE
-    if not stream_path.exists() and not adapter_path.exists():
+    if not stream_path.exists():
         return None
 
     by_producer: Dict[str, List[Dict[str, Any]]] = {}
-    if stream_path.exists():
-        for raw in _read_jsonl(stream_path):
-            row = _alias_stream_monitor(raw)
-            if row is not None:
-                by_producer.setdefault(row["producer"], []).append(row)
+    for raw in _read_jsonl(stream_path):
+        row = _alias_stream_monitor(raw)
+        if row is not None:
+            by_producer.setdefault(row["producer"], []).append(row)
 
     rows: Dict[str, Dict[str, Any]] = {}
-    if adapter_path.exists():
-        for raw in _read_jsonl(adapter_path):
-            key = raw.get("monitor_id")
-            if key and raw.get("producer") not in by_producer:
-                rows.setdefault(str(key), {**raw, "origin": "hub_adapter"})
     for producer_rows in by_producer.values():
         for row in producer_rows:
             rows.setdefault(row["monitor_id"], row)
 
-    summary_path = agg / MONITOR_SUMMARY_FILE
-    summary: Dict[str, Any] = (
-        json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.exists() else {}
-    )
     producers: Dict[str, Any] = {}
-    for pid, info in (summary.get("producers") or {}).items():
-        if not isinstance(info, dict):
-            continue
-        if info.get("reports_via_stream"):
-            # The registry reader no longer reads this producer; its rows come
-            # from the stream, so an aggregate without them is a visible gap.
-            producers[pid] = {**info, "origin": "stream", "errors": [
-                *(info.get("errors") or []),
-                "reports through the source_monitors stream, but this aggregate has no rows from it",
-            ]}
-        else:
-            producers[pid] = {**info, "origin": "hub_adapter"}
+    for pid in MONITOR_STREAM_PRODUCERS:
+        if pid not in by_producer:
+            producers[pid] = {
+                "origin": "stream",
+                "count": 0,
+                "package_created_at": None,
+                "registries": [],
+                "excluded": {},
+                "errors": [MONITOR_STREAM_GAP_ERROR],
+            }
     for pid, producer_rows in by_producer.items():
         extracted = sorted(str(r.get("extracted_at") or "") for r in producer_rows)
         producers[pid] = {
@@ -807,9 +807,8 @@ def project_source_monitors(
             "errors": [],
         }
     summary = {
-        **summary,
-        "schema_version": summary.get("schema_version", "prii_source_monitor_v1"),
-        "generated_at": summary.get("generated_at") or now,
+        "schema_version": MONITOR_SUMMARY_SCHEMA_VERSION,
+        "generated_at": now,
         "producers": dict(sorted(producers.items())),
         "stream_producers": sorted(by_producer),
         "total": len(rows),
@@ -924,8 +923,8 @@ def ingest_aggregate(aggregate_dir: str | Path, db_path: str | Path) -> dict:
         _ingest_pairs(conn, "LiveFeedItems", project_livefeed(agg), ts, collections)
         _ingest_pairs(conn, "OutdoorConditions", project_outdoor_conditions(agg), ts, collections)
 
-        # Source monitor (ADR 0012/0013): stream rows win per producer, hub-adapter
-        # rows cover the rest. Untouched when the aggregate holds neither input.
+        # Source monitor (ADR 0013): MonitoredSources is projected from the
+        # source_monitors stream. Untouched when the aggregate has no stream file.
         monitors = project_source_monitors(agg, now=ts)
         if monitors is not None:
             monitor_pairs, monitor_summary = monitors
