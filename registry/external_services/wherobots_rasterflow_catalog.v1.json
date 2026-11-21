@@ -1,0 +1,1958 @@
+{
+  "schema_version": "prii_external_capability_catalog_v1",
+  "_comment": "Non-authoritative reference catalog of capabilities as presented in a vendor webinar (Wherobots RasterFlow). It records claims, demos and plans exactly as the user-supplied transcript extraction states them; nothing here was independently verified, no runtime reads this file, and listing a capability authorizes nothing. Adoption and authority mapping are decided in the ADR named by decision_state.adr. Prices, volumes and timings are vendor-presented figures, not quotes or benchmarks. tests/test_wherobots_rasterflow_catalog.py enforces the counts, the status vocabulary and parity with the snapshot doc.",
+  "subject": {
+    "vendor": "Wherobots",
+    "product": "RasterFlow",
+    "release_state": "UNVERIFIED"
+  },
+  "source": {
+    "kind": "user_supplied_webinar_transcript",
+    "sha256": "feaf45c04e6bf72a2798695650289860bcbb0ae2b0568a887eb9bac6dcdcbaa6",
+    "chapters": 16,
+    "last_timestamp": "42:39",
+    "evidence_tier": "T4",
+    "independently_verified": false,
+    "recorded_on": "2026-11-05",
+    "normalizations": [
+      {
+        "transcribed_as": "whereabouts",
+        "normalized_to": "Wherobots"
+      },
+      {
+        "transcribed_as": "NAPE",
+        "normalized_to": "NAIP"
+      },
+      {
+        "transcribed_as": "ZAR",
+        "normalized_to": "Zarr"
+      },
+      {
+        "transcribed_as": "geoparet",
+        "normalized_to": "GeoParquet"
+      }
+    ],
+    "not_provided_by_source": [
+      "exact API method signatures",
+      "pricing plan terms",
+      "a complete enumerated nine-stage workflow",
+      "current provider access",
+      "model benchmarks",
+      "a list of the >300 Apache Sedona spatial functions"
+    ]
+  },
+  "decision_state": {
+    "adoption": "NOT_AUTHORIZED",
+    "authority_mapping": "OPEN",
+    "adr": "docs/adr/0011-wherobots-rasterflow-evaluation.md"
+  },
+  "status_vocabulary": {
+    "CASE_STUDY": {
+      "defined_by": "source",
+      "meaning": "Presenter-reported example."
+    },
+    "CLAIMED": {
+      "defined_by": "source",
+      "meaning": "Described but not separately tested."
+    },
+    "DEMO": {
+      "defined_by": "source",
+      "meaning": "Presenter demonstrated or walked through."
+    },
+    "DEMO_DISCUSSION": {
+      "defined_by": "inferred_from_use",
+      "meaning": "Practice discussed around the demo (QA, labeling, model choice); not a demonstrated tool."
+    },
+    "DIRECTION": {
+      "defined_by": "inferred_from_use",
+      "meaning": "Stated direction or use case; not a specified, implemented API."
+    },
+    "DISCUSSION": {
+      "defined_by": "inferred_from_use",
+      "meaning": "Topic raised in discussion; no capability demonstrated."
+    },
+    "EXAMPLE": {
+      "defined_by": "inferred_from_use",
+      "meaning": "Illustrative scenario used to explain a workflow, input or price; not a separately demonstrated feature."
+    },
+    "EXTERNAL": {
+      "defined_by": "inferred_from_use",
+      "meaning": "Third-party technology, platform or format named in the session; not a vendor capability."
+    },
+    "EXTERNAL_COMPARISON": {
+      "defined_by": "inferred_from_use",
+      "meaning": "Third-party product named for vendor comparison."
+    },
+    "INFERRED_RISK": {
+      "defined_by": "source",
+      "meaning": "Analytical caution inferred from example rather than feature claimed by speaker."
+    },
+    "PLANNED": {
+      "defined_by": "source",
+      "meaning": "Upcoming as of the presentation."
+    },
+    "PREVIEW_DEMO": {
+      "defined_by": "source",
+      "meaning": "Demonstrated with preview/upcoming API."
+    },
+    "PREVIOUS_APPROACH": {
+      "defined_by": "inferred_from_use",
+      "meaning": "Earlier approach described as being superseded."
+    },
+    "TRANSCRIPT_ISSUE": {
+      "defined_by": "inferred_from_use",
+      "meaning": "Statement internally inconsistent in the transcript; not usable as verified."
+    },
+    "TRANSCRIPT_UNCERTAIN": {
+      "defined_by": "inferred_from_use",
+      "meaning": "Name rests on noisy speech transcription; exact identity unverified."
+    },
+    "VENDOR_CLAIM": {
+      "defined_by": "inferred_from_use",
+      "meaning": "Claim made by the vendor presenter; not independently verified."
+    }
+  },
+  "groups": [
+    {
+      "id": "platform",
+      "name": "Platform",
+      "count": 14,
+      "first_id": "RF-001",
+      "last_id": "RF-014"
+    },
+    {
+      "id": "source_data",
+      "name": "Source Data",
+      "count": 14,
+      "first_id": "RF-015",
+      "last_id": "RF-028"
+    },
+    {
+      "id": "models",
+      "name": "Models",
+      "count": 9,
+      "first_id": "RF-029",
+      "last_id": "RF-037"
+    },
+    {
+      "id": "imagery",
+      "name": "Imagery",
+      "count": 15,
+      "first_id": "RF-038",
+      "last_id": "RF-052"
+    },
+    {
+      "id": "inference",
+      "name": "Inference",
+      "count": 21,
+      "first_id": "RF-053",
+      "last_id": "RF-073"
+    },
+    {
+      "id": "analytics",
+      "name": "Analytics",
+      "count": 9,
+      "first_id": "RF-074",
+      "last_id": "RF-082"
+    },
+    {
+      "id": "publish",
+      "name": "Publish",
+      "count": 11,
+      "first_id": "RF-083",
+      "last_id": "RF-093"
+    },
+    {
+      "id": "s3_security",
+      "name": "S3 Security",
+      "count": 6,
+      "first_id": "RF-094",
+      "last_id": "RF-099"
+    },
+    {
+      "id": "agent_api",
+      "name": "Agent Api",
+      "count": 14,
+      "first_id": "RF-100",
+      "last_id": "RF-113"
+    },
+    {
+      "id": "workflows",
+      "name": "Workflows",
+      "count": 10,
+      "first_id": "RF-114",
+      "last_id": "RF-123"
+    },
+    {
+      "id": "ecosystem",
+      "name": "Ecosystem",
+      "count": 16,
+      "first_id": "RF-124",
+      "last_id": "RF-139"
+    },
+    {
+      "id": "finops",
+      "name": "Finops",
+      "count": 10,
+      "first_id": "RF-140",
+      "last_id": "RF-149"
+    },
+    {
+      "id": "quality",
+      "name": "Quality",
+      "count": 8,
+      "first_id": "RF-150",
+      "last_id": "RF-157"
+    }
+  ],
+  "entries": [
+    {
+      "id": "RF-001",
+      "group": "platform",
+      "name": "Wherobots RasterFlow",
+      "timestamp": "01:14",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Planetary-scale Earth-observation raster pipeline and model-inference execution engine."
+    },
+    {
+      "id": "RF-002",
+      "group": "platform",
+      "name": "WherobotsDB",
+      "timestamp": "01:23",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Distributed spatial SQL/compute for large raster and vector datasets."
+    },
+    {
+      "id": "RF-003",
+      "group": "platform",
+      "name": "Apache Sedona integration",
+      "timestamp": "01:31",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Open-source distributed geospatial engine supporting more than 300 spatial functions; specific function inventory not enumerated."
+    },
+    {
+      "id": "RF-004",
+      "group": "platform",
+      "name": "Wherobots Cloud / central hub",
+      "timestamp": "01:55",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Coordinates hosted and user-owned spatial datasets, models, jobs, and outputs."
+    },
+    {
+      "id": "RF-005",
+      "group": "platform",
+      "name": "Spatial lakehouse pattern",
+      "timestamp": "02:22",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Use existing storage, public data, and private S3-based sources without requiring an entirely separate data lake."
+    },
+    {
+      "id": "RF-006",
+      "group": "platform",
+      "name": "Hosted dataset discovery",
+      "timestamp": "02:29",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Discover vendor-provided datasets."
+    },
+    {
+      "id": "RF-007",
+      "group": "platform",
+      "name": "User dataset discovery",
+      "timestamp": "02:29",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Discover private datasets available to the user's cloud environment."
+    },
+    {
+      "id": "RF-008",
+      "group": "platform",
+      "name": "Composable pipeline authoring",
+      "timestamp": "02:38",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Assemble repeatable imagery, inference, post-processing, and publication pipelines."
+    },
+    {
+      "id": "RF-009",
+      "group": "platform",
+      "name": "Recurring automated execution",
+      "timestamp": "02:44",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Run stabilized pipelines repeatedly to produce updated derived data products."
+    },
+    {
+      "id": "RF-010",
+      "group": "platform",
+      "name": "Spatial AI coding assistance",
+      "timestamp": "01:40",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Use agents and LLMs for GIS code development and orchestration."
+    },
+    {
+      "id": "RF-011",
+      "group": "platform",
+      "name": "MCP agent connection",
+      "timestamp": "01:47",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Connect an agent or developer tool through Model Context Protocol to spatial engines."
+    },
+    {
+      "id": "RF-012",
+      "group": "platform",
+      "name": "Wherobots native visualization",
+      "timestamp": "25:49",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Inspect cloud-native raster and vector outputs without moving/exporting them first."
+    },
+    {
+      "id": "RF-013",
+      "group": "platform",
+      "name": "Model Hub",
+      "timestamp": "35:12",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Browse available models, example results, and example input imagery."
+    },
+    {
+      "id": "RF-014",
+      "group": "platform",
+      "name": "Distributed WherobotsDB jobs",
+      "timestamp": "38:47",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Launch spatial geometry post-processing from an AI-agent-managed sequence."
+    },
+    {
+      "id": "RF-015",
+      "group": "source_data",
+      "name": "Built-in NAIP aerial imagery",
+      "timestamp": "05:44",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Use high-resolution aerial imagery; transcript transcribes this as 'NAPE'."
+    },
+    {
+      "id": "RF-016",
+      "group": "source_data",
+      "name": "Built-in Sentinel-2 imagery",
+      "timestamp": "05:52",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Use multispectral satellite scenes and composites."
+    },
+    {
+      "id": "RF-017",
+      "group": "source_data",
+      "name": "Sentinel-1 catalog entry",
+      "timestamp": "05:52",
+      "status": "PLANNED",
+      "status_tokens": [
+        "PLANNED"
+      ],
+      "description": "Future radar imagery source; not described as available in the session."
+    },
+    {
+      "id": "RF-018",
+      "group": "source_data",
+      "name": "Public and open Earth-observation imagery",
+      "timestamp": "02:07",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Combine open/public image collections with private imagery."
+    },
+    {
+      "id": "RF-019",
+      "group": "source_data",
+      "name": "Commercial / licensed imagery input",
+      "timestamp": "07:34",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Index separately acquired imagery for compatible pipelines; licenses require separate checking."
+    },
+    {
+      "id": "RF-020",
+      "group": "source_data",
+      "name": "Bring-your-own raster imagery",
+      "timestamp": "06:00",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Register imagery supplied as COGs through a raster tile index."
+    },
+    {
+      "id": "RF-021",
+      "group": "source_data",
+      "name": "AWS S3-hosted Sentinel-2 COGs",
+      "timestamp": "12:07",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Reference imagery source for Fields of the World scenario."
+    },
+    {
+      "id": "RF-022",
+      "group": "source_data",
+      "name": "Kentucky aerial-imagery source",
+      "timestamp": "32:31",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "High-resolution Kentucky imagery provider transcribed as 'Kai from above'; exact proper spelling unverified from transcript."
+    },
+    {
+      "id": "RF-023",
+      "group": "source_data",
+      "name": "Spatial AOI collection in GeoParquet",
+      "timestamp": "23:18",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Supply many parcels or regions of interest to batch tasks from S3."
+    },
+    {
+      "id": "RF-024",
+      "group": "source_data",
+      "name": "Geospatial raster tile index in GeoParquet",
+      "timestamp": "37:46",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Describe user-owned COG footprints and locations for mosaic building."
+    },
+    {
+      "id": "RF-025",
+      "group": "source_data",
+      "name": "Multi-time-period image inputs",
+      "timestamp": "12:30",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Feed different season-specific mosaics into a temporal model."
+    },
+    {
+      "id": "RF-026",
+      "group": "source_data",
+      "name": "Terrain slope as model covariate",
+      "timestamp": "15:37",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Input slope and terrain data to wildfire decision model."
+    },
+    {
+      "id": "RF-027",
+      "group": "source_data",
+      "name": "Weather forecasts as model covariate",
+      "timestamp": "15:44",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Bring external weather information into wildfire suitability inference."
+    },
+    {
+      "id": "RF-028",
+      "group": "source_data",
+      "name": "Soil-moisture data as model covariate",
+      "timestamp": "15:44",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Combine modeled environmental variables in wildfire workflow."
+    },
+    {
+      "id": "RF-029",
+      "group": "models",
+      "name": "SAM 3 model",
+      "timestamp": "06:10",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Text-prompted high-resolution image object detection and geometry production."
+    },
+    {
+      "id": "RF-030",
+      "group": "models",
+      "name": "Fields of the World",
+      "timestamp": "06:18",
+      "status": "CLAIMED+EXAMPLE",
+      "status_tokens": [
+        "CLAIMED",
+        "EXAMPLE"
+      ],
+      "description": "Predict agricultural field boundaries from Sentinel-2 mosaics."
+    },
+    {
+      "id": "RF-031",
+      "group": "models",
+      "name": "Canopy-height model",
+      "timestamp": "06:26",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Estimate height of trees and render canopy-height raster overlay."
+    },
+    {
+      "id": "RF-032",
+      "group": "models",
+      "name": "USDA Forest Service FireCon",
+      "timestamp": "15:30",
+      "status": "CASE_STUDY",
+      "status_tokens": [
+        "CASE_STUDY"
+      ],
+      "description": "Use slope, weather, and moisture to identify candidate wildfire containment locations."
+    },
+    {
+      "id": "RF-033",
+      "group": "models",
+      "name": "Bring-your-own PyTorch model",
+      "timestamp": "06:33",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Register and run an independently developed model using a PT2 archive."
+    },
+    {
+      "id": "RF-034",
+      "group": "models",
+      "name": "Model registration",
+      "timestamp": "06:33",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Make custom model available to RasterFlow execution workflows."
+    },
+    {
+      "id": "RF-035",
+      "group": "models",
+      "name": "Text prompt list",
+      "timestamp": "33:08",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Specify several object classes in one SAM 3 inference job."
+    },
+    {
+      "id": "RF-036",
+      "group": "models",
+      "name": "Confidence threshold control",
+      "timestamp": "33:17",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Adjust the score cutoff for accepted object detections."
+    },
+    {
+      "id": "RF-037",
+      "group": "models",
+      "name": "Model output confidence scores",
+      "timestamp": "12:59",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Use per-pixel or model probability scores when converting predictions to boundaries."
+    },
+    {
+      "id": "RF-038",
+      "group": "imagery",
+      "name": "Imagery search and sourcing",
+      "timestamp": "03:33",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Find appropriate source imagery for target AOI and date coverage."
+    },
+    {
+      "id": "RF-039",
+      "group": "imagery",
+      "name": "Imagery ingestion from COGs/S3",
+      "timestamp": "06:57",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Read cloud-optimized remote-sensing scenes."
+    },
+    {
+      "id": "RF-040",
+      "group": "imagery",
+      "name": "Imagery catalog/index preparation",
+      "timestamp": "07:42",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Create machine-readable indexes for custom image collections."
+    },
+    {
+      "id": "RF-041",
+      "group": "imagery",
+      "name": "Time-range selection for compositing",
+      "timestamp": "07:48",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Choose a date/time interval for making a composite."
+    },
+    {
+      "id": "RF-042",
+      "group": "imagery",
+      "name": "Multi-scene image compositing",
+      "timestamp": "06:57",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Combine scene data across available observations."
+    },
+    {
+      "id": "RF-043",
+      "group": "imagery",
+      "name": "Averaging/compositing to reduce clouds",
+      "timestamp": "07:05",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Build cloud-reduced or cloud-free image mosaics where coverage permits."
+    },
+    {
+      "id": "RF-044",
+      "group": "imagery",
+      "name": "Seamless mosaic construction",
+      "timestamp": "07:56",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Stitch numerous imagery tiles into an inference-ready geospatial mosaic."
+    },
+    {
+      "id": "RF-045",
+      "group": "imagery",
+      "name": "Inference-ready mosaic preparation",
+      "timestamp": "03:41",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Ensure suitable image assembly, tiling/windowing, and data format for model runs."
+    },
+    {
+      "id": "RF-046",
+      "group": "imagery",
+      "name": "Zarr raster mosaics",
+      "timestamp": "08:05",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Write efficiently chunked raster mosaic products."
+    },
+    {
+      "id": "RF-047",
+      "group": "imagery",
+      "name": "Multi-band imagery handling",
+      "timestamp": "19:03",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Account for red/green/blue/near-infrared and 12-band inputs in imagery workflows."
+    },
+    {
+      "id": "RF-048",
+      "group": "imagery",
+      "name": "Multi-temporal pairing",
+      "timestamp": "12:30",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Prepare planting-season and harvest-season mosaics as separate inputs."
+    },
+    {
+      "id": "RF-049",
+      "group": "imagery",
+      "name": "Planting/harvest seasonal heuristics",
+      "timestamp": "12:42",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Select candidate seasonal windows for agricultural boundary model."
+    },
+    {
+      "id": "RF-050",
+      "group": "imagery",
+      "name": "NoData coverage diagnosis",
+      "timestamp": "04:29",
+      "status": "DISCUSSION",
+      "status_tokens": [
+        "DISCUSSION"
+      ],
+      "description": "Detect or explain imagery mosaics with missing data."
+    },
+    {
+      "id": "RF-051",
+      "group": "imagery",
+      "name": "Cloud-coverage diagnosis",
+      "timestamp": "04:38",
+      "status": "DISCUSSION",
+      "status_tokens": [
+        "DISCUSSION"
+      ],
+      "description": "Detect or explain temporal windows without cloud-free imagery."
+    },
+    {
+      "id": "RF-052",
+      "group": "imagery",
+      "name": "Image seam/edge quality assessment",
+      "timestamp": "04:38",
+      "status": "DISCUSSION",
+      "status_tokens": [
+        "DISCUSSION"
+      ],
+      "description": "Check visible splits or boundaries in mosaic joins."
+    },
+    {
+      "id": "RF-053",
+      "group": "inference",
+      "name": "Batch image model inference",
+      "timestamp": "08:30",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Execute model over large multi-tile AOIs."
+    },
+    {
+      "id": "RF-054",
+      "group": "inference",
+      "name": "Distributed parallel inference",
+      "timestamp": "08:30",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Distribute processing across spatial mosaic and compute workers."
+    },
+    {
+      "id": "RF-055",
+      "group": "inference",
+      "name": "GPU utilization management",
+      "timestamp": "03:48",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Reduce idle accelerator time through managed task execution."
+    },
+    {
+      "id": "RF-056",
+      "group": "inference",
+      "name": "Window-based inference",
+      "timestamp": "08:46",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Use windows instead of naive independent image tiles to reduce edge effects."
+    },
+    {
+      "id": "RF-057",
+      "group": "inference",
+      "name": "Tile-boundary artifact suppression",
+      "timestamp": "08:46",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Avoid or reduce artificial seams in predicted features."
+    },
+    {
+      "id": "RF-058",
+      "group": "inference",
+      "name": "Georeferencing of predictions",
+      "timestamp": "33:24",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Map model detections back to real-world spatial coordinates."
+    },
+    {
+      "id": "RF-059",
+      "group": "inference",
+      "name": "Raster prediction output",
+      "timestamp": "08:54",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Retain machine-learning output as a raster layer."
+    },
+    {
+      "id": "RF-060",
+      "group": "inference",
+      "name": "Raster-to-vector conversion",
+      "timestamp": "09:03",
+      "status": "CLAIMED+EXAMPLE",
+      "status_tokens": [
+        "CLAIMED",
+        "EXAMPLE"
+      ],
+      "description": "Generate polygons from model output rasters."
+    },
+    {
+      "id": "RF-061",
+      "group": "inference",
+      "name": "Threshold-based polygonization",
+      "timestamp": "13:13",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Turn pixel confidence values into field-boundary polygons."
+    },
+    {
+      "id": "RF-062",
+      "group": "inference",
+      "name": "Polygon shape/edge cleanup",
+      "timestamp": "09:28",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Refine rough predicted geometries with distributed GIS functions."
+    },
+    {
+      "id": "RF-063",
+      "group": "inference",
+      "name": "Cross-tile detection stitching",
+      "timestamp": "33:32",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Consolidate adjacent detections fragmented by source tile boundaries; example says red-car polygon count changed 539 to 375 after cleanup."
+    },
+    {
+      "id": "RF-064",
+      "group": "inference",
+      "name": "Connected components over intersects",
+      "timestamp": "39:03",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Group touching/intersecting polygons by connected components."
+    },
+    {
+      "id": "RF-065",
+      "group": "inference",
+      "name": "Same-category guard for stitching",
+      "timestamp": "39:03",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Require a matching prediction class when merging touching detections."
+    },
+    {
+      "id": "RF-066",
+      "group": "inference",
+      "name": "Class-specific detection layers",
+      "timestamp": "26:14",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Inspect roofs, roads, boats, cars, sports facilities, and more independently."
+    },
+    {
+      "id": "RF-067",
+      "group": "inference",
+      "name": "Roof and building detection",
+      "timestamp": "26:14",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Use SAM 3 text prompt for roofs/buildings."
+    },
+    {
+      "id": "RF-068",
+      "group": "inference",
+      "name": "Road segment detection",
+      "timestamp": "26:57",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Identify road features from aerial imagery."
+    },
+    {
+      "id": "RF-069",
+      "group": "inference",
+      "name": "Solar-array / solar-panel detection",
+      "timestamp": "21:31",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Find distributed solar arrays using very high-resolution imagery."
+    },
+    {
+      "id": "RF-070",
+      "group": "inference",
+      "name": "Boat detection",
+      "timestamp": "33:08",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Identify boats from high-resolution imagery."
+    },
+    {
+      "id": "RF-071",
+      "group": "inference",
+      "name": "Red-vehicle detection",
+      "timestamp": "33:08",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Identify cars with specified visual attributes."
+    },
+    {
+      "id": "RF-072",
+      "group": "inference",
+      "name": "Baseball field detection",
+      "timestamp": "33:08",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Identify sports fields with possible partial geometry coverage."
+    },
+    {
+      "id": "RF-073",
+      "group": "inference",
+      "name": "Tennis-court detection",
+      "timestamp": "33:08",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Detect courts, subject to basketball-court false positives."
+    },
+    {
+      "id": "RF-074",
+      "group": "analytics",
+      "name": "Raster-vector joins",
+      "timestamp": "09:10",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Join predicted feature geometries to existing geographic datasets."
+    },
+    {
+      "id": "RF-075",
+      "group": "analytics",
+      "name": "Spatial SQL joins",
+      "timestamp": "09:28",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Run spatial matching against enterprise GIS layers."
+    },
+    {
+      "id": "RF-076",
+      "group": "analytics",
+      "name": "Zonal statistics",
+      "timestamp": "09:36",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Calculate raster statistics within detected polygons or existing AOIs."
+    },
+    {
+      "id": "RF-077",
+      "group": "analytics",
+      "name": "Agricultural NDVI by predicted field",
+      "timestamp": "13:42",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Calculate vegetation index on predicted agricultural parcel polygons."
+    },
+    {
+      "id": "RF-078",
+      "group": "analytics",
+      "name": "Agricultural field crop segmentation",
+      "timestamp": "13:34",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "Use boundary candidates to segment crop-growing regions."
+    },
+    {
+      "id": "RF-079",
+      "group": "analytics",
+      "name": "Change monitoring at large scale",
+      "timestamp": "10:58",
+      "status": "DIRECTION",
+      "status_tokens": [
+        "DIRECTION"
+      ],
+      "description": "Monitoring/change detection identified as key use case; not a fully specified implemented change-detection API."
+    },
+    {
+      "id": "RF-080",
+      "group": "analytics",
+      "name": "Regional accuracy comparison",
+      "timestamp": "15:00",
+      "status": "CASE_STUDY",
+      "status_tokens": [
+        "CASE_STUDY"
+      ],
+      "description": "Inspect variation in model performance by geography."
+    },
+    {
+      "id": "RF-081",
+      "group": "analytics",
+      "name": "Annotation/labeling needs assessment",
+      "timestamp": "40:32",
+      "status": "DEMO_DISCUSSION",
+      "status_tokens": [
+        "DEMO_DISCUSSION"
+      ],
+      "description": "Identify new labeling data required after visual QA of model results."
+    },
+    {
+      "id": "RF-082",
+      "group": "analytics",
+      "name": "Model-selection feedback loop",
+      "timestamp": "40:40",
+      "status": "DEMO_DISCUSSION",
+      "status_tokens": [
+        "DEMO_DISCUSSION"
+      ],
+      "description": "Compare model failures and choose alternate model."
+    },
+    {
+      "id": "RF-083",
+      "group": "publish",
+      "name": "GeoParquet vector result handling",
+      "timestamp": "24:57",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Use geospatial columnar vector outputs as inputs to map publication."
+    },
+    {
+      "id": "RF-084",
+      "group": "publish",
+      "name": "Distributed GeoParquet-to-PMTiles conversion",
+      "timestamp": "24:57",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Build optimized tiled vector map products."
+    },
+    {
+      "id": "RF-085",
+      "group": "publish",
+      "name": "PMTiles vector overlays",
+      "timestamp": "09:50",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Render dense polygons interactively over broad AOIs."
+    },
+    {
+      "id": "RF-086",
+      "group": "publish",
+      "name": "Raster pyramid / overview creation",
+      "timestamp": "25:14",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Generate multiresolution raster levels to support fast pan/zoom."
+    },
+    {
+      "id": "RF-087",
+      "group": "publish",
+      "name": "Multiscale Zarr generation",
+      "timestamp": "25:31",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Convert existing Zarr layers into map-browsable multiscale outputs."
+    },
+    {
+      "id": "RF-088",
+      "group": "publish",
+      "name": "Raster and vector overlay inspection",
+      "timestamp": "26:14",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Display SAM 3 PMTiles geometry on a high-resolution Zarr aerial basemap."
+    },
+    {
+      "id": "RF-089",
+      "group": "publish",
+      "name": "Selectable map class overlays",
+      "timestamp": "26:57",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Switch class layers on/off for inspection."
+    },
+    {
+      "id": "RF-090",
+      "group": "publish",
+      "name": "Tree canopy raster overlay",
+      "timestamp": "27:40",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Display canopy height estimates above aerial imagery."
+    },
+    {
+      "id": "RF-091",
+      "group": "publish",
+      "name": "Interactive zoom/pan at 30-cm resolution",
+      "timestamp": "26:38",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Browse high-resolution imagery without downloading full mosaics to desktop."
+    },
+    {
+      "id": "RF-092",
+      "group": "publish",
+      "name": "Downstream map consumer interoperability",
+      "timestamp": "02:52",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Publish results to environments named in transcript as Esri, CARTO, and Felt; precise integration contracts unspecified."
+    },
+    {
+      "id": "RF-093",
+      "group": "publish",
+      "name": "Data product distribution",
+      "timestamp": "02:59",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Deliver spatial result products to downstream business applications or customers."
+    },
+    {
+      "id": "RF-094",
+      "group": "s3_security",
+      "name": "Use own S3 input buckets",
+      "timestamp": "22:45",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Use an existing authorized cloud bucket for inputs."
+    },
+    {
+      "id": "RF-095",
+      "group": "s3_security",
+      "name": "Use own S3 output buckets",
+      "timestamp": "23:43",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Persist derived imagery, detections and geometry in user-controlled storage."
+    },
+    {
+      "id": "RF-096",
+      "group": "s3_security",
+      "name": "Credential-managed storage integration",
+      "timestamp": "23:58",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Configure S3 permissions once via an administrator-managed connection."
+    },
+    {
+      "id": "RF-097",
+      "group": "s3_security",
+      "name": "No secrets in application code",
+      "timestamp": "23:58",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Reference configured storage integration rather than embedding access keys."
+    },
+    {
+      "id": "RF-098",
+      "group": "s3_security",
+      "name": "Object-store in-place processing design",
+      "timestamp": "23:25",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Avoid compulsory duplication of private parcel inputs into hosted vendor storage."
+    },
+    {
+      "id": "RF-099",
+      "group": "s3_security",
+      "name": "Managed vendor output storage",
+      "timestamp": "08:10",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Optionally save outputs in vendor-managed storage."
+    },
+    {
+      "id": "RF-100",
+      "group": "agent_api",
+      "name": "AI agent driven GIS workflow",
+      "timestamp": "36:25",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Delegate imagery selection, mosaic creation, inference-result reuse, and publication sequence to agent."
+    },
+    {
+      "id": "RF-101",
+      "group": "agent_api",
+      "name": "Codex client",
+      "timestamp": "32:41",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "AI coding agent used in live demonstration."
+    },
+    {
+      "id": "RF-102",
+      "group": "agent_api",
+      "name": "Claude or other LLM client",
+      "timestamp": "41:23",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Agent-first interface described as usable with multiple LLM coding tools; transcript phonetically transcribes one as 'quad'."
+    },
+    {
+      "id": "RF-103",
+      "group": "agent_api",
+      "name": "Task API",
+      "timestamp": "37:02",
+      "status": "PLANNED+PREVIEW_DEMO",
+      "status_tokens": [
+        "PLANNED",
+        "PREVIEW_DEMO"
+      ],
+      "description": "Upcoming agent-first reusable workflow API; release later in the month relative to session, not a verified current release."
+    },
+    {
+      "id": "RF-104",
+      "group": "agent_api",
+      "name": "Prebuilt mosaic task",
+      "timestamp": "37:37",
+      "status": "PREVIEW_DEMO",
+      "status_tokens": [
+        "PREVIEW_DEMO"
+      ],
+      "description": "Use a predefined task to build mosaics from included imagery catalogs."
+    },
+    {
+      "id": "RF-105",
+      "group": "agent_api",
+      "name": "Custom imagery mosaic task",
+      "timestamp": "37:46",
+      "status": "PREVIEW_DEMO",
+      "status_tokens": [
+        "PREVIEW_DEMO"
+      ],
+      "description": "Run task against GeoParquet-indexed custom COGs."
+    },
+    {
+      "id": "RF-106",
+      "group": "agent_api",
+      "name": "Reusable web-optimized raster task",
+      "timestamp": "38:15",
+      "status": "PREVIEW_DEMO",
+      "status_tokens": [
+        "PREVIEW_DEMO"
+      ],
+      "description": "Generate or fetch multiscale Zarr optimized for browsers."
+    },
+    {
+      "id": "RF-107",
+      "group": "agent_api",
+      "name": "Reusable vector publication task",
+      "timestamp": "38:31",
+      "status": "PREVIEW_DEMO",
+      "status_tokens": [
+        "PREVIEW_DEMO"
+      ],
+      "description": "Generate or fetch PMTiles for precomputed model detections."
+    },
+    {
+      "id": "RF-108",
+      "group": "agent_api",
+      "name": "Agent-issued spatial cleanup task",
+      "timestamp": "38:47",
+      "status": "PREVIEW_DEMO",
+      "status_tokens": [
+        "PREVIEW_DEMO"
+      ],
+      "description": "Launch connected-component cleanup over predictions from the agent."
+    },
+    {
+      "id": "RF-109",
+      "group": "agent_api",
+      "name": "Task output and cache reuse",
+      "timestamp": "36:47",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Reuse previously computed results instead of rerunning jobs; presenter shows about 55 seconds to fetch a cached mosaic, not a fresh benchmark."
+    },
+    {
+      "id": "RF-110",
+      "group": "agent_api",
+      "name": "Cross-agent-session artifact reuse",
+      "timestamp": "38:15",
+      "status": "PREVIEW_DEMO",
+      "status_tokens": [
+        "PREVIEW_DEMO"
+      ],
+      "description": "Find outputs created in earlier agent sessions."
+    },
+    {
+      "id": "RF-111",
+      "group": "agent_api",
+      "name": "Agent tool calls in lieu of notebooks",
+      "timestamp": "41:14",
+      "status": "PLANNED",
+      "status_tokens": [
+        "PLANNED"
+      ],
+      "description": "Shift from notebook generation/execution to directly invoked API tasks and tests."
+    },
+    {
+      "id": "RF-112",
+      "group": "agent_api",
+      "name": "In-agent task execution and result retrieval",
+      "timestamp": "41:23",
+      "status": "PLANNED+PREVIEW_DEMO",
+      "status_tokens": [
+        "PLANNED",
+        "PREVIEW_DEMO"
+      ],
+      "description": "Run workflows and collect outputs without leaving coding-agent experience."
+    },
+    {
+      "id": "RF-113",
+      "group": "agent_api",
+      "name": "Automatic data-source discovery by agent",
+      "timestamp": "36:32",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Agent identifies matching imagery for a requested AOI."
+    },
+    {
+      "id": "RF-114",
+      "group": "workflows",
+      "name": "Full Earth-observation pipeline",
+      "timestamp": "03:33",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Source -> index -> ingest -> composite -> mosaic -> infer -> refine/vectorize -> join/analyze -> publish; nine stages are asserted but not explicitly enumerated one-by-one."
+    },
+    {
+      "id": "RF-115",
+      "group": "workflows",
+      "name": "Fields-of-the-World agricultural boundaries",
+      "timestamp": "11:58",
+      "status": "CASE_STUDY",
+      "status_tokens": [
+        "CASE_STUDY"
+      ],
+      "description": "Read Sentinel-2 COGs -> create two seasonal mosaics -> infer -> Zarr scores -> polygonize -> optionally NDVI/zonal stats."
+    },
+    {
+      "id": "RF-116",
+      "group": "workflows",
+      "name": "Global agricultural boundaries 2023 and 2024",
+      "timestamp": "14:19",
+      "status": "CASE_STUDY",
+      "status_tokens": [
+        "CASE_STUDY"
+      ],
+      "description": "Presenter reports approximately 500 TB Sentinel-2 mosaics, more than 100 TB initial Zarr outputs, and more than 600 GB vector geometries shared with Source Cooperative; unverified."
+    },
+    {
+      "id": "RF-117",
+      "group": "workflows",
+      "name": "USFS wildfire containment updates",
+      "timestamp": "15:30",
+      "status": "CASE_STUDY",
+      "status_tokens": [
+        "CASE_STUDY"
+      ],
+      "description": "Fuse terrain/weather/moisture -> FireCon -> frequent containment suitability updates; presenter claims less than two hours for western US versus previous daily schedule."
+    },
+    {
+      "id": "RF-118",
+      "group": "workflows",
+      "name": "Urban solar-roof inventory",
+      "timestamp": "21:31",
+      "status": "EXAMPLE",
+      "status_tokens": [
+        "EXAMPLE"
+      ],
+      "description": "High-resolution NAIP mosaic -> SAM 3 class detection -> vector spatial output."
+    },
+    {
+      "id": "RF-119",
+      "group": "workflows",
+      "name": "Kentucky multi-class inventory demo",
+      "timestamp": "32:21",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Index nine imagery tiles -> mosaic -> prompt SAM 3 for multiple classes -> georeference -> stitch -> PMTiles review."
+    },
+    {
+      "id": "RF-120",
+      "group": "workflows",
+      "name": "Canopy-height viewing workflow",
+      "timestamp": "27:40",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Aerial base mosaic -> multiscale Zarr -> canopy-height inference -> raster overlay."
+    },
+    {
+      "id": "RF-121",
+      "group": "workflows",
+      "name": "Tile seam geometry consolidation",
+      "timestamp": "38:47",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Take per-tile detections -> intersect same-class polygons -> connected-components merge -> inspect resultant geometry."
+    },
+    {
+      "id": "RF-122",
+      "group": "workflows",
+      "name": "Agent-driven cached mosaic and publication",
+      "timestamp": "36:25",
+      "status": "PREVIEW_DEMO",
+      "status_tokens": [
+        "PREVIEW_DEMO"
+      ],
+      "description": "Agent finds imagery and cache -> builds/recalls mosaic -> web raster -> detection PMTiles -> geometry cleanup."
+    },
+    {
+      "id": "RF-123",
+      "group": "workflows",
+      "name": "Recurring EO data products",
+      "timestamp": "02:38",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Discover/prepare/validate pipeline once, then rerun regularly for downstream apps."
+    },
+    {
+      "id": "RF-124",
+      "group": "ecosystem",
+      "name": "AWS S3 object storage",
+      "timestamp": "02:29",
+      "status": "EXTERNAL",
+      "status_tokens": [
+        "EXTERNAL"
+      ],
+      "description": "Cloud object-store backbone for source COGs, private AOIs, and generated outputs."
+    },
+    {
+      "id": "RF-125",
+      "group": "ecosystem",
+      "name": "Google Earth Engine",
+      "timestamp": "28:23",
+      "status": "EXTERNAL_COMPARISON",
+      "status_tokens": [
+        "EXTERNAL_COMPARISON"
+      ],
+      "description": "Earth-observation platform used as vendor comparison for capability, pricing, and export friction."
+    },
+    {
+      "id": "RF-126",
+      "group": "ecosystem",
+      "name": "Google Vertex AI",
+      "timestamp": "29:34",
+      "status": "EXTERNAL_COMPARISON",
+      "status_tokens": [
+        "EXTERNAL_COMPARISON"
+      ],
+      "description": "Referenced as a model-inference service users might integrate with Earth Engine."
+    },
+    {
+      "id": "RF-127",
+      "group": "ecosystem",
+      "name": "Esri mapping ecosystem",
+      "timestamp": "02:52",
+      "status": "EXTERNAL",
+      "status_tokens": [
+        "EXTERNAL"
+      ],
+      "description": "Named downstream visualization consumer; precise interface not specified."
+    },
+    {
+      "id": "RF-128",
+      "group": "ecosystem",
+      "name": "CARTO platform",
+      "timestamp": "02:52",
+      "status": "EXTERNAL",
+      "status_tokens": [
+        "EXTERNAL"
+      ],
+      "description": "Named downstream visualization consumer; precise interface not specified."
+    },
+    {
+      "id": "RF-129",
+      "group": "ecosystem",
+      "name": "Felt mapping platform",
+      "timestamp": "02:52",
+      "status": "EXTERNAL",
+      "status_tokens": [
+        "EXTERNAL"
+      ],
+      "description": "Named downstream visualization consumer; precise interface not specified."
+    },
+    {
+      "id": "RF-130",
+      "group": "ecosystem",
+      "name": "Source Cooperative",
+      "timestamp": "14:53",
+      "status": "EXTERNAL",
+      "status_tokens": [
+        "EXTERNAL"
+      ],
+      "description": "Open-data sharing destination for published worldwide field geometries."
+    },
+    {
+      "id": "RF-131",
+      "group": "ecosystem",
+      "name": "Taylor Geospatial",
+      "timestamp": "14:03",
+      "status": "EXTERNAL",
+      "status_tokens": [
+        "EXTERNAL"
+      ],
+      "description": "Named partner in global Fields of the World agricultural boundary processing."
+    },
+    {
+      "id": "RF-132",
+      "group": "ecosystem",
+      "name": "GDAL and Rasterio (likely speech transcription)",
+      "timestamp": "17:27",
+      "status": "TRANSCRIPT_UNCERTAIN",
+      "status_tokens": [
+        "TRANSCRIPT_UNCERTAIN"
+      ],
+      "description": "Audience poll appears to name typical self-managed raster tools; transcript gives 'Galileo, Restio', so exact tools unverified."
+    },
+    {
+      "id": "RF-133",
+      "group": "ecosystem",
+      "name": "Notebook-based Wherobots workflow",
+      "timestamp": "41:14",
+      "status": "PREVIOUS_APPROACH",
+      "status_tokens": [
+        "PREVIOUS_APPROACH"
+      ],
+      "description": "Earlier agent approach generated a notebook to execute in vendor cloud; new Task API is positioned as replacement."
+    },
+    {
+      "id": "RF-134",
+      "group": "ecosystem",
+      "name": "PyTorch PT2 archive format",
+      "timestamp": "06:33",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Model package interchange format for registering user models."
+    },
+    {
+      "id": "RF-135",
+      "group": "ecosystem",
+      "name": "Cloud Optimized GeoTIFF (COG)",
+      "timestamp": "06:00",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Indexed imagery artifact used as input to mosaic workflows."
+    },
+    {
+      "id": "RF-136",
+      "group": "ecosystem",
+      "name": "GeoParquet",
+      "timestamp": "23:18",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Columnar geospatial format used for AOIs, image indexes, and vector publication source."
+    },
+    {
+      "id": "RF-137",
+      "group": "ecosystem",
+      "name": "Zarr",
+      "timestamp": "08:05",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Chunked cloud-native raster array format; transcript repeatedly transcribes 'ZAR'."
+    },
+    {
+      "id": "RF-138",
+      "group": "ecosystem",
+      "name": "PMTiles",
+      "timestamp": "09:50",
+      "status": "CLAIMED+DEMO",
+      "status_tokens": [
+        "CLAIMED",
+        "DEMO"
+      ],
+      "description": "Single-file web map tile format for scalable polygon overlay visualization."
+    },
+    {
+      "id": "RF-139",
+      "group": "ecosystem",
+      "name": "Model Context Protocol (MCP)",
+      "timestamp": "01:47",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Agent-to-spatial-tool connection protocol."
+    },
+    {
+      "id": "RF-140",
+      "group": "finops",
+      "name": "Input-volume based task pricing",
+      "timestamp": "18:39",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Estimate processing charge from pixels, bands, time slices, and task multiplier."
+    },
+    {
+      "id": "RF-141",
+      "group": "finops",
+      "name": "Spatial units calculation",
+      "timestamp": "19:14",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Normalize into billions-of-pixel-values units; example 500 km2 at 30 cm and four bands is roughly 22 billion band-pixel values."
+    },
+    {
+      "id": "RF-142",
+      "group": "finops",
+      "name": "Per-task complexity multipliers",
+      "timestamp": "19:37",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Different pricing factors for mosaic, inference, vectorization tasks."
+    },
+    {
+      "id": "RF-143",
+      "group": "finops",
+      "name": "Up-front workflow cost estimation",
+      "timestamp": "18:55",
+      "status": "CLAIMED",
+      "status_tokens": [
+        "CLAIMED"
+      ],
+      "description": "Estimate spend before submission from AOI, resolution, spectral bands and time slices."
+    },
+    {
+      "id": "RF-144",
+      "group": "finops",
+      "name": "Agricultural boundary example price",
+      "timestamp": "20:13",
+      "status": "CASE_STUDY",
+      "status_tokens": [
+        "CASE_STUDY"
+      ],
+      "description": "150,000 km2 Sentinel-2 dual-mosaic example claims $9 mosaic and about $3.60 inference plus minor vectorization, less than $13 total; not current quote."
+    },
+    {
+      "id": "RF-145",
+      "group": "finops",
+      "name": "Urban solar example price",
+      "timestamp": "21:31",
+      "status": "CASE_STUDY",
+      "status_tokens": [
+        "CASE_STUDY"
+      ],
+      "description": "500 km2 NAIP 30 cm example: approximately $167 mosaic plus $25 SAM 3 inference, source price only."
+    },
+    {
+      "id": "RF-146",
+      "group": "finops",
+      "name": "GEE comparison",
+      "timestamp": "28:23",
+      "status": "VENDOR_CLAIM",
+      "status_tokens": [
+        "VENDOR_CLAIM"
+      ],
+      "description": "Vendor positions price predictability and integrated model execution against Google Earth Engine."
+    },
+    {
+      "id": "RF-147",
+      "group": "finops",
+      "name": "AWS S3 egress considerations",
+      "timestamp": "30:06",
+      "status": "VENDOR_CLAIM",
+      "status_tokens": [
+        "VENDOR_CLAIM"
+      ],
+      "description": "Evaluate export, transfer, and egress costs when comparing cloud platforms."
+    },
+    {
+      "id": "RF-148",
+      "group": "finops",
+      "name": "12-band Sentinel-2 mosaic comparison",
+      "timestamp": "30:41",
+      "status": "VENDOR_CLAIM",
+      "status_tokens": [
+        "VENDOR_CLAIM"
+      ],
+      "description": "Vendor cites $13.50 RasterFlow vs $50 Google Earth Engine in a specified example."
+    },
+    {
+      "id": "RF-149",
+      "group": "finops",
+      "name": "Pipeline engineering cost model",
+      "timestamp": "05:02",
+      "status": "VENDOR_CLAIM",
+      "status_tokens": [
+        "VENDOR_CLAIM"
+      ],
+      "description": "Vendor estimates approx. 3 engineers in year 1 and 1.5–2 ongoing; not verified."
+    },
+    {
+      "id": "RF-150",
+      "group": "quality",
+      "name": "False-positive class confusion",
+      "timestamp": "34:33",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Tennis-court model may confuse basketball courts; human validation needed."
+    },
+    {
+      "id": "RF-151",
+      "group": "quality",
+      "name": "Partial object delineation",
+      "timestamp": "34:42",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Baseball model may map only the infield, not whole field."
+    },
+    {
+      "id": "RF-152",
+      "group": "quality",
+      "name": "False-negative detections",
+      "timestamp": "33:51",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "SAM 3 may miss some target boats/objects."
+    },
+    {
+      "id": "RF-153",
+      "group": "quality",
+      "name": "Tile-edge fragmentation",
+      "timestamp": "33:32",
+      "status": "DEMO",
+      "status_tokens": [
+        "DEMO"
+      ],
+      "description": "Model predictions crossing source tiles may be split into false separate geometries."
+    },
+    {
+      "id": "RF-154",
+      "group": "quality",
+      "name": "Cache-result provenance caution",
+      "timestamp": "36:47",
+      "status": "INFERRED_RISK",
+      "status_tokens": [
+        "INFERRED_RISK"
+      ],
+      "description": "Exact task parameters, model/version, data versions and AOI must be part of cache identity; not guaranteed by transcript."
+    },
+    {
+      "id": "RF-155",
+      "group": "quality",
+      "name": "Contradictory boat count anecdote",
+      "timestamp": "39:37",
+      "status": "TRANSCRIPT_ISSUE",
+      "status_tokens": [
+        "TRANSCRIPT_ISSUE"
+      ],
+      "description": "Speaker says spurious polygons were reduced 'from 24 to 51' (increase): cannot treat as verified reduction."
+    },
+    {
+      "id": "RF-156",
+      "group": "quality",
+      "name": "Predicted geometry not authoritative identity",
+      "timestamp": "39:03",
+      "status": "INFERRED_RISK",
+      "status_tokens": [
+        "INFERRED_RISK"
+      ],
+      "description": "Same class plus touching polygons is only a postprocessing rule, not proof that real-world features are identical."
+    },
+    {
+      "id": "RF-157",
+      "group": "quality",
+      "name": "Source/version/accuracy QA gaps",
+      "timestamp": "40:32",
+      "status": "INFERRED_RISK",
+      "status_tokens": [
+        "INFERRED_RISK"
+      ],
+      "description": "No complete accuracy metrics, benchmark protocol, provenance schema, CRS contract, or certification tests given."
+    }
+  ]
+}
