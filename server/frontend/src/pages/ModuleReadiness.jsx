@@ -82,7 +82,7 @@ export default function ModuleReadiness() {
         <div className="space-y-1.5 w-full sm:w-64">
           <Label className="text-xs">Repository</Label>
           <Select value={repo} onValueChange={setRepo}>
-            <SelectTrigger className="bg-background border-border"><SelectValue /></SelectTrigger>
+            <SelectTrigger aria-label="Repository" className="bg-background border-border"><SelectValue /></SelectTrigger>
             <SelectContent>
               {REPOS.map((r) => <SelectItem key={r.repo} value={r.repo}>{r.name} <span className="text-muted-foreground">({r.repo})</span></SelectItem>)}
             </SelectContent>

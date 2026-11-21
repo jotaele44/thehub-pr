@@ -151,13 +151,13 @@ describe('Satellites panel', () => {
     const { container } = renderSky('&t=2026-11-03T18:10:00Z');
     const iss = await card(container, 'ISS');
     expect(container.querySelector('[data-sky-track]')).toBeNull();
-    const show = within(iss).getAllByRole('button', { name: /^Show the ISS track for the pass rising at 2026-11-04T09:27:5/ })[0];
+    const show = within(iss).getAllByRole('button', { name: /^Show track: ISS, pass rising at 2026-11-04T09:27:5/ })[0];
     expect(show).toHaveAttribute('aria-pressed', 'false');
     fireEvent.click(show);
     const track = await waitFor(() => { const el = container.querySelector('[data-sky-track="ISS"]'); expect(el).toBeTruthy(); return el; });
     expect(track.querySelector('path').getAttribute('d')).toMatch(/^M[-\d.]+,[-\d.]+( L[-\d.]+,[-\d.]+){5,}$/);
     expect(container.querySelector('[data-sky-track-key]')).toHaveTextContent('Hollow dot: rise. Filled dot: set.');
-    const hide = within(iss).getByRole('button', { name: /^Hide the ISS track/ });
+    const hide = within(iss).getByRole('button', { name: /^Hide track: ISS/ });
     expect(hide).toHaveAttribute('aria-pressed', 'true');
     fireEvent.click(hide);
     await waitFor(() => expect(container.querySelector('[data-sky-track]')).toBeNull());
@@ -167,7 +167,7 @@ describe('Satellites panel', () => {
   it('drops a shown track when the observer changes, rather than drawing it for a place it was not computed for', async () => {
     const { container } = renderSky('&t=2026-11-03T18:10:00Z');
     const iss = await card(container, 'ISS');
-    fireEvent.click(within(iss).getAllByRole('button', { name: /^Show the ISS track/ })[0]);
+    fireEvent.click(within(iss).getAllByRole('button', { name: /^Show track: ISS/ })[0]);
     await waitFor(() => expect(container.querySelector('[data-sky-track="ISS"]')).toBeTruthy());
     fireEvent.change(screen.getByLabelText('Latitude (°N)'), { target: { value: '-33.8688' } });
     fireEvent.change(screen.getByLabelText('Longitude (°E)'), { target: { value: '151.2093' } });
@@ -239,7 +239,7 @@ describe('Satellites panel', () => {
   it('is accessible, with a track shown', async () => {
     const { container } = renderSky('&t=2026-11-03T18:10:00Z');
     const iss = await card(container, 'ISS');
-    fireEvent.click(within(iss).getAllByRole('button', { name: /^Show the ISS track/ })[0]);
+    fireEvent.click(within(iss).getAllByRole('button', { name: /^Show track: ISS/ })[0]);
     await waitFor(() => expect(container.querySelector('[data-sky-track="ISS"]')).toBeTruthy());
     expect(await axe(container)).toHaveNoViolations();
   });

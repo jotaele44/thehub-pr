@@ -27,7 +27,8 @@ test('the shell exports exactly its documented surface', () => {
 
 test('the shell has no dependency beyond React, and knows nothing about routing', () => {
   const imports = [...all.matchAll(/from\s+'([^']+)'/g)].map((match) => match[1])
-  for (const source of imports) assert.ok(source === 'react' || source.startsWith('./'), `unexpected import: ${source}`)
+  // The shell may use the package's own control primitives; nothing else.
+  for (const source of imports) assert.ok(source === 'react' || source.startsWith('./') || source.startsWith('../controls/'), `unexpected import: ${source}`)
   assert.doesNotMatch(all, /react-router|next\/|window\.location|history\.push/)
   assert.doesNotMatch(files['nav.js'], /from\s+'react'|<[A-Za-z]/, 'nav.js must stay free of React and JSX')
   assert.deepEqual(pkg.dependencies, undefined)

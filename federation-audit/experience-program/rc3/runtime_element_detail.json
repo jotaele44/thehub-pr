@@ -1,0 +1,6893 @@
+{
+ "schema": "federation.experience-program.runtime-element-detail/1",
+ "method": "Chromium, dark colour scheme, every addressable route at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels. Pages were loaded, not operated. An element is counted once per application however many routes and widths it failed at; routes lists at most five. Element lists are capped at 80 per rule per page load by the scan.",
+ "styled_by_rule": "shared = the element's own class list has a design-system (fd-) class; application = it does not.",
+ "distinct_elements_by_rule": {
+  "color-contrast": {
+   "shared": 0,
+   "application": 252
+  },
+  "button-name": {
+   "shared": 0,
+   "application": 11
+  },
+  "scrollable-region-focusable": {
+   "shared": 0,
+   "application": 22
+  },
+  "label-content-name-mismatch": {
+   "shared": 0,
+   "application": 14
+  }
+ },
+ "applications": [
+  {
+   "repository": "aguayluz-pr",
+   "axe_version": "4.14.1",
+   "csp_bypassed_for_scan": false,
+   "routes": 20,
+   "page_loads": 140,
+   "rules": {
+    "color-contrast": {
+     "routes_failing": 19,
+     "distinct_elements": 222,
+     "styled_by": {
+      "shared": 0,
+      "application": 222
+     },
+     "elements": [
+      {
+       "html": "<div class=\"mt-1 text-[10px] text-slate-500\">FastAPI read layer · repo data</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".pr-1 > .leading-none > .text-slate-500.mt-1.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<div class=\"mt-1 text-[10px] uppercase tracking-wide text-slate-500\">Alerts</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/70.min-w-\\[132px\\].border-slate-800:nth-child(6) > .leading-none.min-w-0 > .tracking-wide.uppercase.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<div class=\"mt-1 text-[10px] uppercase tracking-wide text-slate-500\">Assets</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-sky-500\\/10 > .leading-none.min-w-0 > .uppercase.tracking-wide.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#091f38",
+       "ratio": 3.48,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<div class=\"mt-1 text-[10px] uppercase tracking-wide text-slate-500\">Coverage</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/70.min-w-\\[132px\\].border-slate-800:nth-child(8) > .leading-none.min-w-0 > .tracking-wide.uppercase.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<div class=\"mt-1 text-[10px] uppercase tracking-wide text-slate-500\">Events</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/70.min-w-\\[132px\\].border-slate-800:nth-child(5) > .leading-none.min-w-0 > .tracking-wide.uppercase.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<div class=\"mt-1 text-[10px] uppercase tracking-wide text-slate-500\">Mapped</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/70.min-w-\\[132px\\].py-2:nth-child(4) > .leading-none.min-w-0 > .uppercase.tracking-wide.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<div class=\"mt-1 text-[10px] uppercase tracking-wide text-slate-500\">Readings</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/70.min-w-\\[132px\\].border-slate-800:nth-child(7) > .leading-none.min-w-0 > .tracking-wide.uppercase.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<div class=\"mt-1 text-[10px] uppercase tracking-wide text-slate-500\">Review</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/70.min-w-\\[132px\\].border-slate-800:nth-child(9) > .leading-none.min-w-0 > .tracking-wide.uppercase.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<h2 class=\"px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500\">Data</h2>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "section:nth-child(2) > .pb-1",
+       "fg": "#62748e",
+       "bg": "#0f172b",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<h2 class=\"px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500\">Monitor</h2>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "section:nth-child(1) > .pb-1",
+       "fg": "#62748e",
+       "bg": "#0f172b",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<h2 class=\"px-2 pb-1 text-[10px] font-semibold uppercase tracking-wider text-slate-500\">Tools</h2>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "section:nth-child(3) > .pb-1",
+       "fg": "#62748e",
+       "bg": "#0f172b",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<span class=\"block font-mono text-[10px] uppercase tracking-wider text-slate-500\">PR Monitor</span>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/alerts",
+        "/analytics",
+        "/aquifer-bands",
+        "/assets"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".tracking-wider.block.uppercase",
+       "fg": "#62748e",
+       "bg": "#0f172b",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 19
+      },
+      {
+       "html": "<div class=\"flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500\">",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands",
+        "/cave-karst",
+        "/environmental-exposure",
+        "/hydro-inventory",
+        "/hydromet"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(1) > .gap-2.uppercase.tracking-wide",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 7
+      },
+      {
+       "html": "<span class=\"text-xs text-slate-500\">0 of 0 shown</span>",
+       "styled_by": "application",
+       "routes": [
+        "/regulatory",
+        "/regulatory/review"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mb-4 > .text-xs:nth-child(2)",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 2
+      },
+      {
+       "html": "<button class=\"rounded px-2 py-1 text-[10px] uppercase tracking-wide transition bg-sky-600 text-white\">all</button>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        1920
+       ],
+       "example_selector": ".bg-sky-600",
+       "fg": "#ffffff",
+       "bg": "#0084d1",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"flex items-center gap-2 text-[11px] uppercase tracking-wide text-slate-500\">",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(1) > .gap-2.tracking-wide.items-center",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"flex items-center gap-2 text-xs uppercase tracking-wide text-slate-500\">",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mb-6:nth-child(2) > .sm\\:grid-cols-2.xl\\:grid-cols-4.grid > .bg-slate-900\\/70.p-4.rounded-lg:nth-child(1) > .gap-2.uppercase.tracking-wide",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"flex min-h-48 items-center justify-center text-center text-sm text-slate-500\">Select a municipio on the island to inspect its data.</div>",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-h-48",
+       "fg": "#62748e",
+       "bg": "#080e20",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] font-normal text-slate-500\">AQ:USGS_AQFR:110SCPL</div>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-AQ:USGS_AQFR:110SCPL\"] > .text-slate-200[scope=\"row\"] > .font-mono.font-normal.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] font-normal text-slate-500\">AQ:USGS_AQFR:111AVMV</div>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-AQ:USGS_AQFR:111AVMV\"] > .text-slate-200[scope=\"row\"] > .font-mono.font-normal.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] font-normal text-slate-500\">AQ:USGS_AQFR:111VLAV</div>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-AQ:USGS_AQFR:111VLAV\"] > .text-slate-200[scope=\"row\"] > .font-mono.font-normal.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] font-normal text-slate-500\">AQ:USGS_AQFR:122NRCSL</div>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-AQ:USGS_AQFR:122NRCSL\"] > .text-slate-200[scope=\"row\"] > .font-mono.font-normal.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] font-normal text-slate-500\">AQ:USGS_AQFR:122NRCSU</div>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-AQ:USGS_AQFR:122NRCSU\"] > .text-slate-200[scope=\"row\"] > .font-mono.font-normal.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] font-normal text-slate-500\">AQ:USGS_NAQFR:N300STHCST</div>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer.border-slate-900.hover\\:bg-slate-900\\/60:nth-child(1) > .text-slate-200[scope=\"row\"] > .font-mono.font-normal.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] font-normal text-slate-500\">AQ:USGS_NAQFR:N400NCSTLM</div>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer.border-slate-900.hover\\:bg-slate-900\\/60:nth-child(3) > .text-slate-200[scope=\"row\"] > .font-mono.font-normal.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] text-slate-500\">2026-11-16 16:24</div>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"7\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .text-right.shrink-0 > .font-mono.text-slate-500.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] text-slate-500\">2026-11-16 23:59</div>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"6\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .text-right.shrink-0 > .font-mono.text-slate-500.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] text-slate-500\">2026-11-17 04:00</div>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"1\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .text-right.shrink-0 > .font-mono.text-slate-500.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[10px] text-slate-500\">2026-11-17 12:23</div>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"0\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .text-right.shrink-0 > .font-mono.text-slate-500.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[11px] text-slate-500\">USGSGW_175734066233300</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175734066233300\"] > td:nth-child(1) > .font-mono.text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[11px] text-slate-500\">USGSGW_175910066155500</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175910066155500\"] > td:nth-child(1) > .font-mono.text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[11px] text-slate-500\">USGSGW_175934066364800</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175934066364800\"] > td:nth-child(1) > .font-mono.text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[11px] text-slate-500\">USGSGW_175947066130601</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175947066130601\"] > td:nth-child(1) > .font-mono.text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"font-mono text-[11px] text-slate-500\">USGSGW_180057066311300</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-180057066311300\"] > td:nth-child(1) > .font-mono.text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mb-2 text-[10px] uppercase tracking-wide text-slate-500\">Open payload-product denominator families (27)</div>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-4 > .mb-2.tracking-wide.uppercase",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-0.5 truncate font-mono text-[10px] text-slate-500\" title=\"ANTHROPIC_API_KEY\">ANTHROPIC_API_KEY</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[title=\"ANTHROPIC_API_KEY\"]",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-0.5 truncate font-mono text-[10px] text-slate-500\" title=\"API_SECRET_KEY\">API_SECRET_KEY</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[title=\"API_SECRET_KEY\"]",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-0.5 truncate font-mono text-[10px] text-slate-500\" title=\"NOTIFY_EMAIL_FROM / NOTIFY_EMAIL_TO\">NOTIFY_EMAIL_FROM / NOTIFY_EMAIL_TO</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-950\\/50.p-3.items-start:nth-child(4) > .min-w-0 > .mt-0\\.5.font-mono.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-0.5 truncate font-mono text-[10px] text-slate-500\" title=\"NTFY_TOPIC\">NTFY_TOPIC</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[title=\"NTFY_TOPIC\"]",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-0.5 truncate font-mono text-[10px] text-slate-500\" title=\"SENTRY_DSN\">SENTRY_DSN</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[title=\"SENTRY_DSN\"]",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-0.5 truncate font-mono text-[10px] text-slate-500\" title=\"SLACK_WEBHOOK_URL\">SLACK_WEBHOOK_URL</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[title=\"SLACK_WEBHOOK_URL\"]",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 max-w-xs text-[11px] text-slate-500\">Total 677.21 is from Table 8. The surface/groundwater split is published only in the body text, rounded to whole Mgal/d (590 + 87 = 677).</div>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".max-w-xs",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-[10px] capitalize text-slate-600\">active</div>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"0\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .text-right.shrink-0 > .capitalize.text-slate-600.mt-1",
+       "fg": "#45556c",
+       "bg": "#020618",
+       "ratio": 2.65,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-[10px] capitalize text-slate-600\">closed</div>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"7\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .text-right.shrink-0 > .capitalize.text-slate-600.mt-1",
+       "fg": "#45556c",
+       "bg": "#020618",
+       "ratio": 2.65,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-[10px] text-slate-500\">Write endpoints require a bearer token when set.</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".gap-2\\.5.bg-slate-950\\/50.p-3:nth-child(1) > .min-w-0 > .mt-1.text-slate-500.text-\\[10px\\]",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">0 contradictions</div>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(5) > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">0 current</div>",
+       "styled_by": "application",
+       "routes": [
+        "/regulatory"
+       ],
+       "widths": [
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(3) > .text-xs.text-slate-500.mt-1",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">0 frozen manifestations</div>",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mb-6:nth-child(2) > .sm\\:grid-cols-2.xl\\:grid-cols-4.grid > .bg-slate-900\\/70.p-4.rounded-lg:nth-child(2) > .mt-1.text-xs.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">0 historical/current rows</div>",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mb-6:nth-child(2) > .sm\\:grid-cols-2.xl\\:grid-cols-4.grid > .bg-slate-900\\/70.p-4.rounded-lg:nth-child(1) > .mt-1.text-xs.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">0 source receipts</div>",
+       "styled_by": "application",
+       "routes": [
+        "/regulatory"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(1) > .text-xs.text-slate-500.mt-1",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">0 structural residue classes</div>",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mb-6.bg-slate-900\\/60:nth-child(2) > .sm\\:grid-cols-2.xl\\:grid-cols-4.grid > .bg-slate-900\\/70.p-4.rounded-lg:nth-child(4) > .mt-1.text-slate-500.text-xs",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">19 unresolved gaps</div>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(4) > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">2 observations</div>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(3) > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">27 source families still open</div>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(4) > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">3 status events</div>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(2) > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">31 governed</div>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(2) > .text-xs.text-slate-500.mt-1",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">63 registered products</div>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(3) > .text-xs.text-slate-500.mt-1",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">Access Infrastructure</div>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".hover\\:border-slate-700.hover\\:bg-slate-900.text-left:nth-child(3) > .items-start.justify-between.gap-3 > .min-w-0 > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">Cave</div>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-sky-500\\/50 > .items-start.justify-between.gap-3 > .min-w-0 > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#02162e",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">FROZEN_V1_CANDIDATE</div>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(1) > .text-xs.text-slate-500.mt-1",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">Generation inventory, output and plant state.</div>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mb-4.p-3.bg-slate-950\\/40 > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">None yet</div>",
+       "styled_by": "application",
+       "routes": [
+        "/regulatory"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(2) > .text-xs.text-slate-500.mt-1",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">Park</div>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".hover\\:border-slate-700.hover\\:bg-slate-900.text-left:nth-child(2) > .items-start.justify-between.gap-3 > .min-w-0 > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">Río Camuy scope</div>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-4.bg-slate-900\\/70.rounded-lg:nth-child(1) > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">Underground River</div>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".hover\\:border-slate-700.hover\\:bg-slate-900.text-left:nth-child(4) > .items-start.justify-between.gap-3 > .min-w-0 > .text-xs.mt-1.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 text-xs text-slate-500\">authoritative denominator remains open</div>",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mb-6.bg-slate-900\\/60:nth-child(2) > .sm\\:grid-cols-2.xl\\:grid-cols-4.grid > .bg-slate-900\\/70.p-4.rounded-lg:nth-child(3) > .mt-1.text-slate-500.text-xs",
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 truncate text-[10px] text-slate-500\">PR_COAST</div>",
+       "styled_by": "application",
+       "routes": [
+        "/assets"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-index=\"0\"] > .max-w-\\[190px\\].p-2.align-top > .text-slate-500.mt-1.truncate",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 truncate text-[10px] text-slate-500\">PR_COAST_WQX</div>",
+       "styled_by": "application",
+       "routes": [
+        "/assets"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-index=\"6\"] > .max-w-\\[190px\\].p-2.align-top > .text-slate-500.mt-1.truncate",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 truncate text-[10px] text-slate-500\">PR_LAKES</div>",
+       "styled_by": "application",
+       "routes": [
+        "/assets"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-index=\"1\"] > .max-w-\\[190px\\].p-2.align-top > .text-slate-500.mt-1.truncate",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-1 truncate text-[10px] text-slate-500\">water quality monitoring location</div>",
+       "styled_by": "application",
+       "routes": [
+        "/assets"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-index=\"0\"] > .p-2.align-top:nth-child(2) > .text-slate-500.mt-1.truncate",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-2 text-[10px] uppercase tracking-wide text-slate-600\">Certification: Zero material unresolved source-coverage residue inside declared scope.</div>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".text-slate-600.mt-2.tracking-wide",
+       "fg": "#45556c",
+       "bg": "#0a1023",
+       "ratio": 2.49,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[10px] text-slate-600\">9,826 KB</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(2) > .border-slate-800\\/70.last\\:border-0.gap-3:nth-child(2) > .text-right.shrink-0 > .text-slate-600.text-\\[10px\\]",
+       "fg": "#45556c",
+       "bg": "#0f172a",
+       "ratio": 2.35,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[10px] uppercase tracking-wide text-slate-500\">Bound series</div>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-950.p-2\\.5.rounded:nth-child(1) > .tracking-wide.uppercase.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] font-normal text-slate-500\">Critical from 13.65 ft</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175934066364800\"] > td:nth-child(4) > .font-normal.text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] font-normal text-slate-500\">Critical from 17.40 ft</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175734066233300\"] > td:nth-child(4) > .font-normal.text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] font-normal text-slate-500\">Critical from 23.43 ft</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175947066130601\"] > td:nth-child(4) > .font-normal.text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] font-normal text-slate-500\">Critical from 26.90 ft</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-180057066311300\"] > td:nth-child(4) > .font-normal.text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] font-normal text-slate-500\">Critical from 51.55 ft</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175910066155500\"] > td:nth-child(4) > .font-normal.text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] text-slate-500\">10.8%</div>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"water-use-year-2020\"] > .py-2.text-slate-200:nth-child(3) > .text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] text-slate-500\">11.6%</div>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"water-use-year-2015\"] > .py-2.text-slate-200:nth-child(3) > .text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] text-slate-500\">12.9%</div>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"water-use-year-2010\"] > .py-2.text-slate-200:nth-child(3) > .text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] text-slate-500\">87.1%</div>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"water-use-year-2010\"] > .py-2.text-slate-200:nth-child(2) > .text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] text-slate-500\">88.4%</div>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"water-use-year-2015\"] > .py-2.text-slate-200:nth-child(2) > .text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] text-slate-500\">89.2%</div>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"water-use-year-2020\"] > .py-2.text-slate-200:nth-child(2) > .text-\\[11px\\].text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] text-slate-500\">Juana Díaz</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-180057066311300\"] > td:nth-child(1) > .text-\\[11px\\].text-slate-500:nth-child(3)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] text-slate-500\">Ponce</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175934066364800\"] > td:nth-child(1) > .text-\\[11px\\].text-slate-500:nth-child(3)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] text-slate-500\">Salinas</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175947066130601\"] > td:nth-child(1) > .text-\\[11px\\].text-slate-500:nth-child(3)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-[11px] text-slate-500\">Santa Isabel</div>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175734066233300\"] > td:nth-child(1) > .text-\\[11px\\].text-slate-500:nth-child(3)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-slate-500\">No hazard records have been materialized yet.</div>",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".grid.gap-1.mt-2 > .text-slate-500",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-xs font-medium uppercase tracking-wide text-slate-500\">Current family counts</div>",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".lg\\:grid-cols-2 > div:nth-child(1) > .font-medium.tracking-wide.uppercase",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-xs font-medium uppercase tracking-wide text-slate-500\">Open source-universe residue</div>",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div:nth-child(2) > .font-medium.tracking-wide.uppercase",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-xs text-slate-500\">NOAA/NWS National Water Prediction Service</div>",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-nwps_gauges\"] > .items-start.justify-between.gap-3 > div > .text-xs.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"text-xs text-slate-500\">NOAA/NWS River Forecast Centers (SERFC) via the National Water Prediction Service</div>",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-stage_iv_pr\"] > .items-start.justify-between.gap-3 > div > .text-xs.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"truncate font-mono text-[10px] text-slate-600\">Workspace/data/utility_assets.jsonl</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(2) > .border-slate-800\\/70.last\\:border-0.gap-3:nth-child(2) > .flex-1.min-w-0 > .font-mono.text-slate-600.truncate",
+       "fg": "#45556c",
+       "bg": "#0f172a",
+       "ratio": 2.35,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"truncate font-mono text-[10px] text-slate-600\">Workspace/exports/alert_events.geojson</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(1) > .border-slate-800\\/70.last\\:border-0.gap-3:nth-child(6) > .flex-1.min-w-0 > .font-mono.text-slate-600.truncate",
+       "fg": "#45556c",
+       "bg": "#0f172a",
+       "ratio": 2.35,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"truncate font-mono text-[10px] text-slate-600\">Workspace/exports/federation/manifest.json</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(1) > .border-slate-800\\/70.last\\:border-0.gap-3:nth-child(7) > .flex-1.min-w-0 > .font-mono.text-slate-600.truncate",
+       "fg": "#45556c",
+       "bg": "#0f172a",
+       "ratio": 2.35,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"truncate font-mono text-[10px] text-slate-600\">Workspace/exports/hub_export.json</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(1) > .border-slate-800\\/70.last\\:border-0.gap-3:nth-child(2) > .flex-1.min-w-0 > .font-mono.text-slate-600.truncate",
+       "fg": "#45556c",
+       "bg": "#0f172a",
+       "ratio": 2.35,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"truncate font-mono text-[10px] text-slate-600\">Workspace/exports/integration_report.json</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(1) > .border-slate-800\\/70.last\\:border-0.gap-3:nth-child(4) > .flex-1.min-w-0 > .font-mono.text-slate-600.truncate",
+       "fg": "#45556c",
+       "bg": "#0f172a",
+       "ratio": 2.35,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"truncate font-mono text-[10px] text-slate-600\">Workspace/exports/review_queue.json</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(1) > .border-slate-800\\/70.last\\:border-0.gap-3:nth-child(3) > .flex-1.min-w-0 > .font-mono.text-slate-600.truncate",
+       "fg": "#45556c",
+       "bg": "#0f172a",
+       "ratio": 2.35,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"truncate font-mono text-[10px] text-slate-600\">Workspace/exports/source_manifest.json</div>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(1) > .border-slate-800\\/70.last\\:border-0.gap-3:nth-child(5) > .flex-1.min-w-0 > .font-mono.text-slate-600.truncate",
+       "fg": "#45556c",
+       "bg": "#0f172a",
+       "ratio": 2.35,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"inline text-slate-500\">Arithmetic: </dt>",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-nwps_gauges\"] > dl > div:nth-child(3) > dt",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"inline text-slate-500\">Endpoint: </dt>",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-nwps_gauges\"] > dl > .sm\\:col-span-2:nth-child(6) > dt",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"inline text-slate-500\">Expected cadence: </dt>",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-nwps_gauges\"] > dl > div:nth-child(4) > dt",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"inline text-slate-500\">Last attempt: </dt>",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-nwps_gauges\"] > dl > div:nth-child(2) > dt",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"inline text-slate-500\">Last success: </dt>",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-nwps_gauges\"] > dl > div:nth-child(1) > dt",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"inline text-slate-500\">Source bytes SHA-256: </dt>",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-nwps_gauges\"] > dl > .sm\\:col-span-2:nth-child(5) > dt",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-[11px] uppercase tracking-wide text-slate-500\">Condition</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "section[aria-labelledby=\"infrastructure-profile\"] > dl > .bg-slate-950\\/40.p-3.border-slate-800:nth-child(1) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-[11px] uppercase tracking-wide text-slate-500\">Confidence</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-5 > dl > .bg-slate-950\\/40.p-3.border-slate-800:nth-child(3) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-[11px] uppercase tracking-wide text-slate-500\">Emergency access</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "section[aria-labelledby=\"infrastructure-profile\"] > dl > .bg-slate-950\\/40.p-3.border-slate-800:nth-child(2) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-[11px] uppercase tracking-wide text-slate-500\">Evidence tier</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-5 > dl > .bg-slate-950\\/40.p-3.border-slate-800:nth-child(4) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-[11px] uppercase tracking-wide text-slate-500\">Flood sensitivity</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "section[aria-labelledby=\"hydrologic-profile\"] > dl > .bg-slate-950\\/40.p-3.border-slate-800:nth-child(2) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-[11px] uppercase tracking-wide text-slate-500\">Freshness</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-5 > dl > .bg-slate-950\\/40.p-3.border-slate-800:nth-child(2) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-[11px] uppercase tracking-wide text-slate-500\">Operator</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-950\\/40.p-3.border-slate-800:nth-child(6) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-[11px] uppercase tracking-wide text-slate-500\">Review status</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-950\\/40.p-3.border-slate-800:nth-child(5) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-[11px] uppercase tracking-wide text-slate-500\">Roles</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "section[aria-labelledby=\"hydrologic-profile\"] > dl > .bg-slate-950\\/40.p-3.border-slate-800:nth-child(1) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-[11px] uppercase tracking-wide text-slate-500\">Status as of</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-5 > dl > .bg-slate-950\\/40.p-3.border-slate-800:nth-child(1) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-slate-500\">Layer state</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".gap-4.justify-between.flex:nth-child(1) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-slate-500\">Legal inference</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".gap-4.justify-between.flex:nth-child(3) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-slate-500\">Metric contract</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".gap-4.justify-between.flex:nth-child(2) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<dt class=\"text-slate-500\">Synthetic geometry</dt>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".gap-4.justify-between.flex:nth-child(4) > dt",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<h3 class=\"text-xs font-medium uppercase tracking-wide text-slate-500\">Current hazard records</h3>",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "h3",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<label class=\"flex min-w-[180px] flex-col gap-1 text-[10px] uppercase tracking-wide text-slate-500\">",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(1) > .flex-wrap.mb-4.gap-3 > label",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"-mt-3 text-[11px] text-slate-500\">",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".-mt-3",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mb-3 max-w-3xl text-xs text-slate-500\">Depth to water in feet below land surface: a larger number is a deeper water table. The latest local reading of each well is placed against its own ban",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".max-w-3xl",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mb-3 max-w-3xl text-xs text-slate-500\">Million gallons per day withdrawn by PRASA and non-PRASA community water systems. Shares are of surface water plus groundwater.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(3) > .max-w-3xl.mb-3",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-0.5 truncate text-[11px] text-slate-500\">(unscoped) · Aguada, PR</p>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"6\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .flex-1.min-w-0 > .text-\\[11px\\].mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-0.5 truncate text-[11px] text-slate-500\">(unscoped) · San Juan and Vicinity</p>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"0\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .flex-1.min-w-0 > .mt-0\\.5.text-\\[11px\\]",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-0.5 truncate text-[11px] text-slate-500\">Aguada, Añasco, Rincón · Aguada, Añasco, Rincón</p>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"5\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .flex-1.min-w-0 > .text-\\[11px\\].mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-0.5 truncate text-[11px] text-slate-500\">Aguadilla, Camuy, Isabela, Quebradillas · Aguadilla, Camuy, Isabela, Quebradillas</p>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"4\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .flex-1.min-w-0 > .mt-0\\.5.text-\\[11px\\]",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-0.5 truncate text-[11px] text-slate-500\">Arecibo, Dorado, Manatí, Vega Alta, Vega Baja · Arecibo, Dorado, Manatí, Vega Alta, Vega Baja</p>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"3\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .flex-1.min-w-0 > .mt-0\\.5.text-\\[11px\\]",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-0.5 truncate text-[11px] text-slate-500\">Carolina, San Juan, Toa Baja · Carolina, San Juan, Toa Baja</p>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"1\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .flex-1.min-w-0 > .mt-0\\.5.text-\\[11px\\]",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-0.5 truncate text-[11px] text-slate-500\">Fajardo, Humacao, Luquillo, Río Grande · Fajardo, Humacao, Luquillo, Río Grande</p>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"2\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .flex-1.min-w-0 > .mt-0\\.5.text-\\[11px\\]",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-0.5 truncate text-[11px] text-slate-500\">San Juan · San Juan, La Puntilla Tide Gauge (in MLLW)</p>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-index=\"7\"] > .items-start.border-slate-800\\/70.focus-visible\\:ring-inset > .flex-1.min-w-0 > .text-\\[11px\\].mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1 max-w-3xl text-[11px] leading-relaxed text-slate-500\">USGS streamflow and gage-height observations.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".max-w-3xl",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1 text-[11px] leading-relaxed text-slate-500\">Metric-safe observations with freshness, datum, and certification status.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        1920
+       ],
+       "example_selector": ".space-y-3.h-full.overflow-auto > .items-start.gap-3.justify-between > div:nth-child(1) > .text-\\[11px\\].leading-relaxed",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1 text-[11px] text-slate-500\">Fixed island extent · select a municipio for its attached dashboard data</p>",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div:nth-child(1) > .text-\\[11px\\].text-slate-500.mt-1",
+       "fg": "#62748e",
+       "bg": "#0f172b",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1 text-xs text-slate-500\">Food recalls, water-health advisories, agriculture/animal health, infectious disease and wastewater surveillance.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mb-6:nth-child(2) > .justify-between.flex-wrap.items-start > div:nth-child(1) > p",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1.5 text-[10px] leading-relaxed text-slate-500\">Authoritative watershed geometry exists; monitoring-station topology binding is not yet complete.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/50.hover\\:border-slate-700.text-left:nth-child(6) > .mt-1\\.5.leading-relaxed",
+       "fg": "#62748e",
+       "bg": "#080e22",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1.5 text-[10px] leading-relaxed text-slate-500\">Continuous and discrete groundwater observations remain distinct.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/50.hover\\:border-slate-700.text-left:nth-child(4) > .mt-1\\.5.leading-relaxed",
+       "fg": "#62748e",
+       "bg": "#080e22",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1.5 text-[10px] leading-relaxed text-slate-500\">Current station-derived rainfall context; spatial raster coverage is a separate adapter.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/50.hover\\:border-slate-700.text-left:nth-child(3) > .mt-1\\.5.leading-relaxed",
+       "fg": "#62748e",
+       "bg": "#080e22",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1.5 text-[10px] leading-relaxed text-slate-500\">NOAA coastal water-level observations.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/50.hover\\:border-slate-700.text-left:nth-child(5) > .mt-1\\.5.leading-relaxed",
+       "fg": "#62748e",
+       "bg": "#080e22",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1.5 text-[10px] leading-relaxed text-slate-500\">Permit/franchise identity must be independently bound before legal-state classification.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/50.hover\\:border-slate-700.text-left:nth-child(7) > .mt-1\\.5.leading-relaxed",
+       "fg": "#62748e",
+       "bg": "#080e22",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1.5 text-[10px] leading-relaxed text-slate-500\">Reservoir elevation and storage remain separate metric identities.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-slate-900\\/50.hover\\:border-slate-700.text-left:nth-child(2) > .mt-1\\.5.leading-relaxed",
+       "fg": "#62748e",
+       "bg": "#080e22",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1.5 text-[10px] leading-relaxed text-slate-500\">USGS streamflow and gage-height observations.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-sky-700 > .mt-1\\.5.leading-relaxed",
+       "fg": "#62748e",
+       "bg": "#031025",
+       "ratio": 3.99,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1.5 text-[10px] text-slate-500\">Printable HTML rollup — sectors, top municipios, recent events.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-\\[220px\\]:nth-child(3) > .mt-1\\.5",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1.5 text-[10px] text-slate-500\">Regenerates outputs/ and exports/federation from the current corpus.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-\\[220px\\]:nth-child(1) > .mt-1\\.5",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-1.5 text-[10px] text-slate-500\">Unavailable — set SLACK_WEBHOOK_URL, NTFY_TOPIC, or SMTP email vars.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-\\[220px\\]:nth-child(2) > .mt-1\\.5",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-2 text-[10px] leading-relaxed text-slate-500\">",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-2",
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-2 text-[11px] text-slate-500\">This server holds no reading files, so no well is shown as monitored. That is a property of this server, not of the wells.</p>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".text-\\[11px\\]:nth-child(3)",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-3 text-[11px] leading-relaxed text-slate-500\">Observed stages only: NWS issues no stage forecasts for Puerto Rico points (every forecast category is fcst_not_current). Gauges without publ",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-nwps_gauges\"] > .leading-relaxed",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-3 text-[11px] leading-relaxed text-slate-500\">Post-event analysis published after the 12Z day closes, so it supports turbidity, inflow and landslide follow-up rather than warning. PRISM n",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-stage_iv_pr\"] > .leading-relaxed",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-center text-sm text-slate-500 py-16\">No items match filters</p>",
+       "styled_by": "application",
+       "routes": [
+        "/review"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".text-center",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">0 pending · J/K move · A accept · R reject · S skip</p>",
+       "styled_by": "application",
+       "routes": [
+        "/review"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">19,757 assets · 500 events</p>",
+       "styled_by": "application",
+       "routes": [
+        "/analytics"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">4513 alert(s) · 2134 active · 451 critical (severity ≥ 4) · 4355 mapped</p>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-0\\.5.text-xs",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">Adjudicate candidate links between provider observations and AguaLuz assets</p>",
+       "styled_by": "application",
+       "routes": [
+        "/regulatory/review"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-0 > .mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">All tracked infrastructure assets across Puerto Rico</p>",
+       "styled_by": "application",
+       "routes": [
+        "/assets"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "p",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">Backend configuration, artifact freshness, and the operator actions that depend on them</p>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-0 > p",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">Governed source coverage, runtime health, route provenance, and fail-closed certification boundaries</p>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-0 > p",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">Puerto Rico aquifers, wells, springs, streams, canals, waterbodies, wetlands, dams, water facilities and gauges, reconciled across every enumerated source</p>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-0 > .mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">Puerto Rico river and reservoir flood status and rainfall from NOAA/NWS, with source freshness and provenance</p>",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-0 > .mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">Read-only Río Camuy pilot registry — not a statewide cave census</p>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-0 > .mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">Read-only provider observations — no entity linkage or facility identity is asserted</p>",
+       "styled_by": "application",
+       "routes": [
+        "/regulatory"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-0 > .mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">Rivers, reservoirs, rainfall, groundwater, coastal water, watersheds, extraction, and water quality — provenance-first and fail-closed</p>",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">Service interruptions, restorations, and utility events across Puerto Rico</p>",
+       "styled_by": "application",
+       "routes": [
+        "/outages"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-0\\.5.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">South-coast observation wells against the condition bands a USGS page attributes to PRDNER</p>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-0 > .mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">Temporal source → pathway → receptor graph with fail-closed causal promotion</p>",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-0 > .mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs text-slate-500 mt-0.5\">USGS estimates of public-supply withdrawals in Puerto Rico by source: surface water and groundwater</p>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-0 > p",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"text-xs uppercase tracking-wide text-slate-500\">AYL_KARST_CAMUY_CUEVA_CLARA</p>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "p:nth-child(1)",
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"ml-auto shrink-0 text-[10px] uppercase tracking-wide text-slate-600\">unset</span>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".gap-2\\.5.bg-slate-950\\/50.p-3:nth-child(1) > .ml-auto.tracking-wide.uppercase",
+       "fg": "#45556c",
+       "bg": "#080e21",
+       "ratio": 2.52,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"ml-auto text-[11px] text-slate-500\">2026-06-01 00:00</span>",
+       "styled_by": "application",
+       "routes": [
+        "/outages"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "section:nth-child(3) > .space-y-1\\.5.p-2 > .block.p-2\\.5.hover\\:bg-slate-800\\/60:nth-child(1) > .flex-wrap.gap-2.flex > .ml-auto.text-slate-500.text-\\[11px\\]",
+       "fg": "#62748e",
+       "bg": "#0f172b",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2025-03-03 01:38</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-red-950\\/60.border-red-900.text-red-300:nth-child(15) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#955459",
+       "bg": "#2b070f",
+       "ratio": 3.23,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-19 04:57</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(14) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-20 23:54</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(13) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-21 03:47</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(12) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-21 05:01</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(11) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-23 00:13</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(10) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-24 03:34</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(9) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-24 06:49</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(8) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-24 21:07</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(7) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-25 04:35</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(6) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-25 04:41</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(5) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-25 04:51</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(4) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"shrink-0 text-[10px] opacity-50 w-24\">2026-10-25 05:11</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-amber-950\\/60.border-amber-900.text-amber-300:nth-child(3) > .w-24.opacity-50.text-\\[10px\\]",
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"text-[10px] text-slate-600\">not generated</span>",
+       "styled_by": "application",
+       "routes": [
+        "/system"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".fd-panel.p-5:nth-child(1) > .border-slate-800\\/70.last\\:border-0.gap-3:nth-child(2) > .text-right.shrink-0 > .text-slate-600",
+       "fg": "#45556c",
+       "bg": "#0f172a",
+       "ratio": 2.35,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"text-[11px] text-slate-500\">Fetches the source now, then rebuilds alerts. Scheduled runs continue regardless.</span>",
+       "styled_by": "application",
+       "routes": [
+        "/hydromet"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "div[data-testid=\"hydromet-source-nwps_gauges\"] > .gap-3.flex-wrap.mt-3 > span",
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"text-slate-500\">No current reading, so no condition is claimed</span>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175934066364800\"] > td:nth-child(3) > span",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"text-slate-500\">no reading</span>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "tr[data-testid=\"aquifer-well-175934066364800\"] > td:nth-child(2) > span",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"text-xs text-slate-500\">4 records</span>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mb-3 > span",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"text-xs text-slate-500\">SSE connected · refreshes every 5 s</span>",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".text-xs.text-slate-500",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span>4 gaps</span>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".hover\\:border-slate-700.hover\\:bg-slate-900.text-left:nth-child(4) > .mt-3.justify-between.text-xs > span:nth-child(2)",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span>5 gaps</span>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-sky-500\\/50 > .mt-3.justify-between.text-xs > span:nth-child(2)",
+       "fg": "#62748e",
+       "bg": "#02162e",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span>5 gaps</span>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".hover\\:border-slate-700.hover\\:bg-slate-900.text-left:nth-child(2) > .mt-3.justify-between.text-xs > span:nth-child(2)",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span>78 geometry features · 78 summary GEOIDs</span>",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".justify-between.mt-2.gap-3 > span:nth-child(1)",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span>Assets: brighter → higher relative count</span>",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".justify-between.mt-2.gap-3 > span:nth-child(2)",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span>Showing the 500 most recent of 4,513 matching alert(s).</span>",
+       "styled_by": "application",
+       "routes": [
+        "/alerts"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-t > span",
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span>T2 · 75% confidence</span>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-sky-500\\/50 > .mt-3.justify-between.text-xs > span:nth-child(1)",
+       "fg": "#62748e",
+       "bg": "#02162e",
+       "ratio": 3.81,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span>T2 · 75% confidence</span>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".hover\\:border-slate-700.hover\\:bg-slate-900.text-left:nth-child(4) > .mt-3.justify-between.text-xs > span:nth-child(1)",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span>T2 · 80% confidence</span>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".hover\\:border-slate-700.hover\\:bg-slate-900.text-left:nth-child(3) > .mt-3.justify-between.text-xs > span:nth-child(1)",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<span>T2 · 85% confidence</span>",
+       "styled_by": "application",
+       "routes": [
+        "/cave-karst"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".hover\\:border-slate-700.hover\\:bg-slate-900.text-left:nth-child(2) > .mt-3.justify-between.text-xs > span:nth-child(1)",
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"px-2 py-2\">Adapter</th>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "th:nth-child(4)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "bold",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"px-2 py-2\">Required</th>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "th:nth-child(3)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "bold",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"px-2 py-2\">Role</th>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "th:nth-child(2)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "bold",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"px-2 py-2\">Source family</th>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "th:nth-child(1)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "bold",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"px-2 py-2\">State</th>",
+       "styled_by": "application",
+       "routes": [
+        "/source-intelligence"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "th:nth-child(5)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "bold",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Aquifer</th>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "thead > .border-slate-800 > .py-2:nth-child(1)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Bands (ft below land surface)</th>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "th:nth-child(5)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Condition</th>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "th:nth-child(3)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Depth to water</th>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "th:nth-child(2)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Evidence</th>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-slate-800 > .py-2:nth-child(6)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Island / municipios</th>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-slate-800 > .py-2:nth-child(3)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Margin</th>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "th:nth-child(4)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Share by source</th>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-\\[900px\\] > thead > .border-slate-800 > .py-2:nth-child(5)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Source</th>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-slate-800 > .py-2:nth-child(2)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Well</th>",
+       "styled_by": "application",
+       "routes": [
+        "/aquifer-bands"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "th:nth-child(1)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 font-medium\">Year</th>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-\\[900px\\] > thead > .border-slate-800 > .py-2:nth-child(1)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 text-right font-medium\">Area km²</th>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-slate-800 > .py-2:nth-child(4)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 text-right font-medium\">Groundwater</th>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-\\[900px\\] > thead > .border-slate-800 > .py-2:nth-child(3)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 text-right font-medium\">Surface water</th>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-\\[900px\\] > thead > .border-slate-800 > .py-2:nth-child(2)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 text-right font-medium\">Total</th>",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".min-w-\\[900px\\] > thead > .border-slate-800 > .py-2:nth-child(4)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 text-right font-medium\">Wells by code</th>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-slate-800 > .py-2:nth-child(5)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<th class=\"py-2 pr-3 text-right font-medium\">Wells in outline</th>",
+       "styled_by": "application",
+       "routes": [
+        "/hydro-inventory"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-slate-800 > .py-2:nth-child(6)",
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      }
+     ],
+     "colour_pairs": [
+      {
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "font_size": "8.3pt (11px)",
+       "distinct_elements": 38
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "font_size": "9.0pt (12px)",
+       "distinct_elements": 19
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 17
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "font_size": "8.3pt (11px)",
+       "distinct_elements": 15
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "font_size": "9.0pt (12px)",
+       "distinct_elements": 14
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "font_size": "9.0pt (12px)",
+       "distinct_elements": 14
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "font_size": "8.3pt (11px)",
+       "distinct_elements": 12
+      },
+      {
+       "fg": "#95721d",
+       "bg": "#2b110a",
+       "ratio": 3.96,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 12
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 9
+      },
+      {
+       "fg": "#45556c",
+       "bg": "#0f172a",
+       "ratio": 2.35,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 9
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "font_size": "9.0pt (12px)",
+       "distinct_elements": 8
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 7
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 6
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#080e22",
+       "ratio": 4.02,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 6
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0d1529",
+       "ratio": 3.81,
+       "font_size": "9.0pt (12px)",
+       "distinct_elements": 5
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0f172b",
+       "ratio": 3.74,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 4
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0f172a",
+       "ratio": 3.74,
+       "font_size": "9.0pt (12px)",
+       "distinct_elements": 4
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0a1023",
+       "ratio": 3.96,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 3
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#02162e",
+       "ratio": 3.81,
+       "font_size": "9.0pt (12px)",
+       "distinct_elements": 3
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#080e21",
+       "ratio": 4.02,
+       "font_size": "8.3pt (11px)",
+       "distinct_elements": 3
+      },
+      {
+       "fg": "#45556c",
+       "bg": "#020618",
+       "ratio": 2.65,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 2
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0f172b",
+       "ratio": 3.74,
+       "font_size": "8.3pt (11px)",
+       "distinct_elements": 2
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#091f38",
+       "ratio": 3.48,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#ffffff",
+       "bg": "#0084d1",
+       "ratio": 4.02,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0b1225",
+       "ratio": 3.9,
+       "font_size": "8.3pt (11px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#080e20",
+       "ratio": 4.02,
+       "font_size": "10.5pt (14px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#45556c",
+       "bg": "#0a1023",
+       "ratio": 2.49,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#031025",
+       "ratio": 3.99,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#070d20",
+       "ratio": 4.05,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#020618",
+       "ratio": 4.23,
+       "font_size": "10.5pt (14px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#45556c",
+       "bg": "#080e21",
+       "ratio": 2.52,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#955459",
+       "bg": "#2b070f",
+       "ratio": 3.23,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 1
+      }
+     ]
+    },
+    "button-name": {
+     "routes_failing": 3,
+     "distinct_elements": 1,
+     "styled_by": {
+      "shared": 0,
+      "application": 1
+     },
+     "elements": [
+      {
+       "html": "<button type=\"button\" role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" dir=\"ltr\" data-state=\"closed\" class=\"flex items-center ju...\">",
+       "styled_by": "application",
+       "routes": [
+        "/logs",
+        "/outages",
+        "/review"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".whitespace-nowrap",
+       "route_count": 3
+      }
+     ]
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 5,
+     "distinct_elements": 6,
+     "styled_by": {
+      "shared": 0,
+      "application": 6
+     },
+     "elements": [
+      {
+       "html": "<div class=\"overflow-x-auto\">",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure",
+        "/water-use"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768
+       ],
+       "example_selector": "section[aria-label=\"Solid-waste site registry\"] > .overflow-x-auto",
+       "route_count": 2
+      },
+      {
+       "html": "<div class=\"flex-1 min-h-0 overflow-auto p-6\">",
+       "styled_by": "application",
+       "routes": [
+        "/environmental-exposure"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".p-6",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"flex-1 overflow-auto p-4 space-y-1 font-mono text-xs\">",
+       "styled_by": "application",
+       "routes": [
+        "/logs"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".space-y-1",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"max-h-56 overflow-auto rounded border border-slate-800\"><div class=\"p-4 text-xs text-slate-500\">No persistent incidents. Bootstrap through the authenticated API when operational materializ",
+       "styled_by": "application",
+       "routes": [
+        "/monitoring"
+       ],
+       "widths": [
+        320
+       ],
+       "example_selector": ".max-h-56",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"max-h-[28rem] overflow-auto\">",
+       "styled_by": "application",
+       "routes": [
+        "/water-use"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".max-h-\\[28rem\\]",
+       "route_count": 1
+      },
+      {
+       "html": "<main class=\"flex-1 min-h-0 overflow-auto\">",
+       "styled_by": "application",
+       "routes": [
+        "/water-disruption"
+       ],
+       "widths": [
+        320,
+        390,
+        430
+       ],
+       "example_selector": ".min-h-0",
+       "route_count": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "repository": "centinelas-pr",
+   "axe_version": "4.14.1",
+   "csp_bypassed_for_scan": false,
+   "routes": 12,
+   "page_loads": 84,
+   "rules": {
+    "color-contrast": {
+     "routes_failing": 1,
+     "distinct_elements": 2,
+     "styled_by": {
+      "shared": 0,
+      "application": 2
+     },
+     "elements": [
+      {
+       "html": "<span class=\"inline-flex min-w-16 justify-center rounded-full border px-2 py-1 text-[10px] font-bold tracking-wide border-blue-500/50 text-blue-600\">QUEUED</span>",
+       "styled_by": "application",
+       "routes": [
+        "/dashboard"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".grid-cols-\\[4\\.5rem_minmax\\(0\\,1fr\\)\\].py-4.last\\:border-b-0:nth-child(4) > .border-blue-500\\/50.text-blue-600.min-w-16",
+       "fg": "#2563eb",
+       "bg": "#161d27",
+       "ratio": 3.27,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "bold",
+       "route_count": 1
+      },
+      {
+       "html": "<span class=\"inline-flex min-w-16 justify-center rounded-full border px-2 py-1 text-[10px] font-bold tracking-wide border-emerald-500/50 text-emerald-600\">NEXT</span>",
+       "styled_by": "application",
+       "routes": [
+        "/dashboard"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".pb-2 > .grid-cols-\\[4\\.5rem_minmax\\(0\\,1fr\\)\\].py-4.last\\:border-b-0:nth-child(2) > .border-emerald-500\\/50.text-emerald-600.min-w-16",
+       "fg": "#059669",
+       "bg": "#161d27",
+       "ratio": 4.49,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "bold",
+       "route_count": 1
+      }
+     ],
+     "colour_pairs": [
+      {
+       "fg": "#2563eb",
+       "bg": "#161d27",
+       "ratio": 3.27,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#059669",
+       "bg": "#161d27",
+       "ratio": 4.49,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 1
+      }
+     ]
+    },
+    "label-content-name-mismatch": {
+     "routes_failing": 12,
+     "distinct_elements": 2,
+     "styled_by": {
+      "shared": 0,
+      "application": 2
+     },
+     "elements": [
+      {
+       "html": "<a class=\"_brand_wsssz_23\" aria-label=\"Centinelas overview\" href=\"/\" data-discover=\"true\">",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/autores",
+        "/dashboard",
+        "/entidades",
+        "/handoff"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "._brand_wsssz_23",
+       "route_count": 12
+      },
+      {
+       "html": "<button type=\"button\" class=\"_languageToggle_wsssz_159\" aria-label=\"Change language\">ES</button>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/autores",
+        "/dashboard",
+        "/entidades",
+        "/handoff"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "button[aria-label=\"Change language\"]",
+       "route_count": 12
+      }
+     ]
+    }
+   }
+  },
+  {
+   "repository": "moneysweep-pr",
+   "axe_version": "4.14.1",
+   "csp_bypassed_for_scan": false,
+   "routes": 12,
+   "page_loads": 84,
+   "rules": {
+    "button-name": {
+     "routes_failing": 2,
+     "distinct_elements": 1,
+     "styled_by": {
+      "shared": 0,
+      "application": 1
+     },
+     "elements": [
+      {
+       "html": "<button type=\"button\" role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" dir=\"ltr\" data-state=\"closed\" class=\"flex items-center ju...\">",
+       "styled_by": "application",
+       "routes": [
+        "/?tab=entities",
+        "/?tab=graph"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".justify-between",
+       "route_count": 2
+      }
+     ]
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 12,
+     "distinct_elements": 2,
+     "styled_by": {
+      "shared": 0,
+      "application": 2
+     },
+     "elements": [
+      {
+       "html": "<div class=\"panel-glass flex items-center gap-2 overflow-x-auto border-b border-border px-4 py-2\">",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/?tab=activity",
+        "/?tab=api-keys",
+        "/?tab=campaign-finance",
+        "/?tab=contracts"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768
+       ],
+       "example_selector": ".panel-glass",
+       "route_count": 12
+      },
+      {
+       "html": "<div class=\"ms-scroll-region min-h-0 flex-1 overflow-auto\">",
+       "styled_by": "application",
+       "routes": [
+        "/?tab=campaign-finance",
+        "/?tab=government-changes",
+        "/?tab=graph"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".ms-scroll-region",
+       "route_count": 3
+      }
+     ]
+    }
+   }
+  },
+  {
+   "repository": "mucaro-ai",
+   "axe_version": "4.14.1",
+   "csp_bypassed_for_scan": true,
+   "routes": 1,
+   "page_loads": 7,
+   "rules": {}
+  },
+  {
+   "repository": "ovnis-pr",
+   "axe_version": "4.14.1",
+   "csp_bypassed_for_scan": false,
+   "routes": 1,
+   "page_loads": 7,
+   "rules": {
+    "color-contrast": {
+     "routes_failing": 1,
+     "distinct_elements": 2,
+     "styled_by": {
+      "shared": 0,
+      "application": 2
+     },
+     "elements": [
+      {
+       "html": "<button type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"radix-_r_0_-content-...\" data-state=\"inactive\" id=\"radix-_r_0_-trigger-...\" class=\"inline-flex items-ce...\" tabindex=\"-1\" data-ori",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "#radix-_r_0_-trigger-stats",
+       "fg": "#6c7c93",
+       "bg": "#0f172b",
+       "ratio": 4.19,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<p class=\"mt-0.5 truncate text-[11px] text-slate-500\">Puerto Rico UAP sighting registry &amp; witness review</p>",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".mt-0\\.5",
+       "fg": "#62748e",
+       "bg": "#0f172b",
+       "ratio": 3.74,
+       "expected": "4.5:1",
+       "font_size": "8.3pt (11px)",
+       "font_weight": "normal",
+       "route_count": 1
+      }
+     ],
+     "colour_pairs": [
+      {
+       "fg": "#6c7c93",
+       "bg": "#0f172b",
+       "ratio": 4.19,
+       "font_size": "9.0pt (12px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#62748e",
+       "bg": "#0f172b",
+       "ratio": 3.74,
+       "font_size": "8.3pt (11px)",
+       "distinct_elements": 1
+      }
+     ]
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 1,
+     "distinct_elements": 1,
+     "styled_by": {
+      "shared": 0,
+      "application": 1
+     },
+     "elements": [
+      {
+       "html": "<div class=\"relative w-full overflow-auto\">",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".overflow-auto.relative.w-full",
+       "route_count": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "repository": "skywatcher-pr",
+   "axe_version": "4.14.1",
+   "csp_bypassed_for_scan": false,
+   "routes": 22,
+   "page_loads": 154,
+   "rules": {
+    "button-name": {
+     "routes_failing": 22,
+     "distinct_elements": 1,
+     "styled_by": {
+      "shared": 0,
+      "application": 1
+     },
+     "elements": [
+      {
+       "html": "<button class=\"flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-secondary text-foreground\">",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/aircraft",
+        "/airports",
+        "/analysis",
+        "/calibration"
+       ],
+       "widths": [
+        320,
+        390,
+        430
+       ],
+       "example_selector": ".h-8",
+       "route_count": 22
+      }
+     ]
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 22,
+     "distinct_elements": 10,
+     "styled_by": {
+      "shared": 0,
+      "application": 10
+     },
+     "elements": [
+      {
+       "html": "<div class=\"z-30 flex items-center gap-x-5 gap-y-1 overflow-x-auto border-b border-border bg-[hsl(220_34%_6%)] px-4 py-2 scrollbar-thin\">",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/aircraft",
+        "/airports",
+        "/analysis",
+        "/calibration"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768
+       ],
+       "example_selector": ".z-30",
+       "route_count": 22
+      },
+      {
+       "html": "<div class=\"overflow-x-auto scrollbar-thin\">",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/forgot-password",
+        "/login",
+        "/register",
+        "/reset-password"
+       ],
+       "widths": [
+        320
+       ],
+       "example_selector": ".bg-card.rounded-xl.border:nth-child(10) > .p-0.p-4 > .overflow-x-auto.scrollbar-thin",
+       "route_count": 5
+      },
+      {
+       "html": "<div class=\"overflow-x-auto rounded-lg border border-border scrollbar-thin\">",
+       "styled_by": "application",
+       "routes": [
+        "/airports",
+        "/analysis",
+        "/calibration"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768
+       ],
+       "example_selector": ".overflow-x-auto.scrollbar-thin.rounded-lg",
+       "route_count": 3
+      },
+      {
+       "html": "<main class=\"flex-1 overflow-y-auto scrollbar-thin\">",
+       "styled_by": "application",
+       "routes": [
+        "/calibration",
+        "/readiness",
+        "/review"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "main",
+       "route_count": 3
+      },
+      {
+       "html": "<code class=\"flex-1 overflow-x-auto whitespace-nowrap font-mono text-xs text-foreground/90 scrollbar-thin\">python scripts/validate_airspace_export.py exports/examples/synthetic_airspace_package --mode",
+       "styled_by": "application",
+       "routes": [
+        "/export"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768
+       ],
+       "example_selector": ".p-3.bg-\\[hsl\\(220_30\\%_4\\%\\)\\].border:nth-child(2) > .gap-2.items-center.flex > .overflow-x-auto.scrollbar-thin.flex-1",
+       "route_count": 1
+      },
+      {
+       "html": "<code class=\"flex-1 overflow-x-auto whitespace-nowrap font-mono text-xs text-foreground/90 scrollbar-thin\">python3 scripts/federation_export.py --mode test</code>",
+       "styled_by": "application",
+       "routes": [
+        "/export"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768
+       ],
+       "example_selector": ".p-3.bg-\\[hsl\\(220_30\\%_4\\%\\)\\].border:nth-child(5) > .gap-2.items-center.flex > .overflow-x-auto.scrollbar-thin.flex-1",
+       "route_count": 1
+      },
+      {
+       "html": "<code class=\"flex-1 overflow-x-auto whitespace-nowrap font-mono text-xs text-foreground/90 scrollbar-thin\">python3 scripts/ingest_airports.py</code>",
+       "styled_by": "application",
+       "routes": [
+        "/export"
+       ],
+       "widths": [
+        320,
+        390
+       ],
+       "example_selector": ".p-3.bg-\\[hsl\\(220_30\\%_4\\%\\)\\].border:nth-child(6) > .gap-2.items-center.flex > .overflow-x-auto.scrollbar-thin.flex-1",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"max-h-[420px] overflow-auto\">",
+       "styled_by": "application",
+       "routes": [
+        "/space-track"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".max-h-\\[420px\\]",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"mt-3 rounded border border-border max-h-72 overflow-auto\">",
+       "styled_by": "application",
+       "routes": [
+        "/routes"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".max-h-72",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"overflow-x-auto\">",
+       "styled_by": "application",
+       "routes": [
+        "/space-track"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768
+       ],
+       "example_selector": ".p-0.p-4 > .overflow-x-auto",
+       "route_count": 1
+      }
+     ]
+    },
+    "label-content-name-mismatch": {
+     "routes_failing": 1,
+     "distinct_elements": 7,
+     "styled_by": {
+      "shared": 0,
+      "application": 7
+     },
+     "elements": [
+      {
+       "html": "<button type=\"button\" aria-label=\"C 41 (Hyades)\" aria-describedby=\"sky-target-caldwell-C41\" class=\"min-w-0 flex-1 text-left\">",
+       "styled_by": "application",
+       "routes": [
+        "/space-track/sky"
+       ],
+       "widths": [
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "button[aria-label=\"C 41 (Hyades)\"]",
+       "route_count": 1
+      },
+      {
+       "html": "<button type=\"button\" aria-label=\"Jupiter\" aria-describedby=\"sky-target-planet-jupiter\" class=\"min-w-0 flex-1 text-left\">",
+       "styled_by": "application",
+       "routes": [
+        "/space-track/sky"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "button[aria-label=\"Jupiter\"]",
+       "route_count": 1
+      },
+      {
+       "html": "<button type=\"button\" aria-label=\"M 44 (Beehive Cluster)\" aria-describedby=\"sky-target-messier-M44\" class=\"min-w-0 flex-1 text-left\">",
+       "styled_by": "application",
+       "routes": [
+        "/space-track/sky"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "button[aria-label=\"M 44 (Beehive Cluster)\"]",
+       "route_count": 1
+      },
+      {
+       "html": "<button type=\"button\" aria-label=\"M 45 (Pleiades)\" aria-describedby=\"sky-target-messier-M45\" class=\"min-w-0 flex-1 text-left\">",
+       "styled_by": "application",
+       "routes": [
+        "/space-track/sky"
+       ],
+       "widths": [
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "button[aria-label=\"M 45 (Pleiades)\"]",
+       "route_count": 1
+      },
+      {
+       "html": "<button type=\"button\" aria-label=\"Mars\" aria-describedby=\"sky-target-planet-mars\" class=\"min-w-0 flex-1 text-left\">",
+       "styled_by": "application",
+       "routes": [
+        "/space-track/sky"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "button[aria-label=\"Mars\"]",
+       "route_count": 1
+      },
+      {
+       "html": "<button type=\"button\" aria-label=\"Saturn\" aria-describedby=\"sky-target-planet-saturn\" class=\"min-w-0 flex-1 text-left\">",
+       "styled_by": "application",
+       "routes": [
+        "/space-track/sky"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "button[aria-label=\"Saturn\"]",
+       "route_count": 1
+      },
+      {
+       "html": "<button type=\"button\" aria-label=\"Uranus\" aria-describedby=\"sky-target-planet-uranus\" class=\"min-w-0 flex-1 text-left\">",
+       "styled_by": "application",
+       "routes": [
+        "/space-track/sky"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "button[aria-label=\"Uranus\"]",
+       "route_count": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "repository": "spiderweb-pr",
+   "axe_version": "4.14.1",
+   "csp_bypassed_for_scan": false,
+   "routes": 1,
+   "page_loads": 7,
+   "rules": {
+    "label-content-name-mismatch": {
+     "routes_failing": 1,
+     "distinct_elements": 5,
+     "styled_by": {
+      "shared": 0,
+      "application": 5
+     },
+     "elements": [
+      {
+       "html": "<button title=\"DEMO-EV-1 · Demo filing near San Juan Port · 2025-02-01T14:00:00Z\" aria-label=\"Event DEMO-EV-1: Demo filing near San Juan Port on 2025-02-01T14:00:00Z\"><span class=\"badge\" data-tier=\"T3",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "li:nth-child(1) > button",
+       "route_count": 1
+      },
+      {
+       "html": "<button title=\"DEMO-EV-2 · Demo sighting at Arecibo Airfield · 2025-02-18T09:30:00Z\" aria-label=\"Event DEMO-EV-2: Demo sighting at Arecibo Airfield on 2025-02-18T09:30:00Z\"><span class=\"badge\" data-ti",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "li:nth-child(2) > button",
+       "route_count": 1
+      },
+      {
+       "html": "<button title=\"DEMO-EV-3 · Demo field report near Arecibo · 2025-03-05T18:45:00Z\" aria-label=\"Event DEMO-EV-3: Demo field report near Arecibo on 2025-03-05T18:45:00Z\"><span class=\"badge\" data-tier=\"T2",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "li:nth-child(3) > button",
+       "route_count": 1
+      },
+      {
+       "html": "<button title=\"DEMO-EV-4 · Demo permit issued at Vieques · 2025-03-19T21:10:00Z\" aria-label=\"Event DEMO-EV-4: Demo permit issued at Vieques on 2025-03-19T21:10:00Z\"><span class=\"badge\" data-tier=\"T3\">",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "li:nth-child(4) > button",
+       "route_count": 1
+      },
+      {
+       "html": "<button title=\"DEMO-EV-5 · Demo filing near Guayama Plant · 2025-04-02T12:00:00Z\" aria-label=\"Event DEMO-EV-5: Demo filing near Guayama Plant on 2025-04-02T12:00:00Z\"><span class=\"badge\" data-tier=\"T2",
+       "styled_by": "application",
+       "routes": [
+        "/"
+       ],
+       "widths": [
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": "li:nth-child(5) > button",
+       "route_count": 1
+      }
+     ]
+    }
+   }
+  },
+  {
+   "repository": "thehub-pr",
+   "axe_version": "4.14.1",
+   "csp_bypassed_for_scan": false,
+   "routes": 86,
+   "page_loads": 602,
+   "rules": {
+    "color-contrast": {
+     "routes_failing": 86,
+     "distinct_elements": 26,
+     "styled_by": {
+      "shared": 0,
+      "application": 26
+     },
+     "elements": [
+      {
+       "html": "<div class=\"px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/60\">Federation</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/aguayluz",
+        "/aguayluz?tab=alerts",
+        "/aguayluz?tab=assets",
+        "/aguayluz?tab=feed"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".space-y-1:nth-child(3) > .pb-1.text-sidebar-foreground\\/60.tracking-widest",
+       "fg": "#626a77",
+       "bg": "#12151c",
+       "ratio": 3.34,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 85
+      },
+      {
+       "html": "<div class=\"px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/60\">Overview</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/aguayluz",
+        "/aguayluz?tab=alerts",
+        "/aguayluz?tab=assets",
+        "/aguayluz?tab=feed"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".space-y-1:nth-child(1) > .pb-1.text-sidebar-foreground\\/60.tracking-widest",
+       "fg": "#626a77",
+       "bg": "#12151c",
+       "ratio": 3.34,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 85
+      },
+      {
+       "html": "<div class=\"px-3 pb-1 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/60\">Producers</div>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/aguayluz",
+        "/aguayluz?tab=alerts",
+        "/aguayluz?tab=assets",
+        "/aguayluz?tab=feed"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".space-y-1:nth-child(2) > .pb-1.text-sidebar-foreground\\/60.tracking-widest",
+       "fg": "#626a77",
+       "bg": "#12151c",
+       "ratio": 3.34,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 85
+      },
+      {
+       "html": "<span class=\"text-[10px] text-sidebar-foreground/50\">Sanitized metadata only · Gated sync</span>",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/aguayluz",
+        "/aguayluz?tab=alerts",
+        "/aguayluz?tab=assets",
+        "/aguayluz?tab=feed"
+       ],
+       "widths": [
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".text-sidebar-foreground\\/50",
+       "fg": "#555c68",
+       "bg": "#12151c",
+       "ratio": 2.71,
+       "expected": "4.5:1",
+       "font_size": "7.5pt (10px)",
+       "font_weight": "normal",
+       "route_count": 85
+      },
+      {
+       "html": "<p class=\"note\">\n      Each app opens in its own window on its own local port. Apps marked \"Not cloned\"\n      must be cloned next to TheHub first. The main dashboard is <a href=\"/\">here</a>.\n    </p>",
+       "styled_by": "application",
+       "routes": [
+        "/launcher"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".note",
+       "fg": "#64748b",
+       "bg": "#0b1020",
+       "ratio": 3.97,
+       "expected": "4.5:1",
+       "font_size": "9.0pt (12px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Agua ↔ Cent</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(18) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Agua ↔ Money</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(16) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Agua ↔ Sky</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(17) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Hub ↔ Agua</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(3) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Hub ↔ Cent</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(6) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Hub ↔ Money</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(4) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Hub ↔ Ovnis</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(2) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Hub ↔ Sky</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(5) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Hub ↔ Spider</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(1) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Money ↔ Cent</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(20) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Money ↔ Sky</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(19) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Ovnis ↔ Agua</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(12) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Ovnis ↔ Cent</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(15) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Ovnis ↔ Money</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(13) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Ovnis ↔ Sky</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(14) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Sky ↔ Cent</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(21) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Spider ↔ Agua</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(8) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Spider ↔ Cent</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(11) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Spider ↔ Money</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(9) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Spider ↔ Ovnis</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(7) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      },
+      {
+       "html": "<td class=\"p-2 align-middle [&amp;:has([role=checkbox])]:pr-0 [&amp;&gt;[role=checkbox]]:translate-y-[2px] font-medium whitespace-nowrap\">Spider ↔ Sky</td>",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".cursor-pointer:nth-child(10) > .whitespace-nowrap.font-medium",
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "expected": "4.5:1",
+       "font_size": "10.5pt (14px)",
+       "font_weight": "normal",
+       "route_count": 1
+      }
+     ],
+     "colour_pairs": [
+      {
+       "fg": "#848586",
+       "bg": "#1a1f29",
+       "ratio": 4.46,
+       "font_size": "10.5pt (14px)",
+       "distinct_elements": 21
+      },
+      {
+       "fg": "#626a77",
+       "bg": "#12151c",
+       "ratio": 3.34,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 3
+      },
+      {
+       "fg": "#555c68",
+       "bg": "#12151c",
+       "ratio": 2.71,
+       "font_size": "7.5pt (10px)",
+       "distinct_elements": 1
+      },
+      {
+       "fg": "#64748b",
+       "bg": "#0b1020",
+       "ratio": 3.97,
+       "font_size": "9.0pt (12px)",
+       "distinct_elements": 1
+      }
+     ]
+    },
+    "button-name": {
+     "routes_failing": 12,
+     "distinct_elements": 8,
+     "styled_by": {
+      "shared": 0,
+      "application": 8
+     },
+     "elements": [
+      {
+       "html": "<button type=\"button\" role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" dir=\"ltr\" data-state=\"closed\" class=\"flex items-center ju...\">",
+       "styled_by": "application",
+       "routes": [
+        "/",
+        "/control?tab=tasks",
+        "/crossover",
+        "/research?tab=assistant",
+        "/tasks"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-input.bg-transparent.shadow-xs:nth-child(1)",
+       "route_count": 5
+      },
+      {
+       "html": "<button class=\"inline-flex items-ce...\">",
+       "styled_by": "application",
+       "routes": [
+        "/aguayluz?tab=feed",
+        "/moneysweep",
+        "/moneysweep?tab=feed"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".px-2",
+       "route_count": 3
+      },
+      {
+       "html": "<button class=\"inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors bg-secondary text-foreground\">",
+       "styled_by": "application",
+       "routes": [
+        "/control?tab=tasks",
+        "/tasks"
+       ],
+       "widths": [
+        320,
+        390,
+        430
+       ],
+       "example_selector": ".bg-secondary.text-foreground.gap-1\\.5",
+       "route_count": 2
+      },
+      {
+       "html": "<button class=\"inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors text-muted-foreground hover:text-foreground\">",
+       "styled_by": "application",
+       "routes": [
+        "/control?tab=tasks",
+        "/tasks"
+       ],
+       "widths": [
+        320,
+        390,
+        430
+       ],
+       "example_selector": ".hover\\:text-foreground.gap-1\\.5.px-2\\.5:nth-child(2)",
+       "route_count": 2
+      },
+      {
+       "html": "<button type=\"button\" role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" dir=\"ltr\" data-state=\"closed\" class=\"flex h-9 w-full item...\">",
+       "styled_by": "application",
+       "routes": [
+        "/control?tab=readiness",
+        "/readiness"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".ring-offset-background",
+       "route_count": 2
+      },
+      {
+       "html": "<button class=\"inline-flex items-ce...\" disabled=\"\">",
+       "styled_by": "application",
+       "routes": [
+        "/research?tab=assistant"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".bg-primary",
+       "route_count": 1
+      },
+      {
+       "html": "<button type=\"button\" role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" dir=\"ltr\" data-state=\"closed\" class=\"flex h-9 items-cente...\">",
+       "styled_by": "application",
+       "routes": [
+        "/anomaly-overlap"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".gap-1\\.5.flex-col:nth-child(1) > .border-input.bg-transparent.shadow-xs",
+       "route_count": 1
+      },
+      {
+       "html": "<button type=\"button\" role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" dir=\"ltr\" data-state=\"closed\" data-placeholder=\"\" class=\"flex items-center ju...\">",
+       "styled_by": "application",
+       "routes": [
+        "/hub"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".border-input",
+       "route_count": 1
+      }
+     ]
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 3,
+     "distinct_elements": 3,
+     "styled_by": {
+      "shared": 0,
+      "application": 3
+     },
+     "elements": [
+      {
+       "html": "<div class=\"h-full space-y-3 overflow-y-auto p-3 text-xs\">",
+       "styled_by": "application",
+       "routes": [
+        "/gis?view=digital-twin"
+       ],
+       "widths": [
+        320,
+        390,
+        430,
+        768,
+        1280,
+        1440,
+        1920
+       ],
+       "example_selector": ".space-y-3.p-3.overflow-y-auto",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"overflow-x-auto rounded-lg border border-border bg-card\">",
+       "styled_by": "application",
+       "routes": [
+        "/moneysweep?tab=leaderboards"
+       ],
+       "widths": [
+        320,
+        390,
+        430
+       ],
+       "example_selector": ".overflow-x-auto",
+       "route_count": 1
+      },
+      {
+       "html": "<div class=\"relative w-full overflow-auto\">",
+       "styled_by": "application",
+       "routes": [
+        "/crossover"
+       ],
+       "widths": [
+        320,
+        390,
+        430
+       ],
+       "example_selector": ".overflow-auto",
+       "route_count": 1
+      }
+     ]
+    }
+   }
+  }
+ ]
+}

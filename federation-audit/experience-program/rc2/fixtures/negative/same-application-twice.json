@@ -1,0 +1,11 @@
+{
+  "description": "One application has one contract.",
+  "base": [
+    "mucaro-ai",
+    "mucaro-ai"
+  ],
+  "patch": [],
+  "expect": [
+    "duplicate-application"
+  ]
+}

@@ -19,6 +19,7 @@ export function FederationMobileNav({
   renderLink,
   isActive,
   labelContext,
+  collections,
   label = 'Primary',
   moreLabel = 'More',
   closeLabel = 'Close',
@@ -32,7 +33,7 @@ export function FederationMobileNav({
   const dialogRef = useRef(null)
   const moreRef = useRef(null)
   const active = matchFederationNavItem(groups, current, { isActive })
-  const { primary, overflow, hasMore } = splitMobileNav(groups, { max, hasExtras: Boolean(header || footer) })
+  const { primary, overflow, hasMore } = splitMobileNav(groups, { max, hasExtras: Boolean(header || footer), collections })
   const moreActive = Boolean(active) && !primary.includes(active)
 
   useEffect(() => {
@@ -98,7 +99,7 @@ export function FederationMobileNav({
           </div>
           {open && header ? <div className="fd-mobile-nav__sheet-slot">{header}</div> : null}
           {overflow.length ? (
-            <FederationModuleNav groups={overflow} current={current} isActive={isActive} label={moreLabel} onNavigate={close} {...shared} />
+            <FederationModuleNav groups={overflow} current={current} isActive={isActive} collections={collections} label={moreLabel} onNavigate={close} {...shared} />
           ) : null}
           {open && footer ? <div className="fd-mobile-nav__sheet-slot">{footer}</div> : null}
         </dialog>

@@ -29,7 +29,7 @@ export default function IssueRow({ item, isPull, onToggle, busy }) {
           </Button>
         )}
         <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
-          <a href={item.html_url} target="_blank" rel="noopener noreferrer"><ExternalLink className="h-3.5 w-3.5" /></a>
+          <a href={item.html_url} target="_blank" rel="noopener noreferrer" aria-label="Open on GitHub (new tab)"><ExternalLink className="h-3.5 w-3.5" /></a>
         </Button>
       </div>
     </div>
