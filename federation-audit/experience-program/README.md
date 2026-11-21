@@ -287,6 +287,43 @@ application was changed.
   schema is a declaration an application makes when it adopts the contract,
   and none has.
 
+## Reading the cross-engine pass
+
+Each application's build (`cross-engine/commits.json`) was served once and
+loaded in Chromium 157, Firefox 155 and WebKit 26.6: Playwright 1.63.0,
+headless, Linux container, the same seven widths, dark scheme and axe-core
+4.14.1 as before. That is 1,187 page or view loads per engine. The five RC4
+applications were built at their "after" commits, thehub-pr at #435's head,
+ovnis-pr at #204, mucaro-ai at its RC4 scan commit, and spiderweb-pr at its
+RC0-audited commit, because its `main` does not build.
+
+- `beyond_chromium` lists what an engine showed that Chromium did not on the
+  same build. WebKit showed nothing beyond Chromium on seven applications;
+  Firefox showed nothing on six.
+- Firefox, aguayluz-pr: `/map` renders nothing. The map library throws
+  `GPUInitializationError: WebGL2 is required`. This Firefox has no WebGL2.
+  Chromium's software WebGL draws the map.
+- Firefox, ovnis-pr: after the Map view, any other view replaces the whole app
+  with its error screen. The map has no WebGL context, `map.remove()` throws on
+  unmount, and the app's single error boundary also wraps the navigation.
+- WebKit, ovnis-pr: `SyntaxError: Unexpected token '<'`. The build has no
+  `maplibre-gl-worker.mjs`, so the request is answered with `index.html`.
+  Chromium makes the same request and fails silently, so the defect is not
+  WebKit's; WebKit only reports it.
+- The missing WebGL2 is this environment's, but the blank page and the error
+  screen are how the applications handle it. Every finding is in application
+  map code; none is on a shared design-system element.
+- Firefox reported `link-in-text-block` on fewer page loads than Chromium. Fewer
+  is not a fix; axe evaluates that rule from computed styles that differ by
+  engine.
+- WebKit here is Playwright's Linux build, not Safari on macOS or iOS. Pages
+  and views were loaded or opened, not operated.
+- aguayluz-pr at `c60587e` and centinelas-pr at `d96863d` (and on its current
+  `main`) do not install as pinned: `constraints-desktop.txt` pins
+  `pydantic-core==2.48.0` beside `pydantic==2.13.5`, which requires 2.46.5.
+  They were installed with that one pin removed, and `RC4_GATE.json` records
+  the conflict.
+
 ## Reading qa/
 
 The checks that need a person, or a machine this program does not have, are
