@@ -31,7 +31,7 @@ someone other than the author of the work.
 | `rc1/special_adjudications.json` | Answers to the per-application questions in the program brief. |
 | `rc1/desktop_conventions.json` | Where recents, pinning, renaming and Dock behaviour exist today (workstream WS-D). |
 | `rc1/RC1_GATE.json` | Gate state, totals and per-application validation. |
-| `scripts/runtime/` | Runtime-pass tooling: serve one audited snapshot, and load its routes in Chromium. |
+| `scripts/runtime/` | Runtime-pass tooling: serve one audited snapshot, and load its routes in Chromium (or, with `GUI_ENGINE=firefox` or `webkit`, in that engine). |
 | `scripts/rc1_runtime_merge.py` | Tabulates the runtime pass. Decides nothing beyond the rule stated in its header. |
 | `rc1/runtime_observations.json` | Per application and route: what Chromium observed at seven widths. |
 | `rc1/runtime_findings.json` | The blocking axe rules, horizontal overflows and unnamed buttons observed. |
@@ -63,6 +63,13 @@ someone other than the author of the work.
 | `scripts/rc9_matrix.py` | Reads each application's tree for its toolchain, pins, browser features and the platforms its CI names. |
 | `rc9/compatibility_matrix.json` | One row per application: what it declares, what its build relies on, and the runs that were actually made. |
 | `rc9/RC9_GATE.json` | What differs between the applications, and what the matrix cannot establish. |
+| `scripts/rc10_engine_tabulate.py` | Tabulates a cross-engine pass and lists what Firefox or WebKit shows beyond Chromium on the same build. |
+| `cross-engine/engine_matrix.json` | Each application's build loaded in Chromium, Firefox and WebKit: counts per engine and what differs from Chromium. |
+| `cross-engine/routes.json`, `cross-engine/commits.json` | The routes loaded and the commit built for each application in that pass. |
+| `qa/INDEPENDENT_REVIEW_PACKET.md` | For a reviewer other than the author: what each RC3/RC4 change did, its evidence, what to check, and a sign-off block. |
+| `qa/manual/*.md` | Scripts for a person to run with VoiceOver, NVDA, Voice Control, TalkBack and touch devices, per application and for the shared controls. |
+| `qa/macos_observations.json` | What was measured on the user's Mac: startup, the running app's identity, Dock menu and login items. |
+| `qa/MACOS_CHECKLIST.md` | What still needs a person at the Mac, and what to report back. |
 
 ## Reading RC0
 
@@ -115,7 +122,8 @@ every surface that has its own address, at 320, 390, 430, 768, 1280, 1440 and
   visited, so they remain `SOURCE_CONFIRMED`. mucaro-ai, ovnis-pr and
   spiderweb-pr hold their views in memory and contribute one address each.
 - Pages were loaded, not operated. No form was submitted and no write was tried.
-- One browser. Firefox and WebKit were not available.
+- One browser. Firefox and WebKit were not available then; the later
+  cross-engine pass (`cross-engine/`) loaded the RC4 builds in both.
 - An axe scan finds a subset of accessibility failures. It is not a keyboard or
   screen-reader review, and passing it is not an accessibility pass.
 - mucaro-ai serves a strict `script-src 'self'` policy, which refuses the
@@ -279,6 +287,31 @@ application was changed.
   schema is a declaration an application makes when it adopts the contract,
   and none has.
 
+## Reading qa/
+
+The checks that need a person, or a machine this program does not have, are
+written down here rather than claimed.
+
+- `INDEPENDENT_REVIEW_PACKET.md` is for someone other than the author. The
+  author has not filled in its sign-off and does not count as a reviewer.
+  `independent_review` stays `BLOCKED` in RC3 and RC4 until a reviewer's
+  sign-off is recorded there, with the reviewer named.
+- The `manual/` scripts are for VoiceOver, NVDA, Voice Control, TalkBack and
+  touch devices. `screen_reader` and `touch_devices` stay `BLOCKED` until
+  results come back, and are then recorded per configuration.
+- `macos_observations.json` was measured on the user's Mac, attached to the
+  session, in the user's own checkouts at their local heads, not at the RC4
+  pull-request heads. It establishes:
+  - the running app is the venv's Python (`org.python.python`), not the bundle's
+    identity;
+  - the desktop runtime defines no Dock menu and no login item;
+  - a launch that finds the setup marker or the built frontend missing reruns
+    the full setup (170.8 s once).
+  That this is the startup delay the user reported is an inference, and is
+  marked as one. Reading the Dock on screen needs Accessibility permission that
+  the Mac refused, so the on-screen name and menu are still to be confirmed with
+  `MACOS_CHECKLIST.md`.
+
 ## Re-running
 
 ```bash
@@ -350,3 +383,19 @@ python $P/rc9_matrix.py --targets <targets.json> --observed <observed.json> --ou
 
 Run the measurements one application at a time; parallel runs disturb each
 other's timings.
+
+```bash
+P=federation-audit/experience-program/scripts
+python $P/runtime/serve_snapshot.py <dir of exports> <name> 9600 &
+for e in chromium firefox webkit; do
+  mkdir -p <raw>/$e
+  GUI_ENGINE=$e node $P/runtime/chromium_pass.js <name> 9600 <routes.json> <axe.min.js> <raw>/$e
+  # or, for an application with one address:
+  # GUI_ENGINE=$e node $P/runtime/views_pass.js <name> 9600 <axe.min.js> <raw>/$e
+done
+python $P/rc10_engine_tabulate.py --raw <raw> --commits <commits.json> \
+  --out federation-audit/experience-program/cross-engine/engine_matrix.json
+```
+
+Firefox and WebKit need `npx playwright@<installed version> install firefox webkit`
+and, on Linux, `npx playwright@<version> install-deps webkit firefox`.

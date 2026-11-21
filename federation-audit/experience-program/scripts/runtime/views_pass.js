@@ -11,7 +11,12 @@
 // usage: node views_pass.js <repository> <port> <axe.min.js> <out dir>
 // BYPASS_CSP=1 lifts a strict script policy for this test context only, and
 // the output records that it was lifted.
-const { chromium } = require('playwright');
+// GUI_ENGINE=chromium|firefox|webkit picks the browser (default chromium, which
+// is what every RC1 to RC4 pass used). The output records the engine and its
+// version; keep one output directory per engine.
+const playwright = require('playwright');
+const ENGINE = process.env.GUI_ENGINE || 'chromium';
+if (!['chromium', 'firefox', 'webkit'].includes(ENGINE)) throw new Error('GUI_ENGINE must be chromium, firefox or webkit');
 const fs = require('fs');
 
 const [,, name, port, axeFile, outDir] = process.argv;
@@ -51,8 +56,8 @@ async function measure(page) {
 }
 
 (async () => {
-  const browser = await chromium.launch();
-  const out = { repository: name, base: 'http://127.0.0.1:' + port, mode: 'in-memory views', axe_version: null, csp_bypassed_for_scan: process.env.BYPASS_CSP === '1', switcher: null, observations: [] };
+  const browser = await playwright[ENGINE].launch();
+  const out = { repository: name, engine: ENGINE, browser_version: browser.version(), base: 'http://127.0.0.1:' + port, mode: 'in-memory views', axe_version: null, csp_bypassed_for_scan: process.env.BYPASS_CSP === '1', switcher: null, observations: [] };
   for (const width of WIDTHS) {
     const context = await browser.newContext({ viewport: { width, height: width < 768 ? 844 : 900 }, colorScheme: 'dark', bypassCSP: process.env.BYPASS_CSP === '1' });
     const page = await context.newPage();
