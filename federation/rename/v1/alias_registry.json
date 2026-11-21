@@ -1,0 +1,107 @@
+[
+ {
+  "raw": "thehub-pr",
+  "normalized": "thehub-pr",
+  "canonical": "Batey-PR",
+  "stable_project_id": "federation.project.thehub_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "TheHub PR",
+  "normalized": "thehub-pr",
+  "canonical": "Batey-PR",
+  "stable_project_id": "federation.project.thehub_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "TheHub-PR",
+  "normalized": "thehub-pr",
+  "canonical": "Batey-PR",
+  "stable_project_id": "federation.project.thehub_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "moneysweep-pr",
+  "normalized": "moneysweep-pr",
+  "canonical": "Chanchullos-PR",
+  "stable_project_id": "federation.project.moneysweep_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "MoneySweep-PR",
+  "normalized": "moneysweep-pr",
+  "canonical": "Chanchullos-PR",
+  "stable_project_id": "federation.project.moneysweep_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "MoneySweep PR",
+  "normalized": "moneysweep-pr",
+  "canonical": "Chanchullos-PR",
+  "stable_project_id": "federation.project.moneysweep_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "Centinelas PR",
+  "normalized": "centinelas-pr",
+  "canonical": "Cronos-PR",
+  "stable_project_id": "federation.project.centinelas_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "Centinelas-PR",
+  "normalized": "centinelas-pr",
+  "canonical": "Cronos-PR",
+  "stable_project_id": "federation.project.centinelas_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "centinelas-pr",
+  "normalized": "centinelas-pr",
+  "canonical": "Cronos-PR",
+  "stable_project_id": "federation.project.centinelas_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "Skywatcher-PR",
+  "normalized": "skywatcher-pr",
+  "canonical": "Pitirre-PR",
+  "stable_project_id": "federation.project.skywatcher_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "skywatcher-pr",
+  "normalized": "skywatcher-pr",
+  "canonical": "Pitirre-PR",
+  "stable_project_id": "federation.project.skywatcher_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "Skywatcher PR",
+  "normalized": "skywatcher-pr",
+  "canonical": "Pitirre-PR",
+  "stable_project_id": "federation.project.skywatcher_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "Spiderweb PR",
+  "normalized": "spiderweb-pr",
+  "canonical": "Borikén-PR",
+  "stable_project_id": "federation.project.spiderweb_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "Spiderweb-PR",
+  "normalized": "spiderweb-pr",
+  "canonical": "Borikén-PR",
+  "stable_project_id": "federation.project.spiderweb_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ },
+ {
+  "raw": "spiderweb-pr",
+  "normalized": "spiderweb-pr",
+  "canonical": "Borikén-PR",
+  "stable_project_id": "federation.project.spiderweb_pr",
+  "direction": "OLD_TO_NEW_ONLY"
+ }
+]

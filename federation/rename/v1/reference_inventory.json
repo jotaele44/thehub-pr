@@ -1,0 +1,783 @@
+{
+ "total_content_references": 118734,
+ "per_repo": {
+  "thehub-pr": {
+   "total_content_references": 100398,
+   "path_name_references": 307,
+   "by_layer": {
+    "OTHER": {
+     "thehub": 331,
+     "_files": 34,
+     "moneysweep": 177,
+     "centinelas": 185,
+     "skywatcher": 93,
+     "spiderweb": 90
+    },
+    "DOC": {
+     "thehub": 657,
+     "_files": 131,
+     "moneysweep": 319,
+     "centinelas": 246,
+     "skywatcher": 295,
+     "spiderweb": 308
+    },
+    "FEDERATION_REFERENCE": {
+     "thehub": 980,
+     "_files": 110,
+     "moneysweep": 142,
+     "centinelas": 95,
+     "skywatcher": 399,
+     "spiderweb": 291
+    },
+    "ENVIRONMENT": {
+     "thehub": 92,
+     "_files": 33,
+     "moneysweep": 31,
+     "centinelas": 25,
+     "skywatcher": 22,
+     "spiderweb": 27
+    },
+    "CI/CD": {
+     "thehub": 76,
+     "moneysweep": 55,
+     "centinelas": 24,
+     "skywatcher": 16,
+     "spiderweb": 56,
+     "_files": 23
+    },
+    "PATH_NAME": {
+     "files": 307
+    },
+    "CODE": {
+     "thehub": 341,
+     "_files": 178,
+     "moneysweep": 191,
+     "centinelas": 100,
+     "skywatcher": 113,
+     "spiderweb": 126
+    },
+    "PROVENANCE": {
+     "thehub": 1504,
+     "moneysweep": 87349,
+     "centinelas": 2357,
+     "skywatcher": 1236,
+     "spiderweb": 1263,
+     "_files": 309
+    },
+    "TEST": {
+     "thehub": 250,
+     "_files": 113,
+     "skywatcher": 141,
+     "moneysweep": 189,
+     "spiderweb": 123,
+     "centinelas": 77
+    },
+    "PACKAGE": {
+     "thehub": 6,
+     "_files": 5
+    }
+   },
+   "top_files": [
+    [
+     "reports/moneysweep-live-readiness/20260901T005414Z_moneysweep_live_readiness/aggregate/sources.jsonl",
+     "PROVENANCE",
+     4783
+    ],
+    [
+     "reports/moneysweep-live-readiness/20260901T005414Z_moneysweep_live_readiness/post_push_aggregate/sources.jsonl",
+     "PROVENANCE",
+     4783
+    ],
+    [
+     "reports/moneysweep-live-readiness/20260901T015715Z_moneysweep_live_readiness_continuation/aggregate/sources.jsonl",
+     "PROVENANCE",
+     4783
+    ],
+    [
+     "reports/moneysweep-live-readiness/20260901T022813Z_moneysweep_prasa_contract_closure/aggregate/sources.jsonl",
+     "PROVENANCE",
+     4783
+    ],
+    [
+     "reports/startup-audit/20260831Tfinal-pass/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+     "PROVENANCE",
+     4783
+    ],
+    [
+     "reports/startup-audit/20260831Tfinal-unblock/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+     "PROVENANCE",
+     4783
+    ],
+    [
+     "reports/startup-audit/20260901Tpost-centinelas-final/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+     "PROVENANCE",
+     4783
+    ],
+    [
+     "reports/startup-audit/20260901Trebased-final/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+     "PROVENANCE",
+     4783
+    ],
+    [
+     "reports/federation-completion/20260905T145933Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+     "PROVENANCE",
+     4771
+    ],
+    [
+     "reports/federation-completion/20260905T152023Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+     "PROVENANCE",
+     4771
+    ],
+    [
+     "reports/federation-completion/20260905T202703Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+     "PROVENANCE",
+     4771
+    ],
+    [
+     "reports/federation-completion/20260905T204952Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+     "PROVENANCE",
+     4771
+    ],
+    [
+     "reports/federation-completion/20260907T070418Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+     "PROVENANCE",
+     4771
+    ],
+    [
+     "reports/federation-completion/20260907T072343Z/startup/tmp/thehub-pr/thehub-aggregate/sources.jsonl",
+     "PROVENANCE",
+     4771
+    ],
+    [
+     "reports/moneysweep-live-readiness/20260906T183922Z_moneysweep_hud_validator_pickup/aggregate/sources.jsonl",
+     "PROVENANCE",
+     4771
+    ]
+   ]
+  },
+  "moneysweep-pr": {
+   "total_content_references": 8381,
+   "path_name_references": 299,
+   "by_layer": {
+    "OTHER": {
+     "moneysweep": 139,
+     "_files": 20,
+     "spiderweb": 2,
+     "skywatcher": 1,
+     "thehub": 5,
+     "centinelas": 2
+    },
+    "DOC": {
+     "moneysweep": 624,
+     "_files": 127,
+     "spiderweb": 78,
+     "thehub": 86,
+     "centinelas": 30,
+     "skywatcher": 10
+    },
+    "FEDERATION_REFERENCE": {
+     "thehub": 18,
+     "moneysweep": 1805,
+     "_files": 62,
+     "centinelas": 83,
+     "spiderweb": 30,
+     "skywatcher": 1
+    },
+    "ENVIRONMENT": {
+     "moneysweep": 152,
+     "_files": 28,
+     "thehub": 12,
+     "centinelas": 23,
+     "spiderweb": 14
+    },
+    "CI/CD": {
+     "moneysweep": 69,
+     "_files": 37,
+     "centinelas": 18,
+     "thehub": 43,
+     "spiderweb": 2
+    },
+    "PATH_NAME": {
+     "files": 299
+    },
+    "CODE": {
+     "moneysweep": 862,
+     "_files": 381,
+     "centinelas": 68,
+     "thehub": 57,
+     "skywatcher": 1,
+     "spiderweb": 104
+    },
+    "PROVENANCE": {
+     "moneysweep": 3404,
+     "_files": 197,
+     "thehub": 25,
+     "spiderweb": 34,
+     "centinelas": 34
+    },
+    "PACKAGE": {
+     "thehub": 5,
+     "moneysweep": 7,
+     "_files": 4
+    },
+    "TEST": {
+     "moneysweep": 424,
+     "_files": 198,
+     "spiderweb": 54,
+     "thehub": 13,
+     "centinelas": 40,
+     "skywatcher": 1
+    },
+    "DATABASE": {
+     "moneysweep": 1,
+     "_files": 1
+    }
+   },
+   "top_files": [
+    [
+     ".federation/gui-parity-baseline.json",
+     "FEDERATION_REFERENCE",
+     1179
+    ],
+    [
+     "artifacts/gui-capabilities-merged.json",
+     "PROVENANCE",
+     531
+    ],
+    [
+     ".federation/gui-capabilities.json",
+     "FEDERATION_REFERENCE",
+     413
+    ],
+    [
+     "data/exports/canonical_v1_federation/sources.jsonl",
+     "PROVENANCE",
+     260
+    ],
+    [
+     "exports/federation/sources.jsonl",
+     "PROVENANCE",
+     260
+    ],
+    [
+     "reports/module_inventory.csv",
+     "PROVENANCE",
+     211
+    ],
+    [
+     "data/exports/canonical_v1_federation/entities.jsonl",
+     "PROVENANCE",
+     207
+    ],
+    [
+     "exports/federation/entities.jsonl",
+     "PROVENANCE",
+     207
+    ],
+    [
+     "reports/live-readiness/20260901T005414Z_moneysweep_live_readiness/logs/test_ingest_oce.log",
+     "PROVENANCE",
+     163
+    ],
+    [
+     "reports/local_analysis/06_targeted_coverage.log",
+     "PROVENANCE",
+     94
+    ],
+    [
+     "reports/local_analysis/20260705T225712Z_coverage_guided/01_targeted_coverage_prepatch.log",
+     "PROVENANCE",
+     94
+    ],
+    [
+     "reports/local_analysis/20260705T225913Z_weak_surface_coverage/weak_surface_coverage.log",
+     "PROVENANCE",
+     94
+    ],
+    [
+     "reports/local_analysis/20260705T230233Z_runtime_then_coverage_fix/12_targeted_no_fail_under.log",
+     "PROVENANCE",
+     94
+    ],
+    [
+     "reports/local_analysis/20260706T171158Z_partial_patch_audit_acceptance/10_targeted_tests.log",
+     "PROVENANCE",
+     94
+    ],
+    [
+     "reports/local_analysis/20260706T212632Z_final_scope_acceptance/02_targeted_tests.log",
+     "PROVENANCE",
+     94
+    ]
+   ]
+  },
+  "centinelas-pr": {
+   "total_content_references": 1822,
+   "path_name_references": 58,
+   "by_layer": {
+    "OTHER": {
+     "moneysweep": 7,
+     "centinelas": 35,
+     "_files": 15,
+     "thehub": 5,
+     "skywatcher": 2,
+     "spiderweb": 2
+    },
+    "FEDERATION_REFERENCE": {
+     "thehub": 21,
+     "centinelas": 334,
+     "_files": 32,
+     "spiderweb": 15,
+     "moneysweep": 18,
+     "skywatcher": 5
+    },
+    "ENVIRONMENT": {
+     "thehub": 15,
+     "centinelas": 24,
+     "_files": 14,
+     "moneysweep": 11
+    },
+    "DOC": {
+     "thehub": 89,
+     "_files": 32,
+     "moneysweep": 93,
+     "centinelas": 210,
+     "skywatcher": 13,
+     "spiderweb": 21
+    },
+    "CI/CD": {
+     "thehub": 31,
+     "_files": 20,
+     "centinelas": 67,
+     "moneysweep": 12,
+     "skywatcher": 2,
+     "spiderweb": 2
+    },
+    "PATH_NAME": {
+     "files": 58
+    },
+    "CODE": {
+     "centinelas": 238,
+     "_files": 78,
+     "thehub": 47,
+     "moneysweep": 122,
+     "skywatcher": 8,
+     "spiderweb": 11
+    },
+    "PROVENANCE": {
+     "thehub": 34,
+     "moneysweep": 32,
+     "centinelas": 42,
+     "skywatcher": 3,
+     "spiderweb": 5,
+     "_files": 16
+    },
+    "PACKAGE": {
+     "thehub": 9,
+     "centinelas": 12,
+     "_files": 4,
+     "moneysweep": 2,
+     "spiderweb": 1
+    },
+    "TEST": {
+     "centinelas": 124,
+     "_files": 40,
+     "thehub": 32,
+     "moneysweep": 39,
+     "skywatcher": 10,
+     "spiderweb": 17
+    }
+   },
+   "top_files": [
+    [
+     ".federation/gui-capabilities.json",
+     "FEDERATION_REFERENCE",
+     137
+    ],
+    [
+     ".federation/gui-parity-baseline.json",
+     "FEDERATION_REFERENCE",
+     137
+    ],
+    [
+     "README.md",
+     "DOC",
+     63
+    ],
+    [
+     "docs/REALTIME_DATA_ACQUISITION_AUDIT.md",
+     "DOC",
+     50
+    ],
+    [
+     "frontend/src/lib/i18n/en.js",
+     "CODE",
+     42
+    ],
+    [
+     "docs/GUI_AUDIT.md",
+     "DOC",
+     31
+    ],
+    [
+     "tests/test_router.py",
+     "TEST",
+     28
+    ],
+    [
+     "artifacts/foia_canary_v0_4/CANARY_MANIFEST.json",
+     "PROVENANCE",
+     25
+    ],
+    [
+     "data/reference/source_registry.csv",
+     "PROVENANCE",
+     25
+    ],
+    [
+     "src/centinelas/cli.py",
+     "CODE",
+     24
+    ],
+    [
+     "tests/test_emit_dispatches.py",
+     "TEST",
+     24
+    ],
+    [
+     "federation.json",
+     "FEDERATION_REFERENCE",
+     23
+    ],
+    [
+     "docs/FOIA_CANARY_POST_MERGE_RUNBOOK_v0_6.md",
+     "DOC",
+     22
+    ],
+    [
+     "src/centinelas/route/dispatch.py",
+     "CODE",
+     22
+    ],
+    [
+     ".github/workflows/desktop-build.yml",
+     "CI/CD",
+     21
+    ]
+   ]
+  },
+  "skywatcher-pr": {
+   "total_content_references": 3773,
+   "path_name_references": 240,
+   "by_layer": {
+    "OTHER": {
+     "skywatcher": 64,
+     "_files": 28,
+     "thehub": 4,
+     "spiderweb": 5,
+     "moneysweep": 1
+    },
+    "FEDERATION_REFERENCE": {
+     "thehub": 34,
+     "skywatcher": 1369,
+     "_files": 83,
+     "centinelas": 3,
+     "spiderweb": 61,
+     "moneysweep": 9
+    },
+    "ENVIRONMENT": {
+     "thehub": 7,
+     "skywatcher": 34,
+     "_files": 18,
+     "moneysweep": 12,
+     "spiderweb": 15
+    },
+    "DOC": {
+     "thehub": 89,
+     "_files": 94,
+     "moneysweep": 7,
+     "centinelas": 4,
+     "skywatcher": 536,
+     "spiderweb": 175
+    },
+    "CI/CD": {
+     "thehub": 24,
+     "skywatcher": 66,
+     "_files": 16,
+     "centinelas": 10,
+     "moneysweep": 1
+    },
+    "PATH_NAME": {
+     "files": 240
+    },
+    "CODE": {
+     "skywatcher": 695,
+     "_files": 202,
+     "thehub": 28,
+     "spiderweb": 60,
+     "centinelas": 4,
+     "moneysweep": 1
+    },
+    "PROVENANCE": {
+     "skywatcher": 50,
+     "_files": 23,
+     "spiderweb": 2,
+     "thehub": 5,
+     "moneysweep": 1
+    },
+    "PACKAGE": {
+     "thehub": 12,
+     "skywatcher": 17,
+     "_files": 4,
+     "moneysweep": 1,
+     "centinelas": 1,
+     "spiderweb": 2
+    },
+    "TEST": {
+     "skywatcher": 311,
+     "_files": 101,
+     "thehub": 29,
+     "spiderweb": 15,
+     "moneysweep": 1
+    },
+    "DATABASE": {
+     "skywatcher": 8,
+     "_files": 4
+    }
+   },
+   "top_files": [
+    [
+     ".federation/gui-parity-baseline.json",
+     "FEDERATION_REFERENCE",
+     933
+    ],
+    [
+     ".federation/gui_backend_contract.json",
+     "FEDERATION_REFERENCE",
+     209
+    ],
+    [
+     ".federation/gui-capabilities.json",
+     "FEDERATION_REFERENCE",
+     134
+    ],
+    [
+     "docs/CODE_RELOCATION_LEDGER.csv",
+     "DOC",
+     84
+    ],
+    [
+     "docs/ADR_SKYWATCHER_SPIDERWEB_INTEGRATION.md",
+     "DOC",
+     46
+    ],
+    [
+     "server/backend/main.py",
+     "CODE",
+     39
+    ],
+    [
+     ".github/workflows/ios-native.yml",
+     "CI/CD",
+     34
+    ],
+    [
+     "docs/REPOSITORY_BOUNDARY_AUDIT.md",
+     "DOC",
+     32
+    ],
+    [
+     "docs/MULTISENSOR_REPLAY_AUDIT_AND_DESIGN_v0_1.md",
+     "DOC",
+     30
+    ],
+    [
+     "docs/architecture/archive/v2_0/test_skywatcher_ontology_governance_v2.py",
+     "DOC",
+     26
+    ],
+    [
+     "README.md",
+     "DOC",
+     25
+    ],
+    [
+     "docs/FR24_SPIDERWEB_INTAKE_ADAPTER.md",
+     "DOC",
+     25
+    ],
+    [
+     "configs/pr_intake_domain_router.yaml",
+     "ENVIRONMENT",
+     23
+    ],
+    [
+     "docs/ADR_SKYWATCHER_MODULE_BOUNDARIES.md",
+     "DOC",
+     23
+    ],
+    [
+     "scripts/federation_export.py",
+     "CODE",
+     23
+    ]
+   ]
+  },
+  "spiderweb-pr": {
+   "total_content_references": 4360,
+   "path_name_references": 122,
+   "by_layer": {
+    "OTHER": {
+     "spiderweb": 186,
+     "_files": 27,
+     "moneysweep": 3,
+     "skywatcher": 2,
+     "thehub": 9
+    },
+    "DOC": {
+     "spiderweb": 620,
+     "_files": 110,
+     "thehub": 88,
+     "moneysweep": 249,
+     "centinelas": 6,
+     "skywatcher": 118
+    },
+    "FEDERATION_REFERENCE": {
+     "thehub": 36,
+     "spiderweb": 146,
+     "_files": 78,
+     "moneysweep": 25,
+     "skywatcher": 9,
+     "centinelas": 2
+    },
+    "ENVIRONMENT": {
+     "thehub": 6,
+     "spiderweb": 1366,
+     "_files": 25,
+     "moneysweep": 11
+    },
+    "PATH_NAME": {
+     "files": 122
+    },
+    "CI/CD": {
+     "thehub": 25,
+     "centinelas": 13,
+     "spiderweb": 76,
+     "_files": 20,
+     "moneysweep": 1
+    },
+    "CODE": {
+     "spiderweb": 547,
+     "_files": 187,
+     "skywatcher": 14,
+     "thehub": 13,
+     "moneysweep": 52,
+     "centinelas": 33
+    },
+    "PROVENANCE": {
+     "moneysweep": 13,
+     "spiderweb": 65,
+     "_files": 19,
+     "thehub": 2,
+     "skywatcher": 1
+    },
+    "TEST": {
+     "moneysweep": 112,
+     "spiderweb": 444,
+     "_files": 117,
+     "thehub": 16,
+     "centinelas": 14,
+     "skywatcher": 10
+    },
+    "DATABASE": {
+     "spiderweb": 3,
+     "_files": 2,
+     "skywatcher": 1
+    },
+    "PACKAGE": {
+     "thehub": 6,
+     "spiderweb": 17,
+     "_files": 4
+    }
+   },
+   "top_files": [
+    [
+     "configs/pin_registry.yaml",
+     "ENVIRONMENT",
+     1189
+    ],
+    [
+     "tests/test_spiderweb_intake.py",
+     "TEST",
+     99
+    ],
+    [
+     "configs/ilap_registry.yaml",
+     "ENVIRONMENT",
+     88
+    ],
+    [
+     ".claude/skillpacks/MANIFEST.json",
+     "OTHER",
+     74
+    ],
+    [
+     "docs/legacy/federation/hub/adapters/moneysweep.py",
+     "DOC",
+     59
+    ],
+    [
+     ".claude/skillpacks/SKILL.md",
+     "DOC",
+     49
+    ],
+    [
+     "README.md",
+     "DOC",
+     38
+    ],
+    [
+     "run_all.py",
+     "CODE",
+     37
+    ],
+    [
+     "docs/REPO_BOUNDARY.md",
+     "DOC",
+     36
+    ],
+    [
+     "docs/ADR_SKYWATCHER_SPIDERWEB_INTEGRATION.md",
+     "DOC",
+     35
+    ],
+    [
+     "docs/CONTRACT_FINANCE_PRODUCTION_FUSION_RECIPE.md",
+     "DOC",
+     35
+    ],
+    [
+     "docs/legacy/tests/test_spiderweb_spatial_lane.py",
+     "TEST",
+     34
+    ],
+    [
+     "reports/federation/evidence_spiderweb-pr.jsonl",
+     "PROVENANCE",
+     34
+    ],
+    [
+     "tests/test_spiderweb_spatial_lane.py",
+     "TEST",
+     34
+    ],
+    [
+     ".claude/skillpacks/LEGACY_COMPATIBILITY.json",
+     "OTHER",
+     32
+    ]
+   ]
+  }
+ },
+ "disposition_status": "ALL_UNRESOLVED (layer-classified only; per-occurrence disposition not yet assigned)"
+}
