@@ -44,7 +44,7 @@ producers:
     gui_backend_requirements: "-r server/backend/requirements.txt"
     repo_url: https://github.com/jotaele44/aguayluz-pr
     lock_cmd: "uv lock --check"
-    desktop_extra_requirements: "\nprii-export-utils @ https://github.com/jotaele44/thehub-pr/archive/0f62e4bdde10b5ac82787a329d6f15481ab9c7f0.zip#subdirectory=packages/prii_export_utils\n# setup_center.diagnostics() optionally calls into this if installed (see\n# packages/prii_doctor) -- installed here so the frozen desktop bundle\n# exercises that integration for real.\nprii-doctor @ https://github.com/jotaele44/thehub-pr/archive/f2d5a0a742215db00915475e1e494b8329608dbd.zip#subdirectory=packages/prii_doctor\njsonschema>=4.21.0\nPyYAML>=6.0"
+    desktop_extra_requirements: "\nprii-export-utils @ https://github.com/jotaele44/thehub-pr/archive/7b9759f11a204fa6975a85243d1b5e77d026bcb1.zip#subdirectory=packages/prii_export_utils\n# setup_center.diagnostics() optionally calls into this if installed (see\n# packages/prii_doctor) -- installed here so the frozen desktop bundle\n# exercises that integration for real.\nprii-doctor @ https://github.com/jotaele44/thehub-pr/archive/f2d5a0a742215db00915475e1e494b8329608dbd.zip#subdirectory=packages/prii_doctor\njsonschema>=4.21.0\nPyYAML>=6.0"
     program_desc: the Puerto Rico water, power and utility infrastructure intelligence producer
   centinelas-pr:
     app_slug: CENTINELAS

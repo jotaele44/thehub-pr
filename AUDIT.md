@@ -24,8 +24,10 @@ Changes made:
   files and the manual re-render command, instead of a quiet notice.
 - `ci.yml` gains a `desktop-package` job (ruff, mypy, tests, and the hub's own
   `python -m prii_desktop launchpad --check`).
-- prii-export-utils pins are unified on `0f62e4b`; the package is byte-identical at the old
-  `7b9759f` pin.
+- The two prii-export-utils pins (`7b9759f` for aguayluz-pr, `0f62e4b` for centinelas-pr) are
+  left as they are. The package is byte-identical at both commits, but each pin must equal the
+  one in that producer's `pyproject.toml`/`uv.lock`, so unifying them belongs in a producer
+  change that moves both together.
 
 Still the operator's decision: adding `SYNC_PAT` turns propagation on. Until then producer
 updates are opened by hand, and the pin report shows what is outstanding.
