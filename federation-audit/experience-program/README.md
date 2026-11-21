@@ -59,7 +59,7 @@ someone other than the author of the work.
 | `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the results per application, what is blocked and what they do not show. |
 | `scripts/rc8_baseline.py`, `scripts/runtime/perf_pass.js` | Measure a backend's first start, a built frontend's size and per-route page-load timing, and tabulate them. |
 | `rc8/performance_baselines.json` | Per application at `main`, and for the two RC4 branches: start time, build size, and page-load figures per route. |
-| `rc8/RC8_GATE.json` | What the baseline shows, the RC4 branches against `main`, and a set of budgets that is proposed and not adopted. |
+| `rc8/RC8_GATE.json` | What the baseline shows, the RC4 branches against `main`, and the budgets adopted on 2026-11-18 with which applications exceed them. |
 | `scripts/rc9_matrix.py` | Reads each application's tree for its toolchain, pins, browser features and the platforms its CI names. |
 | `rc9/compatibility_matrix.json` | One row per application: what it declares, what its build relies on, and the runs that were actually made. |
 | `rc9/RC9_GATE.json` | What differs between the applications, and what the matrix cannot establish. |
