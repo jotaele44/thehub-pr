@@ -37,7 +37,19 @@ older frozen template snapshot. It's **dry-run by default**
 producers) it only renders and prints the drift, opening nothing. Set `SYNC_PAT`
 to turn on the automatic per-producer PRs. Until then, edit a template → run
 `render_federation_templates.py --all` locally and commit per repo (each repo's
-`template-drift.yml` keeps them honest).
+`template-drift.yml` keeps them honest). A dry run that finds drift raises a
+warning and lists the files that would change, and the re-render command, in the
+run's job summary.
+
+### Seeing how far producers lag
+
+A producer's drift gate compares it with the hub commit it pinned, so it stays
+green however old that pin is. `tools/federation_pin_report.py` shows the lag:
+each producer's `prii-desktop` pin against the one in `requirements-desktop.txt`,
+how many hub commits its `PRII_TEMPLATE_REF` is behind `main`, and whether it
+declares a Launch Pad. It reads producers' `main` from GitHub, or sibling
+checkouts with `--root ..`. `maintenance.yml` runs it weekly and warns about any
+desktop producer on an older runtime; `--strict` makes that an exit code.
 
 ## Documentation stays true (docs-sync)
 

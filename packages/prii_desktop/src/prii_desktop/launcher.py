@@ -46,6 +46,7 @@ from .launchpad import (
     launchpad_spec,
     render_launchpad_html,
     route_from_argv,
+    scrub_managed_environment,
     session_url,
     should_show,
     stored_session,
@@ -95,7 +96,7 @@ def _pid_alive(pid: int) -> bool:
 
         process_query_limited_information = 0x1000
         still_active = 259
-        kernel32 = ctypes.windll.kernel32
+        kernel32 = ctypes.windll.kernel32  # type: ignore[attr-defined]
         handle = kernel32.OpenProcess(
             process_query_limited_information,
             False,
@@ -142,17 +143,31 @@ def running_instance_base(lock_file: Path) -> str | None:
     return None
 
 
-def write_lock(lock_file: Path, base: str, health_url: str) -> None:
+def write_lock(
+    lock_file: Path, base: str, health_url: str, mode: str | None = None
+) -> None:
     payload = json.dumps(
         {
             "pid": os.getpid(),
             "base": base,
             "health": health_url,
             "born": time.time(),
+            # The Launch Pad access mode of the running session, so a second
+            # start can say what it is attaching to. Never a credential.
+            "mode": mode,
         }
     )
     with contextlib.suppress(Exception):
         lock_file.write_text(payload, encoding="utf-8")
+
+
+def running_instance_mode(lock_file: Path) -> str | None:
+    """The access mode a running instance recorded, if any."""
+    try:
+        mode = json.loads(lock_file.read_text(encoding="utf-8")).get("mode")
+    except Exception:  # noqa: BLE001 - absent or invalid lock
+        return None
+    return mode if mode in ("guest", "operator") else None
 
 
 def clear_lock(lock_file: Path) -> None:
@@ -170,6 +185,12 @@ def restart_process(
     ]
     clean_args.extend(extra)
 
+    # The next process starts from the shell's environment, not this session's:
+    # a Launch Pad write credential or secret must not survive into it. The copy
+    # leaves this process's own environment (which its Guest guard reads per
+    # request) untouched until the exec replaces it.
+    environment = dict(scrub_managed_environment(dict(os.environ)))
+
     def restart() -> None:
         time.sleep(0.25)
         clear_lock(lock_file)
@@ -177,7 +198,7 @@ def restart_process(
             exec_args = [sys.executable, *clean_args]
         else:
             exec_args = [sys.executable, sys.argv[0], *clean_args]
-        os.execv(sys.executable, exec_args)
+        os.execve(sys.executable, exec_args, environment)
 
     threading.Thread(target=restart, name="app-restart", daemon=True).start()
 
@@ -215,16 +236,17 @@ def start_server(config: DesktopConfig, port: int):
         log_level="warning",
     )
     server = uvicorn.Server(uvicorn_config)
-    server.startup_error = None
+    # Diagnostics read back by wait_healthy(); uvicorn.Server has no such fields.
+    server.startup_error = None  # type: ignore[attr-defined]
 
     def run() -> None:
         try:
             server.run()
         except (Exception, SystemExit) as exc:  # surfaced by wait_healthy
-            server.startup_error = exc
+            server.startup_error = exc  # type: ignore[attr-defined]
 
     thread = threading.Thread(target=run, name="uvicorn", daemon=True)
-    server.thread = thread
+    server.thread = thread  # type: ignore[attr-defined]
     thread.start()
     return server
 
@@ -362,7 +384,12 @@ def start_app(
         base = f"http://127.0.0.1:{port}"
         url = _session_target(config, base, argv, session)
         bridge.set_app_url(url)
-        write_lock(lock_file, base, base + config.health_path)
+        write_lock(
+            lock_file,
+            base,
+            base + config.health_path,
+            session.mode if session is not None else None,
+        )
         server = start_server(config, port)
         runtime["server"] = server
         wait_healthy(base + config.health_path, server=server)
@@ -409,8 +436,15 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
         or "--setup" in argv
         or "--repair" in argv
     )
-    spec = launchpad_spec(config)
-    show_pad = should_show(config, argv)
+    declaration_error: str | None = None
+    try:
+        spec = launchpad_spec(config)
+        show_pad = should_show(config, argv)
+    except ValueError as exc:
+        # A broken declaration is a producer bug, not a missing pywebview: say so
+        # in the window instead of falling back to the browser.
+        spec, show_pad = None, False
+        declaration_error = invalid_declaration_message(exc)
     bridge = DesktopBridge(
         config,
         argv=argv,
@@ -448,6 +482,17 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
     window.events.closed += on_closed
 
     def on_ready() -> None:
+        if declaration_error is not None:
+            log(declaration_error)
+            window.load_html(
+                _error_html(
+                    config.app_title,
+                    declaration_error,
+                    config.brand_accent_strong,
+                    log_path=_record_failure(config, declaration_error),
+                )
+            )
+            return
         if show_setup:
             bridge.completed.wait()
             if window_closed.is_set():
@@ -471,6 +516,13 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
     if server is not None:
         finish(server, lock_file)
     clear_lock(lock_file)
+
+
+def invalid_declaration_message(exc: Exception) -> str:
+    return (
+        f"The Launch Pad declaration (LAUNCHPAD in desktop/config.py) is invalid: "
+        f"{exc}. Check it with: python -m prii_desktop launchpad --check"
+    )
 
 
 def _block_until_interrupt(server, lock_file: Path) -> None:
@@ -501,6 +553,16 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
 
             target = display_url(existing, argv)
             log(f"{config.app_title} is already running; opening {target}")
+            mode = running_instance_mode(lock_file)
+            if mode == "operator":
+                log(
+                    "The running session is in Operator mode. Its write credential "
+                    "stays with the original window, so changes made from the "
+                    "browser are refused; use that window, or close it and start "
+                    "again."
+                )
+            elif mode == "guest":
+                log("The running session is a read-only Guest session.")
             webbrowser.open(target)
             return
 
@@ -511,6 +573,10 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
         except Exception as exc:  # noqa: BLE001 - fall back to browser
             log(f"pywebview unavailable ({exc}); opening the default browser.")
 
+    try:
+        launchpad_spec(config)
+    except ValueError as exc:
+        raise SystemExit(invalid_declaration_message(exc)) from exc
     apply_environment(config)
     port = free_port()
     base = f"http://127.0.0.1:{port}"
@@ -526,7 +592,12 @@ def launch(config: DesktopConfig, argv: list[str] | None = None) -> None:
         elif query:
             url = session_url(url, "/", query)
     if not (args & {"--smoke", "--no-window"}):
-        write_lock(lock_file, base, base + config.health_path)
+        write_lock(
+            lock_file,
+            base,
+            base + config.health_path,
+            headless[1].mode if headless is not None else None,
+        )
     server = start_server(config, port)
 
     if "--smoke" in args:

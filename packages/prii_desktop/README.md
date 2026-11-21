@@ -79,8 +79,9 @@ What each part does:
   function that raises becomes one warning row and never blocks launching.
 - **`operator`** makes the app two-mode. Leave it out for an app with no write
   surface and the access choice is not shown. With `token_env`, Operator mode
-  sets that variable to a per-session random credential (or keeps one already
-  exported) and, with `url_param`, appends it to the URL the window opens.
+  sets that variable to a fresh random credential for each session (or keeps one
+  exported by the shell) and, with `url_param`, appends it to the URL the window
+  opens.
 - **Guest mode** sets `PRII_ACCESS_MODE=guest`, and `GuestGuard` (installed by
   `make_desktop_app`) answers every `POST`/`PUT`/`PATCH`/`DELETE` with `403`
   unless it matches `guest_guard.allow`. Patterns are `"[METHOD ]/path"`; `*`
@@ -88,8 +89,18 @@ What each part does:
   there. The guard does nothing unless a session set the mode, so
   `--no-window`, tests and hosted deployments behave as before.
 - **`options`** are `toggle`, `choice`, `text` or `secret`, each bound to one
-  environment variable. `operator_only` options are disabled for a guest. A
+  environment variable. `operator_only` options are disabled for a guest, and a
+  guest session also withholds an operator-only variable the shell exported. A
   `secret` is used for that session and never written to disk.
+- **Each session starts clean.** Changing the mode or options restarts the
+  process, and a restarted process inherits its environment. `apply_session`
+  therefore records what it changed in `PRII_LAUNCHPAD_MANAGED` (the names) and
+  `PRII_LAUNCHPAD_ORIGINAL` (the shell's values it replaced), and
+  `scrub_managed_environment` undoes both before the restart and before the next
+  session is applied. A minted write credential, a typed secret, or an option
+  value never carries over, so an Operator session followed by a Guest one
+  leaves no credential behind, and a secret left empty is really unset. Values
+  the shell exported are put back. Options may not use these two variable names.
 - **Start page.** `--route` preselects a page; the user's choice wins.
 
 Per user, in the app state directory: `launchpad.json` holds the last mode,
@@ -107,6 +118,29 @@ choose the mode for `--browser` and `--no-window` starts (which otherwise leave
 the mode unmanaged). `--smoke` never shows the page. Inside the app, the
 **Launch Pad** button beside the Setup gear restarts on the page so the mode
 or options can be changed.
+
+An invalid declaration stops the launch with a message naming the problem: in
+the window as an error screen (also written to `logs/launcher.log`), and on
+`--browser`, `--no-window` and `--smoke` starts as the exit message. It never
+falls back to the browser as if pywebview were missing. A second start while the
+app is running opens the running instance in the browser and logs its mode; an
+Operator session's credential stays with the original window, so writes from
+that browser tab are refused.
+
+### Checking a declaration offline
+
+```bash
+python -m prii_desktop launchpad --check            # from the producer's repo root
+python -m prii_desktop launchpad --check --no-status
+```
+
+It imports `desktop/config.py` (`--module` and `--repo-root` choose another),
+validates `LAUNCHPAD` exactly as the launcher does, and calls the `status`
+provider once. A provider that raises, or a row with an unknown status, fails
+the check, although at launch time such a provider only adds a warning row. The
+exit code is `0` when there is no declaration or it is valid, and `1` otherwise.
+The federation template `tests/test_launchpad_declaration.py` runs this check
+in each desktop producer's test suite.
 
 `tools/render_desktop_setup.py --page launchpad` renders a producer's real page
 for browser checks.

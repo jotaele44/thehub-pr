@@ -155,6 +155,28 @@ jobs:
       - name: Verify PR grid V2 consumer pin parity
         run: python3 scripts/validate_pr_grid_v2_federation.py --workspace-root _federation
 
+  # Shared desktop runtime (packages/prii_desktop) that every desktop producer
+  # installs from a pinned hub commit. Lint, types and tests run on every change;
+  # desktop-build.yml additionally builds the bundle when the package changes.
+  desktop-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: pip install -e ".[dev]" httpx -r server/backend/requirements.txt -e packages/prii_desktop
+      - name: Ruff
+        run: ruff check packages/prii_desktop
+      - name: Mypy
+        run: mypy packages/prii_desktop/src
+      - name: Tests
+        run: pytest packages/prii_desktop/tests -q
+      - name: TheHub's Launch Pad declaration
+        run: python -m prii_desktop launchpad --check
+
   # Self-contained sub-project (packages/prii_maintenance) — its own CI, isolated
   # from the root test matrix so its lint, type and test results stay separate.
   # Its consumers are spiderweb-pr (>=3.11) and skywatcher-pr (3.10+).
@@ -210,6 +232,7 @@ jobs:
       - audit-claims-federation
       - maintenance-package
       - export-utils-package
+      - desktop-package
     runs-on: ubuntu-latest
     steps:
       - name: All Hub CI jobs succeeded

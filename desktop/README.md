@@ -35,8 +35,11 @@ straight to the dashboard. Nothing is running yet at that point. It shows:
 
 Press **Launch** to start. To change the mode or options later, use the
 **Launch Pad** button in the corner of the app (next to the Setup gear); it
-restarts on this page. Guest and the passphrase keep a shared desktop tidy;
-they do not stop someone who can already run programs under your account.
+restarts on this page with the environment TheHub was started with: the
+Operator credential and any secret from the last session are dropped, and a new
+Operator session gets a new credential. Guest and the passphrase keep a shared
+desktop tidy; they do not stop someone who can already run programs under your
+account.
 
 The launcher opens TheHub with an **empty** database — `data/hub.db` is
 gitignored and created fresh on first run. That's expected, not a setup
@@ -65,6 +68,7 @@ distribution channel, not a replacement for the launcher above.
   summary, readiness check, start pages, the read-only POSTs a guest may call,
   and its options. The screen itself lives in the shared runtime
   ([`packages/prii_desktop`](../packages/prii_desktop/README.md#the-launch-pad)).
+  Validate it with `python -m prii_desktop launchpad --check` from the repo root.
 - `desktop/setup.py` is idempotent one-time setup (`--force` to redo).
 
 ## Command line

@@ -76,7 +76,20 @@ jobs:
           echo "Drift detected in ${{ matrix.repo }}:"
           git status --short
           if [ -z "$GH_TOKEN" ]; then
-            echo "::notice::SYNC_PAT absent — dry run; no PR opened. Set SYNC_PAT to enable propagation."
+            # A dry run that found drift must not read as a quiet success: the
+            # producer keeps running older shared files until someone acts.
+            echo "::warning::${{ matrix.repo }} drifted from the canonical templates, but SYNC_PAT is absent — dry run; no PR opened."
+            {
+              echo "### ${{ matrix.repo }}: drift not propagated (dry run)"
+              echo
+              echo "SYNC_PAT is not set, so no sync PR was opened. Re-render locally with"
+              echo "\`python tools/render_federation_templates.py --repo ${{ matrix.repo }} --repo-root ../${{ matrix.repo }} --template-ref ${{ github.sha }}\`"
+              echo "and open the PR by hand, or set SYNC_PAT. Files that would change:"
+              echo
+              echo '```'
+              git status --short
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           branch="federation-template-sync-${{ github.run_id }}"

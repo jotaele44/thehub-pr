@@ -33,7 +33,7 @@ DECLARATION = {
     ],
 }
 _VARS = ("DEMO_WRITE_TOKEN", "DEMO_OFFLINE", "DEMO_LEVEL", "DEMO_REGION", "DEMO_KEY",
-         pad.ACCESS_MODE_ENV)
+         pad.ACCESS_MODE_ENV, pad.MANAGED_ENV, pad.ORIGINAL_ENV)
 
 
 @pytest.fixture(autouse=True)
@@ -176,6 +176,75 @@ def test_operator_session_keeps_an_exported_token(monkeypatch):
     spec = _spec()
     session = pad.build_session(spec, mode="operator", start_route="/", options={})
     assert pad.apply_session(spec, session) == {"write_token": "from-the-shell"}
+
+
+def _operator_session(spec, **options):
+    return pad.build_session(spec, mode="operator", start_route="/", options=options)
+
+
+def test_restart_into_guest_carries_no_credential_or_secret():
+    spec = _spec()
+    pad.apply_session(spec, _operator_session(spec, key="typed-secret", level="debug"))
+    assert os.environ["DEMO_WRITE_TOKEN"] and os.environ["DEMO_KEY"] == "typed-secret"
+
+    # What restart_process hands to the next process.
+    restarted = pad.scrub_managed_environment(dict(os.environ))
+    for name in ("DEMO_WRITE_TOKEN", "DEMO_KEY", "DEMO_LEVEL", pad.ACCESS_MODE_ENV,
+                 pad.MANAGED_ENV, pad.ORIGINAL_ENV):
+        assert name not in restarted
+
+    guest = pad.build_session(spec, mode="guest", start_route="/", options={})
+    assert pad.apply_session(spec, guest, environ=restarted) == {}
+    assert restarted[pad.ACCESS_MODE_ENV] == "guest"
+    assert "DEMO_WRITE_TOKEN" not in restarted and "DEMO_KEY" not in restarted
+
+
+def test_each_operator_session_mints_a_fresh_credential():
+    spec = _spec()
+    first = pad.apply_session(spec, _operator_session(spec))["write_token"]
+    second = pad.apply_session(spec, _operator_session(spec))["write_token"]
+    assert first != second and os.environ["DEMO_WRITE_TOKEN"] == second
+
+
+def test_a_secret_left_empty_is_not_inherited_from_the_last_session():
+    spec = _spec()
+    pad.apply_session(spec, _operator_session(spec, key="typed-secret"))
+    pad.apply_session(spec, _operator_session(spec, key=""))
+    assert "DEMO_KEY" not in os.environ
+
+
+def test_shell_exported_values_survive_sessions(monkeypatch):
+    monkeypatch.setenv("DEMO_LEVEL", "debug")
+    monkeypatch.setenv("DEMO_WRITE_TOKEN", "from-the-shell")
+    spec = _spec()
+    query = pad.apply_session(spec, _operator_session(spec, level="info"))
+    assert query == {"write_token": "from-the-shell"}
+    assert os.environ["DEMO_LEVEL"] == "info"
+    restored = pad.scrub_managed_environment(dict(os.environ))
+    assert restored["DEMO_LEVEL"] == "debug"
+    assert restored["DEMO_WRITE_TOKEN"] == "from-the-shell"
+
+
+def test_guest_withholds_an_operator_only_secret_even_from_the_shell(monkeypatch):
+    monkeypatch.setenv("DEMO_KEY", "shell-secret")
+    spec = _spec()
+    guest = pad.build_session(spec, mode="guest", start_route="/", options={})
+    pad.apply_session(spec, guest, override=False)
+    assert "DEMO_KEY" not in os.environ
+    assert pad.scrub_managed_environment(dict(os.environ))["DEMO_KEY"] == "shell-secret"
+
+
+def test_scrub_ignores_a_tampered_ledger():
+    env = {pad.MANAGED_ENV: "OK_NAME,bad name,", pad.ORIGINAL_ENV: "not json",
+           "OK_NAME": "x", "KEEP": "y"}
+    assert pad.scrub_managed_environment(env) == {"KEEP": "y"}
+
+
+def test_ledger_variables_are_reserved():
+    broken = dict(DECLARATION, options=[
+        {"id": "sneaky", "label": "S", "kind": "text", "env": pad.MANAGED_ENV}])
+    with pytest.raises(ValueError, match="reserved"):
+        _spec(broken)
 
 
 def test_toggle_off_clears_a_variable_only_when_overriding(monkeypatch):
@@ -531,7 +600,9 @@ def test_restart_arguments(tmp_path, monkeypatch):
 
         def start(self):
             monkeypatch.setattr(launch.time, "sleep", lambda _s: None)
-            monkeypatch.setattr(launch.os, "execv", lambda _exe, args: captured.append(args))
+            monkeypatch.setattr(
+                launch.os, "execve", lambda _exe, args, _env: captured.append(args)
+            )
             self.target()
 
     monkeypatch.setattr(launch.threading, "Thread", Thread)
@@ -681,3 +752,100 @@ def test_app_without_a_declaration_keeps_the_old_flow(tmp_path, monkeypatch):
     launch._run_window(config, tmp_path / ".running", [])
     assert started == [None]
     assert "Starting" in state["window"].pages[0]
+
+
+def test_restart_hands_the_next_process_a_scrubbed_environment(tmp_path, monkeypatch):
+    spec = _spec()
+    pad.apply_session(spec, _operator_session(spec, key="typed-secret"))
+    seen = []
+
+    class Thread:
+        def __init__(self, target, **_k):
+            self.target = target
+
+        def start(self):
+            monkeypatch.setattr(launch.time, "sleep", lambda _s: None)
+            monkeypatch.setattr(
+                launch.os, "execve", lambda _exe, _args, env: seen.append(env)
+            )
+            self.target()
+
+    monkeypatch.setattr(launch.threading, "Thread", Thread)
+    launch.reopen_launchpad(tmp_path / ".running", [])
+    assert "DEMO_WRITE_TOKEN" not in seen[0] and "DEMO_KEY" not in seen[0]
+    # This process keeps its session until the exec replaces it.
+    assert os.environ[pad.ACCESS_MODE_ENV] == "operator"
+
+
+def test_invalid_declaration_is_reported_in_the_window(tmp_path, monkeypatch):
+    broken = dict(DECLARATION, options=[{"id": "Bad Id", "label": "x",
+                                         "kind": "toggle", "env": "X"}])
+    config = _config(tmp_path, declaration=broken)
+    started = []
+    monkeypatch.setattr(launch, "start_app", lambda *_a, **_k: started.append(1))
+    state = _fake_webview(monkeypatch, lambda state: None)
+    launch._run_window(config, tmp_path / ".running", [])
+    assert started == []
+    page = state["window"].pages[-1]
+    assert "Launch Pad declaration" in page and "snake_case" in page
+    log = (tmp_path / "state" / "logs" / "launcher.log").read_text()
+    assert "snake_case" in log
+
+
+def test_headless_start_with_an_invalid_declaration_exits_clearly(tmp_path):
+    config = _config(tmp_path, declaration={"bogus": 1})
+    with pytest.raises(SystemExit, match="LAUNCHPAD in desktop/config.py"):
+        launch.launch(config, ["--no-window"])
+
+
+def test_lock_records_the_mode_but_never_a_credential(tmp_path):
+    lock = tmp_path / ".running"
+    launch.write_lock(lock, "http://127.0.0.1:1", "http://127.0.0.1:1/health", "operator")
+    assert launch.running_instance_mode(lock) == "operator"
+    assert set(json.loads(lock.read_text())) == {"pid", "base", "health", "born", "mode"}
+    launch.write_lock(lock, "b", "h")
+    assert launch.running_instance_mode(lock) is None
+
+
+# ── offline check ─────────────────────────────────────────────────────────────
+
+
+def _producer(tmp_path, body, name):
+    (tmp_path / f"{name}.py").write_text(
+        "from pathlib import Path\n"
+        "REPO_ROOT = Path(__file__).parent\n"
+        "APP_TITLE = 'Demo'\nAPP_IMPORT = 'demo:app'\nDIST_DIR = REPO_ROOT / 'dist'\n"
+        + body
+    )
+    return ["--check", "--repo-root", str(tmp_path), "--module", name]
+
+
+@pytest.mark.parametrize(
+    ("body", "code", "expected"),
+    [
+        ("", 0, "no Launch Pad declared"),
+        ("LAUNCHPAD = {'operator': {}, 'guest_guard': {'allow': ['POST /x']}}\n",
+         0, "1 guest-allowed routes"),
+        ("LAUNCHPAD = {'bogus': 1}\n", 1, "unknown keys"),
+        ("def boom():\n    raise OSError('no db')\nLAUNCHPAD = {'status': boom}\n",
+         1, "OSError: no db"),
+        ("LAUNCHPAD = {'status': lambda: [{'label': 'A', 'status': 'great'}]}\n",
+         1, "has status 'great'"),
+    ],
+)
+def test_check_command(tmp_path, capsys, body, code, expected):
+    name = f"demo_cfg_{abs(hash(body))}"
+    assert pad.main(_producer(tmp_path, body, name)) == code
+    assert expected in capsys.readouterr().out
+
+
+def test_check_command_reports_an_unloadable_module(tmp_path, capsys):
+    assert pad.main(["--check", "--repo-root", str(tmp_path), "--module", "nope_x"]) == 1
+    assert "could not load nope_x" in capsys.readouterr().out
+
+
+def test_package_entry_point_dispatches(capsys):
+    from prii_desktop.__main__ import main
+
+    assert main([]) == 2
+    assert "launchpad --check" in capsys.readouterr().out
