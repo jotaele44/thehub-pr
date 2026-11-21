@@ -2,7 +2,7 @@
  "schema": "federation.experience-program.gate/1",
  "gate": "RC8",
  "state": "PROVISIONAL",
- "why_not_pass": "Budgets are adopted and five applications exceed at least one in this harness, so RC8 cannot be PASS. It is not recorded as FAIL either: the first-start figure is one observation per application, the workspaces were nearly empty, and nothing has been measured on real hardware. The gate stays PROVISIONAL until the exceeding values are either confirmed on a device or brought inside the budgets.",
+ "why_not_pass": "Budgets are adopted and five applications exceed at least one in this harness, so RC8 cannot be PASS. It is not recorded as FAIL either: the first-start figure is one observation per application, the workspaces were nearly empty, and nothing has been measured on real hardware. The gate stays PROVISIONAL until the exceeding values are either confirmed on a device or brought inside the budgets. The two first-start excesses are UNRESOLVED: they reflect this container's cold disk (first_start_diagnosis).",
  "evidence": "rc8/performance_baselines.json",
  "coverage": {
   "targets": 10,
@@ -15,7 +15,7 @@
  "observations": {
   "claim_class": "COMPUTED from rc8/performance_baselines.json, at 1280 CSS pixels unless stated",
   "items": [
-   "First start of a never-run tree: aguayluz-pr 9383.2 ms and moneysweep-pr 9506.3 ms; every other application under 1600 ms. One observation each, not a distribution. The cause is not established here.",
+   "First start of a never-run tree: aguayluz-pr 9383.2 ms and moneysweep-pr 9506.3 ms; every other application under 1600 ms. One observation each, not a distribution. first_start_diagnosis attributes it to reading libraries from this container's cold disk, not to the applications.",
    "Later starts on an empty workspace: every application between about 350 ms and 1060 ms at the median. aguayluz-pr is the slowest (about 1060 ms).",
    "JavaScript loaded up front (gzip): skywatcher-pr 582240 bytes and ovnis-pr 500160 bytes, each a single file holding the whole application; moneysweep-pr 259059 bytes. The other five are between about 90,000 and 136,000 bytes and load the rest later.",
    "aguayluz-pr transfers a median of about 10 MB per route and 29 MB on /map. Its built JavaScript is 0.8 MB gzip in total, so most of that is data fetched by the pages, not the build. Which requests carry it was not broken down.",
@@ -106,7 +106,10 @@
   }
  },
  "artifacts_sha256": {
-  "rc8/performance_baselines.json": "f81c654e0d9505dc39e13f65b340a0b0db3723a36cb256ca6f92c30a0c058e96"
+  "rc8/performance_baselines.json": "61c92cf81be7d00eb982fc16bda210e322dd590f64278287143e260fbc9035f2",
+  "scripts/rc8_baseline.py": "a157dfddb6982fe3a1beb8173c1d8589f861824a37adc27d8a9b06a564fedd86",
+  "scripts/runtime/startup_profile.py": "2782596bc71a70ab9d91e6c11cf726fcf3d4851f4913f9f8801352dc89c76335",
+  "scripts/runtime/netlog/sitecustomize.py": "74d4ca9a466b84156d4961e7dac5000980ea5bb7bc73bf12df65a94b257d7f84"
  },
  "certification": "WITHHELD",
  "budgets": {
@@ -130,6 +133,10 @@
      "routes_over_lcp": "3 of 20",
      "routes_over_bytes": "20 of 20",
      "routes_over_cls": "2 of 20"
+    },
+    "first_start_ms": {
+     "state": "UNRESOLVED",
+     "reason": "The measured value reflects this container's cold disk; see first_start_diagnosis. Needs real hardware."
     }
    },
    "centinelas-pr": {
@@ -142,6 +149,10 @@
      "initial_js_gzip_bytes": 259059,
      "routes_over_lcp": "1 of 12",
      "routes_over_cls": "1 of 12"
+    },
+    "first_start_ms": {
+     "state": "UNRESOLVED",
+     "reason": "The measured value reflects this container's cold disk; see first_start_diagnosis. Needs real hardware."
     }
    },
    "mucaro-ai": {
@@ -170,5 +181,53 @@
    }
   },
   "reading": "EXCEEDS means the measured value in rc8/performance_baselines.json is above the budget in this harness. first_start_ms is a single observation per application. No optimisation has been done or is implied by this record."
+ },
+ "first_start_diagnosis": {
+  "question": "Why did aguayluz-pr and moneysweep-pr take about 9.4 s on their first start in the baseline, against about 1 s afterwards?",
+  "commits": {
+   "aguayluz-pr": "0ecb4aec9835dbb542d53183f22dcf7529ef7a4b",
+   "moneysweep-pr": "c8e7430c694a2dcf2bc20cfc243fbc547c42fbb9"
+  },
+  "method": "Fresh exports of each main, the same interpreter and serve_snapshot.py, three starts per condition, run one after another. Tools: scripts/rc8_baseline.py coldstart, scripts/runtime/startup_profile.py (import time and mapped bytes), scripts/runtime/netlog/ (network calls through audit hooks).",
+  "findings": [
+   {
+    "claim_class": "FACT",
+    "finding": "Every baseline run already starts on a new empty workspace, yet only the first was slow, so the application's first-run data setup is not the cost."
+   },
+   {
+    "claim_class": "COMPUTED",
+    "finding": "moneysweep-pr, fresh export: 8660, 1429, 753 ms. With bytecode writing disabled: 874, 746, 822 ms. Precompiled: 693, 682, 704 ms. Compiling bytecode is not the cost (compiling the whole tree takes about 1.1 s)."
+   },
+   {
+    "claim_class": "COMPUTED",
+    "finding": "Files written outside the export during the slow start: only the per-run temporary workspaces. No hidden cache."
+   },
+   {
+    "claim_class": "COMPUTED",
+    "finding": "Network calls from process start until 3 s after the first 200: zero for both applications, including loopback."
+   },
+   {
+    "claim_class": "COMPUTED",
+    "finding": "Files mapped at start: moneysweep-pr 221 MB (pyarrow 100 MB, numpy and its libraries 38 MB, pandas 18 MB); aguayluz-pr 63 MB, almost all shared with the other applications."
+   },
+   {
+    "claim_class": "COMPUTED",
+    "finding": "After the container restarted, the first moneysweep-pr start took 15373 ms and the next two 730 and 735 ms, on the same export. In the slow start, loading pyarrow.lib took 3840 ms and numpy's _multiarray_umath 1219 ms; warm, 18 and 7 ms."
+   },
+   {
+    "claim_class": "COMPUTED",
+    "finding": "After the same restart, aguayluz-pr took 6325 ms, then 2339, 2010 and 1500 ms. Its imports account for about 2 s of the slow start; server.backend.main's own module code took 1048 ms of it."
+   },
+   {
+    "claim_class": "INFERENCE",
+    "finding": "The first-start cost is reading libraries and files from a cold disk. It is paid once per machine start or long idle, not per checkout. On this container's virtual disk it is far larger than on a local SSD, where 221 MB reads in well under a second."
+   }
+  ],
+  "consequence": "The baseline's two first-start figures describe this container's cold disk, not the applications. Their first_start_ms comparison is UNRESOLVED until measured on real hardware.",
+  "not_tested": "Real hardware. Clearing the container's own file cache added only about 300 ms, because the host below it still caches; only a machine restart reproduced the cold case.",
+  "follow_ups_chosen": [
+   "moneysweep-pr: load pandas, pyarrow and numpy on first use instead of at start.",
+   "aguayluz-pr: look into the module-level work in server/backend/main.py."
+  ]
  }
 }
