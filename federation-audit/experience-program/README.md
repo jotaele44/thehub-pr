@@ -51,9 +51,12 @@ someone other than the author of the work.
 | `rc4/skywatcher_pilot.json` | skywatcher-pr before and after its pilot: the targeted rules per distinct element, and every critical or serious rule. |
 | `rc4/aguayluz_pilot.json` | aguayluz-pr before and after its fixes, in the same form. |
 | `rc4/moneysweep_pilot.json`, `rc4/centinelas_pilot.json`, `rc4/thehub_pilot.json` | The same before/after comparison for those three applications. |
-| `rc4/thehub_overflow.json` | thehub-pr horizontal overflow per width, before and after the tab bar fix. |
+| `rc4/thehub_overflow.json` | thehub-pr horizontal overflow per width, before and after the tab bar fix and the phone-width fix. |
+| `scripts/runtime/views_pass.js` | The runtime pass for an application with one address: opens each in-memory view and records it as the route `/#view:<label>`. |
+| `rc4/ovnis_pilot.json` | ovnis-pr before and after its fixes, per view, in the same form as the other comparisons. |
+| `rc4/mucaro_scan.json` | mucaro-ai scanned per view; nothing to fix, so there is no after. |
 | `rc4/aguayluz_water_use_before_after.png` | One AguaYLuz page before (above) and after (below) the dim-text change. |
-| `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the results for both applications and what they do not show. |
+| `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the results per application, what is blocked and what they do not show. |
 | `scripts/rc8_baseline.py`, `scripts/runtime/perf_pass.js` | Measure a backend's first start, a built frontend's size and per-route page-load timing, and tabulate them. |
 | `rc8/performance_baselines.json` | Per application at `main`, and for the two RC4 branches: start time, build size, and page-load figures per route. |
 | `rc8/RC8_GATE.json` | What the baseline shows, the RC4 branches against `main`, and a set of budgets that is proposed and not adopted. |
@@ -181,10 +184,11 @@ application was changed.
 
 ## Reading RC4
 
-RC4 has its evidence step and five applications fixed in their own code:
+RC4 has its evidence step and six applications fixed in their own code:
 skywatcher-pr (#375), aguayluz-pr (#420), moneysweep-pr (#719), centinelas-pr
-(#198) and thehub-pr (this pull request). ovnis-pr, spiderweb-pr and mucaro-ai
-are not changed.
+(#198), thehub-pr (this pull request) and ovnis-pr (#204). mucaro-ai was
+scanned and needed no change. spiderweb-pr is blocked: its frontend does not
+build on `main`.
 
 - thehub-pr was re-scanned on `main` after thehub-pr#432. Contrast failures
   went from 86 routes to 1. Unnamed buttons and unfocusable scroll regions are
@@ -218,10 +222,21 @@ are not changed.
 - TheHub's shell migration made seven routes overflow at 768 px, because the
   shared sidebar appears from that width and the tab bar could not shrink.
   The tab bar now scrolls; overflow at 768 px went from 7 routes to 0, and at
-  any width from 17 routes to 7.
+  any width from 17 routes to 7. The last seven (the GIS view switcher, a long
+  App Center badge, the crossover date filters) now wrap at phone widths:
+  overflow is 0 on all 86 routes at all seven widths. Naming the date inputs
+  also cleared the `label` rule (7 page loads to 0).
 - TheHub is the first application to use the RC3 control primitives
   (`FederationScrollRegion`), because it consumes the shared package from
   source.
+- OVNIS and Múcaro have one address each, so `views_pass.js` opened every
+  in-memory view at seven widths. OVNIS: contrast 28 to 0 and unfocusable
+  scroll regions 1 to 0 as distinct elements; `link-in-text-block` still fires
+  and was not in scope. Múcaro: no axe violation of any impact, no overflow,
+  no unnamed button in 49 view loads; its script policy was lifted in the test
+  browser only, to inject axe-core.
+- Spiderweb's `main` fails to build (Cesium packages missing exports after a
+  dependency update; its own CI frontend job fails too), so it was not scanned.
 - These are scan results. Pages were loaded, not operated, in Chromium only.
   They are not keyboard or screen-reader reviews, and the AguaYLuz scan ran on
   a workspace with little data on most pages.

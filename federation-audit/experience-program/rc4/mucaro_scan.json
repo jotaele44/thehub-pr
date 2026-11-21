@@ -1,0 +1,31 @@
+{
+ "schema": "federation.experience-program.scan-only/1",
+ "claim_class": "COMPUTED",
+ "repository": "mucaro-ai",
+ "commit": "4fc7b87d368064707493f9f745062a612e9cfbfe",
+ "method": "Chromium, dark colour scheme, at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels, by scripts/runtime/views_pass.js: M\u00facaro has one address and keeps its views in memory, so the scan loads '/', clicks each workspace view and measures it. The app's strict script policy was lifted for the test browser only so axe-core could be injected; the app itself was not changed.",
+ "csp_bypassed_for_scan": true,
+ "axe_version": "4.14.1",
+ "switcher": ".workspace-nav button",
+ "views": [
+  "/#view:Background tasks",
+  "/#view:Chat",
+  "/#view:Memory",
+  "/#view:Provenance",
+  "/#view:Settings",
+  "/#view:Sources",
+  "/#view:Workbench"
+ ],
+ "frame": {
+  "view_loads": 49,
+  "view_loads_with_an_error": 0,
+  "view_loads_opened_through_the_phone_menu": 21,
+  "axe_violations_of_any_impact": 0,
+  "max_horizontal_overflow_px": 0,
+  "view_loads_with_an_unnamed_button": 0,
+  "view_loads_with_page_errors": 0,
+  "controls_under_24px_summed_over_view_loads": 112
+ },
+ "result": "No change needed for the targeted rules: zero axe violations of any impact, no horizontal overflow, no unnamed buttons, in all 49 view loads.",
+ "not_shown": "Views were opened, not otherwise operated; empty workspace; controls under 24 px are recorded, not judged (WCAG 2.5.8 allows exceptions)."
+}

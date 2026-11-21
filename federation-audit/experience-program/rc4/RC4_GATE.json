@@ -78,12 +78,13 @@
    "mucaro-ai, ovnis-pr": "One addressable route each; the scan says little about them."
   },
   "decision_needed": "The pilot application is the user's choice.",
-  "status": "Skywatcher, AguaYLuz, MoneySweep, Centinelas and TheHub done. OVNIS, Spiderweb and Múcaro not started."
+  "status": "Skywatcher, AguaYLuz, MoneySweep, Centinelas and TheHub done. OVNIS, Spiderweb and M\u00facaro not started."
  },
  "blocked": [
   "independent QA",
   "screen reader and touch devices",
-  "macOS Dock menu and app identity"
+  "macOS Dock menu and app identity",
+  "spiderweb-pr frontend build on main"
  ],
  "artifacts_sha256": {
   "rc4/thehub_rescan.json": "8649de2f6762cf7feee513a15b884e5db09fef795c9e315c3abe64db6dc4ef9a",
@@ -94,10 +95,13 @@
   "rc4/moneysweep_pilot.json": "dedf61a76c716624ef953b6fa740fa6a32d5d867241fa23d0b64660df8cc9c40",
   "rc4/centinelas_pilot.json": "fbfd76cb94cdd9a39ff4b48d876ecdf4a12fc7c871ac754fbce56712ac3f08f2",
   "rc4/thehub_pilot.json": "54f85b71cf3593ebf319d91eb029f35e36db789f6f8043010eda175ad8168ed1",
-  "rc4/thehub_overflow.json": "4b74ad2dcf772b4ff4379dede50b505a86c1911afd6aa1aa623a033a144f3519"
+  "rc4/thehub_overflow.json": "0bfa9fed4bb44c84acbb06dc8bb951c5a2cdf4b65f1e78650a5de13b5ed6ac01",
+  "rc4/ovnis_pilot.json": "d151ee40ff7f6ff5e37848ff8e2cb65475b7c740de44031932755cf59aaf171a",
+  "rc4/mucaro_scan.json": "e0a8a2903c050b42ba744bc519b24624cfe5d6fc7a8ae305d7e254020561e5da",
+  "scripts/runtime/views_pass.js": "ede6f72b76e825cdaa0bd6ffb97b605bf15a94aa4330aa6394ca1af6a7941fe6"
  },
  "certification": "WITHHELD",
- "why_not_pass": "Five applications are fixed and measured in Chromium by the author. Pages were loaded, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the applications; surfaces that depend on live external data were seen only when that data happened to load; no change is merged; nobody independent has reviewed them.",
+ "why_not_pass": "Seven applications are scanned in Chromium by the author and six of them fixed; spiderweb-pr could not be scanned because its main does not build. Pages and views were loaded or opened, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the applications; surfaces that depend on live external data were seen only when that data happened to load; no change is merged; nobody independent has reviewed them.",
  "pilot": {
   "repository": "skywatcher-pr",
   "pull_request": "https://github.com/jotaele44/skywatcher-pr/pull/375",
@@ -278,9 +282,58 @@
   "repository": "thehub-pr",
   "evidence": "rc4/thehub_overflow.json",
   "claim_class": "COMPUTED",
-  "result": "Overflow at 768px: 7 routes -> 0. Routes overflowing at any width: 17 -> 7. Page loads with overflow: 52 -> 19.",
-  "fix": "The shared tab bar (server/frontend/src/components/ui/tabs.jsx) scrolls sideways instead of widening the page.",
-  "no_regression_observed": "Every critical or serious accessibility rule is unchanged or lower; errors 0 before and after.",
-  "not_attributable": "label-content-name-mismatch on /skywatcher?view=sky was 2 page loads in the previous scan and 0 in this one. The pass-button fix is in this build, but those buttons appear only when live satellite data loads, so the 0 is not counted as evidence of the fix."
+  "result": "Overflow at 768px: 7 routes -> 0 (tab bar fix). Then at every width: 7 routes -> 0, page loads with overflow 19 -> 0 (phone-width fix). Over both steps, page loads with overflow: 52 -> 0 across 86 routes at 7 widths.",
+  "fix": "The shared tab bar (server/frontend/src/components/ui/tabs.jsx) scrolls sideways instead of widening the page. The GIS view switcher and the crossover date group wrap, and the App Center evidence badge breaks long words.",
+  "no_regression_observed": "Every critical or serious accessibility rule is unchanged or lower after each step; label 7 -> 0 page loads after the phone-width fix; errors 0 throughout.",
+  "not_attributable": "label-content-name-mismatch on /skywatcher?view=sky was 2 page loads in the previous scan and 0 in this one. The pass-button fix is in this build, but those buttons appear only when live satellite data loads, so the 0 is not counted as evidence of the fix.",
+  "commits": {
+   "before": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3",
+   "tab_bar_fix": "d2fa3e32bff7cb4db49f2b647bf160dd123a6d3c",
+   "phone_width_fix": "766080d203b94a45af92958a540f09b5b88b3b64"
+  }
+ },
+ "sixth_application": {
+  "repository": "ovnis-pr",
+  "pull_request": "https://github.com/jotaele44/ovnis-pr/pull/204",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/ovnis_pilot.json",
+  "commits": {
+   "before": "a8225db5d226232037c455daf6e941e50d86d136",
+   "after": "0d1e12bcb2a3d4e26ab9d3c1d10c2c89fd440948"
+  },
+  "coverage": "6 in-memory views at 7 widths, 32 view loads, before and after, by scripts/runtime/views_pass.js.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "28 -> 0",
+   "button-name": "0 -> 0",
+   "scrollable-region-focusable": "1 -> 0",
+   "label-content-name-mismatch": "0 -> 0"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "color-contrast": "32 -> 0",
+   "link-in-text-block": "16 -> 16",
+   "scrollable-region-focusable": "3 -> 0"
+  },
+  "changes": [
+   "Dark-theme muted text raised from 50% to 58% lightness.",
+   "27 dim-text uses (slate-500/600/700) moved to slate-400, as in AguaYLuz.",
+   "Seven scroll containers, including the shared Table wrapper, made keyboard-reachable with the scrollRegion helper, as in the other small apps."
+  ],
+  "not_in_scope": "link-in-text-block, unchanged."
+ },
+ "seventh_application": {
+  "repository": "mucaro-ai",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/mucaro_scan.json",
+  "commit": "4fc7b87d368064707493f9f745062a612e9cfbfe",
+  "result": "7 in-memory views at 7 widths, 49 view loads: zero axe violations of any impact, no overflow, no unnamed buttons. No change made.",
+  "caveat": "The app's strict script policy was lifted in the test browser only, to inject axe-core."
+ },
+ "eighth_application": {
+  "repository": "spiderweb-pr",
+  "state": "BLOCKED",
+  "claim_class": "FACT",
+  "commit": "5ce5ecab33405a5634d52450fffc049a0cc1d48a",
+  "reason": "The frontend does not build on main: 14 'Missing export' errors from the Cesium packages (for example IonAssetElementService from @cesium/engine), after a dependency update merged. Spiderweb's own CI frontend job fails on the same commit. No scan was possible.",
+  "unblocks_when": "The Cesium dependency versions build together again on main."
  }
 }

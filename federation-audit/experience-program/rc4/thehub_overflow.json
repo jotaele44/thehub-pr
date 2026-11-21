@@ -4,7 +4,8 @@
  "repository": "thehub-pr",
  "commits": {
   "before": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3",
-  "after": "d2fa3e32bff7cb4db49f2b647bf160dd123a6d3c"
+  "after": "d2fa3e32bff7cb4db49f2b647bf160dd123a6d3c",
+  "after_phone_fix": "766080d203b94a45af92958a540f09b5b88b3b64"
  },
  "method": "Chromium, 86 routes at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels; horizontal overflow is document scrollWidth minus clientWidth.",
  "cause": "Confirmed in a browser before the change: on /crossover and /ovnis the last tabs of the tab bar set the page width. The shared TabsList could not shrink, and since #432 the shell sidebar takes 14rem from 768px.",
@@ -329,6 +330,18 @@
    ]
   }
  },
- "remaining": "At 320-430px: /gis and its four views (about 172px; the view switcher, logged earlier), /apps (113px) and /crossover (11px at 320px only). Not caused by tab bars; not fixed here.",
- "visual_check": "At 1280px, all 63 tab bars on the 86 routes have the same size and position before and after; their screenshots differ by at most 1 of 255 in one channel on 9 pixels."
+ "visual_check": "At 1280px, all 63 tab bars on the 86 routes have the same size and position before and after; their screenshots differ by at most 1 of 255 in one channel on 9 pixels.",
+ "after_phone_fix": {
+  "page_loads": 602,
+  "routes_overflowing": 0,
+  "page_loads_by_width": {},
+  "by_width": {},
+  "build_identity": "The scanned build is byte-identical to a fresh build of this commit."
+ },
+ "phone_fix_cause": "Confirmed in a browser before the change: on /gis and its four views the GIS view switcher, a row of five buttons that could not wrap; on /apps a long evidence-state badge that could not break; on /crossover at 320px the date filter group. Each now wraps within its container.",
+ "phone_fix_visual_check": "At 1280px, the three changed components have the same size and position before and after and their screenshots are pixel-identical.",
+ "accessibility_side_effect": {
+  "label": "7 -> 0 page loads: the crossover date inputs now have names (From date, To date).",
+  "every_other_critical_or_serious_rule": "unchanged: aria-valid-attr-value 77, link-in-text-block 35. Errors 0 before and after."
+ }
 }
