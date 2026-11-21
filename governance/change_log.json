@@ -135,6 +135,19 @@
         "governance/change_log.json",
         "docs/adr/0013-source-monitors-stream.md"
       ]
+    },
+    {
+      "date": "2026-11-17",
+      "summary": "Completed ADR 0013: moneysweep-pr emits the source_monitors stream (moneysweep-pr#720, template sync #718), so all six producers report their monitored sources through it, and the Hub's ADR 0012 registry reader (src/hub/source_monitor.py) and its `hub source-monitor` CLI are deleted. The ADR 0012 exception to artifact-only federation ends: the Hub no longer reads any producer's registry layout. Ingest keeps its gap error through a hub-owned expected-producer set (MONITOR_STREAM_PRODUCERS in src/hub/ingest.py). No governed contract, schema or dependency edge changed (the source_monitors stream and federation_source_monitor 1.0.0 are as of the 2026-11-11 entry), so no compatibility disposition is required. ADR 0012 is marked superseded by ADR 0013.",
+      "files": [
+        "src/hub/source_monitor.py",
+        "src/hub/ingest.py",
+        "src/hub/cli.py",
+        "skill-registry.yaml",
+        "docs/adr/0012-source-monitor-registry-adapter.md",
+        "docs/adr/0013-source-monitors-stream.md",
+        "governance/change_log.json"
+      ]
     }
   ]
 }
