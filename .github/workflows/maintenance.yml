@@ -27,6 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history so the pin report can count how far each producer's
+          # PRII_TEMPLATE_REF is behind main.
+          fetch-depth: 0
 
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -41,6 +45,25 @@ jobs:
 
       - name: Rollup (audit mode, non-failing)
         run: hub maintenance --root . --write-report --json || true
+
+      # Advisory: producers' drift gates compare against their own pinned hub
+      # commit, so lagging pins never fail anywhere. Surface them here instead.
+      - name: Federation pin report (advisory)
+        run: |
+          python tools/federation_pin_report.py --out reports/federation_maintenance/pin_report.json \
+            | tee -a "$GITHUB_STEP_SUMMARY"
+          lagging=$(python -c "import json; print(', '.join(json.load(open('reports/federation_maintenance/pin_report.json'))['lagging_desktop_producers']))")
+          if [ -n "$lagging" ]; then
+            echo "::warning::Desktop producers on an older prii-desktop than the template pins: $lagging"
+          fi
+
+      - name: Upload pin report
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: federation-pin-report
+          path: reports/federation_maintenance/pin_report.json
+          if-no-files-found: ignore
 
       - name: Upload rollup
         if: always()
