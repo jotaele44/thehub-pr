@@ -83,7 +83,7 @@
  "blocked": [
   "independent QA",
   "screen reader and touch devices",
-  "macOS Dock menu and app identity",
+  "macOS Dock menu and app identity (on-screen confirmation)",
   "spiderweb-pr frontend build on main"
  ],
  "artifacts_sha256": {
@@ -98,10 +98,23 @@
   "rc4/thehub_overflow.json": "0bfa9fed4bb44c84acbb06dc8bb951c5a2cdf4b65f1e78650a5de13b5ed6ac01",
   "rc4/ovnis_pilot.json": "d151ee40ff7f6ff5e37848ff8e2cb65475b7c740de44031932755cf59aaf171a",
   "rc4/mucaro_scan.json": "e0a8a2903c050b42ba744bc519b24624cfe5d6fc7a8ae305d7e254020561e5da",
-  "scripts/runtime/views_pass.js": "ede6f72b76e825cdaa0bd6ffb97b605bf15a94aa4330aa6394ca1af6a7941fe6"
+  "scripts/runtime/views_pass.js": "865985b6244ee88bb714d6afb63e093cdfc8e5fda894ec4a8f20391f1ac6ff53",
+  "cross-engine/engine_matrix.json": "e143f994b264e9067b19a71a1f841a6e9a9989d1039fa5642c4d7bf568b39ec6",
+  "cross-engine/commits.json": "5641ee58a720b7eacc3024b9eae0adc6e5135a4f240269589d23631b59f5b0f2",
+  "cross-engine/routes.json": "0ebb124808e053c987aa990c5f88038d17f74d1cb46d7f82da3e87de8a166d32",
+  "qa/INDEPENDENT_REVIEW_PACKET.md": "83b7908147fa7091cb996f8068a3411bcef89f0177f5ab4d8dd382fec3c96ad6",
+  "qa/macos_observations.json": "a0c49eebc578fbd0704fee988ebd55d2df7472d610edc4a9912e5deb58b7905d",
+  "qa/MACOS_CHECKLIST.md": "fc45d3a8ae914898efcf70a410d4403246596c2db84d60c6d45d7c9e108448e1",
+  "qa/manual/README.md": "101187707958c83819a553d9a4880e482e216e8de568415575e46c04c461b184",
+  "qa/manual/design-system-controls.md": "c82da0577998a2be1ceaa58a85729f236ba2c9f8c42b77607214e95f2e853839",
+  "qa/manual/skywatcher.md": "594ff66318c7394a8989a674bb6284b377eb37d07fd28a467dbca6c049643314",
+  "qa/manual/aguayluz.md": "13d5a50ff42c5821647d757fffc6daded5f13bc89610c4d6a5d1afbe5fbdc575",
+  "qa/manual/moneysweep.md": "27de9c77d7951aa23870ae0172f4a4c3752b1a8ff5cb9c7df82e03e5263b5da0",
+  "qa/manual/centinelas.md": "2f391052c56e5c91f44bd6bb2dc83cf971c5f1967547749fda45a372b9ba965c",
+  "qa/manual/thehub.md": "f736048c0f8d6650a37277f25e80395a14330f696732e5e54ab1680dab621da3"
  },
  "certification": "WITHHELD",
- "why_not_pass": "Seven applications are scanned in Chromium by the author and six of them fixed; spiderweb-pr could not be scanned because its main does not build. Pages and views were loaded or opened, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were not run against the applications; surfaces that depend on live external data were seen only when that data happened to load; no change is merged; nobody independent has reviewed them.",
+ "why_not_pass": "Seven applications are scanned in Chromium by the author and six of them fixed; spiderweb-pr could not be scanned because its main does not build. Pages and views were loaded or opened, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were run against all eight applications and found engine-specific failures in two (cross_engine); surfaces that depend on live external data were seen only when that data happened to load; no change is merged; nobody independent has reviewed them.",
  "pilot": {
   "repository": "skywatcher-pr",
   "pull_request": "https://github.com/jotaele44/skywatcher-pr/pull/375",
@@ -335,5 +348,84 @@
   "commit": "5ce5ecab33405a5634d52450fffc049a0cc1d48a",
   "reason": "The frontend does not build on main: 14 'Missing export' errors from the Cesium packages (for example IonAssetElementService from @cesium/engine), after a dependency update merged. Spiderweb's own CI frontend job fails on the same commit. No scan was possible.",
   "unblocks_when": "The Cesium dependency versions build together again on main."
+ },
+ "cross_engine": {
+  "state": "FAIL",
+  "claim_class": "COMPUTED",
+  "evidence": "cross-engine/engine_matrix.json",
+  "engines": {
+   "chromium": "157.0.8103.78",
+   "firefox": "155.0",
+   "webkit": "26.6"
+  },
+  "coverage": "8 applications, one build each (cross-engine/commits.json). Page and view loads: Chromium 1187, Firefox 1187, WebKit 1187, at 7 widths, dark scheme, axe-core 4.14.1, Playwright 1.63.0 headless in a Linux container.",
+  "result": "All 8 applications rendered every route or view they render in Chromium, with no engine-specific overflow or accessibility rule, except: Firefox on aguayluz-pr (/map blank) and ovnis-pr (the app falls to its error screen after the Map view), both because the map fails without WebGL; and WebKit on ovnis-pr, which surfaces a missing map worker that fails silently in Chromium. Every finding is in application map code; none is on a shared design-system element.",
+  "findings": [
+   {
+    "engine": "firefox",
+    "repository": "aguayluz-pr",
+    "beyond_chromium": [
+     "page_loads_with_page_errors: 7 against 0 in Chromium",
+     "routes not rendered only here: ['/map']"
+    ],
+    "root_cause": "/map renders nothing: the map library throws 'GPUInitializationError: WebGL2 is required' as an uncaught page error. This headless Firefox has no WebGL2; Chromium's software WebGL renders the map. The engine difference is this environment's, but the blank page is the application's handling of a missing WebGL2.",
+    "claim_class": "COMPUTED (counts); FACT (reproduced cause)"
+   },
+   {
+    "engine": "firefox",
+    "repository": "ovnis-pr",
+    "beyond_chromium": [
+     "page_loads_with_an_error: 8 against 0 in Chromium",
+     "routes not rendered only here: ['/#view:Candidates', '/#view:More']"
+    ],
+    "root_cause": "After the Map view, switching to any other view replaces the whole app with its error screen ('can't access property \"destroy\", this.painter is undefined'): the map could not create a WebGL context, map.remove() at dashboard/src/components/CaseMap.jsx:244 throws on unmount, and the only ErrorBoundary (App.jsx:22) wraps the navigation too. The view pass then could not reach 'Candidates' and 'More' at 320-768 px (8 view loads). Reproduced by hand in Firefox; not reproduced in Chromium or WebKit.",
+    "claim_class": "COMPUTED (counts); FACT (reproduced cause)"
+   },
+   {
+    "engine": "webkit",
+    "repository": "ovnis-pr",
+    "beyond_chromium": [
+     "page_loads_with_page_errors: 7 against 0 in Chromium"
+    ],
+    "root_cause": "SyntaxError: Unexpected token '<' on 7 view loads: the build has no maplibre-gl-worker.mjs, so /assets/maplibre-gl-worker.mjs is answered with the SPA's index.html. Chromium requests the same file, gets the same HTML and fails silently (reproduced by hand), so this is a build defect present in every engine that only WebKit reports.",
+    "claim_class": "COMPUTED (counts); FACT (reproduced cause)"
+   }
+  ],
+  "not_findings": "Firefox reported fewer link-in-text-block page loads than Chromium on skywatcher-pr (13 -> 0) and aguayluz-pr (14 -> 7). Fewer is not evidence of a fix; axe's evaluation of that rule depends on computed styles that differ by engine.",
+  "limits": "WebKit here is Playwright's Linux WebKit build, not Safari on macOS or iOS. Firefox here has no WebGL2. Pages and views were loaded or opened, not operated. aguayluz-pr and centinelas-pr were installed with the pydantic-core pin removed from constraints-desktop.txt, because the pinned set does not resolve (see below).",
+  "why_not_pass": "Engine-specific failures were observed on two applications (aguayluz-pr, ovnis-pr). They are recorded, not fixed here."
+ },
+ "desktop_setup_pin_conflict": {
+  "claim_class": "FACT",
+  "statement": "constraints-desktop.txt pins pydantic==2.13.5 with pydantic-core==2.48.0. pydantic 2.13.5 requires pydantic-core==2.46.5, so `python3 desktop/setup.py` fails with ResolutionImpossible ('Cannot install fastapi'). This holds for aguayluz-pr at c60587e and for centinelas-pr at d96863d and on current main (pin since d55eb47). thehub-pr and spiderweb-pr pin the consistent pair 2.13.4 / 2.46.4.",
+  "effect": "A fresh desktop setup of either application cannot complete; its .app launcher shows 'First-run setup could not finish'."
+ },
+ "manual_checks": {
+  "independent_review": {
+   "state": "BLOCKED",
+   "reviewer": null,
+   "next_step": "qa/INDEPENDENT_REVIEW_PACKET.md: a person other than the author, or a reviewer the user designates, reviews items 1-6 and fills in the sign-off. Self-review by the author does not count."
+  },
+  "screen_reader": {
+   "state": "BLOCKED",
+   "next_step": "qa/manual/<application>.md with VoiceOver (macOS, iOS), NVDA (Windows) and Voice Control; results recorded per configuration."
+  },
+  "touch_devices": {
+   "state": "BLOCKED",
+   "next_step": "qa/manual/<application>.md touch steps on an iPhone (Safari) and an Android phone (Chrome)."
+  },
+  "macos": {
+   "state": "BLOCKED",
+   "evidence": "qa/macos_observations.json",
+   "next_step": "qa/MACOS_CHECKLIST.md",
+   "measured": "On the user's Mac: the running app is Python (org.python.python), not TheHub; the desktop runtime defines no Dock menu and no login item; a launch without the setup marker reran full setup in 170.8 s; warm backend start about 1.7 s. On-screen Dock name and menu not seen (Accessibility permission refused)."
+  }
+ },
+ "script_revisions": {
+  "scripts/runtime/views_pass.js": {
+   "sha256_used_for_rc4_evidence": "ede6f72b76e825cdaa0bd6ffb97b605bf15a94aa4330aa6394ca1af6a7941fe6",
+   "sha256_current": "865985b6244ee88bb714d6afb63e093cdfc8e5fda894ec4a8f20391f1ac6ff53",
+   "change": "GUI_ENGINE selects chromium, firefox or webkit (default chromium) and the output records engine and browser_version. With GUI_ENGINE unset the pass behaves as the version that produced rc4/ovnis_pilot.json and rc4/mucaro_scan.json."
+  }
  }
 }

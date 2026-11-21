@@ -2,7 +2,7 @@
  "schema": "federation.experience-program.gate/1",
  "gate": "RC9",
  "state": "PROVISIONAL",
- "why_not_pass": "The matrix records what each tree declares and what was actually run. Most cells of a real compatibility matrix are not run: no application has been loaded in Firefox or WebKit, on macOS or on Windows by this program. The browser floor rests on version numbers written from memory. No application has adopted the experience contract, so there is nothing to check contract compatibility against.",
+ "why_not_pass": "The matrix records what each tree declares and what was actually run. Most cells of a real compatibility matrix are not run: every application has now been loaded in Firefox and WebKit on Linux (cross-engine/), and TheHub started on macOS (qa/macos_observations.json), but nothing on Windows, Safari, or a phone. The browser floor rests on version numbers written from memory. No application has adopted the experience contract, so there is nothing to check contract compatibility against.",
  "evidence": "rc9/compatibility_matrix.json",
  "commits": {
   "aguayluz-pr": "16d3cb0257b51f4b1d714bc773da9f2ece19802b",
@@ -56,7 +56,7 @@
   }
  },
  "artifacts_sha256": {
-  "rc9/compatibility_matrix.json": "c03cf813d65989c255d6f427b26484c59f1cae0a53ac569cbdac2d144e07a259"
+  "rc9/compatibility_matrix.json": "dad2d87b371a1830292d5a7303c810600017d3407af28cca89d643a218422655"
  },
  "certification": "WITHHELD"
 }
