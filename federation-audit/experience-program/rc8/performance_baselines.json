@@ -6,10 +6,10 @@
   "Measured in a Linux container over loopback. The numbers compare applications and commits with each other. They are not device timings and say nothing about macOS startup.",
   "Fresh workspaces hold little data, so data-heavy pages load faster here than in real use.",
   "Every cold-start run is on an empty workspace, so each includes the application's first-run setup. A start on an existing workspace was not measured.",
-  "first_run is one observation per tree, not a distribution. For a tree that had never been run it includes compiling Python bytecode and reading files for the first time; tree_previously_run says which trees that applies to.",
+  "first_run is one observation per tree, not a distribution. It is the first start after the tree was exported and can include reading the application's libraries from a cold disk; on this container's virtual disk that cost is not what a person's machine pays. Compiling Python bytecode was tested and ruled out. Quote first_run only from real hardware; tree_previously_run says which trees had been started before.",
   "Chromium only.",
   "A timing whose runs differ by more than 50% of the median is listed as unreliable for that cell.",
-  "No performance budget has been agreed. Nothing here is a pass or a failure."
+  "This file records measurements only. Budgets, and each application's result against them, are in rc8/RC8_GATE.json."
  ],
  "applications": [
   {

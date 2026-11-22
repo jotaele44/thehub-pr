@@ -91,6 +91,11 @@ def coldstart(args: argparse.Namespace) -> None:
         ),
         "runs_ms": results,
         "failed_runs": sum(1 for value in results if value is None),
+        "note": (
+            "runs_ms[0] is a cold first start: it can include reading libraries from a cold disk, which "
+            "on a container's virtual disk is not what a person's machine pays. Report it apart from the "
+            "later runs, and judge it against a budget only when measured on real hardware."
+        ),
     }
     Path(args.out).write_text(json.dumps(document, indent=1) + "\n")
 
@@ -200,8 +205,9 @@ def tabulate(args: argparse.Namespace) -> None:
         label = target["label"]
         row = dict(target)
         cold = json.loads((source / f"coldstart-{label}.json").read_text())
-        # The first start of a tree that has never run pays for compiling Python
-        # bytecode and a cold file cache; later starts do not. They are different
+        # The first start can read libraries from a cold disk; later starts find
+        # them in memory. Compiling bytecode was tested and ruled out (see
+        # first_start_diagnosis in rc8/RC8_GATE.json). They are different
         # quantities, so they are reported apart and never averaged together.
         row["cold_start_ms"] = {
             "first_run": cold["runs_ms"][0],
@@ -228,13 +234,16 @@ def tabulate(args: argparse.Namespace) -> None:
             "Fresh workspaces hold little data, so data-heavy pages load faster here than in real use.",
             "Every cold-start run is on an empty workspace, so each includes the application's first-run "
             "setup. A start on an existing workspace was not measured.",
-            "first_run is one observation per tree, not a distribution. For a tree that had never been run "
-            "it includes compiling Python bytecode and reading files for the first time; "
-            "tree_previously_run says which trees that applies to.",
+            "first_run is one observation per tree, not a distribution. It is the first start after the "
+            "tree was exported and can include reading the application's libraries from a cold disk; on "
+            "this container's virtual disk that cost is not what a person's machine pays. Compiling Python "
+            "bytecode was tested and ruled out. Quote first_run only from real hardware; "
+            "tree_previously_run says which trees had been started before.",
             "Chromium only.",
             f"A timing whose runs differ by more than {int(MAX_RELATIVE_SPREAD * 100)}% of the median is "
             "listed as unreliable for that cell.",
-            "No performance budget has been agreed. Nothing here is a pass or a failure.",
+            "This file records measurements only. Budgets, and each application's result against them, "
+            "are in rc8/RC8_GATE.json.",
         ],
         "applications": applications,
     }

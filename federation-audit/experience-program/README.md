@@ -58,6 +58,7 @@ someone other than the author of the work.
 | `rc4/aguayluz_water_use_before_after.png` | One AguaYLuz page before (above) and after (below) the dim-text change. |
 | `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the results per application, what is blocked and what they do not show. |
 | `scripts/rc8_baseline.py`, `scripts/runtime/perf_pass.js` | Measure a backend's first start, a built frontend's size and per-route page-load timing, and tabulate them. |
+| `scripts/runtime/startup_profile.py`, `scripts/runtime/netlog/` | Where a backend's start goes (import time and mapped bytes per package), and every network call it makes. Used for the first-start diagnosis. |
 | `rc8/performance_baselines.json` | Per application at `main`, and for the two RC4 branches: start time, build size, and page-load figures per route. |
 | `rc8/RC8_GATE.json` | What the baseline shows, the RC4 branches against `main`, and the budgets adopted on 2026-11-18 with which applications exceed them. |
 | `scripts/rc9_matrix.py` | Reads each application's tree for its toolchain, pins, browser features and the platforms its CI names. |
@@ -263,6 +264,13 @@ application was changed.
   cell and should not be quoted on its own.
 - `cold_start_ms.first_run` is one observation of a tree that had never been
   run; `later_runs` summarises the next four. They are different quantities.
+- The 9.4 s first starts of AguaYLuz and MoneySweep were diagnosed
+  (`first_start_diagnosis` in `RC8_GATE.json`): not bytecode, not network, not
+  workspace setup. After a container restart MoneySweep took 15.4 s once and
+  0.73 s after, with loading pyarrow and numpy's native libraries taking about
+  5 s of it. The cost is reading files from this container's cold disk, so
+  those two first-start budget results are `UNRESOLVED` until measured on real
+  hardware. Report a cold first start apart from warm ones.
 - "Initial" JavaScript is what `index.html` references; the rest loads later.
 - Six budgets were adopted after the baseline was taken; `RC8_GATE.json`
   lists them and each application's result. They are bounds for this harness,
