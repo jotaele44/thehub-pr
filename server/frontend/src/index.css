@@ -5,50 +5,19 @@
 @config "../tailwind.config.js";
 
 @layer base {
-  /* Theme-independent tokens (radius + font stacks) live on :root so they apply
-     in both themes. Color tokens are defined per-theme: :root = light (default),
-     .dark = dark. The ThemeProvider toggles the `.dark` class AND `data-theme`
-     so both Tailwind (darkMode:["class"]) and the shared federation.css agree. */
+  /* The palette is not defined here. Every shadcn colour variable, and --radius,
+     is an alias of a federation token, supplied by shadcn-bridge.css (imported
+     in main.jsx). What remains is the Hub's own: font stacks, the --status-*
+     tones and the constellation palette. The ThemeProvider toggles the `.dark`
+     class AND `data-theme`, so Tailwind (darkMode:["class"]) and the federation
+     tokens agree. */
   :root {
-    --radius: 0.5rem;
     --font-heading: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-body: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-display: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
 
     /* Light theme */
-    --background: 210 40% 98%;
-    --foreground: 222 47% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 226.7 94.2% 33.9%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 40%;
-    --accent: 220 100% 96%;
-    --accent-foreground: 226.7 94.2% 33.9%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214 32% 88%;
-    --input: 214 32% 88%;
-    --ring: 226.7 94.2% 33.9%;
-    --chart-1: 226.7 94.2% 42%;
-    --chart-2: 160 70% 36%;
-    --chart-3: 38 92% 45%;
-    --chart-4: 270 60% 55%;
-    --chart-5: 200 80% 45%;
-    --sidebar-background: 210 40% 98%;
-    --sidebar-foreground: 215 16% 40%;
-    --sidebar-primary: 226.7 94.2% 33.9%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 100% 96%;
-    --sidebar-accent-foreground: 226.7 94.2% 33.9%;
-    --sidebar-border: 214 32% 88%;
-    --sidebar-ring: 226.7 94.2% 33.9%;
 
     /* Semantic status tokens. `-fg` is the readable text tone (darker on light),
        the base is used for tinted bg/border. */
@@ -81,38 +50,6 @@
   }
 
   .dark {
-    --background: 222 18% 7%;
-    --foreground: 210 20% 92%;
-    --card: 223 17% 11%;
-    --card-foreground: 210 20% 92%;
-    --popover: 223 17% 11%;
-    --popover-foreground: 210 20% 92%;
-    --primary: 220.7 100% 71.4%;
-    --primary-foreground: 226 75% 10%;
-    --secondary: 223 15% 16%;
-    --secondary-foreground: 210 20% 92%;
-    --muted: 223 15% 16%;
-    --muted-foreground: 215 14% 55%;
-    --accent: 225 35% 18%;
-    --accent-foreground: 220 100% 86%;
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 223 14% 18%;
-    --input: 223 14% 18%;
-    --ring: 220.7 100% 71.4%;
-    --chart-1: 220.7 100% 71.4%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 38 90% 58%;
-    --chart-4: 270 60% 65%;
-    --chart-5: 200 80% 60%;
-    --sidebar-background: 224 20% 9%;
-    --sidebar-foreground: 215 16% 65%;
-    --sidebar-primary: 220.7 100% 71.4%;
-    --sidebar-primary-foreground: 226 75% 10%;
-    --sidebar-accent: 225 35% 18%;
-    --sidebar-accent-foreground: 220 100% 86%;
-    --sidebar-border: 223 14% 15%;
-    --sidebar-ring: 220.7 100% 71.4%;
 
     /* Dark status tones — `-fg` is the lighter text tone for dark surfaces. */
     --status-danger: 0 84.2% 60.2%;    --status-danger-fg: 0 93.5% 81.8%;
@@ -159,8 +96,8 @@
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 6px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
 
 /* Respect the user's reduced-motion preference: neutralize spinners, pulses,
    and transitions app-wide (WCAG 2.2 — no continuous/large motion). */

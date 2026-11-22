@@ -42,7 +42,7 @@ jobs:
           done
           cat /tmp/federation-fixture-lab.log
           exit 1
-      - name: Execute 32-fixture tri-engine viewport matrix
+      - name: Execute component and shell fixtures, tri-engine viewport matrix
         run: node tests/runtime-matrix.mjs
       - name: Upload fixture evidence
         if: always()

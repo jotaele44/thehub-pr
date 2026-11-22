@@ -226,11 +226,18 @@ def test_centinelas_desktop_requirements_support_plain_pip_install(tmp_path):
     assert f"prii-maintenance @ {archive}" in requirements
     assert f"prii-export-utils @ {archive}" in requirements
     assert "git+https://github.com/jotaele44/thehub-pr" not in requirements
-    # prii-desktop is pinned to the commit carrying the visible-startup-failure fix;
-    # the other two shared packages stay on their original immutable pin.
-    assert f"prii-desktop @ {archive}1313c77aec1a0742c1abb444026284a825af4177.zip" in requirements
-    assert requirements.count("1313c77aec1a0742c1abb444026284a825af4177.zip") == 1
-    assert requirements.count("f2b81769924689b4d959554928810b1d7b7ef3d6.zip") == 2
+    # prii-desktop is pinned to the hub commit that carries the Launch Pad (0.3.0).
+    assert f"prii-desktop @ {archive}dc79dc003815432b3f8bfc8f9bff532f6c47e622.zip" in requirements
+    assert requirements.count("dc79dc003815432b3f8bfc8f9bff532f6c47e622.zip") == 1
+    # The other two must name the same commits as centinelas-pr's pyproject.toml
+    # [tool.uv.sources]: an install that reads both files refuses two different
+    # URLs for one package.
+    maintenance = "f2b81769924689b4d959554928810b1d7b7ef3d6"
+    export_utils = "0f62e4bdde10b5ac82787a329d6f15481ab9c7f0"
+    assert f"prii-maintenance @ {archive}{maintenance}.zip" in requirements
+    assert f"prii-export-utils @ {archive}{export_utils}.zip" in requirements
+    assert requirements.count(f"{maintenance}.zip") == 1
+    assert requirements.count(f"{export_utils}.zip") == 1
 
 
 def test_every_producer_declares_an_app_title():
@@ -505,3 +512,101 @@ def test_pr_grid_v2_runtime_respects_geometry_authority_boundary():
 
     recipients = set().union(*by_output.values())
     assert "spiderweb-pr" not in recipients
+
+
+# --- GUI rules (ADR 0014, docs/FEDERATION_GUI_STANDARD.md) -------------------
+
+_GUI_RULE_TARGETS = {
+    "gui/check_gui_parity.py": "scripts/check_gui_parity.py",
+    "gui/test_gui_parity.py": "tests/test_gui_parity.py",
+    "gui/GUI_CAPABILITY_PARITY.md": "docs/GUI_CAPABILITY_PARITY.md",
+}
+_GUI_CODE_TARGETS = {
+    "gui/gui-capability-parity.yml": ".github/workflows/gui-capability-parity.yml",
+}
+_JSX_PRODUCERS = [
+    "aguayluz-pr", "centinelas-pr", "moneysweep-pr", "ovnis-pr", "skywatcher-pr",
+]
+
+
+def _gui_targets():
+    return {t["template"]: t for t in _targets() if t["template"].startswith("gui/")}
+
+
+def test_gui_rule_files_ship_as_one_unit():
+    """A repo gets the checker, its test and the procedure doc together, or
+    none of them: a checker without its doc is an unexplained gate."""
+    targets = _gui_targets()
+    assert set(targets) == set(_GUI_RULE_TARGETS) | set(_GUI_CODE_TARGETS)
+    for template, output in {**_GUI_RULE_TARGETS, **_GUI_CODE_TARGETS}.items():
+        assert targets[template]["output"] == output
+    rule_sets = {frozenset(targets[t]["repos"]) for t in _GUI_RULE_TARGETS}
+    assert len(rule_sets) == 1, rule_sets
+    assert "thehub-pr" in next(iter(rule_sets))
+
+
+def test_gui_workflow_never_reaches_the_two_repos_that_keep_their_own():
+    """thehub-pr's e2e mocks its API (no backend step); spiderweb-pr keeps its
+    runtime matrix and TypeScript stack. Neither takes the JSX workflow."""
+    repos = set(_gui_targets()["gui/gui-capability-parity.yml"]["repos"])
+    assert repos <= set(_JSX_PRODUCERS)
+
+
+def test_gui_code_adopters_have_adopted_the_rules():
+    targets = _gui_targets()
+    rules = set(targets["gui/check_gui_parity.py"]["repos"])
+    code = set(targets["gui/gui-capability-parity.yml"]["repos"])
+    assert code <= rules
+
+
+@pytest.mark.parametrize("program_id", sorted(_vars()))
+def test_gui_rule_templates_render_for_every_repo(program_id):
+    """Adoption is staged, so most repos are not in the target sets yet. The
+    templates must still be renderable for all of them today, or the first
+    adoption change discovers a missing variable."""
+    mod = _renderer()
+    subs = mod._placeholders(_vars()[program_id])
+    for template in _GUI_RULE_TARGETS:
+        assert mod._unresolved(mod._render_bytes(template, subs)) == [], template
+
+
+@pytest.mark.parametrize("program_id", _JSX_PRODUCERS)
+def test_gui_workflow_renders_valid_and_least_privilege(program_id):
+    mod = _renderer()
+    vars_ = _vars()[program_id]
+    subs = mod._placeholders(vars_)
+    raw = mod._render_bytes("gui/gui-capability-parity.yml", subs)
+    assert mod._unresolved(raw) == []
+    workflow = yaml.safe_load(raw)
+    assert workflow["permissions"] == {"contents": "read"}
+    e2e = workflow["jobs"]["gui-reachability"]
+    assert e2e["defaults"]["run"]["working-directory"] == vars_["frontend_dir"]
+    assert (_HUB.parent / program_id).is_dir() is False or (
+        _HUB.parent / program_id / vars_["frontend_dir"] / "package.json"
+    ).is_file()
+    for job in workflow["jobs"].values():
+        for step in job["steps"]:
+            if "uses" in step:
+                assert re.search(r"@[0-9a-f]{40}$", step["uses"]), step["uses"]
+    # One entry point: the checker merges fragments itself.
+    assert b"check_gui_parity_with_extensions" not in raw
+
+
+def test_thehub_gui_rule_files_are_the_templates():
+    for template, output in _GUI_RULE_TARGETS.items():
+        rendered = (_HUB / output).read_bytes()
+        if b"{{" in (_TEMPLATES / template).read_bytes():
+            continue  # carries per-repo placeholders; covered by --check
+        assert rendered == (_TEMPLATES / template).read_bytes(), output
+
+
+def test_gui_rule_files_render_into_a_fresh_repo(tmp_path):
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "thehub-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    for output in _GUI_RULE_TARGETS.values():
+        assert (tmp_path / output).is_file(), output
+    doc = (tmp_path / "docs" / "GUI_CAPABILITY_PARITY.md").read_text()
+    assert "thehub-pr follows the federation rule" in doc
+    assert "npm --prefix server/frontend run test:gui-parity" in doc

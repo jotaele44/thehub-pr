@@ -22,11 +22,13 @@ git-URL pip dependency — the first time a producer takes a *build-time* depend
 `thehub-pr`. This does not reverse the artifact-only design: it is one shared library with
 no runtime coupling, versioned by tag, bumped one producer at a time.
 
-**A second scoped exception (ADR 0012): the Source Monitor.** `hub source-monitor`
-(`src/hub/source_monitor.py`) reads each producer's own source registry from a workspace
-checkout, outside the frozen contract, because no federation stream carries monitoring data.
-It is read-only and fail-soft, writes a hub-derived `monitored_sources.jsonl` that is not a
-federation stream, and ends when producers emit the deferred `source_monitors` stream.
+**A second scoped exception, now ended (ADR 0012): the Source Monitor.** A hub-side registry
+reader (`hub source-monitor`) once read producers' own source registries from a workspace
+checkout, outside the frozen contract. ADR 0013 retired it producer by producer, and it was
+deleted on 2026-11-17 once the last producer (`moneysweep-pr`) emitted the `source_monitors`
+stream. Every producer now reports its sources through that stream; `hub ingest` projects it
+into `MonitoredSources` and flags any producer in its `MONITOR_STREAM_PRODUCERS` set whose
+rows are missing from the aggregate.
 
 ## Data flow
 
@@ -49,8 +51,8 @@ exports/…/manifest.json + *.jsonl ─(fetch)──▶ hub.validate.validate_pa
                                        ▼
                             data/aggregate/correlations.jsonl  (derived federation_relationship rows)
 
-producer source registries ──(hub source-monitor, ADR 0012)──▶ data/aggregate/monitored_sources.jsonl
-                                                                 (hub-derived, not a federation stream)
+data/aggregate/source_monitors.jsonl ──(hub ingest, ADR 0013)──▶ MonitoredSources + SourceMonitorSummary
+  (every producer emits the stream; an expected producer with no rows is reported as a gap)
 ```
 
 ## Canonical streams & id namespaces
@@ -64,6 +66,7 @@ producer source registries ──(hub source-monitor, ADR 0012)──▶ data/ag
 | `transactions` | `txn_[a-f0-9]{32}` | `federation_transaction.schema.json` | optional |
 | `observations` | producer-defined | producer-specific (e.g. airspace) | optional |
 | `alerts` | `alrt_[a-f0-9]{32}` | `federation_alert.schema.json` | optional |
+| `source_monitors` | `mon_[a-f0-9]{32}` | `federation_source_monitor.schema.json` | optional |
 
 Ids are **deterministic functions of row content**, so the same fact emitted by two producers
 collapses to one aggregated row whose `_producers` list records every contributor.
@@ -216,5 +219,8 @@ Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
   generalize ADR 0004's documentation-drift rule into one shared checker that requires a document
   to change with the paths it covers and forbids new dangling references.
 - [ADR 0012 — Source monitor reads producer registries hub-side](docs/adr/0012-source-monitor-registry-adapter.md):
-  a read-only, fail-soft adapter normalizes producer source registries for the Source Monitor until
-  a `source_monitors` stream exists; freshness is producer-level until then.
+  a read-only, fail-soft adapter normalizes producer source registries for the Source Monitor, with
+  producer-level freshness (the export-package age). Superseded by ADR 0013; retired 2026-11-17.
+- [ADR 0013 — Producers report monitored sources in a `source_monitors` stream](docs/adr/0013-source-monitors-stream.md):
+  an optional frozen stream (`federation_export_manifest` 1.1.0) with a per-source last success and its
+  basis. All six producers emit it, and the ADR 0012 registry reader is deleted.

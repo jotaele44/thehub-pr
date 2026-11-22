@@ -62,6 +62,22 @@ _grid_v2_producer_consumers: &grid_v2_producer_consumers
 # thehub-pr keeps its own variant, which additionally sets no-undef.
 _jsx_frontend: &jsx_frontend
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr]
+# GUI rules (docs/FEDERATION_GUI_STANDARD.md, ADR 0014). These two sets are the
+# ADOPTION LISTS, not the eventual audience: a repository is added here by the
+# hub change that starts its adoption, one repository at a time, because
+# rendering the canonical checker over a producer's own copy before its manifest
+# and fragments are ready would turn that producer's gate red. Until a repo is
+# listed its own copies stand, and federation-template-sync.yml leaves them alone.
+#   _gui_rules — checker, its test, the procedure document. Eventually all seven.
+#   _gui_code  — the parity workflow. Eventually the five in _jsx_frontend;
+#                thehub-pr keeps its own (its e2e mocks the API, with no backend
+#                step) and spiderweb-pr keeps its runtime matrix.
+# Adoption order: moneysweep-pr, centinelas-pr, then the rest.
+# Adopted so far: thehub-pr (rules), moneysweep-pr (rules and workflow).
+_gui_rules: &gui_rules
+  [moneysweep-pr, thehub-pr]
+_gui_code: &gui_code
+  [moneysweep-pr]
 
 targets:
   - template: Fix-Gatekeeper.command
@@ -176,6 +192,23 @@ targets:
   - template: baseline/eslint.config.js
     output: "{{FRONTEND_DIR}}/eslint.config.js"
     repos: *jsx_frontend
+
+  # GUI rules. One checker instead of five diverging copies; repo specifics live
+  # in each repository's manifest `discovery` block, so the checker and its test
+  # carry no placeholders. See the _gui_rules / _gui_code comment above before
+  # adding a repository.
+  - template: gui/check_gui_parity.py
+    output: scripts/check_gui_parity.py
+    repos: *gui_rules
+  - template: gui/test_gui_parity.py
+    output: tests/test_gui_parity.py
+    repos: *gui_rules
+  - template: gui/GUI_CAPABILITY_PARITY.md
+    output: docs/GUI_CAPABILITY_PARITY.md
+    repos: *gui_rules
+  - template: gui/gui-capability-parity.yml
+    output: .github/workflows/gui-capability-parity.yml
+    repos: *gui_code
 
   # Governance and contributor surface. Shared because the quality gates became
   # uniform across the federation; anything repo-specific stays in README/docs.

@@ -7,11 +7,11 @@ import SourceMonitorLedger from "@/components/sources/SourceMonitorLedger";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useEntityData } from "@/hooks/useEntityData";
 import {
-  MONITOR_LIST_LIMIT, MONITOR_SUMMARY_COLLECTION, MONITOR_SUMMARY_ID, PRODUCER_PAGES,
+  MONITOR_LIST_LIMIT, MONITOR_SUMMARY_COLLECTION, MONITOR_SUMMARY_ID, producerMonitorPath,
 } from "@/lib/sourceMonitor";
 
-// Federation-wide, read-only Source Monitor (ADR 0012): the operator view. Each
-// producer page carries the same table scoped to that producer as a Sources tab.
+// Federation-wide, read-only Source Monitor (ADR 0013): the operator view. Each
+// producer page carries the same table scoped to that producer as a Monitor tab.
 export default function SourceMonitor() {
   const { rows: summaries } = useEntityData(MONITOR_SUMMARY_COLLECTION);
   const summary = summaries.find((s) => s.id === MONITOR_SUMMARY_ID) || summaries[0] || null;
@@ -24,7 +24,7 @@ export default function SourceMonitor() {
       <PageHeader
         icon={Gauge}
         title="Source Monitor"
-        description="Read-only view of the sources each producer monitors, normalized from producer registries. Stalest first."
+        description="Read-only view of the sources each producer monitors, as it reports them in its source_monitors stream. Stalest first."
       />
 
       {summary && (
@@ -32,7 +32,7 @@ export default function SourceMonitor() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
             <StatCard label="Monitored sources" value={summary.total ?? 0} icon={Layers} />
             <StatCard label="Producers" value={producers.length} icon={Gauge} />
-            <StatCard label="Registry errors" value={summary.error_count ?? 0} icon={AlertTriangle}
+            <StatCard label="Producer errors" value={summary.error_count ?? 0} icon={AlertTriangle}
               alert={(summary.error_count ?? 0) > 0} sub={`${withErrors} producer(s) affected`} />
             <StatCard label="No export timestamp" value={withoutExport} icon={Clock}
               sub="freshness unknown for these producers" />
@@ -50,6 +50,7 @@ export default function SourceMonitor() {
                 <TableHeader>
                   <TableRow className="border-border hover:bg-transparent">
                     <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Producer</TableHead>
+                    <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Origin</TableHead>
                     <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Sources</TableHead>
                     <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Last export package</TableHead>
                     <TableHead className="text-xs uppercase tracking-wide text-muted-foreground">Registries</TableHead>
@@ -58,11 +59,15 @@ export default function SourceMonitor() {
                 </TableHeader>
                 <TableBody>
                   {producers.map(([pid, p]) => {
-                    const excluded = Object.entries(p.excluded || {});
+                    const monitorTab = producerMonitorPath(pid);
                     return (
                       <TableRow key={pid} className="border-border">
                         <TableCell className="text-sm font-medium">
-                          {PRODUCER_PAGES[pid] ? <Link to={PRODUCER_PAGES[pid]} className="hover:underline">{pid}</Link> : pid}
+                          {monitorTab ? <Link to={monitorTab} className="hover:underline">{pid}</Link> : pid}
+                        </TableCell>
+                        {/* A summary from before ADR 0013 completed may carry hub_adapter (or no origin). */}
+                        <TableCell className="text-xs text-muted-foreground" data-origin={p.origin || "hub_adapter"}>
+                          {p.origin === "stream" ? "source_monitors stream" : "legacy registry reader"}
                         </TableCell>
                         <TableCell className="text-sm font-mono-id">{p.count ?? 0}</TableCell>
                         <TableCell className="text-xs text-muted-foreground">
@@ -73,10 +78,7 @@ export default function SourceMonitor() {
                         </TableCell>
                         <TableCell className="text-xs">
                           {(p.errors || []).map((e) => <div key={e} className="text-status-danger-fg">{e}</div>)}
-                          {excluded.map(([reason, n]) => (
-                            <div key={reason} className="text-muted-foreground">{n} excluded: {reason.replaceAll("_", " ")}</div>
-                          ))}
-                          {!(p.errors || []).length && !excluded.length && <span className="text-muted-foreground">—</span>}
+                          {!(p.errors || []).length && <span className="text-muted-foreground">—</span>}
                         </TableCell>
                       </TableRow>
                     );
@@ -86,7 +88,7 @@ export default function SourceMonitor() {
             </div>
             <p className="border-t border-border px-4 py-2 text-xs text-muted-foreground">
               Built {summary.generated_at ? new Date(summary.generated_at).toLocaleString() : "—"} by{" "}
-              <code>hub source-monitor</code> ({summary.adapter || "—"}).
+              <code>hub ingest</code> from the <code>source_monitors</code> stream.
             </p>
           </div>
         </>

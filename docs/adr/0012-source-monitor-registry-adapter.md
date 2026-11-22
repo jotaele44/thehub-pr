@@ -1,6 +1,6 @@
 # ADR 0012 — Source monitor reads producer registries hub-side; a `source_monitors` stream is deferred
 
-- **Status:** Accepted (hub-side adapter); `source_monitors` stream deferred
+- **Status:** Superseded by [ADR 0013](0013-source-monitors-stream.md) (retired 2026-11-17). The `source_monitors` stream it deferred is accepted there; every producer now emits it, and the hub-side registry reader (`src/hub/source_monitor.py`, `hub source-monitor`) is deleted. The text below is the decision as it stood.
 - **Date:** 2026-11-08
 - **Deciders:** PRII federation maintainers
 - **Scope:** `thehub-pr` (`src/hub/source_monitor.py`, `hub ingest`, the Source Monitor UI); no producer changes
