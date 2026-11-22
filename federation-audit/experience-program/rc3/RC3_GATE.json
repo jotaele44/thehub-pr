@@ -2,7 +2,7 @@
  "schema": "federation.experience-program.gate/1",
  "gate": "RC3",
  "state": "PROVISIONAL",
- "why_not_pass": "The shared design-system changes are implemented and tested by their author only. No application has adopted them, Firefox and WebKit results come from CI and are not recorded here, nothing was used with a screen reader or on a touch device, and nobody independent has reviewed the work.",
+ "why_not_pass": "The shared design-system changes are implemented and tested by their author only. No application has adopted them, Firefox and WebKit pass on the fixture pages in CI and were run against the applications in cross-engine/, where two applications fail in Firefox for want of WebGL and WebKit surfaces a missing map worker in one, nothing was used with a screen reader or on a touch device, and nobody independent has reviewed the work.",
  "scope": "Shared design system only (thehub-pr/federation-design). No application code was changed.",
  "premise_correction": {
   "claim_class": "COMPUTED",
@@ -55,7 +55,15 @@
   },
   "WS-D D1-D2 Dock menu and app identity": {
    "state": "BLOCKED",
-   "reason": "macOS only; belongs to the Python desktop runtime and needs a Mac."
+   "reason": "macOS only; belongs to the Python desktop runtime and needs a Mac.",
+   "evidence": "qa/macos_observations.json",
+   "measured": {
+    "claim_class": "FACT / COMPUTED",
+    "app_identity": "PRII-THEHUB.app declares TheHub / pr.prii.thehub.launcher, but the launcher execs the venv's Python; the running process is Python (org.python.python). The bundle identity does not reach the Dock.",
+    "dock_menu": "No Dock menu is defined in packages/prii_desktop or desktop/.",
+    "open_at_login": "No login item is registered by the runtime; none is set on the measured Mac."
+   },
+   "next_step": "qa/MACOS_CHECKLIST.md steps 1-2 for the on-screen name, icon and Dock menu. The state can only become FAIL or PASS after that, and PASS needs a change that gives the running process the app identity."
   }
  },
  "checks": {
@@ -76,24 +84,29 @@
   },
   "firefox_webkit_matrix": {
    "state": "PASS",
-   "note": "CI run of federation-gui-fixture-matrix.yml on head c057f37: fixture-matrix concluded success with Chromium, Firefox and WebKit, as did all 41 checks on that head. The preceding run (head 45482e9) passed every Firefox and WebKit cell and failed one Chromium controls cell, which the dialog fix in c057f37 addresses. Evidence is the CI run and its artifact, not a file in this package."
+   "note": "CI run of federation-gui-fixture-matrix.yml on head c057f37: fixture-matrix concluded success with Chromium, Firefox and WebKit, as did all 41 checks on that head. The preceding run (head 45482e9) passed every Firefox and WebKit cell and failed one Chromium controls cell, which the dialog fix in c057f37 addresses. Evidence is the CI run and its artifact, not a file in this package.",
+   "scope": "Design-system fixture pages only (CI). The applications are covered by firefox_webkit_applications."
   },
   "gui_backend_parity_audit": {
    "state": "PASS",
    "note": "Two new controls classified CLIENT_STATE in .federation/gui_backend_contract.json; audit returns PASS with zero residue."
   },
   "screen_reader": {
-   "state": "BLOCKED"
+   "state": "BLOCKED",
+   "next_step": "qa/manual/design-system-controls.md (rename dialog, menus, scroll region, responsive label on fixture-lab controls.html) with VoiceOver and NVDA."
   },
   "touch_devices": {
-   "state": "BLOCKED"
+   "state": "BLOCKED",
+   "next_step": "qa/manual/design-system-controls.md touch steps (D7, M9, S4) on a phone."
   },
   "application_adoption": {
    "state": "OPEN",
    "note": "RC4 to RC7. Five applications pin releases 0.3.0 to 0.4.1; two do not depend on the package."
   },
   "independent_review": {
-   "state": "BLOCKED"
+   "state": "BLOCKED",
+   "reviewer": null,
+   "next_step": "qa/INDEPENDENT_REVIEW_PACKET.md item 1."
   },
   "hub_frontend_unit_tests": {
    "state": "PASS",
@@ -104,6 +117,11 @@
   "hub_runtime_remeasure_after_432": {
    "state": "PASS",
    "evidence": "rc4/thehub_rescan.json"
+  },
+  "firefox_webkit_applications": {
+   "state": "FAIL",
+   "evidence": "cross-engine/engine_matrix.json",
+   "note": "See RC4 cross_engine. No finding is on a shared design-system element; both trace to application map code."
   }
  },
  "defects_found_and_fixed_during_rc3": [
@@ -116,7 +134,12 @@
  "package_version": "0.6.0-rc.1 (unchanged; the plan's bump to rc.2 was dropped because the version is referenced by two lockfiles and the RC1 inventory, and the candidate is unreleased)",
  "artifacts_sha256": {
   "rc3/runtime_element_detail.json": "9d83a06f4540e4ece31ad53672ad540572444d57977689df133cbcb4df512140",
-  "rc3/chromium_matrix_receipt.json": "960db722016b0c716162a8f84ae59241ed86065e318ae99f5c5c6131b15ec749"
+  "rc3/chromium_matrix_receipt.json": "960db722016b0c716162a8f84ae59241ed86065e318ae99f5c5c6131b15ec749",
+  "cross-engine/engine_matrix.json": "e143f994b264e9067b19a71a1f841a6e9a9989d1039fa5642c4d7bf568b39ec6",
+  "qa/INDEPENDENT_REVIEW_PACKET.md": "83b7908147fa7091cb996f8068a3411bcef89f0177f5ab4d8dd382fec3c96ad6",
+  "qa/manual/design-system-controls.md": "c82da0577998a2be1ceaa58a85729f236ba2c9f8c42b77607214e95f2e853839",
+  "qa/macos_observations.json": "a0c49eebc578fbd0704fee988ebd55d2df7472d610edc4a9912e5deb58b7905d",
+  "qa/MACOS_CHECKLIST.md": "fc45d3a8ae914898efcf70a410d4403246596c2db84d60c6d45d7c9e108448e1"
  },
  "certification": "WITHHELD",
  "baseline_moved": {

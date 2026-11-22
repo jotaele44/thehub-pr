@@ -150,6 +150,24 @@
      "os": "linux (container)",
      "what": "20 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
      "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    },
+    {
+     "engine": "chromium 157.0.8103.78",
+     "os": "linux (container), headless",
+     "what": "140 page or view loads of commit c60587e at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "firefox 155.0",
+     "os": "linux (container), headless",
+     "what": "140 page or view loads of commit c60587e at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "webkit 26.6",
+     "os": "linux (container), headless",
+     "what": "140 page or view loads of commit c60587e at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
     }
    ]
   },
@@ -241,6 +259,24 @@
      "os": "linux (container)",
      "what": "12 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
      "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    },
+    {
+     "engine": "chromium 157.0.8103.78",
+     "os": "linux (container), headless",
+     "what": "84 page or view loads of commit d96863d at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "firefox 155.0",
+     "os": "linux (container), headless",
+     "what": "84 page or view loads of commit d96863d at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "webkit 26.6",
+     "os": "linux (container), headless",
+     "what": "84 page or view loads of commit d96863d at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
     }
    ]
   },
@@ -325,6 +361,24 @@
      "os": "linux (container)",
      "what": "12 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
      "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    },
+    {
+     "engine": "chromium 157.0.8103.78",
+     "os": "linux (container), headless",
+     "what": "84 page or view loads of commit 6c9a0fe at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "firefox 155.0",
+     "os": "linux (container), headless",
+     "what": "84 page or view loads of commit 6c9a0fe at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "webkit 26.6",
+     "os": "linux (container), headless",
+     "what": "84 page or view loads of commit 6c9a0fe at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
     }
    ]
   },
@@ -399,6 +453,24 @@
      "os": "linux (container)",
      "what": "1 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
      "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    },
+    {
+     "engine": "chromium 157.0.8103.78",
+     "os": "linux (container), headless",
+     "what": "49 page or view loads of commit 4fc7b87 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "firefox 155.0",
+     "os": "linux (container), headless",
+     "what": "49 page or view loads of commit 4fc7b87 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "webkit 26.6",
+     "os": "linux (container), headless",
+     "what": "49 page or view loads of commit 4fc7b87 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
     }
    ]
   },
@@ -483,6 +555,24 @@
      "os": "linux (container)",
      "what": "1 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
      "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    },
+    {
+     "engine": "chromium 157.0.8103.78",
+     "os": "linux (container), headless",
+     "what": "32 page or view loads of commit 0d1e12b at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "firefox 155.0",
+     "os": "linux (container), headless",
+     "what": "32 page or view loads of commit 0d1e12b at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "webkit 26.6",
+     "os": "linux (container), headless",
+     "what": "32 page or view loads of commit 0d1e12b at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
     }
    ]
   },
@@ -570,6 +660,24 @@
      "os": "linux (container)",
      "what": "22 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
      "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    },
+    {
+     "engine": "chromium 157.0.8103.78",
+     "os": "linux (container), headless",
+     "what": "154 page or view loads of commit 1301570 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "firefox 155.0",
+     "os": "linux (container), headless",
+     "what": "154 page or view loads of commit 1301570 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "webkit 26.6",
+     "os": "linux (container), headless",
+     "what": "154 page or view loads of commit 1301570 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
     }
    ]
   },
@@ -652,6 +760,24 @@
      "os": "linux (container)",
      "what": "1 addressable route(s) loaded at up to seven widths; pages loaded, not operated",
      "by": "this program's runtime passes (RC1, RC3, RC4, RC8)"
+    },
+    {
+     "engine": "chromium 157.0.8103.78",
+     "os": "linux (container), headless",
+     "what": "42 page or view loads of commit 9d6af72 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "firefox 155.0",
+     "os": "linux (container), headless",
+     "what": "42 page or view loads of commit 9d6af72 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "webkit 26.6",
+     "os": "linux (container), headless",
+     "what": "42 page or view loads of commit 9d6af72 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
     }
    ]
   },
@@ -764,8 +890,33 @@
      "os": "ubuntu-24.04 (CI)",
      "what": "design-system fixture pages only, not the application: federation-gui-fixture-matrix.yml, concluded success on thehub-pr#435 head c057f37",
      "by": "repository CI"
+    },
+    {
+     "engine": "chromium 157.0.8103.78",
+     "os": "linux (container), headless",
+     "what": "602 page or view loads of commit 28057d8 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "firefox 155.0",
+     "os": "linux (container), headless",
+     "what": "602 page or view loads of commit 28057d8 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "webkit 26.6",
+     "os": "linux (container), headless",
+     "what": "602 page or view loads of commit 28057d8 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "pywebview (system WebKit)",
+     "os": "macOS 26.6.2 x86_64",
+     "what": "desktop app started from PRII-THEHUB.app on the user's Mac at its local main 95c6c99: setup, --smoke start, Dock process identity",
+     "by": "this program (qa/macos_observations.json)"
     }
    ]
   }
- ]
+ ],
+ "observed_runs_note": "observed_runs entries for the cross-engine pass and the macOS observations were appended to this file directly; rc9_matrix.py takes them from its --observed input and the rest of each row is unchanged."
 }

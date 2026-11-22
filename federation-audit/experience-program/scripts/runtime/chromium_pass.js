@@ -1,6 +1,11 @@
 // Chromium runtime pass for one application: every addressable route at seven
 // viewport widths. Records what was observed; decides nothing.
-const { chromium } = require('playwright');
+// GUI_ENGINE=chromium|firefox|webkit picks the browser (default chromium, which
+// is what every RC1 to RC4 pass used). The output records the engine and its
+// version; keep one output directory per engine.
+const playwright = require('playwright');
+const ENGINE = process.env.GUI_ENGINE || 'chromium';
+if (!['chromium', 'firefox', 'webkit'].includes(ENGINE)) throw new Error('GUI_ENGINE must be chromium, firefox or webkit');
 const fs = require('fs');
 // usage: node chromium_pass.js <repository> <port> <routes.json> <axe.min.js> <out dir>
 const [,, name, port, routesFile, axeFile, outDir] = process.argv;
@@ -8,8 +13,8 @@ const routes = JSON.parse(fs.readFileSync(routesFile))[name].routes;
 const axeSource = fs.readFileSync(axeFile, 'utf8');
 const WIDTHS = [320, 390, 430, 768, 1280, 1440, 1920];
 (async () => {
-  const browser = await chromium.launch();
-  const out = { repository: name, base: 'http://127.0.0.1:' + port, axe_version: null, csp_bypassed_for_scan: process.env.BYPASS_CSP === '1', observations: [] };
+  const browser = await playwright[ENGINE].launch();
+  const out = { repository: name, engine: ENGINE, browser_version: browser.version(), base: 'http://127.0.0.1:' + port, axe_version: null, csp_bypassed_for_scan: process.env.BYPASS_CSP === '1', observations: [] };
   for (const width of WIDTHS) {
     // An application with a strict script-src policy refuses the injected axe
     // source. BYPASS_CSP=1 lifts the policy for this test context only, and the
