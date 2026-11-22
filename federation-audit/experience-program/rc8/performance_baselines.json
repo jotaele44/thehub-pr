@@ -143,10 +143,10 @@
       },
       "cls": {
        "runs": 20,
-       "median": 0.0,
+       "median": 0.0029,
        "min": 0,
-       "max": 0.3,
-       "relative_spread": 0.0
+       "max": 0.3413,
+       "relative_spread": 115.695
       },
       "requests": {
        "runs": 20,
@@ -194,10 +194,10 @@
       },
       "cls": {
        "runs": 20,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.3,
-       "relative_spread": 0.0
+       "median": 0.0014,
+       "min": 0,
+       "max": 0.2804,
+       "relative_spread": 193.379
       },
       "requests": {
        "runs": 20,
@@ -305,9 +305,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.3,
+       "median": 0.3413,
        "min": 0,
-       "max": 0.3,
+       "max": 0.3413,
        "relative_spread": 1.0
       },
       "requests": {
@@ -361,9 +361,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
+       "median": 0.132,
        "min": 0,
-       "max": 0.1,
+       "max": 0.132,
        "relative_spread": 1.0
       },
       "requests": {
@@ -417,9 +417,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0518,
+       "min": 0.0518,
+       "max": 0.0518,
        "relative_spread": 0.0
       },
       "requests": {
@@ -473,9 +473,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0133,
+       "min": 0.0133,
+       "max": 0.0133,
        "relative_spread": 0.0
       },
       "requests": {
@@ -641,9 +641,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.124,
+       "min": 0.124,
+       "max": 0.124,
        "relative_spread": 0.0
       },
       "requests": {
@@ -697,9 +697,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0245,
+       "min": 0.0245,
+       "max": 0.0245,
        "relative_spread": 0.0
       },
       "requests": {
@@ -979,9 +979,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0727,
+       "min": 0.0727,
+       "max": 0.0727,
        "relative_spread": 0.0
       },
       "requests": {
@@ -1035,9 +1035,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0235,
+       "min": 0.0235,
+       "max": 0.0235,
        "relative_spread": 0.0
       },
       "requests": {
@@ -1091,9 +1091,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0872,
+       "min": 0.0872,
+       "max": 0.0872,
        "relative_spread": 0.0
       },
       "requests": {
@@ -1147,9 +1147,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0146,
+       "min": 0.0146,
+       "max": 0.0146,
        "relative_spread": 0.0
       },
       "requests": {
@@ -1203,9 +1203,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0712,
+       "min": 0.0712,
+       "max": 0.0712,
        "relative_spread": 0.0
       },
       "requests": {
@@ -1259,9 +1259,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.3,
-       "min": 0.3,
-       "max": 0.3,
+       "median": 0.2804,
+       "min": 0.2804,
+       "max": 0.2804,
        "relative_spread": 0.0
       },
       "requests": {
@@ -1315,9 +1315,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0003,
+       "min": 0.0003,
+       "max": 0.0003,
        "relative_spread": 0.0
       },
       "requests": {
@@ -1371,9 +1371,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
+       "median": 0.0002,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0002,
        "relative_spread": 1.0
       },
       "requests": {
@@ -1427,9 +1427,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0056,
+       "min": 0.0036,
+       "max": 0.0058,
        "relative_spread": 0.393
       },
       "requests": {
@@ -1485,9 +1485,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.004,
+       "min": 0.004,
+       "max": 0.004,
        "relative_spread": 0.0
       },
       "requests": {
@@ -1601,9 +1601,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0017,
+       "min": 0.0017,
+       "max": 0.0017,
        "relative_spread": 0.0
       },
       "requests": {
@@ -1769,9 +1769,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0096,
+       "min": 0.0096,
+       "max": 0.0096,
        "relative_spread": 0.0
       },
       "requests": {
@@ -1825,9 +1825,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
+       "median": 0.0012,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0012,
        "relative_spread": 1.0
       },
       "requests": {
@@ -2220,9 +2220,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0078,
+       "min": 0.0078,
+       "max": 0.0078,
        "relative_spread": 0.0
       },
       "requests": {
@@ -2276,9 +2276,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.2,
-       "min": 0.2,
-       "max": 0.2,
+       "median": 0.1954,
+       "min": 0.1954,
+       "max": 0.1954,
        "relative_spread": 0.0
       },
       "requests": {
@@ -2444,9 +2444,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.1224,
+       "min": 0.1224,
+       "max": 0.1224,
        "relative_spread": 0.0
       },
       "requests": {
@@ -2500,9 +2500,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0167,
+       "min": 0.0167,
+       "max": 0.0167,
        "relative_spread": 0.0
       },
       "requests": {
@@ -2634,10 +2634,10 @@
       },
       "cls": {
        "runs": 12,
-       "median": 0.0,
+       "median": 0.0049,
        "min": 0,
-       "max": 0.7,
-       "relative_spread": 0.0
+       "max": 0.6736,
+       "relative_spread": 138.887
       },
       "requests": {
        "runs": 12,
@@ -2685,10 +2685,10 @@
       },
       "cls": {
        "runs": 12,
-       "median": 0.0,
+       "median": 0.0251,
        "min": 0,
-       "max": 0.1,
-       "relative_spread": 0.0
+       "max": 0.1089,
+       "relative_spread": 4.347
       },
       "requests": {
        "runs": 12,
@@ -2796,9 +2796,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.7,
-       "min": 0.7,
-       "max": 0.7,
+       "median": 0.6736,
+       "min": 0.6736,
+       "max": 0.6736,
        "relative_spread": 0.0
       },
       "requests": {
@@ -2852,9 +2852,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
+       "median": 0.0571,
        "min": 0,
-       "max": 0.1,
+       "max": 0.0571,
        "relative_spread": 1.0
       },
       "requests": {
@@ -2908,9 +2908,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.4,
-       "min": 0.4,
-       "max": 0.4,
+       "median": 0.3866,
+       "min": 0.3866,
+       "max": 0.3866,
        "relative_spread": 0.0
       },
       "requests": {
@@ -2964,9 +2964,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.1064,
+       "min": 0.0562,
+       "max": 0.1064,
        "relative_spread": 0.472
       },
       "requests": {
@@ -3132,9 +3132,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.003,
+       "min": 0.003,
+       "max": 0.003,
        "relative_spread": 0.0
       },
       "requests": {
@@ -3188,9 +3188,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
+       "median": 0.0251,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0251,
        "relative_spread": 1.0
       },
       "requests": {
@@ -3244,9 +3244,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0527,
+       "min": 0.0527,
+       "max": 0.0527,
        "relative_spread": 0.0
       },
       "requests": {
@@ -3300,9 +3300,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.1089,
+       "min": 0.1089,
+       "max": 0.1089,
        "relative_spread": 0.0
       },
       "requests": {
@@ -3356,9 +3356,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0067,
+       "min": 0.0067,
+       "max": 0.0067,
        "relative_spread": 0.0
       },
       "requests": {
@@ -3412,9 +3412,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
+       "median": 0.021,
        "min": 0,
-       "max": 0.0,
+       "max": 0.021,
        "relative_spread": 1.0
       },
       "requests": {
@@ -3636,9 +3636,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0963,
+       "min": 0.0963,
+       "max": 0.0963,
        "relative_spread": 0.0
       },
       "requests": {
@@ -3748,9 +3748,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0059,
+       "min": 0.0059,
+       "max": 0.0059,
        "relative_spread": 0.0
       },
       "requests": {
@@ -3860,9 +3860,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
+       "median": 0.0057,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0057,
        "relative_spread": 1.0
       },
       "requests": {
@@ -3916,9 +3916,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0281,
+       "min": 0.0281,
+       "max": 0.0281,
        "relative_spread": 0.0
       },
       "requests": {
@@ -3972,9 +3972,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.025,
+       "min": 0.025,
+       "max": 0.025,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4028,9 +4028,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.4,
-       "min": 0.4,
-       "max": 0.4,
+       "median": 0.4275,
+       "min": 0.4275,
+       "max": 0.4275,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4084,9 +4084,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0429,
+       "min": 0.0429,
+       "max": 0.0429,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4218,10 +4218,10 @@
       },
       "cls": {
        "runs": 12,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
-       "relative_spread": 0.0
+       "median": 0.0005,
+       "min": 0.0005,
+       "max": 0.0484,
+       "relative_spread": 95.8
       },
       "requests": {
        "runs": 12,
@@ -4269,10 +4269,10 @@
       },
       "cls": {
        "runs": 12,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.2,
-       "relative_spread": 0.0
+       "median": 0.0002,
+       "min": 0.0002,
+       "max": 0.1862,
+       "relative_spread": 930.0
       },
       "requests": {
        "runs": 12,
@@ -4380,9 +4380,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0005,
+       "min": 0.0005,
+       "max": 0.0005,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4436,9 +4436,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0002,
+       "min": 0.0002,
+       "max": 0.0002,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4492,9 +4492,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0005,
+       "min": 0.0005,
+       "max": 0.0005,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4548,9 +4548,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0002,
+       "min": 0.0002,
+       "max": 0.0002,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4604,9 +4604,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0005,
+       "min": 0.0005,
+       "max": 0.0005,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4660,9 +4660,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0002,
+       "min": 0.0002,
+       "max": 0.0002,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4716,9 +4716,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0177,
+       "min": 0.0177,
+       "max": 0.0177,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4772,9 +4772,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0169,
+       "min": 0.0169,
+       "max": 0.0169,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4828,9 +4828,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0005,
+       "min": 0.0005,
+       "max": 0.0005,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4884,9 +4884,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0002,
+       "min": 0.0002,
+       "max": 0.0002,
        "relative_spread": 0.0
       },
       "requests": {
@@ -4940,9 +4940,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
+       "median": 0.0084,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0084,
        "relative_spread": 1.0
       },
       "requests": {
@@ -4998,9 +4998,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
+       "median": 0.0002,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0118,
        "relative_spread": 59.0
       },
       "requests": {
@@ -5054,9 +5054,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0009,
+       "min": 0.0009,
+       "max": 0.0009,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5110,9 +5110,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0006,
+       "min": 0.0006,
+       "max": 0.0006,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5166,9 +5166,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0006,
+       "min": 0.0006,
+       "max": 0.0006,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5222,9 +5222,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0003,
+       "min": 0.0003,
+       "max": 0.0003,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5278,9 +5278,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0005,
+       "min": 0.0005,
+       "max": 0.0005,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5334,9 +5334,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0002,
+       "min": 0.0002,
+       "max": 0.0002,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5390,9 +5390,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0484,
+       "min": 0.0484,
+       "max": 0.0484,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5446,9 +5446,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.2,
-       "min": 0.2,
-       "max": 0.2,
+       "median": 0.1862,
+       "min": 0.1862,
+       "max": 0.1862,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5502,9 +5502,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0005,
+       "min": 0.0005,
+       "max": 0.0005,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5558,9 +5558,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.1,
+       "median": 0.0002,
+       "min": 0.0002,
+       "max": 0.0795,
        "relative_spread": 396.5
       },
       "requests": {
@@ -5614,9 +5614,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0005,
+       "min": 0.0005,
+       "max": 0.0005,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5670,9 +5670,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0002,
+       "min": 0.0002,
+       "max": 0.0002,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5804,9 +5804,9 @@
       },
       "cls": {
        "runs": 1,
-       "median": 0.3,
-       "min": 0.3,
-       "max": 0.3,
+       "median": 0.2733,
+       "min": 0.2733,
+       "max": 0.2733,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5855,9 +5855,9 @@
       },
       "cls": {
        "runs": 1,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0514,
+       "min": 0.0514,
+       "max": 0.0514,
        "relative_spread": 0.0
       },
       "requests": {
@@ -5926,9 +5926,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.3,
-       "min": 0.3,
-       "max": 0.3,
+       "median": 0.2733,
+       "min": 0.2733,
+       "max": 0.2902,
        "relative_spread": 0.062
       },
       "requests": {
@@ -5982,9 +5982,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0514,
+       "min": 0.0514,
+       "max": 0.0514,
        "relative_spread": 0.0
       },
       "requests": {
@@ -6116,9 +6116,9 @@
       },
       "cls": {
        "runs": 1,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0001,
+       "min": 0.0001,
+       "max": 0.0001,
        "relative_spread": 0.0
       },
       "requests": {
@@ -6167,9 +6167,9 @@
       },
       "cls": {
        "runs": 1,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0046,
+       "min": 0.0046,
+       "max": 0.0046,
        "relative_spread": 0.0
       },
       "requests": {
@@ -6238,9 +6238,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0001,
+       "min": 0.0001,
+       "max": 0.0001,
        "relative_spread": 0.0
       },
       "requests": {
@@ -6294,9 +6294,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0046,
+       "min": 0.0046,
+       "max": 0.0047,
        "relative_spread": 0.022
       },
       "requests": {
@@ -6430,7 +6430,7 @@
        "runs": 22,
        "median": 0.0,
        "min": 0,
-       "max": 0.2,
+       "max": 0.236,
        "relative_spread": 0.0
       },
       "requests": {
@@ -6481,7 +6481,7 @@
        "runs": 22,
        "median": 0.0,
        "min": 0,
-       "max": 0.1,
+       "max": 0.0534,
        "relative_spread": 0.0
       },
       "requests": {
@@ -6814,9 +6814,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0088,
+       "min": 0.0088,
+       "max": 0.0088,
        "relative_spread": 0.0
       },
       "requests": {
@@ -6870,9 +6870,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0017,
+       "min": 0.0017,
+       "max": 0.0017,
        "relative_spread": 0.0
       },
       "requests": {
@@ -7150,9 +7150,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.2,
-       "min": 0.2,
-       "max": 0.2,
+       "median": 0.21,
+       "min": 0.21,
+       "max": 0.21,
        "relative_spread": 0.0
       },
       "requests": {
@@ -7206,9 +7206,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0001,
+       "min": 0.0001,
+       "max": 0.0001,
        "relative_spread": 0.0
       },
       "requests": {
@@ -7938,9 +7938,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0088,
+       "min": 0.0088,
+       "max": 0.0088,
        "relative_spread": 0.0
       },
       "requests": {
@@ -7994,9 +7994,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0017,
+       "min": 0.0017,
+       "max": 0.0017,
        "relative_spread": 0.0
       },
       "requests": {
@@ -8614,9 +8614,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.2,
-       "min": 0.2,
-       "max": 0.2,
+       "median": 0.236,
+       "min": 0.236,
+       "max": 0.236,
        "relative_spread": 0.0
       },
       "requests": {
@@ -8670,9 +8670,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.0,
-       "max": 0.1,
+       "median": 0.0534,
+       "min": 0.0369,
+       "max": 0.0534,
        "relative_spread": 0.309
       },
       "requests": {
@@ -8782,9 +8782,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0238,
+       "min": 0.0238,
+       "max": 0.0238,
        "relative_spread": 0.0
       },
       "requests": {
@@ -8838,9 +8838,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.2,
-       "min": 0.2,
-       "max": 0.2,
+       "median": 0.2278,
+       "min": 0.2122,
+       "max": 0.2278,
        "relative_spread": 0.068
       },
       "requests": {
@@ -8894,9 +8894,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0132,
+       "min": 0.0132,
+       "max": 0.0132,
        "relative_spread": 0.0
       },
       "requests": {
@@ -9161,9 +9161,9 @@
       },
       "cls": {
        "runs": 1,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0015,
+       "min": 0.0015,
+       "max": 0.0015,
        "relative_spread": 0.0
       },
       "requests": {
@@ -9212,9 +9212,9 @@
       },
       "cls": {
        "runs": 1,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0058,
+       "min": 0.0058,
+       "max": 0.0058,
        "relative_spread": 0.0
       },
       "requests": {
@@ -9283,9 +9283,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0015,
+       "min": 0.0015,
+       "max": 0.0015,
        "relative_spread": 0.0
       },
       "requests": {
@@ -9339,9 +9339,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0058,
+       "min": 0.0051,
+       "max": 0.0058,
        "relative_spread": 0.121
       },
       "requests": {
@@ -9496,7 +9496,7 @@
        "runs": 86,
        "median": 0.0,
        "min": 0,
-       "max": 0.3,
+       "max": 0.2982,
        "relative_spread": 0.0
       },
       "requests": {
@@ -9547,7 +9547,7 @@
        "runs": 86,
        "median": 0.0,
        "min": 0,
-       "max": 0.1,
+       "max": 0.0936,
        "relative_spread": 0.0
       },
       "requests": {
@@ -10781,7 +10781,7 @@
        "runs": 3,
        "median": 0,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0155,
        "relative_spread": 0.0
       },
       "requests": {
@@ -12011,9 +12011,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0381,
+       "min": 0.0381,
+       "max": 0.0381,
        "relative_spread": 0.0
       },
       "requests": {
@@ -12067,9 +12067,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0226,
+       "min": 0.0226,
+       "max": 0.0226,
        "relative_spread": 0.0
       },
       "requests": {
@@ -13131,9 +13131,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0638,
+       "min": 0.0638,
+       "max": 0.0638,
        "relative_spread": 0.0
       },
       "requests": {
@@ -13187,9 +13187,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0296,
+       "min": 0.0296,
+       "max": 0.0296,
        "relative_spread": 0.0
       },
       "requests": {
@@ -13299,9 +13299,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0007,
+       "min": 0.0007,
+       "max": 0.0007,
        "relative_spread": 0.0
       },
       "requests": {
@@ -13411,9 +13411,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0026,
+       "min": 0.0026,
+       "max": 0.0026,
        "relative_spread": 0.0
       },
       "requests": {
@@ -13467,9 +13467,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.1048,
+       "min": 0.1048,
+       "max": 0.1048,
        "relative_spread": 0.0
       },
       "requests": {
@@ -13526,9 +13526,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0427,
+       "min": 0.0427,
+       "max": 0.0427,
        "relative_spread": 0.0
       },
       "requests": {
@@ -13582,9 +13582,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0082,
+       "min": 0.0082,
+       "max": 0.0082,
        "relative_spread": 0.0
       },
       "requests": {
@@ -13638,9 +13638,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0026,
+       "min": 0.0026,
+       "max": 0.0026,
        "relative_spread": 0.0
       },
       "requests": {
@@ -13694,9 +13694,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.3,
-       "min": 0.3,
-       "max": 0.3,
+       "median": 0.2943,
+       "min": 0.2943,
+       "max": 0.2943,
        "relative_spread": 0.0
       },
       "requests": {
@@ -13750,9 +13750,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0436,
+       "min": 0.0436,
+       "max": 0.0436,
        "relative_spread": 0.0
       },
       "requests": {
@@ -14030,9 +14030,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0657,
+       "min": 0.0657,
+       "max": 0.0657,
        "relative_spread": 0.0
       },
       "requests": {
@@ -14086,9 +14086,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0207,
+       "min": 0.0207,
+       "max": 0.0207,
        "relative_spread": 0.0
       },
       "requests": {
@@ -14702,9 +14702,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
+       "median": 0.0049,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0049,
        "relative_spread": 1.0
       },
       "requests": {
@@ -14758,9 +14758,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0023,
+       "min": 0.0023,
+       "max": 0.0023,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16273,9 +16273,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.1035,
+       "min": 0.1035,
+       "max": 0.1035,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16329,9 +16329,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0263,
+       "min": 0.0263,
+       "max": 0.0263,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16385,9 +16385,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.3,
-       "min": 0.3,
-       "max": 0.3,
+       "median": 0.2982,
+       "min": 0.2982,
+       "max": 0.2982,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16441,9 +16441,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0936,
+       "min": 0.0936,
+       "max": 0.0936,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16497,9 +16497,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.2,
-       "min": 0.2,
-       "max": 0.2,
+       "median": 0.1504,
+       "min": 0.1504,
+       "max": 0.1504,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16553,9 +16553,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0353,
+       "min": 0.0353,
+       "max": 0.0353,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16609,9 +16609,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.1184,
+       "min": 0.1184,
+       "max": 0.1184,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16665,9 +16665,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0302,
+       "min": 0.0302,
+       "max": 0.0302,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16721,9 +16721,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.1184,
+       "min": 0.1184,
+       "max": 0.1184,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16777,9 +16777,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0302,
+       "min": 0.0302,
+       "max": 0.0302,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16833,9 +16833,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.1184,
+       "min": 0.1184,
+       "max": 0.1184,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16889,9 +16889,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0302,
+       "min": 0.0302,
+       "max": 0.0302,
        "relative_spread": 0.0
       },
       "requests": {
@@ -16945,9 +16945,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.1035,
+       "min": 0.1035,
+       "max": 0.1035,
        "relative_spread": 0.0
       },
       "requests": {
@@ -17001,9 +17001,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0263,
+       "min": 0.0263,
+       "max": 0.0263,
        "relative_spread": 0.0
       },
       "requests": {
@@ -19185,9 +19185,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0509,
+       "min": 0.0508,
+       "max": 0.0509,
        "relative_spread": 0.002
       },
       "requests": {
@@ -19241,9 +19241,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0005,
+       "min": 0.0005,
+       "max": 0.0005,
        "relative_spread": 0.0
       },
       "requests": {
@@ -19377,7 +19377,7 @@
        "runs": 22,
        "median": 0.0,
        "min": 0,
-       "max": 0.2,
+       "max": 0.236,
        "relative_spread": 0.0
       },
       "requests": {
@@ -19428,7 +19428,7 @@
        "runs": 22,
        "median": 0.0,
        "min": 0,
-       "max": 0.1,
+       "max": 0.0534,
        "relative_spread": 0.0
       },
       "requests": {
@@ -19763,9 +19763,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0088,
+       "min": 0.0088,
+       "max": 0.0088,
        "relative_spread": 0.0
       },
       "requests": {
@@ -19819,9 +19819,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0017,
+       "min": 0.0017,
+       "max": 0.0017,
        "relative_spread": 0.0
       },
       "requests": {
@@ -20099,9 +20099,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.2,
-       "min": 0.2,
-       "max": 0.2,
+       "median": 0.2019,
+       "min": 0.2019,
+       "max": 0.2019,
        "relative_spread": 0.0
       },
       "requests": {
@@ -20155,9 +20155,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0001,
+       "min": 0.0001,
+       "max": 0.0001,
        "relative_spread": 0.0
       },
       "requests": {
@@ -20887,9 +20887,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0088,
+       "min": 0.0088,
+       "max": 0.0088,
        "relative_spread": 0.0
       },
       "requests": {
@@ -20943,9 +20943,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0017,
+       "min": 0.0017,
+       "max": 0.0017,
        "relative_spread": 0.0
       },
       "requests": {
@@ -21563,9 +21563,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.2,
-       "min": 0.1,
-       "max": 0.2,
+       "median": 0.236,
+       "min": 0.0991,
+       "max": 0.236,
        "relative_spread": 0.58
       },
       "requests": {
@@ -21619,9 +21619,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.0,
-       "max": 0.1,
+       "median": 0.0534,
+       "min": 0.0369,
+       "max": 0.0534,
        "relative_spread": 0.309
       },
       "requests": {
@@ -21731,9 +21731,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0238,
+       "min": 0.0238,
+       "max": 0.0238,
        "relative_spread": 0.0
       },
       "requests": {
@@ -21787,9 +21787,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.2,
-       "min": 0.2,
-       "max": 0.2,
+       "median": 0.1991,
+       "min": 0.1991,
+       "max": 0.1991,
        "relative_spread": 0.0
       },
       "requests": {
@@ -21843,9 +21843,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0075,
+       "min": 0.0075,
+       "max": 0.0075,
        "relative_spread": 0.0
       },
       "requests": {
@@ -22110,10 +22110,10 @@
       },
       "cls": {
        "runs": 20,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.3,
-       "relative_spread": 0.0
+       "median": 0.0032,
+       "min": 0,
+       "max": 0.3413,
+       "relative_spread": 106.656
       },
       "requests": {
        "runs": 20,
@@ -22161,10 +22161,10 @@
       },
       "cls": {
        "runs": 20,
-       "median": 0.0,
+       "median": 0.0001,
        "min": 0,
-       "max": 0.3,
-       "relative_spread": 0.0
+       "max": 0.2804,
+       "relative_spread": 2804.0
       },
       "requests": {
        "runs": 20,
@@ -22272,9 +22272,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.3,
-       "min": 0.3,
-       "max": 0.3,
+       "median": 0.3413,
+       "min": 0.3413,
+       "max": 0.3413,
        "relative_spread": 0.0
       },
       "requests": {
@@ -22330,7 +22330,7 @@
        "runs": 3,
        "median": 0,
        "min": 0,
-       "max": 0.1,
+       "max": 0.1248,
        "relative_spread": 0.0
       },
       "requests": {
@@ -22384,9 +22384,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.1,
+       "median": 0.0444,
+       "min": 0.0435,
+       "max": 0.0518,
        "relative_spread": 0.187
       },
       "requests": {
@@ -22443,9 +22443,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0133,
+       "min": 0.0133,
+       "max": 0.0133,
        "relative_spread": 0.0
       },
       "requests": {
@@ -22613,9 +22613,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.124,
+       "min": 0.124,
+       "max": 0.124,
        "relative_spread": 0.0
       },
       "requests": {
@@ -22669,9 +22669,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0245,
+       "min": 0.0245,
+       "max": 0.0245,
        "relative_spread": 0.0
       },
       "requests": {
@@ -22954,9 +22954,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0727,
+       "min": 0.0727,
+       "max": 0.0727,
        "relative_spread": 0.0
       },
       "requests": {
@@ -23010,9 +23010,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0235,
+       "min": 0.0235,
+       "max": 0.0235,
        "relative_spread": 0.0
       },
       "requests": {
@@ -23066,9 +23066,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0872,
+       "min": 0.0872,
+       "max": 0.0872,
        "relative_spread": 0.0
       },
       "requests": {
@@ -23122,9 +23122,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0146,
+       "min": 0.0146,
+       "max": 0.0146,
        "relative_spread": 0.0
       },
       "requests": {
@@ -23181,9 +23181,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.0712,
+       "min": 0.0712,
+       "max": 0.0712,
        "relative_spread": 0.0
       },
       "requests": {
@@ -23237,9 +23237,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.3,
-       "min": 0.3,
-       "max": 0.3,
+       "median": 0.2804,
+       "min": 0.2804,
+       "max": 0.2804,
        "relative_spread": 0.0
       },
       "requests": {
@@ -23293,9 +23293,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
+       "median": 0.0003,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0198,
        "relative_spread": 66.0
       },
       "requests": {
@@ -23351,9 +23351,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0002,
+       "min": 0.0002,
+       "max": 0.0093,
        "relative_spread": 45.5
       },
       "requests": {
@@ -23409,9 +23409,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0061,
+       "min": 0.0039,
+       "max": 0.0062,
        "relative_spread": 0.377
       },
       "requests": {
@@ -23467,9 +23467,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0043,
+       "min": 0.0041,
+       "max": 0.0046,
        "relative_spread": 0.116
       },
       "requests": {
@@ -23583,9 +23583,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0017,
+       "min": 0.0017,
+       "max": 0.0017,
        "relative_spread": 0.0
       },
       "requests": {
@@ -23751,9 +23751,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
+       "median": 0.0096,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0096,
        "relative_spread": 1.0
       },
       "requests": {
@@ -23809,7 +23809,7 @@
        "runs": 3,
        "median": 0,
        "min": 0,
-       "max": 0.0,
+       "max": 0.0012,
        "relative_spread": 0.0
       },
       "requests": {
@@ -24199,9 +24199,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0078,
+       "min": 0.0078,
+       "max": 0.0078,
        "relative_spread": 0.0
       },
       "requests": {
@@ -24255,9 +24255,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.2,
-       "min": 0.2,
-       "max": 0.2,
+       "median": 0.1954,
+       "min": 0.1954,
+       "max": 0.1954,
        "relative_spread": 0.0
       },
       "requests": {
@@ -24423,9 +24423,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.1,
-       "min": 0.1,
-       "max": 0.1,
+       "median": 0.1224,
+       "min": 0.1224,
+       "max": 0.1224,
        "relative_spread": 0.0
       },
       "requests": {
@@ -24479,9 +24479,9 @@
       },
       "cls": {
        "runs": 3,
-       "median": 0.0,
-       "min": 0.0,
-       "max": 0.0,
+       "median": 0.0167,
+       "min": 0.0167,
+       "max": 0.0167,
        "relative_spread": 0.0
       },
       "requests": {

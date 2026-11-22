@@ -274,7 +274,7 @@ application was changed.
 - "Initial" JavaScript is what `index.html` references; the rest loads later.
 - Six budgets were adopted after the baseline was taken; `RC8_GATE.json`
   lists them and each application's result. They are bounds for this harness,
-  not device targets. Five applications exceed at least one. The gate stays
+  not device targets. Six applications exceed at least one. The gate stays
   `PROVISIONAL`: nothing was optimised, and the first-start figure is a single
   observation per application.
 - The two RC4 branches are measured beside their `main`. Build size and

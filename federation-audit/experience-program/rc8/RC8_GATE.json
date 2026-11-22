@@ -2,7 +2,7 @@
  "schema": "federation.experience-program.gate/1",
  "gate": "RC8",
  "state": "PROVISIONAL",
- "why_not_pass": "Budgets are adopted and five applications exceed at least one in this harness, so RC8 cannot be PASS. It is not recorded as FAIL either: the first-start figure is one observation per application, the workspaces were nearly empty, and nothing has been measured on real hardware. The gate stays PROVISIONAL until the exceeding values are either confirmed on a device or brought inside the budgets. The two first-start excesses are UNRESOLVED: they reflect this container's cold disk (first_start_diagnosis).",
+ "why_not_pass": "Budgets are adopted and six applications exceed at least one in this harness, so RC8 cannot be PASS. It is not recorded as FAIL either: the first-start figure is one observation per application, the workspaces were nearly empty, and nothing has been measured on real hardware. The gate stays PROVISIONAL until the exceeding values are either confirmed on a device or brought inside the budgets. The two first-start excesses are UNRESOLVED: they reflect this container's cold disk (first_start_diagnosis).",
  "evidence": "rc8/performance_baselines.json",
  "coverage": {
   "targets": 10,
@@ -22,7 +22,7 @@
    "thehub-pr /gis?view=digital-twin transfers about 8.2 MB; the next largest thehub-pr routes about 2.4 MB.",
    "Median largest-contentful-paint per route is between about 115 ms and 520 ms for every application in this harness. aguayluz-pr has three routes just over 1000 ms.",
    "The local server sends files uncompressed, so bytes transferred track raw size, not gzip size. For a desktop application on loopback that costs little; it would matter if an application were served over a network.",
-   "Layout shift is 0 at the median for every application; aguayluz-pr and moneysweep-pr each have a route above 0.1."
+   "Layout shift across routes at the median is between 0 and 0.0514 for every application. Routes above the 0.1 budget at 1280 px: aguayluz-pr 3 (/hydromet 0.2804, /system 0.1954, / 0.132), centinelas-pr 2 (/handoff 0.1089, /autores 0.1064), moneysweep-pr 1 (/?tab=leaderboards 0.1862)."
   ]
  },
  "pilot_branches_against_main": {
@@ -92,12 +92,12 @@
   "applications_within_budgets": {
    "state": "OPEN",
    "within": [
-    "centinelas-pr",
     "mucaro-ai",
     "spiderweb-pr"
    ],
    "exceeds": [
     "aguayluz-pr",
+    "centinelas-pr",
     "moneysweep-pr",
     "ovnis-pr",
     "skywatcher-pr",
@@ -106,8 +106,8 @@
   }
  },
  "artifacts_sha256": {
-  "rc8/performance_baselines.json": "61c92cf81be7d00eb982fc16bda210e322dd590f64278287143e260fbc9035f2",
-  "scripts/rc8_baseline.py": "a157dfddb6982fe3a1beb8173c1d8589f861824a37adc27d8a9b06a564fedd86",
+  "rc8/performance_baselines.json": "75db218d7b722a2d97f6e08e7d92432711879037e4c2e631ea407e6b0a76355d",
+  "scripts/rc8_baseline.py": "e85e65eae822dfe2ddd13ecfae967eea01656331cbe14eaff6984ace900329b9",
   "scripts/runtime/startup_profile.py": "2782596bc71a70ab9d91e6c11cf726fcf3d4851f4913f9f8801352dc89c76335",
   "scripts/runtime/netlog/sitecustomize.py": "74d4ca9a466b84156d4961e7dac5000980ea5bb7bc73bf12df65a94b257d7f84"
  },
@@ -132,7 +132,7 @@
      "first_start_ms": 9383.2,
      "routes_over_lcp": "3 of 20",
      "routes_over_bytes": "20 of 20",
-     "routes_over_cls": "2 of 20"
+     "routes_over_cls": "3 of 20"
     },
     "first_start_ms": {
      "state": "UNRESOLVED",
@@ -140,7 +140,11 @@
     }
    },
    "centinelas-pr": {
-    "result": "WITHIN"
+    "result": "EXCEEDS",
+    "exceeds": {
+     "routes_over_cls": "2 of 12"
+    },
+    "note": "Marginal: /autores 0.1064 and /handoff 0.1089 at 1280 px, against a 0.1 budget. Found when CLS stopped being rounded to one decimal."
    },
    "moneysweep-pr": {
     "result": "EXCEEDS",
@@ -228,6 +232,16 @@
   "follow_ups_chosen": [
    "moneysweep-pr: load pandas, pyarrow and numpy on first use instead of at start.",
    "aguayluz-pr: look into the module-level work in server/backend/main.py."
+  ]
+ },
+ "cls_precision_correction": {
+  "claim_class": "COMPUTED",
+  "found_by": "automated review on thehub-pr#435",
+  "what": "scripts/rc8_baseline.py rounded every summarised metric to one decimal, so CLS 0.14 became 0.1 and values below 0.05 became 0. CLS now keeps four decimals; every other figure is unchanged.",
+  "effect": [
+   "centinelas-pr: WITHIN -> EXCEEDS (2 of 12 routes above 0.1, both marginal).",
+   "aguayluz-pr: routes over the CLS budget 2 -> 3 of 20.",
+   "The observation that median layout shift was 0 for every application was an artifact of the rounding and is corrected."
   ]
  }
 }

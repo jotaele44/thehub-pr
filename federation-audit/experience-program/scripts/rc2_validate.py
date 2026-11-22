@@ -100,6 +100,18 @@ def _duplicates(values: Iterable[str]) -> list[str]:
     return repeated
 
 
+def _as_dict(value: Any) -> dict:
+    """The value when it is an object, else an empty one. A section of the wrong
+    type is reported by the schema; the cross-section checks then skip it
+    instead of failing on it."""
+    return value if isinstance(value, dict) else {}
+
+
+def _as_list(value: Any) -> list:
+    """The value when it is a list, else an empty one (see ``_as_dict``)."""
+    return value if isinstance(value, list) else []
+
+
 def _validate_one(doc: Any, validators: dict[str, Draft202012Validator]) -> list[Finding]:
     app = "?"
     if isinstance(doc, dict) and isinstance(doc.get("application"), dict):
@@ -108,10 +120,10 @@ def _validate_one(doc: Any, validators: dict[str, Draft202012Validator]) -> list
     if not isinstance(doc, dict):
         return findings
 
-    actions = doc.get("actions") if isinstance(doc.get("actions"), list) else []
-    settings = doc.get("settings") if isinstance(doc.get("settings"), list) else []
-    navigation = doc.get("navigation") if isinstance(doc.get("navigation"), dict) else {}
-    compatibility = doc.get("compatibility") if isinstance(doc.get("compatibility"), dict) else {}
+    actions = _as_list(doc.get("actions"))
+    settings = _as_list(doc.get("settings"))
+    navigation = _as_dict(doc.get("navigation"))
+    compatibility = _as_dict(doc.get("compatibility"))
     for index, action in enumerate(actions):
         findings += _schema_findings(validators["actions"], action, "actions", app, f"/actions/{index}")
     for index, setting in enumerate(settings):
@@ -126,7 +138,7 @@ def _validate_one(doc: Any, validators: dict[str, Draft202012Validator]) -> list
     def add(code: str, where: str, message: str) -> None:
         findings.append(Finding(code, app, where, message))
 
-    capabilities = [c.get("id") for c in doc.get("capabilities", []) if isinstance(c, dict)]
+    capabilities = [c.get("id") for c in _as_list(doc.get("capabilities")) if isinstance(c, dict)]
     for repeated in _duplicates(capabilities):
         add("duplicate-capability-id", "/capabilities", f"capability id {repeated!r} is declared twice")
     action_ids = [a.get("id") for a in actions if isinstance(a, dict)]
@@ -136,8 +148,9 @@ def _validate_one(doc: Any, validators: dict[str, Draft202012Validator]) -> list
     for repeated in _duplicates(setting_ids):
         add("duplicate-setting-id", "/settings", f"setting id {repeated!r} is declared twice")
 
-    renameable = set((doc.get("evidence") or {}).get("renameable_object_types") or [])
-    modes = set((doc.get("authorization") or {}).get("modes") or [])
+    renameable_types = _as_list(_as_dict(doc.get("evidence")).get("renameable_object_types"))
+    renameable = {t for t in renameable_types if isinstance(t, str)}
+    modes = {m for m in _as_list(_as_dict(doc.get("authorization")).get("modes")) if isinstance(m, str)}
     bindings: dict[str, str] = {}
     for index, action in enumerate(actions):
         if not isinstance(action, dict):
@@ -179,11 +192,11 @@ def _validate_one(doc: Any, validators: dict[str, Draft202012Validator]) -> list
                     f"{setting_id} is application-scoped but not in the {app}. namespace")
 
     nav_ids: list[str] = []
-    for g_index, group in enumerate(navigation.get("groups") or []):
+    for g_index, group in enumerate(_as_list(navigation.get("groups"))):
         if not isinstance(group, dict):
             continue
         nav_ids.append(f"group:{group.get('id')}")
-        for i_index, item in enumerate(group.get("items") or []):
+        for i_index, item in enumerate(_as_list(group.get("items"))):
             if not isinstance(item, dict):
                 continue
             nav_ids.append(f"item:{item.get('id')}")
@@ -221,7 +234,7 @@ def _validate_one(doc: Any, validators: dict[str, Draft202012Validator]) -> list
         add("duplicate-navigation-id", "/navigation", f"{repeated} is declared twice")
     if navigation.get("application") not in (None, app):
         add("navigation-application-mismatch", "/navigation", "navigation is for another application")
-    integration = doc.get("integration") or {}
+    integration = _as_dict(doc.get("integration"))
     if navigation.get("addressing") == "in-memory" and integration.get("deep_links") is True:
         add("deep-link-contradiction", "/integration/deep_links",
             "deep links are claimed but navigation is in-memory")
@@ -230,7 +243,7 @@ def _validate_one(doc: Any, validators: dict[str, Draft202012Validator]) -> list
         add("compatibility-application-mismatch", "/compatibility",
             "compatibility is for another application")
     try:
-        declared = _version((doc.get("contract") or {}).get("version"))
+        declared = _version(_as_dict(doc.get("contract")).get("version"))
         if declared[0] not in SUPPORTED_MAJOR:
             add("version-unsupported", "/contract/version",
                 f"contract major {declared[0]} is not supported (supported: {SUPPORTED_MAJOR})")
@@ -257,7 +270,7 @@ def validate(documents: Iterable[Any]) -> list[Finding]:
         findings += _validate_one(doc, validators)
 
     def app_of(doc: Any) -> str:
-        return str(((doc or {}).get("application") or {}).get("id", "?")) if isinstance(doc, dict) else "?"
+        return str(_as_dict(doc.get("application")).get("id", "?")) if isinstance(doc, dict) else "?"
 
     apps = [app_of(doc) for doc in documents]
     for repeated in _duplicates(apps):
@@ -269,7 +282,7 @@ def validate(documents: Iterable[Any]) -> list[Finding]:
             continue
         app = app_of(doc)
         for kind, key in (("action", "actions"), ("setting", "settings")):
-            for item in doc.get(key) or []:
+            for item in _as_list(doc.get(key)):
                 if not isinstance(item, dict) or "id" not in item:
                     continue
                 item_id = str(item["id"])

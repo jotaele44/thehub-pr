@@ -35,9 +35,12 @@ ASSET = re.compile(r"""(?:src|href)=["']([^"']+\.(?:js|css|mjs))["']""")
 # A measure is quoted only if its runs agree this closely: (max - min) / median.
 MAX_RELATIVE_SPREAD = 0.5
 METRICS = ("ttfb_ms", "dom_content_loaded_ms", "load_ms", "lcp_ms", "cls", "requests", "transferred_bytes")
+# Decimal places kept per metric. CLS is a small unitless score with a 0.1
+# budget, so it keeps the four places perf_pass.js records; times keep one.
+DIGITS = {"cls": 4}
 
 
-def summary(values: list[float]) -> dict:
+def summary(values: list[float], digits: int = 1) -> dict:
     values = [value for value in values if value is not None]
     if not values:
         return {"runs": 0}
@@ -45,9 +48,9 @@ def summary(values: list[float]) -> dict:
     spread = (max(values) - min(values)) / median if median else 0.0
     return {
         "runs": len(values),
-        "median": round(median, 1),
-        "min": round(min(values), 1),
-        "max": round(max(values), 1),
+        "median": round(median, digits),
+        "min": round(min(values), digits),
+        "max": round(max(values), digits),
         "relative_spread": round(spread, 3),
     }
 
@@ -157,7 +160,7 @@ def page_loads(path: Path) -> dict:
         good = [sample for sample in samples if "error" not in sample and sample.get("status") == 200]
         row = {"route": route, "width": width, "runs": len(samples), "failed_runs": len(samples) - len(good)}
         for metric in METRICS:
-            row[metric] = summary([sample.get(metric) for sample in good])
+            row[metric] = summary([sample.get(metric) for sample in good], DIGITS.get(metric, 1))
         row["unreliable"] = sorted(
             metric
             for metric in ("dom_content_loaded_ms", "load_ms", "lcp_ms")
@@ -167,7 +170,8 @@ def page_loads(path: Path) -> dict:
 
     def across(metric: str, width: int) -> dict:
         return summary(
-            [row[metric]["median"] for row in routes if row["width"] == width and row[metric]["runs"]]
+            [row[metric]["median"] for row in routes if row["width"] == width and row[metric]["runs"]],
+            DIGITS.get(metric, 1),
         )
 
     def top(metric: str) -> list:

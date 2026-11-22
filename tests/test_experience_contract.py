@@ -162,3 +162,16 @@ def test_serialization_keeps_array_order_and_refuses_non_json_numbers():
 def test_a_non_object_document_is_reported_not_raised():
     codes = [finding.code for finding in rc2.validate([["not", "a", "contract"], None])]
     assert codes.count("schema:contract:type") == 2
+
+
+@pytest.mark.parametrize("bad", [None, "x", 3, []], ids=["null", "string", "number", "list"])
+def test_a_section_of_the_wrong_type_is_reported_not_fatal(bad):
+    # Any top-level section replaced by a value of the wrong type yields
+    # findings; the cross-section checks must not raise on it.
+    document = _positive("mucaro-ai")
+    for key in [k for k in document if not k.startswith("x-")]:
+        broken = copy.deepcopy(document)
+        broken[key] = bad
+        if bad == [] and key in ("actions", "settings"):
+            continue  # an empty list is valid there
+        assert rc2.validate([broken]), f"{key}={bad!r} was accepted"
