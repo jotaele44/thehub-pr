@@ -58,8 +58,9 @@
    "frontend_changed_on_main_since_evidence": "none"
   },
   "spiderweb-pr": {
-   "evidence_is_current_main": false,
-   "frontend_changed_on_main_since_evidence": "14 files changed, 247 insertions(+), 31 deletions(-)"
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none",
+   "rescanned_at": "e64fb4029d25e5c171f564223c302073c461aeec"
   },
   "thehub-pr": {
    "evidence_is_current_main": true,
@@ -78,13 +79,12 @@
    "mucaro-ai, ovnis-pr": "One addressable route each; the scan says little about them."
   },
   "decision_needed": "The pilot application is the user's choice.",
-  "status": "Skywatcher, AguaYLuz, MoneySweep, Centinelas and TheHub done. OVNIS, Spiderweb and M\u00facaro not started."
+  "status": "All eight done: Skywatcher, AguaYLuz, MoneySweep, Centinelas, TheHub, OVNIS and Spiderweb fixed in their own code; Múcaro scanned with every view open and needed no change."
  },
  "blocked": [
   "independent QA",
   "screen reader and touch devices",
-  "macOS Dock menu and app identity (on-screen confirmation)",
-  "spiderweb-pr frontend build on main"
+  "macOS Dock menu and app identity (on-screen confirmation)"
  ],
  "artifacts_sha256": {
   "rc4/thehub_rescan.json": "8649de2f6762cf7feee513a15b884e5db09fef795c9e315c3abe64db6dc4ef9a",
@@ -111,10 +111,13 @@
   "qa/manual/aguayluz.md": "13d5a50ff42c5821647d757fffc6daded5f13bc89610c4d6a5d1afbe5fbdc575",
   "qa/manual/moneysweep.md": "27de9c77d7951aa23870ae0172f4a4c3752b1a8ff5cb9c7df82e03e5263b5da0",
   "qa/manual/centinelas.md": "2f391052c56e5c91f44bd6bb2dc83cf971c5f1967547749fda45a372b9ba965c",
-  "qa/manual/thehub.md": "f736048c0f8d6650a37277f25e80395a14330f696732e5e54ab1680dab621da3"
+  "qa/manual/thehub.md": "f736048c0f8d6650a37277f25e80395a14330f696732e5e54ab1680dab621da3",
+  "rc4/spiderweb_pilot.json": "17c4a0d01292b0390911ce6a27f70bfbca882e1ff22e3a579ad639a4bdcb196d",
+  "rc4/spiderweb_states.json": "ef7d7272296af1671746ab31675c79193416efbb0cb9f0f5dd761cdebb276838",
+  "rc4/states/spiderweb-pr.json": "cd15df18347096bdd902cfef3ecf3f1c288b12152152ebdb3bdf6054073b5f29"
  },
  "certification": "WITHHELD",
- "why_not_pass": "Seven applications are scanned in Chromium by the author and six of them fixed; spiderweb-pr could not be scanned because its main does not build. Pages and views were loaded or opened, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were run against all eight applications and found engine-specific failures in two (cross_engine); surfaces that depend on live external data were seen only when that data happened to load; no change is merged; nobody independent has reviewed them.",
+ "why_not_pass": "All eight applications are scanned in Chromium by the author and seven of them fixed. Pages and views were loaded or opened, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were run against all eight applications and found engine-specific failures in two (cross_engine); surfaces that depend on live external data were seen only when that data happened to load; only ovnis-pr#204 is merged; nobody independent has reviewed them.",
  "pilot": {
   "repository": "skywatcher-pr",
   "pull_request": "https://github.com/jotaele44/skywatcher-pr/pull/375",
@@ -343,11 +346,38 @@
  },
  "eighth_application": {
   "repository": "spiderweb-pr",
-  "state": "BLOCKED",
-  "claim_class": "FACT",
-  "commit": "5ce5ecab33405a5634d52450fffc049a0cc1d48a",
-  "reason": "The frontend does not build on main: 14 'Missing export' errors from the Cesium packages (for example IonAssetElementService from @cesium/engine), after a dependency update merged. Spiderweb's own CI frontend job fails on the same commit. No scan was possible.",
-  "unblocks_when": "The Cesium dependency versions build together again on main."
+  "pull_request": "https://github.com/jotaele44/spiderweb-pr/pull/473",
+  "claim_class": "COMPUTED",
+  "evidence": [
+   "rc4/spiderweb_pilot.json",
+   "rc4/spiderweb_states.json"
+  ],
+  "commits": {
+   "before": "e64fb4029d25e5c171f564223c302073c461aeec",
+   "after": "b0427630f2e35741c02c5c93770398dfe83e61fc"
+  },
+  "previously_blocked": "main at 5ce5eca did not build (Cesium missing exports). spiderweb-pr#468 aligned the Cesium overrides; main at e64fb40 builds, so this is the first scan of current main.",
+  "coverage": "6 in-memory module views at 7 widths (42 view loads) by scripts/runtime/views_pass.js, plus 7 further states (43 loads: a timeline event, a contract, an anomaly cluster and a graph node selected; the light theme; a stub query run; the Spatial layer panel) by scripts/runtime/states_pass.js with rc4/states/spiderweb-pr.json. Before and after, Chromium, dark colour scheme.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "0 -> 0",
+   "button-name": "0 -> 0",
+   "scrollable-region-focusable": "0 -> 0",
+   "label-content-name-mismatch": "6 -> 0 (views), 6 -> 0 (states)"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "label-content-name-mismatch": "27 -> 0 (views), 31 -> 0 (states)"
+  },
+  "elements_before": [
+   "Timeline event buttons DEMO-EV-1 to DEMO-EV-5: visible text 'T3 DEMO-EV-1', name 'Event DEMO-EV-1: ...' (768 px and up, every view)",
+   "Spatial 'Recenter PR' button named 'Recenter map on Puerto Rico' (every width)"
+  ],
+  "changes": [
+   "Event buttons are named '<tier> <id> event: <label> on <time>', which starts with the visible text and keeps the label and time.",
+   "'Recenter PR' is named 'Recenter PR: recenter the map on Puerto Rico'.",
+   "Timeline.test.tsx asserts the property; jsdom cannot evaluate the axe rule, which passes the old code there."
+  ],
+  "not_in_scope": "region and landmark-unique (moderate) still fire, unchanged.",
+  "limits": "Below 768 px the app hides the rails, inspector and timeline (display: none), so event buttons and selection states exist from 768 px only. spiderweb-pr has no check_gui_parity.py and no gui_backend_contract.json: no parity run and no audit-bind commit."
  },
  "cross_engine": {
   "state": "FAIL",
@@ -426,6 +456,10 @@
    "sha256_used_for_rc4_evidence": "ede6f72b76e825cdaa0bd6ffb97b605bf15a94aa4330aa6394ca1af6a7941fe6",
    "sha256_current": "865985b6244ee88bb714d6afb63e093cdfc8e5fda894ec4a8f20391f1ac6ff53",
    "change": "GUI_ENGINE selects chromium, firefox or webkit (default chromium) and the output records engine and browser_version. With GUI_ENGINE unset the pass behaves as the version that produced rc4/ovnis_pilot.json and rc4/mucaro_scan.json."
+  },
+  "scripts/runtime/states_pass.js": {
+   "sha256_used_for_rc4_evidence": "610ab192a5f67d862fb21ba5c002b5b71ee94ad50388ecf17b467bae52b2d537",
+   "change": "New. Opens named UI states (a short click sequence each) on a single-address application and records them as /#state:<name>, read unchanged by rc3_runtime_detail.py and rc4_pilot_compare.py."
   }
  }
 }

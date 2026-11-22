@@ -55,6 +55,9 @@ someone other than the author of the work.
 | `scripts/runtime/views_pass.js` | The runtime pass for an application with one address: opens each in-memory view and records it as the route `/#view:<label>`. |
 | `rc4/ovnis_pilot.json` | ovnis-pr before and after its fixes, per view, in the same form as the other comparisons. |
 | `rc4/mucaro_scan.json` | mucaro-ai scanned per view; nothing to fix, so there is no after. |
+| `scripts/runtime/states_pass.js` | Opens named UI states of a one-address application (a short click sequence each, from a states file) and records each as the route `/#state:<name>`. |
+| `rc4/spiderweb_pilot.json`, `rc4/spiderweb_states.json` | spiderweb-pr before and after its fixes, per module view and per further state. |
+| `rc4/states/spiderweb-pr.json` | The states opened for spiderweb-pr, so the states pass can be repeated. |
 | `rc4/aguayluz_water_use_before_after.png` | One AguaYLuz page before (above) and after (below) the dim-text change. |
 | `rc4/RC4_GATE.json` | RC4 state, what the re-scan showed, the results per application, what is blocked and what they do not show. |
 | `scripts/rc8_baseline.py`, `scripts/runtime/perf_pass.js` | Measure a backend's first start, a built frontend's size and per-route page-load timing, and tabulate them. |
@@ -195,9 +198,8 @@ application was changed.
 
 RC4 has its evidence step and six applications fixed in their own code:
 skywatcher-pr (#375), aguayluz-pr (#420), moneysweep-pr (#719), centinelas-pr
-(#198), thehub-pr (this pull request) and ovnis-pr (#204). mucaro-ai was
-scanned and needed no change. spiderweb-pr is blocked: its frontend does not
-build on `main`.
+(#198), thehub-pr (this pull request), ovnis-pr (#204) and spiderweb-pr
+(#473). mucaro-ai was scanned and needed no change.
 
 - thehub-pr was re-scanned on `main` after thehub-pr#432. Contrast failures
   went from 86 routes to 1. Unnamed buttons and unfocusable scroll regions are
@@ -208,8 +210,6 @@ build on `main`.
   touches, not a count of source files.
 - An application with one addressable route was scanned on that route only. A
   low count there describes the coverage, not the application.
-- spiderweb-pr's frontend changed on `main` after its evidence was taken, so
-  its row is not current.
 - The pilot recommendation in `RC4_GATE.json` is an inference from this table.
 - Skywatcher pilot: unnamed buttons 1 to 0, unfocusable scroll regions 10 to
   0, label mismatches 7 to 0, counted as distinct elements over the same 22
@@ -244,8 +244,15 @@ build on `main`.
   and was not in scope. Múcaro: no axe violation of any impact, no overflow,
   no unnamed button in 49 view loads; its script policy was lifted in the test
   browser only, to inject axe-core.
-- Spiderweb's `main` fails to build (Cesium packages missing exports after a
-  dependency update; its own CI frontend job fails too), so it was not scanned.
+- Spiderweb's `main` builds again since spiderweb-pr#468, so it was scanned
+  at e64fb40: its six module views by `views_pass.js`, and seven further states
+  by `states_pass.js` (a timeline event, a contract, a cluster and a graph node
+  selected; the light theme; a stub query run; the layer panel). Label
+  mismatches went from 6 to 0 as distinct elements in both: the five timeline
+  event buttons and "Recenter PR". No contrast, unnamed-button or scroll-region
+  failure was found. Below 768 px the app hides its rails, inspector and
+  timeline, so those surfaces exist from 768 px only. `region` and
+  `landmark-unique` (moderate) still fire and were not in scope.
 - These are scan results. Pages were loaded, not operated, in Chromium only.
   They are not keyboard or screen-reader reviews, and the AguaYLuz scan ran on
   a workspace with little data on most pages.
@@ -303,7 +310,7 @@ headless, Linux container, the same seven widths, dark scheme and axe-core
 4.14.1 as before. That is 1,187 page or view loads per engine. The five RC4
 applications were built at their "after" commits, thehub-pr at #435's head,
 ovnis-pr at #204, mucaro-ai at its RC4 scan commit, and spiderweb-pr at its
-RC0-audited commit, because its `main` does not build.
+RC0-audited commit, because its `main` did not build at the time.
 
 - `beyond_chromium` lists what an engine showed that Chromium did not on the
   same build. WebKit showed nothing beyond Chromium on seven applications;
@@ -437,6 +444,8 @@ for e in chromium firefox webkit; do
   GUI_ENGINE=$e node $P/runtime/chromium_pass.js <name> 9600 <routes.json> <axe.min.js> <raw>/$e
   # or, for an application with one address:
   # GUI_ENGINE=$e node $P/runtime/views_pass.js <name> 9600 <axe.min.js> <raw>/$e
+  # and, Chromium only, for states that need more than a tab click:
+  # node $P/runtime/states_pass.js <name> 9600 <states.json> <axe.min.js> <raw>/$e
 done
 python $P/rc10_engine_tabulate.py --raw <raw> --commits <commits.json> \
   --out federation-audit/experience-program/cross-engine/engine_matrix.json

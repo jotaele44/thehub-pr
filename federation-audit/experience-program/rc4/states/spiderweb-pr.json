@@ -1,0 +1,15 @@
+{
+ "spiderweb-pr": {
+  "note": "Below 768 px the app hides the rails, the inspector and the timeline (display: none), so selection states are opened from 768 px only.",
+  "states": [
+   {"name": "Command, timeline event selected", "min_width": 768,
+    "steps": [{"click": "role=list[name=\"Timeline events\"] >> role=button"}]},
+   {"name": "Command, light theme", "steps": [{"click": "role=button[name=/Switch to light theme/]"}]},
+   {"name": "Finance, contract selected", "min_width": 768, "steps": [{"click": "#tab-finance"}, {"click": "tr[tabindex=\"0\"]"}]},
+   {"name": "Anomaly, cluster selected", "steps": [{"click": "#tab-anomaly"}, {"click": ".anom-card"}]},
+   {"name": "Graph, node selected", "steps": [{"click": "#tab-graph"}, {"click": ".graph-node"}]},
+   {"name": "Query, stub run", "steps": [{"click": "#tab-query"}, {"click": "role=button[name=/RUN QUERY/]"}]},
+   {"name": "Spatial, layer panel shown", "steps": [{"click": "#tab-spatial"}, {"click_if_visible": "role=button[name=\"Show layers\"]"}]}
+  ]
+ }
+}
