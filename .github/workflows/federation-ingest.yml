@@ -147,7 +147,10 @@ jobs:
             fi
           }
           trap cleanup_unpublished_branch EXIT
-          branch="fixture-refresh/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          # A flat name, not fixture-refresh/<run>: Git cannot hold refs/heads/fixture-refresh
+          # (PR #401's head) and refs/heads/fixture-refresh/<run> at the same time, so the
+          # nested form was rejected as a "directory file conflict" on every push.
+          branch="fixture-refresh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           git config user.name "prii-federation-bot"
           git config user.email "noreply@github.com"
           git checkout -b "$branch"
