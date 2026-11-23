@@ -9,6 +9,8 @@ Results go back into `rc3/RC3_GATE.json` and `rc4/RC4_GATE.json`. Until then,
 |---|---|
 | `design-system-controls.md` | RC3 shared controls on the fixture page: rename dialog, menu, item menu, scroll region, responsive label. No application uses the dialog or menus yet, so the fixture page is the only place to test them. |
 | `skywatcher.md`, `aguayluz.md`, `moneysweep.md`, `centinelas.md`, `thehub.md` | The controls each RC4 pull request changed, on the pages where the scan found them. |
+| `ovnis.md`, `spiderweb.md` | The same for ovnis-pr#204 and spiderweb-pr#473. Both apps have one address, so the scripts name views and tabs, not pages. |
+| `mucaro.md` | A baseline: the RC4 scan found nothing to fix in mucaro-ai, so this is the first check by a person, including four workspaces added after the scan. Its set-up differs; see the script. |
 
 ## Set-up, once per session
 
