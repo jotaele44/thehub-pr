@@ -117,7 +117,7 @@
   "rc4/states/spiderweb-pr.json": "cd15df18347096bdd902cfef3ecf3f1c288b12152152ebdb3bdf6054073b5f29"
  },
  "certification": "WITHHELD",
- "why_not_pass": "All eight applications are scanned in Chromium by the author and seven of them fixed. Pages and views were loaded or opened, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were run against all eight applications and found engine-specific failures in two (cross_engine); surfaces that depend on live external data were seen only when that data happened to load; only ovnis-pr#204 is merged; nobody independent has reviewed them.",
+ "why_not_pass": "All eight applications are scanned in Chromium by the author and seven of them fixed. Pages and views were loaded or opened, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were run against all eight applications and found engine-specific failures in two (cross_engine); surfaces that depend on live external data were seen only when that data happened to load; skywatcher-pr#375, aguayluz-pr#420, moneysweep-pr#719, ovnis-pr#204 and spiderweb-pr#473 are merged; centinelas-pr#198 and this pull request are not; nobody independent has reviewed them.",
  "pilot": {
   "repository": "skywatcher-pr",
   "pull_request": "https://github.com/jotaele44/skywatcher-pr/pull/375",
@@ -154,7 +154,10 @@
    "The first restructure left the name button 20px tall; the scan counted it under the 24px minimum and it was raised to 24px. Rows are 4px taller.",
    "One parity-baseline entry was updated because the toggle's fingerprint changed; a full baseline regeneration was tried and reverted as too broad."
   ],
-  "deviation_from_plan": "The plan said the Sky Target Finder change would have no visible effect; rows are 4px taller. The plan named a ScrollRegion component; a ref helper was used so only opening tags change."
+  "deviation_from_plan": "The plan said the Sky Target Finder change would have no visible effect; rows are 4px taller. The plan named a ScrollRegion component; a ref helper was used so only opening tags change.",
+  "merged": {
+   "at": "2026-11-22T05:25:59Z"
+  }
  },
  "second_application": {
   "repository": "aguayluz-pr",
@@ -196,7 +199,10 @@
   "tests": "277 unit tests pass, eslint clean, GUI parity ratchet passes, three Python test files that read the dashboard source pass.",
   "ci": "Not fully green. On the code head c60587e, 24 checks passed and 4 were cancelled by the next push. On the following head 9131d38 (a test-stub change), 24 passed and one job, certify-source-product-denominators, failed with a DNS resolution error while fetching a remote source; that job passed on the two previous heads. It has not been re-run.",
   "limits": "The scan ran on a workspace with little data on most pages. Text that appears only with data is covered by the class replacement and its test, not by the scan.",
-  "deviation_from_plan": "The helper was not copied unchanged: it gained an optional second argument for an element that already has a ref. One parity-baseline entry was updated because a control's class changed. A code-scanning note about the helper led to a change in an unrelated test's ResizeObserver stub."
+  "deviation_from_plan": "The helper was not copied unchanged: it gained an optional second argument for an element that already has a ref. One parity-baseline entry was updated because a control's class changed. A code-scanning note about the helper led to a change in an unrelated test's ResizeObserver stub.",
+  "merged": {
+   "at": "2026-11-22T05:21:48Z"
+  }
  },
  "third_application": {
   "repository": "moneysweep-pr",
@@ -223,7 +229,10 @@
    "lib/scrollRegion.js applied to all 16 app-authored scrolling containers."
   ],
   "no_regression_observed": "Every frame measure is identical before and after (overflow, errors, undersized controls, console errors).",
-  "tests": "98 unit tests pass (8 new), eslint clean, GUI parity ratchet and template-boundary test pass."
+  "tests": "98 unit tests pass (8 new), eslint clean, GUI parity ratchet and template-boundary test pass.",
+  "merged": {
+   "at": "2026-11-22T05:23:32Z"
+  }
  },
  "fourth_application": {
   "repository": "centinelas-pr",
@@ -334,7 +343,11 @@
    "27 dim-text uses (slate-500/600/700) moved to slate-400, as in AguaYLuz.",
    "Seven scroll containers, including the shared Table wrapper, made keyboard-reachable with the scrollRegion helper, as in the other small apps."
   ],
-  "not_in_scope": "link-in-text-block, unchanged."
+  "not_in_scope": "link-in-text-block, unchanged.",
+  "merged": {
+   "at": "2026-11-22T05:22:10Z",
+   "merge_commit": "5ff1ac237c53aa7b37648ea812df8fa44861a70a"
+  }
  },
  "seventh_application": {
   "repository": "mucaro-ai",
@@ -377,7 +390,12 @@
    "Timeline.test.tsx asserts the property; jsdom cannot evaluate the axe rule, which passes the old code there."
   ],
   "not_in_scope": "region and landmark-unique (moderate) still fire, unchanged.",
-  "limits": "Below 768 px the app hides the rails, inspector and timeline (display: none), so event buttons and selection states exist from 768 px only. spiderweb-pr has no check_gui_parity.py and no gui_backend_contract.json: no parity run and no audit-bind commit."
+  "limits": "Below 768 px the app hides the rails, inspector and timeline (display: none), so event buttons and selection states exist from 768 px only. spiderweb-pr has no check_gui_parity.py and no gui_backend_contract.json: no parity run and no audit-bind commit.",
+  "merged": {
+   "at": "2026-11-23T15:50:11Z",
+   "merge_commit": "7c65cfeef93e70a07448f4d86a2798894a7acd99",
+   "note": "commits.after is the commit scanned. The merge into main also brings spiderweb main changes made after e64fb40, which this scan did not cover."
+  }
  },
  "cross_engine": {
   "state": "FAIL",

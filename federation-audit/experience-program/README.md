@@ -196,10 +196,12 @@ application was changed.
 
 ## Reading RC4
 
-RC4 has its evidence step and six applications fixed in their own code:
+RC4 has its evidence step and seven applications fixed in their own code:
 skywatcher-pr (#375), aguayluz-pr (#420), moneysweep-pr (#719), centinelas-pr
 (#198), thehub-pr (this pull request), ovnis-pr (#204) and spiderweb-pr
-(#473). mucaro-ai was scanned and needed no change.
+(#473). mucaro-ai was scanned and needed no change. The skywatcher, aguayluz,
+moneysweep, ovnis and spiderweb fixes are merged; centinelas-pr#198 and this
+pull request are not.
 
 - thehub-pr was re-scanned on `main` after thehub-pr#432. Contrast failures
   went from 86 routes to 1. Unnamed buttons and unfocusable scroll regions are
