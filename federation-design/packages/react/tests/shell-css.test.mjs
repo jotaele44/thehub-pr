@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { BUNDLED_STYLES, designRoot, stylePath } from '../scripts/sources.mjs'
+import { BUNDLED_STYLES, designRoot, readBundledCss, stylePath } from '../scripts/sources.mjs'
 import { FEDERATION_SHELL_BREAKPOINTS } from '../src/shell/nav.js'
 
 const tokens = JSON.parse(readFileSync(join(designRoot, 'tokens', 'federation.tokens.json'), 'utf8'))
@@ -165,6 +165,22 @@ test('--fd-accent-strong is legible on every surface, for every repository and t
     }
   }
   assert.ok(worst < 21)
+})
+
+test('text on an accent fill and the focus ring use the legible accent roles', () => {
+  // Both roles are aliases of values the test above already measures: the
+  // strong accent against every surface. That makes the fill/text pair at
+  // least 4.5:1 and the ring at least 3:1 for every repository and theme.
+  assert.equal(declared('--fd-accent-contrast'), 'var(--fd-surface)')
+  assert.equal(declared('--fd-focus-ring'), 'var(--fd-accent-strong)')
+  const bundled = readBundledCss()
+  assert.match(bundled, /\.fd-button--primary\{background:var\(--fd-accent-strong,var\(--fd-accent\)\);color:var\(--fd-accent-contrast,#fff\)\}/)
+  // Outside the definitions and the two fallbacks, nothing draws with the raw accent.
+  const uses = [...bundled.matchAll(/[^{};]*var\(--fd-accent\)[^;}]*/g)].map((match) => match[0].trim())
+  for (const use of uses) {
+    assert.match(use, /^--fd-accent-strong:|var\(--fd-(?:accent-strong|focus-ring), ?var\(--fd-accent\)\)/, `raw accent used directly: ${use}`)
+  }
+  assert.doesNotMatch(bundled, /outline:[^;}]*solid var\(--fd-accent\)/)
 })
 
 test('the raw accent is never used where the strong accent is required', () => {

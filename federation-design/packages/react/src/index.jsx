@@ -245,6 +245,7 @@ export function FederationStatCard({ label, value, icon, sub, alert, tone, accen
   )
 }
 
-// Kept as the last line: `.federation/gui_backend_contract.json` pins audit
+// Kept last: `.federation/gui_backend_contract.json` pins audit
 // exceptions to line numbers in this file, so additions go below everything.
 export * from './shell/index.jsx'
+export * from './controls/index.jsx'

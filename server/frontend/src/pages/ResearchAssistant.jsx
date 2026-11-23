@@ -148,7 +148,7 @@ LANGUAGE: ${langInstruction}`;
               <div className="flex items-center gap-2">
                 <Languages className="h-3.5 w-3.5 text-muted-foreground" />
                 <Select value={language} onValueChange={setLanguage}>
-                  <SelectTrigger className="h-8 w-40 text-xs">
+                  <SelectTrigger aria-label="Answer language" className="h-8 w-40 text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -188,7 +188,7 @@ LANGUAGE: ${langInstruction}`;
         />
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <Select value={scope} onValueChange={setScope}>
-            <SelectTrigger className="sm:w-72">
+            <SelectTrigger aria-label="Module scope" className="sm:w-72">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -198,7 +198,7 @@ LANGUAGE: ${langInstruction}`;
             </SelectContent>
           </Select>
           <Select value={language} onValueChange={setLanguage}>
-            <SelectTrigger className="sm:w-44">
+            <SelectTrigger aria-label="Answer language" className="sm:w-44">
               <Languages className="h-3.5 w-3.5 text-muted-foreground" />
               <SelectValue />
             </SelectTrigger>

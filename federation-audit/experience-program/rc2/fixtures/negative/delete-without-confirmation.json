@@ -1,0 +1,16 @@
+{
+  "description": "A delete is confirmed.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/actions/2/confirmation",
+      "value": "none"
+    }
+  ],
+  "expect": [
+    "schema:actions:enum"
+  ]
+}
