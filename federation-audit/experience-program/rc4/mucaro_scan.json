@@ -3,7 +3,7 @@
  "claim_class": "COMPUTED",
  "repository": "mucaro-ai",
  "commit": "4fc7b87d368064707493f9f745062a612e9cfbfe",
- "method": "Chromium, dark colour scheme, at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels, by scripts/runtime/views_pass.js: M\u00facaro has one address and keeps its views in memory, so the scan loads '/', clicks each workspace view and measures it. The app's strict script policy was lifted for the test browser only so axe-core could be injected; the app itself was not changed.",
+ "method": "Chromium, dark colour scheme, at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels, by scripts/runtime/views_pass.js: Múcaro has one address and keeps its views in memory, so the scan loads '/', clicks each workspace view and measures it. The app's strict script policy was lifted for the test browser only so axe-core could be injected; the app itself was not changed.",
  "csp_bypassed_for_scan": true,
  "axe_version": "4.14.1",
  "switcher": ".workspace-nav button",
@@ -27,5 +27,45 @@
   "controls_under_24px_summed_over_view_loads": 112
  },
  "result": "No change needed for the targeted rules: zero axe violations of any impact, no horizontal overflow, no unnamed buttons, in all 49 view loads.",
- "not_shown": "Views were opened, not otherwise operated; empty workspace; controls under 24 px are recorded, not judged (WCAG 2.5.8 allows exceptions)."
+ "not_shown": "Views were opened, not otherwise operated; empty workspace; controls under 24 px are recorded, not judged (WCAG 2.5.8 allows exceptions).",
+ "rescan_at_main": {
+  "claim_class": "COMPUTED",
+  "commit": "870b46bb7f4194c6ef8a7996a1d15fed95bcf391",
+  "date": "2026-11-23",
+  "why": "main added four workspaces after the first scan (GIS, OCR, Code, Artifacts; mucaro-ai 7f46464), so they had never been scanned.",
+  "method": "Same as the first scan: fresh export of origin/main, frontend built, served by scripts/runtime/serve_snapshot.py, scanned by scripts/runtime/views_pass.js at the same seven widths with the script policy lifted in the test browser only.",
+  "csp_bypassed_for_scan": true,
+  "axe_version": "4.14.1",
+  "views": [
+   "Artifacts",
+   "Background tasks",
+   "Chat",
+   "Code",
+   "GIS",
+   "Memory",
+   "OCR",
+   "Provenance",
+   "Settings",
+   "Sources",
+   "Workbench"
+  ],
+  "new_views": [
+   "GIS",
+   "OCR",
+   "Code",
+   "Artifacts"
+  ],
+  "frame": {
+   "view_loads": 77,
+   "view_loads_with_an_error": 0,
+   "view_loads_opened_through_the_phone_menu": 33,
+   "axe_violations_of_any_impact": 0,
+   "max_horizontal_overflow_px": 0,
+   "view_loads_with_an_unnamed_button": 0,
+   "view_loads_with_page_errors": 0
+  },
+  "rendered": "Each new workspace became the current page and showed its own heading and description (GIS; OCR / page review; Code; Artifacts); the app was not in its locked state.",
+  "result": "All 11 entries (10 workspaces and Background tasks) at 7 widths, 77 view loads: zero axe violations of any impact, no horizontal overflow, no unnamed buttons, no page errors. The four new workspaces are clean in this scan.",
+  "not_shown": "Workspaces were opened, not operated. The new workspaces' result views appear only after an inspection is run (a GeoJSON layer, an image page, a repository check) and were not reached. A clean scan is not a screen-reader review."
+ }
 }

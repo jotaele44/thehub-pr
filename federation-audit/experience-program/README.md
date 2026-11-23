@@ -246,6 +246,10 @@ pull request are not.
   and was not in scope. Múcaro: no axe violation of any impact, no overflow,
   no unnamed button in 49 view loads; its script policy was lifted in the test
   browser only, to inject axe-core.
+- Múcaro was rescanned at `main` (870b46b), whose four new workspaces (GIS,
+  OCR, Code, Artifacts) had never been scanned: all 10 workspaces and
+  Background tasks, 77 view loads, still no violation of any impact. The new
+  workspaces were opened, not operated; their result views were not reached.
 - Spiderweb's `main` builds again since spiderweb-pr#468, so it was scanned
   at e64fb40: its six module views by `views_pass.js`, and seven further states
   by `states_pass.js` (a timeline event, a contract, a cluster and a graph node

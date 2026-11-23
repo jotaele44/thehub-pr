@@ -6,9 +6,11 @@ nothing was fixed (`rc4/mucaro_scan.json`). A clean scan is not a screen-reader
 pass: this script is the first check by a person. Test the current `main` and
 write down its commit.
 
-`main` has changed since the scan. It now has ten workspaces; **GIS, OCR, Code
-and Artifacts were added after the scan and were never scanned**. Treat
-anything you find there as new, not as a regression.
+`main` has changed since that scan. It now has ten workspaces; GIS, OCR, Code
+and Artifacts were added later. A rescan at `870b46bb7f4194c6ef8a7996a1d15fed95bcf391`
+found no violation in any of the ten (`rc4/mucaro_scan.json`, `rescan_at_main`),
+but it only opened them: the result views that appear after an inspection runs
+were not reached. Check those by hand (W5).
 
 Read `README.md` in this folder for recording. Set-up differs from the PRII
 apps: double-click `Mucaro AI Setup.app` (macOS) or `Mucaro AI.exe` (Windows)
@@ -54,7 +56,7 @@ behind a menu button.
 | W2 | Provenance | Move through the entries. | Each entry can be reached and read. |
 | W3 | Settings | Move through every control and change one setting. | Every control is announced with a name and its value; the change is confirmed. |
 | W4 | Background tasks | Open it and close it. | It opens with a heading; closing returns focus to "Background tasks". |
-| W5 | GIS, OCR, Code, Artifacts | Open each and move through it. | Every control has a name. These were not scanned: record anything you find. |
+| W5 | GIS, OCR, Code, Artifacts | Open each and move through it; then run one inspection in each (a small GeoJSON file, an image page, a repository check) and move through the result. | Every control has a name, and the result can be read. The scan covered the empty workspaces only, so the results are unchecked: record anything you find. |
 | W6 | Conversations | Type in "Filter conversations", then open a conversation from the list. | The list narrows; the open conversation is announced as current. |
 
 ## When the app is locked
