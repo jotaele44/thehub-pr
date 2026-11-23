@@ -91,6 +91,14 @@ Token and component changes require:
 - visual-regression update rationale
 - validation against at least `thehub-pr` and one map-heavy repository
 
+### Trying a released candidate against the producers
+
+`thehub-pr` consumes the package from source (`file:../../federation-design/packages/react`), so its own CI covers it. The producers consume a release tarball, and no job in this repository built them against a candidate before a pin PR did. `.github/workflows/federation-design-consumer-matrix.yml` closes that gap. It runs only when dispatched by hand, with the release-asset URL and the SHA-256 of a released candidate (a pre-release is enough), and it reads nothing but public repositories with a read-only token.
+
+For each producer that depends on the package (`aguayluz-pr`, `centinelas-pr`, `moneysweep-pr`, `ovnis-pr`, `skywatcher-pr`) it checks out `main`, builds and unit-tests the producer on its current pin, installs the candidate over the pin, repeats, and compares the two per step. A producer that is already red is reported as such instead of being blamed on the candidate, and a candidate that is not what got installed is a failure. `spiderweb-pr` declares no dependency and is reported as not exercised, never as passed. The decision logic is `tools/federation_consumer_matrix.py`, tested in `tests/test_federation_consumer_matrix.py`.
+
+A green run means the candidate builds and passes each producer's unit tests. It does not run a producer's six-viewport/axe harness, GUI-parity suite or `verify:*` scripts (those check the producer's own pin, so they would fail any candidate by design), and it does not replace migrating one repository at a time: the pin PR's own checks decide that.
+
 ## Current limitation
 
 The GitHub connector can modify existing repositories but cannot create the requested standalone `federation-design` repository. This branch therefore establishes the authoritative seed inside `thehub-pr`. The directory can be extracted into a dedicated repository without changing its contract once the repository is created through GitHub UI or CLI.
