@@ -430,6 +430,34 @@ def test_the_report_names_what_was_not_exercised_and_never_calls_it_passed(
     assert "build and unit tests" in text  # the scope is stated next to the result
 
 
+def test_the_report_names_every_producer_it_exercised_and_only_those(
+    tmp_path: Path,
+) -> None:
+    # "all consumers PASS" means little unless it says which; the list is the matrix's.
+    summary = tmp_path / "summary.md"
+    _run(
+        "report",
+        "--version",
+        "0.6.0-rc.1",
+        "--url",
+        URL_RC1,
+        "--sha256",
+        DIGEST,
+        "--consumer-result",
+        "success",
+        "--summary-file",
+        str(summary),
+    )
+    line = next(
+        entry
+        for entry in summary.read_text().splitlines()
+        if entry.startswith("- exercised: ")
+    )
+    assert line == "- exercised: " + ", ".join(m.CONSUMERS)
+    assert set(line.removeprefix("- exercised: ").split(", ")) == set(m.CONSUMERS)
+    assert "spiderweb-pr" not in line
+
+
 def test_a_red_report_does_not_say_clear(tmp_path: Path) -> None:
     summary = tmp_path / "summary.md"
     _run(

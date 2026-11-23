@@ -97,6 +97,12 @@ _VERDICT_MEANING = {
 }
 
 
+_SCOPE = (
+    "Scope: build and unit tests, compared per step with the current pin. This does not "
+    "run a producer's viewport/axe harness, GUI-parity suite or `verify:*` scripts."
+)
+
+
 class InvalidInput(ValueError):
     """Raised for input that must be refused rather than interpreted."""
 
@@ -279,17 +285,22 @@ def render_record(record: dict[str, Any]) -> str:
             "Note: the baseline was red on this producer; the candidate was not.",
             "",
         ]
+    base_row = (
+        f"| baseline (current pin) | {_cell(base['install'])} | n/a | "
+        f"{_cell(base['build'])} | {_cell(base['test'])} |"
+    )
+    cand_row = (
+        f"| candidate | {_cell(cand['install'])} | {_cell(cand['installed'])} | "
+        f"{_cell(cand['build'])} | {_cell(cand['test'])} |"
+    )
     lines += [
         f"- candidate: `{record['candidate_version']}`",
         f"- pin before: `{record['pin_before']}`",
         "",
         "| phase | install | installed | build | test |",
         "|---|---|---|---|---|",
-        "| baseline (current pin) | "
-        f"{_cell(base['install'])} | n/a | {_cell(base['build'])} | {_cell(base['test'])} |",
-        "| candidate | "
-        f"{_cell(cand['install'])} | {_cell(cand['installed'])} | "
-        f"{_cell(cand['build'])} | {_cell(cand['test'])} |",
+        base_row,
+        cand_row,
         "",
     ]
     return "\n".join(lines) + "\n"
@@ -303,16 +314,21 @@ def render_report(version: str, url: str, sha256: str, consumer_result: str) -> 
         f"- **{repo}**: not exercised, {reason}"
         for repo, reason in NOT_EXERCISED.items()
     )
+    exercised = ", ".join(CONSUMERS)
+    outcome = "all consumers PASS" if consumer_result == "success" else "NOT clear"
+    overall = (
+        f"Overall: **{outcome}** (consumer jobs finished `{consumer_result or 'unknown'}`). "
+        "Each producer's own table is in its job's summary."
+    )
     return "\n".join(
         [
             f"## Consumer matrix for {PACKAGE_NAME} {version}",
             "",
-            f"Overall: **{'all consumers PASS' if consumer_result == 'success' else 'NOT clear'}** "
-            f"(consumer jobs finished `{consumer_result or 'unknown'}`). "
-            "Each producer's own table is in its job's summary.",
+            overall,
             "",
             f"- candidate: `{url}`",
             f"- sha256: `{sha256}` (verified against the downloaded bytes in every job)",
+            f"- exercised: {exercised}",
             "",
             "Verdicts:",
             "",
@@ -322,8 +338,7 @@ def render_report(version: str, url: str, sha256: str, consumer_result: str) -> 
             "",
             skipped,
             "",
-            "Scope: build and unit tests, compared per step with the current pin. This does "
-            "not run a producer's viewport/axe harness, GUI-parity suite or `verify:*` scripts.",
+            _SCOPE,
             "",
         ]
     )
