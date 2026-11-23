@@ -8,9 +8,10 @@ write down its commit.
 
 `main` has changed since that scan. It now has ten workspaces; GIS, OCR, Code
 and Artifacts were added later. A rescan at `870b46bb7f4194c6ef8a7996a1d15fed95bcf391`
-found no violation in any of the ten (`rc4/mucaro_scan.json`, `rescan_at_main`),
-but it only opened them: the result views that appear after an inspection runs
-were not reached. Check those by hand (W5).
+found no violation in any of the ten (`rc4/mucaro_scan.json`, `rescan_at_main`).
+A second scan ran one small inspection in each new workspace and found the
+result views clean too (`results_scan`). Larger or failing results were not
+seen; W5 asks you to try them.
 
 Read `README.md` in this folder for recording. Set-up differs from the PRII
 apps: double-click `Mucaro AI Setup.app` (macOS) or `Mucaro AI.exe` (Windows)
@@ -56,7 +57,7 @@ behind a menu button.
 | W2 | Provenance | Move through the entries. | Each entry can be reached and read. |
 | W3 | Settings | Move through every control and change one setting. | Every control is announced with a name and its value; the change is confirmed. |
 | W4 | Background tasks | Open it and close it. | It opens with a heading; closing returns focus to "Background tasks". |
-| W5 | GIS, OCR, Code, Artifacts | Open each and move through it; then run one inspection in each (a small GeoJSON file, an image page, a repository check) and move through the result. | Every control has a name, and the result can be read. The scan covered the empty workspaces only, so the results are unchecked: record anything you find. |
+| W5 | GIS, OCR, Code, Artifacts | Run one inspection in each (a GeoJSON file, an image page, a repository check; try one large input and one that fails), then move through the result and the Artifacts list. | Every control has a name; the result, including the GIS features table, can be read in order; a failed run's error is announced. The scan saw small successful results only: record anything you find. |
 | W6 | Conversations | Type in "Filter conversations", then open a conversation from the list. | The list narrows; the open conversation is announced as current. |
 
 ## When the app is locked

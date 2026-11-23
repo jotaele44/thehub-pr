@@ -250,6 +250,10 @@ pull request are not.
   OCR, Code, Artifacts) had never been scanned: all 10 workspaces and
   Background tasks, 77 view loads, still no violation of any impact. The new
   workspaces were opened, not operated; their result views were not reached.
+- Then one inspection was run in each new workspace through the UI (GIS on the
+  USGS fixture, OCR with Tesseract, Code on a throwaway repository; Artifacts
+  then listed 2 reports and 1 answer). With the results showing, still no
+  violation of any impact and no overflow at any width.
 - Spiderweb's `main` builds again since spiderweb-pr#468, so it was scanned
   at e64fb40: its six module views by `views_pass.js`, and seven further states
   by `states_pass.js` (a timeline event, a contract, a cluster and a graph node

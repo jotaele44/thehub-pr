@@ -97,7 +97,7 @@
   "rc4/thehub_pilot.json": "54f85b71cf3593ebf319d91eb029f35e36db789f6f8043010eda175ad8168ed1",
   "rc4/thehub_overflow.json": "0bfa9fed4bb44c84acbb06dc8bb951c5a2cdf4b65f1e78650a5de13b5ed6ac01",
   "rc4/ovnis_pilot.json": "d151ee40ff7f6ff5e37848ff8e2cb65475b7c740de44031932755cf59aaf171a",
-  "rc4/mucaro_scan.json": "54c4d3bd88b60edbff47c070991f61e7a62986e5197674b33b65427fe336ff4e",
+  "rc4/mucaro_scan.json": "21bd36142e5820b5f17d4fc6038d1df0db0b3aa61907f3df17c4794bb05a62f5",
   "scripts/runtime/views_pass.js": "865985b6244ee88bb714d6afb63e093cdfc8e5fda894ec4a8f20391f1ac6ff53",
   "cross-engine/engine_matrix.json": "e143f994b264e9067b19a71a1f841a6e9a9989d1039fa5642c4d7bf568b39ec6",
   "cross-engine/commits.json": "5641ee58a720b7eacc3024b9eae0adc6e5135a4f240269589d23631b59f5b0f2",
@@ -359,6 +359,10 @@
   "rescan_at_main": {
    "commit": "870b46bb7f4194c6ef8a7996a1d15fed95bcf391",
    "result": "10 workspaces (incl. the new GIS, OCR, Code, Artifacts) and Background tasks at 7 widths, 77 view loads: zero axe violations of any impact, no overflow, no unnamed buttons. Opened, not operated."
+  },
+  "results_scan": {
+   "commit": "870b46bb7f4194c6ef8a7996a1d15fed95bcf391",
+   "result": "One inspection run in each new workspace through the UI (GIS, OCR with Tesseract, Code; Artifacts then listed 2 reports and 1 answer). With the results showing, 77 view loads at 7 widths: zero axe violations of any impact, no overflow, no unnamed buttons."
   }
  },
  "eighth_application": {
