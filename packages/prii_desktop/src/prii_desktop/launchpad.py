@@ -905,7 +905,10 @@ _PAGE = r"""<!doctype html>
       color:var(--ink); background:var(--field); font:inherit; }
     .option { padding:12px 0; border-top:1px solid var(--line); }
     .option:first-of-type { border-top:0; padding-top:4px; }
-    .option.locked { opacity:.55; }
+    /* A locked (Operator-only, Guest mode) option dims its control only. Its
+       label and help text keep full contrast: they stay readable, and the
+       help text says the option is available in Operator mode. */
+    .option.locked :is(input, select) { opacity:.55; cursor:not-allowed; }
     .check { display:flex; gap:10px; align-items:flex-start; font-weight:650; cursor:pointer; }
     .check input { width:18px; height:18px; margin-top:2px; flex:0 0 18px;
       accent-color:var(--brand-strong); }
