@@ -745,7 +745,8 @@ def test_both_dependabot_templates_agree_outside_the_actions_scope():
     # Producers exclude their rendered pip manifests; the hub excludes nothing,
     # because its scan has to keep reaching the requirements templates.
     producer_pip = dict(_entry(producer, "pip"))
-    assert producer_pip.pop("exclude-paths") == ["{{RENDERED_PIP_MANIFESTS}}"]
+    excluded = producer_pip.pop("exclude-paths", None)
+    assert excluded == ["{{RENDERED_PIP_MANIFESTS}}"]
     assert producer_pip == _entry(hub, "pip")
     for key in ("schedule", "open-pull-requests-limit", "labels", "commit-message"):
         assert _actions_entry(producer)[key] == _actions_entry(hub)[key], key
