@@ -32,6 +32,10 @@
 #                  needs to serve the GUI under test in that workflow.
 #   desktop_extra_requirements — optional repo-specific lines appended after the
 #                  shared prii_desktop dependency by requirements-desktop.txt.
+#
+# Reserved: rendered_workflows is not a key. {{RENDERED_WORKFLOWS}} is derived by
+# the renderer from targets.yaml (the workflows rendered into the repo, which its
+# Dependabot config excludes), and a key that would fill it is rejected.
 schema_version: prii_federation_template_vars_v1
 producers:
   aguayluz-pr:

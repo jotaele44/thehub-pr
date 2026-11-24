@@ -417,7 +417,10 @@ def test_baseline_actions_are_sha_pinned():
     # holds. Pinning is the whole point of these templates, so assert it rather
     # than trusting review to catch a regression.
     pinned = re.compile(r"^[0-9a-f]{40}$")
-    for path in sorted((_TEMPLATES / "baseline").glob("*.yml")):
+    # gui/ as well: the hub's Dependabot scans both directories and keeps SHA
+    # pins as SHA pins, so a floating tag here would never be bumped to one.
+    paths = [*(_TEMPLATES / "baseline").glob("*.y*ml"), *(_TEMPLATES / "gui").glob("*.y*ml")]
+    for path in sorted(paths):
         for ref in re.findall(r"uses:\s*\S+@(\S+)", path.read_text()):
             assert pinned.match(ref), f"{path.name}: {ref} is not a SHA pin"
 
@@ -610,3 +613,203 @@ def test_gui_rule_files_render_into_a_fresh_repo(tmp_path):
     doc = (tmp_path / "docs" / "GUI_CAPABILITY_PARITY.md").read_text()
     assert "thehub-pr follows the federation rule" in doc
     assert "npm --prefix server/frontend run test:gui-parity" in doc
+
+
+# ── Action pins: Dependabot bumps the template, never a rendered copy ─────────
+#
+# A pin bumped in a rendered workflow diverges from its template and turns that
+# repository's drift gate red (spiderweb-pr#410, fixed by hand in thehub-pr#446).
+# So producers exclude their rendered workflows from Dependabot, and the hub's
+# Dependabot scans the workflow templates themselves, bumping each template
+# together with the hub's own rendered copy. See federation-templates/README.md.
+
+_PRODUCERS = sorted(set(_vars()) - {"thehub-pr"})
+_SHA_PIN = re.compile(r"(uses:\s*\S+@)[0-9a-f]{40}")
+
+
+def _actions_entry(config: dict) -> dict:
+    (entry,) = [u for u in config["updates"] if u["package-ecosystem"] == "github-actions"]
+    return entry
+
+
+def _entry(config: dict, ecosystem: str) -> dict:
+    (entry,) = [u for u in config["updates"] if u["package-ecosystem"] == ecosystem]
+    return entry
+
+
+def _workflow_targets() -> list[dict]:
+    return [t for t in _targets() if t["output"].startswith(".github/workflows/")]
+
+
+def test_every_repo_gets_exactly_one_dependabot_config():
+    configs = [t for t in _targets() if t["output"] == ".github/dependabot.yml"]
+    by_template = {t["template"]: t["repos"] for t in configs}
+    assert set(by_template) == {"baseline/dependabot.yml", "baseline/dependabot.hub.yml"}
+    assert by_template["baseline/dependabot.hub.yml"] == ["thehub-pr"]
+    assert sorted(by_template["baseline/dependabot.yml"]) == _PRODUCERS
+    # Two templates for one path in the same repo would make the last one win
+    # silently, in whatever order targets.yaml happens to list them.
+    mod = _renderer()
+    seen = set()
+    for t in _targets():
+        for repo in t["repos"]:
+            key = (repo, mod._resolve_output(t["output"], mod._placeholders(_vars()[repo])))
+            assert key not in seen, f"{key} is rendered by two templates"
+            seen.add(key)
+
+
+@pytest.mark.parametrize("program_id", sorted(_vars()))
+def test_rendered_workflows_are_exactly_the_workflows_rendered(program_id, tmp_path):
+    mod = _renderer()
+    mod.render_repo(program_id, _vars()[program_id], tmp_path, _targets(), False)
+    on_disk = sorted(
+        str(p.relative_to(tmp_path))
+        for p in (tmp_path / ".github" / "workflows").iterdir()
+        if p.suffix in (".yml", ".yaml")
+    )
+    derived = mod._rendered_workflows(program_id, _targets(), mod._placeholders(_vars()[program_id]))
+    assert derived == on_disk
+    # template-drift.yml is not rendered (only its PRII_TEMPLATE_REF is
+    # managed), so its own actions must stay Dependabot's to bump.
+    assert ".github/workflows/template-drift.yml" not in derived
+    if program_id == "moneysweep-pr":
+        assert ".github/workflows/gui-capability-parity.yml" in derived
+        assert ".github/workflows/pip-audit.yml" not in derived
+
+
+@pytest.mark.parametrize("program_id", _PRODUCERS)
+def test_producer_dependabot_never_touches_a_rendered_workflow(program_id, tmp_path):
+    mod = _renderer()
+    mod.render_repo(program_id, _vars()[program_id], tmp_path, _targets(), False)
+    config = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
+    actions = _actions_entry(config)
+    assert actions["directory"] == "/" and "directories" not in actions
+    derived = mod._rendered_workflows(program_id, _targets(), mod._placeholders(_vars()[program_id]))
+    assert actions["exclude-paths"] == derived
+    for rel in actions["exclude-paths"]:
+        assert (tmp_path / rel).is_file(), f"{rel} is excluded but not rendered"
+    # Only the actions ecosystem is narrowed; pip and npm keep their full scope.
+    for ecosystem in ("pip", "npm"):
+        assert "exclude-paths" not in _entry(config, ecosystem), ecosystem
+
+
+def test_hub_dependabot_scans_every_workflow_template():
+    config = yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text())
+    actions = _actions_entry(config)
+    # The hub's own rendered copies must stay in scope: they have to move in the
+    # same pull request as their template, or the hub's drift gate goes red.
+    assert "exclude-paths" not in actions
+    assert "directory" not in actions  # `directories` replaces it
+    template_dirs = {
+        "/federation-templates/" + str(Path(t["template"]).parent) for t in _workflow_targets()
+    }
+    assert {"/"} | template_dirs <= set(actions["directories"])
+
+
+def test_hub_actions_updates_cannot_be_split_across_pull_requests():
+    """No group may carry update-types, and every update kind needs a group.
+
+    Ungrouped updates become one pull request per directory. A group limited by
+    update-types can split one bump too, because Dependabot judges the semver
+    level per directory against the lowest pin it finds there
+    (dependency_set.rb combined_version, semver_grouping_rules.rb), and the
+    hub's workflows still pin older majors than the templates.
+    """
+    groups = _actions_entry(yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text()))["groups"]
+    assert groups, "ungrouped updates are split per directory"
+    for name, group in groups.items():
+        assert "update-types" not in group, name
+        assert group.get("patterns") == ["*"], name
+    applies_to = sorted(g.get("applies-to", "version-updates") for g in groups.values())
+    assert applies_to == ["security-updates", "version-updates"]
+
+
+def test_scanned_template_directories_hold_only_parseable_yaml():
+    # Dependabot parses every *.yml / *.yaml directly inside a scanned directory
+    # as a workflow; one that does not parse fails the whole actions update.
+    actions = _actions_entry(yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text()))
+    for directory in actions["directories"]:
+        if directory == "/":
+            continue
+        files = [p for p in sorted((_HUB / directory.lstrip("/")).iterdir())
+                 if p.is_file() and p.suffix in (".yml", ".yaml")]
+        assert files, directory
+        for path in files:
+            yaml.safe_load(path.read_bytes().decode("utf-8"))
+
+
+def test_both_dependabot_templates_agree_outside_the_actions_scope():
+    producer = yaml.safe_load((_TEMPLATES / "baseline" / "dependabot.yml").read_text())
+    hub = yaml.safe_load((_TEMPLATES / "baseline" / "dependabot.hub.yml").read_text())
+    for ecosystem in ("pip", "npm"):
+        assert _entry(producer, ecosystem) == _entry(hub, ecosystem), ecosystem
+    for key in ("schedule", "open-pull-requests-limit", "labels", "commit-message"):
+        assert _actions_entry(producer)[key] == _actions_entry(hub)[key], key
+
+
+@pytest.mark.parametrize("key", ["rendered_workflows", "RENDERED_WORKFLOWS"])
+def test_a_var_cannot_shadow_the_derived_placeholder(key):
+    mod = _renderer()
+    vars_ = {**_vars()["ovnis-pr"], key: "nothing"}
+    with pytest.raises(SystemExit, match="RENDERED_WORKFLOWS"):
+        mod._subs_for("ovnis-pr", vars_, _targets())
+
+
+def test_an_empty_workflow_list_is_refused(tmp_path):
+    # Rendering `exclude-paths: [""]` would hand Dependabot a pattern that
+    # matches nothing while looking deliberate.
+    mod = _renderer()
+    only_config = [{"template": "baseline/dependabot.yml",
+                    "output": ".github/dependabot.yml", "repos": ["ovnis-pr"]}]
+    with pytest.raises(SystemExit, match="renders no workflow"):
+        mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, only_config, True)
+
+
+def _bump_every_pin(path: Path) -> None:
+    """Rewrite each SHA pin the way a Dependabot version update does."""
+    text = path.read_text()
+    bumped = _SHA_PIN.sub(r"\g<1>" + "f" * 40, text)
+    assert bumped != text, path
+    path.write_text(bumped)
+
+
+def test_a_dependabot_bump_of_template_and_hub_copy_keeps_the_hub_green(tmp_path, monkeypatch):
+    """The mechanism end to end, minus Dependabot: one pull request that edits a
+    template and the hub's copy identically leaves the hub's drift gate green,
+    while either edit alone is drift. That holds only while no `uses:` line in a
+    workflow template carries a placeholder, so that is asserted as well."""
+    import shutil
+
+    mod = _renderer()
+    templates = tmp_path / "federation-templates"
+    shutil.copytree(_TEMPLATES, templates)
+    monkeypatch.setattr(mod, "_TEMPLATES", templates)
+    hub_targets = [t for t in _workflow_targets() if "thehub-pr" in t["repos"]]
+    assert hub_targets
+    for t in _workflow_targets():
+        for line in (templates / t["template"]).read_text().splitlines():
+            if line.lstrip().startswith(("uses:", "- uses:")):
+                assert "{{" not in line, f"{t['template']}: {line.strip()}"
+
+    def fresh_hub(name: str) -> Path:
+        root = tmp_path / name
+        mod.render_repo("thehub-pr", _vars()["thehub-pr"], root, _targets(), False)
+        return root
+
+    def check(root: Path) -> list[str]:
+        return mod.render_repo("thehub-pr", _vars()["thehub-pr"], root, _targets(), True)
+
+    copy_only = fresh_hub("copy-only")
+    _bump_every_pin(copy_only / ".github/workflows/codeql.yml")
+    assert check(copy_only) == [".github/workflows/codeql.yml"]
+
+    together = fresh_hub("together")
+    for t in hub_targets:
+        _bump_every_pin(templates / t["template"])
+        _bump_every_pin(together / t["output"])
+    assert check(together) == []
+
+    # copy-only was rendered from the old templates, so after the template bump
+    # its unbumped files are now the drift: a template-only change is caught.
+    template_only = sorted(t["output"] for t in hub_targets if t["output"] != ".github/workflows/codeql.yml")
+    assert sorted(check(copy_only)) == template_only
