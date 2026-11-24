@@ -70,6 +70,7 @@ someone other than the author of the work.
 | `scripts/rc10_engine_tabulate.py` | Tabulates a cross-engine pass and lists what Firefox or WebKit shows beyond Chromium on the same build. |
 | `cross-engine/engine_matrix.json` | Each application's build loaded in Chromium, Firefox and WebKit: counts per engine and what differs from Chromium. |
 | `cross-engine/routes.json`, `cross-engine/commits.json` | The routes loaded and the commit built for each application in that pass. |
+| `cross-engine/recheck_20261124.json`, `cross-engine/recheck_20261124_commits.json` | The same three-engine pass, repeated for aguayluz-pr and ovnis-pr at their `main` after their map fixes merged. |
 | `qa/INDEPENDENT_REVIEW_PACKET.md` | For a reviewer other than the author: what each RC3/RC4 change did, its evidence, what to check, and a sign-off block. |
 | `qa/manual/*.md` | Scripts for a person to run with VoiceOver, NVDA, Voice Control, TalkBack and touch devices, per application and for the shared controls. |
 | `qa/macos_observations.json` | What was measured on the user's Mac: startup, the running app's identity, Dock menu and login items. |
@@ -347,7 +348,17 @@ RC0-audited commit, because its `main` did not build at the time.
   `main`) do not install as pinned: `constraints-desktop.txt` pins
   `pydantic-core==2.48.0` beside `pydantic==2.13.5`, which requires 2.46.5.
   They were installed with that one pin removed, and `RC4_GATE.json` records
-  the conflict.
+  the conflict. Both repositories' `main` now pin a matching pair.
+- **Re-check, 2026-11-24** (`cross-engine/recheck_20261124.json`). After the
+  fixes merged (aguayluz-pr#423 and #428, ovnis-pr#205), both applications'
+  `main` were loaded again in all three engines, with the same method.
+  Neither shows anything beyond Chromium in Firefox or WebKit:
+  - AguaYLuz `/map` now renders, with no page errors.
+  - Every OVNIS view opens, with no errors.
+  - OVNIS's map worker now loads as JavaScript.
+
+  The cross-engine check is therefore `PASS` for the builds recorded. A later
+  commit of any application is not covered.
 
 ## Reading qa/
 

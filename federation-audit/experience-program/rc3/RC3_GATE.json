@@ -2,7 +2,7 @@
  "schema": "federation.experience-program.gate/1",
  "gate": "RC3",
  "state": "PROVISIONAL",
- "why_not_pass": "The shared design-system changes are implemented and tested by their author only. No application has adopted them, Firefox and WebKit pass on the fixture pages in CI and were run against the applications in cross-engine/, where two applications fail in Firefox for want of WebGL and WebKit surfaces a missing map worker in one, nothing was used with a screen reader or on a touch device, and nobody independent has reviewed the work.",
+ "why_not_pass": "The shared design-system changes are implemented and tested by their author only. No application has adopted them, Firefox and WebKit pass on the fixture pages in CI and were run against the applications in cross-engine/, where the map failures found in two applications have since been fixed and re-checked, nothing was used with a screen reader or on a touch device, and nobody independent has reviewed the work.",
  "scope": "Shared design system only (thehub-pr/federation-design). No application code was changed.",
  "premise_correction": {
   "claim_class": "COMPUTED",
@@ -119,9 +119,9 @@
    "evidence": "rc4/thehub_rescan.json"
   },
   "firefox_webkit_applications": {
-   "state": "FAIL",
+   "state": "PASS",
    "evidence": "cross-engine/engine_matrix.json",
-   "note": "See RC4 cross_engine. No finding is on a shared design-system element; both trace to application map code."
+   "note": "See RC4 cross_engine, including its 2026-11-24 recheck. No finding was on a shared design-system element; both were application map code, now fixed."
   }
  },
  "defects_found_and_fixed_during_rc3": [
@@ -139,7 +139,8 @@
   "qa/INDEPENDENT_REVIEW_PACKET.md": "83b7908147fa7091cb996f8068a3411bcef89f0177f5ab4d8dd382fec3c96ad6",
   "qa/manual/design-system-controls.md": "c82da0577998a2be1ceaa58a85729f236ba2c9f8c42b77607214e95f2e853839",
   "qa/macos_observations.json": "a0c49eebc578fbd0704fee988ebd55d2df7472d610edc4a9912e5deb58b7905d",
-  "qa/MACOS_CHECKLIST.md": "fc45d3a8ae914898efcf70a410d4403246596c2db84d60c6d45d7c9e108448e1"
+  "qa/MACOS_CHECKLIST.md": "fc45d3a8ae914898efcf70a410d4403246596c2db84d60c6d45d7c9e108448e1",
+  "cross-engine/recheck_20261124.json": "9b60da17eab48e8d76c34031c492ca8a4435b85c234358646d72049d9c002367"
  },
  "certification": "WITHHELD",
  "baseline_moved": {

@@ -168,6 +168,24 @@
      "os": "linux (container), headless",
      "what": "140 page or view loads of commit c60587e at seven widths; loaded, not operated",
      "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "chromium 157.0.8103.78",
+     "os": "linux (container), headless",
+     "what": "140 page or view loads of commit e2c99741 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine recheck (cross-engine/recheck_20261124.json)"
+    },
+    {
+     "engine": "firefox 155.0",
+     "os": "linux (container), headless",
+     "what": "140 page or view loads of commit e2c99741 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine recheck (cross-engine/recheck_20261124.json)"
+    },
+    {
+     "engine": "webkit 26.6",
+     "os": "linux (container), headless",
+     "what": "140 page or view loads of commit e2c99741 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine recheck (cross-engine/recheck_20261124.json)"
     }
    ]
   },
@@ -573,6 +591,24 @@
      "os": "linux (container), headless",
      "what": "32 page or view loads of commit 0d1e12b at seven widths; loaded, not operated",
      "by": "this program's cross-engine pass (cross-engine/engine_matrix.json)"
+    },
+    {
+     "engine": "chromium 157.0.8103.78",
+     "os": "linux (container), headless",
+     "what": "32 page or view loads of commit 2b24861 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine recheck (cross-engine/recheck_20261124.json)"
+    },
+    {
+     "engine": "firefox 155.0",
+     "os": "linux (container), headless",
+     "what": "32 page or view loads of commit 2b24861 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine recheck (cross-engine/recheck_20261124.json)"
+    },
+    {
+     "engine": "webkit 26.6",
+     "os": "linux (container), headless",
+     "what": "32 page or view loads of commit 2b24861 at seven widths; loaded, not operated",
+     "by": "this program's cross-engine recheck (cross-engine/recheck_20261124.json)"
     }
    ]
   },

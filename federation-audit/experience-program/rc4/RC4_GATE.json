@@ -79,7 +79,7 @@
    "mucaro-ai, ovnis-pr": "One addressable route each; the scan says little about them."
   },
   "decision_needed": "The pilot application is the user's choice.",
-  "status": "All eight done: Skywatcher, AguaYLuz, MoneySweep, Centinelas, TheHub, OVNIS and Spiderweb fixed in their own code; Múcaro scanned with every view open and needed no change."
+  "status": "All eight done: Skywatcher, AguaYLuz, MoneySweep, Centinelas, TheHub, OVNIS and Spiderweb fixed in their own code; M\u00facaro scanned with every view open and needed no change."
  },
  "blocked": [
   "independent QA",
@@ -105,7 +105,7 @@
   "qa/INDEPENDENT_REVIEW_PACKET.md": "83b7908147fa7091cb996f8068a3411bcef89f0177f5ab4d8dd382fec3c96ad6",
   "qa/macos_observations.json": "a0c49eebc578fbd0704fee988ebd55d2df7472d610edc4a9912e5deb58b7905d",
   "qa/MACOS_CHECKLIST.md": "fc45d3a8ae914898efcf70a410d4403246596c2db84d60c6d45d7c9e108448e1",
-  "qa/manual/README.md": "101187707958c83819a553d9a4880e482e216e8de568415575e46c04c461b184",
+  "qa/manual/README.md": "6480eddd38e3dd0d63bfa2363c89bc6088638c20bd35086969d697edd34c223f",
   "qa/manual/design-system-controls.md": "c82da0577998a2be1ceaa58a85729f236ba2c9f8c42b77607214e95f2e853839",
   "qa/manual/skywatcher.md": "594ff66318c7394a8989a674bb6284b377eb37d07fd28a467dbca6c049643314",
   "qa/manual/aguayluz.md": "13d5a50ff42c5821647d757fffc6daded5f13bc89610c4d6a5d1afbe5fbdc575",
@@ -114,10 +114,12 @@
   "qa/manual/thehub.md": "f736048c0f8d6650a37277f25e80395a14330f696732e5e54ab1680dab621da3",
   "rc4/spiderweb_pilot.json": "17c4a0d01292b0390911ce6a27f70bfbca882e1ff22e3a579ad639a4bdcb196d",
   "rc4/spiderweb_states.json": "ef7d7272296af1671746ab31675c79193416efbb0cb9f0f5dd761cdebb276838",
-  "rc4/states/spiderweb-pr.json": "cd15df18347096bdd902cfef3ecf3f1c288b12152152ebdb3bdf6054073b5f29"
+  "rc4/states/spiderweb-pr.json": "cd15df18347096bdd902cfef3ecf3f1c288b12152152ebdb3bdf6054073b5f29",
+  "cross-engine/recheck_20261124.json": "9b60da17eab48e8d76c34031c492ca8a4435b85c234358646d72049d9c002367",
+  "cross-engine/recheck_20261124_commits.json": "cf33972f9639d64f0d7d0603722343952ab2bb4b32ae0413fb824de56afdb45d"
  },
  "certification": "WITHHELD",
- "why_not_pass": "All eight applications are scanned in Chromium by the author and seven of them fixed. Pages and views were loaded or opened, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were run against all eight applications and found engine-specific failures in two (cross_engine); surfaces that depend on live external data were seen only when that data happened to load; skywatcher-pr#375, aguayluz-pr#420, moneysweep-pr#719, ovnis-pr#204 and spiderweb-pr#473 are merged; centinelas-pr#198 and this pull request are not; nobody independent has reviewed them.",
+ "why_not_pass": "All eight applications are scanned in Chromium by the author and seven of them fixed. Pages and views were loaded or opened, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were run against all eight applications; the engine-specific failures found in two were fixed and re-checked (cross_engine); surfaces that depend on live external data were seen only when that data happened to load; skywatcher-pr#375, aguayluz-pr#420, moneysweep-pr#719, ovnis-pr#204 and spiderweb-pr#473 are merged; centinelas-pr#198 and this pull request are not; nobody independent has reviewed them.",
  "pilot": {
   "repository": "skywatcher-pr",
   "pull_request": "https://github.com/jotaele44/skywatcher-pr/pull/375",
@@ -406,7 +408,7 @@
   }
  },
  "cross_engine": {
-  "state": "FAIL",
+  "state": "PASS",
   "claim_class": "COMPUTED",
   "evidence": "cross-engine/engine_matrix.json",
   "engines": {
@@ -415,7 +417,7 @@
    "webkit": "26.6"
   },
   "coverage": "8 applications, one build each (cross-engine/commits.json). Page and view loads: Chromium 1187, Firefox 1187, WebKit 1187, at 7 widths, dark scheme, axe-core 4.14.1, Playwright 1.63.0 headless in a Linux container.",
-  "result": "All 8 applications rendered every route or view they render in Chromium, with no engine-specific overflow or accessibility rule, except: Firefox on aguayluz-pr (/map blank) and ovnis-pr (the app falls to its error screen after the Map view), both because the map fails without WebGL; and WebKit on ovnis-pr, which surfaces a missing map worker that fails silently in Chromium. Every finding is in application map code; none is on a shared design-system element.",
+  "result": "All 8 applications rendered every route or view they render in Chromium, with no engine-specific overflow or accessibility rule, except: Firefox on aguayluz-pr (/map blank) and ovnis-pr (the app falls to its error screen after the Map view), both because the map fails without WebGL; and WebKit on ovnis-pr, which surfaces a missing map worker that fails silently in Chromium. Every finding is in application map code; none is on a shared design-system element. Re-checked 2026-11-24 after the fixes merged: nothing beyond Chromium on either application (recheck).",
   "findings": [
    {
     "engine": "firefox",
@@ -425,7 +427,8 @@
      "routes not rendered only here: ['/map']"
     ],
     "root_cause": "/map renders nothing: the map library throws 'GPUInitializationError: WebGL2 is required' as an uncaught page error. This headless Firefox has no WebGL2; Chromium's software WebGL renders the map. The engine difference is this environment's, but the blank page is the application's handling of a missing WebGL2.",
-    "claim_class": "COMPUTED (counts); FACT (reproduced cause)"
+    "claim_class": "COMPUTED (counts); FACT (reproduced cause)",
+    "status": "RESOLVED (see recheck)"
    },
    {
     "engine": "firefox",
@@ -435,7 +438,8 @@
      "routes not rendered only here: ['/#view:Candidates', '/#view:More']"
     ],
     "root_cause": "After the Map view, switching to any other view replaces the whole app with its error screen ('can't access property \"destroy\", this.painter is undefined'): the map could not create a WebGL context, map.remove() at dashboard/src/components/CaseMap.jsx:244 throws on unmount, and the only ErrorBoundary (App.jsx:22) wraps the navigation too. The view pass then could not reach 'Candidates' and 'More' at 320-768 px (8 view loads). Reproduced by hand in Firefox; not reproduced in Chromium or WebKit.",
-    "claim_class": "COMPUTED (counts); FACT (reproduced cause)"
+    "claim_class": "COMPUTED (counts); FACT (reproduced cause)",
+    "status": "RESOLVED (see recheck)"
    },
    {
     "engine": "webkit",
@@ -444,12 +448,45 @@
      "page_loads_with_page_errors: 7 against 0 in Chromium"
     ],
     "root_cause": "SyntaxError: Unexpected token '<' on 7 view loads: the build has no maplibre-gl-worker.mjs, so /assets/maplibre-gl-worker.mjs is answered with the SPA's index.html. Chromium requests the same file, gets the same HTML and fails silently (reproduced by hand), so this is a build defect present in every engine that only WebKit reports.",
-    "claim_class": "COMPUTED (counts); FACT (reproduced cause)"
+    "claim_class": "COMPUTED (counts); FACT (reproduced cause)",
+    "status": "RESOLVED (see recheck)"
    }
   ],
   "not_findings": "Firefox reported fewer link-in-text-block page loads than Chromium on skywatcher-pr (13 -> 0) and aguayluz-pr (14 -> 7). Fewer is not evidence of a fix; axe's evaluation of that rule depends on computed styles that differ by engine.",
   "limits": "WebKit here is Playwright's Linux WebKit build, not Safari on macOS or iOS. Firefox here has no WebGL2. Pages and views were loaded or opened, not operated. aguayluz-pr and centinelas-pr were installed with the pydantic-core pin removed from constraints-desktop.txt, because the pinned set does not resolve (see below).",
-  "why_not_pass": "Engine-specific failures were observed on two applications (aguayluz-pr, ovnis-pr). They are recorded, not fixed here."
+  "why_not_pass": null,
+  "recheck": {
+   "claim_class": "COMPUTED (counts); FACT (commits, causes checked)",
+   "evidence": "cross-engine/recheck_20261124.json",
+   "date": "2026-11-24",
+   "commits": {
+    "aguayluz-pr": "e2c99741 (main after aguayluz-pr#423 and #428)",
+    "ovnis-pr": "2b24861 (main after ovnis-pr#205)"
+   },
+   "coverage": "Same method and versions as the first pass (Chromium 157, Firefox 155, WebKit 26.6, 7 widths, axe-core 4.14.1). Page or view loads: Chromium 172, Firefox 172, WebKit 172. Both apps installed from their own pins, without the pydantic-core workaround the first pass needed.",
+   "result": "Neither application shows anything beyond Chromium in Firefox or WebKit: every route and view rendered, no page errors, no view-switch errors.",
+   "findings_resolved": [
+    {
+     "engine": "firefox",
+     "repository": "aguayluz-pr",
+     "by": "aguayluz-pr#423",
+     "observed": "/map renders at all seven widths (3300-3702 characters; 0 before) with no page errors."
+    },
+    {
+     "engine": "firefox",
+     "repository": "ovnis-pr",
+     "by": "ovnis-pr#205",
+     "observed": "All six views open at all widths; 0 view-switch errors (8 before)."
+    },
+    {
+     "engine": "webkit",
+     "repository": "ovnis-pr",
+     "by": "ovnis-pr#205",
+     "observed": "No page errors (7 before); /assets/maplibre-gl-worker-*.js now answers 200 text/javascript (text/html before)."
+    }
+   ]
+  },
+  "state_scope": "For the builds recorded: the first-pass commits of six applications (cross-engine/commits.json) and the rechecked mains of aguayluz-pr and ovnis-pr. A later commit of any application is not covered."
  },
  "desktop_setup_pin_conflict": {
   "claim_class": "FACT",
