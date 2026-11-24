@@ -1,6 +1,6 @@
 # ADR 0014 — Spoke GUIs are complete domain apps on one shared shell
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-11-15
 - **Deciders:** PRII federation maintainers
 - **Scope:** all seven PRII federation repositories
