@@ -1,0 +1,105 @@
+{
+ "schema": "federation.experience-program.macos-observations/1",
+ "observed_at": "2026-11-21",
+ "machine": {
+  "claim_class": "FACT",
+  "os": "macOS 26.6.2 (25G83)",
+  "architecture": "x86_64",
+  "cpu_cores": 8,
+  "memory_gb": 16,
+  "python": "/usr/local/bin/python3, Python 3.13.13 (python.org framework build)",
+  "how_reached": "The user's own Mac, attached to the session through Remote Control. Commands ran in the user's ~/Developer checkouts. Each command was approved by the user at a permission prompt."
+ },
+ "checkouts": {
+  "claim_class": "FACT",
+  "note": "The user's own working copies, at their local heads. They are not the RC4 pull request heads. No checkout, branch or file under version control was changed by these observations.",
+  "thehub-pr": "main 95c6c99 (thehub-pr#432 merge), clean",
+  "centinelas-pr": "main f649a98, clean",
+  "skywatcher-pr": "main a217699, clean",
+  "aguayluz-pr": "main 2304371, clean",
+  "moneysweep-pr": "branch status/capital-control-successor-certified-draft fe74b82, 1 uncommitted path",
+  "ovnis-pr": "main a8225db, clean",
+  "spiderweb-pr": "main 5ce5eca, 6 uncommitted paths",
+  "mucaro-ai": "main c9b983b, clean"
+ },
+ "startup": {
+  "app": "thehub-pr, PRII-THEHUB.app",
+  "launch_chain": {
+   "claim_class": "FACT",
+   "source": "PRII-THEHUB.app/Contents/MacOS/PRII-THEHUB; desktop/setup.py; packages/prii_desktop/src/prii_desktop/launcher.py",
+   "statement": "Opening the bundle runs `python3 desktop/setup.py --ensure`, then `exec .venv/bin/python desktop/launch.py`. --ensure returns at once only if desktop/.setup-complete, .venv/bin/python and the built dist/index.html all exist. Otherwise it reruns the full setup: pip install of the backend and desktop requirements, then `npm ci` (or `npm install`) and `npm run build`. After that, the launcher shows the Launch Pad, and the backend starts only after a choice there."
+  },
+  "setup_ensure_seconds": {
+   "claim_class": "COMPUTED",
+   "runs": [170.80, 0.20, 0.14, 0.13, 0.13],
+   "reading": "The first run took the full-setup path and created desktop/.setup-complete; its modification time, 2026-11-21 01:58, is this run's. The marker was therefore missing before it, and every launch from Finder until then would have taken that path. Later runs take the fast path."
+  },
+  "smoke_start_seconds": {
+   "claim_class": "COMPUTED",
+   "command": ".venv/bin/python desktop/launch.py --smoke (start the backend, wait for /health, exit)",
+   "runs": [6.66, 1.61, 1.71, 1.71, 1.64],
+   "exit_codes": [0, 0, 0, 0, 0],
+   "reading": "First start 6.7 s, then about 1.7 s. The first figure includes cold imports after the setup run."
+  },
+  "open_to_dock_entry_seconds": {
+   "claim_class": "COMPUTED",
+   "runs": [5.9],
+   "method": "`open PRII-THEHUB.app`, then poll System Events once a second for a foreground process.",
+   "limits": "One run, 1-second resolution, warm (setup already complete)."
+  },
+  "open_to_healthy_backend": {
+   "state": "NOT_MEASURED",
+   "claim_class": "FACT",
+   "reason": "The backend starts only after the person picks on the Launch Pad, so this interval includes a human click. A scripted attempt also found an instance already running (pid 20242, up 25 minutes; no command in this session is known to have started it). With an instance running, a new open hands over to it. That instance was left running."
+  },
+  "candidate_cause_of_reported_delay": {
+   "claim_class": "INFERENCE",
+   "statement": "A launch that finds the setup marker or the built frontend missing spends minutes in pip and npm before any window appears. 170.8 s was measured once here. The marker is missing on this Mac for centinelas-pr, aguayluz-pr and spiderweb-pr. That is consistent with the reported startup delay, but the user's own slow launches were not observed, so it is not established as the cause.",
+   "related_fact": "On a fresh setup, centinelas-pr main and aguayluz-pr at c60587e fail to resolve their pins: constraints-desktop.txt pins pydantic-core==2.48.0, but pydantic==2.13.5 requires 2.46.5. Such a launch ends in the 'First-run setup could not finish' dialog rather than a slow start."
+  }
+ },
+ "app_identity": {
+  "bundle": {
+   "claim_class": "FACT",
+   "source": "PRII-THEHUB.app/Contents/Info.plist",
+   "CFBundleName": "TheHub",
+   "CFBundleDisplayName": "TheHub",
+   "CFBundleIdentifier": "pr.prii.thehub.launcher",
+   "CFBundleIconFile": "AppIcon"
+  },
+  "running_process": {
+   "claim_class": "COMPUTED",
+   "observed": "While the app ran, the only new foreground process was named \"Python\", bundle identifier org.python.python, executable /Library/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python desktop/launch.py (pid 14181).",
+   "reading": "The launcher execs the venv's Python. The window is therefore owned by Python.app, and macOS shows it as Python in the Dock and the app switcher, with Python's icon, not TheHub's. The bundle's name, identifier and icon do not reach the running app."
+  },
+  "dock_name_and_icon_on_screen": {
+   "state": "BLOCKED",
+   "claim_class": "ASSUMPTION",
+   "reason": "Reading the Dock's tiles needs Accessibility permission for osascript, and this Mac refused it (System Events error -1719). That the Dock tile reads 'Python' is inferred from the process name above, not seen."
+  }
+ },
+ "dock_menu": {
+  "source": {
+   "claim_class": "FACT",
+   "statement": "No code in packages/prii_desktop or desktop/ defines a Dock menu (no applicationDockMenu, NSMenu or pywebview menu hook). Right-clicking the Dock tile can only show the system default menu (Options, Show All Windows, Hide, Quit)."
+  },
+  "on_screen": {
+   "state": "BLOCKED",
+   "reason": "Not inspected by eye; Accessibility permission refused (see above)."
+  }
+ },
+ "open_at_login": {
+  "login_items": {
+   "claim_class": "COMPUTED",
+   "observed": "System Events login items: Terminal. No PRII application is set to open at login."
+  },
+  "source": {
+   "claim_class": "FACT",
+   "statement": "No code in packages/prii_desktop or desktop/ registers a login item (no SMAppService, LaunchAgent plist or login-item call). Open at Login is available only through the system's own Dock tile menu, and that menu would register Python.app, not TheHub."
+  }
+ },
+ "side_effects": {
+  "claim_class": "FACT",
+  "statement": "Running desktop/setup.py --ensure in the user's thehub-pr checkout created desktop/.setup-complete and installed into .venv and the frontend dist. These are untracked build outputs that the app's own launch writes. TheHub was opened twice from its bundle; the first instance (pid 14181) was stopped by this session, and one instance the user may have opened (pid 20242) was left running."
+ }
+}

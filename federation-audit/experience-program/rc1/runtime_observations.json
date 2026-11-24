@@ -1,0 +1,4442 @@
+{
+  "applications": {
+    "aguayluz-pr": {
+      "axe_version": "4.14.1",
+      "csp_bypassed_for_scan": false,
+      "mounted_surfaces_in_survey": 91,
+      "mounted_surfaces_with_an_address": 20,
+      "mounted_surfaces_without_an_address": 71,
+      "router": "url",
+      "routes": {
+        "/": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 17,
+            "link-in-text-block": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 7,
+          "errors": [],
+          "failed_requests": [
+            "400 GET /readings"
+          ],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 86,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/alerts": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 38
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/analytics": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 13,
+            "svg-img-alt": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/aquifer-bands": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 48
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 7,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/assets": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 33
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/cave-karst": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 47
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 2,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/environmental-exposure": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 30,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/hydro-inventory": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 35
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 162,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/hydromet": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 36
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 187,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/logs": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "color-contrast": 31,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/map": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "link-in-text-block": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 1,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/monitoring": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 30,
+            "link-in-text-block": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 24,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/outages": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "color-contrast": 20
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 143,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/regulatory": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 22
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/regulatory/review": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 14
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/review": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 2,
+            "color-contrast": 14
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/source-intelligence": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 30
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/system": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 43
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/water-disruption": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 12,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/water-use": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 31,
+            "scrollable-region-focusable": 3
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 7,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        }
+      },
+      "routes_not_observed": [],
+      "routes_observed_runtime": 20,
+      "routes_tried": 20,
+      "routes_with_blocking_axe": 20,
+      "routes_with_horizontal_overflow": 0,
+      "state": "PROVISIONAL"
+    },
+    "centinelas-pr": {
+      "axe_version": "4.14.1",
+      "csp_bypassed_for_scan": false,
+      "mounted_surfaces_in_survey": 44,
+      "mounted_surfaces_with_an_address": 12,
+      "mounted_surfaces_without_an_address": 15,
+      "router": "url",
+      "routes": {
+        "/": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/autores": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "SOURCE_CONFIRMED",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [
+            "/entidades"
+          ],
+          "widths_observed": []
+        },
+        "/dashboard": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 6,
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 9,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/entidades": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/handoff": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 376,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/matters": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 1,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/monitor": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 2,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/pipeline": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 2975,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/signals": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 3,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/sources": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/tabla": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 3,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/water-disruption": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        }
+      },
+      "routes_not_observed": [
+        "/autores"
+      ],
+      "routes_observed_runtime": 11,
+      "routes_tried": 12,
+      "routes_with_blocking_axe": 12,
+      "routes_with_horizontal_overflow": 1,
+      "state": "PROVISIONAL"
+    },
+    "moneysweep-pr": {
+      "axe_version": "4.14.1",
+      "csp_bypassed_for_scan": false,
+      "mounted_surfaces_in_survey": 56,
+      "mounted_surfaces_with_an_address": 12,
+      "mounted_surfaces_without_an_address": 44,
+      "router": "query-param",
+      "routes": {
+        "/": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=activity": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=api-keys": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=campaign-finance": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "scrollable-region-focusable": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=contracts": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=data-sources": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=entities": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=government-changes": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "scrollable-region-focusable": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=graph": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=leaderboards": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=municipios": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/?tab=ownership": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 7,
+          "errors": [],
+          "failed_requests": [
+            "503 GET /deep-dive/ownership/BPOP"
+          ],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        }
+      },
+      "routes_not_observed": [],
+      "routes_observed_runtime": 12,
+      "routes_tried": 12,
+      "routes_with_blocking_axe": 12,
+      "routes_with_horizontal_overflow": 0,
+      "state": "PROVISIONAL"
+    },
+    "mucaro-ai": {
+      "axe_version": "4.14.1",
+      "csp_bypassed_for_scan": true,
+      "mounted_surfaces_in_survey": 47,
+      "mounted_surfaces_with_an_address": 0,
+      "mounted_surfaces_without_an_address": 47,
+      "router": "in-memory",
+      "routes": {
+        "/": {
+          "address_normalised_to": [],
+          "axe_blocking": {},
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 4,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        }
+      },
+      "routes_not_observed": [],
+      "routes_observed_runtime": 1,
+      "routes_tried": 1,
+      "routes_with_blocking_axe": 0,
+      "routes_with_horizontal_overflow": 0,
+      "state": "PROVISIONAL"
+    },
+    "ovnis-pr": {
+      "axe_version": "4.14.1",
+      "csp_bypassed_for_scan": false,
+      "mounted_surfaces_in_survey": 37,
+      "mounted_surfaces_with_an_address": 1,
+      "mounted_surfaces_without_an_address": 36,
+      "router": "url",
+      "routes": {
+        "/": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4,
+            "link-in-text-block": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 3,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        }
+      },
+      "routes_not_observed": [],
+      "routes_observed_runtime": 1,
+      "routes_tried": 1,
+      "routes_with_blocking_axe": 1,
+      "routes_with_horizontal_overflow": 0,
+      "state": "PROVISIONAL"
+    },
+    "skywatcher-pr": {
+      "axe_version": "4.14.1",
+      "csp_bypassed_for_scan": false,
+      "mounted_surfaces_in_survey": 76,
+      "mounted_surfaces_with_an_address": 22,
+      "mounted_surfaces_without_an_address": 54,
+      "router": "url",
+      "routes": {
+        "/": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 15,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/aircraft": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/airports": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "link-in-text-block": 1,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 8,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/analysis": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 3
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/calibration": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 5
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/console": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 5,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/export": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 5
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 5,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/flight-archive": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/forgot-password": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "SOURCE_CONFIRMED",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 15,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [
+            "/"
+          ],
+          "widths_observed": []
+        },
+        "/fr24": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/infrastructure": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/login": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "SOURCE_CONFIRMED",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 15,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [
+            "/"
+          ],
+          "widths_observed": []
+        },
+        "/observations": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "link-in-text-block": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 11,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/readiness": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/register": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "SOURCE_CONFIRMED",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 15,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [
+            "/"
+          ],
+          "widths_observed": []
+        },
+        "/reset-password": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "SOURCE_CONFIRMED",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 15,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [
+            "/"
+          ],
+          "widths_observed": []
+        },
+        "/review": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/routes": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 2
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 8,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/sky-cameras": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 10,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/space-track": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 3
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/space-track/sky": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "label-content-name-mismatch": 7,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/spatial-truth": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 8,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        }
+      },
+      "routes_not_observed": [
+        "/forgot-password",
+        "/login",
+        "/register",
+        "/reset-password"
+      ],
+      "routes_observed_runtime": 18,
+      "routes_tried": 22,
+      "routes_with_blocking_axe": 22,
+      "routes_with_horizontal_overflow": 0,
+      "state": "PROVISIONAL"
+    },
+    "spiderweb-pr": {
+      "axe_version": "4.14.1",
+      "csp_bypassed_for_scan": false,
+      "mounted_surfaces_in_survey": 42,
+      "mounted_surfaces_with_an_address": 0,
+      "mounted_surfaces_without_an_address": 42,
+      "router": "in-memory",
+      "routes": {
+        "/": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "label-content-name-mismatch": 5
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 2,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        }
+      },
+      "routes_not_observed": [],
+      "routes_observed_runtime": 1,
+      "routes_tried": 1,
+      "routes_with_blocking_axe": 1,
+      "routes_with_horizontal_overflow": 0,
+      "state": "PROVISIONAL"
+    },
+    "thehub-pr": {
+      "axe_version": "4.14.1",
+      "csp_bypassed_for_scan": false,
+      "mounted_surfaces_in_survey": 125,
+      "mounted_surfaces_with_an_address": 86,
+      "mounted_surfaces_without_an_address": 38,
+      "router": "url",
+      "routes": {
+        "/": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 2,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/aguayluz": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            1280
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 12,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/aguayluz?tab=alerts": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/aguayluz?tab=assets": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/aguayluz?tab=feed": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 40,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/aguayluz?tab=outdoor": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/aguayluz?tab=risks": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/aguayluz?tab=sources": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/aguayluz?tab=workspace": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            1280
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 12,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/anomaly-overlap": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 2,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/apps": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 113,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/cases": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/centinelas": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/centinelas?tab=map": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/centinelas?tab=matters": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/centinelas?tab=sources": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/constellation": {
+          "address_normalised_to": [
+            "/constellation?lens=code&stage=signal-intake"
+          ],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 7,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control?tab=cases": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control?tab=dictionary": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control?tab=exports": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control?tab=gates": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 5,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control?tab=integrations": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 4,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control?tab=manifest": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 6,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control?tab=programs": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 7,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control?tab=readiness": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "button-name": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control?tab=sources": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/control?tab=tasks": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "aria-valid-attr-value": 1,
+            "button-name": 11,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 7,
+          "errors": [],
+          "failed_requests": [
+            "401 GET /api/auth/me"
+          ],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/crossover": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 5,
+            "color-contrast": 25,
+            "label": 2,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 377,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/dictionary": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/exports": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/gates": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 5,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/gis": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4,
+            "link-in-text-block": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 2,
+          "max_horizontal_overflow_px": 172,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/gis?view=aoi-comparison": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4,
+            "link-in-text-block": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 1,
+          "max_horizontal_overflow_px": 172,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/gis?view=digital-twin": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4,
+            "link-in-text-block": 2,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 5,
+          "max_horizontal_overflow_px": 172,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/gis?view=interpretive-layers": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4,
+            "link-in-text-block": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 1,
+          "max_horizontal_overflow_px": 172,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/gis?view=property-map": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4,
+            "link-in-text-block": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 1,
+          "max_horizontal_overflow_px": 172,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/hub": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 16,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/integrations": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 4,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/launcher": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 1,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/manifest": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 6,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/moneysweep": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 17,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/moneysweep?tab=contracts": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/moneysweep?tab=feed": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 17,
+          "max_unnamed_buttons": 1,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/moneysweep?tab=flags": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/moneysweep?tab=leaderboards": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4,
+            "scrollable-region-focusable": 1
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/moneysweep?tab=sources": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/moneysweep?tab=vendors": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/operations": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/operator-settings": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 26,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/ovnis": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 245,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/ovnis?tab=patterns": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 245,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/ovnis?tab=reports": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 245,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/ovnis?tab=showlog": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 245,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/ovnis?tab=sources": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 245,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/ovnis?tab=witness": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 245,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/programs": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 7,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/project-signs": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/readiness": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 1,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/research": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/research?tab=assistant": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 2,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 7,
+          "errors": [],
+          "failed_requests": [
+            "401 GET /api/auth/me"
+          ],
+          "horizontal_overflow_at_widths": [
+            320,
+            390,
+            430
+          ],
+          "max_controls_under_24px": 1,
+          "max_horizontal_overflow_px": 188,
+          "max_unnamed_buttons": 2,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/research?tab=candidates": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/research?tab=contradictions": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/research?tab=hypotheses": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/research?tab=queue": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/research?tab=topics": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/search": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 2,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/search?q=": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 2,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/skywatcher": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            1280
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 12,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/skywatcher?view=corr": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/skywatcher?view=events": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/skywatcher?view=map": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/skywatcher?view=sky": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4,
+            "label-content-name-mismatch": 13
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 5,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/skywatcher?view=sources": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/skywatcher?view=workspace": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            1280
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 12,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/source-monitor": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/sources": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/spiderweb": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            1280
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 12,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/spiderweb?tab=edges": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/spiderweb?tab=map": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/spiderweb?tab=nodes": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/spiderweb?tab=sources": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/spiderweb?tab=workspace": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [
+            1280
+          ],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 12,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/tasks": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "button-name": 11,
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 7,
+          "errors": [],
+          "failed_requests": [
+            "401 GET /api/auth/me"
+          ],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/timeline": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 1,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        },
+        "/transition": {
+          "address_normalised_to": [],
+          "axe_blocking": {
+            "color-contrast": 4
+          },
+          "classification": "OBSERVED_RUNTIME",
+          "console_error_rows": 0,
+          "errors": [],
+          "failed_requests": [],
+          "horizontal_overflow_at_widths": [],
+          "max_controls_under_24px": 0,
+          "max_horizontal_overflow_px": 0,
+          "max_unnamed_buttons": 0,
+          "missing_main_landmark_at_widths": [],
+          "page_errors": [],
+          "redirected_to": [],
+          "widths_observed": [
+            320,
+            390,
+            430,
+            768,
+            1280,
+            1440,
+            1920
+          ]
+        }
+      },
+      "routes_not_observed": [],
+      "routes_observed_runtime": 86,
+      "routes_tried": 86,
+      "routes_with_blocking_axe": 86,
+      "routes_with_horizontal_overflow": 23,
+      "state": "PROVISIONAL"
+    }
+  },
+  "environment": {
+    "backend": "each application's real backend at its RC0 commit, with a fresh temporary workspace seeded by the application's own setup action",
+    "browser": "Chromium (Playwright), headless, dark colour scheme",
+    "desktop_runtime": "served through prii_desktop from the hub checkout, not the version each producer pins",
+    "os": "Linux container",
+    "viewport_widths_css_px": [
+      320,
+      390,
+      430,
+      768,
+      1280,
+      1440,
+      1920
+    ]
+  },
+  "evidence_class": "OBSERVED_RUNTIME for the rows it lists, in one browser only.",
+  "generated_at": "2026-11-17T14:22:39+00:00",
+  "limits": [
+    "Chromium only. Firefox and WebKit were not available.",
+    "Only surfaces with their own address were visited. Dialogs, drawers, tabs held in memory and anything behind a click were not opened.",
+    "Pages were loaded, not operated: no form was submitted and no write was attempted.",
+    "An axe scan finds a subset of accessibility failures. It is not a keyboard or screen-reader review.",
+    "Data was whatever a fresh workspace holds, so empty and loaded states are mixed."
+  ],
+  "schema": "federation.experience-program.runtime-observations/1",
+  "totals": {
+    "applications_run": 8,
+    "page_loads": 1085,
+    "routes_observed_runtime": 150,
+    "routes_tried": 155,
+    "routes_with_blocking_axe": 154,
+    "routes_with_horizontal_overflow": 24
+  }
+}

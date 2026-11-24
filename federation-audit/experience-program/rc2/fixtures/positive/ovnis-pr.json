@@ -1,0 +1,199 @@
+{
+  "x-fixture-note": "Illustrative fixture for testing the contract schemas. It is NOT a declaration made by this application and NOT an audit result; values are chosen to exercise the rules.",
+  "contract": {
+    "name": "federation-experience",
+    "version": "1.0.0"
+  },
+  "application": {
+    "id": "ovnis-pr",
+    "display_name": "OVNIS",
+    "repository": "jotaele44/ovnis-pr",
+    "role": "producer",
+    "source_commit": "a8225db5d226232037c455daf6e941e50d86d136"
+  },
+  "capabilities": [
+    {
+      "id": "cases",
+      "title": "Cases",
+      "audience": "guest"
+    },
+    {
+      "id": "case-map",
+      "title": "Map",
+      "audience": "guest"
+    }
+  ],
+  "navigation": {
+    "application": "ovnis-pr",
+    "addressing": "in-memory",
+    "groups": [
+      {
+        "id": "views",
+        "label": "Views",
+        "kind": "static",
+        "items": [
+          {
+            "id": "cases",
+            "label": "Cases",
+            "target": "view:cases",
+            "capability_id": "cases"
+          },
+          {
+            "id": "map",
+            "label": "Map",
+            "target": "view:map",
+            "capability_id": "case-map"
+          }
+        ]
+      }
+    ],
+    "mobile": {
+      "pattern": "bottom-bar",
+      "toggle_accessible_name": null
+    }
+  },
+  "actions": [
+    {
+      "id": "ovnis-pr.case.open",
+      "owning_application": "ovnis-pr",
+      "capability_id": "cases",
+      "title": "Open case",
+      "object_type": "case",
+      "object_class": "evidence",
+      "selection": {
+        "min": 1,
+        "max": 1
+      },
+      "permission": "guest",
+      "effect": "read",
+      "availability": {
+        "predicate": "case.exists",
+        "requires_online": false
+      },
+      "confirmation": "none",
+      "audit_event": null,
+      "keyboard_binding": "Enter",
+      "display_surfaces": [
+        "detail-panel",
+        "keyboard"
+      ],
+      "error_behavior": {
+        "on_failure": "inline",
+        "preserves_input": true,
+        "retryable": true
+      }
+    }
+  ],
+  "settings": [
+    {
+      "id": "federation.appearance.theme",
+      "scope": "GLOBAL_USER",
+      "owning_application": null,
+      "title": "Theme",
+      "value_type": "enum",
+      "choices": [
+        "system",
+        "light",
+        "dark"
+      ],
+      "default": "system",
+      "storage": "federation-profile",
+      "applies": "immediately"
+    },
+    {
+      "id": "ovnis-pr.display.locale",
+      "scope": "APPLICATION_USER",
+      "owning_application": "ovnis-pr",
+      "title": "Language",
+      "value_type": "enum",
+      "choices": [
+        "en",
+        "es"
+      ],
+      "default": "en",
+      "storage": "app-local-storage",
+      "applies": "immediately"
+    }
+  ],
+  "interaction": {
+    "keyboard_complete": false,
+    "touch_alternatives": true,
+    "minimum_target_css_px": 44,
+    "focus_visible": true
+  },
+  "accessibility": {
+    "target": "WCAG 2.2 AA",
+    "automated_scan": "OPEN",
+    "manual_review": "BLOCKED",
+    "known_failures": []
+  },
+  "evidence": {
+    "provenance_fields": [
+      "source_tier",
+      "witness_tier",
+      "review_state",
+      "source_citation"
+    ],
+    "missing_value_presentation": "explicit-unknown",
+    "renameable_object_types": []
+  },
+  "states": {
+    "loading": {
+      "supported": true,
+      "presentation": "Skeleton rows"
+    },
+    "empty": {
+      "supported": true,
+      "presentation": "No cases match"
+    },
+    "error": {
+      "supported": true,
+      "presentation": "Inline error"
+    },
+    "offline": {
+      "supported": false,
+      "presentation": null
+    },
+    "stale": {
+      "supported": false,
+      "presentation": null
+    }
+  },
+  "authorization": {
+    "modes": [
+      "single"
+    ],
+    "write_guard": null,
+    "guest_can_write": false
+  },
+  "compatibility": {
+    "application": "ovnis-pr",
+    "contract_version": "1.0.0",
+    "min_contract_version": "1.0.0",
+    "max_contract_version": "1.99.0",
+    "shared_packages": [
+      {
+        "name": "@pr-federation/react",
+        "version": "0.3.0",
+        "source": "registry"
+      }
+    ],
+    "desktop_runtime": {
+      "name": "prii-desktop",
+      "version": "0.3.0",
+      "commit": "dc79dc003815432b3f8bfc8f9bff532f6c47e622"
+    },
+    "independent_startup": true,
+    "federation_runtime_required": false
+  },
+  "integration": {
+    "recovery": {
+      "failed_backend": "Error screen with Try Again",
+      "interrupted_request": "Request is retried on the next view change"
+    },
+    "deep_links": false
+  },
+  "performance": {
+    "instrumented_metrics": []
+  }
+}

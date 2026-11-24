@@ -1,0 +1,16 @@
+{
+  "description": "Deep links cannot be claimed with in-memory navigation.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/integration/deep_links",
+      "value": true
+    }
+  ],
+  "expect": [
+    "deep-link-contradiction"
+  ]
+}

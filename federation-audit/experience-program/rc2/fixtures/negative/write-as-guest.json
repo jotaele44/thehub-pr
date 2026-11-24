@@ -1,0 +1,16 @@
+{
+  "description": "A write is never available to a guest.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/actions/1/permission",
+      "value": "guest"
+    }
+  ],
+  "expect": [
+    "schema:actions:enum"
+  ]
+}
