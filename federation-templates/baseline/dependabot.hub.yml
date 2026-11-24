@@ -18,6 +18,12 @@
 version: 2
 updates:
   - package-ecosystem: "pip"
+    # The pip ecosystem also reads requirement files one directory below "/",
+    # so this scan reaches federation-templates/requirements-desktop.txt: a
+    # pywebview bump edits that template and the hub's own
+    # requirements-desktop.txt in one pull request. Producers exclude their
+    # rendered copy. No exclude-paths here, and no second directory for the
+    # templates: that would scan the template twice and split a bump.
     directory: "/"
     schedule:
       interval: "weekly"
