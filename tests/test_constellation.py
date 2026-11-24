@@ -196,6 +196,26 @@ def test_content_nodes_carry_exported_totals_and_stored_rows():
     assert out["totals"] == {"exported": 1010, "stored": 16, "correlations": 3}
 
 
+def test_source_monitors_are_a_content_stream():
+    """ADR 0013's stream is canonical, so the content lens shows it like any other."""
+    snapshot = StoreSnapshot(
+        summary={"producers": {"aguayluz-pr": {"source_monitors": 31}}, "streams": {"source_monitors": 31}},
+        collections={"SourceMonitors": 31},
+        stored={("aguayluz-pr", "source_monitors"): 31},
+        samples={("aguayluz-pr", "source_monitors"): [{"id": "mon_a", "label": "LUMA outages"}]},
+    )
+    out = build_constellation(SPEC, snapshot)
+    nodes = _by_id(out["lenses"]["content"]["nodes"])
+    producer = nodes["content:aguayluz:source_monitors"]
+    assert (producer["total"], producer["stored"]) == (31, 31)
+    hub = nodes["content:thehub:stream:source_monitors"]
+    assert (hub["total"], hub["stored"]) == (31, 31)
+    assert [s["id"] for s in hub["samples"]] == ["mon_a"]
+    edges = _by_id(out["lenses"]["content"]["edges"])
+    assert edges["flow:content:aguayluz:source_monitors->content:thehub:stream:source_monitors"]["weight"] == 31
+    assert out["totals"]["exported"] == out["totals"]["stored"] == 31
+
+
 def test_flows_are_weighted_by_the_exported_total():
     edges = _by_id(build_constellation(SPEC, _snapshot())["lenses"]["content"]["edges"])
     flow = edges["flow:content:aguayluz:entities->content:thehub:stream:entities"]
