@@ -1,0 +1,16 @@
+{
+  "description": "One key cannot trigger two different actions.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/actions/2/keyboard_binding",
+      "value": "F2"
+    }
+  ],
+  "expect": [
+    "binding-conflict"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "description": "A keyboard surface needs a binding.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/actions/1/keyboard_binding",
+      "value": null
+    }
+  ],
+  "expect": [
+    "schema:actions:type"
+  ]
+}

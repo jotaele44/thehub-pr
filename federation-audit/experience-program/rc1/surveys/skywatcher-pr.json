@@ -1,0 +1,3085 @@
+{
+ "repository": "skywatcher-pr",
+ "audited_commit": "a2176990606048a6b918daacdb8bce027e58a903",
+ "frontend": {
+  "dir": "frontend",
+  "language": "js",
+  "framework": "React 18 + Vite + Tailwind (shadcn/Radix ui kit, MapLibre GL, recharts, TanStack Query)",
+  "router": "url",
+  "router_file": "frontend/src/App.jsx:4",
+  "shared_design_package": "@pr-federation/react@0.3.0 (frontend/package.json:21; styles imported frontend/src/main.jsx:10; used by EmptyState.jsx:3 and StatusChip.jsx:2)"
+ },
+ "entry_points": [
+  {
+   "id": "web-spa",
+   "kind": "web",
+   "path": "frontend/src/main.jsx:17",
+   "note": "React root; BrowserRouter in App.jsx:109. Dev: vite with /api proxy to :8000 (frontend/vite.config.js:19-22)"
+  },
+  {
+   "id": "backend-api",
+   "kind": "server",
+   "path": "server/backend/main.py:90",
+   "note": "FastAPI app 'Skywatcher-PR Dashboard API'; uvicorn server.backend.main:app (.claude/launch.json backend config)"
+  },
+  {
+   "id": "desktop-launch",
+   "kind": "launcher",
+   "path": "desktop/launch.py:24",
+   "note": "Thin shim over external prii_desktop package (not in this repo); serves built SPA + API same-origin via desktop/app_server.py:20; flags --no-window/--browser/--route/--smoke handled in prii_desktop"
+  },
+  {
+   "id": "launcher-linux",
+   "kind": "launcher",
+   "path": "PRII-SKYWATCHER.sh:26",
+   "note": "Runs desktop/setup.py --ensure then desktop/launch.py"
+  },
+  {
+   "id": "launcher-macos",
+   "kind": "launcher",
+   "path": "PRII-SKYWATCHER.command:24",
+   "note": "Also PRII-SKYWATCHER.app bundle and Fix-Gatekeeper.command (not inspected)"
+  },
+  {
+   "id": "launcher-windows",
+   "kind": "launcher",
+   "path": "PRII-SKYWATCHER.bat:20",
+   "note": ""
+  },
+  {
+   "id": "ios-native",
+   "kind": "launcher",
+   "path": "ios/SkywatcherMobile/project.yml:1",
+   "note": "Separate native iOS project; NOT audited (out of web frontend scope)"
+  },
+  {
+   "id": "cli-pipelines",
+   "kind": "cli",
+   "path": "run_all.py:1",
+   "note": "Python pipeline CLIs (run_all.py, run-rlsm.sh, scripts/, tools/) exist; not enumerated in this UI/API audit"
+  }
+ ],
+ "surfaces": [
+  {
+   "id": "app-shell",
+   "kind": "workspace",
+   "label": "Skywatcher-PR",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/Layout.jsx:7",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:57",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Layout route wrapping all 18 workspace routes; no skip link, no landmark label"
+  },
+  {
+   "id": "top-status-strip",
+   "kind": "toolbar",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/skywatcher/TopStatusStrip.jsx:34",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/Layout.jsx:11",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Static hardcoded cells ('Discovery Ready', 'Live Exec Blocked', data mode) - not data-driven (TopStatusStrip.jsx:13-21)"
+  },
+  {
+   "id": "sidebar-desktop",
+   "kind": "sidebar",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/skywatcher/Sidebar.jsx:40",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/Layout.jsx:15",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "hidden md:block; 18 links with aria-current"
+  },
+  {
+   "id": "mobile-nav-overlay",
+   "kind": "drawer",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/skywatcher/Layout.jsx:19",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/Layout.jsx:19-26",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hand-rolled overlay (md:hidden) toggled by unlabeled 32px button; no role=dialog, no focus trap, no Escape"
+  },
+  {
+   "id": "toaster",
+   "kind": "notification",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/ui/toaster.jsx:1",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:112",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Global toast host; ToastClose button has no accessible name (ui/toast.jsx:63-75)"
+  },
+  {
+   "id": "error-boundary",
+   "kind": "notification",
+   "label": "Reload",
+   "address": null,
+   "component": "frontend/src/components/ErrorBoundary.jsx:6",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:106",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Top-level render error screen with reload button"
+  },
+  {
+   "id": "route-dashboard",
+   "kind": "route",
+   "label": "Command Dashboard",
+   "address": "/",
+   "component": "frontend/src/pages/Dashboard.jsx:43",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:58",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Entity load failures are swallowed to [] (lib/SkywatcherData.jsx:55) so no error state; hardcoded PROGRAM_TIMELINE and posture cards"
+  },
+  {
+   "id": "route-console",
+   "kind": "route",
+   "label": "Interactive Console",
+   "address": "/console",
+   "component": "frontend/src/pages/Console.jsx:22",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:59",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Capability-gated MapLibre runtime; falls back to PuertoRicoMapShell when gated (Console.jsx:102-119). No loading indicator for capabilities"
+  },
+  {
+   "id": "route-observations",
+   "kind": "route",
+   "label": "Airspace Observations",
+   "address": "/observations",
+   "component": "frontend/src/pages/Observations.jsx:52",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:60",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Filter/sort/bulk review; error only for bulk write failures (toast)"
+  },
+  {
+   "id": "route-aircraft",
+   "kind": "route",
+   "label": "Aircraft Profiles",
+   "address": "/aircraft",
+   "component": "frontend/src/pages/Aircraft.jsx:16",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:61",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Cards/table toggle"
+  },
+  {
+   "id": "route-fr24",
+   "kind": "route",
+   "label": "FR24 Intake",
+   "address": "/fr24",
+   "component": "frontend/src/pages/FR24Intake.jsx:22",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:62",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Read-only capture table; edits happen in capture drawer"
+  },
+  {
+   "id": "route-routes",
+   "kind": "route",
+   "label": "Route-Line Mining",
+   "address": "/routes",
+   "component": "frontend/src/pages/Routes.jsx:26",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:63",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "V4 corpus panels + route segment table"
+  },
+  {
+   "id": "route-infrastructure",
+   "kind": "route",
+   "label": "Infrastructure Links",
+   "address": "/infrastructure",
+   "component": "frontend/src/pages/Infrastructure.jsx:25",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:64",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Backend loaders for InfrastructureAssets/AirspaceAssetLinks are `list` (always empty) - server/backend/main.py:1004-1005, so page always renders empty state from the shipped backend"
+  },
+  {
+   "id": "route-airports",
+   "kind": "route",
+   "label": "PR Airports",
+   "address": "/airports",
+   "component": "frontend/src/pages/Airports.jsx:15",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:65",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Airport table + map"
+  },
+  {
+   "id": "route-review",
+   "kind": "route",
+   "label": "Manual Review",
+   "address": "/review",
+   "component": "frontend/src/pages/ManualReview.jsx:18",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:66",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Kanban-style columns (ManualReview.jsx:11)"
+  },
+  {
+   "id": "route-export",
+   "kind": "route",
+   "label": "Federation Export",
+   "address": "/export",
+   "component": "frontend/src/pages/ExportCenter.jsx:15",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:67",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Read-only export validation + command reference copy; no export/download action exists"
+  },
+  {
+   "id": "route-readiness",
+   "kind": "route",
+   "label": "Readiness / Blockers",
+   "address": "/readiness",
+   "component": "frontend/src/pages/Readiness.jsx:34",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:68",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "READINESS_ITEMS and NEXT_ACTIONS are hardcoded constants (Readiness.jsx:11,25)"
+  },
+  {
+   "id": "route-calibration",
+   "kind": "route",
+   "label": "SATIM Calibration",
+   "address": "/calibration",
+   "component": "frontend/src/pages/Calibration.jsx:62",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:69",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Reads static frontend/public/satim/moca_fr24_2025.summary.json via fetch (Calibration.jsx:16,69); no backend"
+  },
+  {
+   "id": "route-analysis",
+   "kind": "route",
+   "label": "Analysis Lenses",
+   "address": "/analysis",
+   "component": "frontend/src/pages/AnalysisLenses.jsx:40",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:70",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Fetches GET /api/analysis/registry (AnalysisLenses.jsx:51)"
+  },
+  {
+   "id": "route-spatial-truth",
+   "kind": "route",
+   "label": "Aircraft Spatial Truth",
+   "address": "/spatial-truth",
+   "component": "frontend/src/pages/SpatialTruth.jsx:33",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:71",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "RLSM spatial tables + local flight file renderer"
+  },
+  {
+   "id": "route-flight-archive",
+   "kind": "route",
+   "label": "Flight Archive",
+   "address": "/flight-archive",
+   "component": "frontend/src/pages/FlightArchive.jsx:64",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:72",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Local file ingest, persist snapshot, 5 tabs"
+  },
+  {
+   "id": "route-space-track",
+   "kind": "route",
+   "label": "Space-Track Control",
+   "address": "/space-track",
+   "component": "frontend/src/pages/SpaceTrackControl.jsx:41",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:73",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Read-only status; first nav item"
+  },
+  {
+   "id": "route-sky-target-finder",
+   "kind": "route",
+   "label": "Sky Target Finder",
+   "address": "/space-track/sky",
+   "component": "frontend/src/pages/SkyTargetFinder.jsx:160",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:74",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Search/recommend/favorites + sky chart"
+  },
+  {
+   "id": "route-sky-cameras",
+   "kind": "route",
+   "label": "Sky Cameras",
+   "address": "/sky-cameras",
+   "component": "frontend/src/pages/SkyCameras.jsx:373",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:75",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Camera catalogue, contribute form, review queue"
+  },
+  {
+   "id": "route-login",
+   "kind": "route",
+   "label": "Login",
+   "address": "/login",
+   "component": "frontend/src/pages/Login.jsx:1",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:84",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Conditionally mounted only when authRequired (frontend/src/App.jsx:49-51,82); shipped backend always reports requires_auth=false (server/backend/main.py:1106) so by default these paths redirect to / (frontend/src/App.jsx:91-94). Only reachable with VITE_FEDERATION_REQUIRE_AUTH=true build (frontend/src/lib/app-params.js:87), and then no backend auth route exists. Not linked from any nav."
+  },
+  {
+   "id": "route-register",
+   "kind": "route",
+   "label": "Register",
+   "address": "/register",
+   "component": "frontend/src/pages/Register.jsx:1",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:85",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Conditionally mounted only when authRequired (frontend/src/App.jsx:49-51,82); shipped backend always reports requires_auth=false (server/backend/main.py:1106) so by default these paths redirect to / (frontend/src/App.jsx:91-94). Only reachable with VITE_FEDERATION_REQUIRE_AUTH=true build (frontend/src/lib/app-params.js:87), and then no backend auth route exists. Not linked from any nav."
+  },
+  {
+   "id": "route-forgot-password",
+   "kind": "route",
+   "label": "Forgot password",
+   "address": "/forgot-password",
+   "component": "frontend/src/pages/ForgotPassword.jsx:1",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:86",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Conditionally mounted only when authRequired (frontend/src/App.jsx:49-51,82); shipped backend always reports requires_auth=false (server/backend/main.py:1106) so by default these paths redirect to / (frontend/src/App.jsx:91-94). Only reachable with VITE_FEDERATION_REQUIRE_AUTH=true build (frontend/src/lib/app-params.js:87), and then no backend auth route exists. Not linked from any nav."
+  },
+  {
+   "id": "route-reset-password",
+   "kind": "route",
+   "label": "Reset password",
+   "address": "/reset-password",
+   "component": "frontend/src/pages/ResetPassword.jsx:1",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:87",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Conditionally mounted only when authRequired (frontend/src/App.jsx:49-51,82); shipped backend always reports requires_auth=false (server/backend/main.py:1106) so by default these paths redirect to / (frontend/src/App.jsx:91-94). Only reachable with VITE_FEDERATION_REQUIRE_AUTH=true build (frontend/src/lib/app-params.js:87), and then no backend auth route exists. Not linked from any nav."
+  },
+  {
+   "id": "route-not-found",
+   "kind": "route",
+   "label": "Page Not Found",
+   "address": "*",
+   "component": "frontend/src/lib/PageNotFound.jsx:6",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:97",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Rendered outside Layout with light slate theme; leftover scaffold text 'Ask it to implement it in the chat' for admin role (PageNotFound.jsx:52); calls /api/auth/me which always 401s"
+  },
+  {
+   "id": "drawer-observation",
+   "kind": "drawer",
+   "label": "Observation detail",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/drawers/ObservationDetailDrawer.jsx:15",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/drawers/DrawerHub.jsx:46",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hand-rolled SideDrawer (SideDrawer.jsx:4): Escape closes, backdrop click closes; no role=dialog/aria-modal/label, no focus trap/return, unlabeled X button. 'not found' fallback title when id missing. In-memory stack only; not URL-addressable"
+  },
+  {
+   "id": "drawer-aircraft",
+   "kind": "drawer",
+   "label": "Aircraft detail",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/drawers/AircraftDetailDrawer.jsx:10",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/drawers/DrawerHub.jsx:47",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hand-rolled SideDrawer (SideDrawer.jsx:4): Escape closes, backdrop click closes; no role=dialog/aria-modal/label, no focus trap/return, unlabeled X button. 'not found' fallback title when id missing. In-memory stack only; not URL-addressable"
+  },
+  {
+   "id": "drawer-capture",
+   "kind": "drawer",
+   "label": "Capture detail",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/drawers/CaptureDetailDrawer.jsx:12",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/drawers/DrawerHub.jsx:48",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hand-rolled SideDrawer (SideDrawer.jsx:4): Escape closes, backdrop click closes; no role=dialog/aria-modal/label, no focus trap/return, unlabeled X button. 'not found' fallback title when id missing. In-memory stack only; not URL-addressable"
+  },
+  {
+   "id": "drawer-route",
+   "kind": "drawer",
+   "label": "Route segment detail",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/drawers/RouteDetailDrawer.jsx:12",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/drawers/DrawerHub.jsx:49",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hand-rolled SideDrawer (SideDrawer.jsx:4): Escape closes, backdrop click closes; no role=dialog/aria-modal/label, no focus trap/return, unlabeled X button. 'not found' fallback title when id missing. In-memory stack only; not URL-addressable"
+  },
+  {
+   "id": "drawer-asset",
+   "kind": "drawer",
+   "label": "Asset detail",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/drawers/AssetDetailDrawer.jsx:13",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/drawers/DrawerHub.jsx:50",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hand-rolled SideDrawer (SideDrawer.jsx:4): Escape closes, backdrop click closes; no role=dialog/aria-modal/label, no focus trap/return, unlabeled X button. 'not found' fallback title when id missing. In-memory stack only; not URL-addressable"
+  },
+  {
+   "id": "drawer-export",
+   "kind": "drawer",
+   "label": "Export package detail",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/drawers/ExportDetailDrawer.jsx:8",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/drawers/DrawerHub.jsx:51",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hand-rolled SideDrawer (SideDrawer.jsx:4): Escape closes, backdrop click closes; no role=dialog/aria-modal/label, no focus trap/return, unlabeled X button. 'not found' fallback title when id missing. In-memory stack only; not URL-addressable"
+  },
+  {
+   "id": "drawer-review",
+   "kind": "drawer",
+   "label": "Review item detail",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/drawers/ReviewDetailDrawer.jsx:13",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/drawers/DrawerHub.jsx:52",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hand-rolled SideDrawer (SideDrawer.jsx:4): Escape closes, backdrop click closes; no role=dialog/aria-modal/label, no focus trap/return, unlabeled X button. 'not found' fallback title when id missing. In-memory stack only; not URL-addressable"
+  },
+  {
+   "id": "map-shell",
+   "kind": "map",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:106",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Dashboard.jsx:120",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Shared MapLibre map also mounted in Observations.jsx:137, Routes.jsx:218, Airports.jsx:34, SpatialTruth.jsx:115, Console.jsx:118 (fallback). Geo layer fetch failures silently return EMPTY (PuertoRicoMapShell.jsx:90-97); only municipio density has explicit error+retry (424-427). Basemap/terrain tiles require network (OSM style line 28, DEM line 12); feature click popups are pointer-only (258)"
+  },
+  {
+   "id": "map-shell-layer-toggles",
+   "kind": "toolbar",
+   "label": "Zones / Corridors / Heatmap / Terrain / Municipios / Tools / Track",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:383",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:383-389",
+   "parent": "map-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "aria-pressed toggle chips (PuertoRicoMapShell.jsx:461-466)"
+  },
+  {
+   "id": "spatial-tools-panel",
+   "kind": "panel",
+   "label": "Tools",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/SpatialToolsPanel.jsx:281",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:7",
+   "parent": "map-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Measure/buffer/nearest tools driven by map clicks only (SpatialToolsPanel.jsx:232-254); results labelled CANDIDATE_NOT_IDENTITY / UNRESOLVED / FAIL (185,203,223)"
+  },
+  {
+   "id": "track-time-scrubber",
+   "kind": "timeline",
+   "label": "Track",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/TrackTimeScrubber.jsx:14",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:8",
+   "parent": "map-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Aircraft select + range input over GET /api/geo/tracks; 'positional scrubbing - not synced to elapsed real-world time' (TrackTimeScrubber.jsx:124)"
+  },
+  {
+   "id": "console-map-runtime",
+   "kind": "map",
+   "label": "Puerto Rico Map Runtime",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/MapRuntime.jsx:6",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Console.jsx:103",
+   "parent": "route-console",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Mounted only if capability map_navigation enabled (Console.jsx:102)"
+  },
+  {
+   "id": "console-layer-registry",
+   "kind": "settings",
+   "label": "Layer Registry",
+   "address": null,
+   "component": "frontend/src/pages/Console.jsx:150",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Console.jsx:150",
+   "parent": "route-console",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Checkbox per layer, disabled when capability not enabled; visibility state is not persisted"
+  },
+  {
+   "id": "console-basemap-select",
+   "kind": "settings",
+   "label": "Basemap",
+   "address": null,
+   "component": "frontend/src/pages/Console.jsx:88",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Console.jsx:88",
+   "parent": "route-console",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Select + Reset viewport button"
+  },
+  {
+   "id": "dashboard-program-timeline",
+   "kind": "timeline",
+   "label": "Timeline / Upcoming work",
+   "address": null,
+   "component": "frontend/src/components/ProgramTimeline.jsx:18",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Dashboard.jsx:63",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": true
+   },
+   "notes": "Items are hardcoded in Dashboard.jsx:26-32; merges live events from localStorage federation.programActivity.v1.<producer> with stale handling (programActivityEvent.js:81)"
+  },
+  {
+   "id": "dashboard-hourly-chart",
+   "kind": "chart",
+   "label": "Hourly observations",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/HourlyObservationsChart.jsx:1",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Dashboard.jsx:137",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "recharts BarChart; no text alternative found"
+  },
+  {
+   "id": "dashboard-heatmap",
+   "kind": "chart",
+   "label": "Observation density",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/ObservationHeatMap.jsx:33",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Dashboard.jsx:140",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hand-drawn SVG density by municipality"
+  },
+  {
+   "id": "dashboard-recent-observations",
+   "kind": "table",
+   "label": "Recent Observations",
+   "address": null,
+   "component": "frontend/src/pages/Dashboard.jsx:149",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Dashboard.jsx:149",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Row onClick opens drawer; rows not keyboard-focusable"
+  },
+  {
+   "id": "dashboard-sync-events",
+   "kind": "table",
+   "label": "Recent Federation Sync Events",
+   "address": null,
+   "component": "frontend/src/pages/Dashboard.jsx:190",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Dashboard.jsx:190",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "FederationSyncEvents loader is `list` (always empty) - server/backend/main.py:1006; table renders header with no empty row"
+  },
+  {
+   "id": "observations-filters",
+   "kind": "filter",
+   "label": "Search / Review / Source / Synthetic / Confidence / Sort",
+   "address": null,
+   "component": "frontend/src/pages/Observations.jsx:140",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Observations.jsx:140-147",
+   "parent": "route-observations",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "SearchInput has no accessible name (Toolbar.jsx:8-13, placeholder only)"
+  },
+  {
+   "id": "observations-table",
+   "kind": "table",
+   "label": "observations",
+   "address": null,
+   "component": "frontend/src/pages/Observations.jsx:179",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Observations.jsx:179",
+   "parent": "route-observations",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Unvirtualized; row click opens drawer"
+  },
+  {
+   "id": "observations-bulk-bar",
+   "kind": "toolbar",
+   "label": "Approve / Flag for review / Clear",
+   "address": null,
+   "component": "frontend/src/pages/Observations.jsx:154",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Observations.jsx:154",
+   "parent": "route-observations",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Shown when rows selected"
+  },
+  {
+   "id": "aircraft-view-toggle",
+   "kind": "toolbar",
+   "label": "Cards / Table",
+   "address": null,
+   "component": "frontend/src/pages/Aircraft.jsx:48",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Aircraft.jsx:48-51",
+   "parent": "route-aircraft",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "No aria-pressed on the two view buttons"
+  },
+  {
+   "id": "routes-v4-evidence",
+   "kind": "panel",
+   "label": "Flight Corpus V4 - Evidence State",
+   "address": null,
+   "component": "frontend/src/pages/Routes.jsx:104",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Routes.jsx:104",
+   "parent": "route-routes",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Plus recurrence panels at Routes.jsx:156,177 and provenance at 201"
+  },
+  {
+   "id": "routes-table",
+   "kind": "table",
+   "label": "Route segments",
+   "address": null,
+   "component": "frontend/src/pages/Routes.jsx:246",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Routes.jsx:246",
+   "parent": "route-routes",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "flight-archive-load",
+   "kind": "import",
+   "label": "Load corpus snapshot",
+   "address": null,
+   "component": "frontend/src/pages/FlightArchive.jsx:201",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/FlightArchive.jsx:201",
+   "parent": "route-flight-archive",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "File input accepts html/csv/kml (FlightArchive.jsx:10,203-209)"
+  },
+  {
+   "id": "flight-archive-snapshots",
+   "kind": "panel",
+   "label": "Persisted snapshots",
+   "address": null,
+   "component": "frontend/src/pages/FlightArchive.jsx:239",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/FlightArchive.jsx:239",
+   "parent": "route-flight-archive",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "flight-archive-tab-archive",
+   "kind": "tab",
+   "label": "Archive",
+   "address": null,
+   "component": "frontend/src/pages/FlightArchive.jsx:289",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/FlightArchive.jsx:289",
+   "parent": "route-flight-archive",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "In-memory tab state (FlightArchive.jsx:65); role=tablist/tab+aria-selected (269-275) but no tabpanel/aria-controls/arrow-key handling; not URL-addressable"
+  },
+  {
+   "id": "flight-archive-tab-coverage",
+   "kind": "tab",
+   "label": "Coverage",
+   "address": null,
+   "component": "frontend/src/pages/FlightArchive.jsx:290",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/FlightArchive.jsx:290",
+   "parent": "route-flight-archive",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "In-memory tab state (FlightArchive.jsx:65); role=tablist/tab+aria-selected (269-275) but no tabpanel/aria-controls/arrow-key handling; not URL-addressable"
+  },
+  {
+   "id": "flight-archive-tab-timeline",
+   "kind": "tab",
+   "label": "Timeline",
+   "address": null,
+   "component": "frontend/src/pages/FlightArchive.jsx:294",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/FlightArchive.jsx:294",
+   "parent": "route-flight-archive",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "In-memory tab state (FlightArchive.jsx:65); role=tablist/tab+aria-selected (269-275) but no tabpanel/aria-controls/arrow-key handling; not URL-addressable"
+  },
+  {
+   "id": "flight-archive-tab-acquisition",
+   "kind": "tab",
+   "label": "Acquisition",
+   "address": null,
+   "component": "frontend/src/pages/FlightArchive.jsx:295",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/FlightArchive.jsx:295",
+   "parent": "route-flight-archive",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "In-memory tab state (FlightArchive.jsx:65); role=tablist/tab+aria-selected (269-275) but no tabpanel/aria-controls/arrow-key handling; not URL-addressable"
+  },
+  {
+   "id": "flight-archive-tab-integrity",
+   "kind": "tab",
+   "label": "Integrity",
+   "address": null,
+   "component": "frontend/src/pages/FlightArchive.jsx:313",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/FlightArchive.jsx:313",
+   "parent": "route-flight-archive",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "In-memory tab state (FlightArchive.jsx:65); role=tablist/tab+aria-selected (269-275) but no tabpanel/aria-controls/arrow-key handling; not URL-addressable"
+  },
+  {
+   "id": "sky-finder-tab-recommend",
+   "kind": "tab",
+   "label": "Recommend",
+   "address": null,
+   "component": "frontend/src/pages/SkyTargetFinder.jsx:40",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyTargetFinder.jsx:425-436",
+   "parent": "route-sky-target-finder",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "In-memory tab state; role=tab+aria-selected, no tabpanel/arrow keys"
+  },
+  {
+   "id": "sky-finder-tab-favorites",
+   "kind": "tab",
+   "label": "Favorites",
+   "address": null,
+   "component": "frontend/src/pages/SkyTargetFinder.jsx:40",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyTargetFinder.jsx:425-436",
+   "parent": "route-sky-target-finder",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "In-memory tab state; role=tab+aria-selected, no tabpanel/arrow keys"
+  },
+  {
+   "id": "sky-finder-tab-catalog",
+   "kind": "tab",
+   "label": "Catalog",
+   "address": null,
+   "component": "frontend/src/pages/SkyTargetFinder.jsx:40",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyTargetFinder.jsx:425-436",
+   "parent": "route-sky-target-finder",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "In-memory tab state; role=tab+aria-selected, no tabpanel/arrow keys"
+  },
+  {
+   "id": "sky-finder-observer-form",
+   "kind": "form",
+   "label": "Observer location",
+   "address": null,
+   "component": "frontend/src/pages/SkyTargetFinder.jsx:338",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyTargetFinder.jsx:338",
+   "parent": "route-sky-target-finder",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Lat/lon/elevation validated client-side (290-309); observation time input + Now button (385-399)"
+  },
+  {
+   "id": "sky-finder-search",
+   "kind": "search",
+   "label": "Search sky targets",
+   "address": null,
+   "component": "frontend/src/pages/SkyTargetFinder.jsx:414",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyTargetFinder.jsx:414",
+   "parent": "route-sky-target-finder",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "250 ms debounce (62,192); kind filter select (446)"
+  },
+  {
+   "id": "sky-chart",
+   "kind": "chart",
+   "label": "Sky chart",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/SkyChart.jsx:52",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyTargetFinder.jsx:551",
+   "parent": "route-sky-target-finder",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "SVG role=img with aria-label; FOV select, zoom in/out, copy coordinates"
+  },
+  {
+   "id": "sky-cameras-coverage",
+   "kind": "panel",
+   "label": "Coverage",
+   "address": null,
+   "component": "frontend/src/pages/SkyCameras.jsx:33",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyCameras.jsx:33",
+   "parent": "route-sky-cameras",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Coverage fetch failure handling not inspected in detail"
+  },
+  {
+   "id": "sky-cameras-filters",
+   "kind": "filter",
+   "label": "Category / Municipality / Search",
+   "address": null,
+   "component": "frontend/src/pages/SkyCameras.jsx:456",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyCameras.jsx:456-486",
+   "parent": "route-sky-cameras",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "sky-cameras-contribute",
+   "kind": "form",
+   "label": "Contribute",
+   "address": null,
+   "component": "frontend/src/pages/SkyCameras.jsx:72",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyCameras.jsx:438",
+   "parent": "route-sky-cameras",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Inline disclosure panel (aria-expanded), NOT a dialog despite federationClient.js:232 comment 'Contribute dialog'"
+  },
+  {
+   "id": "sky-cameras-review-queue",
+   "kind": "panel",
+   "label": "Review queue",
+   "address": null,
+   "component": "frontend/src/pages/SkyCameras.jsx:288",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyCameras.jsx:453",
+   "parent": "route-sky-cameras",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Inline disclosure panel; reviewer-guarded endpoints"
+  },
+  {
+   "id": "sky-camera-card",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/skywatcher/CameraCard.jsx:66",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SkyCameras.jsx:373",
+   "parent": "route-sky-cameras",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "iframe only for allowlisted youtube-nocookie/vimeo URLs (CameraCard.jsx:22-24)"
+  },
+  {
+   "id": "spatial-truth-flight-renderer",
+   "kind": "import",
+   "label": "Load KML or CSV flight files",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/SpatialFlightRenderer.jsx:47",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SpatialTruth.jsx:113",
+   "parent": "route-spatial-truth",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-only parse, max 12 files (SpatialFlightRenderer.jsx:5,87)"
+  },
+  {
+   "id": "calibration-tables",
+   "kind": "table",
+   "label": "Promotion Gate / Marker Legend / Marked Features",
+   "address": null,
+   "component": "frontend/src/pages/Calibration.jsx:155",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Calibration.jsx:155-242",
+   "parent": "route-calibration",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "analysis-lens-table",
+   "kind": "table",
+   "label": "Lenses / Thresholds",
+   "address": null,
+   "component": "frontend/src/pages/AnalysisLenses.jsx:168",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/AnalysisLenses.jsx:168",
+   "parent": "route-analysis",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Search + stage filter (148-152)"
+  },
+  {
+   "id": "export-command-reference",
+   "kind": "panel",
+   "label": "Read-Only Repository Command References",
+   "address": null,
+   "component": "frontend/src/components/skywatcher/CommandReferenceCard.jsx:4",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/ExportCenter.jsx:56",
+   "parent": "route-export",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Copy button calls navigator.clipboard?.writeText and sets 'copied' unconditionally (CommandReferenceCard.jsx:7-9) - claims success even without clipboard"
+  },
+  {
+   "id": "unmounted-protected-route",
+   "kind": "route",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/ProtectedRoute.jsx:12",
+   "mounted": false,
+   "mounted_evidence": null,
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Defined, never imported by any module (grep 'ProtectedRoute' in src: only its own file). Workspace routes are therefore never auth-gated even when authRequired"
+  },
+  {
+   "id": "unmounted-user-not-registered",
+   "kind": "notification",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/UserNotRegisteredError.jsx:1",
+   "mounted": false,
+   "mounted_evidence": null,
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Only imported by unmounted ProtectedRoute.jsx:4"
+  },
+  {
+   "id": "unmounted-scroll-to-top",
+   "kind": "toolbar",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/ScrollToTop.jsx:14",
+   "mounted": false,
+   "mounted_evidence": null,
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Not imported anywhere"
+  },
+  {
+   "id": "unmounted-ui-dialog",
+   "kind": "dialog",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/ui/dialog.jsx:9",
+   "mounted": false,
+   "mounted_evidence": null,
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix Dialog primitive; imported only by ui/command.jsx:6 which itself is unused"
+  },
+  {
+   "id": "unmounted-ui-alert-dialog",
+   "kind": "dialog",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/ui/alert-dialog.jsx:7",
+   "mounted": false,
+   "mounted_evidence": null,
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix AlertDialog primitive; no importer"
+  },
+  {
+   "id": "unmounted-ui-sheet",
+   "kind": "drawer",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/ui/sheet.jsx:9",
+   "mounted": false,
+   "mounted_evidence": null,
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix sheet; imported only by unused ui/sidebar.jsx:11"
+  },
+  {
+   "id": "unmounted-ui-drawer",
+   "kind": "drawer",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/ui/drawer.jsx:12",
+   "mounted": false,
+   "mounted_evidence": null,
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "vaul drawer; no importer"
+  },
+  {
+   "id": "unmounted-ui-sidebar",
+   "kind": "sidebar",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/ui/sidebar.jsx:25",
+   "mounted": false,
+   "mounted_evidence": null,
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "shadcn sidebar incl. Ctrl/Cmd+B shortcut (ui/sidebar.jsx:25,80-88); no importer - app uses components/skywatcher/Sidebar.jsx"
+  },
+  {
+   "id": "unmounted-zip-design-shell",
+   "kind": "workspace",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/zip-design/adaptation.css:2",
+   "mounted": false,
+   "mounted_evidence": null,
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "zip-design CSS (.zip-surface, .zip-mobile-menu) is not imported by any JS/CSS in src and no JSX applies those classes; frontend/tests/zip-design.spec.mjs:19,30 still asserts them"
+  }
+ ],
+ "workflows": [
+  {
+   "id": "load-entities",
+   "name": "Load all entity collections",
+   "surface": "app-shell",
+   "ui_action": "App mount",
+   "frontend_handler": "frontend/src/lib/SkywatcherData.jsx:42",
+   "backend_endpoint": "GET /api/entities/{entity_name}",
+   "backend_handler": "server/backend/main.py:1179",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "17 collections fetched with allSettled, failures become [] (frontend/src/lib/SkywatcherData.jsx:47-56); 3 collections have `list` loaders and are always empty (server/backend/main.py:1004-1006). Availability headers set by backend (server/backend/main.py:1188) are not read by the client",
+   "has_test": true,
+   "test": "frontend/src/lib/SkywatcherData.test.jsx:36"
+  },
+  {
+   "id": "app-boot-public-settings",
+   "name": "Resolve auth mode",
+   "surface": "app-shell",
+   "ui_action": "App mount",
+   "frontend_handler": "frontend/src/lib/AuthContext.jsx:46",
+   "backend_endpoint": "GET /api/apps/public-settings",
+   "backend_handler": "server/backend/main.py:1096",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "publicSettings() falls back to local default on failure (frontend/src/api/federationClient.js:242-245); write_token_required flag returned (server/backend/main.py:1108) is never read by frontend (grep write_token_required in frontend/src: no hit)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "observation-open-drawer",
+   "name": "Open observation detail",
+   "surface": "route-observations",
+   "ui_action": "Click table row",
+   "frontend_handler": "frontend/src/pages/Observations.jsx:199",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Works by mouse; <tr onClick> has no tabIndex/role/key handler (frontend/src/pages/Observations.jsx:199-200) so keyboard users cannot open the drawer from the table",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "observation-bulk-review",
+   "name": "Bulk approve / flag observations",
+   "surface": "observations-bulk-bar",
+   "ui_action": "Select rows, click Approve or Flag for review",
+   "frontend_handler": "frontend/src/pages/Observations.jsx:108",
+   "backend_endpoint": "PATCH /api/entities/{entity_name}/{entity_id}",
+   "backend_handler": "server/backend/main.py:1243",
+   "writes": true,
+   "authorization": "other: bearer PRII_WRITE_TOKEN if set, else local-network client only (server/backend/main.py:342-357)",
+   "status": "COMPLETE",
+   "status_evidence": "updateRecord -> PATCH; failures keep rows selected and toast (frontend/src/pages/Observations.jsx:112-127). Backend write is an in-memory overlay only, lost on restart (server/backend/main.py:1247, comment 295-297)",
+   "has_test": true,
+   "test": "frontend/src/pages/Observations.test.jsx:51"
+  },
+  {
+   "id": "observation-set-review-status",
+   "name": "Set observation review status",
+   "surface": "drawer-observation",
+   "ui_action": "Click a ReviewActions button",
+   "frontend_handler": "frontend/src/components/skywatcher/drawers/ObservationDetailDrawer.jsx:28",
+   "backend_endpoint": "PATCH /api/entities/{entity_name}/{entity_id}",
+   "backend_handler": "server/backend/main.py:1243",
+   "writes": true,
+   "authorization": "other: bearer PRII_WRITE_TOKEN if set, else local-network client only (server/backend/main.py:342-357)",
+   "status": "COMPLETE",
+   "status_evidence": "ReviewActions (frontend/src/components/skywatcher/ReviewActions.jsx:31-33) -> updateRecord; failure toast (frontend/src/components/skywatcher/drawers/ObservationDetailDrawer.jsx:30-34). Session overlay only",
+   "has_test": true,
+   "test": "frontend/src/components/skywatcher/drawers/DiagnosticWriteFailure.test.jsx:73"
+  },
+  {
+   "id": "route-set-review-status",
+   "name": "Set route segment review status",
+   "surface": "drawer-route",
+   "ui_action": "Click a ReviewActions button",
+   "frontend_handler": "frontend/src/components/skywatcher/drawers/RouteDetailDrawer.jsx:23",
+   "backend_endpoint": "PATCH /api/entities/{entity_name}/{entity_id}",
+   "backend_handler": "server/backend/main.py:1243",
+   "writes": true,
+   "authorization": "other: bearer PRII_WRITE_TOKEN if set, else local-network client only (server/backend/main.py:342-357)",
+   "status": "COMPLETE",
+   "status_evidence": "updateRecord('routes') with failure toast (frontend/src/components/skywatcher/drawers/RouteDetailDrawer.jsx:23-29)",
+   "has_test": true,
+   "test": "frontend/src/components/skywatcher/drawers/DiagnosticWriteFailure.test.jsx:73"
+  },
+  {
+   "id": "capture-set-status",
+   "name": "Mark capture duplicate / rejected",
+   "surface": "drawer-capture",
+   "ui_action": "Click 'duplicate' or 'reject' in capture drawer",
+   "frontend_handler": "frontend/src/components/skywatcher/drawers/CaptureDetailDrawer.jsx:24",
+   "backend_endpoint": "PATCH /api/entities/{entity_name}/{entity_id}",
+   "backend_handler": "server/backend/main.py:1243",
+   "writes": true,
+   "authorization": "other: bearer PRII_WRITE_TOKEN if set, else local-network client only (server/backend/main.py:342-357)",
+   "status": "COMPLETE",
+   "status_evidence": "frontend/src/components/skywatcher/drawers/CaptureDetailDrawer.jsx:88-89 -> updateRecord('captures')",
+   "has_test": true,
+   "test": "frontend/src/components/skywatcher/drawers/CaptureDetailDrawer.test.jsx:48"
+  },
+  {
+   "id": "capture-open-manual-review",
+   "name": "Create manual review item from capture",
+   "surface": "drawer-capture",
+   "ui_action": "Click 'Open Manual Review'",
+   "frontend_handler": "frontend/src/components/skywatcher/drawers/CaptureDetailDrawer.jsx:36",
+   "backend_endpoint": "POST /api/entities/{entity_name}",
+   "backend_handler": "server/backend/main.py:1220",
+   "writes": true,
+   "authorization": "other: bearer PRII_WRITE_TOKEN if set, else local-network client only (server/backend/main.py:342-357)",
+   "status": "COMPLETE",
+   "status_evidence": "createReview -> POST /entities/ManualReviewItems (frontend/src/lib/SkywatcherData.jsx:75-79); row is session-only (_session_only, server/backend/main.py:1224,1239)",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:347"
+  },
+  {
+   "id": "capture-copy-hash",
+   "name": "Copy capture SHA-256",
+   "surface": "drawer-capture",
+   "ui_action": "Click copy icon",
+   "frontend_handler": "frontend/src/components/skywatcher/drawers/CaptureDetailDrawer.jsx:54",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Clipboard unavailability surfaced (frontend/src/components/skywatcher/drawers/CaptureDetailDrawer.jsx:54-63)",
+   "has_test": true,
+   "test": "frontend/src/components/skywatcher/drawers/CaptureDetailDrawer.test.jsx:62"
+  },
+  {
+   "id": "review-set-status",
+   "name": "Start / resolve / reject review item",
+   "surface": "drawer-review",
+   "ui_action": "Click a review action",
+   "frontend_handler": "frontend/src/components/skywatcher/drawers/ReviewDetailDrawer.jsx:27",
+   "backend_endpoint": "PATCH /api/entities/{entity_name}/{entity_id}",
+   "backend_handler": "server/backend/main.py:1243",
+   "writes": true,
+   "authorization": "other: bearer PRII_WRITE_TOKEN if set, else local-network client only (server/backend/main.py:342-357)",
+   "status": "COMPLETE",
+   "status_evidence": "MANUAL_REVIEW_ACTIONS (frontend/src/components/skywatcher/ReviewActions.jsx:47-50) -> updateRecord('reviews')",
+   "has_test": true,
+   "test": "frontend/src/components/skywatcher/drawers/DiagnosticWriteFailure.test.jsx:73"
+  },
+  {
+   "id": "review-save-notes",
+   "name": "Save review notes",
+   "surface": "drawer-review",
+   "ui_action": "Edit textarea, click save",
+   "frontend_handler": "frontend/src/components/skywatcher/drawers/ReviewDetailDrawer.jsx:39",
+   "backend_endpoint": "PATCH /api/entities/{entity_name}/{entity_id}",
+   "backend_handler": "server/backend/main.py:1243",
+   "writes": true,
+   "authorization": "other: bearer PRII_WRITE_TOKEN if set, else local-network client only (server/backend/main.py:342-357)",
+   "status": "COMPLETE",
+   "status_evidence": "frontend/src/components/skywatcher/drawers/ReviewDetailDrawer.jsx:102-109; textarea has no label association (not verified beyond grep of aria/label attributes)",
+   "has_test": true,
+   "test": "frontend/src/components/skywatcher/drawers/DiagnosticWriteFailure.test.jsx:73"
+  },
+  {
+   "id": "review-open-from-board",
+   "name": "Open review item",
+   "surface": "route-review",
+   "ui_action": "Click review card",
+   "frontend_handler": "frontend/src/pages/ManualReview.jsx:54",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "ManualReviewPanel is a <button> (frontend/src/components/skywatcher/ManualReviewPanel.jsx:14)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "drawer-relationship-jump",
+   "name": "Jump between linked records in drawer",
+   "surface": "drawer-observation",
+   "ui_action": "Click LinkChip / RouteSegmentPanel",
+   "frontend_handler": "frontend/src/components/skywatcher/drawers/DrawerHub.jsx:30",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "go.* replaces top of stack (frontend/src/components/skywatcher/drawers/DrawerHub.jsx:17,30-38); no back navigation since replace discards the previous record",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "aircraft-open",
+   "name": "Open aircraft profile",
+   "surface": "route-aircraft",
+   "ui_action": "Click card or table row",
+   "frontend_handler": "frontend/src/pages/Aircraft.jsx:68",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Card view uses <button> (frontend/src/components/skywatcher/AircraftProfileCard.jsx:11) - keyboard OK; table view row is mouse-only (frontend/src/pages/Aircraft.jsx:86)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "fr24-open-capture",
+   "name": "Open capture detail",
+   "surface": "route-fr24",
+   "ui_action": "Click table row",
+   "frontend_handler": "frontend/src/pages/FR24Intake.jsx:76",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "<tr onClick> only, no keyboard path (frontend/src/pages/FR24Intake.jsx:76)",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:347"
+  },
+  {
+   "id": "routes-open-segment",
+   "name": "Open route segment",
+   "surface": "routes-table",
+   "ui_action": "Click table row",
+   "frontend_handler": "frontend/src/pages/Routes.jsx:262",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "<tr onClick> only (frontend/src/pages/Routes.jsx:262)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "routes-v4-status",
+   "name": "Load Flight Corpus V4 evidence state",
+   "surface": "routes-v4-evidence",
+   "ui_action": "Page load",
+   "frontend_handler": "frontend/src/pages/Routes.jsx:45",
+   "backend_endpoint": "GET /api/flight-corpus/v4/status",
+   "backend_handler": "server/backend/main.py:112",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "status + deep-interface (server/backend/main.py:136) fetched with allSettled",
+   "has_test": true,
+   "test": "tests/test_flight_corpus_v4_contract.py:1"
+  },
+  {
+   "id": "routes-v4-family-recurrence",
+   "name": "Query route-family recurrence",
+   "surface": "routes-v4-evidence",
+   "ui_action": "Type month / family id",
+   "frontend_handler": "frontend/src/pages/Routes.jsx:56",
+   "backend_endpoint": "GET /api/flight-corpus/v4/route-family-recurrence",
+   "backend_handler": "server/backend/main.py:196",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Inputs at frontend/src/pages/Routes.jsx:168-169 fire a request on every keystroke (no debounce); inputs have placeholder only, no label",
+   "has_test": true,
+   "test": "tests/test_flight_corpus_v4_contract.py:1"
+  },
+  {
+   "id": "routes-v4-airport-edge",
+   "name": "Query airport-edge recurrence",
+   "surface": "routes-v4-evidence",
+   "ui_action": "Type month / departure / arrival",
+   "frontend_handler": "frontend/src/pages/Routes.jsx:64",
+   "backend_endpoint": "GET /api/flight-corpus/v4/airport-edge-recurrence",
+   "backend_handler": "server/backend/main.py:206",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Inputs at frontend/src/pages/Routes.jsx:191-193, no debounce",
+   "has_test": true,
+   "test": "tests/test_flight_corpus_v4_contract.py:1"
+  },
+  {
+   "id": "routes-v4-provenance",
+   "name": "Show family methodology provenance",
+   "surface": "routes-v4-evidence",
+   "ui_action": "Click provenance toggle",
+   "frontend_handler": "frontend/src/pages/Routes.jsx:72",
+   "backend_endpoint": "GET /api/flight-corpus/v4/family-provenance",
+   "backend_handler": "server/backend/main.py:228",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Toggle at frontend/src/pages/Routes.jsx:134",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "infrastructure-browse",
+   "name": "Browse infrastructure assets and links",
+   "surface": "route-infrastructure",
+   "ui_action": "Filter, click asset",
+   "frontend_handler": "frontend/src/pages/Infrastructure.jsx:80",
+   "backend_endpoint": "GET /api/entities/{entity_name}",
+   "backend_handler": "server/backend/main.py:1179",
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "UI complete but InfrastructureAssets and AirspaceAssetLinks loaders are `list` (server/backend/main.py:1004-1005; 'No infrastructure-asset artifact is connected in Phase 2' server/backend/main.py:1010) so the shipped backend never supplies rows; page always shows EmptyState (frontend/src/pages/Infrastructure.jsx:72)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "airports-open-aircraft",
+   "name": "Open aircraft from airport row",
+   "surface": "route-airports",
+   "ui_action": "Click tail chip",
+   "frontend_handler": "frontend/src/pages/Airports.jsx:76",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "<button> chip",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "export-open-details",
+   "name": "Open export package details",
+   "surface": "route-export",
+   "ui_action": "Click 'Details'",
+   "frontend_handler": "frontend/src/pages/ExportCenter.jsx:42",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Read-only drawer; no export/download/submit action exists in UI (grep download|Blob|createObjectURL in frontend/src: no hit)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "export-copy-command",
+   "name": "Copy repository command",
+   "surface": "export-command-reference",
+   "ui_action": "Click copy",
+   "frontend_handler": "frontend/src/components/skywatcher/CommandReferenceCard.jsx:7",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Sets copied=true even when navigator.clipboard is undefined (frontend/src/components/skywatcher/CommandReferenceCard.jsx:7-9)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "calibration-load",
+   "name": "Load SATIM calibration summary",
+   "surface": "route-calibration",
+   "ui_action": "Page load",
+   "frontend_handler": "frontend/src/pages/Calibration.jsx:69",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Static asset frontend/public/satim/moca_fr24_2025.summary.json; error -> EmptyState (frontend/src/pages/Calibration.jsx:90-97)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "analysis-registry-load",
+   "name": "Load lens registry",
+   "surface": "route-analysis",
+   "ui_action": "Page load",
+   "frontend_handler": "frontend/src/pages/AnalysisLenses.jsx:51",
+   "backend_endpoint": "GET /api/analysis/registry",
+   "backend_handler": "server/backend/main.py:1113",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Unavailable registry and failed fetch handled",
+   "has_test": true,
+   "test": "frontend/src/pages/AnalysisLenses.test.jsx:79"
+  },
+  {
+   "id": "console-capabilities",
+   "name": "Load console capabilities and gate map",
+   "surface": "route-console",
+   "ui_action": "Page load",
+   "frontend_handler": "frontend/src/pages/Console.jsx:34",
+   "backend_endpoint": "GET /api/console/capabilities",
+   "backend_handler": "server/backend/console/router.py:33",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Gated fallback rendered when unavailable (frontend/src/pages/Console.jsx:113-119)",
+   "has_test": true,
+   "test": "tests/test_console_capabilities.py:1"
+  },
+  {
+   "id": "console-map-select",
+   "name": "Select a coordinate on console map",
+   "surface": "console-map-runtime",
+   "ui_action": "Click map",
+   "frontend_handler": "frontend/src/console/mapRuntimeAdapter.js:80",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Pointer-only coordinate selection (frontend/src/pages/Console.jsx:140); no keyboard alternative",
+   "has_test": true,
+   "test": "frontend/src/console/tests/mapRuntime.test.mjs:35"
+  },
+  {
+   "id": "console-reset-viewport",
+   "name": "Reset console viewport",
+   "surface": "console-basemap-select",
+   "ui_action": "Click Reset",
+   "frontend_handler": "frontend/src/pages/Console.jsx:55",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Persists to localStorage skywatcher.console.viewport.v1",
+   "has_test": true,
+   "test": "frontend/src/console/tests/mapRuntime.test.mjs:26"
+  },
+  {
+   "id": "map-layer-toggle",
+   "name": "Toggle map layers",
+   "surface": "map-shell-layer-toggles",
+   "ui_action": "Click chip",
+   "frontend_handler": "frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:383",
+   "backend_endpoint": "GET /api/geo/infrastructure.geojson",
+   "backend_handler": "server/backend/main.py:1360",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Zones/corridors/heatmap fetched once at load (frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:155-157 -> server/backend/main.py:1360,1384,1407); fetch failure silently yields empty layer",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:76"
+  },
+  {
+   "id": "map-municipio-density",
+   "name": "Show municipio observation density",
+   "surface": "map-shell-layer-toggles",
+   "ui_action": "Click Municipios chip",
+   "frontend_handler": "frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:332",
+   "backend_endpoint": "GET /api/geo/municipios/observation_density.geojson",
+   "backend_handler": "server/backend/main.py:1528",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Error banner with retry (frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:424-427); scope CANDIDATE_NOT_IDENTITY passed through (server/backend/main.py:1577-1586)",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:98"
+  },
+  {
+   "id": "map-spatial-tools",
+   "name": "Measure / buffer / nearest",
+   "surface": "spatial-tools-panel",
+   "ui_action": "Enable Tools, pick mode, click map",
+   "frontend_handler": "frontend/src/components/skywatcher/SpatialToolsPanel.jsx:232",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Client-side turf computations; map-click only, no keyboard alternative",
+   "has_test": true,
+   "test": "frontend/src/components/skywatcher/SpatialToolsPanel.test.jsx:16"
+  },
+  {
+   "id": "map-track-scrub",
+   "name": "Scrub an aircraft track",
+   "surface": "track-time-scrubber",
+   "ui_action": "Enable Track, choose aircraft, drag slider",
+   "frontend_handler": "frontend/src/components/skywatcher/TrackTimeScrubber.jsx:41",
+   "backend_endpoint": "GET /api/geo/tracks/{icao24}.geojson",
+   "backend_handler": "server/backend/main.py:1419",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "List from GET /api/geo/tracks (frontend/src/components/skywatcher/TrackTimeScrubber.jsx:22 -> server/backend/main.py:1455)",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:76"
+  },
+  {
+   "id": "spatial-truth-load-files",
+   "name": "Render local KML/CSV flight files",
+   "surface": "spatial-truth-flight-renderer",
+   "ui_action": "Choose files",
+   "frontend_handler": "frontend/src/components/skywatcher/SpatialFlightRenderer.jsx:131",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Client-only; >12 files fails closed",
+   "has_test": true,
+   "test": "frontend/src/components/skywatcher/SpatialFlightRenderer.test.jsx:97"
+  },
+  {
+   "id": "flight-archive-ingest",
+   "name": "Parse Master Flight Log / CSV / KML locally",
+   "surface": "flight-archive-load",
+   "ui_action": "Choose files",
+   "frontend_handler": "frontend/src/pages/FlightArchive.jsx:111",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "parseFlightFiles in browser",
+   "has_test": true,
+   "test": "frontend/src/lib/flightIngestion.test.js:223"
+  },
+  {
+   "id": "flight-archive-persist",
+   "name": "Persist corpus snapshot",
+   "surface": "flight-archive-load",
+   "ui_action": "Click persist button",
+   "frontend_handler": "frontend/src/pages/FlightArchive.jsx:128",
+   "backend_endpoint": "POST /api/flight-corpus/archive/snapshots",
+   "backend_handler": "server/backend/main.py:490",
+   "writes": true,
+   "authorization": "other: bearer PRII_WRITE_TOKEN if set, else local-network client only (server/backend/main.py:342-357)",
+   "status": "COMPLETE",
+   "status_evidence": "Sends base64 source bytes + records (frontend/src/pages/FlightArchive.jsx:141-150); this write reaches disk (persist_corpus_snapshot, server/backend/main.py:64), unlike entity overlay writes",
+   "has_test": true,
+   "test": "tests/test_flight_corpus_archive_api.py:1"
+  },
+  {
+   "id": "flight-archive-load-snapshot",
+   "name": "Load stored snapshot + coverage",
+   "surface": "flight-archive-snapshots",
+   "ui_action": "Click a snapshot",
+   "frontend_handler": "frontend/src/pages/FlightArchive.jsx:162",
+   "backend_endpoint": "GET /api/flight-corpus/archive/snapshots/{snapshot_id}",
+   "backend_handler": "server/backend/main.py:396",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Also GET .../coverage (server/backend/main.py:431); list from server/backend/main.py:372",
+   "has_test": true,
+   "test": "tests/test_flight_corpus_archive_api.py:1"
+  },
+  {
+   "id": "flight-archive-p1-status",
+   "name": "Show P1 acquisition status",
+   "surface": "flight-archive-tab-acquisition",
+   "ui_action": "Page load",
+   "frontend_handler": "frontend/src/pages/FlightArchive.jsx:89",
+   "backend_endpoint": "GET /api/flight-acquisition/p1/status",
+   "backend_handler": "server/backend/main.py:469",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Read-only receipt",
+   "has_test": true,
+   "test": "tests/test_acquisition_status_api.py:1"
+  },
+  {
+   "id": "space-track-status",
+   "name": "Read Space-Track status",
+   "surface": "route-space-track",
+   "ui_action": "Page load / Refresh",
+   "frontend_handler": "frontend/src/pages/SpaceTrackControl.jsx:50",
+   "backend_endpoint": "GET /api/space-track/status",
+   "backend_handler": "server/backend/spacetrack_router.py:85",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Error panel + refresh",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:173"
+  },
+  {
+   "id": "sky-finder-list",
+   "name": "Recommend / catalog / search sky targets",
+   "surface": "sky-finder-search",
+   "ui_action": "Type query, switch tab, pick kind",
+   "frontend_handler": "frontend/src/pages/SkyTargetFinder.jsx:203",
+   "backend_endpoint": "GET /api/space-track/sky/targets",
+   "backend_handler": "server/backend/spacetrack_router.py:151",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Recommend tab uses GET /api/space-track/sky/recommend (server/backend/spacetrack_router.py:173)",
+   "has_test": true,
+   "test": "frontend/src/pages/SkyTargetFinder.test.jsx:123"
+  },
+  {
+   "id": "sky-finder-chart",
+   "name": "Open sky chart for target",
+   "surface": "sky-chart",
+   "ui_action": "Click target row",
+   "frontend_handler": "frontend/src/pages/SkyTargetFinder.jsx:256",
+   "backend_endpoint": "GET /api/space-track/sky/chart",
+   "backend_handler": "server/backend/spacetrack_router.py:186",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Error with retry",
+   "has_test": true,
+   "test": "frontend/src/pages/SkyTargetFinder.test.jsx:132"
+  },
+  {
+   "id": "sky-finder-favorite",
+   "name": "Toggle favorite",
+   "surface": "route-sky-target-finder",
+   "ui_action": "Click heart",
+   "frontend_handler": "frontend/src/pages/SkyTargetFinder.jsx:275",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "localStorage skywatcher.sky-favorites.v1",
+   "has_test": true,
+   "test": "frontend/src/pages/SkyTargetFinder.test.jsx:159"
+  },
+  {
+   "id": "sky-finder-copy",
+   "name": "Copy target coordinates",
+   "surface": "route-sky-target-finder",
+   "ui_action": "Click copy",
+   "frontend_handler": "frontend/src/pages/SkyTargetFinder.jsx:78",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Clipboard failure toast",
+   "has_test": true,
+   "test": "frontend/src/pages/SkyTargetFinder.test.jsx:148"
+  },
+  {
+   "id": "sky-finder-observer",
+   "name": "Set observer location / time",
+   "surface": "sky-finder-observer-form",
+   "ui_action": "Submit form",
+   "frontend_handler": "frontend/src/pages/SkyTargetFinder.jsx:290",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Validated; not persisted across reloads (state only)",
+   "has_test": true,
+   "test": "frontend/src/pages/SkyTargetFinder.test.jsx:184"
+  },
+  {
+   "id": "sky-cameras-list",
+   "name": "List / filter cameras",
+   "surface": "route-sky-cameras",
+   "ui_action": "Load, filter, search",
+   "frontend_handler": "frontend/src/pages/SkyCameras.jsx:392",
+   "backend_endpoint": "GET /api/sky-cameras",
+   "backend_handler": "server/backend/cameras_router.py:110",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Coverage via GET /api/sky-cameras/coverage (server/backend/cameras_router.py:126)",
+   "has_test": true,
+   "test": "frontend/src/pages/SkyCameras.test.jsx:60"
+  },
+  {
+   "id": "sky-cameras-submit",
+   "name": "Contribute camera link or video",
+   "surface": "sky-cameras-contribute",
+   "ui_action": "Fill form, submit",
+   "frontend_handler": "frontend/src/pages/SkyCameras.jsx:123",
+   "backend_endpoint": "POST /api/sky-cameras/submissions",
+   "backend_handler": "server/backend/cameras_router.py:171",
+   "writes": true,
+   "authorization": "none (unauthenticated; per-IP rate limit server/backend/cameras_router.py:142-154, size limit server/backend/cameras_router.py:174-177)",
+   "status": "COMPLETE",
+   "status_evidence": "Multipart FormData; attestations validated client- and server-side; never publishes without review",
+   "has_test": true,
+   "test": "frontend/src/pages/SkyCameras.test.jsx:86"
+  },
+  {
+   "id": "sky-cameras-review-list",
+   "name": "List submissions for review",
+   "surface": "sky-cameras-review-queue",
+   "ui_action": "Open Review panel",
+   "frontend_handler": "frontend/src/pages/SkyCameras.jsx:296",
+   "backend_endpoint": "GET /api/sky-cameras/submissions",
+   "backend_handler": "server/backend/cameras_router.py:210",
+   "writes": false,
+   "authorization": "other: require_reviewer overridden to require_write_access (server/backend/main.py:362)",
+   "status": "PARTIAL",
+   "status_evidence": "Works from a local network without token. Video preview uses <video src={row.media_url}> (frontend/src/pages/SkyCameras.jsx:352) against reviewer-guarded GET /api/sky-cameras/submissions/{id}/media (server/backend/cameras_router.py:220); a media element cannot send the Authorization header, so in PRII_WRITE_TOKEN mode the preview request is unauthenticated and the guard returns 401 (server/backend/main.py:344-347)",
+   "has_test": true,
+   "test": "frontend/src/pages/SkyCameras.test.jsx:109"
+  },
+  {
+   "id": "sky-cameras-decide",
+   "name": "Approve / reject / take down submission",
+   "surface": "sky-cameras-review-queue",
+   "ui_action": "Click Approve / Reject / Take down",
+   "frontend_handler": "frontend/src/pages/SkyCameras.jsx:315",
+   "backend_endpoint": "POST /api/sky-cameras/submissions/{submission_id}/decision",
+   "backend_handler": "server/backend/cameras_router.py:237",
+   "writes": true,
+   "authorization": "other: require_write_access (server/backend/main.py:362)",
+   "status": "COMPLETE",
+   "status_evidence": "No confirmation step before 'Take down'; note parameter supported by client but UI never supplies one",
+   "has_test": true,
+   "test": "tests/test_sky_cameras_endpoints.py:1"
+  },
+  {
+   "id": "sky-cameras-players-pref",
+   "name": "Toggle embedded players",
+   "surface": "route-sky-cameras",
+   "ui_action": "Click players chip",
+   "frontend_handler": "frontend/src/pages/SkyCameras.jsx:435",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "localStorage skywatcher.skyCameras.showPlayers",
+   "has_test": true,
+   "test": "frontend/src/pages/SkyCameras.test.jsx:71"
+  },
+  {
+   "id": "timeline-filter",
+   "name": "Filter / sort / search program timeline",
+   "surface": "dashboard-program-timeline",
+   "ui_action": "Click phase chips, sort, type",
+   "frontend_handler": "frontend/src/components/ProgramTimeline.jsx:43",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Client-only",
+   "has_test": true,
+   "test": "frontend/src/components/programActivityEvent.test.js:23"
+  },
+  {
+   "id": "mobile-nav",
+   "name": "Open mobile navigation and navigate",
+   "surface": "mobile-nav-overlay",
+   "ui_action": "Tap hamburger, tap link",
+   "frontend_handler": "frontend/src/components/skywatcher/Layout.jsx:31",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Functional by touch; toggle has no accessible name/aria-expanded/aria-controls (frontend/src/components/skywatcher/Layout.jsx:30-35); overlay not a dialog, no Escape, focus not moved or trapped",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "auth-login",
+   "name": "Email/password login",
+   "surface": "route-login",
+   "ui_action": "Submit login form",
+   "frontend_handler": "frontend/src/pages/Login.jsx:22",
+   "backend_endpoint": "POST /api/auth/login",
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "BROKEN",
+   "status_evidence": "Route mounted only when authRequired (frontend/src/App.jsx:82); backend defines no such route (all @app/@router decorators enumerated; only GET /api/auth/me exists and it always raises 401, server/backend/main.py:1148-1150)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "auth-login-google",
+   "name": "Login with Google",
+   "surface": "route-login",
+   "ui_action": "Click Google button",
+   "frontend_handler": "frontend/src/pages/Login.jsx:32",
+   "backend_endpoint": "GET /api/auth/google/login",
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "BROKEN",
+   "status_evidence": "Route mounted only when authRequired (frontend/src/App.jsx:82); backend defines no such route (all @app/@router decorators enumerated; only GET /api/auth/me exists and it always raises 401, server/backend/main.py:1148-1150); also Register.jsx:70",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "auth-register",
+   "name": "Register + verify OTP + resend OTP",
+   "surface": "route-register",
+   "ui_action": "Submit register form, enter OTP",
+   "frontend_handler": "frontend/src/pages/Register.jsx:31",
+   "backend_endpoint": "POST /api/auth/register",
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "BROKEN",
+   "status_evidence": "Route mounted only when authRequired (frontend/src/App.jsx:82); backend defines no such route (all @app/@router decorators enumerated; only GET /api/auth/me exists and it always raises 401, server/backend/main.py:1148-1150); verify-otp at frontend/src/pages/Register.jsx:44, resend-otp at frontend/src/pages/Register.jsx:59",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "auth-forgot-password",
+   "name": "Request password reset",
+   "surface": "route-forgot-password",
+   "ui_action": "Submit email",
+   "frontend_handler": "frontend/src/pages/ForgotPassword.jsx:19",
+   "backend_endpoint": "POST /api/auth/password/reset-request",
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "BROKEN",
+   "status_evidence": "Route mounted only when authRequired (frontend/src/App.jsx:82); backend defines no such route (all @app/@router decorators enumerated; only GET /api/auth/me exists and it always raises 401, server/backend/main.py:1148-1150)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "auth-reset-password",
+   "name": "Reset password",
+   "surface": "route-reset-password",
+   "ui_action": "Submit new password",
+   "frontend_handler": "frontend/src/pages/ResetPassword.jsx:28",
+   "backend_endpoint": "POST /api/auth/password/reset",
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "BROKEN",
+   "status_evidence": "Route mounted only when authRequired (frontend/src/App.jsx:82); backend defines no such route (all @app/@router decorators enumerated; only GET /api/auth/me exists and it always raises 401, server/backend/main.py:1148-1150)",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "auth-logout",
+   "name": "Logout / redirect to login",
+   "surface": "app-shell",
+   "ui_action": "(no UI control)",
+   "frontend_handler": "frontend/src/lib/AuthContext.jsx:79",
+   "backend_endpoint": "GET /api/auth/logout",
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "UNREACHABLE",
+   "status_evidence": "logout and navigateToLogin are exported by AuthContext (frontend/src/lib/AuthContext.jsx:98-99) but no component calls them (grep 'logout|navigateToLogin' in src outside AuthContext/federationClient: no hit); backend route absent",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "api-query",
+   "name": "Craft-profile query",
+   "surface": "app-shell",
+   "ui_action": "(no UI control)",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /api/query",
+   "backend_handler": "server/backend/main.py:1153",
+   "writes": false,
+   "authorization": "other: require_write_access called inline (server/backend/main.py:1156)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "Backend endpoint with no frontend caller (grep '/query' in frontend/src: no hit)",
+   "has_test": true,
+   "test": "tests/test_query_engine.py:1"
+  },
+  {
+   "id": "api-console-data",
+   "name": "Console repository data endpoints",
+   "surface": "route-console",
+   "ui_action": "(no UI control)",
+   "frontend_handler": null,
+   "backend_endpoint": "GET /api/console/flights",
+   "backend_handler": "server/backend/console/router.py:232",
+   "writes": false,
+   "authorization": "none",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "10 of 11 /api/console GET endpoints (server/backend/console/router.py:40,86,122,150,188,232,286,297,346,375) have no frontend caller; only /capabilities is called (frontend/src/pages/Console.jsx:34)",
+   "has_test": true,
+   "test": "tests/test_console_phase2_api.py:1"
+  }
+ ],
+ "navigation": {
+  "registry_file": "frontend/src/components/skywatcher/Sidebar.jsx:11",
+  "items": [
+   {
+    "label": "Space-Track Control",
+    "target": "/space-track"
+   },
+   {
+    "label": "Sky Target Finder",
+    "target": "/space-track/sky"
+   },
+   {
+    "label": "Sky Cameras",
+    "target": "/sky-cameras"
+   },
+   {
+    "label": "Command Dashboard",
+    "target": "/"
+   },
+   {
+    "label": "Interactive Console",
+    "target": "/console"
+   },
+   {
+    "label": "Airspace Observations",
+    "target": "/observations"
+   },
+   {
+    "label": "Aircraft Profiles",
+    "target": "/aircraft"
+   },
+   {
+    "label": "FR24 Intake",
+    "target": "/fr24"
+   },
+   {
+    "label": "Flight Archive",
+    "target": "/flight-archive"
+   },
+   {
+    "label": "Aircraft Spatial Truth",
+    "target": "/spatial-truth"
+   },
+   {
+    "label": "Route-Line Mining",
+    "target": "/routes"
+   },
+   {
+    "label": "Infrastructure Links",
+    "target": "/infrastructure"
+   },
+   {
+    "label": "PR Airports",
+    "target": "/airports"
+   },
+   {
+    "label": "Manual Review",
+    "target": "/review"
+   },
+   {
+    "label": "Federation Export",
+    "target": "/export"
+   },
+   {
+    "label": "Readiness / Blockers",
+    "target": "/readiness"
+   },
+   {
+    "label": "SATIM Calibration",
+    "target": "/calibration"
+   },
+   {
+    "label": "Analysis Lenses",
+    "target": "/analysis"
+   }
+  ],
+  "mobile_navigation": "Below md breakpoint the sidebar is hidden (frontend/src/components/skywatcher/Layout.jsx:14) and a header bar with a 32x32 icon-only toggle button renders (frontend/src/components/skywatcher/Layout.jsx:29-37); it toggles a hand-rolled fixed overlay containing the same Sidebar with onNavigate close (frontend/src/components/skywatcher/Layout.jsx:19-26). No Sheet/Dialog primitive, no aria-expanded/controls/label, no Escape, no focus management. frontend/tests/zip-design.spec.mjs:28-33 expects a different '.zip-mobile-menu > summary' structure that does not exist in current JSX.",
+  "dead_or_unlinked_routes": [
+   "/login, /register, /forgot-password, /reset-password - not in NAV; redirect to / unless authRequired (frontend/src/App.jsx:82-95); nothing ever navigates to /login (navigateToLogin uncalled)",
+   "* -> PageNotFound (frontend/src/App.jsx:97)",
+   "All 18 Layout routes are linked from NAV (Sidebar.jsx:12-29 vs App.jsx:58-75): no unlinked workspace route"
+  ]
+ },
+ "settings": [
+  {
+   "id": "write-token",
+   "label": null,
+   "scope": "SECRET",
+   "storage": "localStorage key federation_write_token (set only from ?write_token= URL param); cleared by ?clear_write_token=true",
+   "evidence": "frontend/src/lib/app-params.js:84"
+  },
+  {
+   "id": "access-token",
+   "label": null,
+   "scope": "SECRET",
+   "storage": "localStorage keys federation_access_token and access_token (from ?access_token= or auth responses)",
+   "evidence": "frontend/src/api/federationClient.js:29-39"
+  },
+  {
+   "id": "api-base-url",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "localStorage key federation_api_base_url (from ?api_base_url= or VITE_SKYWATCHER_API_BASE_URL / VITE_FEDERATION_API_BASE_URL, default /api). Note: a URL query parameter can repoint all API calls (and the bearer token) to another origin",
+   "evidence": "frontend/src/lib/app-params.js:74-76"
+  },
+  {
+   "id": "app-id",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "localStorage key federation_app_id",
+   "evidence": "frontend/src/lib/app-params.js:72"
+  },
+  {
+   "id": "from-url",
+   "label": null,
+   "scope": "SESSION",
+   "storage": "localStorage key federation_from_url",
+   "evidence": "frontend/src/lib/app-params.js:85"
+  },
+  {
+   "id": "require-auth",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env VITE_FEDERATION_REQUIRE_AUTH (build time)",
+   "evidence": "frontend/src/lib/app-params.js:87"
+  },
+  {
+   "id": "console-viewport",
+   "label": "Viewport State",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage key skywatcher.console.viewport.v1",
+   "evidence": "frontend/src/console/viewportState.js:1"
+  },
+  {
+   "id": "console-basemap",
+   "label": "Basemap",
+   "scope": "SESSION",
+   "storage": "none (component state)",
+   "evidence": "frontend/src/pages/Console.jsx:27"
+  },
+  {
+   "id": "console-layer-visibility",
+   "label": "Layer Registry",
+   "scope": "SESSION",
+   "storage": "none (component state)",
+   "evidence": "frontend/src/pages/Console.jsx:30"
+  },
+  {
+   "id": "sky-favorites",
+   "label": "Favorites",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage key skywatcher.sky-favorites.v1",
+   "evidence": "frontend/src/lib/skyFavorites.js:10"
+  },
+  {
+   "id": "sky-observer",
+   "label": "Observer location",
+   "scope": "SESSION",
+   "storage": "none (component state; default San Juan)",
+   "evidence": "frontend/src/pages/SkyTargetFinder.jsx:39"
+  },
+  {
+   "id": "sky-cameras-show-players",
+   "label": "Embedded players toggle",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage key skywatcher.skyCameras.showPlayers",
+   "evidence": "frontend/src/pages/SkyCameras.jsx:9"
+  },
+  {
+   "id": "program-activity",
+   "label": null,
+   "scope": "GLOBAL_USER",
+   "storage": "localStorage key federation.programActivity.v1.<producerId> (read by timeline; appendProgramActivityEvent has no UI caller)",
+   "evidence": "frontend/src/components/programActivityEvent.js:3"
+  },
+  {
+   "id": "theme",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "none - dark theme hardcoded, no user toggle",
+   "evidence": "frontend/src/main.jsx:15"
+  },
+  {
+   "id": "backend-write-token",
+   "label": null,
+   "scope": "SECRET",
+   "storage": "env PRII_WRITE_TOKEN",
+   "evidence": "server/backend/main.py:315"
+  },
+  {
+   "id": "backend-sky-cameras-limits",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env SKYWATCHER_SKY_CAMERAS_MAX_UPLOAD_MB / _SUBMISSIONS_PER_HOUR / _ROOT / _CATALOG_DIR",
+   "evidence": "server/backend/cameras_router.py:52-74"
+  },
+  {
+   "id": "backend-db-paths",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env SKYWATCHER_DB, SKYWATCHER_CORPUS_IMPORT_MAX_BYTES",
+   "evidence": "server/backend/main.py:78-79"
+  }
+ ],
+ "context_actions": [],
+ "keyboard_shortcuts": [
+  {
+   "keys": "Escape",
+   "action": "Close top detail drawer",
+   "scope": "drawer-*",
+   "evidence": "frontend/src/components/skywatcher/SideDrawer.jsx:6-7"
+  }
+ ],
+ "accessibility_source_findings": [
+  {
+   "id": "a11y-mobile-toggle-unlabeled",
+   "severity": "serious",
+   "finding": "Mobile navigation toggle is an icon-only <button> (h-8 w-8 = 32x32 CSS px) with no aria-label, no visible/sr-only text, no aria-expanded, no aria-controls, no type attribute",
+   "evidence": "frontend/src/components/skywatcher/Layout.jsx:30-35",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-mobile-nav-not-modal",
+   "severity": "serious",
+   "finding": "Mobile nav overlay is a plain fixed div: no role=dialog/aria-modal, no focus move/trap/return, no Escape handler, backdrop is a click-only div; background content stays in tab order",
+   "evidence": "frontend/src/components/skywatcher/Layout.jsx:19-26",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-side-drawer-semantics",
+   "severity": "serious",
+   "finding": "SideDrawer (all 7 detail drawers) has no role=dialog, aria-modal, aria-labelledby; no focus trap; focus is not moved in on open nor returned on close. Only Escape + backdrop click are handled",
+   "evidence": "frontend/src/components/skywatcher/SideDrawer.jsx:4-34",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-drawer-close-unlabeled",
+   "severity": "serious",
+   "finding": "SideDrawer close button is icon-only (X) with no accessible name; 32x32 px",
+   "evidence": "frontend/src/components/skywatcher/SideDrawer.jsx:22-27",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-clickable-rows",
+   "severity": "serious",
+   "finding": "Data-table rows open drawers via <tr onClick> with no tabIndex/role/keyboard handler: Dashboard.jsx:165, Observations.jsx:199, Aircraft.jsx:86, FR24Intake.jsx:76, Routes.jsx:262. Observation, capture and route detail (and their review actions) are unreachable by keyboard from these tables",
+   "evidence": "frontend/src/pages/Observations.jsx:199",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-search-input-unlabeled",
+   "severity": "moderate",
+   "finding": "Shared SearchInput has placeholder only - no label/aria-label (FilterSelect does have aria-label)",
+   "evidence": "frontend/src/components/skywatcher/Toolbar.jsx:8-13",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-routes-inputs-unlabeled",
+   "severity": "moderate",
+   "finding": "V4 recurrence inputs rely on placeholder only",
+   "evidence": "frontend/src/pages/Routes.jsx:168-169",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-tabs-incomplete",
+   "severity": "moderate",
+   "finding": "role=tablist/tab with aria-selected but no role=tabpanel, aria-controls, roving tabindex or arrow-key support (FlightArchive.jsx:269-276; SkyTargetFinder.jsx:425-436)",
+   "evidence": "frontend/src/pages/FlightArchive.jsx:269-276",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-focus-outline-hidden",
+   "severity": "moderate",
+   "finding": "Inputs/selects set focus:outline-hidden with only a faint border-colour change (focus:border-primary/50) as the focus indicator",
+   "evidence": "frontend/src/components/skywatcher/Toolbar.jsx:12",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-view-toggle-state",
+   "severity": "minor",
+   "finding": "Cards/Table view toggle conveys state by colour only (no aria-pressed)",
+   "evidence": "frontend/src/pages/Aircraft.jsx:49-50",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-map-pointer-only",
+   "severity": "moderate",
+   "finding": "Map feature inspection, console coordinate selection and spatial tools are map-click only; console map container is a div with aria-label but no role",
+   "evidence": "frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:258",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-toast-close-unlabeled",
+   "severity": "minor",
+   "finding": "ToastClose button is icon-only without accessible name",
+   "evidence": "frontend/src/components/ui/toast.jsx:63-75",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-loading-not-announced",
+   "severity": "minor",
+   "finding": "LoadingState spinner has no role=status/aria-live",
+   "evidence": "frontend/src/components/skywatcher/LoadingState.jsx:6-8",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-no-skip-link-or-nav-label",
+   "severity": "minor",
+   "finding": "No skip-to-content link; <nav> has no aria-label; page title/heading management on route change not found (ScrollToTop is unmounted)",
+   "evidence": "frontend/src/components/skywatcher/Sidebar.jsx:56",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-small-touch-targets",
+   "severity": "moderate",
+   "finding": "Several controls are below 44px (and some below 24px): mobile toggle 32px (Layout.jsx:32), drawer close 32px (SideDrawer.jsx:24), copy-hash icon button h-3 w-3 with no padding (CaptureDetailDrawer.jsx:104)",
+   "evidence": "frontend/src/components/skywatcher/drawers/CaptureDetailDrawer.jsx:104",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-automation-absent",
+   "severity": "moderate",
+   "finding": "vitest-axe is declared as a devDependency (frontend/package.json:101) but no test imports it (grep 'axe' in frontend/src and frontend/tests finds no vitest-axe usage); no axe/a11y assertion exists in the frontend suites",
+   "evidence": "frontend/package.json:101",
+   "confidence": "high"
+  }
+ ],
+ "backend": {
+  "framework": "FastAPI (uvicorn)",
+  "app_object": "server/backend/main.py:90",
+  "endpoint_count": {
+   "GET": 50,
+   "POST": 6,
+   "PUT": 0,
+   "PATCH": 1,
+   "DELETE": 0
+  },
+  "endpoints_not_called_by_frontend": [
+   "GET /health (used as desktop HEALTH_PATH, desktop/config.py:38)",
+   "GET /api/health",
+   "GET /api/flight-corpus/v4/artifact-members (client method defined federationClient.js:197, never invoked)",
+   "GET /api/flight-corpus/v4/family-split-summary",
+   "POST /api/query",
+   "POST /api/entities/{entity_name}/filter (client method federationClient.js:103, never invoked)",
+   "GET /api/entities/{entity_name}/availability",
+   "GET /api/entities/{entity_name}/{entity_id} (client method federationClient.js:107, never invoked)",
+   "GET /api/geo/observations.geojson",
+   "GET /api/geo/airports.geojson",
+   "GET /api/geo/municipios.geojson",
+   "GET /api/space-track/objects (client method federationClient.js:222, never invoked)",
+   "GET /api/space-track/reentry (client method federationClient.js:223, never invoked)",
+   "GET /api/console/repositories",
+   "GET /api/console/captures",
+   "GET /api/console/review/items",
+   "GET /api/console/aircraft/profiles",
+   "GET /api/console/aircraft/states",
+   "GET /api/console/flights",
+   "GET /api/console/flights/{flight_id}",
+   "GET /api/console/flights/{flight_id}/track",
+   "GET /api/console/routes",
+   "GET /api/console/airports/{airport_id}/operations"
+  ],
+  "frontend_calls_with_no_backend_route": [
+   "POST /api/entities/{entity}/bulk (frontend/src/api/federationClient.js:109) - not invoked by UI",
+   "DELETE /api/entities/{entity}/{id} (frontend/src/api/federationClient.js:111) - not invoked by UI",
+   "POST /api/auth/login (frontend/src/api/federationClient.js:123) - invoked by frontend/src/pages/Login.jsx:22",
+   "GET /api/auth/{provider}/login (frontend/src/api/federationClient.js:130) - invoked by frontend/src/pages/Login.jsx:32, frontend/src/pages/Register.jsx:70",
+   "POST /api/auth/register (frontend/src/api/federationClient.js:132) - invoked by frontend/src/pages/Register.jsx:31",
+   "POST /api/auth/verify-otp (frontend/src/api/federationClient.js:134) - invoked by frontend/src/pages/Register.jsx:44",
+   "POST /api/auth/resend-otp (frontend/src/api/federationClient.js:138) - invoked by frontend/src/pages/Register.jsx:59",
+   "POST /api/auth/password/reset-request (frontend/src/api/federationClient.js:139) - invoked by frontend/src/pages/ForgotPassword.jsx:19",
+   "POST /api/auth/password/reset (frontend/src/api/federationClient.js:140) - invoked by frontend/src/pages/ResetPassword.jsx:28",
+   "GET /api/auth/logout (frontend/src/api/federationClient.js:145) - only via AuthContext.logout, which no component calls",
+   "POST /api/functions/{name}/invoke (frontend/src/api/federationClient.js:154) - not invoked",
+   "POST /api/integrations/llm/invoke (frontend/src/api/federationClient.js:159) - not invoked",
+   "POST /api/integrations/email/send (frontend/src/api/federationClient.js:160) - not invoked",
+   "POST /api/integrations/extract-uploaded-file (frontend/src/api/federationClient.js:161) - not invoked",
+   "POST /api/files/upload (frontend/src/api/federationClient.js:166) - not invoked",
+   "GET /api/agents/conversations (frontend/src/api/federationClient.js:172) - not invoked",
+   "GET /api/agents/conversations/{id} (frontend/src/api/federationClient.js:173) - not invoked",
+   "POST /api/agents/conversations (frontend/src/api/federationClient.js:174) - not invoked",
+   "POST /api/agents/conversations/{id}/messages (frontend/src/api/federationClient.js:177) - not invoked",
+   "GET(SSE) /api/agents/conversations/{id}/events (frontend/src/api/federationClient.js:182) - not invoked",
+   "GET /api/connectors/{name}/connection (frontend/src/api/federationClient.js:192) - not invoked"
+  ]
+ },
+ "tests": {
+  "frontend_unit": "112 it() cases in 21 *.test.{js,jsx} files, vitest (npm run test; ci.yml:133) + 5 node:test cases in frontend/src/console/tests/mapRuntime.test.mjs (npm run test:console; ci.yml:129)",
+  "frontend_e2e": "Playwright: frontend/tests/gui-parity.spec.mjs (8 test() declarations, one parameterised per manifest route; run by .github/workflows/gui-capability-parity.yml:88) and frontend/tests/zip-design.spec.mjs (2 declarations, one looped over 2 widths; targets .zip-surface/.zip-mobile-menu selectors absent from current JSX; no npm script or workflow reference found for zip-design.playwright.config.mjs)",
+  "backend": "1704 def test_ functions across 221 tests/test_*.py files (pytest); includes tests/test_sky_cameras_endpoints.py, test_spacetrack_endpoints.py, test_sky_endpoints.py, test_flight_corpus_archive_api.py, test_console_phase2_api.py, test_server_smoke.py",
+  "accessibility_automation": "None in the frontend suites: vitest-axe is in devDependencies (frontend/package.json:101) but unused. desktop-build.yml:123-135 runs a 'Visual and accessibility smoke' Playwright spec that lives in the external thehub tooling repo and targets the desktop setup page, not this SPA. docs/a11y-evidence/ holds 6 PNG screenshots only (incl. mobile-sheet-nav-open.png) - HISTORICAL evidence, not automation"
+ },
+ "performance_protections": [
+  {
+   "what": "debounce 250 ms on sky target search",
+   "evidence": "frontend/src/pages/SkyTargetFinder.jsx:62"
+  },
+  {
+   "what": "debounce 250 ms on sky camera search",
+   "evidence": "frontend/src/pages/SkyCameras.jsx:385"
+  },
+  {
+   "what": "result cap LIST_LIMIT=50 for sky targets",
+   "evidence": "frontend/src/pages/SkyTargetFinder.jsx:63"
+  },
+  {
+   "what": "entity list limit 500 default, 20000 for RLSM spatial collections; SpatialTruth shows latest 1,000",
+   "evidence": "frontend/src/lib/SkywatcherData.jsx:26-29"
+  },
+  {
+   "what": "useMemo for filtered/sorted rows",
+   "evidence": "frontend/src/pages/Observations.jsx:65"
+  },
+  {
+   "what": "AbortController on console capabilities fetch",
+   "evidence": "frontend/src/pages/Console.jsx:33"
+  },
+  {
+   "what": "upload batch cap (12 files) in SpatialFlightRenderer; server-side upload size + rate limits",
+   "evidence": "frontend/src/components/skywatcher/SpatialFlightRenderer.jsx:5"
+  },
+  {
+   "what": "embedded players opt-out (links only) for camera grid; video preload=metadata",
+   "evidence": "frontend/src/pages/SkyCameras.jsx:352"
+  },
+  {
+   "what": "self-hosted fonts instead of render-blocking import",
+   "evidence": "frontend/src/main.jsx:3-5"
+  },
+  {
+   "what": "ABSENT: no lazy routes / code splitting - all 22 pages are static imports; no virtualized lists; all 17 entity collections fetched on every app load regardless of route; V4 recurrence inputs fire a request per keystroke",
+   "evidence": "frontend/src/App.jsx:11-32"
+  }
+ ],
+ "special_adjudications": [
+  {
+   "question": "Mobile navigation: currently unlabeled 32px navigation toggle",
+   "answer": "CONFIRMED in current source. The toggle is the <button> at Layout.jsx:30-35 inside the md:hidden header bar. Classes 'flex h-8 w-8 ...' => 2rem x 2rem = 32x32 CSS px at default root size (icon h-4 w-4 = 16px). Accessible name: NONE - no aria-label, no title, no visible text, no sr-only span; its only child is a lucide Menu/X svg. aria-expanded: absent. aria-controls: absent. Also no type attribute. The adjacent 'Skywatcher-PR' span (line 36) is a sibling, not a label. The overlay it opens (Layout.jsx:19-26) has no dialog semantics.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "frontend/src/components/skywatcher/Layout.jsx:30-35",
+    "frontend/src/components/skywatcher/Layout.jsx:19-26",
+    "frontend/src/components/skywatcher/Layout.jsx:36"
+   ]
+  },
+  {
+   "question": "Dialog semantics: every dialog/modal/drawer/sheet in the frontend",
+   "answer": "MOUNTED, all hand-rolled (no shared primitive): (1) SideDrawer, used by 7 drawers via DrawerHub (Observation, Aircraft, Capture, Route, Asset, Export, Review) - role=dialog: NO; native <dialog>: NO; aria-modal: NO; aria-labelledby/label: NO (title is a plain h2 with no id); focus trap: NO; Escape: YES (window keydown, SideDrawer.jsx:5-9); focus return: NO; initial focus move: NO; backdrop click closes; close button unlabeled. (2) Mobile nav overlay (Layout.jsx:19-26) - role=dialog NO, aria-modal NO, label NO, focus trap NO, Escape NO, focus return NO. NOT dialogs: Sky Cameras 'Contribute' and 'Review' are inline disclosure panels with aria-expanded (SkyCameras.jsx:438-453); toasts via ui/toaster. UNMOUNTED shared primitives present in the tree but imported by no page/feature component: ui/dialog.jsx (Radix Dialog), ui/alert-dialog.jsx (Radix AlertDialog), ui/sheet.jsx (Radix Dialog as sheet), ui/drawer.jsx (vaul), ui/command.jsx (cmdk in Dialog) - these would supply role/aria-modal/trap/Escape/return but are unused. No confirm dialog exists for destructive actions (e.g. 'Take down', SkyCameras.jsx:363).",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "frontend/src/components/skywatcher/SideDrawer.jsx:4-34",
+    "frontend/src/components/skywatcher/drawers/DrawerHub.jsx:46-52",
+    "frontend/src/components/skywatcher/Layout.jsx:19-26",
+    "frontend/src/pages/SkyCameras.jsx:438-453",
+    "frontend/src/components/ui/dialog.jsx:9",
+    "frontend/src/components/ui/sheet.jsx:9",
+    "frontend/src/components/ui/drawer.jsx:12",
+    "frontend/src/components/ui/alert-dialog.jsx:7",
+    "frontend/src/components/ui/command.jsx:6"
+   ]
+  },
+  {
+   "question": "federationClient.js client calls with no backend route (bulk, auth/*, functions, integrations, files/upload, agents/*) and whether UI invokes them",
+   "answer": "No backend route exists for any of the following (all backend decorators enumerated in main.py, console/router.py, spacetrack_router.py, cameras_router.py). NOT invoked by any UI code: entities.bulkCreate POST /entities/{e}/bulk (:109); entities.delete DELETE /entities/{e}/{id} (:111); functions.invoke (:154); integrations.Core.InvokeLLM (:159), SendEmail (:160), ExtractDataFromUploadedFile (:161), UploadFile -> /files/upload (:166); agents.listConversations/getConversation/createConversation/addMessage/subscribeToConversation (:172-182); connectors.getConnection (:192); auth.logout -> /auth/logout (:145, reachable only through AuthContext.logout which no component calls). INVOKED by UI but only on auth pages that mount when authRequired (App.jsx:82-88; default backend reports requires_auth=false, main.py:1106): auth.loginViaEmailPassword (Login.jsx:22), auth.loginWithProvider (Login.jsx:32, Register.jsx:70), auth.register (Register.jsx:31), auth.verifyOtp (Register.jsx:44), auth.resendOtp (Register.jsx:59), auth.resetPasswordRequest (ForgotPassword.jsx:19), auth.resetPassword (ResetPassword.jsx:28) - all would 404. auth.me (:119) HAS a backend route but it unconditionally raises 401 (main.py:1148-1150). Additionally, client methods with a backend route but no UI caller: entities.filter, entities.get, flightCorpusV4.artifactMembers, spaceTrack.objects, spaceTrack.reentry.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "frontend/src/api/federationClient.js:109",
+    "frontend/src/api/federationClient.js:111",
+    "frontend/src/api/federationClient.js:118-151",
+    "frontend/src/api/federationClient.js:153-155",
+    "frontend/src/api/federationClient.js:157-169",
+    "frontend/src/api/federationClient.js:171-189",
+    "frontend/src/api/federationClient.js:191-193",
+    "frontend/src/pages/Login.jsx:22",
+    "frontend/src/pages/Register.jsx:31",
+    "frontend/src/pages/ForgotPassword.jsx:19",
+    "frontend/src/pages/ResetPassword.jsx:28",
+    "frontend/src/App.jsx:82-95",
+    "server/backend/main.py:1148-1150"
+   ]
+  },
+  {
+   "question": "Write-token handling: where the frontend stores the write token and whether any UI lets the user enter it",
+   "answer": "Storage: window.localStorage key 'federation_write_token' (federationClient.js:13,18-27), plus an in-memory copy appParams.writeToken captured at module load (app-params.js:84). The only way it gets set is the URL query parameter ?write_token=..., which getParamValue writes to localStorage under federation_write_token and then strips from the URL via history.replaceState (app-params.js:35-49,84); ?clear_write_token=true removes it (app-params.js:64-66). It is sent as 'Authorization: Bearer' only when no access token is present (federationClient.js:65-66,72-74). UI entry: NONE - there is no input, form or settings surface for the token; setWriteToken is exported but has no caller (grep setWriteToken in src: definition only). The backend exposes public_settings.write_token_required (main.py:1108) but the frontend never reads it, so the UI cannot prompt; the only user-facing hint is the Review-queue 401/403 message 'Reviewing needs write access (a local network, or the PRII write token).' (SkyCameras.jsx:305). Token persists in localStorage in plaintext with no expiry. The backend comment at main.py:309-312 ('browser UI has no write-credential input ... sources only the federation access token') is partly stale: the client now does source a separate write token, but still offers no input.",
+   "status": "PARTIAL",
+   "evidence": [
+    "frontend/src/api/federationClient.js:13-27",
+    "frontend/src/api/federationClient.js:65-66",
+    "frontend/src/lib/app-params.js:64-66",
+    "frontend/src/lib/app-params.js:78-84",
+    "server/backend/main.py:1101-1109",
+    "server/backend/main.py:309-312",
+    "frontend/src/pages/SkyCameras.jsx:305"
+   ]
+  }
+ ],
+ "unknowns": [
+  "prii_desktop package (desktop launcher runtime, SPA static serving, --route handling, single-instance lock) is an external dependency not present in the snapshot; its routes/behaviour were not audited.",
+  "iOS project under ios/SkywatcherMobile and the vendored vendor/openmct were not audited.",
+  "Whether zip-design.spec.mjs is executed anywhere: no npm script and no workflow reference found by grep in frontend/package.json and .github/workflows (ci.yml, gui-capability-parity.yml checked); other workflows not exhaustively read.",
+  "Colour-contrast, real focus-ring visibility, reflow and screen-reader behaviour cannot be determined from source; nothing was run.",
+  "Per-page internals were read in full for App, Layout, Sidebar, SideDrawer, DrawerHub, federationClient, app-params, AuthContext, SkywatcherData, Dashboard, Console, Observations, Aircraft, FR24Intake; the remaining pages/components were audited by targeted line extraction (handlers, controls, aria/role, fetch calls), so minor controls inside them may be missing from the surface list.",
+  "has_test for backend-backed workflows cites the test file (line 1) rather than a specific test function where the individual case was not opened.",
+  "Console router handler bodies (pagination, query validation) and spacetrack_router internals were enumerated by decorator only.",
+  "Whether _merged_rows makes session-created entities patchable was not traced (server/backend/main.py:1073-1074)."
+ ],
+ "denominator": {
+  "surfaces_total": 85,
+  "surfaces_mounted": 76,
+  "workflows_total": 59,
+  "by_workflow_status": {
+   "COMPLETE": 41,
+   "PARTIAL": 10,
+   "BROKEN": 5,
+   "UNREACHABLE": 1,
+   "INTERNAL_ONLY": 2
+  },
+  "coverage_statement": "EXHAUSTIVE: routes (App.jsx Route table), navigation items (Sidebar NAV), drawers/dialogs/overlays, localStorage/env settings (grep of localStorage/sessionStorage/import.meta.env in src), keyboard handlers (grep keydown/onKeyDown/addEventListener - only SideDrawer Escape in mounted code), context menus (grep onContextMenu/ContextMenu - none mounted), backend endpoints (all route decorators in server/backend), and client->backend call mapping. SAMPLED (significant ones only): per-page tables, filters, charts and small panels; drawer inner sections; MetricCards. Auth-page surfaces counted as mounted but are conditional on authRequired. Nothing was executed."
+ }
+}

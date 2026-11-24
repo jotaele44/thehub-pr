@@ -22,6 +22,7 @@ export function FederationAppShell({
   renderLink,
   isActive,
   labelContext,
+  collections,
   mobileBelow = 'tablet',
   navLabel = 'Primary',
   moreLabel = 'More',
@@ -55,7 +56,7 @@ export function FederationAppShell({
     if (focusMainOnNavigate) mainRef.current?.focus()
   }, [current, focusMainOnNavigate])
 
-  const shared = { groups: nav, current, onSelect, renderLink, isActive, labelContext, label: navLabel }
+  const shared = { groups: nav, current, onSelect, renderLink, isActive, labelContext, collections, label: navLabel }
 
   return (
     <div className={cx('fd-shell', className)} data-mobile-below={mobileBelow} {...props}>

@@ -1,0 +1,18 @@
+{
+  "description": "The Dock menu cannot be the only surface.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/actions/0/display_surfaces",
+      "value": [
+        "dock-menu"
+      ]
+    }
+  ],
+  "expect": [
+    "schema:actions:contains"
+  ]
+}

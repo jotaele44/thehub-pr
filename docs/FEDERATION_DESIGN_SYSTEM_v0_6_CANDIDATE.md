@@ -24,6 +24,13 @@ property is removed or changed. Tokens stay at 2.0.0.
 - `shadcn-bridge.css`, a separate opt-in export that defines the shadcn
   variables as aliases of the federation tokens.
 - A changelog, `federation-design/packages/react/CHANGELOG.md`.
+- Control primitives, unfrozen: `FederationDialog`, `FederationRenameDialog`,
+  `FederationTextField`, `FederationMenu`, `FederationItemMenu`,
+  `FederationStatusMark`, `FederationScrollRegion`,
+  `FederationResponsiveLabel`, with `styles/controls.css` in the packaged
+  stylesheet.
+- Pinned and recent navigation groups, fed at render time through
+  `collections`.
 
 ## Adopted by
 
@@ -40,15 +47,25 @@ to the sans font stack, which named a family no application loads.
   directions. Six GIS exports that had shipped outside the API contract are
   recorded as `unfrozenExports`.
 - The release manifest hashes every shipped source file.
+- `.fd-button--primary` and the default focus outline use the legible accent
+  roles (`--fd-accent-strong`, `--fd-accent-contrast`, `--fd-focus-ring`)
+  instead of the raw repository accent.
+- `FederationExportMenu` is built on `FederationMenu`; `FederationDatasetGrid`
+  can be scrolled from the keyboard and follows the theme.
 
 ## Compatibility
 
-All 0.5 exports, classes and custom properties remain. The shell stylesheet is
-part of `styles.css` but inert for a page that does not render the shell: it
-adds custom properties and `.fd-*`-scoped rules only, which a test enforces,
-and no federation frontend uses any of the new names. The bridge changes
-nothing until an application imports it. React 18 and 19 are supported; no
-dependency is added.
+All 0.5 exports, classes and custom properties remain. The shell and control
+stylesheets are part of `styles.css` but inert for a page that does not render
+their components: they add custom properties and `.fd-*`-scoped rules only,
+which tests enforce. Two changes are not inert: the primary button and the
+default focus outline change colour for any page that loads the stylesheet.
+
+The Hub frontend renders the shell and loads the stylesheet from source, so it
+shows those changes as soon as they are merged. The other repositories pin a
+released tarball and are unaffected until they move their pin. The bridge
+changes nothing until an application imports it. React 18 and 19 are
+supported; no dependency is added.
 
 Browser floor: `<dialog>` with `:modal`, and `color-mix()`. That is Firefox
 113, Safari 16.2 and Chrome 111, below the floor Tailwind 4 already sets.
@@ -65,13 +82,18 @@ Browser floor: `<dialog>` with `:modal`, and `color-mix()`. That is Firefox
   entries of at least 44 by 44 pixels, "More" opening and closing with focus
   returned, and the inspector's docked and modal behaviour.
 - The 32 existing component fixtures are unchanged and still pass.
+- Controls: one fixture page driven from the keyboard at the same six widths
+  (menu keys, rename validation and failure, dialog focus, scroll regions,
+  pinned and recent groups), and an axe scan for every repository accent in
+  both themes at two widths, at rest, with a menu open and with the rename
+  dialog showing an error. Zero critical or serious findings is required.
 
 ## Known issues
 
-- The raw repository accent (`--fd-accent`) is below 4.5:1 as text, or behind
-  white text, for several repositories. The shell and the bridge use
-  `--fd-accent-strong`; `.fd-button--primary` and the default focus outline
-  still use the raw accent.
+- The raw repository accent (`--fd-accent`) is below 4.5:1 as text for several
+  repositories. Nothing in the packaged stylesheet draws with it any more.
+- The control primitives have not been used with a screen reader or on a touch
+  device.
 - `--fd-accent-strong` is darker than the brand accent in the light theme for
   every repository, including those whose accent was already legible.
 - The bridge derives on-accent, destructive and chart colours from existing
@@ -79,7 +101,8 @@ Browser floor: `<dialog>` with `:modal`, and `color-mix()`. That is Firefox
 - Fonts are not bridged: `--fd-font-sans` names a different family from the
   one the applications load.
 - `gis.css` is not part of the packaged stylesheet.
-- No automated accessibility-rule (axe) run covers the shell fixtures yet.
+- No automated accessibility-rule (axe) run covers the shell fixtures yet; the
+  control fixtures are covered.
 
 ## Non-goals
 

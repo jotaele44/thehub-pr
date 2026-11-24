@@ -197,3 +197,55 @@ test('shell breakpoints are the token breakpoints', () => {
   assert.equal(`${FEDERATION_SHELL_BREAKPOINTS.desktop}px`, tokens.breakpoints.desktop)
   assert.ok(Object.isFrozen(FEDERATION_SHELL_BREAKPOINTS))
 })
+
+test('pinned and recent groups are declared without items and get their defaults', () => {
+  const nav = defineFederationNav([
+    { label: 'Overview', items: [item('/')] },
+    { kind: 'pinned', label: 'Pinned' },
+    { kind: 'recent', label: 'Recent', maxItems: 3, overflow: 'scroll', setting_id: 'nav.recents' },
+  ])
+  assert.deepEqual([nav[1].kind, nav[1].maxItems, nav[1].overflow, nav[1].items], ['pinned', 5, 'more-submenu', []])
+  assert.deepEqual([nav[2].maxItems, nav[2].overflow, nav[2].setting_id], [3, 'scroll', 'nav.recents'])
+  assert.ok(Object.isFrozen(nav[1]))
+  // A collection contributes nothing to the registry's own items.
+  assert.equal(flattenFederationNav(nav).length, 1)
+  assert.equal(matchFederationNavItem(nav, '/').path, '/')
+})
+
+test('a malformed pinned or recent group is rejected, with every problem named', () => {
+  assert.throws(() => defineFederationNav([
+    { label: 'Overview', items: [item('/')] },
+    { kind: 'pinned' },
+    { kind: 'recent', label: 'Recent', items: [item('/x')], maxItems: 0, overflow: 'wrap' },
+    { kind: 'recent', label: 'Again' },
+    { kind: 'starred', label: 'Starred' },
+  ]), (error) => {
+    for (const fragment of [
+      'groups[1].label is required for a pinned group',
+      'groups[2].items must be omitted',
+      'groups[2].maxItems must be a whole number from 1 to 50',
+      'groups[2].overflow must be one of: more-submenu, scroll, none',
+      'groups[3] repeats the collection "recent"',
+      'groups[4].kind must be one of: static, pinned, recent',
+    ]) assert.ok(error.message.includes(fragment), `missing: ${fragment}\n${error.message}`)
+    return true
+  })
+  assert.doesNotThrow(() => defineFederationNav([
+    { label: 'Overview', items: [item('/')] },
+    { kind: 'recent', label: 'Recent cases', id: 'recent-cases' },
+    { kind: 'recent', label: 'Recent searches', id: 'recent-searches' },
+  ]))
+})
+
+test('a collection with entries sits behind More on the mobile bar, an empty one does not', () => {
+  const nav = defineFederationNav([
+    { label: 'Overview', items: [item('/'), item('/hub')] },
+    { kind: 'pinned', label: 'Pinned' },
+  ])
+  assert.deepEqual(splitMobileNav(nav).hasMore, false)
+  assert.deepEqual(splitMobileNav(nav, { collections: { pinned: [] } }).hasMore, false)
+  const split = splitMobileNav(nav, { collections: { pinned: [{ id: 'case-1', label: 'Case 1' }] } })
+  assert.equal(split.hasMore, true)
+  assert.deepEqual(split.primary.map((entry) => entry.path), ['/', '/hub'])
+  assert.deepEqual(split.overflow.map((group) => group.kind), ['pinned'])
+})

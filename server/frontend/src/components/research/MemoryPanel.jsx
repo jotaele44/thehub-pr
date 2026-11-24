@@ -33,7 +33,7 @@ export default function MemoryPanel({ memory, distilling, onRegenerate, onClose,
             {memory ? "Refresh" : "Distill"}
           </Button>
           {onClose && (
-            <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7">
+            <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7" aria-label="Close memory panel">
               <X className="h-3.5 w-3.5" />
             </Button>
           )}

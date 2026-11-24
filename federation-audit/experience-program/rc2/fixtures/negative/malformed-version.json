@@ -1,0 +1,16 @@
+{
+  "description": "Versions are semantic versions.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/contract/version",
+      "value": "v1"
+    }
+  ],
+  "expect": [
+    "schema:contract:pattern"
+  ]
+}

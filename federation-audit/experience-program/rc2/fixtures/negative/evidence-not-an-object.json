@@ -1,0 +1,16 @@
+{
+  "description": "An object section given as a string is reported, and the other checks still run instead of failing on it.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/evidence",
+      "value": "x"
+    }
+  ],
+  "expect": [
+    "schema:contract:type"
+  ]
+}

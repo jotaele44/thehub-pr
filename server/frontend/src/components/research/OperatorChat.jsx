@@ -189,6 +189,7 @@ export default function OperatorChat() {
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading || !conversation}
           title="Attach files for the operator to read"
+          aria-label="Attach files for the operator to read"
         >
           {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
         </Button>
@@ -200,7 +201,7 @@ export default function OperatorChat() {
           className="min-h-11 max-h-32 resize-none"
           disabled={!conversation}
         />
-        <Button onClick={send} disabled={!conversation || sending || (!input.trim() && files.length === 0)} size="icon" className="shrink-0">
+        <Button onClick={send} disabled={!conversation || sending || (!input.trim() && files.length === 0)} size="icon" className="shrink-0" aria-label="Send message">
           {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>
       </div>

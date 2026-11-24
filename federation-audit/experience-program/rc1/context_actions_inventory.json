@@ -1,0 +1,373 @@
+{
+  "audited_commits": {
+    "aguayluz-pr": "6e3a4f67de20889abc3d0a48e0b514a4f7087f7a",
+    "centinelas-pr": "893a06f4a50655bcfae90469e15677c5f665d7a6",
+    "moneysweep-pr": "956bb498796c698230d2a2de722d316945777f62",
+    "mucaro-ai": "593bdd813686048a881cb3af61f4fbb9d211a52d",
+    "ovnis-pr": "a8225db5d226232037c455daf6e941e50d86d136",
+    "skywatcher-pr": "a2176990606048a6b918daacdb8bce027e58a903",
+    "spiderweb-pr": "9d6af728b48b7bbde5167d8abaacf51f34a0acaa",
+    "thehub-pr": "4f5c660801b6380ad4b64d39518fa778c9d25c76"
+  },
+  "context_actions": [
+    {
+      "evidence": "frontend/src/components/ChatView.jsx:51-60",
+      "has_non_mouse_alternative": true,
+      "id": "conversation-menu",
+      "object": "open conversation (Rename, Copy transcript, Background tasks, Delete…)",
+      "repository": "mucaro-ai",
+      "trigger": "menu-button"
+    },
+    {
+      "evidence": "frontend/src/components/MessageActions.jsx:116-145",
+      "has_non_mouse_alternative": true,
+      "id": "message-actions",
+      "object": "message (Copy, Edit, Read aloud, Save, Share) — always-visible icon buttons, not a popup",
+      "repository": "mucaro-ai",
+      "trigger": "menu-button"
+    },
+    {
+      "evidence": "frontend/src/components/RichText.jsx:26",
+      "has_non_mouse_alternative": true,
+      "id": "code-block-copy",
+      "object": "fenced code block",
+      "repository": "mucaro-ai",
+      "trigger": "menu-button"
+    },
+    {
+      "evidence": "frontend/src/App.jsx:1",
+      "has_non_mouse_alternative": true,
+      "id": "none-right-click",
+      "object": "none: no onContextMenu, long-press or touch handlers exist in frontend/src (searched onContextMenu, contextmenu, touchstart, long-press)",
+      "repository": "mucaro-ai",
+      "trigger": "right-click"
+    }
+  ],
+  "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
+  "generated_at": "2026-11-17T13:53:39+00:00",
+  "keyboard_shortcuts": [
+    {
+      "action": "Move review cursor down",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:128",
+      "keys": "J / ArrowDown",
+      "repository": "aguayluz-pr",
+      "scope": "review-queue"
+    },
+    {
+      "action": "Move review cursor up",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:129",
+      "keys": "K / ArrowUp",
+      "repository": "aguayluz-pr",
+      "scope": "review-queue"
+    },
+    {
+      "action": "Accept cursor record (immediate write, no confirmation)",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:130-135",
+      "keys": "A",
+      "repository": "aguayluz-pr",
+      "scope": "review-queue"
+    },
+    {
+      "action": "Reject cursor record (immediate write, no confirmation)",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:130-135",
+      "keys": "R",
+      "repository": "aguayluz-pr",
+      "scope": "review-queue"
+    },
+    {
+      "action": "Skip cursor record",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:130-135",
+      "keys": "S",
+      "repository": "aguayluz-pr",
+      "scope": "review-queue"
+    },
+    {
+      "action": "Focus asset search",
+      "evidence": "dashboard/src/components/AssetsTable.jsx:146-150",
+      "keys": "/",
+      "repository": "aguayluz-pr",
+      "scope": "assets-table (window listener; active on /assets and /map)"
+    },
+    {
+      "action": "Select next / previous asset row (opens detail sheet)",
+      "evidence": "dashboard/src/components/AssetsTable.jsx:151-161",
+      "keys": "j / k",
+      "repository": "aguayluz-pr",
+      "scope": "assets-table (window listener; active on /assets and /map)"
+    },
+    {
+      "action": "Sort by focused column header; open focused asset row",
+      "evidence": "dashboard/src/components/AssetsTable.jsx:255,273",
+      "keys": "Enter / Space",
+      "repository": "aguayluz-pr",
+      "scope": "assets-table"
+    },
+    {
+      "action": "Select focused municipio path",
+      "evidence": "dashboard/src/components/MunicipalOverviewMap.jsx:170-174",
+      "keys": "Enter / Space",
+      "repository": "aguayluz-pr",
+      "scope": "overview-municipal-map"
+    },
+    {
+      "action": "Close mobile navigation drawer",
+      "evidence": "dashboard/src/components/layout/Sidebar.jsx:141-146",
+      "keys": "Escape",
+      "repository": "aguayluz-pr",
+      "scope": "mobile-nav-drawer"
+    },
+    {
+      "action": "Close asset detail sheet (in addition to Radix Dialog's own handling)",
+      "evidence": "dashboard/src/components/AssetDetail.jsx:51-56",
+      "keys": "Escape",
+      "repository": "aguayluz-pr",
+      "scope": "asset-detail-sheet"
+    },
+    {
+      "action": "Submit AI question",
+      "evidence": "dashboard/src/components/AiQueryPanel.jsx:25-30",
+      "keys": "Enter",
+      "repository": "aguayluz-pr",
+      "scope": "ai-query-panel"
+    },
+    {
+      "action": "Open contract detail sheet from a focused row",
+      "evidence": "dashboard/src/components/ContractsTable.jsx:80",
+      "keys": "Enter / Space",
+      "repository": "moneysweep-pr",
+      "scope": "contracts-table"
+    },
+    {
+      "action": "Open entity detail sheet from a focused row",
+      "evidence": "dashboard/src/components/EntitiesTable.jsx:79",
+      "keys": "Enter / Space",
+      "repository": "moneysweep-pr",
+      "scope": "entities-table"
+    },
+    {
+      "action": "Send the message (hardware keyboard only)",
+      "evidence": "frontend/src/components/Composer.jsx:106-116",
+      "keys": "Enter",
+      "repository": "mucaro-ai",
+      "scope": "chat-composer"
+    },
+    {
+      "action": "Insert a new line",
+      "evidence": "frontend/src/components/Composer.jsx:113",
+      "keys": "Shift+Enter",
+      "repository": "mucaro-ai",
+      "scope": "chat-composer"
+    },
+    {
+      "action": "Send the message (also on touch keyboards)",
+      "evidence": "frontend/src/components/Composer.jsx:108-112",
+      "keys": "Cmd/Ctrl+Enter",
+      "repository": "mucaro-ai",
+      "scope": "chat-composer"
+    },
+    {
+      "action": "Inserts a new line; Send button submits",
+      "evidence": "frontend/src/components/Composer.jsx:7, frontend/src/components/Composer.jsx:113",
+      "keys": "Enter on a coarse pointer",
+      "repository": "mucaro-ai",
+      "scope": "chat-composer"
+    },
+    {
+      "action": "Close the open sheet/dialog",
+      "evidence": "frontend/src/components/Sheet.jsx:28-30",
+      "keys": "Escape",
+      "repository": "mucaro-ai",
+      "scope": "all Sheet dialogs"
+    },
+    {
+      "action": "Cycle focus inside the open sheet",
+      "evidence": "frontend/src/components/Sheet.jsx:31-42",
+      "keys": "Tab / Shift+Tab",
+      "repository": "mucaro-ai",
+      "scope": "all Sheet dialogs"
+    },
+    {
+      "action": "Cancel a message edit",
+      "evidence": "frontend/src/components/MessageActions.jsx:202-204",
+      "keys": "Escape",
+      "repository": "mucaro-ai",
+      "scope": "message-editor"
+    },
+    {
+      "action": "Save a message edit",
+      "evidence": "frontend/src/components/MessageActions.jsx:205-207",
+      "keys": "Cmd/Ctrl+Enter",
+      "repository": "mucaro-ai",
+      "scope": "message-editor"
+    },
+    {
+      "action": "Move focus to main",
+      "evidence": "frontend/src/App.jsx:238, frontend/src/App.jsx:296",
+      "keys": "Tab to 'Skip to content', Enter",
+      "repository": "mucaro-ai",
+      "scope": "global"
+    },
+    {
+      "action": "There are no global accelerators: the only document-level key listener is the Sheet's (searched addEventListener('keydown' and onKeyDown across frontend/src)",
+      "evidence": "frontend/src/components/Sheet.jsx:45",
+      "keys": "(none)",
+      "repository": "mucaro-ai",
+      "scope": "global"
+    },
+    {
+      "action": "Close the case detail sheet or the More sheet (Radix Dialog default; no app-defined handler)",
+      "evidence": "dashboard/src/components/ui/sheet.jsx:3",
+      "keys": "Escape",
+      "repository": "ovnis-pr",
+      "scope": "case-detail"
+    },
+    {
+      "action": "Move between desktop tab triggers (Radix Tabs default; no app-defined handler)",
+      "evidence": "dashboard/src/components/ui/tabs.jsx:2",
+      "keys": "Arrow keys / Home / End",
+      "repository": "ovnis-pr",
+      "scope": "desktop-side-pane"
+    },
+    {
+      "action": "Close top detail drawer",
+      "evidence": "frontend/src/components/skywatcher/SideDrawer.jsx:6-7",
+      "keys": "Escape",
+      "repository": "skywatcher-pr",
+      "scope": "drawer-*"
+    },
+    {
+      "action": "Toggle left rail",
+      "evidence": "server/frontend/src/App.tsx:143",
+      "keys": "[",
+      "repository": "spiderweb-pr",
+      "scope": "global"
+    },
+    {
+      "action": "Toggle inspector",
+      "evidence": "server/frontend/src/App.tsx:146",
+      "keys": "]",
+      "repository": "spiderweb-pr",
+      "scope": "global"
+    },
+    {
+      "action": "Toggle layer panel",
+      "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:763",
+      "keys": "L / l",
+      "repository": "spiderweb-pr",
+      "scope": "module-spatial"
+    },
+    {
+      "action": "Submit global query",
+      "evidence": "server/frontend/src/components/CommandBar.tsx:45",
+      "keys": "Enter",
+      "repository": "spiderweb-pr",
+      "scope": "global-query-form"
+    },
+    {
+      "action": "Select focused contract row",
+      "evidence": "server/frontend/src/modules/FinanceIntelligence.tsx:209",
+      "keys": "Enter / Space",
+      "repository": "spiderweb-pr",
+      "scope": "finance-contracts-table"
+    },
+    {
+      "action": "Move temporal cursor",
+      "evidence": "server/frontend/src/components/Timeline.tsx:57",
+      "keys": "ArrowLeft / ArrowRight (Shift = 7 days), Home, End",
+      "repository": "spiderweb-pr",
+      "scope": "timeline"
+    },
+    {
+      "action": "Move imagery comparison divider",
+      "evidence": "server/frontend/src/spatial/imagery/CompareOverlay.tsx:108",
+      "keys": "ArrowLeft / ArrowRight (Shift = 10%), Home, End",
+      "repository": "spiderweb-pr",
+      "scope": "spatial-compare-overlay"
+    },
+    {
+      "action": "Toggle command palette",
+      "evidence": "server/frontend/src/hooks/useGlobalShortcut.js:4",
+      "keys": "Ctrl+K / Cmd+K",
+      "repository": "thehub-pr",
+      "scope": "global"
+    },
+    {
+      "action": "Move/run palette command",
+      "evidence": "server/frontend/src/components/command/CommandPalette.jsx:33",
+      "keys": "ArrowUp/ArrowDown/Home/End/Enter",
+      "repository": "thehub-pr",
+      "scope": "command-palette"
+    },
+    {
+      "action": "Close palette (Radix Dialog)",
+      "evidence": "server/frontend/src/components/command/CommandPalette.jsx:55",
+      "keys": "Escape",
+      "repository": "thehub-pr",
+      "scope": "command-palette"
+    },
+    {
+      "action": "Play/pause constellation tour",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:87",
+      "keys": "Space",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Next/previous constellation stage",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:88",
+      "keys": "ArrowRight / ArrowLeft",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Switch constellation lens",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:90",
+      "keys": "L",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Zoom constellation",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:92",
+      "keys": "+ / = / -",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Fit constellation",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:95",
+      "keys": "F",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Clear constellation selection",
+      "evidence": "server/frontend/src/pages/FederationConstellation.jsx:97",
+      "keys": "Escape",
+      "repository": "thehub-pr",
+      "scope": "route-constellation"
+    },
+    {
+      "action": "Send chat message",
+      "evidence": "server/frontend/src/components/research/ModuleChat.jsx:239",
+      "keys": "Enter (Shift+Enter newline)",
+      "repository": "thehub-pr",
+      "scope": "research-assistant-tab-chat"
+    },
+    {
+      "action": "Send operator message",
+      "evidence": "server/frontend/src/components/research/OperatorChat.jsx:198",
+      "keys": "Enter (Shift+Enter newline)",
+      "repository": "thehub-pr",
+      "scope": "research-assistant-tab-operator"
+    },
+    {
+      "action": "Load readiness for owner",
+      "evidence": "server/frontend/src/pages/ModuleReadiness.jsx:80",
+      "keys": "Enter",
+      "repository": "thehub-pr",
+      "scope": "route-module-readiness"
+    }
+  ],
+  "schema": "federation.experience-program.context-actions-inventory/1"
+}

@@ -1,0 +1,1880 @@
+{
+ "repository": "ovnis-pr",
+ "audited_commit": "a8225db5d226232037c455daf6e941e50d86d136",
+ "frontend": {
+  "dir": "dashboard",
+  "language": "js",
+  "framework": "React 19 + Vite 8 (Tailwind 4, shadcn/Radix, MapLibre GL, Recharts, TanStack Query); Capacitor 8 wrappers under dashboard/ios and dashboard/android",
+  "router": "url",
+  "router_file": "dashboard/src/App.jsx:24",
+  "shared_design_package": "@pr-federation/react@0.3.0 (dashboard/package.json:23)"
+ },
+ "entry_points": [
+  {
+   "id": "web-spa",
+   "kind": "web",
+   "path": "dashboard/src/main.jsx:19",
+   "note": "index.html:27 loads main.jsx; App.jsx:9 picks HashRouter when VITE_OFFLINE=1, else BrowserRouter. Although the router is URL-based it has one route; every view is in-memory state."
+  },
+  {
+   "id": "backend-api",
+   "kind": "server",
+   "path": "server/backend/main.py:26",
+   "note": "FastAPI app, GET-only; uvicorn server.backend.main:app --port 8000 (dashboard/src/lib/api.js:2). CORS allows :5173 plus ALLOWED_ORIGINS (main.py:33-36)."
+  },
+  {
+   "id": "desktop-launch",
+   "kind": "launcher",
+   "path": "desktop/launch.py:24",
+   "note": "Delegates to the external prii_desktop package (not in this repository); config in desktop/config.py:14-32. Same-origin ASGI app at desktop/app_server.py:20."
+  },
+  {
+   "id": "desktop-setup",
+   "kind": "cli",
+   "path": "desktop/setup.py:91",
+   "note": "Creates .venv, installs requirements, builds the frontend with VITE_API_BASE='' (setup.py:80)."
+  },
+  {
+   "id": "os-launchers",
+   "kind": "launcher",
+   "path": "PRII-OVNIS.sh:26",
+   "note": "Also PRII-OVNIS.command, PRII-OVNIS.bat, PRII-OVNIS.app; each runs desktop/setup.py --ensure then desktop/launch.py. Only the .sh was read."
+  },
+  {
+   "id": "offline-export",
+   "kind": "cli",
+   "path": "dashboard/package.json:9",
+   "note": "VITE_OFFLINE=1 single-file build to export-standalone (vite.config.js:15-20); data from src/lib/snapshot.json."
+  },
+  {
+   "id": "capacitor-native",
+   "kind": "launcher",
+   "path": "dashboard/capacitor.config.json:2",
+   "note": "iOS/Android shells around the offline build (package.json:16-18). README states native builds were never run (dashboard/README.md:86)."
+  }
+ ],
+ "surfaces": [
+  {
+   "id": "route-dashboard",
+   "kind": "route",
+   "label": "OVNIS · Ovnis-PR",
+   "address": "/",
+   "component": "dashboard/src/pages/Dashboard.jsx:24",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:24",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Only real route. BrowserRouter, or HashRouter when VITE_OFFLINE=1 (App.jsx:9). 'offline' = baked snapshot build (lib/api.js:34-40), not a network-loss state. useCases/useGeojson isLoading/isError are never read (Dashboard.jsx:25-26)."
+  },
+  {
+   "id": "route-not-found",
+   "kind": "route",
+   "label": "Page Not Found",
+   "address": "*",
+   "component": "dashboard/src/lib/PageNotFound.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:25",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Reachable only by a mistyped URL. English-only. 'Go Home' sets window.location.href='/' (PageNotFound.jsx:24)."
+  },
+  {
+   "id": "app-header",
+   "kind": "toolbar",
+   "label": "OVNIS · Ovnis-PR",
+   "address": null,
+   "component": "dashboard/src/pages/Dashboard.jsx:57",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:57",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Brand, subtitle, health indicator, TopControls."
+  },
+  {
+   "id": "health-indicator",
+   "kind": "notification",
+   "label": "{master} cases · {mapped} mapped · {unmapped} unmapped",
+   "address": null,
+   "component": "dashboard/src/pages/Dashboard.jsx:63",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:63",
+   "parent": "app-header",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Three states connecting/unreachable/summary (Dashboard.jsx:36-40); role=alert on error; text is sr-only on mobile and repeated in the More sheet (MobileNav.jsx:92). Polls every 20 s (lib/hooks.js:4)."
+  },
+  {
+   "id": "theme-toggle",
+   "kind": "settings",
+   "label": "Theme: {mode}. Tap to change.",
+   "address": null,
+   "component": "dashboard/src/components/TopControls.jsx:11",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/TopControls.jsx:64",
+   "parent": "app-header",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Cycles dark -> light -> system; persisted in localStorage ovnis.theme."
+  },
+  {
+   "id": "locale-toggle",
+   "kind": "settings",
+   "label": "Language (English / Español)",
+   "address": null,
+   "component": "dashboard/src/components/TopControls.jsx:34",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/TopControls.jsx:65",
+   "parent": "app-header",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Two aria-pressed buttons; persisted in localStorage ovnis.locale; sets <html lang> (lib/locale.js:136-138)."
+  },
+  {
+   "id": "desktop-side-pane",
+   "kind": "sidebar",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/Dashboard.jsx:101",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:101",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Desktop only (>=860px): fixed 440px aside holding an uncontrolled Radix Tabs (defaultValue='cases', Dashboard.jsx:102). No <main> landmark in the desktop branch."
+  },
+  {
+   "id": "mobile-bottom-nav",
+   "kind": "sidebar",
+   "label": "OVNIS mobile navigation",
+   "address": null,
+   "component": "dashboard/src/components/MobileNav.jsx:23",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:92",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Mobile only (<860px). Cases, Map, Statistics, Candidates, More. aria-current marks the active view."
+  },
+  {
+   "id": "mobile-more-sheet",
+   "kind": "dialog",
+   "label": "More",
+   "address": null,
+   "component": "dashboard/src/components/MobileNav.jsx:60",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/MobileNav.jsx:60",
+   "parent": "mobile-bottom-nav",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix Dialog bottom sheet: Activity link plus backend status text. Focus handed back to the More button on close (MobileNav.jsx:63-66)."
+  },
+  {
+   "id": "view-cases",
+   "kind": "tab",
+   "label": "Cases",
+   "address": null,
+   "component": "dashboard/src/components/CaseGrid.jsx:54",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:110",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Desktop TabsContent (Dashboard.jsx:109-111); mobile section kept mounted and toggled with hidden (Dashboard.jsx:75-77). No URL address. A failed or pending /cases request renders '0 of 0 cases' plus the 'No cases found' empty state because cases defaults to [] (Dashboard.jsx:26, CaseGrid.jsx:184-194)."
+  },
+  {
+   "id": "case-search",
+   "kind": "search",
+   "label": "Search cases",
+   "address": null,
+   "component": "dashboard/src/components/CaseGrid.jsx:98",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseGrid.jsx:140",
+   "parent": "view-cases",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-side substring match over id, date, decade, both descriptions, location, agency (CaseGrid.jsx:30-35). Not debounced."
+  },
+  {
+   "id": "case-filter-period",
+   "kind": "filter",
+   "label": "Period",
+   "address": null,
+   "component": "dashboard/src/components/CaseGrid.jsx:109",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseGrid.jsx:145",
+   "parent": "view-cases",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix Select of decades derived from loaded cases (CaseGrid.jsx:64-67)."
+  },
+  {
+   "id": "case-filter-tier",
+   "kind": "filter",
+   "label": "Tier",
+   "address": null,
+   "component": "dashboard/src/components/CaseGrid.jsx:121",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseGrid.jsx:149",
+   "parent": "view-cases",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix Select all/T1-T4 (CaseGrid.jsx:24)."
+  },
+  {
+   "id": "case-filter-chips",
+   "kind": "filter",
+   "label": "Remove filter: {label}",
+   "address": null,
+   "component": "dashboard/src/components/CaseGrid.jsx:166",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseGrid.jsx:166",
+   "parent": "view-cases",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "One removable chip per active search/period/tier; result count is aria-live (CaseGrid.jsx:162)."
+  },
+  {
+   "id": "case-table",
+   "kind": "table",
+   "label": "Case / Date / Location / Agency / Tier",
+   "address": null,
+   "component": "dashboard/src/components/CaseGrid.jsx:303",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseGrid.jsx:204",
+   "parent": "view-cases",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Desktop only. Rows are <tr onClick> with no tabIndex, role or key handler (CaseGrid.jsx:319-327). No sort control; ledger order."
+  },
+  {
+   "id": "case-card-list",
+   "kind": "table",
+   "label": "Cases",
+   "address": null,
+   "component": "dashboard/src/components/CaseGrid.jsx:265",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseGrid.jsx:199",
+   "parent": "view-cases",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Mobile only. <ul> of <button aria-pressed> cards (CaseGrid.jsx:196-202, 268-271)."
+  },
+  {
+   "id": "case-pagination",
+   "kind": "toolbar",
+   "label": "Case pages / Per page",
+   "address": null,
+   "component": "dashboard/src/components/CaseGrid.jsx:209",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseGrid.jsx:208",
+   "parent": "view-cases",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Page sizes 12/24/48/100 (CaseGrid.jsx:22); prev/next buttons; 'Page x of y' aria-live."
+  },
+  {
+   "id": "case-detail",
+   "kind": "drawer",
+   "label": "{case_id} · {date_raw}",
+   "address": null,
+   "component": "dashboard/src/components/CaseDetail.jsx:15",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:126",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix Dialog via shadcn Sheet; right drawer on desktop, bottom sheet max 85dvh on mobile (CaseDetail.jsx:25-32). Rendered from the already-loaded row; GET /cases/{id} is not called. No URL address."
+  },
+  {
+   "id": "view-map",
+   "kind": "map",
+   "label": "Map",
+   "address": null,
+   "component": "dashboard/src/components/CaseMap.jsx:122",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:97",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Desktop: always visible beside the pane (Dashboard.jsx:96-99). Mobile: mounted on demand when view==='map' (Dashboard.jsx:78-83). MapLibre canvas; OSM raster tiles and AWS terrain tiles are fetched from the internet (CaseMap.jsx:17,27). useGeojson error/loading not rendered: legend shows '0 mapped sightings' (Dashboard.jsx:46-50)."
+  },
+  {
+   "id": "map-layer-toolbar",
+   "kind": "toolbar",
+   "label": "Heatmap / Terrain / Density / Spatial tools",
+   "address": null,
+   "component": "dashboard/src/components/CaseMap.jsx:373",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseMap.jsx:373",
+   "parent": "view-map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Four aria-pressed toggle buttons."
+  },
+  {
+   "id": "map-density-status",
+   "kind": "notification",
+   "label": "Density unavailable; no zero-case inference was made.",
+   "address": null,
+   "component": "dashboard/src/components/CaseMap.jsx:408",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseMap.jsx:408",
+   "parent": "view-map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Loading shown as 'Density · loading' on the button (CaseMap.jsx:397); error role=alert with Retry; ready role=status with matched/unresolved/total and scope state."
+  },
+  {
+   "id": "map-date-filter",
+   "kind": "filter",
+   "label": "Filter cases from date / to date",
+   "address": null,
+   "component": "dashboard/src/components/CaseMap.jsx:420",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseMap.jsx:420",
+   "parent": "view-map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Two native date inputs filtering map features by properties.date_local (CaseMap.jsx:105-120); independent of the Cases list filters."
+  },
+  {
+   "id": "map-tier-legend",
+   "kind": "panel",
+   "label": "Evidence tier",
+   "address": null,
+   "component": "dashboard/src/components/CaseMap.jsx:347",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseMap.jsx:347",
+   "parent": "view-map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "T1-T4 colour key plus density key when density is ready; hidden on mobile while spatial tools are open."
+  },
+  {
+   "id": "map-count-legend",
+   "kind": "panel",
+   "label": "{count} mapped sightings · colored by evidence tier",
+   "address": null,
+   "component": "dashboard/src/pages/Dashboard.jsx:46",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:98",
+   "parent": "view-map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "absolute bottom-2 left-2, the same corner as the spatial tools panel (SpatialToolsPanel.jsx:286)."
+  },
+  {
+   "id": "spatial-tools-panel",
+   "kind": "panel",
+   "label": "Spatial tools",
+   "address": null,
+   "component": "dashboard/src/components/SpatialToolsPanel.jsx:279",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CaseMap.jsx:452",
+   "parent": "view-map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Off / Measure / Buffer / Nearest; map-click driven only. Target select has one option, 'Cases' (CaseMap.jsx:335-338)."
+  },
+  {
+   "id": "view-stats",
+   "kind": "tab",
+   "label": "Statistics",
+   "address": null,
+   "component": "dashboard/src/components/StatsPanel.jsx:13",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:113",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Desktop Dashboard.jsx:112-114; mobile Dashboard.jsx:84. QueryState loading/error with Retry (StatsPanel.jsx:18-24). English-only."
+  },
+  {
+   "id": "stats-kpis",
+   "kind": "panel",
+   "label": "Total / Mapped / Unmapped",
+   "address": null,
+   "component": "dashboard/src/components/StatsPanel.jsx:32",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/StatsPanel.jsx:32",
+   "parent": "view-stats",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Three KPI tiles; '–' when value missing."
+  },
+  {
+   "id": "stats-chart-decade",
+   "kind": "chart",
+   "label": "Cases by decade",
+   "address": null,
+   "component": "dashboard/src/components/StatsPanel.jsx:38",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/StatsPanel.jsx:38",
+   "parent": "view-stats",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Recharts BarChart; no accessibilityLayer, no data-table equivalent."
+  },
+  {
+   "id": "stats-chart-tier",
+   "kind": "chart",
+   "label": "Cases by evidence tier",
+   "address": null,
+   "component": "dashboard/src/components/StatsPanel.jsx:52",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/StatsPanel.jsx:52",
+   "parent": "view-stats",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Recharts BarChart coloured by tierHex; no data-table equivalent."
+  },
+  {
+   "id": "view-candidates",
+   "kind": "tab",
+   "label": "Candidates",
+   "address": null,
+   "component": "dashboard/src/components/CandidateReview.jsx:23",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:116",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Desktop Dashboard.jsx:115-117; mobile Dashboard.jsx:85. Read-only list of the candidate queue; no promote/reject/merge control exists in the GUI. English-only."
+  },
+  {
+   "id": "view-activity",
+   "kind": "tab",
+   "label": "Activity",
+   "address": null,
+   "component": "dashboard/src/components/ProgramTimeline.jsx:18",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:119",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Desktop Dashboard.jsx:118-120; mobile via More sheet, Dashboard.jsx:86-90. Renders five hard-coded programme items (Dashboard.jsx:16-22) merged with LIVE events read from localStorage (ProgramTimeline.jsx:19). English-only."
+  },
+  {
+   "id": "activity-timeline",
+   "kind": "timeline",
+   "label": "Timeline",
+   "address": null,
+   "component": "dashboard/src/components/ProgramTimeline.jsx:35",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ProgramTimeline.jsx:35",
+   "parent": "view-activity",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Programme-workflow list (phase badge, title, detail, category) built from <div> grids, not a case chronology. Empty text 'No timeline items match this filter.' (ProgramTimeline.jsx:64)."
+  },
+  {
+   "id": "activity-filters",
+   "kind": "filter",
+   "label": "ALL / NOW / NEXT / QUEUED / BLOCKED, Priority/Name sort, search",
+   "address": null,
+   "component": "dashboard/src/components/ProgramTimeline.jsx:40",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ProgramTimeline.jsx:40",
+   "parent": "view-activity",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Phase filter buttons carry no aria-pressed; search input named only by its placeholder."
+  },
+  {
+   "id": "activity-next-queue",
+   "kind": "panel",
+   "label": "Upcoming work",
+   "address": null,
+   "component": "dashboard/src/components/ProgramTimeline.jsx:68",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ProgramTimeline.jsx:68",
+   "parent": "view-activity",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "First five NEXT/QUEUED/BLOCKED items."
+  },
+  {
+   "id": "query-state",
+   "kind": "notification",
+   "label": "Could not load this data",
+   "address": null,
+   "component": "dashboard/src/components/QueryState.jsx:22",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/StatsPanel.jsx:21",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Shared loading/error/empty renderer; used only by StatsPanel.jsx:21 and CandidateReview.jsx:32. English-only."
+  },
+  {
+   "id": "error-boundary",
+   "kind": "notification",
+   "label": "Something broke while rendering this view",
+   "address": null,
+   "component": "dashboard/src/components/ErrorBoundary.jsx:16",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:22",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Wraps <Routes>; 'Try again' resets its state."
+  },
+  {
+   "id": "toaster",
+   "kind": "notification",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/ui/toaster.jsx:12",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:29",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Mounted but dormant: no toast()/useToast caller exists outside components/ui (grep)."
+  },
+  {
+   "id": "unused-shadcn-primitives",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/ui/",
+   "mounted": false,
+   "mounted_evidence": "none: only tabs, sheet, badge, table, button, input, select, pagination, toaster/toast/use-toast are imported by app code",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "38 of 49 files under components/ui/ (dialog, drawer, dropdown-menu, context-menu, command, sidebar, menubar, form, chart, calendar, ...) have no importer outside components/ui."
+  }
+ ],
+ "workflows": [
+  {
+   "id": "health-poll",
+   "name": "Backend health and corpus counts",
+   "surface": "health-indicator",
+   "ui_action": "none (automatic on load, every 20 s)",
+   "frontend_handler": "dashboard/src/lib/hooks.js:4",
+   "backend_endpoint": "GET /health",
+   "backend_handler": "server/backend/main.py:290",
+   "writes": false,
+   "authorization": "none (no auth dependency or middleware other than CORS: server/backend/main.py:38-44)",
+   "status": "COMPLETE",
+   "status_evidence": "useHealth -> getHealth (lib/api.js:63) -> health() -> label rendered at Dashboard.jsx:36-40,65.",
+   "has_test": true,
+   "test": "tests/test_server_smoke.py:77"
+  },
+  {
+   "id": "cases-load",
+   "name": "Load the case list",
+   "surface": "view-cases",
+   "ui_action": "none (automatic on load)",
+   "frontend_handler": "dashboard/src/pages/Dashboard.jsx:26",
+   "backend_endpoint": "GET /cases",
+   "backend_handler": "server/backend/main.py:310",
+   "writes": false,
+   "authorization": "none (no auth dependency or middleware other than CORS: server/backend/main.py:38-44)",
+   "status": "PARTIAL",
+   "status_evidence": "Happy path traced: useCases (lib/hooks.js:8-9) -> getCases (lib/api.js:64) -> cases() -> CaseGrid rows (Dashboard.jsx:76,110). Failure and loading are not rendered: Dashboard.jsx:26 destructures only data with a [] default, so an outage shows '0 of 0 cases' and 'No cases found' (CaseGrid.jsx:162-165,184-194). Backend filter params decade/tier/municipality/q (main.py:312-315) are never sent.",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:11"
+  },
+  {
+   "id": "cases-search",
+   "name": "Search cases",
+   "surface": "case-search",
+   "ui_action": "type in the search box",
+   "frontend_handler": "dashboard/src/components/CaseGrid.jsx:102",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "change(setQ) resets page (CaseGrid.jsx:77-80) -> filterCases (CaseGrid.jsx:37-43) -> rows re-rendered. Client-side only; GET /search is not used.",
+   "has_test": true,
+   "test": "dashboard/src/components/CaseGrid.test.jsx:32"
+  },
+  {
+   "id": "cases-filter-period",
+   "name": "Filter cases by decade",
+   "surface": "case-filter-period",
+   "ui_action": "choose a period",
+   "frontend_handler": "dashboard/src/components/CaseGrid.jsx:110",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "change(setDecade) -> filterCases (CaseGrid.jsx:40).",
+   "has_test": true,
+   "test": "dashboard/src/components/CaseGrid.test.jsx:38"
+  },
+  {
+   "id": "cases-filter-tier",
+   "name": "Filter cases by evidence tier",
+   "surface": "case-filter-tier",
+   "ui_action": "choose a tier",
+   "frontend_handler": "dashboard/src/components/CaseGrid.jsx:122",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "change(setTier) -> filterCases (CaseGrid.jsx:41).",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:70"
+  },
+  {
+   "id": "cases-remove-chip",
+   "name": "Remove one active filter",
+   "surface": "case-filter-chips",
+   "ui_action": "activate a filter chip",
+   "frontend_handler": "dashboard/src/components/CaseGrid.jsx:170",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "chip.clear defined at CaseGrid.jsx:91-93.",
+   "has_test": true,
+   "test": "dashboard/src/components/CaseGrid.test.jsx:110"
+  },
+  {
+   "id": "cases-reset",
+   "name": "Reset search from the empty state",
+   "surface": "view-cases",
+   "ui_action": "press 'Reset search'",
+   "frontend_handler": "dashboard/src/components/CaseGrid.jsx:81",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "reset() clears q/decade/tier/page; button at CaseGrid.jsx:190.",
+   "has_test": true,
+   "test": "dashboard/src/components/CaseGrid.test.jsx:95"
+  },
+  {
+   "id": "cases-paginate",
+   "name": "Page through cases",
+   "surface": "case-pagination",
+   "ui_action": "press previous/next page",
+   "frontend_handler": "dashboard/src/components/CaseGrid.jsx:229",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "setPage -> pageSlice (CaseGrid.jsx:45-49,70); list scrolls to top (CaseGrid.jsx:73-75).",
+   "has_test": true,
+   "test": "dashboard/src/components/CaseGrid.test.jsx:73"
+  },
+  {
+   "id": "cases-page-size",
+   "name": "Change page size",
+   "surface": "case-pagination",
+   "ui_action": "choose rows per page",
+   "frontend_handler": "dashboard/src/components/CaseGrid.jsx:212",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "change(setPageSize)(Number(v)); not persisted.",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:42"
+  },
+  {
+   "id": "case-open-table",
+   "name": "Open a case from the desktop table",
+   "surface": "case-table",
+   "ui_action": "click a table row",
+   "frontend_handler": "dashboard/src/components/CaseGrid.jsx:321",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "PARTIAL",
+   "status_evidence": "Mouse path complete: onSelect -> setSelected (Dashboard.jsx:110) -> CaseDetail (Dashboard.jsx:126). There is no keyboard path: the row has no tabIndex/role/onKeyDown (CaseGrid.jsx:319-327), and the only other desktop trigger is a map canvas click.",
+   "has_test": true,
+   "test": "dashboard/src/components/CaseGrid.test.jsx:119"
+  },
+  {
+   "id": "case-open-card",
+   "name": "Open a case from a mobile card",
+   "surface": "case-card-list",
+   "ui_action": "tap a case card",
+   "frontend_handler": "dashboard/src/components/CaseGrid.jsx:270",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "<button> -> onSelect -> setSelected (Dashboard.jsx:76) -> bottom sheet (CaseDetail.jsx:26).",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity-mobile.spec.mjs:76"
+  },
+  {
+   "id": "case-open-map",
+   "name": "Open a case from a map point",
+   "surface": "view-map",
+   "ui_action": "click an unclustered case dot",
+   "frontend_handler": "dashboard/src/components/CaseMap.jsx:229",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "cases-dot click -> onSelect(feature.properties) -> selectByProps looks the full row up by case_id, falling back to the raw feature properties (Dashboard.jsx:41-44). Suppressed while a spatial tool is active (CaseMap.jsx:230). Pointer only.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "case-close",
+   "name": "Close the case detail",
+   "surface": "case-detail",
+   "ui_action": "press Close, press Escape, or click the overlay",
+   "frontend_handler": "dashboard/src/components/CaseDetail.jsx:21",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "onOpenChange(false) -> onClose -> setSelected(null) (Dashboard.jsx:126); Close button from sheet.jsx:51-55. No test clicks Close or presses Escape on this sheet.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "case-open-source",
+   "name": "Open a case's source link",
+   "surface": "case-detail",
+   "ui_action": "activate the source link",
+   "frontend_handler": "dashboard/src/components/CaseDetail.jsx:59",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "Rendered only when sourceUrl() accepts an http/https URL (lib/ovnis-format.js:29-40); target=_blank rel=noopener noreferrer; otherwise text plus 'No URL' badge (CaseDetail.jsx:68-75).",
+   "has_test": true,
+   "test": "dashboard/src/components/CaseDetail.test.jsx:32"
+  },
+  {
+   "id": "map-load",
+   "name": "Load mapped cases",
+   "surface": "view-map",
+   "ui_action": "none (automatic on load)",
+   "frontend_handler": "dashboard/src/pages/Dashboard.jsx:25",
+   "backend_endpoint": "GET /geojson",
+   "backend_handler": "server/backend/main.py:343",
+   "writes": false,
+   "authorization": "none (no auth dependency or middleware other than CORS: server/backend/main.py:38-44)",
+   "status": "PARTIAL",
+   "status_evidence": "Happy path traced: useGeojson (lib/hooks.js:6) -> release_geojson (main.py:213) -> CaseMap source 'cases' (CaseMap.jsx:185-191,248-251). Failure/loading not rendered: only data is read (Dashboard.jsx:25) so an outage shows an empty map and '0 mapped sightings'. Basemap tiles need internet (CaseMap.jsx:27).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "map-cluster-zoom",
+   "name": "Zoom into a cluster",
+   "surface": "view-map",
+   "ui_action": "click a cluster bubble",
+   "frontend_handler": "dashboard/src/components/CaseMap.jsx:234",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "getClusterExpansionZoom -> easeTo (CaseMap.jsx:239-240). Pointer only.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "map-heatmap",
+   "name": "Toggle heatmap layer",
+   "surface": "map-layer-toolbar",
+   "ui_action": "press Heatmap",
+   "frontend_handler": "dashboard/src/components/CaseMap.jsx:378",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "setShowHeatmap -> setLayoutProperty (CaseMap.jsx:253-256).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "map-terrain",
+   "name": "Toggle 3D terrain",
+   "surface": "map-layer-toolbar",
+   "ui_action": "press Terrain",
+   "frontend_handler": "dashboard/src/components/CaseMap.jsx:386",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "setShowTerrain -> hillshade + setTerrain + pitch (CaseMap.jsx:258-269). Depends on AWS elevation tiles (CaseMap.jsx:17); no failure UI.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "map-density",
+   "name": "Toggle municipio case-density choropleth",
+   "surface": "map-density-status",
+   "ui_action": "press Density",
+   "frontend_handler": "dashboard/src/components/CaseMap.jsx:278",
+   "backend_endpoint": "GET /municipios/case_density",
+   "backend_handler": "server/backend/main.py:426",
+   "writes": false,
+   "authorization": "none (no auth dependency or middleware other than CORS: server/backend/main.py:38-44)",
+   "status": "COMPLETE",
+   "status_evidence": "toggleDensity -> getMunicipiosCaseDensity (CaseMap.jsx:296, lib/api.js:78) -> parseCaseDensity validates arithmetic and identity_effect (CaseMap.jsx:66-82) -> feature-state fill (CaseMap.jsx:309-333) -> status line (CaseMap.jsx:415-419).",
+   "has_test": true,
+   "test": "tests/test_municipios_case_density.py:47"
+  },
+  {
+   "id": "map-density-retry",
+   "name": "Retry a failed density request",
+   "surface": "map-density-status",
+   "ui_action": "press 'Retry density'",
+   "frontend_handler": "dashboard/src/components/CaseMap.jsx:288",
+   "backend_endpoint": "GET /municipios/case_density",
+   "backend_handler": "server/backend/main.py:426",
+   "writes": false,
+   "authorization": "none (no auth dependency or middleware other than CORS: server/backend/main.py:38-44)",
+   "status": "COMPLETE",
+   "status_evidence": "retryDensity bumps densityRequest, re-running the effect at CaseMap.jsx:293-307.",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:113"
+  },
+  {
+   "id": "map-date-filter",
+   "name": "Filter map points by date range",
+   "surface": "map-date-filter",
+   "ui_action": "set from/to dates, or press × to clear",
+   "frontend_handler": "dashboard/src/components/CaseMap.jsx:424",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "filteredGeojson (CaseMap.jsx:140-144) -> setData (CaseMap.jsx:248-251); '{n} shown' at CaseMap.jsx:438. Does not affect the Cases list.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "spatial-measure",
+   "name": "Measure a distance on the map",
+   "surface": "spatial-tools-panel",
+   "ui_action": "choose Measure, click map points",
+   "frontend_handler": "dashboard/src/components/SpatialToolsPanel.jsx:235",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "Vertices appended and drawn (SpatialToolsPanel.jsx:235-241); length shown in km and mi (SpatialToolsPanel.jsx:320-326). Pointer only.",
+   "has_test": true,
+   "test": "dashboard/src/components/SpatialToolsPanel.test.jsx:28"
+  },
+  {
+   "id": "spatial-buffer",
+   "name": "Count cases within a radius",
+   "surface": "spatial-tools-panel",
+   "ui_action": "choose Buffer, pick a radius, click the map",
+   "frontend_handler": "dashboard/src/components/SpatialToolsPanel.jsx:244",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "bufferPointCandidates (SpatialToolsPanel.jsx:50-56) -> result and QueryEvidence (SpatialToolsPanel.jsx:341-342). Result is a count only; matching cases are not listed.",
+   "has_test": true,
+   "test": "dashboard/src/components/SpatialToolsPanel.test.jsx:34"
+  },
+  {
+   "id": "spatial-nearest",
+   "name": "Find the nearest case to a clicked point",
+   "surface": "spatial-tools-panel",
+   "ui_action": "choose Nearest, click the map",
+   "frontend_handler": "dashboard/src/components/SpatialToolsPanel.jsx:249",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "PARTIAL",
+   "status_evidence": "Distance and connector line work (SpatialToolsPanel.jsx:189-224) but the label comes from candidateLabel, which reads asset_id/event_id/alert_id/id only (SpatialToolsPanel.jsx:114-120). Case features carry case_id/record_id and none of those keys (server/backend/main.py:200-209; releases/2026-06-23/ovnis_cases_master.geojson feature properties), so every result is labelled 'unnamed candidate'.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "stats-view",
+   "name": "View corpus statistics",
+   "surface": "view-stats",
+   "ui_action": "open Statistics",
+   "frontend_handler": "dashboard/src/components/StatsPanel.jsx:14",
+   "backend_endpoint": "GET /stats",
+   "backend_handler": "server/backend/main.py:348",
+   "writes": false,
+   "authorization": "none (no auth dependency or middleware other than CORS: server/backend/main.py:38-44)",
+   "status": "COMPLETE",
+   "status_evidence": "useStats (lib/hooks.js:5) -> stats_payload (main.py:248-267) -> KPIs and two charts (StatsPanel.jsx:31-66).",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:84"
+  },
+  {
+   "id": "candidates-view",
+   "name": "View the candidate intake queue",
+   "surface": "view-candidates",
+   "ui_action": "open Candidates",
+   "frontend_handler": "dashboard/src/components/CandidateReview.jsx:24",
+   "backend_endpoint": "GET /candidates",
+   "backend_handler": "server/backend/main.py:338",
+   "writes": false,
+   "authorization": "none (no auth dependency or middleware other than CORS: server/backend/main.py:38-44)",
+   "status": "COMPLETE",
+   "status_evidence": "useCandidates (lib/hooks.js:7) -> all_candidates, placeholders excluded (main.py:172-181) -> cards (CandidateReview.jsx:40-58). Read-only: the GUI offers no review action.",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:98"
+  },
+  {
+   "id": "query-retry",
+   "name": "Retry a failed statistics or candidates request",
+   "surface": "query-state",
+   "ui_action": "press Retry",
+   "frontend_handler": "dashboard/src/components/QueryState.jsx:52",
+   "backend_endpoint": "GET /stats | GET /candidates",
+   "backend_handler": "server/backend/main.py:348",
+   "writes": false,
+   "authorization": "none (no auth dependency or middleware other than CORS: server/backend/main.py:38-44)",
+   "status": "COMPLETE",
+   "status_evidence": "onRetry=refetch (StatsPanel.jsx:21, CandidateReview.jsx:32).",
+   "has_test": true,
+   "test": "dashboard/src/components/QueryState.test.jsx:115"
+  },
+  {
+   "id": "activity-filter",
+   "name": "Filter, sort and search programme activity",
+   "surface": "activity-filters",
+   "ui_action": "press a phase button, the sort button, or type in the search box",
+   "frontend_handler": "dashboard/src/components/ProgramTimeline.jsx:43",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "visible memo (ProgramTimeline.jsx:24-29) over five static items (Dashboard.jsx:16-22). Client-side only.",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:164"
+  },
+  {
+   "id": "activity-live-append",
+   "name": "Record a LIVE programme-activity event",
+   "surface": "view-activity",
+   "ui_action": "none",
+   "frontend_handler": "dashboard/src/components/programActivityEvent.js:64",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none (client-side only)",
+   "status": "UNREACHABLE",
+   "status_evidence": "appendProgramActivityEvent has no caller in dashboard/src (grep); only readLiveProgramActivity is used (ProgramTimeline.jsx:19), so the localStorage key is read but never written by this app.",
+   "has_test": true,
+   "test": "dashboard/src/components/programActivityEvent.test.js:1"
+  },
+  {
+   "id": "nav-desktop-tabs",
+   "name": "Switch view on desktop",
+   "surface": "desktop-side-pane",
+   "ui_action": "select a tab",
+   "frontend_handler": "dashboard/src/pages/Dashboard.jsx:102",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "Uncontrolled Radix Tabs; four triggers at Dashboard.jsx:104-107.",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity-mobile.spec.mjs:179"
+  },
+  {
+   "id": "nav-mobile",
+   "name": "Switch view on mobile",
+   "surface": "mobile-bottom-nav",
+   "ui_action": "tap a bottom-nav item, or More then Activity",
+   "frontend_handler": "dashboard/src/components/MobileNav.jsx:39",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "onChange -> setView (Dashboard.jsx:29,92) -> conditional sections (Dashboard.jsx:75-90); More sheet item at MobileNav.jsx:80-83.",
+   "has_test": true,
+   "test": "dashboard/src/components/MobileNav.test.jsx:20"
+  },
+  {
+   "id": "theme-cycle",
+   "name": "Change theme",
+   "surface": "theme-toggle",
+   "ui_action": "press the theme button",
+   "frontend_handler": "dashboard/src/components/TopControls.jsx:20",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "cycle -> pref.set (lib/theme.js:51) -> applyTheme via subscription (lib/theme.js:38) -> localStorage ovnis.theme (lib/prefs.js:29).",
+   "has_test": true,
+   "test": "dashboard/src/components/TopControls.test.jsx:41"
+  },
+  {
+   "id": "locale-switch",
+   "name": "Change language",
+   "surface": "locale-toggle",
+   "ui_action": "press a language button",
+   "frontend_handler": "dashboard/src/components/TopControls.jsx:48",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "PARTIAL",
+   "status_evidence": "Works for shell, navigation, Cases and case-detail field labels (lib/locale.js:13-116). Statistics, Candidates, Activity, map controls, spatial tools, QueryState, ErrorBoundary, 404 and the sheet Close label are hard-coded English (StatsPanel.jsx:33-52, CandidateReview.jsx:39,61, CaseMap.jsx:348-443, ProgramTimeline.jsx:37, QueryState.jsx:42, ui/sheet.jsx:54).",
+   "has_test": true,
+   "test": "dashboard/src/components/TopControls.test.jsx:31"
+  },
+  {
+   "id": "error-boundary-retry",
+   "name": "Recover from a render error",
+   "surface": "error-boundary",
+   "ui_action": "press 'Try again'",
+   "frontend_handler": "dashboard/src/components/ErrorBoundary.jsx:47",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "COMPLETE",
+   "status_evidence": "setState({error:null}) re-renders children.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "not-found-home",
+   "name": "Return home from the 404 page",
+   "surface": "route-not-found",
+   "ui_action": "press 'Go Home'",
+   "frontend_handler": "dashboard/src/lib/PageNotFound.jsx:24",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "PARTIAL",
+   "status_evidence": "Hard navigation to '/' works when served over http. In the VITE_OFFLINE file:// export (base './', HashRouter: vite.config.js:15, App.jsx:9) it resolves to the filesystem root instead of the app.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "case-fetch-by-id",
+   "name": "Fetch one case by id",
+   "surface": null,
+   "ui_action": "none",
+   "frontend_handler": "dashboard/src/lib/api.js:65",
+   "backend_endpoint": "GET /cases/{case_id}",
+   "backend_handler": "server/backend/main.py:330",
+   "writes": false,
+   "authorization": "none (no auth dependency or middleware other than CORS: server/backend/main.py:38-44)",
+   "status": "UNREACHABLE",
+   "status_evidence": "getCase is exported but has no caller in dashboard/src (grep).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "server-search",
+   "name": "Server-side full-corpus search",
+   "surface": null,
+   "ui_action": "none",
+   "frontend_handler": "dashboard/src/lib/api.js:74",
+   "backend_endpoint": "GET /search",
+   "backend_handler": "server/backend/main.py:353",
+   "writes": false,
+   "authorization": "none (no auth dependency or middleware other than CORS: server/backend/main.py:38-44)",
+   "status": "UNREACHABLE",
+   "status_evidence": "search() is exported but has no caller outside its own test (grep); the Cases search box filters client-side.",
+   "has_test": true,
+   "test": "dashboard/src/lib/api.test.js:10"
+  },
+  {
+   "id": "offline-export",
+   "name": "Build the single-file offline export",
+   "surface": "route-dashboard",
+   "ui_action": "none (npm run build:export)",
+   "frontend_handler": "dashboard/src/lib/api.js:34",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-side only)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "VITE_OFFLINE=1 resolves every request from src/lib/snapshot.json (keys /candidates, /cases, /geojson, /health, /municipios/case_density, /stats); also the Capacitor webDir (capacitor.config.json:4).",
+   "has_test": false,
+   "test": null
+  }
+ ],
+ "navigation": {
+  "registry_file": "dashboard/src/components/MobileNav.jsx:12",
+  "items": [
+   {
+    "label": "Cases",
+    "target": "in-memory view 'cases' (desktop tab Dashboard.jsx:104; mobile MobileNav.jsx:13)"
+   },
+   {
+    "label": "Map",
+    "target": "in-memory view 'map' (mobile only, MobileNav.jsx:14; always visible on desktop, Dashboard.jsx:97)"
+   },
+   {
+    "label": "Statistics",
+    "target": "in-memory view 'stats' (Dashboard.jsx:105; MobileNav.jsx:15)"
+   },
+   {
+    "label": "Candidates",
+    "target": "in-memory view 'candidates' (Dashboard.jsx:106; MobileNav.jsx:16)"
+   },
+   {
+    "label": "Activity",
+    "target": "in-memory view 'activity' (desktop tab Dashboard.jsx:107; mobile inside More, MobileNav.jsx:18)"
+   },
+   {
+    "label": "More",
+    "target": "mobile bottom sheet (MobileNav.jsx:48-60)"
+   }
+  ],
+  "mobile_navigation": "Below 860px (hooks/use-mobile.jsx:5) a five-slot bottom bar renders Cases, Map, Statistics, Candidates and More; More opens a bottom sheet holding Activity and the backend status text (dashboard/src/components/MobileNav.jsx:23-94, mounted at dashboard/src/pages/Dashboard.jsx:92). Desktop has no registry: the four tab triggers are written inline at dashboard/src/pages/Dashboard.jsx:103-108.",
+  "dead_or_unlinked_routes": [
+   "'*' -> PageNotFound (dashboard/src/App.jsx:25): no in-app link leads to it",
+   "ProgramTimeline item links (dashboard/src/components/ProgramTimeline.jsx:59): rendered only when an item has href; none of the five declared items has one (dashboard/src/pages/Dashboard.jsx:16-22)"
+  ]
+ },
+ "settings": [
+  {
+   "id": "theme",
+   "label": "Theme (dark / light / system)",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage ovnis.theme",
+   "evidence": "dashboard/src/lib/theme.js:9"
+  },
+  {
+   "id": "locale",
+   "label": "Language (en / es)",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage ovnis.locale",
+   "evidence": "dashboard/src/lib/locale.js:130"
+  },
+  {
+   "id": "program-activity-live",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage federation.programActivity.v1.ovnis-pr (read only; no writer in this app)",
+   "evidence": "dashboard/src/components/programActivityEvent.js:3"
+  },
+  {
+   "id": "case-list-view-state",
+   "label": "Search, period, tier, page, per page",
+   "scope": "SESSION",
+   "storage": "none (component state; lost on reload)",
+   "evidence": "dashboard/src/components/CaseGrid.jsx:57"
+  },
+  {
+   "id": "map-view-state",
+   "label": "Heatmap, terrain, density, date range, spatial tool",
+   "scope": "SESSION",
+   "storage": "none (component state; lost when the mobile map view unmounts)",
+   "evidence": "dashboard/src/components/CaseMap.jsx:130"
+  },
+  {
+   "id": "api-base",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env VITE_API_BASE (build time)",
+   "evidence": "dashboard/src/lib/api.js:5"
+  },
+  {
+   "id": "offline-mode",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env VITE_OFFLINE (build time)",
+   "evidence": "dashboard/src/lib/api.js:9"
+  },
+  {
+   "id": "cors-origins",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env ALLOWED_ORIGINS (backend)",
+   "evidence": "server/backend/main.py:34"
+  }
+ ],
+ "context_actions": [],
+ "keyboard_shortcuts": [
+  {
+   "keys": "Escape",
+   "action": "Close the case detail sheet or the More sheet (Radix Dialog default; no app-defined handler)",
+   "scope": "case-detail",
+   "evidence": "dashboard/src/components/ui/sheet.jsx:3"
+  },
+  {
+   "keys": "Arrow keys / Home / End",
+   "action": "Move between desktop tab triggers (Radix Tabs default; no app-defined handler)",
+   "scope": "desktop-side-pane",
+   "evidence": "dashboard/src/components/ui/tabs.jsx:2"
+  }
+ ],
+ "accessibility_source_findings": [
+  {
+   "id": "desktop-case-rows-not-keyboard-operable",
+   "severity": "blocker",
+   "finding": "On desktop the only ways to open a case are a mouse click on a <tr> that has no tabIndex, role or key handler, or a click on a map canvas point. The case detail cannot be opened from the keyboard or by a screen-reader user in the desktop shell.",
+   "evidence": "dashboard/src/components/CaseGrid.jsx:319",
+   "confidence": "high"
+  },
+  {
+   "id": "cases-outage-shown-as-empty",
+   "severity": "serious",
+   "finding": "A failed or still-pending /cases or /geojson request is presented as real emptiness ('0 of 0 cases', 'No cases found', '0 mapped sightings'). Only the small header text says 'backend unreachable'. Statistics and Candidates do distinguish the two states through QueryState.",
+   "evidence": "dashboard/src/pages/Dashboard.jsx:26",
+   "confidence": "high"
+  },
+  {
+   "id": "map-has-no-accessible-name-or-keyboard-selection",
+   "severity": "serious",
+   "finding": "The MapLibre container has no role or accessible name, and points, clusters and all three spatial tools respond only to pointer clicks. The Cases list is a text equivalent for the points themselves, but not for measure, buffer or nearest.",
+   "evidence": "dashboard/src/components/CaseMap.jsx:343",
+   "confidence": "high"
+  },
+  {
+   "id": "charts-have-no-text-equivalent",
+   "severity": "serious",
+   "finding": "Both Recharts bar charts expose their per-decade and per-tier values only as SVG bars and hover tooltips; there is no table, list or accessibilityLayer. Only Total/Mapped/Unmapped are available as text.",
+   "evidence": "dashboard/src/components/StatsPanel.jsx:38",
+   "confidence": "high"
+  },
+  {
+   "id": "untranslated-content-under-lang-es",
+   "severity": "moderate",
+   "finding": "Switching to Español sets <html lang='es'> while Statistics, Candidates, Activity, map controls, spatial tools, error states and the sheet 'Close' label stay English, so a screen reader pronounces them with the wrong language.",
+   "evidence": "dashboard/src/lib/locale.js:137",
+   "confidence": "high"
+  },
+  {
+   "id": "case-detail-badges-unlabelled",
+   "severity": "moderate",
+   "finding": "Evidence tier and confidence are bare badges ('T3', '0.2') with no visible or accessible label saying which is which; meaning is carried by position and colour. Confidence arrives as a number, so confidenceTone's high/medium/low palette never matches and every badge is slate.",
+   "evidence": "dashboard/src/components/CaseDetail.jsx:38",
+   "confidence": "high"
+  },
+  {
+   "id": "case-detail-focus-not-restored-on-desktop",
+   "severity": "moderate",
+   "finding": "CaseDetail sets no onCloseAutoFocus and is not opened from a focusable trigger on desktop (table row or map canvas), so focus has no meaningful element to return to on close. The More sheet does restore focus explicitly.",
+   "evidence": "dashboard/src/components/CaseDetail.jsx:25",
+   "confidence": "medium"
+  },
+  {
+   "id": "activity-filter-state-colour-only",
+   "severity": "moderate",
+   "finding": "Programme-timeline phase filter buttons show the active filter by class only (no aria-pressed), the search input is named only by its placeholder, and decorative icons lack aria-hidden.",
+   "evidence": "dashboard/src/components/ProgramTimeline.jsx:43",
+   "confidence": "high"
+  },
+  {
+   "id": "mobile-targets-below-44px",
+   "severity": "moderate",
+   "finding": "Controls reachable in the mobile shell without a 44px minimum: timeline filter and sort buttons (min-h-9), spatial-tool mode, radius and Clear buttons, the map 'Clear date filter' × and 'Retry density' link-button, the QueryState Retry button, and MapLibre's zoom control (no CSS override in index.css).",
+   "evidence": "dashboard/src/components/SpatialToolsPanel.jsx:302",
+   "confidence": "medium"
+  },
+  {
+   "id": "scroll-region-not-focusable",
+   "severity": "moderate",
+   "finding": "The case-list scroll container and the table wrapper are overflow-auto with no tabindex, so the region cannot be focused for keyboard scrolling.",
+   "evidence": "dashboard/src/components/CaseGrid.jsx:183",
+   "confidence": "medium"
+  },
+  {
+   "id": "desktop-shell-has-no-main-landmark",
+   "severity": "minor",
+   "finding": "The mobile branch wraps content in <main>; the desktop branch uses <div> and <aside> only. There is no skip link in either.",
+   "evidence": "dashboard/src/pages/Dashboard.jsx:95",
+   "confidence": "high"
+  },
+  {
+   "id": "table-missing-coords-icon-unnamed",
+   "severity": "minor",
+   "finding": "In the desktop table the 'no coordinates' icon passes a title prop to an SVG and has no aria-label, unlike the mobile card which uses aria-label.",
+   "evidence": "dashboard/src/components/CaseGrid.jsx:344",
+   "confidence": "medium"
+  },
+  {
+   "id": "legend-overlaps-spatial-tools",
+   "severity": "minor",
+   "finding": "The mapped-count legend and the spatial tools panel are both absolutely positioned at bottom-2 left-2 of the map area, so they occupy the same corner when tools are open.",
+   "evidence": "dashboard/src/components/SpatialToolsPanel.jsx:286",
+   "confidence": "medium"
+  },
+  {
+   "id": "health-dot-colour-only",
+   "severity": "minor",
+   "finding": "The health dot conveys up/down by colour and pulse only; it is acceptable because the adjacent text (sr-only on mobile) states the same thing.",
+   "evidence": "dashboard/src/pages/Dashboard.jsx:64",
+   "confidence": "high"
+  }
+ ],
+ "backend": {
+  "framework": "FastAPI",
+  "app_object": "server/backend/main.py:26",
+  "endpoint_count": {
+   "GET": 8,
+   "POST": 0,
+   "PUT": 0,
+   "PATCH": 0,
+   "DELETE": 0
+  },
+  "endpoints_not_called_by_frontend": [
+   "GET /cases/{case_id}",
+   "GET /search"
+  ],
+  "frontend_calls_with_no_backend_route": []
+ },
+ "tests": {
+  "frontend_unit": "126 it() cases in 14 files, vitest + jsdom + Testing Library (dashboard/vitest.config.js:35; counted by grep, not run)",
+  "frontend_e2e": "21 Playwright tests in 2 specs: dashboard/tests/gui-parity.spec.mjs (9, desktop) and dashboard/tests/gui-parity-mobile.spec.mjs (12, 390x844 / 430x932 / 844x390 / 1440x900); starts the real backend and Vite (dashboard/gui-parity.playwright.config.mjs:53-82)",
+  "backend": "271 pytest functions in 42 files under tests/; HTTP-level coverage of the dashboard API is limited to /health (tests/test_server_smoke.py:77) and /municipios/case_density (tests/test_municipios_case_density.py:47); /cases, /cases/{id}, /candidates, /geojson, /stats and /search have no TestClient test (grep)",
+  "accessibility_automation": "vitest-axe assertions in three unit files: dashboard/src/components/CaseGrid.test.jsx:163 (mobile list and empty state), dashboard/src/components/MobileNav.test.jsx:47, dashboard/src/components/TopControls.test.jsx:50. No axe run in the Playwright specs; no axe coverage of the case detail sheet, map, statistics, candidates or activity views. Touch-target and overflow assertions exist in dashboard/tests/gui-parity-mobile.spec.mjs:37,53,153."
+ },
+ "performance_protections": [
+  {
+   "what": "client-side pagination, 12 rows per page by default (list not virtualized)",
+   "evidence": "dashboard/src/components/CaseGrid.jsx:22"
+  },
+  {
+   "what": "memoized filtering of the case list",
+   "evidence": "dashboard/src/components/CaseGrid.jsx:69"
+  },
+  {
+   "what": "map point clustering (clusterMaxZoom 12, radius 40)",
+   "evidence": "dashboard/src/components/CaseMap.jsx:188"
+  },
+  {
+   "what": "query cache with retry 1 and no refetch on window focus",
+   "evidence": "dashboard/src/lib/query-client.js:6"
+  },
+  {
+   "what": "8 s request timeout",
+   "evidence": "dashboard/src/lib/api.js:43"
+  },
+  {
+   "what": "mobile map, statistics, candidates and activity views mount on demand",
+   "evidence": "dashboard/src/pages/Dashboard.jsx:78"
+  },
+  {
+   "what": "density data fetched only when the layer is switched on",
+   "evidence": "dashboard/src/components/CaseMap.jsx:294"
+  },
+  {
+   "what": "self-hosted fonts instead of a render-blocking external import",
+   "evidence": "dashboard/src/main.jsx:5"
+  },
+  {
+   "what": "ABSENT: no lazy route or code splitting (all imports static)",
+   "evidence": "dashboard/src/App.jsx:11"
+  },
+  {
+   "what": "ABSENT: search input not debounced",
+   "evidence": "dashboard/src/components/CaseGrid.jsx:102"
+  },
+  {
+   "what": "ABSENT: backend re-reads and re-normalizes the JSONL ledgers and release GeoJSON on every request, including the 20 s /health poll",
+   "evidence": "server/backend/main.py:292"
+  }
+ ],
+ "special_adjudications": [
+  {
+   "question": "1a. Historical mobile defect: fixed 440px side pane overflows a 390px viewport and squeezes the map to 0px (docs/A11Y_AUDIT.md:128-151, citing Dashboard.jsx <aside w-[440px]>). Doc records a later repair: yes (docs/A11Y_AUDIT.md:120-126).",
+   "answer": "Fixed in current source. Below 860px Dashboard renders a separate mobile shell (one view at a time plus a bottom nav); the 440px aside exists only in the desktop branch. The breakpoint is shared by useIsMobile and the shell-mobile/shell-desktop CSS variants, and html/body/#root are capped at max-width 100%. Layout was not rendered in this audit.",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/pages/Dashboard.jsx:70",
+    "dashboard/src/pages/Dashboard.jsx:101",
+    "dashboard/src/hooks/use-mobile.jsx:5",
+    "dashboard/src/index.css:14",
+    "dashboard/src/index.css:201",
+    "dashboard/tests/gui-parity-mobile.spec.mjs:153"
+   ]
+  },
+  {
+   "question": "1b. Historical mobile/desktop defect: axe button-name on the decade and tier Select triggers (docs/A11Y_AUDIT.md:153-172, citing CaseGrid.jsx). Doc records a later repair: yes (docs/A11Y_AUDIT.md:120-123).",
+   "answer": "Fixed in current source: both triggers carry aria-label (Period / Tier), the page-size trigger uses aria-labelledby, and the mobile layout adds visible captions.",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/components/CaseGrid.jsx:111",
+    "dashboard/src/components/CaseGrid.jsx:123",
+    "dashboard/src/components/CaseGrid.jsx:213",
+    "dashboard/src/components/CaseGrid.jsx:144"
+   ]
+  },
+  {
+   "question": "1c. Historical defect: horizontal overflow at 390px on all four scripted states (docs/A11Y_AUDIT.md:102-107,140-142). Doc records a later repair: yes, as part of finding 1 (docs/A11Y_AUDIT.md:120-126).",
+   "answer": "Same root cause as 1a and fixed with it. A Playwright spec asserts no horizontal overflow at 430x932 and 844x390; it was not executed here.",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/pages/Dashboard.jsx:53",
+    "dashboard/src/index.css:201",
+    "dashboard/tests/gui-parity-mobile.spec.mjs:153",
+    "dashboard/tests/gui-parity-mobile.spec.mjs:165"
+   ]
+  },
+  {
+   "question": "1d. Historical defect: touch targets under 44px - tab triggers, MapLibre zoom buttons, Select triggers (28px), sheet Close (33px) (docs/A11Y_AUDIT.md:210-223). Doc records a later repair: no (the 2026-10-25 status note covers findings 1 and 2 only).",
+   "answer": "Partly fixed. Fixed on mobile: tab triggers are replaced by a 56px bottom nav, Select triggers and search are h-11, chips min-h-11, pager buttons 44px, sheet Close 44x44, map layer buttons min-h-11. Still present: MapLibre's zoom control has no size override, and newer controls have no mobile minimum (timeline filter/sort min-h-9, spatial-tool buttons, 'Clear date filter' ×, 'Retry density', QueryState Retry).",
+   "status": "PARTIAL",
+   "evidence": [
+    "dashboard/src/components/MobileNav.jsx:21",
+    "dashboard/src/components/CaseGrid.jsx:96",
+    "dashboard/src/components/ui/sheet.jsx:52",
+    "dashboard/src/components/CaseMap.jsx:379",
+    "dashboard/src/components/CaseMap.jsx:158",
+    "dashboard/src/components/ProgramTimeline.jsx:43",
+    "dashboard/src/components/SpatialToolsPanel.jsx:302",
+    "dashboard/src/components/CaseMap.jsx:442",
+    "dashboard/src/components/QueryState.jsx:52"
+   ]
+  },
+  {
+   "question": "1e. Historical defect: scrollable-region-focusable on the case table scroll container, both viewports (docs/A11Y_AUDIT.md:186-193, citing CaseGrid.jsx). Doc records a later repair: no.",
+   "answer": "Still present in source: the list scroll container and the Table wrapper are overflow-auto without tabindex. Pagination (12 rows by default) reduces how often it overflows; 100 per page is still selectable. On mobile the cards are buttons, so focus can enter the region there; on desktop the rows are not focusable.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/components/CaseGrid.jsx:183",
+    "dashboard/src/components/ui/table.jsx:6",
+    "dashboard/src/components/CaseGrid.jsx:22"
+   ]
+  },
+  {
+   "question": "1f. Historical defect: link-in-text-block on MapLibre's attribution link, desktop viewport only (docs/A11Y_AUDIT.md:174-184). Doc records a later repair: no.",
+   "answer": "Not adjudicable from source. No .maplibregl-ctrl-attrib override exists in index.css (grep), so nothing in the app changes the third-party link styling; whether axe still flags it requires a run. On mobile the map is now visible, so the rule could now apply there too.",
+   "status": "UNKNOWN",
+   "evidence": [
+    "dashboard/src/index.css:1",
+    "dashboard/src/main.jsx:11"
+   ]
+  },
+  {
+   "question": "1g. Historical layout defect: Cases tab forces the page to ~11,300px and the map renders as a sliver because Tailwind 4 dropped zero-value utilities under the legacy @config shim (docs/GUI_AUDIT.md:168-205, 129-133). Doc records a later repair: no (the 2026-10-25 note at docs/GUI_AUDIT.md:10-16 describes control changes only).",
+   "answer": "Root cause removed in source: index.css now uses native '@import \"tailwindcss\"' with an @theme block, its comment names this exact failure, and dashboard/tailwind.config.js no longer exists. The list is also paginated instead of rendering 470 rows. Compiled CSS was not built or inspected.",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/index.css:1",
+    "dashboard/src/index.css:4",
+    "dashboard/src/index.css:76",
+    "dashboard/src/components/CaseGrid.jsx:70"
+   ]
+  },
+  {
+   "question": "1h. Historical latent defect: Toaster viewport would be mispositioned by the same missing utilities (docs/GUI_AUDIT.md:437-441). Doc records a later repair: no.",
+   "answer": "Root cause removed as in 1g and the viewport now positions itself above the mobile bottom nav. Still dormant: nothing calls toast().",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/components/ui/toast.jsx:18",
+    "dashboard/src/App.jsx:29"
+   ]
+  },
+  {
+   "question": "1i. Historical scope note: no light theme exists (docs/A11Y_AUDIT.md:79-86).",
+   "answer": "No longer true: a light token set and a dark/light/system toggle exist. Light-theme contrast has not been audited by any document found.",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/index.css:137",
+    "dashboard/src/lib/theme.js:5",
+    "dashboard/src/components/TopControls.jsx:11"
+   ]
+  },
+  {
+   "question": "2a. Case-detail defect: drawer renders entirely off-screen, Close and click-outside unreachable, only Escape works (docs/GUI_AUDIT.md:225-253, citing CaseDetail.jsx and ui/sheet.jsx). Doc records a later repair: no.",
+   "answer": "Root cause removed in source (see 1g). The sheet variants still use inset-y-0/right-0 and inset-x-0/bottom-0, which now compile under native Tailwind 4. A Playwright spec asserts the mobile bottom sheet settles against the viewport bottom; no spec asserts the desktop right-hand drawer's position, and nothing was run here.",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/index.css:1",
+    "dashboard/src/components/ui/sheet.jsx:33",
+    "dashboard/src/components/CaseDetail.jsx:26",
+    "dashboard/tests/gui-parity-mobile.spec.mjs:76"
+   ]
+  },
+  {
+   "question": "2b. Case-detail defect: axe aria-hidden-focus while the sheet is open (docs/A11Y_AUDIT.md:195-208). Doc records a later repair: no.",
+   "answer": "Not adjudicable from source. The sheet is a stock Radix Dialog portal with no custom aria-hidden handling; whether a focusable background node remains inside an aria-hidden ancestor is a runtime property. No automated axe check covers the open case sheet (vitest-axe covers CaseGrid, MobileNav and TopControls only).",
+   "status": "UNKNOWN",
+   "evidence": [
+    "dashboard/src/components/ui/sheet.jsx:47",
+    "dashboard/src/components/CaseGrid.test.jsx:163"
+   ]
+  },
+  {
+   "question": "2c. Case-detail defect: sheet Close button below 44px (docs/A11Y_AUDIT.md:216-218). Doc records a later repair: no.",
+   "answer": "Fixed for the mobile shell (44x44 under shell-mobile); unchanged icon-sized target on desktop.",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/components/ui/sheet.jsx:52",
+    "dashboard/tests/gui-parity-mobile.spec.mjs:53"
+   ]
+  },
+  {
+   "question": "2d. Current source: how a case is opened.",
+   "answer": "Three triggers, all setting one in-memory 'selected' object: desktop table row click, mobile card button, map point click. Detail is rendered from the row already in memory; GET /cases/{case_id} is never called. The desktop table row is not keyboard operable, so on desktop there is no keyboard route to the detail view.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/pages/Dashboard.jsx:28",
+    "dashboard/src/components/CaseGrid.jsx:321",
+    "dashboard/src/components/CaseGrid.jsx:270",
+    "dashboard/src/components/CaseMap.jsx:229",
+    "dashboard/src/pages/Dashboard.jsx:41"
+   ]
+  },
+  {
+   "question": "2e. Current source: dialog/panel semantics, focus handling and close behaviour.",
+   "answer": "Radix Dialog (role=dialog, modal) with SheetTitle '{case_id} · {date_raw}' and SheetDescription (location). Close via the built-in Close button, Escape, or overlay click, all routed through onOpenChange. Focus trapping and return are Radix defaults; CaseDetail sets no onCloseAutoFocus, and on desktop the opener is not focusable, so focus is not returned to a meaningful element. The Close label is the hard-coded English 'Close'.",
+   "status": "PARTIAL",
+   "evidence": [
+    "dashboard/src/components/CaseDetail.jsx:21",
+    "dashboard/src/components/CaseDetail.jsx:42",
+    "dashboard/src/components/ui/sheet.jsx:51",
+    "dashboard/src/components/ui/sheet.jsx:54",
+    "dashboard/src/components/MobileNav.jsx:63"
+   ]
+  },
+  {
+   "question": "2f. Current source: long-text overflow in the case detail.",
+   "answer": "The sheet scrolls vertically (overflow-y-auto; max 85dvh on mobile). The source link uses break-all and the non-link source label break-words. Description, English gloss and contradictions paragraphs have no break utility, so they rely on normal wrapping; behaviour with a long unbroken token was not rendered. The longest description in the ledger is 1,250 characters and the longest source_url 555. The title has no reserved space for the absolutely positioned Close button.",
+   "status": "PARTIAL",
+   "evidence": [
+    "dashboard/src/components/CaseDetail.jsx:28",
+    "dashboard/src/components/CaseDetail.jsx:63",
+    "dashboard/src/components/CaseDetail.jsx:69",
+    "dashboard/src/components/CaseDetail.jsx:47",
+    "dashboard/src/components/CaseDetail.jsx:84",
+    "dashboard/src/components/ui/sheet.jsx:52"
+   ]
+  },
+  {
+   "question": "2g. Current source: missing-field rendering in the case detail.",
+   "answer": "Witness and evidence type fall back to an em dash, the source falls back to 'Source not supplied' with a 'No URL' badge, and agency and contradictions are omitted when absent. The provenance line is not guarded: it interpolates reviewer_action, promoted_from, promoted_at and promoted_by directly, and in the current ledger candidate_id is null on all 470 rows and promoted_by is not a ledger key, so it renders as 'promote · from  · 2026-06-23 · ' with dangling separators. Tier, confidence and decade badges render empty if their value is missing. The existing test only asserts that at least one em dash appears.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/components/CaseDetail.jsx:53",
+    "dashboard/src/components/CaseDetail.jsx:55",
+    "dashboard/src/lib/ovnis-format.js:48",
+    "dashboard/src/components/CaseDetail.jsx:87",
+    "server/backend/main.py:148",
+    "server/backend/main.py:150",
+    "dashboard/src/components/CaseDetail.jsx:38",
+    "dashboard/src/components/CaseDetail.test.jsx:131"
+   ]
+  },
+  {
+   "question": "3a. How source tiers, witness tiers and review state are shown on a case.",
+   "answer": "Evidence tier (T1-T4) is the only tier: a colour badge in the table, card, detail header and map point colour, with a legend that labels T1 'highest confidence' and T4 'lowest confidence'. There is no witness tier; witness is one plain-text line built from witness_type, count and name. 'Confidence' is a second unlabelled badge whose value is the first present of case_confidence, chronology_confidence, source_reliability - a number in the ledger - while the colour map expects high/medium/low words, so it is always slate. source_reliability, chronology_confidence, location_confidence, dedupe_status and translation_status are not displayed. Source is a citation/family/URL label, linked only for http(s) URLs, with a 'No URL' flag otherwise; source_family appears as an 'Agency involvement' badge tinted amber for military families. Review state on a master case is the review_action word inside the muted provenance line (it is 'promote' on all 470 rows). Candidates show review_status as a federation tone badge plus an evidence-tier badge.",
+   "status": "PARTIAL",
+   "evidence": [
+    "dashboard/src/lib/format.js:22",
+    "dashboard/src/components/CaseDetail.jsx:38",
+    "dashboard/src/components/CaseDetail.jsx:39",
+    "dashboard/src/lib/ovnis-format.js:8",
+    "server/backend/main.py:117",
+    "dashboard/src/components/CaseDetail.jsx:53",
+    "dashboard/src/components/CaseDetail.jsx:56",
+    "dashboard/src/lib/ovnis-format.js:55",
+    "dashboard/src/components/CaseDetail.jsx:87",
+    "dashboard/src/components/CandidateReview.jsx:14",
+    "dashboard/src/components/CandidateReview.jsx:46",
+    "dashboard/src/components/CaseMap.jsx:87"
+   ]
+  },
+  {
+   "question": "3b. Whether the chronology/timeline has a non-visual (list/table) equivalent.",
+   "answer": "There is no case chronology or timeline visualisation in the dashboard. The 'Activity' view is a programme-workflow list of five hard-coded items; it is already text (phase, title, detail, category) but is built from <div> grids rather than a list or table. Time appears elsewhere only as a Date column in the cases table (no sort control, ledger order), the Period filter, the map date-range filter, and the 'Cases by decade' bar chart, which has no table equivalent.",
+   "status": "NOT_FOUND",
+   "evidence": [
+    "dashboard/src/pages/Dashboard.jsx:16",
+    "dashboard/src/components/ProgramTimeline.jsx:55",
+    "dashboard/src/components/CaseGrid.jsx:341",
+    "dashboard/src/components/CaseMap.jsx:420",
+    "dashboard/src/components/StatsPanel.jsx:38"
+   ]
+  },
+  {
+   "question": "4. Views are in-memory state with no URL: confirm, and state what a deep link to a view or to a single case would require.",
+   "answer": "Confirmed. The router declares only '/' and '*'. The mobile view is useState('cases'); the desktop view is an uncontrolled Radix Tabs with defaultValue 'cases' (a separate state from the mobile one, so crossing 860px resets it); the open case is a useState object; filters, page and page size are CaseGrid-local state. No file in dashboard/src uses useParams, useSearchParams or useNavigate. A view deep link would require one shared view value bound to the URL (search parameter or path segment) driving both a controlled Tabs and MobileNav, and working under HashRouter for the offline export. A case deep link would require a case id in the URL resolved either from the loaded /cases array or through GET /cases/{case_id}, which exists in the backend and as an unused client function; the offline snapshot has no per-case keys, so offline it must resolve from the /cases list. It also needs a not-found state for an unknown id, and SPA fallback for non-root paths in the desktop server, which lives in the external prii_desktop package and was not available to inspect.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/App.jsx:24",
+    "dashboard/src/pages/Dashboard.jsx:28",
+    "dashboard/src/pages/Dashboard.jsx:29",
+    "dashboard/src/pages/Dashboard.jsx:102",
+    "dashboard/src/components/CaseGrid.jsx:57",
+    "dashboard/src/lib/api.js:65",
+    "server/backend/main.py:330",
+    "dashboard/src/lib/api.js:35",
+    "dashboard/src/App.jsx:9",
+    "desktop/launch.py:8"
+   ]
+  }
+ ],
+ "denominator": {
+  "surfaces_total": 38,
+  "surfaces_mounted": 37,
+  "workflows_total": 38,
+  "by_workflow_status": {
+   "COMPLETE": 28,
+   "PARTIAL": 6,
+   "BROKEN": 0,
+   "UNREACHABLE": 3,
+   "INTERNAL_ONLY": 1
+  },
+  "coverage_statement": "Exhaustive: routes (2), views/tabs (5), navigation items, dialogs/sheets (2), settings, context actions (none exist), keyboard shortcuts (none app-defined), backend endpoints (8 GET, all read), and every file under dashboard/src outside components/ui was read in full. Exhaustive for filters, tables, charts and toolbars inside each view as well; the application is small enough that nothing was sampled. The 38 unused shadcn primitives are counted as one unmounted surface, not individually. Not read: the Android/iOS native projects, the .command/.bat/.app launchers, and Python outside server/backend and desktop. Nothing was built, run or rendered; every layout, focus and overflow statement is a source reading. Test counts are grep counts of it()/test()/def test_."
+ },
+ "unknowns": [
+  "Runtime layout, focus order, contrast (including the light theme) and axe results: nothing was executed.",
+  "Whether the compiled CSS now contains the zero-value utilities whose absence caused the 2026-08-23 off-screen drawer and page blow-up; only the source configuration (native Tailwind 4 import, no @config shim) was verified.",
+  "axe aria-hidden-focus on the open case sheet and link-in-text-block on the MapLibre attribution: runtime-only; no source change addresses either and no automated check covers them.",
+  "Desktop wrapper behaviour (bind host, loopback restriction, SPA fallback, --route flag, single-instance lock): implemented in the external prii_desktop package, which is not in this repository.",
+  "Whether the offline file:// export can load geo/pr_municipios.geojson through MapLibre (CaseMap.jsx:13) and whether OSM/AWS tiles failing offline degrade cleanly: not run.",
+  "Whether src/lib/snapshot.json (populated, 470 cases) is intended to be committed populated; api.js:4 describes it as '{}' in normal builds.",
+  "Contents and correctness of the Capacitor iOS/Android projects: not read; README says they were never built."
+ ]
+}
