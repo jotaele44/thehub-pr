@@ -1,0 +1,16 @@
+{
+  "description": "No contract may let a guest write.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/authorization/guest_can_write",
+      "value": true
+    }
+  ],
+  "expect": [
+    "schema:contract:const"
+  ]
+}

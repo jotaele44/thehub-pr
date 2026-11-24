@@ -9,6 +9,16 @@
 // test keeps all three in step.
 export const FEDERATION_SHELL_BREAKPOINTS = Object.freeze({ tablet: 768, desktop: 1280 })
 export const FEDERATION_MOBILE_NAV_MAX = 5
+// Groups whose entries the host supplies at render time (what a person
+// pinned, what they opened last) instead of declaring them in the registry.
+export const FEDERATION_NAV_COLLECTION_KINDS = Object.freeze(['pinned', 'recent'])
+export const FEDERATION_NAV_OVERFLOW = Object.freeze(['more-submenu', 'scroll', 'none'])
+export const FEDERATION_NAV_COLLECTION_MAX = 50
+const DEFAULT_COLLECTION_ITEMS = 5
+
+export const isNavCollection = (group) => Boolean(group) && FEDERATION_NAV_COLLECTION_KINDS.includes(group.kind)
+// The key a host files a collection's entries under: the group's id, or its kind.
+export const navCollectionKey = (group) => group.id || group.kind
 
 const isLabel = (value) => (typeof value === 'string' && value.trim() !== '') || typeof value === 'function'
 const isIcon = (value) => typeof value === 'function' || (typeof value === 'object' && value !== null)
@@ -36,6 +46,10 @@ export function normalizeNavPath(value) {
  * Validate and freeze a navigation registry.
  *
  * `groups` is `[{ label?, items: [{ label, path | id, icon?, capabilityId, ... }] }]`.
+ * A group with `kind: 'pinned'` or `kind: 'recent'` declares no items: it
+ * reserves a place for entries the host passes at render time, with
+ * `maxItems` (1 to 50, default 5) shown and `overflow` deciding what happens
+ * to the rest ('more-submenu', 'scroll' or 'none').
  * Every problem is collected and reported in one error, so a registry is
  * fixed in one pass instead of one throw at a time.
  */
@@ -43,6 +57,7 @@ export function defineFederationNav(groups, { requireCapabilityId = true } = {})
   const problems = []
   const ids = new Set()
   const paths = new Set()
+  const collectionKeys = new Set()
   if (!Array.isArray(groups) || groups.length === 0) {
     throw new Error('defineFederationNav: groups must be a non-empty array')
   }
@@ -53,6 +68,25 @@ export function defineFederationNav(groups, { requireCapabilityId = true } = {})
       return { items: [] }
     }
     if (group.label !== undefined && !isLabel(group.label)) problems.push(`${where}.label must be a non-empty string or a function`)
+    if (group.kind !== undefined && group.kind !== 'static' && !FEDERATION_NAV_COLLECTION_KINDS.includes(group.kind)) {
+      problems.push(`${where}.kind must be one of: static, ${FEDERATION_NAV_COLLECTION_KINDS.join(', ')}`)
+      return { ...group, items: [] }
+    }
+    if (isNavCollection(group)) {
+      if (!isLabel(group.label)) problems.push(`${where}.label is required for a ${group.kind} group`)
+      if (group.items !== undefined) problems.push(`${where}.items must be omitted: a ${group.kind} group gets its entries at render time`)
+      if (group.id !== undefined && (typeof group.id !== 'string' || group.id === '')) problems.push(`${where}.id must be a non-empty string`)
+      const maxItems = group.maxItems === undefined ? DEFAULT_COLLECTION_ITEMS : group.maxItems
+      if (!Number.isInteger(maxItems) || maxItems < 1 || maxItems > FEDERATION_NAV_COLLECTION_MAX) {
+        problems.push(`${where}.maxItems must be a whole number from 1 to ${FEDERATION_NAV_COLLECTION_MAX}`)
+      }
+      const overflow = group.overflow === undefined ? 'more-submenu' : group.overflow
+      if (!FEDERATION_NAV_OVERFLOW.includes(overflow)) problems.push(`${where}.overflow must be one of: ${FEDERATION_NAV_OVERFLOW.join(', ')}`)
+      const key = navCollectionKey(group)
+      if (collectionKeys.has(key)) problems.push(`${where} repeats the collection "${key}"; give one of them an id`)
+      collectionKeys.add(key)
+      return { ...group, maxItems, overflow, items: [] }
+    }
     if (!Array.isArray(group.items) || group.items.length === 0) {
       problems.push(`${where}.items must be a non-empty array`)
       return { ...group, items: [] }
@@ -174,16 +208,20 @@ export function matchFederationNavItem(registry, current, { isActive } = {}) {
  * are returned as overflow, still grouped. `hasExtras` forces a "More" entry
  * when the host has non-navigation content to put behind it.
  */
-export function splitMobileNav(registry, { max = FEDERATION_MOBILE_NAV_MAX, hasExtras = false } = {}) {
+export function splitMobileNav(registry, { max = FEDERATION_MOBILE_NAV_MAX, hasExtras = false, collections } = {}) {
   const limit = Math.max(2, Math.min(FEDERATION_MOBILE_NAV_MAX, Math.floor(max) || FEDERATION_MOBILE_NAV_MAX))
   const all = (registry || []).flatMap((group) => group.items || [])
-  if (all.length <= limit && !hasExtras) return { primary: all, overflow: [], hasMore: false }
+  // Pinned and recent entries never take a slot on the bar; a collection that
+  // has entries lives behind "More", which it therefore forces.
+  const filled = (group) => isNavCollection(group) && (collections?.[navCollectionKey(group)] || []).length > 0
+  const collected = (registry || []).filter(filled)
+  if (all.length <= limit && !hasExtras && collected.length === 0) return { primary: all, overflow: [], hasMore: false }
   const slots = limit - 1
   const preferred = all.filter((item) => item.mobile === 'primary')
   const chosen = new Set([...preferred, ...all.filter((item) => item.mobile !== 'primary')].slice(0, slots))
   const primary = all.filter((item) => chosen.has(item))
   const overflow = (registry || [])
     .map((group) => ({ ...group, items: (group.items || []).filter((item) => !chosen.has(item)) }))
-    .filter((group) => group.items.length > 0)
+    .filter((group) => group.items.length > 0 || filled(group))
   return { primary, overflow, hasMore: true }
 }

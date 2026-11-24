@@ -57,6 +57,11 @@
 [data-theme],
 [data-repo] {
   --fd-accent-strong: color-mix(in srgb, var(--fd-accent) 45%, var(--fd-text));
+  /* The roles the raw accent used to fill. Text on a solid accent fill, and
+   * the focus ring: both follow the legible accent, so every repository and
+   * theme meets 4.5:1 for the text and 3:1 for the ring. */
+  --fd-accent-contrast: var(--fd-surface);
+  --fd-focus-ring: var(--fd-accent-strong);
 }
 
 .fd-shell {
@@ -482,4 +487,23 @@
   .fd-mobile-nav__link[aria-current="page"]::before {
     background: Highlight;
   }
+}
+
+/* Pinned and recent groups: a row is a link and, beside it, its item menu. */
+.fd-nav__row {
+  display: flex;
+  align-items: center;
+  gap: .125rem;
+  min-width: 0;
+}
+.fd-nav__row > .fd-nav__link { flex: 1 1 auto; }
+.fd-nav__row > .fd-item-menu { flex: none; }
+.fd-nav__link > .fd-status-mark { flex: none; }
+.fd-nav__link[aria-current="true"] {
+  background: var(--fd-surface-2);
+  color: var(--fd-text);
+}
+.fd-nav__more { margin-top: .125rem; }
+.fd-nav__scroll {
+  max-height: calc(var(--fd-nav-rows, 5) * (var(--fd-touch-min) + .125rem));
 }

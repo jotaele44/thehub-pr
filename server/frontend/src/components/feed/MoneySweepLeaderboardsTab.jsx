@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { FederationScrollRegion } from "@pr-federation/react";
 
 const money = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -131,7 +132,7 @@ export default function MoneySweepLeaderboardsTab() {
             <span className="shrink-0"><State value="PASS" /></span>
           </div>
 
-          <div className="overflow-x-auto rounded-lg border border-border bg-card">
+          <FederationScrollRegion label="Ranking table" axis="x" role="group" className="rounded-lg border border-border bg-card">
             <table className="w-full text-left text-sm">
               <thead className="bg-muted/50 text-muted-foreground">
                 <tr>
@@ -163,7 +164,7 @@ export default function MoneySweepLeaderboardsTab() {
             {!ranking?.rows?.length && (
               <div className="p-4 text-sm text-muted-foreground">No certified rows are present in the promoted package.</div>
             )}
-          </div>
+          </FederationScrollRegion>
         </>
       )}
     </div>
