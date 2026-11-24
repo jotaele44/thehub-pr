@@ -10,10 +10,15 @@ and the docs-sync rule described below.
 Placeholders are `{{UPPER_CASE}}` keys taken from each repo's entry in
 `producers.vars.yaml` (every key is documented at the top of that file, and the
 renderer refuses to write a file with one left unresolved); which template renders
-where lives in `targets.yaml`. One placeholder is derived instead of read from the
-vars file: `{{RENDERED_WORKFLOWS}}` lists the `.github/workflows/` files
-`targets.yaml` renders into the repo (see
-[Action pins](#action-pins-dependabot-bumps-the-template-never-a-copy) below).
+where lives in `targets.yaml`. Two placeholders are derived from `targets.yaml`
+instead of read from the vars file: `{{RENDERED_WORKFLOWS}}` lists the
+`.github/workflows/` files rendered into the repo (see
+[Action pins](#action-pins-dependabot-bumps-the-template-never-a-copy) below), and
+`{{RENDERED_PIP_MANIFESTS}}` lists the rendered files Dependabot's pip ecosystem
+reads as manifests (see
+[Pip manifests](#pip-manifests-the-same-rule-for-requirements-desktoptxt)). A
+template writes each as `key: ["{{…}}"]`; where the list is empty for a repo, the
+renderer leaves that whole line out, and it refuses the placeholder anywhere else.
 
 ## Edit once, then re-render
 
@@ -90,6 +95,50 @@ Keeping it working:
 across a repository, not by file, and the same actions also run in workflows that
 are not rendered (setup-uv in `ci.yml`, for one), so ignoring them would stop
 legitimate bumps.
+
+## Pip manifests: the same rule for requirements-desktop.txt
+
+`requirements-desktop.txt` is rendered into the five desktop producers, and
+Dependabot's pip ecosystem reads it there. A `pywebview` floor bumped in that copy
+would fail the producer's `template-drift.yml` exactly as an action pin does, so
+the pip side follows the same rule ([ADR 0016](../docs/adr/0016-rendered-pip-manifests-land-in-templates-first.md)):
+
+| Repository | Pip ecosystem |
+|---|---|
+| The six producers | `directory: "/"` with `exclude-paths: ["{{RENDERED_PIP_MANIFESTS}}"]`. The renderer fills in the rendered files the pip ecosystem would read: `.txt` / `.in` files at the root or one directory down, and `pyproject.toml`, `setup.py`, `setup.cfg`, `Pipfile`, `Pipfile.lock`, `poetry.lock`, `pdm.lock` at the root. Today that is `requirements-desktop.txt` in the five desktop producers. spiderweb-pr renders none, so its config has no pip `exclude-paths` at all. |
+| `thehub-pr` | `directory: "/"`, no `exclude-paths`. The pip ecosystem reads requirement files one directory below the root too, so it reaches `federation-templates/requirements-desktop.txt` as well as the hub's own `requirements-desktop.txt`, and bumps `pywebview` in both in one pull request (as it did in `f1cfad5`). |
+
+What happens when `pywebview` publishes a release:
+
+1. The hub's weekly Dependabot run opens a pull request that edits the template and
+   the hub's `requirements-desktop.txt` together. The hub renders no copy of this
+   template, so its drift gate is unaffected. Review and merge it.
+2. The merge touches `federation-templates/**`, and the change reaches each desktop
+   producer in a template sync PR, as described for action pins above.
+
+Keeping it working:
+
+- Keep pip-manifest templates directly in `federation-templates/`. One directory
+  deeper (`baseline/`, say) is out of the hub's pip scan, and nothing would bump the
+  template. Do not add a second pip directory for the templates either: the template
+  would be scanned twice, and an ungrouped bump would split into two pull requests.
+- Never put a placeholder on a registry requirement line. It may trail a direct
+  reference (`name @ url`), which Dependabot parses but never bumps, as
+  `{{DESKTOP_EXTRA_REQUIREMENTS}}` does.
+- The template's `pywebview` line must stay identical to the one in the hub's
+  `requirements-desktop.txt`, so the hub tests the floor producers ship.
+- No file in a producer may `-r` or `-c` a rendered manifest. Dependabot refuses a
+  requirements file that references an excluded one, and that fails the producer's
+  whole pip update, not just that file.
+- `exclude-paths` applies to version updates only, as on the actions side. Close a
+  Dependabot security PR that edits a rendered `requirements-desktop.txt` and bump
+  the template instead.
+- If the hub's pip run stops opening pull requests (check *Insights → Dependency
+  graph → Dependabot*), bump by hand: edit the template and the hub's
+  `requirements-desktop.txt` in one commit.
+
+`tests/test_render_federation_templates.py` enforces each of these that a test can
+see from the hub.
 
 ## Documentation stays true (docs-sync)
 
