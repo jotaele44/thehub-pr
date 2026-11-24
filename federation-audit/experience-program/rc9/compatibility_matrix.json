@@ -950,6 +950,12 @@
      "os": "macOS 26.6.2 x86_64",
      "what": "desktop app started from PRII-THEHUB.app on the user's Mac at its local main 95c6c99: setup, --smoke start, Dock process identity",
      "by": "this program (qa/macos_observations.json)"
+    },
+    {
+     "engine": "pywebview (system WebKit)",
+     "os": "macOS 26.6.2 x86_64",
+     "what": "desktop app started once from PRII-THEHUB.app on the user's Mac at its local main a97a56b: window rendered the Hub interface; Dock tile, menu bar and application menu read on screen; not timed, not operated",
+     "by": "this program (qa/macos_observations.json, on_screen_2026_11_24)"
     }
    ]
   }

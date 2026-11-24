@@ -70,12 +70,12 @@
   "running_process": {
    "claim_class": "COMPUTED",
    "observed": "While the app ran, the only new foreground process was named \"Python\", bundle identifier org.python.python, executable /Library/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python desktop/launch.py (pid 14181).",
-   "reading": "The launcher execs the venv's Python. The window is therefore owned by Python.app, and macOS shows it as Python in the Dock and the app switcher, with Python's icon, not TheHub's. The bundle's name, identifier and icon do not reach the running app."
+   "reading": "The launcher execs the venv's Python. The window is therefore owned by Python.app, and macOS reports the running application as Python (org.python.python); the bundle's identifier does not reach it. This reading also predicted a Python Dock tile with Python's icon. The on-screen check of 2026-11-24 contradicted that part: see on_screen_2026_11_24, where the Dock tile carries the bundle's name and a blue icon while the menu bar and application menu say Python."
   },
   "dock_name_and_icon_on_screen": {
-   "state": "BLOCKED",
-   "claim_class": "ASSUMPTION",
-   "reason": "Reading the Dock's tiles needs Accessibility permission for osascript, and this Mac refused it (System Events error -1719). That the Dock tile reads 'Python' is inferred from the process name above, not seen."
+   "state": "PARTIAL",
+   "claim_class": "FACT",
+   "reason": "On 2026-11-21 the Dock could not be read: osascript was refused Accessibility permission (System Events error -1719), and the tile was inferred to read 'Python'. That inference was wrong for the tile. It was read on screen on 2026-11-24 (on_screen_2026_11_24). The app switcher (Cmd-Tab) was not observed."
   }
  },
  "dock_menu": {
@@ -85,7 +85,7 @@
   },
   "on_screen": {
    "state": "BLOCKED",
-   "reason": "Not inspected by eye; Accessibility permission refused (see above)."
+   "reason": "Right-clicking the running tile twice on 2026-11-24 produced no menu in the screenshots, so no entry is recorded. The capture shows only windows of applications granted to the session, and the Dock's menu is the Dock's own window; whether the menu opened and was filtered out, or did not open, is not known. Read it by eye (qa/MACOS_CHECKLIST.md step 2.3)."
   }
  },
  "open_at_login": {
@@ -101,5 +101,47 @@
  "side_effects": {
   "claim_class": "FACT",
   "statement": "Running desktop/setup.py --ensure in the user's thehub-pr checkout created desktop/.setup-complete and installed into .venv and the frontend dist. These are untracked build outputs that the app's own launch writes. TheHub was opened twice from its bundle; the first instance (pid 14181) was stopped by this session, and one instance the user may have opened (pid 20242) was left running."
+ },
+ "on_screen_2026_11_24": {
+  "observed_at": "2026-11-24",
+  "how_reached": "The user's Mac, linked to the session through the Claude desktop app, with computer use approved by the user for PRII-THEHUB, Python and Finder. PRII-THEHUB.app was opened once and quit once through its own menu. Nothing else was clicked.",
+  "checkout": {
+   "claim_class": "FACT",
+   "statement": "thehub-pr main a97a56b (thehub-pr#449 merge), clean before and after. desktop/.setup-complete (2026-11-21), .venv/bin/python and server/frontend/dist/index.html were all present before the launch, so it took the fast path; the marker's modification time did not change."
+  },
+  "running_application": {
+   "claim_class": "FACT",
+   "statement": "No PRII-THEHUB or Python instance was running before the launch. Afterwards the session's application list showed one running application, Python, bundle identifier org.python.python, pid 68591, and PRII-THEHUB (pr.prii.thehub.launcher) as not running. Quitting through the application menu ended it."
+  },
+  "dock_tile": {
+   "claim_class": "FACT",
+   "statement": "Read from screenshots while the app ran. Hovering the tile showed the label 'PRII-THEHUB' (the bundle's file name; Info.plist's CFBundleName and CFBundleDisplayName are 'TheHub'). The tile showed a blue circular icon with a black network graph and a running dot, not Python's icon.",
+   "icon_match": {
+    "claim_class": "COMPUTED",
+    "statement": "PRII-THEHUB.app/Contents/Resources/AppIcon.icns rendered at 16 x 16: 215 of 240 opaque pixels are blue-dominant, mean RGB (16, 52, 156), 25 near-black. This agrees with the tile by eye. It is not a pixel comparison."
+   }
+  },
+  "menu_bar_and_application_menu": {
+   "claim_class": "FACT",
+   "statement": "The bold name next to the Apple menu read 'Python'. The menu bar had Apple, Python, Edit and View. The application menu listed About Python, Services, Hide Python, Hide Others, Show All, Quit Python and Quit and Keep Windows. The window's title bar read 'TheHub'."
+  },
+  "window_content": {
+   "claim_class": "FACT",
+   "statement": "At the first screenshot, about 10 s after the open command, the tile was in the Dock and no window was on screen. At the second, a few seconds later, the TheHub window showed the Hub interface (Validation Gates view). No Launch Pad was seen between the two. Neither moment was timed finely: each call took several seconds, so this is not a startup measurement and is not comparable to open_to_dock_entry_seconds."
+  },
+  "not_observed": {
+   "claim_class": "FACT",
+   "items": [
+    "Dock tile menu entries, including whether Open at Login is offered (see dock_menu.on_screen)",
+    "app switcher (Cmd-Tab) name and icon (the session had no permission for system key combinations)",
+    "the producer apps (PRII-CENTINELAS and the others)",
+    "the user's own slow launches"
+   ]
+  },
+  "reading": {
+   "claim_class": "INFERENCE",
+   "statement": "The Dock tile follows the bundle that was opened, and the menu bar and application menu follow the running Python application. Two surfaces of the same app therefore show two names. Why the Dock keeps the bundle's name is not established here."
+  },
+  "limits": "One Mac, one launch, one observer. The Dock, an application menu and a menu bar were read from screenshots by eye."
  }
 }
