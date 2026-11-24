@@ -1084,10 +1084,10 @@ test.describe('sky workspace', () => {
 
     // A pass track appears on the chart and goes away again.
     await expect(page.locator('[data-sky-track]')).toHaveCount(0);
-    await rows.nth(2).getByRole('button', { name: /^Show the ISS track/ }).click();
+    await rows.nth(2).getByRole('button', { name: /^Show track: ISS/ }).click();
     await expect(page.locator('[data-sky-track="ISS"] path')).toBeVisible();
     await expect(page.locator('[data-sky-track-key]')).toContainText('Hollow dot: rise. Filled dot: set.');
-    await rows.nth(2).getByRole('button', { name: /^Hide the ISS track/ }).click();
+    await rows.nth(2).getByRole('button', { name: /^Hide track: ISS/ }).click();
     await expect(page.locator('[data-sky-track]')).toHaveCount(0);
 
     // Hubble's elements did not load: it is listed as failed with the reason, and nothing is placed for it.

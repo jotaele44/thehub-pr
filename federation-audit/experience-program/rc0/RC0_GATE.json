@@ -1,0 +1,45 @@
+{
+  "checks": {
+    "brief_identities_current": {
+      "note": "current_remote_head is the audited identity. A brief SHA that is an ancestor of it was simply recorded earlier.",
+      "relations": {
+        "jotaele44/aguayluz-pr": "SUPERSEDED_ANCESTOR_OF_CURRENT",
+        "jotaele44/centinelas-pr": "SUPERSEDED_ANCESTOR_OF_CURRENT",
+        "jotaele44/moneysweep-pr": "SUPERSEDED_ANCESTOR_OF_CURRENT",
+        "jotaele44/mucaro-ai": "SUPERSEDED_ANCESTOR_OF_CURRENT",
+        "jotaele44/ovnis-pr": "SAME",
+        "jotaele44/skywatcher-pr": "SAME",
+        "jotaele44/spiderweb-pr": "SAME",
+        "jotaele44/thehub-pr": "SUPERSEDED_ANCESTOR_OF_CURRENT"
+      },
+      "state": "SUPERSEDED"
+    },
+    "eight_repositories_identified": {
+      "count": 8,
+      "state": "PASS"
+    },
+    "no_uncommitted_local_changes": {
+      "excluded": "thehub-pr paths under federation-audit/experience-program/ (this program's own artifacts)",
+      "found": {},
+      "state": "PASS"
+    },
+    "off_device_backup_verified": {
+      "state": "OPEN"
+    },
+    "path_conservation": {
+      "state": "PASS"
+    },
+    "remote_reproduces_trees": {
+      "state": "PASS"
+    },
+    "sha256_manifests_built": {
+      "files": 12707,
+      "state": "PASS"
+    }
+  },
+  "gate": "RC0",
+  "generated_at": "2026-11-17T12:56:55+00:00",
+  "schema": "federation.experience-program.gate/1",
+  "state": "PROVISIONAL",
+  "why_not_pass": "Off-device recovery is OPEN: only the Git remote was shown to reproduce the trees."
+}

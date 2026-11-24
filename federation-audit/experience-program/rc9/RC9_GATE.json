@@ -1,0 +1,62 @@
+{
+ "schema": "federation.experience-program.gate/1",
+ "gate": "RC9",
+ "state": "PROVISIONAL",
+ "why_not_pass": "The matrix records what each tree declares and what was actually run. Most cells of a real compatibility matrix are not run: every application has now been loaded in Firefox and WebKit on Linux (cross-engine/), and TheHub started on macOS (qa/macos_observations.json), but nothing on Windows, Safari, or a phone. The browser floor rests on version numbers written from memory. No application has adopted the experience contract, so there is nothing to check contract compatibility against.",
+ "evidence": "rc9/compatibility_matrix.json",
+ "commits": {
+  "aguayluz-pr": "16d3cb0257b51f4b1d714bc773da9f2ece19802b",
+  "centinelas-pr": "6df08e3a5ff388379d00ce5232bdcdb1e79acd6c",
+  "moneysweep-pr": "c8e7430c694a2dcf2bc20cfc243fbc547c42fbb9",
+  "mucaro-ai": "3963fbd8fee904c1f1b2130c2652c6836a01a0d1",
+  "ovnis-pr": "a8225db5d226232037c455daf6e941e50d86d136",
+  "skywatcher-pr": "a2176990606048a6b918daacdb8bce027e58a903",
+  "spiderweb-pr": "278eb9a8a1e43b906ee0cb83ffc0aa2c9a15c8e6",
+  "thehub-pr": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3"
+ },
+ "observations": {
+  "claim_class": "FACT unless marked",
+  "items": [
+   "spiderweb-pr declares react, react-dom, vite and typescript as \"latest\". Its build is not reproducible from package.json alone; what it resolves to depends on its lockfile and the day it is installed.",
+   "skywatcher-pr is on React 18. aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, thehub-pr and mucaro-ai are on React 19. spiderweb-pr declares \"latest\", so its version is not stated by its package.json. The shared package supports 18 and 19.",
+   "centinelas-pr is on Tailwind 3; aguayluz-pr, moneysweep-pr, ovnis-pr, skywatcher-pr and thehub-pr are on Tailwind 4. spiderweb-pr and mucaro-ai do not use Tailwind.",
+   "Design-system pins on main: thehub-pr source; moneysweep-pr 0.4.1; aguayluz-pr 0.4.0; centinelas-pr, ovnis-pr and skywatcher-pr 0.3.0; spiderweb-pr and mucaro-ai none. Nothing newer than 0.4.1 is released.",
+   "Desktop-runtime pins on main: five producers pin thehub-pr commit 1313c77, which predates the Launch Pad; spiderweb-pr pins f2b8176. The Launch Pad pins are on unmerged branches.",
+   "Python floors differ: thehub-pr >=3.9; aguayluz-pr, centinelas-pr and skywatcher-pr >=3.10; spiderweb-pr and mucaro-ai >=3.11; moneysweep-pr and ovnis-pr declare none in pyproject.toml.",
+   "Only thehub-pr and moneysweep-pr declare a Node engine.",
+   "CI names Firefox and WebKit for thehub-pr (design-system fixtures only), spiderweb-pr and, for WebKit, mucaro-ai. For the other five applications CI names Chromium only.",
+   "ASSUMPTION: from the features found in the builds, six applications need about Chromium 111, Firefox 128 and Safari 16.4; centinelas-pr and mucaro-ai about Chromium 111, Firefox 113 and Safari 16.2. The Firefox 128 figure comes from CSS @property and has not been checked against a compatibility source."
+  ]
+ },
+ "checks": {
+  "matrix_recomputed_from_trees": {
+   "state": "PASS",
+   "command": "scripts/rc9_matrix.py"
+  },
+  "validation_against_rc2_schema": {
+   "state": "UNRESOLVED",
+   "note": "Planned, not possible. rc2/schemas/federation-compatibility.schema.json describes a declaration made by an application that has adopted the contract (it requires contract_version and its bounds). No application has, so no row can be a valid declaration. The matrix has its own shape instead; the gap is recorded here rather than filled with invented contract versions."
+  },
+  "browser_version_table_checked": {
+   "state": "OPEN"
+  },
+  "ci_jobs_confirmed_to_run_and_pass": {
+   "state": "OPEN",
+   "note": "Workflow files were read; run history was not."
+  },
+  "firefox_webkit_against_applications": {
+   "state": "BLOCKED",
+   "note": "Not installed in this environment."
+  },
+  "macos_windows": {
+   "state": "BLOCKED"
+  },
+  "independent_review": {
+   "state": "BLOCKED"
+  }
+ },
+ "artifacts_sha256": {
+  "rc9/compatibility_matrix.json": "dad2d87b371a1830292d5a7303c810600017d3407af28cca89d643a218422655"
+ },
+ "certification": "WITHHELD"
+}

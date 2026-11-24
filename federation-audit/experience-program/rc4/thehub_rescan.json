@@ -1,0 +1,472 @@
+{
+ "schema": "federation.experience-program.rescan/1",
+ "repository": "thehub-pr",
+ "audited_commit": "4f5c660801b6380ad4b64d39518fa778c9d25c76",
+ "rescanned_commit": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3",
+ "method": "Chromium, dark colour scheme, every addressable route at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels. Pages were loaded, not operated. An element is counted once per application however many routes and widths it failed at; routes lists at most five. Element lists are capped at 80 per rule per page load by the scan.",
+ "reachability": {
+  "routes": 86,
+  "page_loads": 602,
+  "routes_with_a_problem": {}
+ },
+ "horizontal_overflow": {
+  "audited_commit": {
+   "routes": 23,
+   "page_loads_by_width": {
+    "320": 17,
+    "390": 14,
+    "430": 14,
+    "1280": 6
+   },
+   "routes_by_width": {
+    "320": [
+     "/aguayluz?tab=feed",
+     "/apps",
+     "/crossover",
+     "/gis",
+     "/gis?view=aoi-comparison",
+     "/gis?view=digital-twin",
+     "/gis?view=interpretive-layers",
+     "/gis?view=property-map",
+     "/moneysweep",
+     "/moneysweep?tab=feed",
+     "/ovnis",
+     "/ovnis?tab=patterns",
+     "/ovnis?tab=reports",
+     "/ovnis?tab=showlog",
+     "/ovnis?tab=sources",
+     "/ovnis?tab=witness",
+     "/research?tab=assistant"
+    ],
+    "390": [
+     "/apps",
+     "/crossover",
+     "/gis",
+     "/gis?view=aoi-comparison",
+     "/gis?view=digital-twin",
+     "/gis?view=interpretive-layers",
+     "/gis?view=property-map",
+     "/ovnis",
+     "/ovnis?tab=patterns",
+     "/ovnis?tab=reports",
+     "/ovnis?tab=showlog",
+     "/ovnis?tab=sources",
+     "/ovnis?tab=witness",
+     "/research?tab=assistant"
+    ],
+    "430": [
+     "/apps",
+     "/crossover",
+     "/gis",
+     "/gis?view=aoi-comparison",
+     "/gis?view=digital-twin",
+     "/gis?view=interpretive-layers",
+     "/gis?view=property-map",
+     "/ovnis",
+     "/ovnis?tab=patterns",
+     "/ovnis?tab=reports",
+     "/ovnis?tab=showlog",
+     "/ovnis?tab=sources",
+     "/ovnis?tab=witness",
+     "/research?tab=assistant"
+    ],
+    "1280": [
+     "/aguayluz",
+     "/aguayluz?tab=workspace",
+     "/skywatcher",
+     "/skywatcher?view=workspace",
+     "/spiderweb",
+     "/spiderweb?tab=workspace"
+    ]
+   }
+  },
+  "rescanned_commit": {
+   "routes": 17,
+   "page_loads_by_width": {
+    "320": 17,
+    "390": 14,
+    "430": 14,
+    "768": 7
+   },
+   "routes_by_width": {
+    "320": [
+     "/aguayluz?tab=feed",
+     "/apps",
+     "/crossover",
+     "/gis",
+     "/gis?view=aoi-comparison",
+     "/gis?view=digital-twin",
+     "/gis?view=interpretive-layers",
+     "/gis?view=property-map",
+     "/moneysweep",
+     "/moneysweep?tab=feed",
+     "/ovnis",
+     "/ovnis?tab=patterns",
+     "/ovnis?tab=reports",
+     "/ovnis?tab=showlog",
+     "/ovnis?tab=sources",
+     "/ovnis?tab=witness",
+     "/research?tab=assistant"
+    ],
+    "390": [
+     "/apps",
+     "/crossover",
+     "/gis",
+     "/gis?view=aoi-comparison",
+     "/gis?view=digital-twin",
+     "/gis?view=interpretive-layers",
+     "/gis?view=property-map",
+     "/ovnis",
+     "/ovnis?tab=patterns",
+     "/ovnis?tab=reports",
+     "/ovnis?tab=showlog",
+     "/ovnis?tab=sources",
+     "/ovnis?tab=witness",
+     "/research?tab=assistant"
+    ],
+    "430": [
+     "/apps",
+     "/crossover",
+     "/gis",
+     "/gis?view=aoi-comparison",
+     "/gis?view=digital-twin",
+     "/gis?view=interpretive-layers",
+     "/gis?view=property-map",
+     "/ovnis",
+     "/ovnis?tab=patterns",
+     "/ovnis?tab=reports",
+     "/ovnis?tab=showlog",
+     "/ovnis?tab=sources",
+     "/ovnis?tab=witness",
+     "/research?tab=assistant"
+    ],
+    "768": [
+     "/crossover",
+     "/ovnis",
+     "/ovnis?tab=patterns",
+     "/ovnis?tab=reports",
+     "/ovnis?tab=showlog",
+     "/ovnis?tab=sources",
+     "/ovnis?tab=witness"
+    ]
+   }
+  }
+ },
+ "by_rule": {
+  "color-contrast": {
+   "audited_commit": {
+    "routes_failing": 86,
+    "distinct_elements": 26,
+    "style_signatures": 4,
+    "colour_pairs": 4
+   },
+   "rescanned_commit": {
+    "routes_failing": 1,
+    "distinct_elements": 1,
+    "style_signatures": 1,
+    "colour_pairs": 1
+   }
+  },
+  "button-name": {
+   "audited_commit": {
+    "routes_failing": 12,
+    "distinct_elements": 8,
+    "style_signatures": 4
+   },
+   "rescanned_commit": {
+    "routes_failing": 12,
+    "distinct_elements": 8,
+    "style_signatures": 4
+   }
+  },
+  "scrollable-region-focusable": {
+   "audited_commit": {
+    "routes_failing": 3,
+    "distinct_elements": 3,
+    "style_signatures": 3
+   },
+   "rescanned_commit": {
+    "routes_failing": 3,
+    "distinct_elements": 3,
+    "style_signatures": 3
+   }
+  },
+  "label-content-name-mismatch": {
+   "audited_commit": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "style_signatures": 0
+   },
+   "rescanned_commit": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "style_signatures": 0
+   }
+  }
+ },
+ "rescanned_detail": {
+  "repository": "thehub-pr",
+  "axe_version": "4.14.1",
+  "csp_bypassed_for_scan": false,
+  "routes": 86,
+  "page_loads": 602,
+  "rules": {
+   "color-contrast": {
+    "routes_failing": 1,
+    "distinct_elements": 1,
+    "styled_by": {
+     "shared": 0,
+     "application": 1
+    },
+    "elements": [
+     {
+      "html": "<p class=\"note\">\n      Each app opens in its own window on its own local port. Apps marked \"Not cloned\"\n      must be cloned next to TheHub first. The main dashboard is <a href=\"/\">here</a>.\n    </p>",
+      "styled_by": "application",
+      "routes": [
+       "/launcher"
+      ],
+      "widths": [
+       320,
+       390,
+       430,
+       768,
+       1280,
+       1440,
+       1920
+      ],
+      "example_selector": ".note",
+      "fg": "#64748b",
+      "bg": "#0b1020",
+      "ratio": 3.97,
+      "expected": "4.5:1",
+      "font_size": "9.0pt (12px)",
+      "font_weight": "normal",
+      "route_count": 1
+     }
+    ],
+    "colour_pairs": [
+     {
+      "fg": "#64748b",
+      "bg": "#0b1020",
+      "ratio": 3.97,
+      "font_size": "9.0pt (12px)",
+      "distinct_elements": 1
+     }
+    ]
+   },
+   "button-name": {
+    "routes_failing": 12,
+    "distinct_elements": 8,
+    "styled_by": {
+     "shared": 0,
+     "application": 8
+    },
+    "elements": [
+     {
+      "html": "<button type=\"button\" role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" dir=\"ltr\" data-state=\"closed\" class=\"flex items-center ju...\">",
+      "styled_by": "application",
+      "routes": [
+       "/",
+       "/control?tab=tasks",
+       "/crossover",
+       "/research?tab=assistant",
+       "/tasks"
+      ],
+      "widths": [
+       320,
+       390,
+       430,
+       768,
+       1280,
+       1440,
+       1920
+      ],
+      "example_selector": ".whitespace-nowrap.border-input.bg-transparent:nth-child(1)",
+      "route_count": 5
+     },
+     {
+      "html": "<button class=\"inline-flex items-ce...\">",
+      "styled_by": "application",
+      "routes": [
+       "/aguayluz?tab=feed",
+       "/moneysweep",
+       "/moneysweep?tab=feed"
+      ],
+      "widths": [
+       320,
+       390,
+       430,
+       768,
+       1280,
+       1440,
+       1920
+      ],
+      "example_selector": ".hover\\:bg-accent",
+      "route_count": 3
+     },
+     {
+      "html": "<button class=\"inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors bg-secondary text-foreground\">",
+      "styled_by": "application",
+      "routes": [
+       "/control?tab=tasks",
+       "/tasks"
+      ],
+      "widths": [
+       320,
+       390,
+       430
+      ],
+      "example_selector": ".bg-secondary.text-foreground.gap-1\\.5",
+      "route_count": 2
+     },
+     {
+      "html": "<button class=\"inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors text-muted-foreground hover:text-foreground\">",
+      "styled_by": "application",
+      "routes": [
+       "/control?tab=tasks",
+       "/tasks"
+      ],
+      "widths": [
+       320,
+       390,
+       430
+      ],
+      "example_selector": ".hover\\:text-foreground.gap-1\\.5.px-2\\.5:nth-child(2)",
+      "route_count": 2
+     },
+     {
+      "html": "<button type=\"button\" role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" dir=\"ltr\" data-state=\"closed\" class=\"flex h-9 w-full item...\">",
+      "styled_by": "application",
+      "routes": [
+       "/control?tab=readiness",
+       "/readiness"
+      ],
+      "widths": [
+       320,
+       390,
+       430,
+       768,
+       1280,
+       1440,
+       1920
+      ],
+      "example_selector": ".justify-between",
+      "route_count": 2
+     },
+     {
+      "html": "<button class=\"inline-flex items-ce...\" disabled=\"\">",
+      "styled_by": "application",
+      "routes": [
+       "/research?tab=assistant"
+      ],
+      "widths": [
+       320,
+       390,
+       430,
+       768,
+       1280,
+       1440,
+       1920
+      ],
+      "example_selector": ".\\[\\&_svg\\]\\:pointer-events-none",
+      "route_count": 1
+     },
+     {
+      "html": "<button type=\"button\" role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" dir=\"ltr\" data-state=\"closed\" class=\"flex h-9 items-cente...\">",
+      "styled_by": "application",
+      "routes": [
+       "/anomaly-overlap"
+      ],
+      "widths": [
+       320,
+       390,
+       430,
+       768,
+       1280,
+       1440,
+       1920
+      ],
+      "example_selector": ".gap-1\\.5.flex-col.flex:nth-child(1) > .justify-between.whitespace-nowrap.border-input",
+      "route_count": 1
+     },
+     {
+      "html": "<button type=\"button\" role=\"combobox\" aria-expanded=\"false\" aria-autocomplete=\"none\" dir=\"ltr\" data-state=\"closed\" data-placeholder=\"\" class=\"flex items-center ju...\">",
+      "styled_by": "application",
+      "routes": [
+       "/hub"
+      ],
+      "widths": [
+       320,
+       390,
+       430,
+       768,
+       1280,
+       1440,
+       1920
+      ],
+      "example_selector": ".border-input",
+      "route_count": 1
+     }
+    ]
+   },
+   "scrollable-region-focusable": {
+    "routes_failing": 3,
+    "distinct_elements": 3,
+    "styled_by": {
+     "shared": 0,
+     "application": 3
+    },
+    "elements": [
+     {
+      "html": "<div class=\"h-full space-y-3 overflow-y-auto p-3 text-xs\">",
+      "styled_by": "application",
+      "routes": [
+       "/gis?view=digital-twin"
+      ],
+      "widths": [
+       320,
+       390,
+       430,
+       768,
+       1280,
+       1440,
+       1920
+      ],
+      "example_selector": ".space-y-3.overflow-y-auto.p-3",
+      "route_count": 1
+     },
+     {
+      "html": "<div class=\"overflow-x-auto rounded-lg border border-border bg-card\">",
+      "styled_by": "application",
+      "routes": [
+       "/moneysweep?tab=leaderboards"
+      ],
+      "widths": [
+       320,
+       390,
+       430,
+       768
+      ],
+      "example_selector": ".overflow-x-auto",
+      "route_count": 1
+     },
+     {
+      "html": "<div class=\"relative w-full overflow-auto\">",
+      "styled_by": "application",
+      "routes": [
+       "/crossover"
+      ],
+      "widths": [
+       320,
+       390,
+       430,
+       768
+      ],
+      "example_selector": ".overflow-auto",
+      "route_count": 1
+     }
+    ]
+   }
+  }
+ }
+}

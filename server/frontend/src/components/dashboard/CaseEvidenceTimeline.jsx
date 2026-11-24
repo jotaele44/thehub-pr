@@ -53,7 +53,7 @@ export default function CaseEvidenceTimeline() {
         </div>
 
         <Select value={selectedCaseId} onValueChange={setCaseId}>
-          <SelectTrigger className="w-[16rem] h-8 text-xs">
+          <SelectTrigger aria-label="Case" className="w-[16rem] h-8 text-xs">
             <SelectValue placeholder="Select a case" />
           </SelectTrigger>
           <SelectContent>
