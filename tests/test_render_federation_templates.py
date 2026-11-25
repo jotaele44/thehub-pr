@@ -752,6 +752,25 @@ def test_both_dependabot_templates_agree_outside_the_actions_scope():
         assert _actions_entry(producer)[key] == _actions_entry(hub)[key], key
 
 
+# Majors whose peers the federation has not migrated: eslint-plugin-react 7
+# accepts eslint <= 9, @eslint/js 10 requires eslint 10, react-day-picker 8
+# accepts date-fns <= 3. Proposing them only produces PRs that fail `npm ci`
+# (skywatcher-pr merged two and its main went red).
+_HELD_NPM_MAJORS = {"eslint", "@eslint/js", "date-fns"}
+
+
+@pytest.mark.parametrize("template", ["dependabot.yml", "dependabot.hub.yml"])
+def test_npm_holds_unmigrated_majors_only_by_semver_level(template):
+    config = yaml.safe_load((_TEMPLATES / "baseline" / template).read_text())
+    ignores = _entry(config, "npm")["ignore"]
+    assert {i["dependency-name"] for i in ignores} == _HELD_NPM_MAJORS
+    for rule in ignores:
+        # By semver level, never by version range: spiderweb-pr already runs
+        # eslint 10, and a ">=10" range would stop its 10.x updates entirely.
+        assert rule["update-types"] == ["version-update:semver-major"], rule
+        assert "versions" not in rule, rule
+
+
 @pytest.mark.parametrize("key", [
     "rendered_workflows", "RENDERED_WORKFLOWS",
     "rendered_pip_manifests", "RENDERED_PIP_MANIFESTS",
