@@ -417,7 +417,10 @@ def test_baseline_actions_are_sha_pinned():
     # holds. Pinning is the whole point of these templates, so assert it rather
     # than trusting review to catch a regression.
     pinned = re.compile(r"^[0-9a-f]{40}$")
-    for path in sorted((_TEMPLATES / "baseline").glob("*.yml")):
+    # gui/ as well: the hub's Dependabot scans both directories and keeps SHA
+    # pins as SHA pins, so a floating tag here would never be bumped to one.
+    paths = [*(_TEMPLATES / "baseline").glob("*.y*ml"), *(_TEMPLATES / "gui").glob("*.y*ml")]
+    for path in sorted(paths):
         for ref in re.findall(r"uses:\s*\S+@(\S+)", path.read_text()):
             assert pinned.match(ref), f"{path.name}: {ref} is not a SHA pin"
 
@@ -610,3 +613,410 @@ def test_gui_rule_files_render_into_a_fresh_repo(tmp_path):
     doc = (tmp_path / "docs" / "GUI_CAPABILITY_PARITY.md").read_text()
     assert "thehub-pr follows the federation rule" in doc
     assert "npm --prefix server/frontend run test:gui-parity" in doc
+
+
+# ── Action pins: Dependabot bumps the template, never a rendered copy ─────────
+#
+# A pin bumped in a rendered workflow diverges from its template and turns that
+# repository's drift gate red (spiderweb-pr#410, fixed by hand in thehub-pr#446).
+# So producers exclude their rendered workflows from Dependabot, and the hub's
+# Dependabot scans the workflow templates themselves, bumping each template
+# together with the hub's own rendered copy. See federation-templates/README.md.
+
+_PRODUCERS = sorted(set(_vars()) - {"thehub-pr"})
+_SHA_PIN = re.compile(r"(uses:\s*\S+@)[0-9a-f]{40}")
+
+
+def _actions_entry(config: dict) -> dict:
+    (entry,) = [u for u in config["updates"] if u["package-ecosystem"] == "github-actions"]
+    return entry
+
+
+def _entry(config: dict, ecosystem: str) -> dict:
+    (entry,) = [u for u in config["updates"] if u["package-ecosystem"] == ecosystem]
+    return entry
+
+
+def _workflow_targets() -> list[dict]:
+    return [t for t in _targets() if t["output"].startswith(".github/workflows/")]
+
+
+def test_every_repo_gets_exactly_one_dependabot_config():
+    configs = [t for t in _targets() if t["output"] == ".github/dependabot.yml"]
+    by_template = {t["template"]: t["repos"] for t in configs}
+    assert set(by_template) == {"baseline/dependabot.yml", "baseline/dependabot.hub.yml"}
+    assert by_template["baseline/dependabot.hub.yml"] == ["thehub-pr"]
+    assert sorted(by_template["baseline/dependabot.yml"]) == _PRODUCERS
+    # Two templates for one path in the same repo would make the last one win
+    # silently, in whatever order targets.yaml happens to list them.
+    mod = _renderer()
+    seen = set()
+    for t in _targets():
+        for repo in t["repos"]:
+            key = (repo, mod._resolve_output(t["output"], mod._placeholders(_vars()[repo])))
+            assert key not in seen, f"{key} is rendered by two templates"
+            seen.add(key)
+
+
+@pytest.mark.parametrize("program_id", sorted(_vars()))
+def test_rendered_workflows_are_exactly_the_workflows_rendered(program_id, tmp_path):
+    mod = _renderer()
+    mod.render_repo(program_id, _vars()[program_id], tmp_path, _targets(), False)
+    on_disk = sorted(
+        str(p.relative_to(tmp_path))
+        for p in (tmp_path / ".github" / "workflows").iterdir()
+        if p.suffix in (".yml", ".yaml")
+    )
+    derived = mod._rendered_workflows(program_id, _targets(), mod._placeholders(_vars()[program_id]))
+    assert derived == on_disk
+    # template-drift.yml is not rendered (only its PRII_TEMPLATE_REF is
+    # managed), so its own actions must stay Dependabot's to bump.
+    assert ".github/workflows/template-drift.yml" not in derived
+    if program_id == "moneysweep-pr":
+        assert ".github/workflows/gui-capability-parity.yml" in derived
+        assert ".github/workflows/pip-audit.yml" not in derived
+
+
+@pytest.mark.parametrize("program_id", _PRODUCERS)
+def test_producer_dependabot_never_touches_a_rendered_workflow(program_id, tmp_path):
+    mod = _renderer()
+    mod.render_repo(program_id, _vars()[program_id], tmp_path, _targets(), False)
+    config = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
+    actions = _actions_entry(config)
+    assert actions["directory"] == "/" and "directories" not in actions
+    derived = mod._rendered_workflows(program_id, _targets(), mod._placeholders(_vars()[program_id]))
+    assert actions["exclude-paths"] == derived
+    for rel in actions["exclude-paths"]:
+        assert (tmp_path / rel).is_file(), f"{rel} is excluded but not rendered"
+    # npm keeps its full scope; pip is narrowed only by the pip-manifest list
+    # (test_producer_dependabot_never_touches_a_rendered_pip_manifest).
+    assert "exclude-paths" not in _entry(config, "npm")
+
+
+def test_hub_dependabot_scans_every_workflow_template():
+    config = yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text())
+    actions = _actions_entry(config)
+    # The hub's own rendered copies must stay in scope: they have to move in the
+    # same pull request as their template, or the hub's drift gate goes red.
+    assert "exclude-paths" not in actions
+    assert "directory" not in actions  # `directories` replaces it
+    template_dirs = {
+        "/federation-templates/" + str(Path(t["template"]).parent) for t in _workflow_targets()
+    }
+    assert {"/"} | template_dirs <= set(actions["directories"])
+
+
+def test_hub_actions_updates_cannot_be_split_across_pull_requests():
+    """No group may carry update-types, and every update kind needs a group.
+
+    Ungrouped updates become one pull request per directory. A group limited by
+    update-types can split one bump too, because Dependabot judges the semver
+    level per directory against the lowest pin it finds there
+    (dependency_set.rb combined_version, semver_grouping_rules.rb), and the
+    hub's workflows still pin older majors than the templates.
+    """
+    groups = _actions_entry(yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text()))["groups"]
+    assert groups, "ungrouped updates are split per directory"
+    for name, group in groups.items():
+        assert "update-types" not in group, name
+        assert group.get("patterns") == ["*"], name
+    applies_to = sorted(g.get("applies-to", "version-updates") for g in groups.values())
+    assert applies_to == ["security-updates", "version-updates"]
+
+
+def test_scanned_template_directories_hold_only_parseable_yaml():
+    # Dependabot parses every *.yml / *.yaml directly inside a scanned directory
+    # as a workflow; one that does not parse fails the whole actions update.
+    actions = _actions_entry(yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text()))
+    for directory in actions["directories"]:
+        if directory == "/":
+            continue
+        files = [p for p in sorted((_HUB / directory.lstrip("/")).iterdir())
+                 if p.is_file() and p.suffix in (".yml", ".yaml")]
+        assert files, directory
+        for path in files:
+            yaml.safe_load(path.read_bytes().decode("utf-8"))
+
+
+def test_both_dependabot_templates_agree_outside_the_actions_scope():
+    producer = yaml.safe_load((_TEMPLATES / "baseline" / "dependabot.yml").read_text())
+    hub = yaml.safe_load((_TEMPLATES / "baseline" / "dependabot.hub.yml").read_text())
+    assert _entry(producer, "npm") == _entry(hub, "npm")
+    # Producers exclude their rendered pip manifests; the hub excludes nothing,
+    # because its scan has to keep reaching the requirements templates.
+    producer_pip = dict(_entry(producer, "pip"))
+    excluded = producer_pip.pop("exclude-paths", None)
+    assert excluded == ["{{RENDERED_PIP_MANIFESTS}}"]
+    assert producer_pip == _entry(hub, "pip")
+    for key in ("schedule", "open-pull-requests-limit", "labels", "commit-message"):
+        assert _actions_entry(producer)[key] == _actions_entry(hub)[key], key
+
+
+# Majors whose peers the federation has not migrated: eslint-plugin-react 7
+# accepts eslint <= 9, @eslint/js 10 requires eslint 10, react-day-picker 8
+# accepts date-fns <= 3. Proposing them only produces PRs that fail `npm ci`
+# (skywatcher-pr merged two and its main went red).
+_HELD_NPM_MAJORS = {"eslint", "@eslint/js", "date-fns"}
+
+
+@pytest.mark.parametrize("template", ["dependabot.yml", "dependabot.hub.yml"])
+def test_npm_holds_unmigrated_majors_only_by_semver_level(template):
+    config = yaml.safe_load((_TEMPLATES / "baseline" / template).read_text())
+    ignores = _entry(config, "npm")["ignore"]
+    assert {i["dependency-name"] for i in ignores} == _HELD_NPM_MAJORS
+    for rule in ignores:
+        # By semver level, never by version range: spiderweb-pr already runs
+        # eslint 10, and a ">=10" range would stop its 10.x updates entirely.
+        assert rule["update-types"] == ["version-update:semver-major"], rule
+        assert "versions" not in rule, rule
+
+
+@pytest.mark.parametrize("key", [
+    "rendered_workflows", "RENDERED_WORKFLOWS",
+    "rendered_pip_manifests", "RENDERED_PIP_MANIFESTS",
+])
+def test_a_var_cannot_shadow_the_derived_placeholder(key):
+    mod = _renderer()
+    vars_ = {**_vars()["ovnis-pr"], key: "nothing"}
+    with pytest.raises(SystemExit, match=key.upper()):
+        mod._subs_for("ovnis-pr", vars_, _targets())
+
+
+def test_an_empty_derived_list_drops_only_its_line(tmp_path):
+    # Rendering `exclude-paths: [""]` would hand Dependabot a pattern that
+    # matches nothing while looking deliberate. Nothing to exclude means no key:
+    # rendered alone, the config gives ovnis-pr no workflow and no pip manifest,
+    # so both exclude-paths lines go and nothing else does.
+    mod = _renderer()
+    only_config = [{"template": "baseline/dependabot.yml",
+                    "output": ".github/dependabot.yml", "repos": ["ovnis-pr"]}]
+    subs, empty = mod._subs_for("ovnis-pr", _vars()["ovnis-pr"], only_config)
+    assert empty == {"{{RENDERED_WORKFLOWS}}", "{{RENDERED_PIP_MANIFESTS}}"}
+    assert not set(subs) & empty
+    mod.render_repo("ovnis-pr", _vars()["ovnis-pr"], tmp_path, only_config, False)
+    # The template with every other placeholder filled in, before any line drop.
+    template = mod._render_bytes("baseline/dependabot.yml", subs).decode().splitlines()
+    rendered = (tmp_path / ".github" / "dependabot.yml").read_text().splitlines()
+    assert [line for line in template if line not in rendered] == [
+        '    exclude-paths: ["{{RENDERED_PIP_MANIFESTS}}"]',
+        '    exclude-paths: ["{{RENDERED_WORKFLOWS}}"]',
+    ]
+    assert len(rendered) == len(template) - 2
+    config = yaml.safe_load("\n".join(rendered))
+    assert all("exclude-paths" not in u for u in config["updates"])
+
+
+@pytest.mark.parametrize("line", [
+    'exclude-paths: ["{{RENDERED_PIP_MANIFESTS}}", "extra.txt"]',
+    'exclude-paths: [{{RENDERED_PIP_MANIFESTS}}]',
+    'exclude-paths: ["{{RENDERED_PIP_MANIFESTS}}"]  # trailing comment',
+    'note: "{{RENDERED_PIP_MANIFESTS}}"',
+])
+def test_an_empty_derived_list_anywhere_else_is_refused(tmp_path, monkeypatch, line):
+    # Only a whole `<key>: ["{{P}}"]` line can be omitted. Anything else would
+    # have to be rewritten rather than dropped, so the render refuses it.
+    mod = _renderer()
+    templates = tmp_path / "templates"
+    templates.mkdir()
+    (templates / "x.yml").write_text(f"a: 1\n{line}\nb: 2\n")
+    monkeypatch.setattr(mod, "_TEMPLATES", templates)
+    targets = [{"template": "x.yml", "output": "x.yml", "repos": ["spiderweb-pr"]}]
+    with pytest.raises(SystemExit, match=r"RENDERED_PIP_MANIFESTS.*empty for this repo"):
+        mod.render_repo("spiderweb-pr", _vars()["spiderweb-pr"], tmp_path / "out", targets, True)
+
+
+def _bump_every_pin(path: Path) -> None:
+    """Rewrite each SHA pin the way a Dependabot version update does."""
+    text = path.read_text()
+    bumped = _SHA_PIN.sub(r"\g<1>" + "f" * 40, text)
+    assert bumped != text, path
+    path.write_text(bumped)
+
+
+def test_a_dependabot_bump_of_template_and_hub_copy_keeps_the_hub_green(tmp_path, monkeypatch):
+    """The mechanism end to end, minus Dependabot: one pull request that edits a
+    template and the hub's copy identically leaves the hub's drift gate green,
+    while either edit alone is drift. That holds only while no `uses:` line in a
+    workflow template carries a placeholder, so that is asserted as well."""
+    import shutil
+
+    mod = _renderer()
+    templates = tmp_path / "federation-templates"
+    shutil.copytree(_TEMPLATES, templates)
+    monkeypatch.setattr(mod, "_TEMPLATES", templates)
+    hub_targets = [t for t in _workflow_targets() if "thehub-pr" in t["repos"]]
+    assert hub_targets
+    for t in _workflow_targets():
+        for line in (templates / t["template"]).read_text().splitlines():
+            if line.lstrip().startswith(("uses:", "- uses:")):
+                assert "{{" not in line, f"{t['template']}: {line.strip()}"
+
+    def fresh_hub(name: str) -> Path:
+        root = tmp_path / name
+        mod.render_repo("thehub-pr", _vars()["thehub-pr"], root, _targets(), False)
+        return root
+
+    def check(root: Path) -> list[str]:
+        return mod.render_repo("thehub-pr", _vars()["thehub-pr"], root, _targets(), True)
+
+    copy_only = fresh_hub("copy-only")
+    _bump_every_pin(copy_only / ".github/workflows/codeql.yml")
+    assert check(copy_only) == [".github/workflows/codeql.yml"]
+
+    together = fresh_hub("together")
+    for t in hub_targets:
+        _bump_every_pin(templates / t["template"])
+        _bump_every_pin(together / t["output"])
+    assert check(together) == []
+
+    # copy-only was rendered from the old templates, so after the template bump
+    # its unbumped files are now the drift: a template-only change is caught.
+    template_only = sorted(t["output"] for t in hub_targets if t["output"] != ".github/workflows/codeql.yml")
+    assert sorted(check(copy_only)) == template_only
+
+
+# ── Pip manifests: the same rule for requirements-desktop.txt ─────────────────
+#
+# A requirement bumped in a rendered pip manifest (pywebview in the desktop
+# producers' requirements-desktop.txt) diverges from its template and fails that
+# repository's drift gate, exactly like an action pin. Producers exclude their
+# rendered manifests from the pip ecosystem; the hub's pip scan of "/" reaches
+# the template one directory down and bumps it together with the hub's own
+# requirements-desktop.txt (as dependabot[bot] did in f1cfad5). See
+# federation-templates/README.md and ADR 0016.
+
+_DESKTOP_REQUIREMENTS = "requirements-desktop.txt"
+
+
+def _pip_manifest_targets() -> list[dict]:
+    """Targets whose output some repo's {{RENDERED_PIP_MANIFESTS}} lists."""
+    mod = _renderer()
+    listed = set()
+    for program_id, vars_ in _vars().items():
+        listed |= {(program_id, rel) for rel in
+                   mod._rendered_pip_manifests(program_id, _targets(), mod._placeholders(vars_))}
+    return [t for t in _targets()
+            if any((repo, mod._resolve_output(t["output"], mod._placeholders(_vars()[repo])))
+                   in listed for repo in t["repos"])]
+
+
+def _pywebview_line(path: Path) -> str:
+    (line,) = [ln for ln in path.read_text().splitlines()
+               if re.match(r"pywebview\b", ln.strip())]
+    return line.strip()
+
+
+def test_pip_manifests_follow_dependabots_pip_scan():
+    # dependabot-core python shared_file_fetcher.rb: *.txt / *.in at the root
+    # and one directory below (req_txt_and_in_files, req_files_for_dir), plus
+    # fixed manifest names at the root only.
+    mod = _renderer()
+    outputs = [
+        "requirements-desktop.txt", "constraints.txt", "deps.in", "pyproject.toml",
+        "setup.py", "Pipfile.lock", "requirements/dev.txt", ".github/extra.txt",
+        "a/b/deep.txt", "sub/pyproject.toml", "README.md", "LICENSE",
+        ".github/workflows/codeql.yml", "PRII-{{APP_SLUG}}.sh",
+    ]
+    targets = [{"template": "unused", "output": o, "repos": ["ovnis-pr"]} for o in outputs]
+    assert mod._rendered_pip_manifests("ovnis-pr", targets, mod._placeholders(_vars()["ovnis-pr"])) == sorted([
+        "requirements-desktop.txt", "constraints.txt", "deps.in", "pyproject.toml",
+        "setup.py", "Pipfile.lock", "requirements/dev.txt", ".github/extra.txt",
+    ])
+
+
+def test_a_pip_manifest_path_that_needs_quoting_is_refused():
+    mod = _renderer()
+    targets = [{"template": "unused", "output": "requirements desktop.txt", "repos": ["ovnis-pr"]}]
+    with pytest.raises(SystemExit, match="pip manifest path"):
+        mod._rendered_pip_manifests("ovnis-pr", targets, {})
+
+
+@pytest.mark.parametrize("program_id", sorted(_vars()))
+def test_rendered_pip_manifests_per_repo(program_id, tmp_path):
+    mod = _renderer()
+    (desktop,) = [t for t in _targets() if t["output"] == _DESKTOP_REQUIREMENTS]
+    derived = mod._rendered_pip_manifests(program_id, _targets(), mod._placeholders(_vars()[program_id]))
+    expected = [_DESKTOP_REQUIREMENTS] if program_id in desktop["repos"] else []
+    assert derived == expected
+    if program_id in ("aguayluz-pr", "centinelas-pr", "moneysweep-pr", "ovnis-pr", "skywatcher-pr"):
+        assert derived == [_DESKTOP_REQUIREMENTS]
+    if program_id in ("spiderweb-pr", "thehub-pr"):
+        # Both keep their own requirements-desktop.txt, so it stays Dependabot's.
+        assert derived == []
+    mod.render_repo(program_id, _vars()[program_id], tmp_path, _targets(), False)
+    for rel in derived:
+        assert (tmp_path / rel).is_file(), f"{rel} is listed but not rendered"
+
+
+@pytest.mark.parametrize("program_id", _PRODUCERS)
+def test_producer_dependabot_never_touches_a_rendered_pip_manifest(program_id, tmp_path):
+    mod = _renderer()
+    mod.render_repo(program_id, _vars()[program_id], tmp_path, _targets(), False)
+    config = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
+    pip = _entry(config, "pip")
+    assert pip["directory"] == "/" and "directories" not in pip
+    derived = mod._rendered_pip_manifests(program_id, _targets(), mod._placeholders(_vars()[program_id]))
+    if derived:
+        assert pip["exclude-paths"] == derived
+    else:
+        # spiderweb-pr renders no pip manifest: no key, not an empty pattern.
+        assert "exclude-paths" not in pip
+    assert "exclude-paths" not in _entry(config, "npm")
+
+
+def test_hub_pip_scan_reaches_every_pip_manifest_template():
+    # The hub's pip ecosystem bumps the templates only because "/" reaches one
+    # directory down. A pip manifest template moved deeper (baseline/, say)
+    # would silently stop being bumped; a second directory or an exclude-paths
+    # entry would split or drop the bump.
+    config = yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text())
+    pip = _entry(config, "pip")
+    assert pip["directory"] == "/"
+    assert "directories" not in pip and "exclude-paths" not in pip
+    templates = _pip_manifest_targets()
+    assert [t["template"] for t in templates] == [_DESKTOP_REQUIREMENTS]
+    for t in templates:
+        rel = Path("federation-templates") / t["template"]
+        assert len(rel.parts) <= 2 and rel.suffix in (".txt", ".in"), rel
+
+
+def test_pip_manifest_templates_keep_placeholders_off_requirement_lines():
+    # Dependabot edits a registry requirement line in the template and in the
+    # hub's copy alike, so that line must read the same in both: no placeholder.
+    # A direct reference (`name @ url`) is parsed but never bumped, so a
+    # placeholder may trail it, as {{DESKTOP_EXTRA_REQUIREMENTS}} does.
+    for t in _pip_manifest_targets():
+        for line in (_TEMPLATES / t["template"]).read_text().splitlines():
+            stripped = line.strip()
+            if "{{" in stripped and not stripped.startswith("#"):
+                assert " @ " in stripped, f"{t['template']}: {stripped}"
+
+
+def test_template_pywebview_floor_matches_the_hubs_own():
+    # The hub's Dependabot bumps both lines in one pull request (f1cfad5). Equal
+    # lines keep the hub testing the floor that producers ship, and a hand edit
+    # to only one of them fails here.
+    assert _pywebview_line(_TEMPLATES / _DESKTOP_REQUIREMENTS) == _pywebview_line(_HUB / _DESKTOP_REQUIREMENTS)
+
+
+def test_a_pywebview_bump_in_the_template_reaches_producers_only_by_sync(tmp_path, monkeypatch):
+    """The hub stays green and a producer's next sync carries the bump."""
+    import shutil
+
+    mod = _renderer()
+    producer = tmp_path / "centinelas-pr"
+    mod.render_repo("centinelas-pr", _vars()["centinelas-pr"], producer, _targets(), False)
+    assert mod.render_repo("centinelas-pr", _vars()["centinelas-pr"], producer, _targets(), True) == []
+
+    templates = tmp_path / "federation-templates"
+    shutil.copytree(_TEMPLATES, templates)
+    monkeypatch.setattr(mod, "_TEMPLATES", templates)
+    template = templates / _DESKTOP_REQUIREMENTS
+    text = template.read_text()
+    old = _pywebview_line(template)
+    template.write_text(text.replace(old, "pywebview>=99.0", 1))
+
+    hub = tmp_path / "thehub-pr"
+    mod.render_repo("thehub-pr", _vars()["thehub-pr"], hub, _targets(), False)
+    assert mod.render_repo("thehub-pr", _vars()["thehub-pr"], hub, _targets(), True) == []
+    assert mod.render_repo("centinelas-pr", _vars()["centinelas-pr"], producer, _targets(), True) == [_DESKTOP_REQUIREMENTS]

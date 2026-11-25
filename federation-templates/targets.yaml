@@ -46,7 +46,8 @@ _review: &review
 _needs_license: &needs_license
   [ovnis-pr, skywatcher-pr, spiderweb-pr]
 # The six producers, excluding thehub-pr — the hub already has its own server
-# tests, and its backend is the one the producers' shells were modelled on.
+# tests, and its backend is the one the producers' shells were modelled on. Also
+# the audience of baseline/dependabot.yml, whose hub variant differs.
 _producers: &producers
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr]
 # V2 grid consumers that are also producer repositories. Spiderweb is excluded:
@@ -101,6 +102,10 @@ targets:
     output: PRII-{{APP_SLUG}}.app/Contents/MacOS/PRII-{{APP_SLUG}}
     repos: *standard_shell_launchers
     mode: 0755
+  # A pip manifest: producers' Dependabot excludes it ({{RENDERED_PIP_MANIFESTS}}).
+  # Keep the template directly in federation-templates/, where the hub's own pip
+  # scan of "/" still reaches it and bumps pywebview here and in the hub's
+  # requirements-desktop.txt together.
   - template: requirements-desktop.txt
     output: requirements-desktop.txt
     repos: *desktop
@@ -138,11 +143,22 @@ targets:
     repos: *grid_v2_producer_consumers
 
   # Engineering baseline — supply-chain and dependency hygiene that every repo
-  # in the federation needs identically. Single-sourced here so a fix lands once
-  # instead of seven times, and so template-drift.yml keeps it from rotting.
+  # in the federation needs. Single-sourced here so a fix lands once instead of
+  # seven times, and so template-drift.yml keeps it from rotting.
+  # Dependabot comes in two variants that render to the same path. Producers
+  # exclude the workflows and pip manifests rendered into them
+  # ({{RENDERED_WORKFLOWS}}, {{RENDERED_PIP_MANIFESTS}}, both derived from this
+  # file), because a version bumped in a rendered copy breaks their drift gate.
+  # thehub-pr instead scans the templates themselves, so bumps land in the
+  # template first and reach producers in a sync PR. See the README sections
+  # "Action pins: Dependabot bumps the template, never a copy" and "Pip
+  # manifests: the same rule for requirements-desktop.txt".
   - template: baseline/dependabot.yml
     output: .github/dependabot.yml
-    repos: *all
+    repos: *producers
+  - template: baseline/dependabot.hub.yml
+    output: .github/dependabot.yml
+    repos: [thehub-pr]
   - template: baseline/codeql.yml
     output: .github/workflows/codeql.yml
     repos: *all
