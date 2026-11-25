@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { createDatasetMapBridge } from './bridge.js'
+import { FederationMenu } from '../controls/Menu.jsx'
+import { useScrollable } from '../controls/ScrollRegion.jsx'
 
 export { createDatasetMapBridge } from './bridge.js'
 
@@ -8,8 +10,12 @@ function GisButton({ children, className = '', ...props }) {
 }
 
 export function FederationDatasetGrid({ records, columns, getRecordId, selection, onSelectRecord, compact = true }) {
+  const gridRef = useRef(null)
+  // Rows are not tab stops, so a grid wider or taller than its box can only
+  // be scrolled from the keyboard if the box is one.
+  const scrollable = useScrollable(gridRef)
   return (
-    <div className={`fd-gis-grid${compact ? ' fd-gis-grid--compact' : ''}`} role="region" aria-label="Dataset records">
+    <div ref={gridRef} className={`fd-gis-grid fd-focus${compact ? ' fd-gis-grid--compact' : ''}`} role="region" aria-label="Dataset records" tabIndex={scrollable ? 0 : undefined}>
       <table>
         <thead><tr>{columns.map((column) => <th key={column.key} scope="col">{column.label ?? column.key}</th>)}</tr></thead>
         <tbody>{records.map((record) => {
@@ -26,15 +32,13 @@ export function FederationDatasetGrid({ records, columns, getRecordId, selection
   )
 }
 
-export function FederationExportMenu({ exports = [], onExport }) {
-  const [open, setOpen] = useState(false)
+// The shared menu supplies what the hand-written one lacked: arrow keys,
+// Escape, close on an outside click, and focus back on the button.
+export function FederationExportMenu({ exports = [], onExport, label = 'Download Results' }) {
   return (
-    <div className="fd-gis-export">
-      <GisButton aria-expanded={open} onClick={() => setOpen((value) => !value)}>Download Results ▾</GisButton>
-      {open ? <div className="fd-gis-export__menu" role="menu">{exports.map((item) => (
-        <button key={item.id} type="button" role="menuitem" onClick={() => { setOpen(false); onExport?.(item) }}>{item.label}</button>
-      ))}</div> : null}
-    </div>
+    <FederationMenu className="fd-gis-export" label={label} align="end" items={exports} onSelect={(item) => onExport?.(item)}>
+      {label} <span aria-hidden="true">▾</span>
+    </FederationMenu>
   )
 }
 

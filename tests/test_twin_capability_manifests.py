@@ -298,13 +298,17 @@ def _phase_row(doc, phase):
     return next(r for r in doc["capabilities"] if r["phase"] == phase and r["implementation_status"] in ("NEW", "EXTEND"))
 
 
-def test_run_2_states_are_valid_only_on_phase_4_and_5_rows(observed):
+def test_run_2_states_are_valid_only_on_phase_4_5_and_6_rows(observed):
     doc = copy.deepcopy(observed)
-    for phase, test in ((4, "tests/test_event_timeline.py"), (5, "tests/test_spatial_features.py")):
+    for phase, test in (
+        (4, "tests/test_event_timeline.py"),
+        (5, "tests/test_spatial_features.py"),
+        (6, "server/frontend/src/sky/astronomy.test.js"),
+    ):
         row = _phase_row(doc, phase)
         row["delivery_state"], row["tests"] = "IMPLEMENTED_RUN_2", [test]
     assert tm.validate_observed(doc) == []
-    for phase in (3, 6):
+    for phase in (3, 7):
         bad = copy.deepcopy(doc)
         _phase_row(bad, phase)["delivery_state"] = "PARTIAL_RUN_2"
         assert any("claims run-2 work" in e for e in tm.validate_observed(bad))

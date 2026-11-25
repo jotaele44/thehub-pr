@@ -1,0 +1,16 @@
+{
+  "description": "A write always names its audit event.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/actions/1/audit_event",
+      "value": null
+    }
+  ],
+  "expect": [
+    "schema:actions:type"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "description": "An action names a declared capability.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/actions/0/capability_id",
+      "value": "teleport"
+    }
+  ],
+  "expect": [
+    "action-capability-unknown"
+  ]
+}

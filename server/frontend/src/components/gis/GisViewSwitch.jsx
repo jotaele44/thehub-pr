@@ -19,7 +19,7 @@ export function gisViewFrom(searchParams) {
 
 export default function GisViewSwitch({ view, setSearchParams }) {
   return (
-    <div role="group" aria-label="GIS view" className="inline-flex gap-1 rounded-md border border-border bg-muted/30 p-1">
+    <div role="group" aria-label="GIS view" className="inline-flex max-w-full flex-wrap gap-1 rounded-md border border-border bg-muted/30 p-1">
       {GIS_VIEWS.map((item) => (
         <button
           key={item.id} type="button" aria-pressed={view === item.id}

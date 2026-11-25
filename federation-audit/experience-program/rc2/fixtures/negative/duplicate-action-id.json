@@ -1,0 +1,16 @@
+{
+  "description": "Two actions cannot share an id.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "copy",
+      "path": "/actions/0",
+      "to": "/actions/-"
+    }
+  ],
+  "expect": [
+    "duplicate-action-id"
+  ]
+}

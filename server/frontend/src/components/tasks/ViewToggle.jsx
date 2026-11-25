@@ -18,13 +18,18 @@ export default function ViewToggle({ value, onChange }) {
         return (
           <button
             key={v.key}
+            type="button"
+            // The label is hidden below 640px; without this the button would
+            // be an unnamed icon there.
+            aria-label={v.label}
+            aria-pressed={active}
             onClick={() => onChange(v.key)}
             className={cn(
               "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors",
               active ? "bg-secondary text-foreground" : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Icon className="h-3.5 w-3.5" />
+            <Icon className="h-3.5 w-3.5" aria-hidden="true" />
             <span className="hidden sm:inline">{v.label}</span>
           </button>
         );
