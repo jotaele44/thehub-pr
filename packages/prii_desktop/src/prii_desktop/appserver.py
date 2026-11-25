@@ -16,11 +16,13 @@ from __future__ import annotations
 
 import html
 import importlib
+import os
 import re
 import sys
 from pathlib import Path
 
 from .config import DesktopConfig
+from .launchpad import ACCESS_MODE_ENV, GUEST, OPERATOR, install_guest_guard
 
 _PASSTHROUGH_PREFIXES = ("/docs", "/redoc", "/openapi")
 _HEX = re.compile(r"^#[0-9a-fA-F]{6}$")
@@ -58,11 +60,41 @@ def desktop_controls_script(config: DesktopConfig) -> str:
     label = html.escape(
         f"Open {config.app_title} Setup & Diagnostics", quote=True
     )
+    pad_label = html.escape(
+        f"Return to the {config.app_title} Launch Pad", quote=True
+    )
+    # Read per request: the mode is set by the Launch Pad just before the
+    # backend starts, long after this module was imported.
+    mode = os.environ.get(ACCESS_MODE_ENV, "") if config.launchpad else ""
+    mode = mode if mode in (GUEST, OPERATOR) else ""
+    has_pad = "true" if config.launchpad else "false"
     return f"""<script id="prii-desktop-controls">
 (() => {{
+  window.__PRII_SESSION__ = Object.freeze({{ mode: "{mode}" || null }});
   const mount = () => {{
     if (!window.pywebview || !window.pywebview.api ||
         document.getElementById("prii-desktop-setup-button")) return;
+    if ({has_pad}) {{
+      const pad = document.createElement("button");
+      pad.id = "prii-desktop-launchpad-button";
+      pad.type = "button";
+      pad.setAttribute("aria-label", "{pad_label}");
+      pad.title = "Launch Pad" + ("{mode}" ? " ({mode} session)" : "");
+      pad.textContent = "{mode}" === "guest" ? "Guest · Launch Pad"
+        : "{mode}" === "operator" ? "Operator · Launch Pad" : "Launch Pad";
+      Object.assign(pad.style, {{
+        position:"fixed", right:"66px", bottom:"14px", zIndex:"2147483647",
+        height:"44px", padding:"0 14px", borderRadius:"12px",
+        border:"1px solid #ffffff66", color:"#fff", background:"{accent}",
+        font:"600 13px system-ui", boxShadow:"0 7px 24px #0005", cursor:"pointer"
+      }});
+      pad.addEventListener("focus", () => {{
+        pad.style.outline = "3px solid #fff"; pad.style.outlineOffset = "3px";
+      }});
+      pad.addEventListener("blur", () => {{ pad.style.outline = "none"; }});
+      pad.addEventListener("click", () => window.pywebview.api.open_launchpad());
+      document.body.appendChild(pad);
+    }}
     const button = document.createElement("button");
     button.id = "prii-desktop-setup-button";
     button.type = "button";
@@ -116,6 +148,9 @@ def _load_app(config: DesktopConfig):
 def make_desktop_app(config: DesktopConfig):
     """Return the producer's FastAPI app augmented with same-origin SPA serving."""
     app = _load_app(config)
+    # Before the early return: adapters that attach their own frontend (the Hub)
+    # still get the Guest guard.
+    install_guest_guard(app, config)
     if not config.attach_frontend:
         return app
     return attach_spa(app, config.dist_dir, config=config)

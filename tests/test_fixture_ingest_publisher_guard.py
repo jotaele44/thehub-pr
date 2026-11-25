@@ -99,7 +99,10 @@ def test_insufficient_push_rights_cannot_write(tmp_path: Path) -> None:
 
 def test_unique_branch_and_no_force_push() -> None:
     content = _script()
-    assert 'branch="fixture-refresh/' in content
+    assert 'branch="fixture-refresh-' in content
+    # Never nested under fixture-refresh/: that ref path collides with the existing
+    # fixture-refresh branch (PR #401's head) and GitHub rejects the push.
+    assert 'branch="fixture-refresh/' not in content
     assert "GITHUB_RUN_ID" in content and "GITHUB_RUN_ATTEMPT" in content
     assert "git push --force" not in content
     assert 'git push origin "HEAD:refs/heads/$branch"' in content
@@ -114,8 +117,8 @@ def test_failed_publication_cleans_only_new_branch(tmp_path: Path) -> None:
     result, calls = _run(tmp_path, True, "review-publisher", "true", git_ok=True)
     assert result.returncode != 0
     assert "gh pr create --draft" in calls
-    assert "git push origin HEAD:refs/heads/fixture-refresh/987654-2" in calls
-    assert "git push origin :refs/heads/fixture-refresh/987654-2" in calls
+    assert "git push origin HEAD:refs/heads/fixture-refresh-987654-2" in calls
+    assert "git push origin :refs/heads/fixture-refresh-987654-2" in calls
     assert "git push --force" not in calls
 
 

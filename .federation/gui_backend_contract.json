@@ -1,7 +1,7 @@
 {
   "schema_version": "federation.gui-backend-contract/1.0",
   "repository": "Jotaele44/thehub-pr",
-  "source_commit": "64c096206786220498a1654258ab68b9bc877f6d",
+  "source_commit": "d8b8eafab395a2455995365ad85216a30369d653",
   "policy": {
     "require_zero_material_residue": true,
     "dimensions": [
@@ -32,8 +32,7 @@
     "navigation_files": [
       "server/frontend/src/App.jsx",
       "server/frontend/src/lib/nav.js",
-      "server/frontend/src/components/layout/Sidebar.jsx",
-      "server/frontend/src/components/layout/MobileNav.jsx"
+      "server/frontend/src/components/layout/AppLayout.jsx"
     ],
     "existing_gui_capability_manifests": [
       ".federation/gui-capabilities.json"
@@ -1088,30 +1087,6 @@
       ]
     },
     {
-      "pattern": "server/frontend/src/components/layout/Sidebar.jsx:11:unlabeled-control",
-      "classification": "PRESENTATION_ONLY",
-      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
-      "evidence": [
-        "server/frontend/src/components/layout/Sidebar.jsx:11"
-      ]
-    },
-    {
-      "pattern": "server/frontend/src/components/layout/MobileNav.jsx:25:Open navigation menu",
-      "classification": "PRESENTATION_ONLY",
-      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
-      "evidence": [
-        "server/frontend/src/components/layout/MobileNav.jsx:25"
-      ]
-    },
-    {
-      "pattern": "server/frontend/src/components/layout/MobileNav.jsx:35:setOpen(false)} className= >",
-      "classification": "PRESENTATION_ONLY",
-      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
-      "evidence": [
-        "server/frontend/src/components/layout/MobileNav.jsx:35"
-      ]
-    },
-    {
       "pattern": "server/frontend/src/components/cases/BriefTemplateDialog.jsx:34:setSelected(t.id)} className= `} >",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
@@ -1408,7 +1383,7 @@
       ]
     },
     {
-      "pattern": "server/frontend/src/components/feed/LiveIndicator.jsx:54:unlabeled-control",
+      "pattern": "server/frontend/src/components/feed/LiveIndicator.jsx:54:Refresh now",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
       "evidence": [
@@ -1472,19 +1447,11 @@
       ]
     },
     {
-      "pattern": "federation-design/packages/react/src/gis/index.jsx:7:unlabeled-control",
+      "pattern": "federation-design/packages/react/src/gis/index\\.jsx:[0-9]+:unlabeled-control",
       "classification": "PRESENTATION_ONLY",
       "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
       "evidence": [
-        "federation-design/packages/react/src/gis/index.jsx:7"
-      ]
-    },
-    {
-      "pattern": "federation-design/packages/react/src/gis/index.jsx:35:}>",
-      "classification": "PRESENTATION_ONLY",
-      "rationale": "Local UI control or presentation fallback whose state is handled within the rendered component and does not require a distinct backend endpoint.",
-      "evidence": [
-        "federation-design/packages/react/src/gis/index.jsx:35"
+        "federation-design/packages/react/src/gis/index.jsx"
       ]
     },
     {
@@ -1661,14 +1628,6 @@
       "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
       "evidence": [
         "server/frontend/src/components/intelligence/IntelligenceWorkspace.jsx:228"
-      ]
-    },
-    {
-      "pattern": "server/frontend/src/components/layout/MobileNav\\.jsx:35:setOpen\\(false\\)\\}\\ className=\\ >",
-      "classification": "PRESENTATION_ONLY",
-      "rationale": "Intentional local UI control with no distinct backend endpoint; state is handled by the component.",
-      "evidence": [
-        "server/frontend/src/components/layout/MobileNav.jsx:35"
       ]
     },
     {
@@ -1879,24 +1838,6 @@
       ]
     },
     {
-      "pattern": "server/frontend/src/components/layout/MobileNav\\.jsx:[0-9]+:Open navigation menu",
-      "classification": "CLIENT_STATE",
-      "rationale": "The Radix Sheet trigger opens tested local navigation state and intentionally has no backend target.",
-      "evidence": [
-        "server/frontend/src/components/layout/MobileNav.jsx:25",
-        "server/frontend/tests/visual/gui-parity.spec.js:29"
-      ]
-    },
-    {
-      "pattern": "server/frontend/src/components/layout/Sidebar\\.jsx:[0-9]+:unlabeled-control",
-      "classification": "INTERNAL_NAVIGATION",
-      "rationale": "The reusable sidebar item is a React Router link whose targets come from the tested navigation registry.",
-      "evidence": [
-        "server/frontend/src/components/layout/Sidebar.jsx:12",
-        "server/frontend/src/lib/commands.test.js:9"
-      ]
-    },
-    {
       "pattern": "server/frontend/src/components/research/OvnisResearchTabs\\.jsx:[0-9]+:Open report",
       "classification": "INTERNAL_NAVIGATION",
       "rationale": "The report link navigates to the tested case-reconstruction route using the producer case identifier.",
@@ -2058,10 +1999,10 @@
       "classification": "INTERNAL_NAVIGATION",
       "rationale": "The producer name in the Source Monitor summary table and on a source's detail page links to that producer's Hub page; the target comes from the module registry (PRODUCER_PAGES in lib/sourceMonitor.js, derived from MODULES) and no backend request is made.",
       "evidence": [
-        "server/frontend/src/pages/SourceMonitor.jsx:65",
-        "server/frontend/src/pages/SourceMonitorDetail.jsx:74",
-        "server/frontend/src/pages/SourceMonitorDetail.test.jsx:51",
-        "server/frontend/src/lib/sourceMonitor.test.js:56"
+        "server/frontend/src/pages/SourceMonitor.jsx:66",
+        "server/frontend/src/pages/SourceMonitorDetail.jsx:84",
+        "server/frontend/src/pages/SourceMonitorDetail.test.jsx:53",
+        "server/frontend/src/lib/sourceMonitor.test.js:57"
       ]
     },
     {
@@ -2115,6 +2056,66 @@
         "server/frontend/src/components/sky/ExclusionPanel.jsx:277-287",
         "server/frontend/src/components/sky/ExclusionPanel.test.jsx:288",
         "server/frontend/tests/visual/gui-parity.spec.js:1131"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/shell/AppShell\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "The skip link moves focus to the main region of the page it is on; it performs no backend request. Rendered and exercised in three browsers by the fixture matrix (skip_link_first, skip_link_reaches_main).",
+      "evidence": [
+        "federation-design/packages/react/src/shell/AppShell.jsx",
+        "federation-design/packages/react/tests/shell-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/shell/InspectorPanel\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "The inspector's close control calls the host's onClose; the design-system component holds no data and makes no backend request. Exercised by the fixture matrix (inspector_closes, inspector_focus_returns).",
+      "evidence": [
+        "federation-design/packages/react/src/shell/InspectorPanel.jsx",
+        "federation-design/packages/react/tests/shell-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/shell/MobileNav\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "The 'More' control opens a client-side dialog listing the navigation entries that do not fit the bottom bar, and its close control dismisses it; neither makes a backend request. Exercised by the fixture matrix (more_opens_and_escape_closes, more_focus_returns).",
+      "evidence": [
+        "federation-design/packages/react/src/shell/MobileNav.jsx",
+        "federation-design/packages/react/tests/shell-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/shell/parts\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "A state-driven navigation entry calls the host's onSelect; the design-system component performs no backend request and the host application binds the behaviour. Exercised by the fixture matrix (sidebar_click_moves_current, sheet_entry_navigates).",
+      "evidence": [
+        "federation-design/packages/react/src/shell/parts.jsx",
+        "federation-design/packages/react/tests/shell-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/controls/Dialog\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "The dialog's close control calls the host's onClose; the design-system component holds no data and makes no backend request. Exercised by the fixture matrix (dialog_is_modal, dialog_escape_returns_focus).",
+      "evidence": [
+        "federation-design/packages/react/src/controls/Dialog.jsx",
+        "federation-design/packages/react/tests/controls-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
+      ]
+    },
+    {
+      "pattern": "federation-design/packages/react/src/controls/RenameDialog\\.jsx:[0-9]+:unlabeled-control",
+      "classification": "CLIENT_STATE",
+      "rationale": "Cancel calls the host's onClose and Save submits the form to the host's onRename; the design-system component stores nothing and makes no backend request, and the host application binds the write. Exercised by the fixture matrix (rename_saves_trimmed_name, rename_escape_cancels, rename_reports_failed_save_and_stays_open).",
+      "evidence": [
+        "federation-design/packages/react/src/controls/RenameDialog.jsx",
+        "federation-design/packages/react/tests/controls-contracts.test.mjs",
+        "federation-design/fixture-lab/tests/runtime-matrix.mjs"
       ]
     }
   ],

@@ -1,0 +1,15 @@
+{
+  "description": "A pinned group is bounded.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "remove",
+      "path": "/navigation/groups/1/max_items"
+    }
+  ],
+  "expect": [
+    "schema:navigation:required"
+  ]
+}

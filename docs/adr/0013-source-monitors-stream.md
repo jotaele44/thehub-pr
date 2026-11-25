@@ -1,10 +1,10 @@
 # ADR 0013 — Producers report monitored sources in a `source_monitors` stream
 
-- **Status:** Accepted
+- **Status:** Accepted; rollout complete (2026-11-17). All six producers emit the stream, and the ADR 0012 registry reader and its CLI are deleted.
 - **Date:** 2026-11-11
 - **Deciders:** PRII federation maintainers
 - **Scope:** `thehub-pr` canonical contract (`federation_export_manifest` 1.0.0 → 1.1.0, new `federation_source_monitor` 1.0.0), `packages/prii_export_utils` 0.2.0, Hub ingest and Source Monitor UI; producers adopt one repository at a time, starting with `aguayluz-pr`
-- **Supersedes in part:** ADR 0012. Its hub-side registry reader stays for producers that do not emit the stream yet.
+- **Supersedes:** ADR 0012, in full since 2026-11-17. Its hub-side registry reader stayed for producers that did not emit the stream yet, and was deleted once the last one did.
 
 ## Context
 
@@ -61,13 +61,25 @@ When each source last succeeded is not recorded uniformly today:
 
 After each producer emits, move it from `REGISTRIES` to `STREAM_PRODUCERS` in `src/hub/source_monitor.py`. The registry reader then stops reading that producer and marks it `reports_via_stream`; ingest takes its rows from the stream, and flags the producer with an error when an aggregate has no stream rows from it, instead of dropping it silently. When all six emit, delete the registry reader and its CLI, and the ADR 0012 exception ends.
 
+This is done. The registry reader (`src/hub/source_monitor.py`) and `hub source-monitor` are deleted. The expected-producer set moved into ingest as `MONITOR_STREAM_PRODUCERS` in `src/hub/ingest.py`, so the gap error survives the reader: when an aggregate has a `source_monitors.jsonl`, each expected producer with no rows in it gets a zero-count summary entry with that error. An aggregate with no stream file at all leaves the previous `MonitoredSources` rows in place.
+
 Status:
 
 - `aguayluz-pr` emits the stream (aguayluz-pr#408, merged 2026-11-13). A Hub ingest on `main` loaded all 25 of its `MonitoredSources` rows with `origin: stream`, and it has moved to `STREAM_PRODUCERS`.
 - `ovnis-pr` (ovnis-pr#202) and `spiderweb-pr` (spiderweb-pr#454) emit the stream, and both have moved to `STREAM_PRODUCERS`. The evidence is a local reproduction of the Federation ingest steps (`hub fetch --run`, then `scripts/build_hub_fixture.py`) on 2026-11-15, not a CI run. With `ovnis-pr` at `4fd2306` and `spiderweb-pr` at `b2c532f`, ingest loaded 26 and 32 `MonitoredSources` rows with `origin: stream`. Their source ids, names, families, tiers, cadences, windows, declared statuses and URLs matched the registry reader's rows on `main` exactly; the 3 sources `spiderweb-pr` marks never-federated are in neither. All 58 rows are `NOT_RECORDED`: neither producer records a per-source last success yet, so the UI still measures their freshness from the export-package age.
+- `skywatcher-pr` emits the stream (skywatcher-pr#371, merged 2026-11-15), and skywatcher-pr#373 (merged 2026-11-16 as `f90c288`) re-exported its committed production package with it. It has moved to `STREAM_PRODUCERS`, so `moneysweep-pr` and `centinelas-pr` are the only producers the registry reader still reads. The evidence is a local reproduction on 2026-11-16, not a CI run, with `aguayluz-pr` at `116bb9a`, `centinelas-pr` at `499cd48`, `moneysweep-pr` at `08e1bb2`, `ovnis-pr` at `91b8bb0`, `skywatcher-pr` at `f90c288` and `spiderweb-pr` at `9d09155`:
+  - Reading the committed packages (`hub fetch` without `--run`, then `hub aggregate`, `hub source-monitor` and `hub ingest`), ingest loaded its 4 `MonitoredSources` rows with `origin: stream` and no gap error. `fr24_exports` is `OUTPUT_DERIVED` (last success 2026-07-06T22:50:00Z); the other three are `NOT_RECORDED`.
+  - With `hub fetch --run`, as the Federation ingest workflow runs it, `skywatcher-pr`'s `export_canonical` regenerates the package in test mode, and all 4 rows are `NOT_RECORDED`.
+  - In both, the source ids, names, families, tiers, cadences, windows, declared statuses and URLs matched the registry reader's rows exactly.
+- `centinelas-pr` emits the stream (centinelas-pr#194, merged as `bfd0ad1`), and it has moved to `STREAM_PRODUCERS`, so `moneysweep-pr` is the only producer the registry reader still reads. Like `aguayluz-pr`, `ovnis-pr` and `spiderweb-pr`, it commits no export package: `hub fetch --run` regenerates it with its `export_canonical` (`scripts/federation_export.py --mode production`), so a workspace fetched without `--run` has no `centinelas-pr` stream rows, and ingest flags that gap. The evidence is a local reproduction on 2026-11-16, not a CI run, with `aguayluz-pr` at `59e8fdb`, `centinelas-pr` at `499cd48` (after `6c1c43e`, which scoped its signal ledger to Puerto Rico), `moneysweep-pr` at `08e1bb2`, `ovnis-pr` at `91b8bb0`, `skywatcher-pr` at `f90c288` and `spiderweb-pr` at `9d09155`:
+  - With `hub fetch --run`, then `hub aggregate`, `hub source-monitor` and `hub ingest`, ingest loaded its 87 `MonitoredSources` rows with `origin: stream` and no gap error. Five RSS sources are `OUTPUT_DERIVED` (last success is their newest `captured_at` in the signal ledger, all 2026-11-16T05:45Z); the other 82 are `NOT_RECORDED`.
+  - The 87 source ids, and their names, families, tiers, cadences, windows, declared statuses and URLs, matched the registry reader's rows exactly.
+- `moneysweep-pr` emits the stream (moneysweep-pr#720, merged as `c8e7430`; its template sync is moneysweep-pr#718). It was the last producer, so the registry reader and its CLI are deleted, and the rollout is complete. Before the deletion, a parity check found that its 167 stream rows equal the reader's 167 rows exactly: the same ids and no field differences. The evidence for the final state is a local reproduction on 2026-11-17, not a CI run, with `aguayluz-pr` at `cf7507e`, `centinelas-pr` at `9fd6aa8`, `moneysweep-pr` at `c8e7430`, `ovnis-pr` at `a8225db`, `skywatcher-pr` at `a217699` and `spiderweb-pr` at `278eb9a`:
+  - With `hub fetch --run`, then `hub aggregate` and `hub ingest` (no registry reader), ingest loaded 347 `MonitoredSources` rows, all with `origin: stream`: 31 from `aguayluz-pr`, 87 from `centinelas-pr`, 167 from `moneysweep-pr`, 26 from `ovnis-pr`, 4 from `skywatcher-pr` and 32 from `spiderweb-pr`. The summary lists all six as stream producers, with `error_count` 0.
+  - Removing `moneysweep-pr`'s rows from that aggregate's `source_monitors.jsonl` and ingesting again gave 180 rows and a `moneysweep-pr` summary entry with count 0 and the gap error, so `error_count` 1.
 
 ## Consequences
 
 - Per-source freshness becomes real wherever a producer records it, and labelled as unknown where it does not. Nothing is guessed.
 - Producers gain a committed state file that changes on fetch runs. Branches that both run fetches can conflict on it; one key per source keeps the conflicts local.
-- Until all six producers emit, the Hub keeps the ADR 0012 coupling to producer-internal registry layouts for the rest.
+- Until all six producers emit, the Hub keeps the ADR 0012 coupling to producer-internal registry layouts for the rest. Done 2026-11-17: all six emit, and the Hub no longer reads any producer's registry layout.

@@ -47,7 +47,7 @@ PROGRAMS: dict[str, dict[str, Any]] = {
         "source_sha256": "981fb8c6f36cca7d451f21210c7f54f19bf102c022b01066ebb56d2e710d76dc",
         "bundle": "PRII-THEHUB.app",
         "frontend": "server/frontend",
-        "palette": ("server/frontend/src/index.css", "226.7 94.2% 33.9%"),
+        "palette": ("server/frontend/src/main.jsx", "dataset.repo = 'thehub-pr'"),
     },
     "aguayluz-pr": {
         "name": "AguaYLuz",

@@ -1,0 +1,16 @@
+{
+  "description": "No application may require a federation runtime to start.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/compatibility/federation_runtime_required",
+      "value": true
+    }
+  ],
+  "expect": [
+    "schema:compatibility:const"
+  ]
+}

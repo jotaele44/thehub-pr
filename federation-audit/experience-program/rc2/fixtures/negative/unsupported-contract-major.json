@@ -1,0 +1,26 @@
+{
+  "description": "An unknown major version is refused.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/contract/version",
+      "value": "2.0.0"
+    },
+    {
+      "op": "set",
+      "path": "/compatibility/contract_version",
+      "value": "2.0.0"
+    },
+    {
+      "op": "set",
+      "path": "/compatibility/max_contract_version",
+      "value": "2.0.0"
+    }
+  ],
+  "expect": [
+    "version-unsupported"
+  ]
+}
