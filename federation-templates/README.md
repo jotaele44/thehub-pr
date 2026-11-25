@@ -140,6 +140,28 @@ Keeping it working:
 `tests/test_render_federation_templates.py` enforces each of these that a test can
 see from the hub.
 
+## Npm: held majors
+
+Both Dependabot templates carry the same npm block, and that block `ignore`s the
+majors of a few packages whose peers the federation has not migrated. Proposing
+them only produces pull requests that fail `npm ci`: skywatcher-pr merged two of
+them, and its `main` went red.
+
+| Held major | Why | Lift when |
+|---|---|---|
+| `eslint` 10 | `eslint-plugin-react` 7 accepts eslint up to 9 | `eslint-plugin-react` declares eslint 10 support |
+| `@eslint/js` 10 | it requires eslint 10 | the `eslint` hold is lifted |
+| `date-fns` 4 | `react-day-picker` 8 accepts date-fns up to 3 | the last repository using react-day-picker 8 moves to 9 |
+
+Each hold is by semver level (`update-types: ["version-update:semver-major"]`),
+never by version range, so a repository already on the newer major keeps its
+minor and patch updates. spiderweb-pr runs eslint 10 without
+`eslint-plugin-react`, and a `>=10` range would freeze it.
+
+To lift a hold, delete its entry from both `baseline/dependabot.yml` and
+`baseline/dependabot.hub.yml`, which must stay identical outside the actions
+scope, and re-pin the producers.
+
 ## Documentation stays true (docs-sync)
 
 `baseline/check_docs_sync.py`, `baseline/docs-sync.yml`, `baseline/claude-settings.json`
