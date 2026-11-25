@@ -119,7 +119,7 @@ def test_ingest_gates_its_pr_on_substantive_drift():
 def test_ingest_preserves_review_heads_and_cleans_failed_publication():
     """A unique review branch must not be overwritten or left orphaned on PR failure."""
     workflow = _ingest_workflow()
-    assert 'branch="fixture-refresh/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"' in workflow
+    assert 'branch="fixture-refresh-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"' in workflow
     assert "git push --force" not in workflow
     assert "gh pr create --draft" in workflow
     assert "trap cleanup_unpublished_branch EXIT" in workflow

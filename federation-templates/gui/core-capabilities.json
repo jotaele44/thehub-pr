@@ -1,0 +1,16 @@
+{
+  "schema_version": "prii.gui-core-capabilities/v1",
+  "description": "Capability ids the federation hub owns. A repository declares one only when it ships the feature, and then with exactly this id and classification. scripts/check_gui_parity.py carries the same table (CORE_CAPABILITIES) because it must run without the hub checked out; tests/test_gui_capability_schemas.py keeps the two in step.",
+  "capabilities": [
+    {
+      "id": "pr-grid-v2-runtime-contract",
+      "classification": "internal",
+      "meaning": "The PR_GRID_GEOGRAPHIC_V2 consumer runtime rendered from federation-templates/spatial/."
+    },
+    {
+      "id": "service-health",
+      "classification": "internal",
+      "meaning": "The GET /health liveness endpoint every producer backend exposes."
+    }
+  ]
+}

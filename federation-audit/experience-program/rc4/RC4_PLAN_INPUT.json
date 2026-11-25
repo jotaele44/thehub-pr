@@ -1,0 +1,267 @@
+{
+ "schema": "federation.experience-program.rc4-plan-input/1",
+ "claim_class": "COMPUTED",
+ "note": "Counts are distinct failing elements for four axe rules in Chromium, pages loaded and not operated. An application with one addressable route was scanned on that route only, so a low count there is a statement about coverage, not about the application.",
+ "applications": [
+  {
+   "repository": "aguayluz-pr",
+   "routes": 20,
+   "page_loads": 140,
+   "evidence_commit": "6e3a4f67de20889abc3d0a48e0b514a4f7087f7a",
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none",
+   "design_system_pin": "release 0.4.0",
+   "by_rule": {
+    "color-contrast": {
+     "routes_failing": 19,
+     "distinct_elements": 222,
+     "style_signatures": 57,
+     "colour_pairs": 32
+    },
+    "button-name": {
+     "routes_failing": 3,
+     "distinct_elements": 1,
+     "style_signatures": 1
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 5,
+     "distinct_elements": 6,
+     "style_signatures": 6
+    },
+    "label-content-name-mismatch": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    }
+   },
+   "distinct_failing_elements": 229
+  },
+  {
+   "repository": "centinelas-pr",
+   "routes": 12,
+   "page_loads": 84,
+   "evidence_commit": "893a06f4a50655bcfae90469e15677c5f665d7a6",
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none",
+   "design_system_pin": "release 0.3.0",
+   "by_rule": {
+    "color-contrast": {
+     "routes_failing": 1,
+     "distinct_elements": 2,
+     "style_signatures": 2,
+     "colour_pairs": 2
+    },
+    "button-name": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "label-content-name-mismatch": {
+     "routes_failing": 12,
+     "distinct_elements": 2,
+     "style_signatures": 2
+    }
+   },
+   "distinct_failing_elements": 4
+  },
+  {
+   "repository": "moneysweep-pr",
+   "routes": 12,
+   "page_loads": 84,
+   "evidence_commit": "956bb498796c698230d2a2de722d316945777f62",
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none",
+   "design_system_pin": "release 0.4.1",
+   "by_rule": {
+    "color-contrast": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "button-name": {
+     "routes_failing": 2,
+     "distinct_elements": 1,
+     "style_signatures": 1
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 12,
+     "distinct_elements": 2,
+     "style_signatures": 2
+    },
+    "label-content-name-mismatch": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    }
+   },
+   "distinct_failing_elements": 3
+  },
+  {
+   "repository": "mucaro-ai",
+   "routes": 1,
+   "page_loads": 7,
+   "evidence_commit": "593bdd813686048a881cb3af61f4fbb9d211a52d",
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none",
+   "design_system_pin": "no dependency",
+   "by_rule": {
+    "color-contrast": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "button-name": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "label-content-name-mismatch": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    }
+   },
+   "distinct_failing_elements": 0
+  },
+  {
+   "repository": "ovnis-pr",
+   "routes": 1,
+   "page_loads": 7,
+   "evidence_commit": "a8225db5d226232037c455daf6e941e50d86d136",
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none",
+   "design_system_pin": "release 0.3.0",
+   "by_rule": {
+    "color-contrast": {
+     "routes_failing": 1,
+     "distinct_elements": 2,
+     "style_signatures": 2,
+     "colour_pairs": 2
+    },
+    "button-name": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 1,
+     "distinct_elements": 1,
+     "style_signatures": 1
+    },
+    "label-content-name-mismatch": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    }
+   },
+   "distinct_failing_elements": 3
+  },
+  {
+   "repository": "skywatcher-pr",
+   "routes": 22,
+   "page_loads": 154,
+   "evidence_commit": "a2176990606048a6b918daacdb8bce027e58a903",
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none",
+   "design_system_pin": "release 0.3.0",
+   "by_rule": {
+    "color-contrast": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "button-name": {
+     "routes_failing": 22,
+     "distinct_elements": 1,
+     "style_signatures": 1
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 22,
+     "distinct_elements": 10,
+     "style_signatures": 8
+    },
+    "label-content-name-mismatch": {
+     "routes_failing": 1,
+     "distinct_elements": 7,
+     "style_signatures": 1
+    }
+   },
+   "distinct_failing_elements": 18
+  },
+  {
+   "repository": "spiderweb-pr",
+   "routes": 1,
+   "page_loads": 7,
+   "evidence_commit": "9d6af728b48b7bbde5167d8abaacf51f34a0acaa",
+   "evidence_is_current_main": false,
+   "frontend_changed_on_main_since_evidence": "14 files changed, 247 insertions(+), 31 deletions(-)",
+   "design_system_pin": "no dependency (own copy of the token names)",
+   "by_rule": {
+    "color-contrast": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "button-name": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    },
+    "label-content-name-mismatch": {
+     "routes_failing": 1,
+     "distinct_elements": 5,
+     "style_signatures": 1
+    }
+   },
+   "distinct_failing_elements": 5
+  },
+  {
+   "repository": "thehub-pr",
+   "routes": 86,
+   "page_loads": 602,
+   "evidence_commit": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3",
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none",
+   "design_system_pin": "source (file: link), current",
+   "by_rule": {
+    "color-contrast": {
+     "routes_failing": 1,
+     "distinct_elements": 1,
+     "style_signatures": 1,
+     "colour_pairs": 1
+    },
+    "button-name": {
+     "routes_failing": 12,
+     "distinct_elements": 8,
+     "style_signatures": 4
+    },
+    "scrollable-region-focusable": {
+     "routes_failing": 3,
+     "distinct_elements": 3,
+     "style_signatures": 3
+    },
+    "label-content-name-mismatch": {
+     "routes_failing": 0,
+     "distinct_elements": 0,
+     "style_signatures": 0
+    }
+   },
+   "distinct_failing_elements": 12
+  }
+ ]
+}

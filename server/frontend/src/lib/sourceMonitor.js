@@ -1,7 +1,8 @@
-// Source Monitor (ADR 0012, ADR 0013): shared constants and freshness logic for
-// the read-only MonitoredSources views. Rows come from the `source_monitors`
-// federation stream for producers that emit it, and from the hub-side registry
-// reader (`hub source-monitor`) for the others; `hub ingest` merges the two.
+// Source Monitor (ADR 0013): shared constants and freshness logic for the
+// read-only MonitoredSources views. Rows come from each producer's
+// `source_monitors` federation stream; `hub ingest` projects them into
+// MonitoredSources. (ADR 0012's hub-side registry reader is retired; a hub.db not
+// re-ingested since may still hold its rows, which these views tolerate.)
 //
 // Freshness uses a source's own last success when its producer reports one
 // (last_success_basis RUN_RECEIPT or OUTPUT_DERIVED). Otherwise it falls back to
@@ -12,11 +13,13 @@ import { MODULES } from "@/lib/federation";
 export const MONITOR_COLLECTION = "MonitoredSources";
 export const MONITOR_SUMMARY_COLLECTION = "SourceMonitorSummary";
 export const MONITOR_SUMMARY_ID = "source_monitor_summary";
-// useEntityData lists at most this many rows; the page warns when the summary
-// total is larger instead of truncating silently.
+// useEntityData lists at most this many rows across every producer. Rather than
+// truncate silently, the Source Monitor page warns when the summary total is
+// larger, and a producer's Monitor tab warns when its own rows were cut.
 export const MONITOR_LIST_LIMIT = 500;
 
-// Vocabularies mirror src/hub/source_monitor.py (CADENCES / STATUSES).
+// Vocabularies mirror the enums in schemas/federation_source_monitor.schema.json
+// (cadence / declared_status / evidence_tier).
 export const MONITOR_STATUSES = ["active", "partial", "not_active", "manual", "inactive", "unknown"];
 export const MONITOR_CADENCES = [
   "realtime", "hourly", "daily", "weekly", "monthly", "quarterly", "yearly",
@@ -30,24 +33,36 @@ const FRESHNESS_RANK = { Stale: 0, Due: 1, Unknown: 2, Fresh: 3, Static: 4 };
 
 // producer program_id (repo name) -> hub page path, from the module registry.
 export const PRODUCER_PAGES = Object.fromEntries(MODULES.map((m) => [m.repo_name, m.path]));
+export const PRODUCER_NAMES = Object.fromEntries(MODULES.map((m) => [m.repo_name, m.name]));
 export const MONITOR_PRODUCERS = Object.keys(PRODUCER_PAGES).sort();
+
+// The tab value every producer page gives its Monitor tab. Skywatcher keeps its
+// tab in ?view=; the other producer pages keep theirs in ?tab=.
+export const MONITOR_TAB = "sources";
+const TAB_PARAM = { "skywatcher-pr": "view" };
+
+// The producer page with its Monitor tab selected, or null for an unknown producer.
+export function producerMonitorPath(producer) {
+  if (typeof producer !== "string" || !Object.prototype.hasOwnProperty.call(PRODUCER_PAGES, producer)) return null;
+  return `${PRODUCER_PAGES[producer]}?${TAB_PARAM[producer] || "tab"}=${MONITOR_TAB}`;
+}
 
 export function monitorPath(monitorId) {
   return `/source-monitor/${encodeURIComponent(monitorId)}`;
 }
 
 // Where a source's last-success time comes from, as the producer reports it.
-// Rows read by the hub-side registry reader carry no basis: "Registry only".
+// The stream requires a basis; a legacy row without one (from the retired
+// registry reader) recorded no success either, so it reads "Not recorded".
 export const SUCCESS_BASIS_LABELS = {
   RUN_RECEIPT: "Run receipt",
   OUTPUT_DERIVED: "From outputs",
   NOT_RECORDED: "Not recorded",
 };
-export const REGISTRY_ONLY = "Registry only";
-export const SUCCESS_BASES = [...Object.values(SUCCESS_BASIS_LABELS), REGISTRY_ONLY];
+export const SUCCESS_BASES = Object.values(SUCCESS_BASIS_LABELS);
 
 export function successBasisLabel(row) {
-  return SUCCESS_BASIS_LABELS[row?.last_success_basis] || REGISTRY_ONLY;
+  return SUCCESS_BASIS_LABELS[row?.last_success_basis] || SUCCESS_BASIS_LABELS.NOT_RECORDED;
 }
 
 function parseTime(value) {
@@ -102,3 +117,16 @@ export function withFreshness(now = Date.now()) {
 }
 
 export const formatLabel = (value) => (value ? String(value).replaceAll("_", " ") : "—");
+
+// Options for the Family filter: the distinct, non-empty producer_family values in
+// the rows, sorted. Values stay as stored, since the filter matches String(value).
+export function familyOptions(rows) {
+  const families = new Set();
+  for (const row of rows || []) {
+    const family = row?.producer_family;
+    if (family === null || family === undefined) continue;
+    const value = String(family);
+    if (value.trim()) families.add(value);
+  }
+  return [...families].sort((a, b) => a.localeCompare(b));
+}

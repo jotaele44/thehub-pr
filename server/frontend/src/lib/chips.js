@@ -227,9 +227,66 @@ export const SECRET_PRESENCE = {
   unavailable: RED,
 };
 
-// --- Source Monitor (ADR 0012) ----------------------------------------------
-// Declared status is what a producer registry says about a source, normalized
-// by `hub source-monitor`; it is not a health check. Keyed by display label
+// --- AguaYLuz outdoor conditions ---------------------------------------------
+// The producer's summary level. NO_DRIVER_REPORTED is neutral, not green: no
+// reported driver is not a finding that conditions are safe.
+export const OUTDOOR_LEVEL = {
+  ELEVATED: ORANGE,
+  CAUTION: YELLOW,
+  NO_DRIVER_REPORTED: SLATE,
+  INSUFFICIENT_DATA: AMBER,
+};
+
+// Why a component has (or lacks) a value.
+export const OUTDOOR_STATE = {
+  REPORTED: BLUE,
+  NONE_ACTIVE: SLATE,
+  STALE: AMBER,
+  NOT_COVERED: SLATE,
+  NOT_INGESTED: SLATE,
+  NOT_CONFIGURED: VIOLET,
+  SOURCE_FAILED: RED,
+};
+
+// NWS Surf Zone Forecast rip current risk.
+export const RIP_RISK = {
+  LOW: SLATE,
+  MODERATE: YELLOW,
+  HIGH: RED,
+};
+
+// NWS heat-index chart bands.
+export const HEAT_BAND = {
+  BELOW_CAUTION: SLATE,
+  CAUTION: YELLOW,
+  EXTREME_CAUTION: ORANGE,
+  DANGER: RED,
+  EXTREME_DANGER: RED,
+};
+
+// EPA/WHO UV index exposure categories.
+export const UV_CATEGORY = {
+  LOW: SLATE,
+  MODERATE: YELLOW,
+  HIGH: ORANGE,
+  VERY_HIGH: RED,
+  EXTREME: RED,
+};
+
+// AirNow / EPA AQI categories.
+export const AQI_CATEGORY = {
+  GOOD: GREEN,
+  MODERATE: YELLOW,
+  UNHEALTHY_FOR_SENSITIVE_GROUPS: ORANGE,
+  UNHEALTHY: RED,
+  VERY_UNHEALTHY: RED,
+  HAZARDOUS: RED,
+  UNAVAILABLE: SLATE,
+};
+
+// --- Source Monitor (ADR 0013) ----------------------------------------------
+// Declared status is what a producer says about a source in its source_monitors
+// stream (`declared_status`); it is not a health check. Keyed by display label
 // (formatLabel in lib/sourceMonitor.js turns `not_active` into "not active").
 export const MONITOR_STATUS = {
   active: GREEN,
@@ -240,8 +297,9 @@ export const MONITOR_STATUS = {
   unknown: NEUTRAL,
 };
 
-// Freshness is producer-level: the age of the producer's last export package
-// against the source's cadence window (see lib/sourceMonitor.js).
+// Freshness compares a source's age with its cadence window, measured from the
+// source's own last success when its producer reports one (ADR 0013) and otherwise
+// from the producer's last export package (see lib/sourceMonitor.js).
 export const FRESHNESS = {
   Fresh: GREEN,
   Due: AMBER,

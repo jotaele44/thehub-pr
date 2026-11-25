@@ -40,8 +40,10 @@ CODE_KINDS = frozenset({"command", "config", "module", "script", "function", "ar
 CODE_EDGE_KINDS = ("call", "handoff", "result")
 CONTENT_EDGE_KINDS = ("flow", "correlation", "projection")
 EDGE_STATUSES = frozenset({"dormant", "manual"})
-# The canonical streams in aggregate order (schemas/federation_*.schema.json).
-STREAMS = ("sources", "entities", "relationships", "funding_awards", "transactions", "observations", "alerts")
+# The canonical streams in aggregate order (schemas/federation_*.schema.json, the order
+# of hub._schemas.STREAM_SCHEMA). source_monitors is ADR 0013's per-source freshness.
+STREAMS = ("sources", "entities", "relationships", "funding_awards", "transactions", "observations", "alerts",
+           "source_monitors")
 # Hub-side content node kinds, each placed at the stage the spec's content_stages names.
 HUB_CONTENT_KINDS = ("hub_stream", "correlation", "collection")
 _CORRELATIONS_COLLECTION = STREAM_TO_COLLECTION["correlations"]
