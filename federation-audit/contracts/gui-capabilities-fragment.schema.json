@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/blob/main/federation-audit/contracts/gui-capabilities-fragment.schema.json",
+  "title": "PRII GUI Capability Extension Fragment",
+  "description": "Shape of .federation/gui-capabilities.extensions/<extension_id>.json. A fragment appends capabilities and exceptions to the base manifest and can do nothing else: no policy, no discovery, no redefinition of a base id.",
+  "type": "object",
+  "required": [
+    "extension_id"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "prii.gui-capability/v1"
+    },
+    "extension_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Must equal the fragment's filename without .json."
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "$ref": "gui-capabilities.schema.json#/$defs/capability"
+      }
+    },
+    "exceptions": {
+      "type": "array",
+      "items": {
+        "$ref": "gui-capabilities.schema.json#/$defs/exception"
+      }
+    }
+  },
+  "anyOf": [
+    {
+      "required": [
+        "capabilities"
+      ]
+    },
+    {
+      "required": [
+        "exceptions"
+      ]
+    }
+  ],
+  "additionalProperties": false
+}

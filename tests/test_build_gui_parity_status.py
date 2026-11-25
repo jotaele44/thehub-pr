@@ -205,3 +205,90 @@ def test_build_handles_checker_that_never_writes_a_report(tmp_path):
     p = summary["producers"][0]
     assert p["blocker_class"] == "gate_run_failed"
     assert p["run_error"] is not None
+
+
+# --- extension fragments -----------------------------------------------------
+# A producer may keep capabilities in .federation/gui-capabilities.extensions/.
+# The rollup has to judge the same merged manifest that producer's gate does.
+
+_ECHO_CHECKER = """#!/usr/bin/env python3
+%s
+import argparse, json, sys
+p = argparse.ArgumentParser()
+p.add_argument("--report", required=True)
+p.add_argument("--repo-root", default=None)
+p.add_argument("--manifest", default=None)
+args = p.parse_args()
+ids = None
+if args.manifest:
+    with open(args.manifest) as f:
+        ids = [c["id"] for c in json.load(f)["capabilities"]]
+report = {
+    "mode": "ratchet",
+    "passed": True,
+    "summary": {
+        "current_candidates": len(ids) if ids is not None else -1,
+        "mapped_candidates": 0,
+        "legacy_gaps": 0,
+        "new_gaps": 0,
+        "manifest_issues": 0,
+    },
+}
+with open(args.report, "w") as f:
+    json.dump(report, f)
+"""
+
+
+def _producer_with_fragment(tmp_path: Path, checker_marker: str) -> Path:
+    producer_dir = tmp_path / "test-producer"
+    federation = producer_dir / ".federation"
+    extensions = federation / "gui-capabilities.extensions"
+    extensions.mkdir(parents=True)
+    (federation / "gui-capabilities.json").write_text(
+        json.dumps({"capabilities": [{"id": "base", "status": "active"}]})
+    )
+    (extensions / "feature.json").write_text(
+        json.dumps(
+            {
+                "extension_id": "feature",
+                "capabilities": [{"id": "extra", "status": "staged"}],
+            }
+        )
+    )
+    scripts = producer_dir / "scripts"
+    scripts.mkdir()
+    (scripts / "check_gui_parity.py").write_text(_ECHO_CHECKER % checker_marker)
+    return producer_dir
+
+
+def test_staged_count_includes_extension_fragments(tmp_path):
+    producer_dir = _producer_with_fragment(tmp_path, "")
+    manifest = producer_dir / ".federation" / "gui-capabilities.json"
+    assert bgps._staged_capability_count(manifest) == 1
+
+
+def test_legacy_checker_is_given_the_merged_manifest(tmp_path):
+    """A checker that reads only the base manifest must be handed the merge."""
+    _producer_with_fragment(tmp_path, "")
+    registry = _write_registry_yaml(tmp_path, "test-producer")
+    row = bgps.build(registry, tmp_path, "now")["producers"][0]
+    assert row["current"] == 2  # base + extra, counted from the merged manifest
+    assert row["staged_capability_count"] == 1
+
+
+def test_merging_checker_is_not_given_a_second_merge(tmp_path):
+    """The canonical checker merges fragments itself; a pre-merged manifest
+    would apply each fragment twice."""
+    _producer_with_fragment(tmp_path, "# supports --no-extensions")
+    registry = _write_registry_yaml(tmp_path, "test-producer")
+    row = bgps.build(registry, tmp_path, "now")["producers"][0]
+    assert row["current"] == -1  # --manifest was not passed
+
+
+def test_unreadable_fragment_does_not_break_the_rollup(tmp_path):
+    producer_dir = _producer_with_fragment(tmp_path, "")
+    (
+        producer_dir / ".federation" / "gui-capabilities.extensions" / "broken.json"
+    ).write_text("{")
+    manifest = producer_dir / ".federation" / "gui-capabilities.json"
+    assert bgps._staged_capability_count(manifest) == 1

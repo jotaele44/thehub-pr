@@ -1,4 +1,5 @@
 import React from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
@@ -14,10 +15,19 @@ import { GENERIC_STATUS, SEVERITY, CONFIDENCE, REVIEW_STATUS } from "@/lib/chips
 const MODULE = MODULES.find((m) => m.name === "MoneySweep-PR");
 const PROC_TYPES = ["Competitive", "Emergency", "SoleSource", "Grant", "Unknown", "Other"];
 const FLAG_TYPES = ["DuplicateVendor", "UnusualAmount", "EmergencyPattern", "SoleSourcePattern", "MissingData", "RepeatedAward", "TimingAnomaly", "Other"];
+const MONEYSWEEP_TABS = ["feed", "leaderboards", "contracts", "vendors", "flags", "sources"];
 
 const fmtMoney = (n) => (n || n === 0) ? `$${Number(n).toLocaleString()}` : "—";
 
 export default function MoneySweep() {
+  // The tab is URL state, so /moneysweep?tab=sources deep-links the Monitor tab.
+  const [params, setParams] = useSearchParams();
+  const tab = MONEYSWEEP_TABS.includes(params.get("tab")) ? params.get("tab") : "feed";
+  const selectTab = (value) => {
+    const next = new URLSearchParams(params);
+    next.set("tab", value);
+    setParams(next);
+  };
   const contractFields = [
     { key: "contract_id", label: "Contract ID", required: true },
     { key: "title", label: "Title", required: true, full: true },
@@ -82,7 +92,7 @@ export default function MoneySweep() {
   return (
     <div>
       <ModulePageHeader module={MODULE} icon={Banknote} />
-      <Tabs defaultValue="feed">
+      <Tabs value={tab} onValueChange={selectTab}>
         <TabsList className="mb-4 flex h-auto min-h-11 flex-wrap">
           <TabsTrigger value="feed" className="min-h-11">Procurement + Funding Feed</TabsTrigger>
           <TabsTrigger value="leaderboards" className="min-h-11">Leaderboards</TabsTrigger>

@@ -240,7 +240,7 @@ ${transcript}`;
           placeholder={`Message the ${module} assistant…`}
           className="min-h-11 max-h-32 resize-none"
         />
-        <Button onClick={send} disabled={loading || !input.trim()} size="icon" className="shrink-0">
+        <Button onClick={send} disabled={loading || !input.trim()} size="icon" className="shrink-0" aria-label="Send message">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
         </Button>
       </div>

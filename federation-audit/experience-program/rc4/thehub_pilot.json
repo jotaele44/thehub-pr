@@ -1,0 +1,188 @@
+{
+ "schema": "federation.experience-program.pilot-comparison/1",
+ "claim_class": "COMPUTED",
+ "repository": "thehub-pr",
+ "commits": {
+  "before": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3",
+  "after": "978007b7812ecf9ef33c26e005231f9a877e005f"
+ },
+ "method": "Chromium, dark colour scheme, the same routes at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels, on a fresh temporary workspace. Pages were loaded, not operated.",
+ "frame": {
+  "before": {
+   "routes": 86,
+   "page_loads": 602,
+   "page_loads_with_an_error": 0,
+   "page_loads_not_200": 0,
+   "routes_that_redirect": [],
+   "page_loads_with_horizontal_overflow": 52,
+   "page_loads_with_an_unnamed_button": 28,
+   "controls_under_24px_summed_over_page_loads": 829,
+   "page_loads_with_console_errors": 21,
+   "page_loads_with_page_errors": 0
+  },
+  "after": {
+   "routes": 86,
+   "page_loads": 602,
+   "page_loads_with_an_error": 0,
+   "page_loads_not_200": 0,
+   "routes_that_redirect": [],
+   "page_loads_with_horizontal_overflow": 52,
+   "page_loads_with_an_unnamed_button": 7,
+   "controls_under_24px_summed_over_page_loads": 829,
+   "page_loads_with_console_errors": 21,
+   "page_loads_with_page_errors": 0
+  }
+ },
+ "targeted_rules": {
+  "color-contrast": {
+   "before": {
+    "routes_failing": 1,
+    "distinct_elements": 1
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "button-name": {
+   "before": {
+    "routes_failing": 12,
+    "distinct_elements": 8
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "scrollable-region-focusable": {
+   "before": {
+    "routes_failing": 3,
+    "distinct_elements": 3
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "label-content-name-mismatch": {
+   "before": {
+    "routes_failing": 0,
+    "distinct_elements": 0
+   },
+   "after": {
+    "routes_failing": 1,
+    "distinct_elements": 3,
+    "elements": [
+     {
+      "html": "<button type=\"button\" class=\"min-h-[44px] rounded-md border border-border px-3 text-sm font-medium hover:bg-muted disabled:opacity-50\" aria-pressed=\"false\" aria-label=\"Show the CSS track for the pass ",
+      "route_count": 1,
+      "routes": [
+       "/skywatcher?view=sky"
+      ],
+      "widths": [
+       430,
+       1920
+      ]
+     },
+     {
+      "html": "<button type=\"button\" class=\"min-h-[44px] rounded-md border border-border px-3 text-sm font-medium hover:bg-muted disabled:opacity-50\" aria-pressed=\"false\" aria-label=\"Show the HST track for the pass ",
+      "route_count": 1,
+      "routes": [
+       "/skywatcher?view=sky"
+      ],
+      "widths": [
+       430,
+       1920
+      ]
+     },
+     {
+      "html": "<button type=\"button\" class=\"min-h-[44px] rounded-md border border-border px-3 text-sm font-medium hover:bg-muted disabled:opacity-50\" aria-pressed=\"false\" aria-label=\"Show the ISS track for the pass ",
+      "route_count": 1,
+      "routes": [
+       "/skywatcher?view=sky"
+      ],
+      "widths": [
+       430,
+       1920
+      ]
+     }
+    ]
+   }
+  }
+ },
+ "every_critical_or_serious_rule": {
+  "aria-valid-attr-value": {
+   "before": {
+    "page_loads": 77,
+    "routes": 11
+   },
+   "after": {
+    "page_loads": 77,
+    "routes": 11
+   }
+  },
+  "button-name": {
+   "before": {
+    "page_loads": 84,
+    "routes": 12
+   },
+   "after": {
+    "page_loads": 0,
+    "routes": 0
+   }
+  },
+  "color-contrast": {
+   "before": {
+    "page_loads": 7,
+    "routes": 1
+   },
+   "after": {
+    "page_loads": 0,
+    "routes": 0
+   }
+  },
+  "label": {
+   "before": {
+    "page_loads": 7,
+    "routes": 1
+   },
+   "after": {
+    "page_loads": 7,
+    "routes": 1
+   }
+  },
+  "label-content-name-mismatch": {
+   "before": {
+    "page_loads": 0,
+    "routes": 0
+   },
+   "after": {
+    "page_loads": 2,
+    "routes": 1
+   }
+  },
+  "link-in-text-block": {
+   "before": {
+    "page_loads": 35,
+    "routes": 5
+   },
+   "after": {
+    "page_loads": 35,
+    "routes": 5
+   }
+  },
+  "scrollable-region-focusable": {
+   "before": {
+    "page_loads": 15,
+    "routes": 3
+   },
+   "after": {
+    "page_loads": 0,
+    "routes": 0
+   }
+  }
+ }
+}

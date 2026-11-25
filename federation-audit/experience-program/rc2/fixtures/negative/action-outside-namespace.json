@@ -1,0 +1,16 @@
+{
+  "description": "An action id lives in its application's namespace.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/actions/0/id",
+      "value": "thehub-pr.conversation.open"
+    }
+  ],
+  "expect": [
+    "action-namespace"
+  ]
+}

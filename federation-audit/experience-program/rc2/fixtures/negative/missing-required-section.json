@@ -1,0 +1,15 @@
+{
+  "description": "A required section cannot be dropped.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "remove",
+      "path": "/states"
+    }
+  ],
+  "expect": [
+    "schema:contract:required"
+  ]
+}

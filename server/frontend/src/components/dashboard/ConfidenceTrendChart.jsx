@@ -5,9 +5,9 @@ import { TrendingUp, Info } from "lucide-react";
 
 const DAYS = 30;
 const BANDS = [
-  { key: "High", color: "hsl(var(--chart-2))" },
-  { key: "Medium", color: "hsl(var(--chart-1))" },
-  { key: "Low", color: "hsl(var(--chart-3))" },
+  { key: "High", color: "var(--chart-2)" },
+  { key: "Medium", color: "var(--chart-1)" },
+  { key: "Low", color: "var(--chart-3)" },
 ];
 
 // Build a 30-day cumulative trend of correlation confidence bands.
@@ -74,12 +74,12 @@ export default function ConfidenceTrendChart() {
                   </linearGradient>
                 ))}
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-              <XAxis dataKey="date" tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} interval={Math.floor(DAYS / 6)} tickLine={false} axisLine={false} />
-              <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "hsl(var(--muted-foreground))" }} tickLine={false} axisLine={false} width={32} />
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} interval={Math.floor(DAYS / 6)} tickLine={false} axisLine={false} />
+              <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} tickLine={false} axisLine={false} width={32} />
               <Tooltip
-                contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
-                labelStyle={{ color: "hsl(var(--foreground))" }}
+                contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }}
+                labelStyle={{ color: "var(--foreground)" }}
               />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               {BANDS.map((b) => (

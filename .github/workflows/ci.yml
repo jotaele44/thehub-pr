@@ -19,13 +19,11 @@ concurrency:
 
 jobs:
   test:
-    # Pinned: ubuntu-latest is Ubuntu 26.04, which has no Python 3.9 build for
-    # actions/setup-python, and this matrix keeps the 3.9 floor.
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
@@ -35,9 +33,7 @@ jobs:
       - name: Install
         run: |
           pip install -e ".[dev]" httpx -r server/backend/requirements.txt
-          if [ "${{ matrix.python-version }}" != "3.9" ]; then
-            pip install -e packages/prii_desktop
-          fi
+          pip install -e packages/prii_desktop
       - name: Schemas are well-formed JSON
         run: python -c "import json, glob; [json.load(open(f)) for f in glob.glob('schemas/*.json')]; print('schemas ok')"
       - name: Registry loads
@@ -49,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
       - name: Lock file is up to date
         run: uv lock --check
 
@@ -160,8 +156,8 @@ jobs:
         run: python3 scripts/validate_pr_grid_v2_federation.py --workspace-root _federation
 
   # Self-contained sub-project (packages/prii_maintenance) — its own CI, isolated
-  # from the root test matrix since its consumers (spiderweb-pr >=3.11,
-  # skywatcher-pr 3.10+) don't need the root matrix's Python 3.9 floor.
+  # from the root test matrix so its lint, type and test results stay separate.
+  # Its consumers are spiderweb-pr (>=3.11) and skywatcher-pr (3.10+).
   maintenance-package:
     runs-on: ubuntu-latest
     steps:

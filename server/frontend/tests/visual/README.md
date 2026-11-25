@@ -23,11 +23,17 @@ Baselines live in `__screenshots__/` and are committed. `test-results/` and
 
 ## Environment
 
-The Chromium build is pinned through `@playwright/test` (1.56.x → Chromium 1194),
-the same build CI installs via `npx playwright install --with-deps chromium`, so
-rendering matches. `maxDiffPixelRatio: 0.03` absorbs minor cross-machine
-antialiasing. If a legitimate rendering difference trips CI, regenerate the
-baselines with `test:visual:update` and commit the updated PNGs.
+The Chromium build is whatever the installed `@playwright/test` pins (see
+`package-lock.json`), the same build CI installs via
+`npx playwright install --with-deps chromium`, so rendering matches.
+
+`maxDiffPixelRatio: 0.03` absorbs cross-machine antialiasing. It also absorbs
+small real changes: a page can gain a tab or a navigation entry and still pass.
+`test:visual:update` rewrites only the baselines that fail, so after an
+intentional change to the shell, the palette or the fonts, regenerate all of
+them (`npx playwright test tests/visual/pages.spec.js --update-snapshots=all`)
+and review every image before committing. Never regenerate a baseline to get a
+red build green without looking at what changed.
 
 ## CI
 
