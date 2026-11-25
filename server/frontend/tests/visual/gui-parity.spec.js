@@ -25,16 +25,50 @@ async function mockApi(page, handlers = {}) {
 }
 
 test.describe('federation shell', () => {
-  test('primary navigation rail is present and marks the active module', async ({ page }) => {
+  test('one primary navigation is exposed and marks exactly the current page', async ({ page }) => {
     await mockApi(page);
     await page.goto('/sources', { waitUntil: 'networkidle' });
-    // Below the lg breakpoint the rail collapses into the responsive mobile menu.
-    const menu = page.getByRole('button', { name: 'Open navigation menu' });
-    if (await menu.isVisible()) await menu.click();
-    const nav = page.locator('nav[aria-label="Primary"]:visible').first();
-    await expect(nav).toBeVisible();
-    const active = nav.getByRole('link', { name: 'Sources' });
-    await expect(active).toHaveClass(/bg-sidebar-accent/);
+    // The shared shell renders the sidebar from 768px up, which covers both
+    // projects, and a bottom bar below that; only one is ever exposed.
+    const navs = page.locator('nav[aria-label="Primary"]:visible');
+    await expect(navs).toHaveCount(1);
+    const current = navs.first().locator('[aria-current="page"]');
+    await expect(current).toHaveCount(1);
+    await expect(current).toHaveAccessibleName('Sources');
+    // /source-monitor shares a prefix with /sources but is its own entry.
+    await page.goto('/source-monitor', { waitUntil: 'networkidle' });
+    await expect(navs.first().locator('[aria-current="page"]')).toHaveAccessibleName('Source Monitor');
+  });
+
+  test('the skip link is the first stop and lands on the page content', async ({ page }) => {
+    await mockApi(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('main')).toBeFocused();
+  });
+
+  test('a phone gets a bottom bar of at most five entries, with the rest behind More', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await mockApi(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    const nav = page.locator('nav[aria-label="Primary"]:visible');
+    await expect(nav).toHaveCount(1);
+    const entries = nav.locator('li');
+    expect(await entries.count()).toBeLessThanOrEqual(5);
+    // Sources is not one of the first four, so More reports the current page.
+    const more = nav.getByRole('button', { name: 'More' });
+    await expect(more).toHaveAttribute('aria-current', 'page');
+    await more.click();
+    const sheet = page.getByRole('dialog', { name: 'More' });
+    await expect(sheet.getByRole('link', { name: 'Sources', exact: true })).toHaveAttribute('aria-current', 'page');
+    // The command palette trigger lives in the sidebar header; on a phone it is here.
+    await expect(sheet.getByRole('button', { name: /Search & commands/ })).toBeVisible();
+    await sheet.getByRole('link', { name: 'Gates', exact: true }).click();
+    await expect(page).toHaveURL(/\/gates$/);
+    await expect(sheet).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   });
 });
 
@@ -60,6 +94,28 @@ test.describe('provenance inspector', () => {
     await page.goto('/evidence/Entities/missing', { waitUntil: 'networkidle' });
     await expect(page.getByRole('alert')).toContainText('The Hub holds no Entities record missing');
     await expect(page.locator('[data-evidence-axis]')).toHaveCount(0);
+  });
+});
+
+test.describe('AguaYLuz outdoor conditions', () => {
+  test('is reachable from the AguaYLuz module and says why a cell has no value', async ({ page }) => {
+    const rows = [
+      { id: 'ent_out_sj', municipality: 'San Juan', level: 'ELEVATED', rip_current_state: 'REPORTED', rip_current_risk: 'HIGH',
+        surf_ft: '5–7', air_quality_state: 'NOT_CONFIGURED', _producers: ['aguayluz-pr'] },
+      { id: 'ent_out_x', municipality: 'Ponce', level: 'ELEVATED', _producers: ['skywatcher-pr'] },
+    ];
+    await mockApi(page, { '/entities/OutdoorConditions': rows });
+
+    await page.goto('/aguayluz', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Outdoor Conditions' }).click();
+    const panel = page.getByRole('tabpanel');
+
+    await expect(panel.getByText(/Conditions context, not safety advice/)).toBeVisible();
+    const row = panel.getByRole('row', { name: /San Juan/ });
+    await expect(row.getByText('HIGH')).toBeVisible();
+    await expect(row.getByText('5–7 ft')).toBeVisible();
+    await expect(row.getByText('NOT_CONFIGURED')).toBeVisible();
+    await expect(panel.getByText('Ponce')).toHaveCount(0);
   });
 });
 
@@ -349,9 +405,9 @@ const COMPOSITION = {
   limits: { relationships: 200, linked_records: 200 },
 };
 
+// The sidebar is rendered from 768px up, so at both project widths the primary
+// navigation is on screen and needs no opening.
 async function openPrimaryNav(page) {
-  const menu = page.getByRole('button', { name: 'Open navigation menu' });
-  if (await menu.isVisible()) await menu.click();
   return page.locator('nav[aria-label="Primary"]:visible').first();
 }
 
@@ -1028,10 +1084,10 @@ test.describe('sky workspace', () => {
 
     // A pass track appears on the chart and goes away again.
     await expect(page.locator('[data-sky-track]')).toHaveCount(0);
-    await rows.nth(2).getByRole('button', { name: /^Show the ISS track/ }).click();
+    await rows.nth(2).getByRole('button', { name: /^Show track: ISS/ }).click();
     await expect(page.locator('[data-sky-track="ISS"] path')).toBeVisible();
     await expect(page.locator('[data-sky-track-key]')).toContainText('Hollow dot: rise. Filled dot: set.');
-    await rows.nth(2).getByRole('button', { name: /^Hide the ISS track/ }).click();
+    await rows.nth(2).getByRole('button', { name: /^Hide track: ISS/ }).click();
     await expect(page.locator('[data-sky-track]')).toHaveCount(0);
 
     // Hubble's elements did not load: it is listed as failed with the reason, and nothing is placed for it.
@@ -1160,34 +1216,34 @@ test.describe('sky workspace', () => {
   });
 });
 
-// Source Monitor (ADR 0012, ADR 0013): read-only MonitoredSources rows written by
-// `hub source-monitor` and loaded by `hub ingest`. Timestamps are relative to
-// now because freshness is computed against the viewer's clock.
+// Source Monitor (ADR 0013): read-only MonitoredSources rows projected by
+// `hub ingest` from each producer's source_monitors stream. Timestamps are relative
+// to now because freshness is computed against the viewer's clock.
 const daysAgo = (days) => new Date(Date.now() - days * 86400000).toISOString();
+const STREAM_ADAPTER = 'source_monitors stream (producer export)';
 const MONITOR_ROWS = [
   {
     id: 'ovnis-pr:SRC-0001', monitor_id: 'ovnis-pr:SRC-0001', producer: 'ovnis-pr', source_id: 'SRC-0001',
-    name: 'AARO Case Archive', producer_family: 'USAF', evidence_tier: 'T1', cadence: 'yearly', cadence_raw: 'annual',
-    cadence_window_seconds: 366 * 86400, status: 'active', status_raw: 'yes', producer_last_package_at: daysAgo(10),
-    raw: { source_family: 'USAF', retrieval_cadence: 'annual' },
-    lineage: { registry_path: 'data/reference/source_registry.csv', adapter: 'source_monitor_v1' }, observed_at: daysAgo(0),
+    name: 'AARO Case Archive', producer_family: 'USAF', evidence_tier: 'T1', cadence: 'yearly',
+    cadence_window_seconds: 366 * 86400, status: 'active', origin: 'stream',
+    last_success_basis: 'NOT_RECORDED', last_success_at: null, producer_last_package_at: daysAgo(10),
+    lineage: { registry_path: 'data/reference/source_registry.csv', adapter: STREAM_ADAPTER }, observed_at: daysAgo(10),
   },
   {
     id: 'moneysweep-pr:usaspending_prime', monitor_id: 'moneysweep-pr:usaspending_prime', producer: 'moneysweep-pr',
     source_id: 'usaspending_prime', name: 'usaspending_prime', producer_family: 'federal', evidence_tier: null,
-    cadence: 'weekly', cadence_raw: 'weekly', cadence_window_seconds: 7 * 86400, status: 'partial',
-    status_raw: 'partially_materialized', producer_last_package_at: daysAgo(30),
-    raw: { family: 'federal', pipeline_status: 'partially_materialized' },
-    lineage: { registry_path: 'reports/source_registry_status.csv', adapter: 'source_monitor_v1' }, observed_at: daysAgo(0),
+    cadence: 'weekly', cadence_window_seconds: 7 * 86400, status: 'partial', origin: 'stream',
+    last_success_basis: 'NOT_RECORDED', last_success_at: null, producer_last_package_at: daysAgo(30),
+    lineage: { registry_path: 'reports/source_registry_status.csv', adapter: STREAM_ADAPTER }, observed_at: daysAgo(30),
   },
 ];
 const MONITOR_SUMMARY = [{
-  id: 'source_monitor_summary', schema_version: 'prii_source_monitor_v1', adapter: 'source_monitor_v1',
-  generated_at: daysAgo(0), total: 2, error_count: 1,
+  id: 'source_monitor_summary', schema_version: 'prii_source_monitor_v1',
+  generated_at: daysAgo(0), total: 2, error_count: 1, stream_producers: ['moneysweep-pr', 'ovnis-pr'],
   producers: {
-    'moneysweep-pr': { count: 1, package_created_at: daysAgo(30), registries: ['reports/source_registry_status.csv'], excluded: {}, errors: [] },
-    'ovnis-pr': { count: 1, package_created_at: daysAgo(10), registries: ['data/reference/source_registry.csv'], excluded: {}, errors: [] },
-    'centinelas-pr': { count: 0, package_created_at: null, registries: ['data/reference/source_registry.csv'], excluded: {}, errors: ['data/reference/source_registry.csv: file not found'] },
+    'moneysweep-pr': { origin: 'stream', count: 1, package_created_at: daysAgo(30), registries: ['reports/source_registry_status.csv'], excluded: {}, errors: [] },
+    'ovnis-pr': { origin: 'stream', count: 1, package_created_at: daysAgo(10), registries: ['data/reference/source_registry.csv'], excluded: {}, errors: [] },
+    'centinelas-pr': { origin: 'stream', count: 0, package_created_at: null, registries: [], excluded: {}, errors: ['reports through the source_monitors stream, but this aggregate has no rows from it'] },
   },
 }];
 // Detail fragment first: mockApi matches the first fragment the URL contains.
@@ -1204,8 +1260,8 @@ test.describe('source monitor', () => {
     await (await openPrimaryNav(page)).getByRole('link', { name: 'Source Monitor', exact: true }).click();
     await expect(page).toHaveURL(/\/source-monitor$/);
     await expect(page.getByRole('heading', { name: 'Source Monitor' })).toBeVisible();
-    // A drifted registry is reported per producer, not hidden.
-    await expect(page.getByText('data/reference/source_registry.csv: file not found')).toBeVisible();
+    // An expected producer missing from the aggregate is reported per producer, not hidden.
+    await expect(page.getByText('reports through the source_monitors stream, but this aggregate has no rows from it')).toBeVisible();
 
     const rows = page.locator('table').last().locator('tbody tr');
     await expect(rows).toHaveCount(2);
@@ -1217,9 +1273,11 @@ test.describe('source monitor', () => {
     await rows.first().click();
     await expect(page).toHaveURL(/\/source-monitor\/moneysweep-pr%3Ausaspending_prime$/);
     await expect(page.getByRole('heading', { name: 'usaspending_prime' })).toBeVisible();
-    await expect(page.getByText('registry: partially_materialized')).toBeVisible();
+    await expect(page.getByText('Reported by the producer in its source_monitors stream.', { exact: false })).toBeVisible();
+    await expect(page.getByText('source_monitors stream', { exact: true })).toBeVisible();
     await expect(page.getByText('reports/source_registry_status.csv')).toBeVisible();
-    await page.getByRole('link', { name: 'Source Monitor' }).first().click();
+    // Opened from the federation table, the way back is the federation view.
+    await page.getByRole('link', { name: 'Back to Source Monitor', exact: true }).click();
     await expect(page).toHaveURL(/\/source-monitor$/);
   });
 
@@ -1236,6 +1294,64 @@ test.describe('source monitor', () => {
     const ovnis = page.getByRole('tabpanel', { name: 'Monitor' });
     await expect(ovnis.locator('tbody tr')).toHaveCount(1);
     await expect(ovnis).toContainText('AARO Case Archive');
+  });
+
+  test('each producer deep link opens its Monitor tab', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    // Skywatcher keeps its tab in ?view=; the other producer pages in ?tab=.
+    const links = {
+      '/aguayluz?tab=sources': 'aguayluz-pr',
+      '/centinelas?tab=sources': 'centinelas-pr',
+      '/moneysweep?tab=sources': 'moneysweep-pr',
+      '/ovnis?tab=sources': 'ovnis-pr',
+      '/skywatcher?view=sources': 'skywatcher-pr',
+      '/spiderweb?tab=sources': 'spiderweb-pr',
+    };
+    for (const [link, producer] of Object.entries(links)) {
+      await page.goto(link, { waitUntil: 'networkidle' });
+      await expect(page.getByRole('tab', { name: 'Monitor', exact: true }), link).toHaveAttribute('aria-selected', 'true');
+      const panel = page.getByRole('tabpanel', { name: 'Monitor' });
+      await expect(panel, link).toContainText('Sources this producer monitors');
+      const held = MONITOR_ROWS.filter((r) => r.producer === producer);
+      if (held.length) await expect(panel.locator('tbody tr'), link).toHaveCount(held.length);
+      else await expect(panel, link).toContainText(`No sources from ${producer} in the hub.`);
+    }
+  });
+
+  test('a source opened from a producer Monitor tab leads back to that tab', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Monitor', exact: true }).click();
+    await expect(page).toHaveURL(/\/moneysweep\?tab=sources$/);
+
+    await page.getByRole('tabpanel', { name: 'Monitor' }).locator('tbody tr').first().click();
+    await expect(page).toHaveURL(/\/source-monitor\/moneysweep-pr%3Ausaspending_prime$/);
+    await expect(page.getByRole('heading', { name: 'usaspending_prime' })).toBeVisible();
+    await expect(page.getByRole('main').getByRole('link', { name: 'moneysweep-pr', exact: true }))
+      .toHaveAttribute('href', '/moneysweep?tab=sources');
+
+    await page.getByRole('link', { name: 'Back to the MoneySweep-PR Monitor tab' }).click();
+    await expect(page).toHaveURL(/\/moneysweep\?tab=sources$/);
+    await expect(page.getByRole('tab', { name: 'Monitor', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tabpanel', { name: 'Monitor' }).locator('tbody tr')).toHaveCount(1);
+  });
+
+  test('the Family filter narrows the table to one family', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    await page.goto('/source-monitor', { waitUntil: 'networkidle' });
+    const rows = page.locator('table').last().locator('tbody tr');
+    await expect(rows).toHaveCount(2);
+
+    await page.getByRole('combobox', { name: 'Family' }).click();
+    // The options are the families in the rows, not a fixed list.
+    await expect(page.getByRole('option')).toHaveText(['All Family', 'federal', 'USAF']);
+    await page.getByRole('option', { name: 'federal', exact: true }).click();
+    await expect(rows).toHaveCount(1);
+    await expect(rows.first()).toContainText('usaspending_prime');
+
+    await page.getByRole('combobox', { name: 'Family' }).click();
+    await page.getByRole('option', { name: 'All Family', exact: true }).click();
+    await expect(rows).toHaveCount(2);
   });
 
   test('a stream row is measured from its own last success (ADR 0013)', async ({ page }) => {
@@ -1262,7 +1378,7 @@ test.describe('source monitor', () => {
     await expect(row.locator('[data-freshness-kind="last_success"]')).toHaveText('last success · from outputs');
   });
 
-  test('a source dropped from its registry is reported, not substituted', async ({ page }) => {
+  test('a source dropped from its stream is reported, not substituted', async ({ page }) => {
     await mockApi(page, { '/entities/MonitoredSources/ovnis-pr': { __status: 404, detail: 'MonitoredSources/ovnis-pr:GONE not found' } });
     await page.goto('/source-monitor/ovnis-pr%3AGONE', { waitUntil: 'networkidle' });
     await expect(page.getByText('Monitored source not found')).toBeVisible();

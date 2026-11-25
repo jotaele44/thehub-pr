@@ -6,6 +6,8 @@ import json
 import os
 from pathlib import Path
 
+import pytest
+
 from prii_desktop import DesktopConfig
 from prii_desktop.setup_center import (
     SetupBridge,
@@ -104,6 +106,9 @@ def test_diagnostics_unchanged_without_a_doctor_manifest(tmp_path):
 def test_diagnostics_appends_federation_doctor_checks_when_manifest_present(tmp_path):
     """When the target repo declares a doctor manifest, its results are
     appended after the 5 bundle checks -- additive, never replacing them."""
+    # prii_doctor is optional: setup_center returns no doctor rows without it.
+    # Producers run this suite from their desktop CI, and most do not install it.
+    pytest.importorskip("prii_doctor")
     config = _config(tmp_path)
     fed_dir = config.repo_root / ".federation"
     fed_dir.mkdir(parents=True, exist_ok=True)

@@ -163,7 +163,7 @@ function AppTile({ app }) {
                   <li key={evidence.sourceId} className="rounded-md border border-status-success/30 bg-status-success/10 p-2">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-medium">{evidence.label}</span>
-                      <span className="rounded-md border border-status-success/40 bg-status-success/10 px-2 py-0.5 text-status-success-fg">
+                      <span className="max-w-full rounded-md border border-status-success/40 bg-status-success/10 px-2 py-0.5 text-status-success-fg [overflow-wrap:anywhere]">
                         {evidence.state}
                       </span>
                     </div>

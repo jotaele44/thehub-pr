@@ -1,0 +1,203 @@
+{
+  "claim_class": "FACT",
+  "generated_at": "2026-11-17T12:56:55+00:00",
+  "note": "Git commit and tree ids are Git object hashes. They are not SHA-256 file hashes; those are in source_manifest.json.",
+  "repositories": [
+    {
+      "audited_ref": "origin/main",
+      "commit_date": "2026-11-17T12:48:28+00:00",
+      "dirty_paths": [],
+      "identities": {
+        "brief_recorded_remote_head": "74fcffadd285d508381ae2762377a0f7c60463d9",
+        "current_local_branch": "claude/pensive-goodall-bo5l74",
+        "current_local_head": "746c3085d78895816d0a3fcb714713f1ef5b7be7",
+        "current_remote_head": "6e3a4f67de20889abc3d0a48e0b514a4f7087f7a",
+        "current_remote_tree": "5ab1e6dec0260def99edab798c275d64a2319f03",
+        "local_is_ancestor_of_remote_main": false,
+        "session_ledger_remote_head": "6046bda762107dacfab6a0d195a1b9cef196b7ed",
+        "upstream": "origin/claude/pensive-goodall-bo5l74"
+      },
+      "identity_agreement": {
+        "brief_equals_current": false,
+        "brief_equals_session_ledger": false,
+        "brief_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT",
+        "session_ledger_equals_current": false,
+        "session_ledger_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT"
+      },
+      "repository": "jotaele44/aguayluz-pr",
+      "shallow_clone": true
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit_date": "2026-11-17T12:28:52+00:00",
+      "dirty_paths": [],
+      "identities": {
+        "brief_recorded_remote_head": "f8fe6aed9322207b059ab881bb4967010082b038",
+        "current_local_branch": "claude/pensive-goodall-bo5l74",
+        "current_local_head": "378ea43afcc4b116b4a290835ae0dae3eaa26e17",
+        "current_remote_head": "893a06f4a50655bcfae90469e15677c5f665d7a6",
+        "current_remote_tree": "2cf02224df4f284075e042a3156a20245dd5f8a5",
+        "local_is_ancestor_of_remote_main": false,
+        "session_ledger_remote_head": "3b80bb5e5bae3df1d1a358ffc250d42887132991",
+        "upstream": "origin/claude/pensive-goodall-bo5l74"
+      },
+      "identity_agreement": {
+        "brief_equals_current": false,
+        "brief_equals_session_ledger": false,
+        "brief_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT",
+        "session_ledger_equals_current": false,
+        "session_ledger_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT"
+      },
+      "repository": "jotaele44/centinelas-pr",
+      "shallow_clone": true
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit_date": "2026-11-17T06:15:01-04:00",
+      "dirty_paths": [],
+      "identities": {
+        "brief_recorded_remote_head": "c26b5028fd42a653eacb2bca48fd3ec8589d2a0f",
+        "current_local_branch": "claude/pensive-goodall-bo5l74",
+        "current_local_head": "02d668ded416756885d20aa7b8d19aad9fc9feda",
+        "current_remote_head": "956bb498796c698230d2a2de722d316945777f62",
+        "current_remote_tree": "f4d7f198615b7776ae55c01d40e54896461ad494",
+        "local_is_ancestor_of_remote_main": false,
+        "session_ledger_remote_head": "b0dc1737fb58b4c544c1189a8db7e43338b70188",
+        "upstream": "origin/claude/pensive-goodall-bo5l74"
+      },
+      "identity_agreement": {
+        "brief_equals_current": false,
+        "brief_equals_session_ledger": false,
+        "brief_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT",
+        "session_ledger_equals_current": false,
+        "session_ledger_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT"
+      },
+      "repository": "jotaele44/moneysweep-pr",
+      "shallow_clone": true
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit_date": "2026-11-17T06:14:12-04:00",
+      "dirty_paths": [],
+      "identities": {
+        "brief_recorded_remote_head": "0da925cf2c1059060fbd5f69ab2358d08e6808aa",
+        "current_local_branch": "claude/pensive-goodall-bo5l74",
+        "current_local_head": "aa384d261fabb5e6859ff765958173944829bb98",
+        "current_remote_head": "593bdd813686048a881cb3af61f4fbb9d211a52d",
+        "current_remote_tree": "fe8e50d1991a948cb8e9c50dc277d63ce47074da",
+        "local_is_ancestor_of_remote_main": true,
+        "session_ledger_remote_head": "cf0c9901411fd07656b91f267cc0a274c58d460b",
+        "upstream": null
+      },
+      "identity_agreement": {
+        "brief_equals_current": false,
+        "brief_equals_session_ledger": false,
+        "brief_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT",
+        "session_ledger_equals_current": false,
+        "session_ledger_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT"
+      },
+      "repository": "jotaele44/mucaro-ai",
+      "shallow_clone": true
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit_date": "2026-11-16T15:59:28-04:00",
+      "dirty_paths": [],
+      "identities": {
+        "brief_recorded_remote_head": "a8225db5d226232037c455daf6e941e50d86d136",
+        "current_local_branch": "claude/pensive-goodall-bo5l74",
+        "current_local_head": "f3715d4c7ad034ea57e808c6114fd11df18fb6ff",
+        "current_remote_head": "a8225db5d226232037c455daf6e941e50d86d136",
+        "current_remote_tree": "4028a8445c04099297479e7636ccc6f8e84d3ec2",
+        "local_is_ancestor_of_remote_main": false,
+        "session_ledger_remote_head": "a8225db5d226232037c455daf6e941e50d86d136",
+        "upstream": "origin/claude/pensive-goodall-bo5l74"
+      },
+      "identity_agreement": {
+        "brief_equals_current": true,
+        "brief_equals_session_ledger": true,
+        "brief_relation_to_current": "SAME",
+        "session_ledger_equals_current": true,
+        "session_ledger_relation_to_current": "SAME"
+      },
+      "repository": "jotaele44/ovnis-pr",
+      "shallow_clone": true
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit_date": "2026-11-16T16:00:48-04:00",
+      "dirty_paths": [],
+      "identities": {
+        "brief_recorded_remote_head": "a2176990606048a6b918daacdb8bce027e58a903",
+        "current_local_branch": "claude/pensive-goodall-bo5l74",
+        "current_local_head": "db797d100ef5da03c2dca030a6d6b8e541e7dfaa",
+        "current_remote_head": "a2176990606048a6b918daacdb8bce027e58a903",
+        "current_remote_tree": "22c592a4696d6df2e683e103a44c7c69c1834531",
+        "local_is_ancestor_of_remote_main": false,
+        "session_ledger_remote_head": "a2176990606048a6b918daacdb8bce027e58a903",
+        "upstream": "origin/claude/pensive-goodall-bo5l74"
+      },
+      "identity_agreement": {
+        "brief_equals_current": true,
+        "brief_equals_session_ledger": true,
+        "brief_relation_to_current": "SAME",
+        "session_ledger_equals_current": true,
+        "session_ledger_relation_to_current": "SAME"
+      },
+      "repository": "jotaele44/skywatcher-pr",
+      "shallow_clone": true
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit_date": "2026-11-16T21:34:12-04:00",
+      "dirty_paths": [],
+      "identities": {
+        "brief_recorded_remote_head": "9d6af728b48b7bbde5167d8abaacf51f34a0acaa",
+        "current_local_branch": "claude/pensive-goodall-bo5l74",
+        "current_local_head": "643829d9ff028254461ec227a82be695bc4a9053",
+        "current_remote_head": "9d6af728b48b7bbde5167d8abaacf51f34a0acaa",
+        "current_remote_tree": "43ba7df5b91f4a431c39e6a24766419058ad26bc",
+        "local_is_ancestor_of_remote_main": false,
+        "session_ledger_remote_head": "451535d7d19e1886dd0c478e1455d53625b85cab",
+        "upstream": "origin/claude/pensive-goodall-bo5l74"
+      },
+      "identity_agreement": {
+        "brief_equals_current": true,
+        "brief_equals_session_ledger": false,
+        "brief_relation_to_current": "SAME",
+        "session_ledger_equals_current": false,
+        "session_ledger_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT"
+      },
+      "repository": "jotaele44/spiderweb-pr",
+      "shallow_clone": true
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit_date": "2026-11-17T06:13:43-04:00",
+      "dirty_paths": [
+        "?? federation-audit/experience-program/"
+      ],
+      "identities": {
+        "brief_recorded_remote_head": "dc79dc003815432b3f8bfc8f9bff532f6c47e622",
+        "current_local_branch": "claude/pensive-goodall-bo5l74",
+        "current_local_head": "4f5c660801b6380ad4b64d39518fa778c9d25c76",
+        "current_remote_head": "4f5c660801b6380ad4b64d39518fa778c9d25c76",
+        "current_remote_tree": "c04ac7d9fa150b40f7b63b5614380524cf7168e6",
+        "local_is_ancestor_of_remote_main": true,
+        "session_ledger_remote_head": "dc79dc003815432b3f8bfc8f9bff532f6c47e622",
+        "upstream": "origin/main"
+      },
+      "identity_agreement": {
+        "brief_equals_current": false,
+        "brief_equals_session_ledger": true,
+        "brief_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT",
+        "session_ledger_equals_current": false,
+        "session_ledger_relation_to_current": "SUPERSEDED_ANCESTOR_OF_CURRENT"
+      },
+      "repository": "jotaele44/thehub-pr",
+      "shallow_clone": true
+    }
+  ],
+  "repository_count": 8,
+  "schema": "federation.experience-program.repository-baselines/1"
+}

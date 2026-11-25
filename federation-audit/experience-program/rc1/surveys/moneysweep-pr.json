@@ -1,0 +1,2259 @@
+{
+ "repository": "moneysweep-pr",
+ "audited_commit": "956bb498796c698230d2a2de722d316945777f62",
+ "frontend": {
+  "dir": "dashboard",
+  "language": "js",
+  "framework": "React 19 + Vite 8 + Tailwind 4 + TanStack Query 5 + Radix UI (dashboard/package.json:26-43)",
+  "router": "query-param",
+  "router_file": "dashboard/src/pages/Dashboard.jsx:37 (react-router BrowserRouter with a single '/' route at dashboard/src/App.jsx:7,16; HashRouter when VITE_OFFLINE=1)",
+  "shared_design_package": "@pr-federation/react@0.4.1 (dashboard/package.json:29)"
+ },
+ "entry_points": [
+  {
+   "id": "desktop-launchers",
+   "kind": "launcher",
+   "path": "PRII-MONEYSWEEP.sh:26",
+   "note": "Linux launcher: runs desktop/setup.py --ensure then desktop/launch.py. Sibling launchers PRII-MONEYSWEEP.command (macOS), PRII-MONEYSWEEP.bat (Windows), PRII-MONEYSWEEP.app and Fix-Gatekeeper.command exist at repo root; only the .sh was read."
+  },
+  {
+   "id": "desktop-launch",
+   "kind": "launcher",
+   "path": "desktop/launch.py:85",
+   "note": "main(): apply saved workspace, bootstrap workspace, optional --selftest, then prii_desktop.launch (external package, requirements-desktop.txt:5)."
+  },
+  {
+   "id": "desktop-asgi-shim",
+   "kind": "server",
+   "path": "desktop/app_server.py:20",
+   "note": "make_desktop_app(DesktopConfig) - same-origin SPA + API wrapper implemented in external prii_desktop."
+  },
+  {
+   "id": "desktop-backend-app",
+   "kind": "server",
+   "path": "server/backend/desktop_app.py:25",
+   "note": "Desktop composition root: main.app + /materialization router (line 26); requires MONEYSWEEP_DATA_ROOT (18-20). Selected by desktop/config.py:18."
+  },
+  {
+   "id": "dev-backend-app",
+   "kind": "server",
+   "path": "server/backend/main.py:44",
+   "note": "uvicorn server.backend.main:app --port 8000 (docstring line 9). Read layer over data/canonical_v1 CSVs + api-keys, campaign-finance, government-changes, leaderboards, ownership routers (286-290). No /materialization."
+  },
+  {
+   "id": "case-manager-app",
+   "kind": "server",
+   "path": "server/backend/case_manager_app.py:12",
+   "note": "Standalone FastAPI app for /cases; started manually (docs/CASE_MANAGER_PHASE_1_API_CONTRACT.md:10). Not launched by desktop or dashboard."
+  },
+  {
+   "id": "dashboard-web",
+   "kind": "web",
+   "path": "dashboard/index.html:13",
+   "note": "Vite SPA entry -> dashboard/src/main.jsx:18 -> dashboard/src/App.jsx:11. Dev port 5173 (dashboard/vite.config.js:23)."
+  },
+  {
+   "id": "dashboard-offline-export",
+   "kind": "web",
+   "path": "dashboard/package.json:13",
+   "note": "npm run build:export: snapshot + VITE_OFFLINE=1 single-file build (dashboard/vite.config.js:12-21)."
+  },
+  {
+   "id": "pilot-atlas",
+   "kind": "web",
+   "path": "dashboard/federation-pilot-atlas.html:11",
+   "note": "Visual-test fixture page; not part of the app navigation."
+  },
+  {
+   "id": "forensics-cli",
+   "kind": "cli",
+   "path": "moneysweep/forensics/cli.py:16",
+   "note": "contract-forensics argparse CLI."
+  },
+  {
+   "id": "pipeline-cli",
+   "kind": "cli",
+   "path": "run_all.py:1",
+   "note": "Pipeline runner referenced by server/backend/api_keys.py:3-7. Root-level run_*.py and scripts/ were NOT audited (out of GUI scope)."
+  }
+ ],
+ "surfaces": [
+  {
+   "id": "root-dashboard",
+   "kind": "route",
+   "label": "MoneySweep PR",
+   "address": "/",
+   "component": "dashboard/src/pages/Dashboard.jsx:36",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:16",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Only real route. Header + StatsBar + 11-tab console (9 tabs when VITE_OFFLINE=1). No <main> landmark."
+  },
+  {
+   "id": "not-found",
+   "kind": "route",
+   "label": "Page Not Found",
+   "address": "*",
+   "component": "dashboard/src/lib/PageNotFound.jsx:4",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:17",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Catch-all 404 with 'Go Home' button."
+  },
+  {
+   "id": "error-boundary",
+   "kind": "panel",
+   "label": "Something went wrong",
+   "address": null,
+   "component": "dashboard/src/components/ErrorBoundary.jsx:4",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/main.jsx:20",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Root render-crash guard with 'Try again' button (dashboard/src/components/ErrorBoundary.jsx:17-22)."
+  },
+  {
+   "id": "stats-bar",
+   "kind": "toolbar",
+   "label": "Backend online / Backend down / Connecting…",
+   "address": null,
+   "component": "dashboard/src/components/StatsBar.jsx:17",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:56",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Health badge (role=status, aria-live) + 4 KPI cards (Contracts, Entities, Edges, Municipios); missing stat rendered as en dash '–' (dashboard/src/components/StatsBar.jsx:39-42); shows 'award amounts not populated in Tranche A' when contractsWithAmount==0 (dashboard/src/components/StatsBar.jsx:43-45). /health polled every 15s (dashboard/src/lib/hooks.js:11). /stats failure is silent (no error UI)."
+  },
+  {
+   "id": "tab-bar",
+   "kind": "toolbar",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/Dashboard.jsx:61",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:59",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix Tabs; value bound to ?tab= (dashboard/src/pages/Dashboard.jsx:37-42); unknown/missing tab falls back to 'contracts' (line 38)."
+  },
+  {
+   "id": "tab-activity",
+   "kind": "tab",
+   "label": "Activity",
+   "address": "/?tab=activity",
+   "component": "dashboard/src/components/ProgramTimeline.jsx:18",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:76",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Static PROGRAM_TIMELINE (dashboard/src/pages/Dashboard.jsx:18-24) merged with LIVE events read from localStorage; no backend call. Empty text only for filter miss (dashboard/src/components/ProgramTimeline.jsx:64)."
+  },
+  {
+   "id": "activity-timeline-filter",
+   "kind": "filter",
+   "label": "ALL / NOW / NEXT / QUEUED / BLOCKED",
+   "address": null,
+   "component": "dashboard/src/components/ProgramTimeline.jsx:42",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ProgramTimeline.jsx:42",
+   "parent": "tab-activity",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Phase filter buttons, no aria-pressed; plus Priority/Name sort toggle (line 45)."
+  },
+  {
+   "id": "activity-search",
+   "kind": "search",
+   "label": "Search activity, function, or state",
+   "address": null,
+   "component": "dashboard/src/components/ProgramTimeline.jsx:51",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ProgramTimeline.jsx:51",
+   "parent": "tab-activity",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Placeholder-only name (label wraps icon + input, no text)."
+  },
+  {
+   "id": "activity-next-queue",
+   "kind": "panel",
+   "label": "Upcoming work",
+   "address": null,
+   "component": "dashboard/src/components/ProgramTimeline.jsx:68",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ProgramTimeline.jsx:68",
+   "parent": "tab-activity",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "First 5 NEXT/QUEUED/BLOCKED items."
+  },
+  {
+   "id": "tab-contracts",
+   "kind": "tab",
+   "label": "Contracts",
+   "address": "/?tab=contracts",
+   "component": "dashboard/src/components/ContractsTable.jsx:25",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:77",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Default tab. GET /contracts unfiltered; all filtering/sorting client-side."
+  },
+  {
+   "id": "contracts-agency-filter",
+   "kind": "filter",
+   "label": "Filter by awarding agency…",
+   "address": null,
+   "component": "dashboard/src/components/ContractsTable.jsx:45",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ContractsTable.jsx:45",
+   "parent": "tab-contracts",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-side substring on awardingName (dashboard/src/components/ContractsTable.jsx:31-36); backend query params municipality/agency/status/fiscal_year (server/backend/main.py:119-124) are never sent."
+  },
+  {
+   "id": "contracts-table",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/ContractsTable.jsx:62",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ContractsTable.jsx:62",
+   "parent": "tab-contracts",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Columns Contract, Awarding, Contractor, Municipio, Amount, Status; sortable headers (SortHead); rows are role=button opening the sheet."
+  },
+  {
+   "id": "contract-detail-sheet",
+   "kind": "drawer",
+   "label": "contract serviceType/contractNumber",
+   "address": null,
+   "component": "dashboard/src/components/ContractsTable.jsx:96",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ContractsTable.jsx:96",
+   "parent": "tab-contracts",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix Dialog as right-side sheet; rows: Awarding entity, Contractor, Municipality, Award amount, Period, Fiscal year, Confidence (dashboard/src/components/ContractsTable.jsx:106-112)."
+  },
+  {
+   "id": "tab-leaderboards",
+   "kind": "tab",
+   "label": "Top Entities",
+   "address": "/?tab=leaderboards",
+   "component": "dashboard/src/components/FinancialLeaderboards.jsx:23",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:78",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Own useEffect fetching (not react-query/QueryBoundary): loading text line 94, error role=alert line 93, empty text line 101. No offline/stale handling."
+  },
+  {
+   "id": "leaderboards-category-select",
+   "kind": "filter",
+   "label": "Category (Financial category)",
+   "address": null,
+   "component": "dashboard/src/components/FinancialLeaderboards.jsx:86",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/FinancialLeaderboards.jsx:86",
+   "parent": "tab-leaderboards",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Native select of all ontology categories (22 in config/financial_category_ontology.json); backend filters start_year/end_year/municipality/entity_type/currency (server/backend/leaderboards.py:174-182) have no UI."
+  },
+  {
+   "id": "leaderboards-ranking-table",
+   "kind": "table",
+   "label": "Top N · ties included",
+   "address": null,
+   "component": "dashboard/src/components/FinancialLeaderboards.jsx:99",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/FinancialLeaderboards.jsx:99",
+   "parent": "tab-leaderboards",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Columns Rank, Entity, Value, Records, Identity, Inspect."
+  },
+  {
+   "id": "leaderboards-movers-panel",
+   "kind": "panel",
+   "label": "Frozen history / movers",
+   "address": null,
+   "component": "dashboard/src/components/FinancialLeaderboards.jsx:105",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/FinancialLeaderboards.jsx:105",
+   "parent": "tab-leaderboards",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "leaderboards-signals-panel",
+   "kind": "panel",
+   "label": "Investigation signals (N)",
+   "address": null,
+   "component": "dashboard/src/components/FinancialLeaderboards.jsx:107",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/FinancialLeaderboards.jsx:107",
+   "parent": "tab-leaderboards",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "<details>, rendered only when signals exist."
+  },
+  {
+   "id": "leaderboards-reconciliation-panel",
+   "kind": "panel",
+   "label": "Reconciliation",
+   "address": null,
+   "component": "dashboard/src/components/FinancialLeaderboards.jsx:109",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/FinancialLeaderboards.jsx:109",
+   "parent": "tab-leaderboards",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Input/Retained/Excluded/Unresolved/Out of scope + PASS/FAIL arithmeticClosed badge."
+  },
+  {
+   "id": "leaderboards-entity-neighborhood",
+   "kind": "panel",
+   "label": "Entity neighborhood",
+   "address": null,
+   "component": "dashboard/src/components/FinancialLeaderboards.jsx:111",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/FinancialLeaderboards.jsx:111",
+   "parent": "tab-leaderboards",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Appears after 'Inspect'; dataset counts + 'Map handoff' state. No close control; cleared on category change (line 43-44)."
+  },
+  {
+   "id": "leaderboards-provenance-panel",
+   "kind": "panel",
+   "label": "Provenance & freshness",
+   "address": null,
+   "component": "dashboard/src/components/FinancialLeaderboards.jsx:113",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/FinancialLeaderboards.jsx:113",
+   "parent": "tab-leaderboards",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "<details> listing source path, SHA256, bytes, modifiedAt, computedAt."
+  },
+  {
+   "id": "tab-entities",
+   "kind": "tab",
+   "label": "Entities",
+   "address": "/?tab=entities",
+   "component": "dashboard/src/components/EntitiesTable.jsx:19",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:79",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": ""
+  },
+  {
+   "id": "entities-search",
+   "kind": "search",
+   "label": "Search entities…",
+   "address": null,
+   "component": "dashboard/src/components/EntitiesTable.jsx:45",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/EntitiesTable.jsx:45",
+   "parent": "tab-entities",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-side name substring."
+  },
+  {
+   "id": "entities-type-filter",
+   "kind": "filter",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/TypeFilterSelect.jsx:9",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/EntitiesTable.jsx:52",
+   "parent": "tab-entities",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix Select with no accessible name (dashboard/src/components/TypeFilterSelect.jsx:16)."
+  },
+  {
+   "id": "entities-table",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/EntitiesTable.jsx:63",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/EntitiesTable.jsx:63",
+   "parent": "tab-entities",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Columns Name, Type, Jurisdiction, Conf.; sortable; rows role=button."
+  },
+  {
+   "id": "entity-detail-sheet",
+   "kind": "drawer",
+   "label": "entity name",
+   "address": null,
+   "component": "dashboard/src/components/EntitiesTable.jsx:93",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/EntitiesTable.jsx:93",
+   "parent": "tab-entities",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Type, Jurisdiction, Parent entity, Confidence, Notes; null -> '—' via dashboard/src/components/DetailRow.jsx:6."
+  },
+  {
+   "id": "tab-government-changes",
+   "kind": "tab",
+   "label": "Gov Changes",
+   "address": "/?tab=government-changes",
+   "component": "dashboard/src/components/GovernmentChanges.jsx:7",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:80",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Header strip with Events/Candidates/Alerts/Binding totals ('—' when summary missing, lines 17-20) and 'ledger not materialized' badges (21-22). Summary query errors are not surfaced."
+  },
+  {
+   "id": "government-changes-table",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/GovernmentChanges.jsx:26",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/GovernmentChanges.jsx:26",
+   "parent": "tab-government-changes",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Columns Entity, Change, Effective ('pending' when blank, line 42), State, Severity, Impact. Header cells are <td> (TableCell) not <th>."
+  },
+  {
+   "id": "government-change-candidates-table",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/GovernmentChangeCandidates.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/GovernmentChanges.jsx:53",
+   "parent": "tab-government-changes",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Second QueryBoundary under the events table; table has no header row and no heading/caption."
+  },
+  {
+   "id": "tab-graph",
+   "kind": "tab",
+   "label": "Relationships",
+   "address": "/?tab=graph",
+   "component": "dashboard/src/components/RelationshipGraph.jsx:9",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:81",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Despite the name it is a list of edge cards (source -> edgeType -> target), not a graph visualisation."
+  },
+  {
+   "id": "relationships-type-filter",
+   "kind": "filter",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/TypeFilterSelect.jsx:9",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/RelationshipGraph.jsx:24",
+   "parent": "tab-graph",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Same unnamed Radix Select."
+  },
+  {
+   "id": "tab-municipios",
+   "kind": "tab",
+   "label": "Municipios",
+   "address": "/?tab=municipios",
+   "component": "dashboard/src/components/MunicipalityAggregates.jsx:13",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:82",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": ""
+  },
+  {
+   "id": "municipios-distributions",
+   "kind": "chart",
+   "label": "Contracts by status / Contracts by service / Entities by type",
+   "address": null,
+   "component": "dashboard/src/components/StatsDistributions.jsx:29",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/MunicipalityAggregates.jsx:27",
+   "parent": "tab-municipios",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "CSS proportion bars from /stats; returns null while stats missing (line 31) - no loading/error UI."
+  },
+  {
+   "id": "municipios-bar-chart",
+   "kind": "chart",
+   "label": "Contracts per municipio",
+   "address": null,
+   "component": "dashboard/src/components/MunicipalityAggregates.jsx:33",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/MunicipalityAggregates.jsx:33",
+   "parent": "tab-municipios",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "recharts BarChart of contract counts (not amounts)."
+  },
+  {
+   "id": "municipios-list",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/MunicipalityAggregates.jsx:47",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/MunicipalityAggregates.jsx:47",
+   "parent": "tab-municipios",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "'<n> contracts · <fmtMoney(total)>' per municipio (line 51)."
+  },
+  {
+   "id": "tab-campaign-finance",
+   "kind": "tab",
+   "label": "Campaign Finance",
+   "address": "/?tab=campaign-finance",
+   "component": "dashboard/src/components/CampaignFinance.jsx:118",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:83",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "5 metric tiles (lines 136-140), summary error banner (142-156), not-materialized status (157-161), latest-file timestamp (162-166)."
+  },
+  {
+   "id": "campaign-finance-view-select",
+   "kind": "filter",
+   "label": "Campaign-finance view",
+   "address": null,
+   "component": "dashboard/src/components/CampaignFinance.jsx:170",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CampaignFinance.jsx:170",
+   "parent": "tab-campaign-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Contributions / Candidates, committees & recipients / OCE reports."
+  },
+  {
+   "id": "campaign-finance-source-select",
+   "kind": "filter",
+   "label": "Campaign-finance source",
+   "address": null,
+   "component": "dashboard/src/components/CampaignFinance.jsx:181",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CampaignFinance.jsx:181",
+   "parent": "tab-campaign-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "All/FEC/CEE/OCE; only in contributions view."
+  },
+  {
+   "id": "campaign-finance-search",
+   "kind": "search",
+   "label": "Filter name… / Filter committee…",
+   "address": null,
+   "component": "dashboard/src/components/CampaignFinance.jsx:198",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CampaignFinance.jsx:198",
+   "parent": "tab-campaign-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Sent as q to the server on every keystroke (no debounce)."
+  },
+  {
+   "id": "campaign-finance-contributions-table",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/CampaignFinance.jsx:24",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CampaignFinance.jsx:209",
+   "parent": "tab-campaign-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Date, Donor, Recipient, Source, Party, Amount. Header cells are <td>. limit=1000, no paging UI."
+  },
+  {
+   "id": "campaign-finance-entities-table",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/CampaignFinance.jsx:56",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CampaignFinance.jsx:210",
+   "parent": "tab-campaign-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Type, Name, Party / resolved type, Office, Amount, Review."
+  },
+  {
+   "id": "campaign-finance-reports-table",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/CampaignFinance.jsx:88",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/CampaignFinance.jsx:211",
+   "parent": "tab-campaign-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Filed, Committee, Report, Type, Period."
+  },
+  {
+   "id": "tab-data-sources",
+   "kind": "tab",
+   "label": "Data Sources",
+   "address": "/?tab=data-sources",
+   "component": "dashboard/src/components/DataSources.jsx:38",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:84",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hidden when VITE_OFFLINE=1 (dashboard/src/pages/Dashboard.jsx:32,70,84). Calls /materialization/* which is mounted only by server/backend/desktop_app.py:26, not by main.py (server/backend/main.py:286-290). Initial-load failure shows only the 'Operation result' error text (dashboard/src/components/DataSources.jsx:85-86, 266)."
+  },
+  {
+   "id": "data-sources-hud-drgr-audit",
+   "kind": "panel",
+   "label": "HUD DRGR source audit",
+   "address": null,
+   "component": "dashboard/src/components/HudDrgrAudit.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/DataSources.jsx:163",
+   "parent": "tab-data-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": true
+   },
+   "notes": "Refresh saved audits / Create new audit snapshot; receipts as <details> with SHA256, path, records; error text says saved results 'may be stale' (dashboard/src/components/HudDrgrAudit.jsx:34)."
+  },
+  {
+   "id": "data-sources-state-panel",
+   "kind": "panel",
+   "label": "Data-plane state",
+   "address": null,
+   "component": "dashboard/src/components/DataSources.jsx:164",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/DataSources.jsx:164",
+   "parent": "tab-data-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Registered / Automatable / Manual exports / Source-ID hash / Production (missing -> '—' or 'UNKNOWN', lines 177-181) + Refresh button."
+  },
+  {
+   "id": "data-sources-offline-files-form",
+   "kind": "import",
+   "label": "Offline files",
+   "address": null,
+   "component": "dashboard/src/components/DataSources.jsx:185",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/DataSources.jsx:185",
+   "parent": "tab-data-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Manual source select, file input, 'Stage + hash', 'Materialize staged source'."
+  },
+  {
+   "id": "data-sources-api-materialization-form",
+   "kind": "form",
+   "label": "API materialization",
+   "address": null,
+   "component": "dashboard/src/components/DataSources.jsx:216",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/DataSources.jsx:216",
+   "parent": "tab-data-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Source select, 'Dry run', 'Fetch + materialize'. Deliberately no run-all (line 233)."
+  },
+  {
+   "id": "data-sources-credentials-form",
+   "kind": "settings",
+   "label": "API credentials",
+   "address": null,
+   "component": "dashboard/src/components/DataSources.jsx:237",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/DataSources.jsx:237",
+   "parent": "tab-data-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "OS credential vault: key select (configured/not configured), password input, 'Save to vault', 'Remove'."
+  },
+  {
+   "id": "data-sources-operation-result",
+   "kind": "notification",
+   "label": "Operation result",
+   "address": null,
+   "component": "dashboard/src/components/DataSources.jsx:262",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/DataSources.jsx:262",
+   "parent": "tab-data-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "aria-live=polite section: 'Running <op>…', error text, raw JSON result."
+  },
+  {
+   "id": "tab-api-keys",
+   "kind": "tab",
+   "label": "API Keys",
+   "address": "/?tab=api-keys",
+   "component": "dashboard/src/components/ApiKeysPanel.jsx:68",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:85",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Hidden when VITE_OFFLINE=1. Writes to the local .env file (dashboard/src/components/ApiKeysPanel.jsx:75-78) - a different store from the Data Sources OS vault."
+  },
+  {
+   "id": "api-keys-table",
+   "kind": "settings",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/ApiKeysPanel.jsx:82",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ApiKeysPanel.jsx:82",
+   "parent": "tab-api-keys",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Key, Description, Requirement, Status (Set/Not set), Set value (password input + Save per row). Save error is plain <p>, no role=alert (line 60-62)."
+  },
+  {
+   "id": "tab-ownership",
+   "kind": "tab",
+   "label": "Ownership",
+   "address": "/?tab=ownership",
+   "component": "dashboard/src/components/OwnershipDeepDive.jsx:25",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/Dashboard.jsx:86",
+   "parent": "root-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Empty label 'Certified ownership dataset is not mounted' (line 56). Status query failure not surfaced (falls back to 'OPEN', line 49)."
+  },
+  {
+   "id": "ownership-issuer-select",
+   "kind": "filter",
+   "label": "Ownership issuer",
+   "address": null,
+   "component": "dashboard/src/components/OwnershipDeepDive.jsx:37",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/OwnershipDeepDive.jsx:37",
+   "parent": "tab-ownership",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "BPOP only; OFG and EVTC options are disabled (lines 44-45); query is enabled only for BPOP (dashboard/src/lib/hooks.js:53)."
+  },
+  {
+   "id": "ownership-metrics",
+   "kind": "panel",
+   "label": "Certification / Latest period / Source rows / Active / Superseded / 8Q periods",
+   "address": null,
+   "component": "dashboard/src/components/OwnershipDeepDive.jsx:58",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/OwnershipDeepDive.jsx:58",
+   "parent": "tab-ownership",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "ownership-holders-table",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/OwnershipDeepDive.jsx:86",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/OwnershipDeepDive.jsx:86",
+   "parent": "tab-ownership",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Holder / stable ID, As of, Filed, Shares, % issuer, 13F portfolio %, Amendment, Accession. Header cells are <td>."
+  },
+  {
+   "id": "query-boundary-states",
+   "kind": "notification",
+   "label": "Loading records / Couldn’t reach the backend / MoneySweep is offline / This view may be stale / Clear filters",
+   "address": null,
+   "component": "dashboard/src/components/QueryBoundary.jsx:73",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/ContractsTable.jsx:54",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Shared async-state wrapper used by Contracts, Entities, Gov Changes (x2), Relationships, Municipios, Campaign Finance (x3), API Keys, Ownership. Not used by Top Entities, Data Sources, HUD DRGR audit, Activity. Error description hides the server message (line 172)."
+  },
+  {
+   "id": "federation-pilot-atlas",
+   "kind": "route",
+   "label": "MoneySweep Federation Design Pilot Atlas",
+   "address": "/federation-pilot-atlas.html",
+   "component": "dashboard/src/visual-tests/FederationPilotAtlas.jsx:52",
+   "mounted": false,
+   "mounted_evidence": "dashboard/federation-pilot-atlas.html:11",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Separate Vite HTML entry used only by dashboard/scripts/run-federation-pilot-visual-checks.mjs:14; not linked from the app and not a router route. Fixture page, not the shipped dashboard."
+  },
+  {
+   "id": "components-ui-button-raw",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/ui/skeleton.jsx:1",
+   "mounted": false,
+   "mounted_evidence": "none",
+   "parent": null,
+   "classification": "UNKNOWN",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "ui/skeleton.jsx has no importer found by grep in dashboard/src (searched 'skeleton'); not traced further."
+  },
+  {
+   "id": "case-manager-gui",
+   "kind": "workspace",
+   "label": null,
+   "address": null,
+   "component": "server/backend/case_manager_api.py:47",
+   "mounted": false,
+   "mounted_evidence": "none",
+   "parent": null,
+   "classification": "MANIFEST_DECLARED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "No dashboard surface exists. Declared as exception case-manager-phase-1-gui-gap (.federation/gui-capabilities.json:1747). Backend-only /cases router served by the standalone case_manager_app."
+  },
+  {
+   "id": "forensics-gui",
+   "kind": "workspace",
+   "label": null,
+   "address": null,
+   "component": "moneysweep/forensics/cli.py:16",
+   "mounted": false,
+   "mounted_evidence": "none",
+   "parent": null,
+   "classification": "MANIFEST_DECLARED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "No dashboard surface and no HTTP route. Declared as exception forensics-gui-gap (.federation/gui-capabilities.json:1770). CLI/library only."
+  },
+  {
+   "id": "desktop-setup-diagnostics",
+   "kind": "settings",
+   "label": "Setup & Diagnostics",
+   "address": null,
+   "component": "desktop/config.py:37",
+   "mounted": false,
+   "mounted_evidence": "none",
+   "parent": null,
+   "classification": "UNKNOWN",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Referenced by comments in desktop/config.py:34-38 and desktop/launch.py:34; implemented in external package prii_desktop (requirements-desktop.txt:5), which is not in the snapshot."
+  }
+ ],
+ "workflows": [
+  {
+   "id": "switch-tab",
+   "name": "Switch dashboard tab (deep-linkable ?tab=)",
+   "surface": "tab-bar",
+   "ui_action": "Click a tab trigger or open /?tab=<id>",
+   "frontend_handler": "dashboard/src/pages/Dashboard.jsx:39",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "TabsTrigger -> onValueChange=setTab (dashboard/src/pages/Dashboard.jsx:59) -> setParams replace (39-42) -> TabsContent (76-86).",
+   "has_test": true,
+   "test": "dashboard/tests/zip-design.spec.mjs:28"
+  },
+  {
+   "id": "backend-health-indicator",
+   "name": "Backend health badge + KPI counts",
+   "surface": "stats-bar",
+   "ui_action": "Passive (15s poll)",
+   "frontend_handler": "dashboard/src/lib/hooks.js:11",
+   "backend_endpoint": "GET /health",
+   "backend_handler": "server/backend/main.py:110",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useHealth (dashboard/src/lib/hooks.js:11) -> getHealth swallows errors to {status:'down'} (dashboard/src/lib/api.js:48-54) -> badge label (dashboard/src/components/StatsBar.jsx:24-25); KPIs from GET /stats (server/backend/main.py:250) at dashboard/src/components/StatsBar.jsx:39-42.",
+   "has_test": true,
+   "test": "tests/test_server_smoke.py:77"
+  },
+  {
+   "id": "contracts-browse",
+   "name": "Browse contracts",
+   "surface": "contracts-table",
+   "ui_action": "Open Contracts tab",
+   "frontend_handler": "dashboard/src/components/ContractsTable.jsx:26",
+   "backend_endpoint": "GET /contracts",
+   "backend_handler": "server/backend/main.py:118",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useContracts (dashboard/src/lib/hooks.js:13-14) -> getContracts (dashboard/src/lib/api.js:55) -> server/backend/main.py:118-160 -> rows rendered dashboard/src/components/ContractsTable.jsx:74-90.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "contracts-filter-agency",
+   "name": "Filter contracts by awarding agency",
+   "surface": "contracts-agency-filter",
+   "ui_action": "Type in filter input",
+   "frontend_handler": "dashboard/src/components/ContractsTable.jsx:47",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Client-side useMemo filter (dashboard/src/components/ContractsTable.jsx:31-36); filtered-empty state with Clear filters (57-60).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "contracts-sort",
+   "name": "Sort contracts by column",
+   "surface": "contracts-table",
+   "ui_action": "Click a column header",
+   "frontend_handler": "dashboard/src/components/SortHead.jsx:14",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Works by pointer: SortHead onClick -> useSortable.sort (dashboard/src/lib/use-sortable.js:11-18). The <th> has onClick only - no tabIndex, no button, no key handler (dashboard/src/components/SortHead.jsx:11-15) - so keyboard users cannot sort.",
+   "has_test": true,
+   "test": "dashboard/src/components/SortHead.test.jsx:114"
+  },
+  {
+   "id": "contract-open-detail",
+   "name": "Open contract detail sheet",
+   "surface": "contract-detail-sheet",
+   "ui_action": "Click a row or press Enter/Space on a focused row",
+   "frontend_handler": "dashboard/src/components/ContractsTable.jsx:79",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "onClick/onKeyDown setOpen(c) (dashboard/src/components/ContractsTable.jsx:79-80) -> Sheet open (96) -> DetailRows (106-112). Data comes from the already-fetched list; no detail endpoint.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "leaderboards-view-ranking",
+   "name": "View top-entity ranking for a financial category",
+   "surface": "leaderboards-ranking-table",
+   "ui_action": "Open Top Entities tab / choose Category",
+   "frontend_handler": "dashboard/src/components/FinancialLeaderboards.jsx:39",
+   "backend_endpoint": "GET /leaderboards/top (+ /categories, /movers, /history, /signals)",
+   "backend_handler": "server/backend/leaderboards.py:173",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "select onChange setCategory (dashboard/src/components/FinancialLeaderboards.jsx:86) -> Promise.all of 4 fetches (45-50; dashboard/src/lib/api.js:87-94) -> server/backend/leaderboards.py:163,173,194,217,239 -> table/panels (99-113). NOTE: spec file is not in the testMatch of either Playwright config (dashboard/gui-parity.playwright.config.mjs:30-36, dashboard/zip-design.playwright.config.mjs:3), so no npm script/CI job runs it.",
+   "has_test": true,
+   "test": "dashboard/tests/financial-leaderboards.spec.mjs:3"
+  },
+  {
+   "id": "leaderboards-inspect-entity",
+   "name": "Inspect ranked entity neighbourhood",
+   "surface": "leaderboards-entity-neighborhood",
+   "ui_action": "Click 'Inspect' on a ranking row",
+   "frontend_handler": "dashboard/src/components/FinancialLeaderboards.jsx:100",
+   "backend_endpoint": "GET /leaderboards/entity/{entity_id}",
+   "backend_handler": "server/backend/leaderboards.py:262",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "button onClick setSelectedEntityId (line 100) -> effect getLeaderboardEntity (60-67; dashboard/src/lib/api.js:95-98) -> server/backend/leaderboards.py:262-264 -> panel (111). 'Map handoff' is a state badge + municipality names only; no navigation to a map.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "entities-browse-search-filter",
+   "name": "Browse, search and type-filter entities",
+   "surface": "entities-table",
+   "ui_action": "Open Entities tab; type in search; pick type",
+   "frontend_handler": "dashboard/src/components/EntitiesTable.jsx:26",
+   "backend_endpoint": "GET /entities",
+   "backend_handler": "server/backend/main.py:163",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useEntities (dashboard/src/lib/hooks.js:15-16) -> server/backend/main.py:163-183 -> client filter (dashboard/src/components/EntitiesTable.jsx:26-31) -> rows (73-87).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "entity-open-detail",
+   "name": "Open entity detail sheet",
+   "surface": "entity-detail-sheet",
+   "ui_action": "Click a row or press Enter/Space",
+   "frontend_handler": "dashboard/src/components/EntitiesTable.jsx:78",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "setOpen(e) (dashboard/src/components/EntitiesTable.jsx:78-79) -> Sheet (93) -> DetailRows (103-107). Parent entity is shown as a raw id with no link.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "government-changes-view",
+   "name": "View government organisation change events and candidates",
+   "surface": "tab-government-changes",
+   "ui_action": "Open Gov Changes tab",
+   "frontend_handler": "dashboard/src/components/GovernmentChanges.jsx:8",
+   "backend_endpoint": "GET /government-changes, /government-changes/summary, /government-changes/candidates",
+   "backend_handler": "server/backend/government_changes.py:38",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "dashboard/src/lib/hooks.js:20-25 -> server/backend/government_changes.py:38,57,68 -> tables (dashboard/src/components/GovernmentChanges.jsx:26-51, dashboard/src/components/GovernmentChangeCandidates.jsx:9-22). Backend filters entity_id/severity/alerts_only (server/backend/government_changes.py:40-42) have no UI. NOTE: spec file is not in the testMatch of either Playwright config (dashboard/gui-parity.playwright.config.mjs:30-36, dashboard/zip-design.playwright.config.mjs:3), so no npm script/CI job runs it.",
+   "has_test": true,
+   "test": "dashboard/tests/org-change-monitor.spec.mjs:3"
+  },
+  {
+   "id": "relationships-view-filter",
+   "name": "View relationships and filter by edge type",
+   "surface": "tab-graph",
+   "ui_action": "Open Relationships tab; choose type",
+   "frontend_handler": "dashboard/src/components/RelationshipGraph.jsx:10",
+   "backend_endpoint": "GET /edges",
+   "backend_handler": "server/backend/main.py:186",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useEdges -> server/backend/main.py:186-216 -> client filter (dashboard/src/components/RelationshipGraph.jsx:14-17) -> cards (36-46).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "municipios-view",
+   "name": "View per-municipio aggregates and distributions",
+   "surface": "tab-municipios",
+   "ui_action": "Open Municipios tab",
+   "frontend_handler": "dashboard/src/components/MunicipalityAggregates.jsx:14",
+   "backend_endpoint": "GET /municipalities, GET /stats",
+   "backend_handler": "server/backend/main.py:219",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useMunicipalities -> server/backend/main.py:219-247 -> chart (33-42) + list (47-53); StatsDistributions from /stats (server/backend/main.py:250).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "campaign-finance-view",
+   "name": "View campaign-finance contributions / entities / OCE reports",
+   "surface": "tab-campaign-finance",
+   "ui_action": "Open tab; switch view; choose source; type search",
+   "frontend_handler": "dashboard/src/components/CampaignFinance.jsx:172",
+   "backend_endpoint": "GET /campaign-finance/summary|contributions|entities|reports",
+   "backend_handler": "server/backend/campaign_finance.py:194",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Filters memoised (dashboard/src/components/CampaignFinance.jsx:122-124) -> dashboard/src/lib/hooks.js:27-43 -> server/backend/campaign_finance.py:100,194,228,279 -> tables (209-211). In contributions view q matches donorName only (server/backend/campaign_finance.py:207-208).",
+   "has_test": true,
+   "test": "dashboard/tests/campaign-finance.spec.mjs:21"
+  },
+  {
+   "id": "campaign-finance-paging",
+   "name": "Reach contribution rows beyond the first 1000",
+   "surface": "campaign-finance-contributions-table",
+   "ui_action": "(no control)",
+   "frontend_handler": "dashboard/src/components/CampaignFinance.jsx:122",
+   "backend_endpoint": "GET /campaign-finance/contributions?offset=",
+   "backend_handler": "server/backend/campaign_finance.py:203",
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Backend supports offset/limit (server/backend/campaign_finance.py:202-203, 221) and UI shows '<total> matches' (dashboard/src/components/CampaignFinance.jsx:196), but the UI always sends limit=1000 and never offset (line 122) and has no pager, so rows past 1000 cannot be displayed.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "data-sources-refresh-status",
+   "name": "Load / refresh data-plane status",
+   "surface": "data-sources-state-panel",
+   "ui_action": "Open tab or click Refresh",
+   "frontend_handler": "dashboard/src/components/DataSources.jsx:111",
+   "backend_endpoint": "GET /materialization/status, /sources, /credentials",
+   "backend_handler": "server/backend/materialization.py:126",
+   "writes": false,
+   "authorization": "loopback (server/backend/materialization.py:50-54 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "refresh() (dashboard/src/components/DataSources.jsx:62-78) -> dashboard/src/lib/api.js:102-107 -> server/backend/materialization.py:126,147,186 -> dl (176-182). Only when the backend is desktop_app (server/backend/desktop_app.py:26); main.py does not mount this router (server/backend/main.py:286-290).",
+   "has_test": true,
+   "test": "dashboard/tests/data-sources.spec.mjs:86"
+  },
+  {
+   "id": "data-sources-stage-offline-file",
+   "name": "Stage + hash an operator-supplied offline file",
+   "surface": "data-sources-offline-files-form",
+   "ui_action": "Choose source + file, click 'Stage + hash'",
+   "frontend_handler": "dashboard/src/components/DataSources.jsx:123",
+   "backend_endpoint": "POST /materialization/offline/upload",
+   "backend_handler": "server/backend/materialization.py:218",
+   "writes": true,
+   "authorization": "loopback (server/backend/materialization.py:50-54 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "onStage (123-127) -> stageOfflineFile FormData (dashboard/src/lib/api.js:119-128) -> server/backend/materialization.py:218 -> JSON result (262-268).",
+   "has_test": true,
+   "test": "dashboard/tests/data-sources.spec.mjs:101"
+  },
+  {
+   "id": "data-sources-materialize-offline",
+   "name": "Materialize a staged offline source",
+   "surface": "data-sources-offline-files-form",
+   "ui_action": "Click 'Materialize staged source'",
+   "frontend_handler": "dashboard/src/components/DataSources.jsx:129",
+   "backend_endpoint": "POST /materialization/offline/{source_id}/run",
+   "backend_handler": "server/backend/materialization.py:291",
+   "writes": true,
+   "authorization": "loopback (server/backend/materialization.py:50-54 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "onMaterializeOffline (129-132) -> dashboard/src/lib/api.js:130-134 -> server/backend/materialization.py:291-292 -> JSON result. Not exercised by the e2e spec (dashboard/tests/data-sources.spec.mjs:96-118 covers stage, dry run, save credential only).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "data-sources-api-dry-run",
+   "name": "Dry-run one automatable API source",
+   "surface": "data-sources-api-materialization-form",
+   "ui_action": "Choose source, click 'Dry run'",
+   "frontend_handler": "dashboard/src/components/DataSources.jsx:134",
+   "backend_endpoint": "POST /materialization/api/run",
+   "backend_handler": "server/backend/materialization.py:305",
+   "writes": false,
+   "authorization": "loopback (server/backend/materialization.py:50-54 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "onApi(true) (134-137, 230) -> runApiMaterialization dry_run (dashboard/src/lib/api.js:136-142) -> server/backend/materialization.py:305-306 -> JSON result.",
+   "has_test": true,
+   "test": "dashboard/tests/data-sources.spec.mjs:104"
+  },
+  {
+   "id": "data-sources-api-live-run",
+   "name": "Fetch + materialize one API source (live egress)",
+   "surface": "data-sources-api-materialization-form",
+   "ui_action": "Choose source, click 'Fetch + materialize'",
+   "frontend_handler": "dashboard/src/components/DataSources.jsx:134",
+   "backend_endpoint": "POST /materialization/api/run",
+   "backend_handler": "server/backend/materialization.py:305",
+   "writes": true,
+   "authorization": "loopback (server/backend/materialization.py:50-54 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "onApi(false) (dashboard/src/components/DataSources.jsx:231) -> same endpoint with dry_run=false; no confirmation dialog before a live network run. Not exercised by e2e.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "data-sources-save-credential",
+   "name": "Save API credential to OS vault",
+   "surface": "data-sources-credentials-form",
+   "ui_action": "Choose key, paste value, click 'Save to vault'",
+   "frontend_handler": "dashboard/src/components/DataSources.jsx:139",
+   "backend_endpoint": "PUT /materialization/credentials/{key_name}",
+   "backend_handler": "server/backend/materialization.py:195",
+   "writes": true,
+   "authorization": "loopback (server/backend/materialization.py:50-54 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "onSaveCredential (139-145) -> saveCredential (dashboard/src/lib/api.js:109-114) -> server/backend/materialization.py:195-196 -> result + refreshed configured state (245).",
+   "has_test": true,
+   "test": "dashboard/tests/data-sources.spec.mjs:115"
+  },
+  {
+   "id": "data-sources-delete-credential",
+   "name": "Remove API credential from OS vault",
+   "surface": "data-sources-credentials-form",
+   "ui_action": "Choose key, click 'Remove'",
+   "frontend_handler": "dashboard/src/components/DataSources.jsx:147",
+   "backend_endpoint": "DELETE /materialization/credentials/{key_name}",
+   "backend_handler": "server/backend/materialization.py:207",
+   "writes": true,
+   "authorization": "loopback (server/backend/materialization.py:50-54 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "onDeleteCredential (147-150) -> deleteCredential (dashboard/src/lib/api.js:116-117) -> server/backend/materialization.py:207-208. No confirmation prompt. Not exercised by e2e.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "hud-drgr-audit-refresh",
+   "name": "List saved HUD DRGR audit receipts",
+   "surface": "data-sources-hud-drgr-audit",
+   "ui_action": "Open Data Sources / click 'Refresh saved audits'",
+   "frontend_handler": "dashboard/src/components/HudDrgrAudit.jsx:16",
+   "backend_endpoint": "GET /materialization/hud-drgr/audits",
+   "backend_handler": "server/backend/materialization.py:356",
+   "writes": false,
+   "authorization": "loopback (server/backend/materialization.py:50-54 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "refresh() (dashboard/src/components/HudDrgrAudit.jsx:16-24) -> dashboard/src/lib/hudDrgrApi.js:18 -> server/backend/materialization.py:356-357 -> <details> list (36-50).",
+   "has_test": true,
+   "test": "dashboard/tests/hud-drgr-audit.spec.mjs:4"
+  },
+  {
+   "id": "hud-drgr-audit-create",
+   "name": "Create new HUD DRGR audit snapshot",
+   "surface": "data-sources-hud-drgr-audit",
+   "ui_action": "Click 'Create new audit snapshot'",
+   "frontend_handler": "dashboard/src/components/HudDrgrAudit.jsx:30",
+   "backend_endpoint": "POST /materialization/hud-drgr/audits",
+   "backend_handler": "server/backend/materialization.py:399",
+   "writes": true,
+   "authorization": "loopback (server/backend/materialization.py:50-54 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "refresh(true) (dashboard/src/components/HudDrgrAudit.jsx:20,30) -> createHudDrgrAudit (dashboard/src/lib/hudDrgrApi.js:19; 600s timeout line 8) -> server/backend/materialization.py:399-400.",
+   "has_test": true,
+   "test": "tests/test_hud_drgr_audit_api.py:39"
+  },
+  {
+   "id": "api-keys-list",
+   "name": "List pipeline API keys (set / not set)",
+   "surface": "api-keys-table",
+   "ui_action": "Open API Keys tab",
+   "frontend_handler": "dashboard/src/components/ApiKeysPanel.jsx:69",
+   "backend_endpoint": "GET /api-keys",
+   "backend_handler": "server/backend/api_keys.py:30",
+   "writes": false,
+   "authorization": "loopback (server/backend/api_keys.py:21-23 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "useApiKeys (dashboard/src/lib/hooks.js:45) -> dashboard/src/lib/api.js:147 -> server/backend/api_keys.py:30-35 -> rows (dashboard/src/components/ApiKeysPanel.jsx:93-95).",
+   "has_test": true,
+   "test": "dashboard/tests/api-keys.spec.mjs:11"
+  },
+  {
+   "id": "api-keys-save",
+   "name": "Save an API key to local .env",
+   "surface": "api-keys-table",
+   "ui_action": "Paste value, click Save",
+   "frontend_handler": "dashboard/src/components/ApiKeysPanel.jsx:55",
+   "backend_endpoint": "POST /api-keys/{name}",
+   "backend_handler": "server/backend/api_keys.py:38",
+   "writes": true,
+   "authorization": "loopback (server/backend/api_keys.py:21-23 -> server/backend/local_request.py:20-32)",
+   "status": "COMPLETE",
+   "status_evidence": "mutation (dashboard/src/components/ApiKeysPanel.jsx:16-22) -> setApiKey (dashboard/src/lib/api.js:148-157) -> server/backend/api_keys.py:38-55 -> invalidate + 'Set' badge (33-38). No UI to clear/unset a key.",
+   "has_test": true,
+   "test": "dashboard/tests/api-keys.spec.mjs:40"
+  },
+  {
+   "id": "ownership-view-bpop",
+   "name": "View certified BPOP ownership deep dive",
+   "surface": "tab-ownership",
+   "ui_action": "Open Ownership tab",
+   "frontend_handler": "dashboard/src/components/OwnershipDeepDive.jsx:28",
+   "backend_endpoint": "GET /deep-dive/ownership/BPOP, GET /deep-dive/ownership/status",
+   "backend_handler": "server/backend/ownership_api.py:88",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "dashboard/src/lib/hooks.js:47-54 -> server/backend/ownership_api.py:46,88 -> metrics (58-65) + table (86-116). NOTE: spec file is not in the testMatch of either Playwright config (dashboard/gui-parity.playwright.config.mjs:30-36, dashboard/zip-design.playwright.config.mjs:3), so no npm script/CI job runs it.",
+   "has_test": true,
+   "test": "dashboard/tests/ownership-deep-dive.spec.mjs:8"
+  },
+  {
+   "id": "ownership-switch-issuer",
+   "name": "Switch ownership issuer",
+   "surface": "ownership-issuer-select",
+   "ui_action": "Use the issuer select",
+   "frontend_handler": "dashboard/src/components/OwnershipDeepDive.jsx:39",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "The select has one enabled option (BPOP); OFG/EVTC are disabled (dashboard/src/components/OwnershipDeepDive.jsx:44-45), the hook only runs for BPOP (dashboard/src/lib/hooks.js:53) and the backend returns 409 for OFG/EVTC (server/backend/ownership_api.py:91-98). The control cannot change the view - intentional per the labels 'regression only'. NOTE: spec file is not in the testMatch of either Playwright config (dashboard/gui-parity.playwright.config.mjs:30-36, dashboard/zip-design.playwright.config.mjs:3), so no npm script/CI job runs it.",
+   "has_test": true,
+   "test": "dashboard/tests/ownership-deep-dive.spec.mjs:38"
+  },
+  {
+   "id": "activity-timeline-filter-sort-search",
+   "name": "Filter, sort and search the program activity timeline",
+   "surface": "tab-activity",
+   "ui_action": "Click phase buttons / sort toggle / type in search",
+   "frontend_handler": "dashboard/src/components/ProgramTimeline.jsx:43",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Local state (dashboard/src/components/ProgramTimeline.jsx:20-29) over 5 static declared items (dashboard/src/pages/Dashboard.jsx:18-24) plus LIVE events from localStorage (dashboard/src/components/programActivityEvent.js:51-62). Nothing in dashboard/src ever writes that key (appendProgramActivityEvent has no caller outside its test), so in practice the tab shows the 5 hard-coded items.",
+   "has_test": true,
+   "test": "dashboard/src/components/programActivityEvent.test.js:1"
+  },
+  {
+   "id": "query-retry-and-clear-filters",
+   "name": "Retry a failed/stale/offline query; clear filters from filtered-empty state",
+   "surface": "query-boundary-states",
+   "ui_action": "Click Retry / Refresh / Clear filters",
+   "frontend_handler": "dashboard/src/components/QueryBoundary.jsx:107",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "retry -> query.refetch (dashboard/src/components/QueryBoundary.jsx:107); Clear filters -> onResetFilters (201). Atlas fixture checks each state text (dashboard/scripts/run-federation-pilot-visual-checks.mjs:52-72).",
+   "has_test": true,
+   "test": "dashboard/tests/federation-pilot.test.mjs:20"
+  },
+  {
+   "id": "not-found-go-home",
+   "name": "Return home from 404",
+   "surface": "not-found",
+   "ui_action": "Click 'Go Home'",
+   "frontend_handler": "dashboard/src/lib/PageNotFound.jsx:24",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "navigate('/') (dashboard/src/lib/PageNotFound.jsx:24).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "error-boundary-retry",
+   "name": "Recover from render crash",
+   "surface": "error-boundary",
+   "ui_action": "Click 'Try again'",
+   "frontend_handler": "dashboard/src/components/ErrorBoundary.jsx:19",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "setState({error:null}) (dashboard/src/components/ErrorBoundary.jsx:19).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "offline-export-readonly",
+   "name": "Standalone offline export (file://) read-only dashboard",
+   "surface": "root-dashboard",
+   "ui_action": "Open the single-file export",
+   "frontend_handler": "dashboard/src/lib/api.js:16",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "VITE_OFFLINE=1 serves GETs from lib/snapshot.json (dashboard/src/lib/api.js:9-21) and hides Data Sources/API Keys (dashboard/src/pages/Dashboard.jsx:32). lib/snapshot.json is a 0-byte file in this commit (generated by 'npm run snapshot', dashboard/package.json:12-13), so the import at dashboard/src/lib/api.js:4 only works after generation; which paths the generator includes was not audited. Parameterised paths fall back to the base path (dashboard/src/lib/api.js:11-12), so e.g. every leaderboard category would resolve to the same snapshot entry.",
+   "has_test": true,
+   "test": "dashboard/scripts/inline-single-file.test.mjs:1"
+  },
+  {
+   "id": "case-manager-read",
+   "name": "Read cases / case collections",
+   "surface": null,
+   "ui_action": "(no GUI)",
+   "frontend_handler": null,
+   "backend_endpoint": "GET /cases, GET /cases/{case_id}, GET /cases/{case_id}/{collection}",
+   "backend_handler": "server/backend/case_manager_api.py:163",
+   "writes": false,
+   "authorization": "token + loopback (server/backend/case_manager_auth.py:127-143 X-Case-Token; server/backend/case_manager_api.py:37-51)",
+   "status": "UNREACHABLE",
+   "status_evidence": "Router exists (server/backend/case_manager_api.py:47-51) but is included only by the standalone case_manager_app (server/backend/case_manager_app.py:20); not by main.py (286-290) or desktop_app.py (26). grep for 'cases', 'case_manager', 'X-Case' in dashboard/src, dashboard/tests, desktop/ returns nothing. (No UI surface: the placeholder row 'case-manager-gui' in surfaces is not mounted.)",
+   "has_test": true,
+   "test": "tests/test_case_manager_auth.py:121"
+  },
+  {
+   "id": "case-manager-commands",
+   "name": "Create case / link evidence / claims / evidence relations / contradictions / leads / findings / snapshots",
+   "surface": null,
+   "ui_action": "(no GUI)",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /cases and 10 POST sub-commands",
+   "backend_handler": "server/backend/case_manager_api.py:200",
+   "writes": true,
+   "authorization": "token + loopback (server/backend/case_manager_auth.py:127-143)",
+   "status": "UNREACHABLE",
+   "status_evidence": "11 POST command routes (server/backend/case_manager_api.py:200,212,231,246,266,287,308,321,340,356,374) reachable only via the standalone app started manually (docs/CASE_MANAGER_PHASE_1_API_CONTRACT.md:10). No frontend caller. (No UI surface: the placeholder row 'case-manager-gui' in surfaces is not mounted.)",
+   "has_test": true,
+   "test": "tests/test_case_manager_phase1_service.py:35"
+  },
+  {
+   "id": "forensics-cli",
+   "name": "Contract forensics ledger (init/status/export/coverage/proposals)",
+   "surface": null,
+   "ui_action": "(terminal only)",
+   "frontend_handler": null,
+   "backend_endpoint": null,
+   "backend_handler": "moneysweep/forensics/cli.py:16",
+   "writes": true,
+   "authorization": "none",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "argparse CLI over a DuckDB ledger (moneysweep/forensics/cli.py:8-27); no importer in server/backend, dashboard/src or desktop (grep 'forensic' returns nothing there; desktop/launch.py:50-53 only imports duckdb/pyarrow as a packaging gate). (No UI surface: the placeholder row 'forensics-gui' in surfaces is not mounted.)",
+   "has_test": true,
+   "test": "tests/forensics/test_engine.py:21"
+  }
+ ],
+ "navigation": {
+  "registry_file": "dashboard/src/pages/Dashboard.jsx:30",
+  "items": [
+   {
+    "label": "Activity",
+    "target": "?tab=activity"
+   },
+   {
+    "label": "Contracts",
+    "target": "?tab=contracts (default)"
+   },
+   {
+    "label": "Top Entities",
+    "target": "?tab=leaderboards"
+   },
+   {
+    "label": "Entities",
+    "target": "?tab=entities"
+   },
+   {
+    "label": "Gov Changes",
+    "target": "?tab=government-changes"
+   },
+   {
+    "label": "Relationships",
+    "target": "?tab=graph"
+   },
+   {
+    "label": "Municipios",
+    "target": "?tab=municipios"
+   },
+   {
+    "label": "Campaign Finance",
+    "target": "?tab=campaign-finance"
+   },
+   {
+    "label": "Data Sources",
+    "target": "?tab=data-sources (hidden when VITE_OFFLINE=1)"
+   },
+   {
+    "label": "API Keys",
+    "target": "?tab=api-keys (hidden when VITE_OFFLINE=1)"
+   },
+   {
+    "label": "Ownership",
+    "target": "?tab=ownership"
+   }
+  ],
+  "mobile_navigation": "No separate mobile nav (no drawer/hamburger). The same Radix tab list is restyled by CSS: at <=760px it becomes a 3-column grid with wrapping 11px labels and 44px min-height tabs (dashboard/src/zip-design/adaptation.css:10-16), overriding the inline min-w-[880px] horizontal-scroll list (dashboard/src/pages/Dashboard.jsx:60-61). StatsBar scrolls horizontally (dashboard/src/components/StatsBar.jsx:28).",
+  "dead_or_unlinked_routes": [
+   "/federation-pilot-atlas.html - separate Vite entry, linked from nowhere in the app (dashboard/federation-pilot-atlas.html:11)",
+   "No dead router routes: App.jsx defines only '/' and '*' (dashboard/src/App.jsx:16-17)",
+   "PROGRAM_TIMELINE items carry no href, so the Activity tab's <Link> branch (dashboard/src/components/ProgramTimeline.jsx:59) is never taken for declared items (dashboard/src/pages/Dashboard.jsx:18-24)"
+  ]
+ },
+ "settings": [
+  {
+   "id": "active-tab",
+   "label": "Selected tab",
+   "scope": "SESSION",
+   "storage": "URL query param ?tab= (replace navigation, not persisted)",
+   "evidence": "dashboard/src/pages/Dashboard.jsx:37"
+  },
+  {
+   "id": "pipeline-api-keys",
+   "label": "API Keys (per-key value)",
+   "scope": "SECRET",
+   "storage": "backend: local .env file via scripts.manage_api_keys.set_key",
+   "evidence": "server/backend/api_keys.py:38"
+  },
+  {
+   "id": "vault-credentials",
+   "label": "API credentials (Save to vault / Remove)",
+   "scope": "SECRET",
+   "storage": "backend: operating-system credential vault",
+   "evidence": "server/backend/materialization.py:195"
+  },
+  {
+   "id": "program-activity-live-events",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage key federation.programActivity.v1.moneysweep-pr (read only by the app; no writer in dashboard/src)",
+   "evidence": "dashboard/src/components/programActivityEvent.js:3"
+  },
+  {
+   "id": "api-base",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "build-time env VITE_API_BASE (default http://localhost:8000; '' for desktop builds, desktop/setup.py:194)",
+   "evidence": "dashboard/src/lib/api.js:5"
+  },
+  {
+   "id": "offline-mode",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "build-time env VITE_OFFLINE",
+   "evidence": "dashboard/src/lib/api.js:7"
+  },
+  {
+   "id": "cors-origins",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env MONEYSWEEP_CORS_ORIGINS",
+   "evidence": "server/backend/main.py:48"
+  },
+  {
+   "id": "workspace-root",
+   "label": "Workspace (Setup & Diagnostics)",
+   "scope": "GLOBAL_USER",
+   "storage": "env MONEYSWEEP_WORKSPACE_ROOT / saved state in external prii_desktop setup center (UI not in snapshot)",
+   "evidence": "desktop/config.py:37"
+  },
+  {
+   "id": "case-manager-identities",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "data/case_manager_identities.json (SHA-256 token hashes) or env MONEYSWEEP_CASE_IDENTITIES; no GUI",
+   "evidence": "server/backend/case_manager_auth.py:43"
+  },
+  {
+   "id": "theme",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "none - hard-coded dark, no user setting",
+   "evidence": "dashboard/src/main.jsx:16"
+  },
+  {
+   "id": "view-filters",
+   "label": "Filters, sort order, campaign-finance view/source, leaderboard category",
+   "scope": "SESSION",
+   "storage": "none - React component state only, reset on tab switch/reload",
+   "evidence": "dashboard/src/components/CampaignFinance.jsx:119"
+  }
+ ],
+ "context_actions": [],
+ "keyboard_shortcuts": [
+  {
+   "keys": "Enter / Space",
+   "action": "Open contract detail sheet from a focused row",
+   "scope": "contracts-table",
+   "evidence": "dashboard/src/components/ContractsTable.jsx:80"
+  },
+  {
+   "keys": "Enter / Space",
+   "action": "Open entity detail sheet from a focused row",
+   "scope": "entities-table",
+   "evidence": "dashboard/src/components/EntitiesTable.jsx:79"
+  }
+ ],
+ "accessibility_source_findings": [
+  {
+   "id": "sort-headers-not-keyboard-operable",
+   "severity": "serious",
+   "finding": "Sortable column headers are <th> elements with an onClick only: no tabIndex, no inner <button>, no key handler. Sorting in Contracts and Entities is pointer-only. aria-sort is set correctly.",
+   "evidence": "dashboard/src/components/SortHead.jsx:11",
+   "confidence": "high"
+  },
+  {
+   "id": "type-filter-select-unnamed",
+   "severity": "serious",
+   "finding": "TypeFilterSelect renders a Radix SelectTrigger with no aria-label and no associated label; used on Entities and Relationships. This is the button-name finding from docs/A11Y_AUDIT.md:105-114 and is still present in current source.",
+   "evidence": "dashboard/src/components/TypeFilterSelect.jsx:16",
+   "confidence": "high"
+  },
+  {
+   "id": "no-main-landmark",
+   "severity": "moderate",
+   "finding": "Dashboard root is a <div> with a <header>; there is no <main> element or role=main anywhere in the shipped app (grep '<main' in dashboard/src matches only the visual-test atlas).",
+   "evidence": "dashboard/src/pages/Dashboard.jsx:47",
+   "confidence": "high"
+  },
+  {
+   "id": "table-headers-are-td",
+   "severity": "moderate",
+   "finding": "Campaign Finance (3 tables), Ownership and Gov Changes build their header rows from TableCell (<td>) instead of TableHead (<th>), so columns have no header semantics. The change-candidates table has no header row at all.",
+   "evidence": "dashboard/src/components/CampaignFinance.jsx:31",
+   "confidence": "high"
+  },
+  {
+   "id": "table-headers-are-td-ownership",
+   "severity": "moderate",
+   "finding": "Same issue in the ownership holders table and the government-changes table (dashboard/src/components/GovernmentChanges.jsx:29-34); dashboard/src/components/GovernmentChangeCandidates.jsx:11-20 has body rows only.",
+   "evidence": "dashboard/src/components/OwnershipDeepDive.jsx:89",
+   "confidence": "high"
+  },
+  {
+   "id": "row-as-button",
+   "severity": "moderate",
+   "finding": "Contract and entity rows are <tr role=\"button\" tabIndex=0>, which replaces row semantics for assistive tech, and use focus:outline-hidden with only a background tint as the focus indicator. Keyboard activation (Enter/Space) is implemented.",
+   "evidence": "dashboard/src/components/ContractsTable.jsx:77",
+   "confidence": "medium"
+  },
+  {
+   "id": "activity-search-placeholder-only",
+   "severity": "moderate",
+   "finding": "Activity search input sits in a <label> containing only an icon, so its accessible name comes from the placeholder alone; outline is removed (outline-hidden). Phase filter buttons expose selection by colour only (no aria-pressed).",
+   "evidence": "dashboard/src/components/ProgramTimeline.jsx:49",
+   "confidence": "high"
+  },
+  {
+   "id": "leaderboard-inspect-buttons-ambiguous",
+   "severity": "minor",
+   "finding": "Every ranking row has a button named just 'Inspect' (no entity in the name) at min-h-9 (36px, under the 44px target the federation harness requires); the ranking <table> has no caption and its <th> cells no scope.",
+   "evidence": "dashboard/src/components/FinancialLeaderboards.jsx:100",
+   "confidence": "high"
+  },
+  {
+   "id": "small-filter-controls",
+   "severity": "minor",
+   "finding": "Filter inputs/selects and the API-key Save button use h-7 (28px) heights: dashboard/src/components/ContractsTable.jsx:50, dashboard/src/components/EntitiesTable.jsx:50, dashboard/src/components/CampaignFinance.jsx:174,185,203, dashboard/src/components/OwnershipDeepDive.jsx:41, dashboard/src/components/ApiKeysPanel.jsx:48,53, dashboard/src/components/TypeFilterSelect.jsx:16.",
+   "evidence": "dashboard/src/components/CampaignFinance.jsx:174",
+   "confidence": "high"
+  },
+  {
+   "id": "api-key-save-error-not-announced",
+   "severity": "minor",
+   "finding": "API-key save failure is rendered as a plain <p> with no role=alert/aria-live.",
+   "evidence": "dashboard/src/components/ApiKeysPanel.jsx:60",
+   "confidence": "high"
+  },
+  {
+   "id": "leaderboards-loading-not-announced",
+   "severity": "minor",
+   "finding": "Top Entities 'Loading ranking…' text has no role=status/aria-live (its error does have role=alert at line 93).",
+   "evidence": "dashboard/src/components/FinancialLeaderboards.jsx:94",
+   "confidence": "high"
+  },
+  {
+   "id": "dark-theme-only",
+   "severity": "minor",
+   "finding": "Theme is hard-coded to dark at boot and in index.html; no theme toggle or light theme in the shipped app.",
+   "evidence": "dashboard/src/main.jsx:16",
+   "confidence": "high"
+  },
+  {
+   "id": "chart-without-text-alternative",
+   "severity": "minor",
+   "finding": "recharts BarChart has no accessible name/description; the same counts are available as text in the list directly below (lines 47-53).",
+   "evidence": "dashboard/src/components/MunicipalityAggregates.jsx:33",
+   "confidence": "medium"
+  },
+  {
+   "id": "tab-coverage-gap-in-a11y-automation",
+   "severity": "serious",
+   "finding": "No automated accessibility check runs against any real dashboard tab. The only axe run targets the fixture page federation-pilot-atlas.html; vitest-axe matchers are registered (dashboard/src/test/setup.js:2-5) but no test calls axe()/toHaveNoViolations (grep in dashboard/src returns nothing).",
+   "evidence": "dashboard/scripts/run-federation-pilot-visual-checks.mjs:14",
+   "confidence": "high"
+  }
+ ],
+ "backend": {
+  "framework": "FastAPI (pandas over CSV; SQLite for case manager; DuckDB for forensics library)",
+  "app_object": "server/backend/desktop_app.py:25",
+  "endpoint_count": {
+   "GET": 26,
+   "POST": 5,
+   "PUT": 1,
+   "PATCH": 0,
+   "DELETE": 1
+  },
+  "endpoints_not_called_by_frontend": [
+   "(desktop app: none - every route above has a caller in dashboard/src/lib/api.js or lib/hudDrgrApi.js)",
+   "GET /cases (case_manager_app only)",
+   "GET /cases/{case_id}",
+   "GET /cases/{case_id}/{collection}",
+   "POST /cases",
+   "POST /cases/{case_id}/evidence-links",
+   "POST /cases/{case_id}/claims",
+   "POST /cases/{case_id}/claims/{claim_id}/evidence-relations",
+   "POST /cases/{case_id}/contradictions",
+   "POST /cases/{case_id}/contradictions/{contradiction_id}/resolution",
+   "POST /cases/{case_id}/leads",
+   "POST /cases/{case_id}/leads/{lead_id}/closure",
+   "POST /cases/{case_id}/findings",
+   "POST /cases/{case_id}/findings/{finding_id}/acceptance",
+   "POST /cases/{case_id}/snapshots",
+   "GET /health (server/backend/case_manager_app.py:23)"
+  ],
+  "frontend_calls_with_no_backend_route": [
+   "None against desktop_app. Against the dev app main:app (no /materialization router, server/backend/main.py:286-290) the Data Sources tab's calls have no route: GET /materialization/status (dashboard/src/lib/api.js:102)",
+   "GET /materialization/sources (dashboard/src/lib/api.js:104)",
+   "GET /materialization/credentials (dashboard/src/lib/api.js:106)",
+   "PUT /materialization/credentials/{key} (dashboard/src/lib/api.js:109)",
+   "DELETE /materialization/credentials/{key} (dashboard/src/lib/api.js:116)",
+   "POST /materialization/offline/upload (dashboard/src/lib/api.js:123)",
+   "POST /materialization/offline/{id}/run (dashboard/src/lib/api.js:131)",
+   "POST /materialization/api/run (dashboard/src/lib/api.js:137)",
+   "GET|POST /materialization/hud-drgr/audits (dashboard/src/lib/hudDrgrApi.js:7)"
+  ]
+ },
+ "tests": {
+  "frontend_unit": "6 vitest files, 61 it() cases by grep (CampaignFinance.test.jsx 2, SortHead.test.jsx 13, programActivityEvent.test.js 5, cs-format.test.js 14, use-sortable.test.js 14, scripts/inline-single-file.test.mjs 13) - 'npm run test' (dashboard/package.json:16; CI .github/workflows/ci.yml:49). Plus 8 node --test source-contract tests in dashboard/tests/federation-pilot.test.mjs ('npm run test:pilot').",
+  "frontend_e2e": "9 Playwright spec files, 17 test() declarations (two are parameterised over 2 widths). gui-parity config runs 5 files: gui-parity, campaign-finance, api-keys, data-sources, hud-drgr-audit (dashboard/gui-parity.playwright.config.mjs:30-36; CI .github/workflows/gui-capability-parity.yml:88). zip-design config runs zip-design.spec.mjs only and no workflow references test:zip-design. financial-leaderboards.spec.mjs, org-change-monitor.spec.mjs and ownership-deep-dive.spec.mjs are matched by NO config, so they are not run by any npm script or workflow found.",
+  "backend": "pytest (pytest.ini, coverage floor 44%): 348 top-level test files in tests/ plus tests/forensics (4) and tests/skill_contract; about 2,747 test functions by grep (parametrisation not expanded). 15 files import server.backend (api keys, materialization, campaign finance, case manager x2+, HUD DRGR audit, leaderboards x5, server smoke, gui parity, desktop secrets). No test found that calls the /deep-dive/ownership or /government-changes HTTP routes (grep 'ownership_api|deep-dive/ownership' in tests: none; government-changes: only library test tests/test_org_change_monitor.py).",
+  "accessibility_automation": "Only dashboard/scripts/run-federation-pilot-visual-checks.mjs (axe wcag2a/2aa/21a/21aa, 6 viewports x dark/light, overflow, 44px targets, keyboard reach) and it targets the fixture page federation-pilot-atlas.html, not the dashboard tabs. vitest-axe is installed and registered (dashboard/src/test/setup.js:2-5) but unused. docs/A11Y_AUDIT.md is a historical manual report (6 tabs)."
+ },
+ "performance_protections": [
+  {
+   "what": "cache: TanStack Query shared client, refetchOnWindowFocus off, retry 1",
+   "evidence": "dashboard/src/lib/query-client.js:4"
+  },
+  {
+   "what": "cache: per-filter query keys so tab revisits reuse results",
+   "evidence": "dashboard/src/lib/hooks.js:13"
+  },
+  {
+   "what": "request timeout 8s default, 10 min for materialization calls (AbortSignal.timeout)",
+   "evidence": "dashboard/src/lib/api.js:23"
+  },
+  {
+   "what": "cache: backend mtime-keyed CSV cache for campaign-finance files",
+   "evidence": "server/backend/campaign_finance.py:33"
+  },
+  {
+   "what": "server-side row caps: campaign finance limit<=5000 (UI asks 1000), leaderboards limit<=25",
+   "evidence": "server/backend/campaign_finance.py:202"
+  },
+  {
+   "what": "memoised client filters/sort (useMemo)",
+   "evidence": "dashboard/src/lib/use-sortable.js:20"
+  },
+  {
+   "what": "ABSENT: no lazy routes / code splitting - all 11 tab components are statically imported",
+   "evidence": "dashboard/src/pages/Dashboard.jsx:4"
+  },
+  {
+   "what": "ABSENT: no list virtualisation - Contracts/Entities/Relationships render every row",
+   "evidence": "dashboard/src/components/ContractsTable.jsx:74"
+  },
+  {
+   "what": "ABSENT: no debounce - campaign-finance search issues a new server query per keystroke",
+   "evidence": "dashboard/src/components/CampaignFinance.jsx:122"
+  },
+  {
+   "what": "ABSENT: /contracts, /entities, /edges return the full table on every call (iterrows over the whole frame, no pagination)",
+   "evidence": "server/backend/main.py:129"
+  }
+ ],
+ "special_adjudications": [
+  {
+   "question": "1. Navigation areas: confirm the list; which tabs each accessibility report/test covers; tabs with no accessibility test coverage today.",
+   "answer": "Current source has exactly eleven tab triggers, in this order: Activity, Contracts, Top Entities, Entities, Gov Changes, Relationships, Municipios, Campaign Finance, Data Sources, API Keys, Ownership (values activity, contracts, leaderboards, entities, government-changes, graph, municipios, campaign-finance, data-sources, api-keys, ownership). Data Sources and API Keys are omitted when VITE_OFFLINE=1 (nine tabs). Default tab is Contracts. Accessibility artefacts found: (a) docs/A11Y_AUDIT.md (dated 2026-08-24) - a one-off manual axe/overflow/touch-target/focus pass covering six tab states only: Contracts, Entities, Gov Changes, Relationships, Municipios, Campaign Finance, at 390x844 and 1280x800, dark theme; its driver script was a deleted throwaway (lines 34-37), so it is not repeatable from the repo. (b) docs/a11y-evidence/*.png - 8 screenshots: Contracts (badge, clear-filters, contract sheet), Entities (select button-name) and the tab bar. (c) docs/design-system-usage.json:90 repeats the '6 tabs, grid-cols-6' description. (d) dashboard/scripts/run-federation-pilot-visual-checks.mjs (npm run test:visual; CI job .github/workflows/moneysweep-federation-design-pilot.yml:50-55) - the only automated axe run; it loads federation-pilot-atlas.html (a fixture rendering QueryBoundary states and stat cards), not the dashboard, so it covers zero real tabs. (e) dashboard/src/test/setup.js registers vitest-axe matchers but no unit test uses them. (f) dashboard/tests/zip-design.spec.mjs:28-33 clicks every tab at 390px and asserts aria-selected, and lines 13-27 assert no horizontal overflow on the default (Contracts) view at 390/1440 with the backend blocked - reachability/overflow only, no axe. (g) dashboard/tests/hud-drgr-audit.spec.mjs runs the Data Sources HUD panel at 390 and 1440px - functional only. Tabs with NO accessibility test coverage of any kind (manual report or automation): Activity, Top Entities, Data Sources, API Keys, Ownership. Tabs with NO automated accessibility (axe) coverage today: all eleven. The six tabs in the 2026-08 report have only that historical manual pass, taken when the tab bar was a 6-column grid.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/pages/Dashboard.jsx:30",
+    "dashboard/src/pages/Dashboard.jsx:62",
+    "dashboard/src/pages/Dashboard.jsx:72",
+    "docs/A11Y_AUDIT.md:11",
+    "docs/A11Y_AUDIT.md:34",
+    "docs/A11Y_AUDIT.md:72",
+    "docs/design-system-usage.json:90",
+    "dashboard/scripts/run-federation-pilot-visual-checks.mjs:14",
+    "dashboard/scripts/run-federation-pilot-visual-checks.mjs:93",
+    "dashboard/federation-pilot-atlas.html:11",
+    "dashboard/src/test/setup.js:2",
+    "dashboard/tests/zip-design.spec.mjs:28",
+    ".github/workflows/moneysweep-federation-design-pilot.yml:50"
+   ]
+  },
+  {
+   "question": "2. case-manager-phase-1-gui-gap: references, backend, mounting, dashboard callers, exact gap.",
+   "answer": "References: the exception itself at .federation/gui-capabilities.json:1747-1768 (owner jotaele44, tracking jotaele44/thehub-pr#56, expires 2027-01-31, renewed 2026-11-15; candidate_ids are GET /{case_id}, GET /{case_id}/{collection}, POST /{case_id}/claims, POST /{case_id}/claims/{claim_id}/evidence-relations); a copy in the generated artifacts/gui-capabilities-merged.json:2256; and one mention in .federation/gui-capabilities.extensions/case-manager-authorization-boundary.json:9. The same manifest classifies the rest as internal capability 'case-manager-backend' (line 644). Docs: docs/CASE_MANAGER_PHASE_1_API_CONTRACT.md:10 (run on port 8001), docs/GUI_AUDIT.md:36, docs/GAP_ANALYSIS_AND_OPTIMIZATION_2026-09.md:337-338 ('router remains unmounted on the main app'). Backend that exists: server/backend/case_manager_api.py - APIRouter prefix /cases with 3 GET routes (list, get, collection: evidence/claims/contradictions/events/leads/findings/snapshots/audit-events) and 11 POST command routes (create case, evidence-links, claims, claim evidence-relations, contradictions, contradiction resolution, leads, lead closure, findings, finding acceptance, snapshots); no PATCH/DELETE. server/backend/case_manager_auth.py - X-Case-Token verified against SHA-256 hashes in data/case_manager_identities.json, plus loopback. server/backend/case_manager_app.py - a separate FastAPI app (v0.13.0) that includes the router and adds GET /health. Domain layer in moneysweep/case_manager/ (SQLite, migrations/001_case_manager_v1.sql). Mounted in the desktop app: NO. desktop_app.py only adds the materialization router to main.app (line 26), and main.py includes api_keys, campaign_finance, government_changes, leaderboards and ownership routers (286-290). The only include of the case router is server/backend/case_manager_app.py:20; nothing launches that app (desktop/config.py:18 points at desktop_app; grep for case_manager_app finds only tests, docs and the manifest). Dashboard callers: NONE. grep for 'cases', 'case_manager', 'case-manager', 'X-Case' in dashboard/src, dashboard/tests and desktop/ returns no match; lib/api.js has no case function. Exact gap: the whole Case Manager is GUI-less and not served by the shipped desktop process. The exception names only the claim and evidence-relation workflows (4 endpoints), but in source all 14 /cases routes lack a UI, there is no place in the UI to supply the X-Case-Token, and the service would have to be started by hand with uvicorn on another port. So closing the gap needs (1) mounting or launching the service, (2) a token/identity entry path, and (3) screens for cases, evidence, claims, evidence relations, contradictions, leads, findings and snapshots.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    ".federation/gui-capabilities.json:1747",
+    ".federation/gui-capabilities.json:644",
+    ".federation/gui-capabilities.extensions/case-manager-authorization-boundary.json:9",
+    "server/backend/case_manager_api.py:47",
+    "server/backend/case_manager_api.py:163",
+    "server/backend/case_manager_api.py:200",
+    "server/backend/case_manager_api.py:246",
+    "server/backend/case_manager_auth.py:127",
+    "server/backend/case_manager_app.py:12",
+    "server/backend/case_manager_app.py:20",
+    "server/backend/desktop_app.py:26",
+    "server/backend/main.py:286",
+    "desktop/config.py:18",
+    "docs/CASE_MANAGER_PHASE_1_API_CONTRACT.md:10",
+    "docs/GAP_ANALYSIS_AND_OPTIMIZATION_2026-09.md:337",
+    "dashboard/src/lib/api.js:1"
+   ]
+  },
+  {
+   "question": "3. forensics-gui-gap: references, backend, mounting, dashboard callers, exact gap.",
+   "answer": "References: the exception at .federation/gui-capabilities.json:1770-1787 (same owner/tracking/expiry; candidate_id cli_surface:moneysweep/forensics/cli.py) and its copy in artifacts/gui-capabilities-merged.json:2279; the engine is declared as capability 'contract-forensics-engine' at .federation/gui-capabilities.json:741. No extension fragment mentions it. In docs/, 'forensics' appears only as a package name in docs/BACKEND_ASSESSMENT_AND_DEVELOPMENT_PLAN.md:45. Backend that exists: NO HTTP backend. There is no server/backend/forensics* file and grep 'forensic' over server/, dashboard/src, dashboard/tests and desktop/ returns nothing. What exists is a library + CLI: moneysweep/forensics/{core,adapters,candidate,pipeline,seed,cli}.py over a DuckDB ledger at data/forensics/contract_forensics.duckdb with migrations/forensics, JSON schemas in schemas/forensics/ (20 files), an agent skill in moneysweep/forensics/skill/, and tests in tests/forensics/ (4 files). The CLI (prog 'contract-forensics') has subcommands init, status, export, coverage <entity_id>, proposals. Mounted in the desktop app: NO. The desktop self-test only imports duckdb and pyarrow to prove they are packaged (desktop/launch.py:50-53); no route exposes the ledger. Dashboard callers: NONE. Exact gap: unlike the Case Manager, there is not even an API to call. Closing it requires designing an HTTP boundary over ForensicsLedger first (status, coverage per entity, proposals, export, plus whatever acquisition controls are intended), then a dashboard workflow. Today the capability is terminal-only.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    ".federation/gui-capabilities.json:1770",
+    ".federation/gui-capabilities.json:741",
+    "moneysweep/forensics/cli.py:8",
+    "moneysweep/forensics/cli.py:16",
+    "desktop/launch.py:50",
+    "docs/BACKEND_ASSESSMENT_AND_DEVELOPMENT_PLAN.md:45",
+    "tests/forensics/test_engine.py:21",
+    "server/backend/main.py:286"
+   ]
+  },
+  {
+   "question": "4. Financial semantics in Contracts, Top Entities, Campaign Finance and Ownership: fields, labels, null rendering, mixed amounts.",
+   "answer": "CONTRACTS. One monetary field: awardAmount (from CSV column award_amount, server/backend/main.py:143). Table header label 'Amount' (dashboard/src/components/ContractsTable.jsx:69); detail sheet label 'Award amount' (line 109). Null handling: backend _num maps blank/unparseable to null (server/backend/main.py:82-90); fmtMoney(null/undefined) renders an em dash '—' (dashboard/src/lib/cs-format.js:5-6); a real 0 renders '$0'. Formatting is whole dollars, always USD - the row's currency field is returned (server/backend/main.py:144) but never displayed or used. Other blanks: awarding/contractor/municipio '—' (lines 84-86), period '?' (110), other sheet rows '—' (dashboard/src/components/DetailRow.jsx:6). StatsBar prints 'award amounts not populated in Tranche A' when no contract has an amount (dashboard/src/lib/cs-format.js:50-51, dashboard/src/components/StatsBar.jsx:43-45). TOP ENTITIES. One column, header 'Value' (dashboard/src/components/FinancialLeaderboards.jsx:99), showing row.metricValue as USD currency or '<number> <currency>' for non-USD (line 100). The measure name is not in the column header; it is shown as ranking.metricType in the caption 'Top N · ties included · <metricType> · N candidates' (line 98) and as definition.metric_type in the box above (line 92). Measures by category (config/financial_category_ontology.json): contract_award=AWARDED (sum of award_amount, server/backend/leaderboard_adapters.py:218,237,247); debt_issuance=DEBT_ISSUED_PAR; asg_emergency_purchase_source_native=ASG_EMERGENCY_PURCHASE_COST; federal_obligation / federal_grant / disaster_assistance / federal_assistance=OBLIGATED (sum of obligated_amount, lines 773,784); campaign_contribution_received=CONTRIBUTIONS_RECEIVED (sum of amount, lines 933,947); 13 further categories (PAID, FUNDED, LOAN_PRINCIPAL, GUARANTEED, etc.) have no adapter and return zero rows. There is no 'disbursement' or 'payment' ranking with data. Null handling: records with a missing amount are excluded and counted under 'Excluded' in the Reconciliation panel (adapters 219-221; UI line 109); missing currency -> 'Unresolved'; a category with no rows shows the sentence 'No certifiable ranking rows for this category. Missing adapters or source manifestations remain explicit rather than becoming false zero rankings.' (line 101), not a zero. Missing state badges render 'UNKNOWN' (line 14); candidateCount and snapshot count default to 0 (lines 98, 105). CAMPAIGN FINANCE. (i) Tile 'Signed amount' = summary.totalContributionAmount (dashboard/src/components/CampaignFinance.jsx:137); '—' if null, but the backend always returns a number (0 when nothing is materialized). (ii) Contributions table column 'Amount' = row.amount via fmtMoney (lines 36, 47): FEC contribution_receipt_amount or CEE/OCE amount (server/backend/campaign_finance.py:162,181). (iii) Entities table column 'Amount' = row.amount (lines 67, 78), which the backend sets only for recipient rows, from total_disbursements (server/backend/campaign_finance.py:269); candidate and committee rows carry no amount and render '—'. (iv) 'Federal outflows' tile is a row COUNT of FEC disbursements + independent expenditures, not money (line 140; server/backend/campaign_finance.py:121); 'Contribution rows', 'FEC', 'CEE + OCE' are also counts (default 0). Missing text fields render '—'. OWNERSHIP. No monetary field is displayed. Columns are Shares (integer), '% issuer' (percent_issuer_shares_computed) and '13F portfolio %' (percent_13f_reportable_value) (dashboard/src/components/OwnershipDeepDive.jsx:92-94, 108-110); null -> '—' via fmtInt/fmtPct (lines 15-23). market_value exists in the payload builder (moneysweep/capital_control/deep_dive.py:290) but is not rendered. Metric tiles are counts/states, defaulting to 0 or '—' (lines 59-64). PLACES WHERE DIFFERENT KINDS OF AMOUNT SHARE A LABEL OR ARE SUMMED (reported, not judged): (a) Campaign Finance uses the single label 'Amount' for contribution receipts in the Contributions view and for recipients' total_disbursements in the Entities view (dashboard/src/components/CampaignFinance.jsx:36 vs 67; server/backend/campaign_finance.py:162/181 vs 269). (b) 'Signed amount' adds FEC receipts + CEE amounts + OCE amounts into one figure across three sources (server/backend/campaign_finance.py:103-105, 120). (c) In the contributions feed a blank or unparseable amount is coerced to 0 by _amount (server/backend/campaign_finance.py:58-62) before reaching the UI, so a missing contribution amount displays as '$0', not '—'; the same coercion feeds the 'Signed amount' sum. This differs from Contracts, where blank stays null and shows '—'. (d) Top Entities shows awarded, obligated, debt-par, purchase-cost and contributions-received values under one 'Value' header, one category at a time; nothing in the UI sums across categories, and the measure is named in the caption. (e) The ASG emergency-purchase adapter reads a column named obligation_amount and reports it with metricType ASG_EMERGENCY_PURCHASE_COST (server/backend/leaderboard_adapters.py:406, 467, 480). (f) federal_assistance and disaster_assistance pool several source programmes (grants, fema_pa, fema_hmgp, cdbg_dr, hud, ...) into one OBLIGATED total per UEI (server/backend/leaderboard_adapters.py:840-871); fema_pa/fema_hmgp/cdbg_dr records are counted in both categories. (g) Outside the four views asked about: Municipios shows an unlabelled dollar figure that is the sum of award_amount per municipio, '—' when none are populated (dashboard/src/components/MunicipalityAggregates.jsx:51; server/backend/main.py:239-245), and Relationships shows an unlabelled edge amount only when non-null (dashboard/src/components/RelationshipGraph.jsx:42).",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/components/ContractsTable.jsx:69",
+    "dashboard/src/components/ContractsTable.jsx:87",
+    "dashboard/src/components/ContractsTable.jsx:109",
+    "dashboard/src/lib/cs-format.js:5",
+    "server/backend/main.py:82",
+    "server/backend/main.py:143",
+    "dashboard/src/components/FinancialLeaderboards.jsx:98",
+    "dashboard/src/components/FinancialLeaderboards.jsx:99",
+    "dashboard/src/components/FinancialLeaderboards.jsx:100",
+    "dashboard/src/components/FinancialLeaderboards.jsx:101",
+    "dashboard/src/components/FinancialLeaderboards.jsx:109",
+    "server/backend/leaderboard_adapters.py:218",
+    "server/backend/leaderboard_adapters.py:406",
+    "server/backend/leaderboard_adapters.py:480",
+    "server/backend/leaderboard_adapters.py:773",
+    "server/backend/leaderboard_adapters.py:840",
+    "server/backend/leaderboard_adapters.py:947",
+    "dashboard/src/components/CampaignFinance.jsx:36",
+    "dashboard/src/components/CampaignFinance.jsx:47",
+    "dashboard/src/components/CampaignFinance.jsx:67",
+    "dashboard/src/components/CampaignFinance.jsx:78",
+    "dashboard/src/components/CampaignFinance.jsx:137",
+    "dashboard/src/components/CampaignFinance.jsx:140",
+    "server/backend/campaign_finance.py:58",
+    "server/backend/campaign_finance.py:120",
+    "server/backend/campaign_finance.py:162",
+    "server/backend/campaign_finance.py:269",
+    "dashboard/src/components/OwnershipDeepDive.jsx:15",
+    "dashboard/src/components/OwnershipDeepDive.jsx:92",
+    "dashboard/src/components/OwnershipDeepDive.jsx:108",
+    "moneysweep/capital_control/deep_dive.py:290",
+    "dashboard/src/components/MunicipalityAggregates.jsx:51",
+    "dashboard/src/components/RelationshipGraph.jsx:42"
+   ]
+  },
+  {
+   "question": "5. Desktop conventions: recently opened items, pinned items, user rename.",
+   "answer": "Recently opened items: NONE FOUND. Pinned items: NONE FOUND. User rename of any object: NONE FOUND. The only browser storage the app touches is one localStorage key prefix, federation.programActivity.v1.<producerId> (dashboard/src/components/programActivityEvent.js:3), read by readLiveProgramActivity (line 51) to merge activity events into the Activity tab. Its writer appendProgramActivityEvent (line 64) has no caller in dashboard/src outside its test. It holds activity events, not a recents or pins list. The prebuilt desktop bundle (desktop/prebuilt-dashboard/bundle/assets/index-xHPKZVps.js) contains the same key and no other localStorage key. No sessionStorage or IndexedDB use was found. Desktop: the only remembered user choice is the single workspace folder picked in the external Setup & Diagnostics centre. It is applied from saved state at launch (desktop/launch.py:33-43; desktop/config.py:34-37). It is one saved value, not a list of recent workspaces, and its UI lives in the external prii_desktop package, which is not in the snapshot. Rename: there are no PATCH routes on any backend, and the case manager has only create/command POSTs (server/backend/case_manager_api.py:200-374), with case_id derived deterministically from title/type/scope (server/backend/case_manager_api.py:203), so a case title cannot be renamed. The dashboard has no rename or edit-label control. Searched (case-insensitive): localStorage|sessionStorage|indexedDB and recent|pinned|pin|favorite|favourite|bookmark|rename over dashboard/src, desktop/*.py, desktop/prebuilt-dashboard bundle and server/backend/*.py. Every match outside the program-activity module was in a test (programActivityEvent.test.js, cs-format.test.js), and the 'renamed' match there is test data for an event title.",
+   "status": "NOT_FOUND",
+   "evidence": [
+    "dashboard/src/components/programActivityEvent.js:3",
+    "dashboard/src/components/programActivityEvent.js:51",
+    "dashboard/src/components/programActivityEvent.js:64",
+    "desktop/launch.py:33",
+    "desktop/config.py:34",
+    "server/backend/case_manager_api.py:200",
+    "server/backend/case_manager_api.py:203",
+    "server/backend/materialization.py:195"
+   ]
+  }
+ ],
+ "unknowns": [
+  "prii_desktop (desktop window, SPA serving, 'Setup & Diagnostics' centre) is an external package pinned in requirements-desktop.txt:5 and is not in the snapshot, so its routes, windows and settings UI were not audited.",
+  "Radix UI and @pr-federation/react internals (tab arrow-key behaviour, dialog focus trap, whether inactive TabsContent is unmounted, state-component markup) were not read: node_modules is not in the snapshot. Keyboard shortcuts listed are only those written in this repo's source.",
+  "Nothing was run: actual axe results, contrast, rendered sizes and whether the three un-configured Playwright specs pass are unknown.",
+  "Offline export content: dashboard/src/lib/snapshot.json is 0 bytes at this commit and scripts/gen_dashboard_snapshot.py was not read, so which tabs have data in a standalone export is unknown.",
+  "The pipeline/CLI side (run_all.py, run_*.py, scripts/, moneysweep/ other than forensics/cli.py and names of case_manager files) was not audited; only its touch points with the GUI/backend were traced.",
+  "macOS/Windows launchers (PRII-MONEYSWEEP.command/.bat/.app, Fix-Gatekeeper.command) were listed but not read.",
+  "dashboard/src/components/ui/{badge,button,input,select,skeleton,table}.jsx were only partially read (select trigger, table head, sheet, tabs); ui/skeleton.jsx importer status unverified.",
+  "Test counts are grep counts of declarations, not collected test counts.",
+  "The 548 KB .federation/gui-parity-baseline.json and 39 KB gui_backend_contract.json were not read; only gui-capabilities.json exceptions and the case-manager extension fragment were."
+ ],
+ "denominator": {
+  "surfaces_total": 61,
+  "surfaces_mounted": 56,
+  "workflows_total": 36,
+  "by_workflow_status": {
+   "COMPLETE": 29,
+   "PARTIAL": 4,
+   "BROKEN": 0,
+   "UNREACHABLE": 2,
+   "INTERNAL_ONLY": 1
+  },
+  "coverage_statement": "Exhaustive (every file read in full): dashboard/src/App.jsx, main.jsx, pages/Dashboard.jsx, all 19 non-test components in src/components, src/lib/*.js(x), server/backend/main.py, desktop_app.py, case_manager_app.py, api_keys.py, local_request.py, campaign_finance.py, leaderboards.py, desktop/config.py, launch.py, app_server.py. Routes, tabs, navigation items, dialogs/drawers (2 sheets), settings, context actions (none: no onContextMenu in dashboard/src), source-level keyboard handlers, and backend route decorators in server/backend are enumerated exhaustively. Forms, tables, charts, filters and panels inside each tab are enumerated to the level of every distinct control group I found, which I believe is complete for the 11 tabs, but individual buttons inside a group are described in notes rather than listed as separate surfaces. Sampled / partially read: leaderboard_adapters.py (amount and metric lines only), materialization.py, government_changes.py, ownership_api.py, case_manager_api.py and case_manager_auth.py (decorators, auth and key handlers), Playwright specs (test declarations and selected bodies), ui/ primitives. Surfaces not mounted (5): the pilot atlas fixture page, ui/skeleton (unverified), the two manifest-declared GUI gaps, and the external desktop Setup & Diagnostics window. The five surface rows for the gaps/atlas/external window are placeholders for things that do not exist in the shipped dashboard, included so the denominator shows them. Endpoint counting: Counts are for the desktop app object (main.app + materialization router), counted from decorators: main.py 6 GET (110,118,163,186,219,250); api_keys 1 GET + 1 POST (30,38); campaign_finance 4 GET (100,194,228,279); government_changes 3 GET (38,57,68); leaderboards 6 GET (163,173,194,217,239,262); ownership 2 GET (46,88); materialization 4 GET (126,147,186,356), 1 PUT (195), 1 DELETE (207), 4 POST (218,291,305,399). The dev app main:app has 22 GET + 1 POST. Not included: the separate case_manager_app with 4 GET (health + 3) and 11 POST, and whatever routes the external prii_desktop wrapper adds (SPA/static/setup - not in snapshot)."
+ }
+}

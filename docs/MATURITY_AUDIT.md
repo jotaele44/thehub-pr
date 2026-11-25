@@ -51,7 +51,7 @@ never been run into `data/hub.db`, so most of that craft renders blank.
 
 | Module | Evidence |
 |---|---|
-| `src/hub/cli.py` | **15** subcommands (`list`, `validate-manifest`, `validate-package`, `validate-federation`, `fetch`, `aggregate`, `wrap-bridge`, `correlate`, `ingest`, `graph-report`, `analytics-v2`, `consume-sensor-fusion`, `project-signs`, `maintenance`, `source-monitor`) |
+| `src/hub/cli.py` | **14** subcommands (`list`, `validate-manifest`, `validate-package`, `validate-federation`, `fetch`, `aggregate`, `wrap-bridge`, `correlate`, `ingest`, `graph-report`, `analytics-v2`, `consume-sensor-fusion`, `project-signs`, `maintenance`) |
 | `src/hub/bridge.py`, `federation_analytics_v2.py`, `sensor_fusion_consumer.py` | CLI-exposed via `wrap-bridge`, `analytics-v2`, `consume-sensor-fusion` |
 | `src/hub/aggregate.py`, `correlate.py`, `validate.py`, `registry.py`, `manifest.py` | covered by the 388-test suite; mypy-clean |
 | `src/hub/ingest.py` | `ingest_aggregate` + `_project_ui` + four `project_*` helpers (`:111`, `:254`, `:305`, `:396`, `:567`, `:629`) |

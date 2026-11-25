@@ -1,0 +1,1859 @@
+{
+ "repository": "centinelas-pr",
+ "audited_commit": "893a06f4a50655bcfae90469e15677c5f665d7a6",
+ "frontend": {
+  "dir": "frontend",
+  "language": "js",
+  "framework": "React 19 + Vite 8 + Tailwind 3 (frontend/package.json:28,56,54)",
+  "router": "url",
+  "router_file": "frontend/src/App.jsx:28 (BrowserRouter at frontend/src/App.jsx:63)",
+  "shared_design_package": "@pr-federation/react@0.3.0 (release tarball, frontend/package.json:21)"
+ },
+ "entry_points": [
+  {
+   "id": "web-index",
+   "kind": "web",
+   "path": "frontend/index.html:27",
+   "note": "Loads frontend/src/main.jsx; root render at frontend/src/main.jsx:16."
+  },
+  {
+   "id": "vite-dev",
+   "kind": "web",
+   "path": "frontend/package.json:8",
+   "note": "npm run dev; API base defaults to http://localhost:8000 (frontend/src/api/pipelineClient.js:11)."
+  },
+  {
+   "id": "fastapi-backend",
+   "kind": "server",
+   "path": "server/backend/main.py:32",
+   "note": "uvicorn server.backend.main:app; water router included at main.py:40."
+  },
+  {
+   "id": "desktop-asgi",
+   "kind": "server",
+   "path": "desktop/app_server.py:20",
+   "note": "Same-origin wrapper from external prii_desktop package (not in snapshot); APP_IMPORT at desktop/config.py:24."
+  },
+  {
+   "id": "desktop-launch",
+   "kind": "launcher",
+   "path": "desktop/launch.py:24",
+   "note": "prii_desktop.launch; flags handled in the external package."
+  },
+  {
+   "id": "launcher-linux",
+   "kind": "launcher",
+   "path": "PRII-CENTINELAS.sh:26",
+   "note": "Runs desktop/setup.py --ensure then desktop/launch.py."
+  },
+  {
+   "id": "launcher-macos",
+   "kind": "launcher",
+   "path": "PRII-CENTINELAS.command:24",
+   "note": "Also PRII-CENTINELAS.app/Contents/MacOS/PRII-CENTINELAS and Fix-Gatekeeper.command (not read line by line)."
+  },
+  {
+   "id": "launcher-windows",
+   "kind": "launcher",
+   "path": "PRII-CENTINELAS.bat:20",
+   "note": "Windows launcher."
+  },
+  {
+   "id": "desktop-setup",
+   "kind": "cli",
+   "path": "desktop/setup.py:76",
+   "note": "Builds frontend with VITE_API_BASE='' for same-origin serving."
+  },
+  {
+   "id": "cli-centinelas",
+   "kind": "cli",
+   "path": "pyproject.toml:44",
+   "note": "Typer app src/centinelas/cli.py:12; commands ingest (:40), classify (:66), route (:99), run (:134), status (:176)."
+  }
+ ],
+ "surfaces": [
+  {
+   "id": "app-shell",
+   "kind": "sidebar",
+   "label": "CENTINELAS",
+   "address": null,
+   "component": "frontend/src/zip-design/AppShell.jsx:30",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/Layout.jsx:5 (Layout routed at frontend/src/App.jsx:29)",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Shell for all routes except 404. No skip link. Data source: none."
+  },
+  {
+   "id": "sidebar-nav",
+   "kind": "sidebar",
+   "label": "Centinelas diagnostic navigation",
+   "address": null,
+   "component": "frontend/src/zip-design/AppShell.jsx:49",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/zip-design/AppShell.jsx:49",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "8 links from navItems (AppShell.jsx:19-28); aria-current=page on active (AppShell.jsx:53)."
+  },
+  {
+   "id": "topbar",
+   "kind": "toolbar",
+   "label": "Diagnostic surface",
+   "address": null,
+   "component": "frontend/src/zip-design/AppShell.jsx:71",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/zip-design/AppShell.jsx:71",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Static labels plus language/theme buttons."
+  },
+  {
+   "id": "language-toggle",
+   "kind": "settings",
+   "label": "ES / EN (aria-label Change language)",
+   "address": null,
+   "component": "frontend/src/zip-design/AppShell.jsx:79",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/zip-design/AppShell.jsx:79",
+   "parent": "topbar",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Persists to localStorage centinelas_lang."
+  },
+  {
+   "id": "theme-toggle",
+   "kind": "settings",
+   "label": "☀ / ☾ (aria-label Change theme)",
+   "address": null,
+   "component": "frontend/src/zip-design/AppShell.jsx:80",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/zip-design/AppShell.jsx:80",
+   "parent": "topbar",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Persists to localStorage centinelas_theme; no aria-pressed/state in name."
+  },
+  {
+   "id": "sidebar-boundary-note",
+   "kind": "panel",
+   "label": "CENTINELAS · PR",
+   "address": null,
+   "component": "frontend/src/zip-design/AppShell.jsx:61",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/zip-design/AppShell.jsx:61",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Static text; display:none at <=820px (AppShell.module.css:211-213)."
+  },
+  {
+   "id": "footer",
+   "kind": "panel",
+   "label": "Centinelas",
+   "address": null,
+   "component": "frontend/src/components/Footer.jsx:4",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/Layout.jsx:5",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Static."
+  },
+  {
+   "id": "route-home",
+   "kind": "route",
+   "label": "Orientación antes del monitor",
+   "address": "/",
+   "component": "frontend/src/pages/Home.jsx:7",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:30",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: none (static). Gated by useHomeEntryGate (Home.jsx:9): renders null and redirects to /dashboard unless cold-start at '/' or an explicit permit. Renders a nested <main> inside the shell <main> (Home.jsx:14)."
+  },
+  {
+   "id": "home-tour",
+   "kind": "panel",
+   "label": "Tour de Centinelas",
+   "address": "/",
+   "component": "frontend/src/pages/Home.jsx:39",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Home.jsx:39",
+   "parent": "route-home",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Toggled by Tour button (Home.jsx:33); open by default (Home.jsx:10)."
+  },
+  {
+   "id": "route-dashboard",
+   "kind": "route",
+   "label": "Centinelas",
+   "address": "/dashboard",
+   "component": "frontend/src/pages/Dashboard.jsx:9",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:31",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: static hard-coded programTimeline (Dashboard.jsx:11-17) + read of localStorage federation.programActivity.v1.centinelas-pr. No backend. Not in sidebar nav."
+  },
+  {
+   "id": "dashboard-program-timeline",
+   "kind": "timeline",
+   "label": "Timeline",
+   "address": "/dashboard",
+   "component": "frontend/src/components/ProgramTimeline.jsx:19",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Dashboard.jsx:60",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": true
+   },
+   "notes": "Declared items merged with LIVE events from localStorage (ProgramTimeline.jsx:20; programActivityEvent.js:51). Live events older than 7 days become UNRESOLVED (programActivityEvent.js:102). Nothing in the app writes LIVE events."
+  },
+  {
+   "id": "program-timeline-filter",
+   "kind": "filter",
+   "label": "ALL / NOW / NEXT / QUEUED / BLOCKED + sort",
+   "address": "/dashboard",
+   "component": "frontend/src/components/ProgramTimeline.jsx:48",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ProgramTimeline.jsx:48",
+   "parent": "dashboard-program-timeline",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Buttons have no aria-pressed."
+  },
+  {
+   "id": "program-timeline-search",
+   "kind": "search",
+   "label": null,
+   "address": "/dashboard",
+   "component": "frontend/src/components/ProgramTimeline.jsx:58",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ProgramTimeline.jsx:58",
+   "parent": "dashboard-program-timeline",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Input labelled by placeholder only (label wraps an icon, no text)."
+  },
+  {
+   "id": "dashboard-upcoming-work",
+   "kind": "panel",
+   "label": "Upcoming work",
+   "address": "/dashboard",
+   "component": "frontend/src/components/ProgramTimeline.jsx:78",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ProgramTimeline.jsx:78",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "No empty state."
+  },
+  {
+   "id": "matter-timeline",
+   "kind": "timeline",
+   "label": "Línea de vida del asunto",
+   "address": "/dashboard, /matters/:id",
+   "component": "frontend/src/components/lifecycle/MatterTimeline.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Dashboard.jsx:61; frontend/src/pages/MatterDetail.jsx:74",
+   "parent": "route-dashboard",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "On Dashboard the stage is hard-coded pending_officialization. Label says 'Etapa n/6' (MatterTimeline.jsx:15) with a 7-column grid (MatterTimeline.jsx:17)."
+  },
+  {
+   "id": "route-monitor",
+   "kind": "route",
+   "label": "Monitor",
+   "address": "/monitor",
+   "component": "frontend/src/pages/Monitor.jsx:11",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:32",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: localStorage centinelas_local_store_v1 via appClient (frontend/src/api/appClient.js:10; loader frontend/src/lib/appQuery.js:31). Several cards have hard-coded Spanish not passed through t() (Monitor.jsx:91-121)."
+  },
+  {
+   "id": "monitor-metrics",
+   "kind": "panel",
+   "label": "Señales capturadas / Asuntos públicos / Listos para MoneySweep / Fuentes con brecha",
+   "address": "/monitor",
+   "component": "frontend/src/components/monitor/MetricCard.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Monitor.jsx:65",
+   "parent": "route-monitor",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Counts from localStorage store. 'Listos para MoneySweep' = signals ready + localStorage HandoffCandidate rows (Monitor.jsx:41), unrelated to the backend /handoffs data shown on /handoff."
+  },
+  {
+   "id": "monitor-signal-inbox",
+   "kind": "panel",
+   "label": "Bandeja de señales",
+   "address": "/monitor",
+   "component": "frontend/src/pages/Monitor.jsx:77",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Monitor.jsx:77",
+   "parent": "route-monitor",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "First 8 signals (Monitor.jsx:84)."
+  },
+  {
+   "id": "route-signals",
+   "kind": "route",
+   "label": "Bandeja de señales",
+   "address": "/signals",
+   "component": "frontend/src/pages/Signals.jsx:8",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:33",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: localStorage centinelas_local_store_v1 via appClient (frontend/src/api/appClient.js:10; loader frontend/src/lib/appQuery.js:31)."
+  },
+  {
+   "id": "signals-search",
+   "kind": "search",
+   "label": "Buscar señales",
+   "address": "/signals",
+   "component": "frontend/src/pages/Signals.jsx:52",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Signals.jsx:52",
+   "parent": "route-signals",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-side filter; label wraps input."
+  },
+  {
+   "id": "signals-handoff-filter",
+   "kind": "filter",
+   "label": "Handoff",
+   "address": "/signals",
+   "component": "frontend/src/pages/Signals.jsx:56",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Signals.jsx:56",
+   "parent": "route-signals",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Native select on signal.handoff_status."
+  },
+  {
+   "id": "route-signals-table",
+   "kind": "route",
+   "label": "Señales — vista de tabla",
+   "address": "/tabla",
+   "component": "frontend/src/pages/SignalsTable.jsx:19",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:45",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: localStorage centinelas_local_store_v1 via appClient (frontend/src/api/appClient.js:10; loader frontend/src/lib/appQuery.js:31). Not in nav; linked from Signals.jsx:49."
+  },
+  {
+   "id": "signals-table",
+   "kind": "table",
+   "label": "(7 columns)",
+   "address": "/tabla",
+   "component": "frontend/src/pages/SignalsTable.jsx:73",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SignalsTable.jsx:73",
+   "parent": "route-signals-table",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Wrapped in overflow-x-auto (SignalsTable.jsx:72). No caption, th without scope, no sorting."
+  },
+  {
+   "id": "signals-table-search",
+   "kind": "search",
+   "label": "Buscar señales",
+   "address": "/tabla",
+   "component": "frontend/src/pages/SignalsTable.jsx:61",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/SignalsTable.jsx:61",
+   "parent": "route-signals-table",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-side filter."
+  },
+  {
+   "id": "route-matters",
+   "kind": "route",
+   "label": "Asuntos públicos",
+   "address": "/matters",
+   "component": "frontend/src/pages/Matters.jsx:11",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:34",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: localStorage centinelas_local_store_v1 via appClient (frontend/src/api/appClient.js:10; loader frontend/src/lib/appQuery.js:31)."
+  },
+  {
+   "id": "route-matter-detail",
+   "kind": "route",
+   "label": "Matter ID",
+   "address": "/matters/:id",
+   "component": "frontend/src/pages/MatterDetail.jsx:12",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:35",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: localStorage centinelas_local_store_v1 via appClient (frontend/src/api/appClient.js:10; loader frontend/src/lib/appQuery.js:31). Not-found state at MatterDetail.jsx:52."
+  },
+  {
+   "id": "matter-moneysweep-panel",
+   "kind": "panel",
+   "label": "Panel MoneySweep",
+   "address": "/matters/:id",
+   "component": "frontend/src/pages/MatterDetail.jsx:83",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/MatterDetail.jsx:83",
+   "parent": "route-matter-detail",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Read-only counts of localStorage OfficialRecord rows (seeded empty, seedData.js:146)."
+  },
+  {
+   "id": "route-entities",
+   "kind": "route",
+   "label": "Entidades",
+   "address": "/entidades",
+   "component": "frontend/src/pages/Entities.jsx:13",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:46",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: localStorage centinelas_local_store_v1 via appClient (frontend/src/api/appClient.js:10; loader frontend/src/lib/appQuery.js:31); entities derived from signal/matter string arrays (appQuery.js:70)."
+  },
+  {
+   "id": "entities-search",
+   "kind": "search",
+   "label": "Buscar entidad",
+   "address": "/entidades",
+   "component": "frontend/src/pages/Entities.jsx:48",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Entities.jsx:48",
+   "parent": "route-entities",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-side filter."
+  },
+  {
+   "id": "route-entity-detail",
+   "kind": "route",
+   "label": "(entity name)",
+   "address": "/entidad/:slug",
+   "component": "frontend/src/pages/EntityDetail.jsx:12",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:47",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: localStorage centinelas_local_store_v1 via appClient (frontend/src/api/appClient.js:10; loader frontend/src/lib/appQuery.js:31)."
+  },
+  {
+   "id": "route-sources",
+   "kind": "route",
+   "label": "Registro de fuentes",
+   "address": "/sources",
+   "component": "frontend/src/pages/Sources.jsx:18",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:36",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: localStorage centinelas_local_store_v1 via appClient (frontend/src/api/appClient.js:10; loader frontend/src/lib/appQuery.js:31) with hard-coded fallback list when store empty (Sources.jsx:8-16,30). Does NOT call backend GET /sources."
+  },
+  {
+   "id": "sources-search",
+   "kind": "search",
+   "label": "Buscar fuente",
+   "address": "/sources",
+   "component": "frontend/src/pages/Sources.jsx:54",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Sources.jsx:54",
+   "parent": "route-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-side filter."
+  },
+  {
+   "id": "route-pipeline",
+   "kind": "route",
+   "label": "Pipeline",
+   "address": "/pipeline",
+   "component": "frontend/src/pages/Pipeline.jsx:72",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:40",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Data source: FastAPI backend GET /items + GET /status (Pipeline.jsx:84-87). Cards, not a table. Loading/empty paragraphs have no role=status."
+  },
+  {
+   "id": "pipeline-domain-filter",
+   "kind": "filter",
+   "label": "Todos + 7 domain chips",
+   "address": "/pipeline",
+   "component": "frontend/src/pages/Pipeline.jsx:129",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Pipeline.jsx:129",
+   "parent": "route-pipeline",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Server-side filter via ?domain=. No aria-pressed. Chip labels English only (DomainBadge.jsx:8-14)."
+  },
+  {
+   "id": "pipeline-backend-unreachable",
+   "kind": "notification",
+   "label": "Backend no accesible",
+   "address": "/pipeline",
+   "component": "frontend/src/pages/Pipeline.jsx:117",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Pipeline.jsx:117",
+   "parent": "route-pipeline",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Shown when GET /status returns the {} fallback (Pipeline.jsx:91); no role=alert."
+  },
+  {
+   "id": "route-pipeline-item-detail",
+   "kind": "route",
+   "label": "(item title)",
+   "address": "/pipeline/:itemId",
+   "component": "frontend/src/pages/PipelineItemDetail.jsx:31",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:41",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: FastAPI backend GET /items/{id} (PipelineItemDetail.jsx:40). Backend-down and not-found share one message (PipelineItemDetail.jsx:55-64). English only."
+  },
+  {
+   "id": "route-handoff",
+   "kind": "route",
+   "label": "Handoff",
+   "address": "/handoff",
+   "component": "frontend/src/pages/Handoff.jsx:21",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:37",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Data source: FastAPI backend GET /handoffs, POST /handoffs/{id}. Error state is coded (Handoff.jsx:31-33) but unreachable because getHandoffs falls back to [] (pipelineClient.js:46). Hard-coded Spanish."
+  },
+  {
+   "id": "handoff-target-form",
+   "kind": "form",
+   "label": "Destinos + Entregar",
+   "address": "/handoff",
+   "component": "frontend/src/pages/Handoff.jsx:102",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/Handoff.jsx:102",
+   "parent": "route-handoff",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "One fieldset of 4 checkboxes + button per classified item (TARGETS Handoff.jsx:9-14)."
+  },
+  {
+   "id": "route-water-disruption",
+   "kind": "route",
+   "label": "Water Disruption Shadow Queue",
+   "address": "/water-disruption",
+   "component": "frontend/src/pages/WaterDisruption.jsx:6",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:42",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Data source: FastAPI backend (iframe of GET /water-disruption/console). English only."
+  },
+  {
+   "id": "water-console-iframe",
+   "kind": "panel",
+   "label": "Water disruption shadow console",
+   "address": "/water-disruption",
+   "component": "frontend/src/pages/WaterDisruption.jsx:36",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/pages/WaterDisruption.jsx:36",
+   "parent": "route-water-disruption",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Backend-rendered static HTML (server/backend/water_disruption_api.py:125-127) whose nav links open raw JSON endpoints inside the iframe."
+  },
+  {
+   "id": "route-autores-redirect",
+   "kind": "route",
+   "label": null,
+   "address": "/autores",
+   "component": "frontend/src/App.jsx:49",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:49",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Navigate replace to /entidades."
+  },
+  {
+   "id": "route-not-found",
+   "kind": "route",
+   "label": "Página no encontrada",
+   "address": "*",
+   "component": "frontend/src/lib/PageNotFound.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:52",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Outside Layout: no shell/nav. Button does a full reload to /dashboard (PageNotFound.jsx:33)."
+  },
+  {
+   "id": "error-boundary",
+   "kind": "notification",
+   "label": "Something broke while rendering this view",
+   "address": null,
+   "component": "frontend/src/components/ErrorBoundary.jsx:14",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:27",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Wraps Routes including the shell, so a page throw replaces the whole chrome. English only."
+  },
+  {
+   "id": "toaster",
+   "kind": "notification",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/ui/toaster.jsx:1",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:66",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Mounted but toast() is never called anywhere (only definition at frontend/src/components/ui/use-toast.jsx:113)."
+  },
+  {
+   "id": "legacy-header",
+   "kind": "toolbar",
+   "label": "Centinelas (legacy header + nav)",
+   "address": null,
+   "component": "frontend/src/components/Header.jsx:66",
+   "mounted": false,
+   "mounted_evidence": "no importer: grep for 'Header' in frontend/src finds only the definition (frontend/src/components/Header.jsx:66)",
+   "parent": null,
+   "classification": "HISTORICAL_ONLY",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Dead code with its own navItems (Header.jsx:9-18). Imports @/assets/icon-64.png (Header.jsx:6) and frontend/src/assets does not exist."
+  },
+  {
+   "id": "legacy-header-mobile-nav",
+   "kind": "drawer",
+   "label": "Navegación móvil",
+   "address": null,
+   "component": "frontend/src/components/Header.jsx:97",
+   "mounted": false,
+   "mounted_evidence": "parent Header.jsx is not imported",
+   "parent": "legacy-header",
+   "classification": "HISTORICAL_ONLY",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hamburger disclosure exists only in dead Header."
+  },
+  {
+   "id": "auth-layout",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/AuthLayout.jsx:3",
+   "mounted": false,
+   "mounted_evidence": "no importer (grep AuthLayout finds only frontend/src/components/AuthLayout.jsx:3)",
+   "parent": null,
+   "classification": "HISTORICAL_ONLY",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Leftover from removed auth flow."
+  },
+  {
+   "id": "email-review-admin",
+   "kind": "route",
+   "label": null,
+   "address": "/admin/email-sources, /admin/email-runs, /admin/email-messages, /admin/email-review, /admin/email-parser-health",
+   "component": "server/backend/email_review_contract.py:32",
+   "mounted": false,
+   "mounted_evidence": "server/backend/email_review_contract.py:3 (module registers no FastAPI routes)",
+   "parent": null,
+   "classification": "MANIFEST_DECLARED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Inert contract only; no frontend or backend route."
+  }
+ ],
+ "workflows": [
+  {
+   "id": "switch-language",
+   "name": "Switch UI language",
+   "surface": "language-toggle",
+   "ui_action": "Click ES/EN button",
+   "frontend_handler": "frontend/src/zip-design/AppShell.jsx:79",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "toggleLang (frontend/src/lib/LanguageContext.jsx:27) -> persisted + html lang set (LanguageContext.jsx:17-20). Writes localStorage only.",
+   "has_test": true,
+   "test": "frontend/tests/zip-design.spec.mjs:28"
+  },
+  {
+   "id": "switch-theme",
+   "name": "Switch light/dark theme",
+   "surface": "theme-toggle",
+   "ui_action": "Click theme button",
+   "frontend_handler": "frontend/src/zip-design/AppShell.jsx:80",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "toggleTheme (frontend/src/lib/ThemeContext.jsx:31) -> applyTheme + localStorage (ThemeContext.jsx:26-29).",
+   "has_test": true,
+   "test": "frontend/tests/zip-design.spec.mjs:28"
+  },
+  {
+   "id": "navigate-sidebar",
+   "name": "Navigate between workspaces",
+   "surface": "sidebar-nav",
+   "ui_action": "Click a sidebar link",
+   "frontend_handler": "frontend/src/zip-design/AppShell.jsx:53",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Links map to routes in frontend/src/App.jsx:32-47.",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:41"
+  },
+  {
+   "id": "return-home",
+   "name": "Return to Home/orientation page",
+   "surface": "app-shell",
+   "ui_action": "Click brand link (aria-label 'Centinelas overview')",
+   "frontend_handler": "frontend/src/zip-design/AppShell.jsx:39",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Brand link goes to '/' without calling permitHomeEntry; Home gate then decides DENIED and redirects to /dashboard (frontend/src/lib/homeEntryGuard.js:24-28,54-63). permitHomeEntry is only called from dead Header.jsx:72, so Home is reachable only on a cold start at '/'.",
+   "has_test": true,
+   "test": "frontend/src/lib/homeEntryGuard.test.js:1 (decision function only)"
+  },
+  {
+   "id": "home-tour",
+   "name": "Show/hide tour",
+   "surface": "home-tour",
+   "ui_action": "Click Tour button",
+   "frontend_handler": "frontend/src/pages/Home.jsx:33",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Local state toggle (Home.jsx:10,39). No aria-expanded.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "dashboard-timeline-controls",
+   "name": "Filter/sort/search program timeline",
+   "surface": "dashboard-program-timeline",
+   "ui_action": "Click phase chip, sort button, type in search",
+   "frontend_handler": "frontend/src/components/ProgramTimeline.jsx:25",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "State -> useMemo filter -> list rendered (ProgramTimeline.jsx:25-30,64-73). Static/localStorage data only.",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:97"
+  },
+  {
+   "id": "monitor-overview",
+   "name": "View monitor metrics and signal inbox",
+   "surface": "route-monitor",
+   "ui_action": "Open /monitor",
+   "frontend_handler": "frontend/src/pages/Monitor.jsx:24",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "loadLifecycle -> localStorage -> MetricCard/SignalCard (Monitor.jsx:24,65-84). Not backend data.",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:41 (route render only)"
+  },
+  {
+   "id": "signals-search-filter",
+   "name": "Search and filter signals",
+   "surface": "route-signals",
+   "ui_action": "Type query / choose handoff status",
+   "frontend_handler": "frontend/src/pages/Signals.jsx:31",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Client-side filter over localStorage rows (Signals.jsx:31-40,75).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "signals-table-search",
+   "name": "Browse/search signals table",
+   "surface": "route-signals-table",
+   "ui_action": "Type query",
+   "frontend_handler": "frontend/src/pages/SignalsTable.jsx:41",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Client-side filter rendered to table (SignalsTable.jsx:41-47,86).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "open-matter",
+   "name": "Open matter detail from a signal or matter card",
+   "surface": "route-matter-detail",
+   "ui_action": "Click signal/matter title",
+   "frontend_handler": "frontend/src/components/monitor/SignalCard.jsx:25",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Route /matters/:id -> lookup in localStorage rows (MatterDetail.jsx:40-42).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "matters-list",
+   "name": "Browse matters",
+   "surface": "route-matters",
+   "ui_action": "Open /matters",
+   "frontend_handler": "frontend/src/pages/Matters.jsx:20",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "localStorage rows sorted by confidence (Matters.jsx:32).",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:41 (route render only)"
+  },
+  {
+   "id": "entities-browse",
+   "name": "Search entities and open entity detail",
+   "surface": "route-entities",
+   "ui_action": "Type query, click card",
+   "frontend_handler": "frontend/src/pages/Entities.jsx:35",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "deriveEntities -> filter -> Link /entidad/:slug (Entities.jsx:25,63; EntityDetail.jsx:37).",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:41 (route render only)"
+  },
+  {
+   "id": "sources-search",
+   "name": "Search source registry",
+   "surface": "route-sources",
+   "ui_action": "Type query",
+   "frontend_handler": "frontend/src/pages/Sources.jsx:40",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Client-side filter over localStorage/fallback list (Sources.jsx:30,40-46). Not the backend source list.",
+   "has_test": true,
+   "test": "frontend/tests/gui-parity.spec.mjs:41 (route render only)"
+  },
+  {
+   "id": "pipeline-list-filter",
+   "name": "List classified items and filter by domain",
+   "surface": "route-pipeline",
+   "ui_action": "Open /pipeline, click a domain chip",
+   "frontend_handler": "frontend/src/pages/Pipeline.jsx:83",
+   "backend_endpoint": "GET /items, GET /status",
+   "backend_handler": "server/backend/main.py:95, server/backend/main.py:130",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "getItems/getStatus (frontend/src/api/pipelineClient.js:41,45) -> handlers -> cards (Pipeline.jsx:157-161).",
+   "has_test": true,
+   "test": "tests/test_run_endpoint.py:82 (backend); frontend/tests/gui-parity.spec.mjs:41 (route render)"
+  },
+  {
+   "id": "pipeline-item-detail",
+   "name": "Open a pipeline item",
+   "surface": "route-pipeline-item-detail",
+   "ui_action": "Click an item card",
+   "frontend_handler": "frontend/src/pages/PipelineItemDetail.jsx:40",
+   "backend_endpoint": "GET /items/{item_id}",
+   "backend_handler": "server/backend/main.py:107",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "getItem (pipelineClient.js:42) -> item + dispatch record rendered (PipelineItemDetail.jsx:74-153).",
+   "has_test": true,
+   "test": "tests/test_run_endpoint.py:139 (backend path-safety)"
+  },
+  {
+   "id": "handoff-list",
+   "name": "List classified items with handoff history",
+   "surface": "route-handoff",
+   "ui_action": "Open /handoff",
+   "frontend_handler": "frontend/src/pages/Handoff.jsx:28",
+   "backend_endpoint": "GET /handoffs",
+   "backend_handler": "server/backend/main.py:152",
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "List renders, but (a) backend failure is indistinguishable from empty because getHandoffs falls back to [] (pipelineClient.js:46 vs Handoff.jsx:31) and (b) the 'con entrega confirmada' count tests attempt.status === 'delivered' (Handoff.jsx:44), a value the backend never emits (src/centinelas/route/dispatch.py:239,250,256-259), so it is always 0.",
+   "has_test": true,
+   "test": "tests/test_handoff_endpoint.py:74 (backend)"
+  },
+  {
+   "id": "handoff-deliver",
+   "name": "Deliver an item to selected federation repos",
+   "surface": "handoff-target-form",
+   "ui_action": "Tick destinations, click Entregar",
+   "frontend_handler": "frontend/src/pages/Handoff.jsx:56",
+   "backend_endpoint": "POST /handoffs/{item_id}",
+   "backend_handler": "server/backend/main.py:162",
+   "writes": true,
+   "authorization": "token if CENTINELAS_WRITE_TOKEN set, else private/loopback client address (server/backend/auth.py:41-58)",
+   "status": "PARTIAL",
+   "status_evidence": "Request, receipt persistence and list refresh are traced (pipelineClient.js:60-64; main.py:183-190; Handoff.jsx:61-63). But success receipts have status 'pending_ack' (dispatch.py:259) while the UI only shows a confirmation for 'delivered' (Handoff.jsx:132), so a successful send shows no message; postJSON sends no Authorization header (pipelineClient.js:23-29) so the call is 401 whenever CENTINELAS_WRITE_TOKEN is set (auth.py:48-52); a real dispatch also needs FEDERATION_DISPATCH_TOKEN/CENTINELAS_GITHUB_TOKEN (dispatch.py:216-222). dry_run is false and there is no confirmation step.",
+   "has_test": true,
+   "test": "tests/test_handoff_endpoint.py:46 (backend only; no frontend test)"
+  },
+  {
+   "id": "handoff-retry-failed",
+   "name": "Retry only failed handoff targets",
+   "surface": "handoff-target-form",
+   "ui_action": "none (no control)",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /handoffs/{item_id} with retry_receipt_id",
+   "backend_handler": "server/backend/main.py:173",
+   "writes": true,
+   "authorization": "token if CENTINELAS_WRITE_TOKEN set, else private/loopback client address (server/backend/auth.py:41-58)",
+   "status": "UNREACHABLE",
+   "status_evidence": "Backend supports retry_receipt_id (main.py:149,173-180); createHandoff never sends it (pipelineClient.js:60-64). UI text tells the user to retry (Handoff.jsx:133) but only a full re-send is possible.",
+   "has_test": true,
+   "test": "tests/test_handoff_endpoint.py:99"
+  },
+  {
+   "id": "handoff-dry-run",
+   "name": "Dry-run a handoff",
+   "surface": "handoff-target-form",
+   "ui_action": "none (no control)",
+   "frontend_handler": "frontend/src/api/pipelineClient.js:63",
+   "backend_endpoint": "POST /handoffs/{item_id} dry_run=true",
+   "backend_handler": "server/backend/main.py:183",
+   "writes": false,
+   "authorization": "token if CENTINELAS_WRITE_TOKEN set, else private/loopback client address (server/backend/auth.py:41-58)",
+   "status": "UNREACHABLE",
+   "status_evidence": "Client accepts options.dryRun (pipelineClient.js:60-63) but Handoff calls createHandoff(item_id, targets) with no options (Handoff.jsx:61).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "run-pipeline",
+   "name": "Run ingest/classify/dispatch",
+   "surface": "route-pipeline",
+   "ui_action": "none in GUI (empty state tells user to run CLI, Pipeline.jsx:153-154)",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /run",
+   "backend_handler": "server/backend/main.py:193",
+   "writes": true,
+   "authorization": "token if CENTINELAS_WRITE_TOKEN set, else private/loopback client address (server/backend/auth.py:41-58)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "No frontend client function for /run; available via API and CLI 'centinelas run' (src/centinelas/cli.py:133).",
+   "has_test": true,
+   "test": "tests/test_run_endpoint.py:54"
+  },
+  {
+   "id": "water-console-view",
+   "name": "View water-disruption shadow console",
+   "surface": "water-console-iframe",
+   "ui_action": "Open /water-disruption; Retry on failure",
+   "frontend_handler": "frontend/src/pages/WaterDisruption.jsx:9",
+   "backend_endpoint": "GET /water-disruption/console",
+   "backend_handler": "server/backend/water_disruption_api.py:125",
+   "writes": false,
+   "authorization": "local-network client only (server/backend/water_disruption_api.py:36-50)",
+   "status": "COMPLETE",
+   "status_evidence": "Probe fetch (pipelineClient.js:47-59) then iframe (WaterDisruption.jsx:36-40) or alert card with Retry (WaterDisruption.jsx:42-62).",
+   "has_test": true,
+   "test": "frontend/src/pages/WaterDisruption.test.jsx:16; frontend/tests/gui-parity.spec.mjs:75"
+  },
+  {
+   "id": "water-console-links",
+   "name": "Open sources/runs/candidates/outbox from console",
+   "surface": "water-console-iframe",
+   "ui_action": "Click a link inside the iframe",
+   "frontend_handler": "server/backend/water_disruption_api.py:127",
+   "backend_endpoint": "GET /water-disruption/sources|runs|candidates|outbox",
+   "backend_handler": "server/backend/water_disruption_api.py:130, :136, :150, :156",
+   "writes": false,
+   "authorization": "local-network client only (server/backend/water_disruption_api.py:36-50)",
+   "status": "PARTIAL",
+   "status_evidence": "Links are plain anchors in backend HTML to JSON endpoints; the iframe shows raw JSON with no way back except browser history.",
+   "has_test": true,
+   "test": "tests/test_water_disruption_api.py:6 (backend)"
+  },
+  {
+   "id": "water-capture",
+   "name": "Capture water-disruption evidence",
+   "surface": "route-water-disruption",
+   "ui_action": "none (no control)",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /water-disruption/capture",
+   "backend_handler": "server/backend/water_disruption_api.py:162",
+   "writes": true,
+   "authorization": "local-network client only (server/backend/water_disruption_api.py:36-50) + token if CENTINELAS_WRITE_TOKEN set, else private/loopback client address (server/backend/auth.py:41-58)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "No frontend caller (grep of frontend/src for 'capture' in api clients: none).",
+   "has_test": true,
+   "test": "tests/test_water_disruption_api.py:6"
+  },
+  {
+   "id": "water-dispatch",
+   "name": "Dispatch a water candidate",
+   "surface": "route-water-disruption",
+   "ui_action": "none (no control)",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /water-disruption/candidates/{candidate_id}/dispatch",
+   "backend_handler": "server/backend/water_disruption_api.py:169",
+   "writes": true,
+   "authorization": "local-network client only (server/backend/water_disruption_api.py:36-50) + token if CENTINELAS_WRITE_TOKEN set, else private/loopback client address (server/backend/auth.py:41-58)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "No frontend caller; requires Idempotency-Key header (water_disruption_api.py:170).",
+   "has_test": true,
+   "test": "tests/test_water_disruption_api.py:6"
+  },
+  {
+   "id": "water-deliver",
+   "name": "Deliver outbox envelope to consumer",
+   "surface": "route-water-disruption",
+   "ui_action": "none (no control)",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /water-disruption/outbox/{outbox_id}/deliver",
+   "backend_handler": "server/backend/water_disruption_api.py:177",
+   "writes": true,
+   "authorization": "local-network client only (server/backend/water_disruption_api.py:36-50) + token if CENTINELAS_WRITE_TOKEN set, else private/loopback client address (server/backend/auth.py:41-58) + consumer origin allowlist (water_disruption_api.py:88-116)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "No frontend caller.",
+   "has_test": true,
+   "test": "tests/test_water_disruption_egress.py:18"
+  },
+  {
+   "id": "water-retract",
+   "name": "Retract a water candidate",
+   "surface": "route-water-disruption",
+   "ui_action": "none (no control)",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /water-disruption/candidates/{candidate_id}/retract",
+   "backend_handler": "server/backend/water_disruption_api.py:200",
+   "writes": true,
+   "authorization": "local-network client only (server/backend/water_disruption_api.py:36-50) + token if CENTINELAS_WRITE_TOKEN set, else private/loopback client address (server/backend/auth.py:41-58)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "No frontend caller.",
+   "has_test": true,
+   "test": "tests/test_water_disruption_api.py:6"
+  },
+  {
+   "id": "local-handoff-candidate-lifecycle",
+   "name": "Evaluate/accept/reject MoneySweep handoff candidate, sync official record, validate pre-official language (localStorage)",
+   "surface": "route-matter-detail",
+   "ui_action": "none (no control)",
+   "frontend_handler": "frontend/src/api/appClient.js:187",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "UNREACHABLE",
+   "status_evidence": "functionHandlers defined (appClient.js:187-295) but appClient.functions.invoke and entity create/update/delete have no caller in frontend/src (grep 'appClient\\.' finds only appQuery.js:13, a list call). The localStorage store is therefore read-only seed data from the UI.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "backend-queue-sources-health",
+   "name": "View raw queue / backend source list / health",
+   "surface": "route-pipeline",
+   "ui_action": "none (no control)",
+   "frontend_handler": "frontend/src/api/pipelineClient.js:40",
+   "backend_endpoint": "GET /health, GET /queue, GET /sources",
+   "backend_handler": "server/backend/main.py:86, :115, :122",
+   "writes": false,
+   "authorization": "none",
+   "status": "UNREACHABLE",
+   "status_evidence": "getHealth/getQueue/getSources are exported (pipelineClient.js:40,43,44) but imported by no page.",
+   "has_test": true,
+   "test": "tests/test_server_smoke.py:77 (/health)"
+  },
+  {
+   "id": "not-found-recover",
+   "name": "Leave 404 page",
+   "surface": "route-not-found",
+   "ui_action": "Click 'Ir al Dashboard'",
+   "frontend_handler": "frontend/src/lib/PageNotFound.jsx:33",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "window.location.href='/dashboard' (full reload).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "error-boundary-retry",
+   "name": "Recover from render error",
+   "surface": "error-boundary",
+   "ui_action": "Click 'Try again'",
+   "frontend_handler": "frontend/src/components/ErrorBoundary.jsx:41",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Resets error state and re-renders children.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "autores-redirect",
+   "name": "Legacy /autores link",
+   "surface": "route-autores-redirect",
+   "ui_action": "Open /autores",
+   "frontend_handler": "frontend/src/App.jsx:49",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Navigate replace to /entidades.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "email-review",
+   "name": "Operator email review",
+   "surface": "email-review-admin",
+   "ui_action": "none",
+   "frontend_handler": null,
+   "backend_endpoint": null,
+   "backend_handler": "server/backend/email_review_contract.py:41",
+   "writes": false,
+   "authorization": "other (not activated; server/backend/email_review_contract.py:41-49)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "Module registers no routes (email_review_contract.py:3-4).",
+   "has_test": true,
+   "test": "tests/test_email_ingestion_design.py:1"
+  }
+ ],
+ "navigation": {
+  "registry_file": "frontend/src/zip-design/AppShell.jsx:19",
+  "items": [
+   {
+    "label": "Monitor",
+    "target": "/monitor"
+   },
+   {
+    "label": "Signals / Señales",
+    "target": "/signals"
+   },
+   {
+    "label": "Matters / Asuntos",
+    "target": "/matters"
+   },
+   {
+    "label": "Entities / Entidades",
+    "target": "/entidades"
+   },
+   {
+    "label": "Sources / Fuentes",
+    "target": "/sources"
+   },
+   {
+    "label": "Pipeline",
+    "target": "/pipeline"
+   },
+   {
+    "label": "Water disruptions / Interrupciones de agua",
+    "target": "/water-disruption"
+   },
+   {
+    "label": "Handoff",
+    "target": "/handoff"
+   },
+   {
+    "label": "CENTINELAS brand link (aria-label Centinelas overview)",
+    "target": "/ (AppShell.jsx:39; redirects to /dashboard after cold start)"
+   }
+  ],
+  "mobile_navigation": "No hamburger or drawer. At max-width 820px the grid collapses to one column, the sidebar becomes a static block above the content and the nav becomes a single horizontally scrolling row (frontend/src/zip-design/AppShell.module.css:185-209); the boundary note and clock label are hidden (AppShell.module.css:211-222). The only hamburger menu is in the unmounted frontend/src/components/Header.jsx:85-102.",
+  "dead_or_unlinked_routes": [
+   "/dashboard: not in sidebar; reached from Home link (frontend/src/pages/Home.jsx:30), Home gate redirect (frontend/src/lib/homeEntryGuard.js:60) and 404 button",
+   "/tabla: not in sidebar; only from frontend/src/pages/Signals.jsx:49",
+   "/: Home renders only on a cold start at '/'; later visits redirect to /dashboard (frontend/src/lib/homeEntryGuard.js:24-28)",
+   "/autores: redirect only (frontend/src/App.jsx:49)",
+   "/matters/:id, /entidad/:slug, /pipeline/:itemId: detail routes reached from cards, not nav",
+   "Dead nav list: frontend/src/components/Header.jsx:9-18 (component unmounted)"
+  ]
+ },
+ "settings": [
+  {
+   "id": "theme",
+   "label": "Change theme / Cambiar tema",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage centinelas_theme",
+   "evidence": "frontend/src/lib/ThemeContext.jsx:3"
+  },
+  {
+   "id": "language",
+   "label": "Change language / Cambiar idioma",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage centinelas_lang",
+   "evidence": "frontend/src/lib/LanguageContext.jsx:4"
+  },
+  {
+   "id": "home-entry-permit",
+   "label": null,
+   "scope": "SESSION",
+   "storage": "sessionStorage prii:federation-home-permit:v1 and prii:federation-cold-home-consumed:v1",
+   "evidence": "frontend/src/lib/homeEntryGuard.js:4"
+  },
+  {
+   "id": "local-data-store",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage centinelas_local_store_v1 (seeded from frontend/src/data/seedData.js; no UI to reset)",
+   "evidence": "frontend/src/api/appClient.js:10"
+  },
+  {
+   "id": "program-activity-live-events",
+   "label": null,
+   "scope": "GLOBAL_USER",
+   "storage": "localStorage federation.programActivity.v1.centinelas-pr (read only by UI)",
+   "evidence": "frontend/src/components/programActivityEvent.js:3"
+  },
+  {
+   "id": "api-base",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env VITE_API_BASE (build time)",
+   "evidence": "frontend/src/api/pipelineClient.js:11"
+  },
+  {
+   "id": "write-token",
+   "label": null,
+   "scope": "SECRET",
+   "storage": "env CENTINELAS_WRITE_TOKEN",
+   "evidence": "server/backend/auth.py:10"
+  },
+  {
+   "id": "dispatch-token",
+   "label": null,
+   "scope": "SECRET",
+   "storage": "env FEDERATION_DISPATCH_TOKEN or CENTINELAS_GITHUB_TOKEN",
+   "evidence": "src/centinelas/route/dispatch.py:216"
+  },
+  {
+   "id": "data-dir",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env CENTINELAS_DATA_DIR",
+   "evidence": "server/backend/main.py:26"
+  },
+  {
+   "id": "allowed-origins",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env ALLOWED_ORIGINS",
+   "evidence": "server/backend/main.py:36"
+  },
+  {
+   "id": "water-consumer-origins",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env CENTINELAS_WATER_DISRUPTION_CONSUMER_ORIGINS",
+   "evidence": "server/backend/water_disruption_api.py:90"
+  }
+ ],
+ "context_actions": [],
+ "keyboard_shortcuts": [],
+ "accessibility_source_findings": [
+  {
+   "id": "a11y-handoff-focus-loss",
+   "severity": "serious",
+   "finding": "After a successful Entregar, load() sets loading=true and ListState swaps the whole list for skeletons, unmounting the focused button; nothing restores focus (no .focus() call exists in frontend/src). Keyboard and screen-reader users are dropped to the document start on a page that can hold hundreds of cards.",
+   "evidence": "frontend/src/pages/Handoff.jsx:63; frontend/src/pages/Handoff.jsx:29; frontend/src/components/ListState.jsx:28",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-handoff-success-silent",
+   "severity": "serious",
+   "finding": "Handoff success is not announced: the confirmation span has no live region and is keyed to status 'delivered', which the backend never returns (it returns pending_ack/partial/failed). Only errors use role=alert.",
+   "evidence": "frontend/src/pages/Handoff.jsx:131-133; src/centinelas/route/dispatch.py:259",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-handoff-ambiguous-names",
+   "severity": "moderate",
+   "finding": "Every card repeats the same button name 'Entregar' and the same group legend 'Destinos' with no reference to the item title, so controls are indistinguishable in a controls list.",
+   "evidence": "frontend/src/pages/Handoff.jsx:103; frontend/src/pages/Handoff.jsx:126-130",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-warning-caution-contrast",
+   "severity": "serious",
+   "finding": "ConfidenceBadge maps medium->warning and low->caution, HandoffStatusBadge maps watching->warning, onto @pr-federation/react 0.3.0 tones that the repo's own audit records as failing contrast. The mapping is unchanged and the package pin is unchanged; the CSS values themselves are not in the snapshot.",
+   "evidence": "frontend/src/components/lifecycle/ConfidenceBadge.jsx:13-15; frontend/src/components/lifecycle/HandoffStatusBadge.jsx:19; frontend/package.json:21; docs/A11Y_AUDIT.md:43",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-pipeline-mobile-overflow",
+   "severity": "moderate",
+   "finding": "Below the md breakpoint the Pipeline card grid has one implicit auto column; each card is a grid item with default min-width:auto containing a nowrap (truncate) title, so a long title can widen the track past the viewport.",
+   "evidence": "frontend/src/pages/Pipeline.jsx:157; frontend/src/pages/Pipeline.jsx:49-53",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-nested-main",
+   "severity": "moderate",
+   "finding": "Home renders a <main> inside the shell's <main>, giving two nested main landmarks.",
+   "evidence": "frontend/src/pages/Home.jsx:14; frontend/src/zip-design/AppShell.jsx:83",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-no-skip-link",
+   "severity": "moderate",
+   "finding": "No skip-to-content link; on narrow screens the brand plus 8 nav links precede the content on every page.",
+   "evidence": "frontend/src/zip-design/AppShell.jsx:38-59",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-timeline-search-unlabelled",
+   "severity": "moderate",
+   "finding": "Program timeline search input has no accessible name other than its placeholder; the wrapping label contains only an icon.",
+   "evidence": "frontend/src/components/ProgramTimeline.jsx:58-61",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-toggle-state-not-exposed",
+   "severity": "moderate",
+   "finding": "Filter chips (Pipeline domains, timeline phases) and the theme button convey selection by colour/glyph only; no aria-pressed or aria-current.",
+   "evidence": "frontend/src/pages/Pipeline.jsx:130-146; frontend/src/components/ProgramTimeline.jsx:50; frontend/src/zip-design/AppShell.jsx:80",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-mixed-language",
+   "severity": "moderate",
+   "finding": "Pages bypass the i18n helper: Handoff is hard-coded Spanish, PipelineItemDetail, WaterDisruption, ProgramTimeline and ErrorBoundary are hard-coded English, while html lang follows the toggle. Content language can disagree with the declared language.",
+   "evidence": "frontend/src/pages/Handoff.jsx:75-80; frontend/src/pages/PipelineItemDetail.jsx:52-63; frontend/src/pages/WaterDisruption.jsx:24-28; frontend/src/lib/LanguageContext.jsx:18",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-pipeline-status-not-announced",
+   "severity": "minor",
+   "finding": "Pipeline and PipelineItemDetail loading, empty and backend-unreachable messages are plain elements without role=status/alert, unlike the ListState pages.",
+   "evidence": "frontend/src/pages/Pipeline.jsx:117-127; frontend/src/pages/Pipeline.jsx:150; frontend/src/pages/PipelineItemDetail.jsx:52",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-touch-targets",
+   "severity": "minor",
+   "finding": "Topbar buttons are 34px high, the shadcn Button default is h-9 (36px), and Pipeline chips use py-1 text-sm; all below a 44px target.",
+   "evidence": "frontend/src/zip-design/AppShell.module.css:160-161; frontend/src/components/ui/button.jsx:24; frontend/src/pages/Pipeline.jsx:133",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-table-semantics",
+   "severity": "minor",
+   "finding": "Signals table has no caption and th cells have no scope; its horizontal scroll container is not keyboard focusable.",
+   "evidence": "frontend/src/pages/SignalsTable.jsx:72-83",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-title-only-info",
+   "severity": "minor",
+   "finding": "Badge explanations (confidence band, evidence tier, routing target) are exposed only through title attributes.",
+   "evidence": "frontend/src/components/lifecycle/ConfidenceBadge.jsx:24; frontend/src/components/lifecycle/EvidenceTierBadge.jsx:7; frontend/src/components/pipeline/DomainBadge.jsx:31",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-hardcoded-red",
+   "severity": "minor",
+   "finding": "Dispatch error text uses text-red-700 with no dark-mode variant.",
+   "evidence": "frontend/src/pages/PipelineItemDetail.jsx:122",
+   "confidence": "medium"
+  }
+ ],
+ "backend": {
+  "framework": "FastAPI",
+  "app_object": "server/backend/main.py:32",
+  "endpoint_count": {
+   "GET": 13,
+   "POST": 6,
+   "PUT": 0,
+   "PATCH": 0,
+   "DELETE": 0
+  },
+  "endpoints_not_called_by_frontend": [
+   "GET /health (client fn exists, unused; used as desktop HEALTH_PATH desktop/config.py:39)",
+   "GET /queue (client fn exists, unused)",
+   "GET /sources (client fn exists, unused)",
+   "POST /run",
+   "GET /water-disruption/evidence/{evidence_id}",
+   "POST /water-disruption/capture",
+   "POST /water-disruption/candidates/{candidate_id}/dispatch",
+   "POST /water-disruption/outbox/{outbox_id}/deliver",
+   "POST /water-disruption/candidates/{candidate_id}/retract",
+   "GET /water-disruption/sources, /runs, /candidates, /outbox (only via anchor links inside the backend console HTML, server/backend/water_disruption_api.py:127)"
+  ],
+  "frontend_calls_with_no_backend_route": []
+ },
+ "tests": {
+  "frontend_unit": "4 files / 38 it() cases, Vitest + Testing Library (frontend/vitest.config.js:27-33): lifecycle.test.js 28, programActivityEvent.test.js 5, homeEntryGuard.test.js 3, WaterDisruption.test.jsx 2. Only one page component has a render test.",
+  "frontend_e2e": "2 Playwright specs: frontend/tests/gui-parity.spec.mjs (1 manifest check + 1 per manifest route, 10 routes at this commit, + water console + dashboard timeline = 13) and frontend/tests/zip-design.spec.mjs (3: two viewport renders + preferences).",
+  "backend": "382 test functions across tests/*.py by grep of 'def test_' (pytest, pyproject.toml:52-54); backend API files: test_handoff_endpoint.py, test_run_endpoint.py, test_server_smoke.py, test_backend_write_auth.py, test_water_disruption_api.py, test_water_disruption_egress.py.",
+  "accessibility_automation": "vitest-axe matchers are registered (frontend/src/test/setup.js:2-5; frontend/package.json:58) but no test calls axe()/toHaveNoViolations (grep of frontend/src and frontend/tests). No axe in the Playwright specs. docs/A11Y_AUDIT.md:14 used an external harness not in this repo."
+ },
+ "performance_protections": [
+  {
+   "what": "fetch timeouts (8s GET, 15s POST) via AbortSignal.timeout",
+   "evidence": "frontend/src/api/pipelineClient.js:15"
+  },
+  {
+   "what": "backend list caps: limit default 500, max 5000",
+   "evidence": "server/backend/main.py:96"
+  },
+  {
+   "what": "localStorage list caps (200/300/50 rows)",
+   "evidence": "frontend/src/lib/appQuery.js:39"
+  },
+  {
+   "what": "memoized client-side filters",
+   "evidence": "frontend/src/pages/Signals.jsx:31"
+  },
+  {
+   "what": "monitor inbox limited to 8 cards",
+   "evidence": "frontend/src/pages/Monitor.jsx:84"
+  },
+  {
+   "what": "stale-response guard (active flag) in effects",
+   "evidence": "frontend/src/pages/Pipeline.jsx:81"
+  },
+  {
+   "what": "self-hosted fonts, pre-paint theme script",
+   "evidence": "frontend/src/main.jsx:4; frontend/index.html:14"
+  },
+  {
+   "what": "NONE: no lazy routes/code splitting (all pages statically imported), no virtualization (Handoff renders every row with 4 checkboxes), no debounce; React Query provider present but no useQuery",
+   "evidence": "frontend/src/App.jsx:8-22; frontend/src/pages/Handoff.jsx:88"
+  }
+ ],
+ "special_adjudications": [
+  {
+   "question": "Shared warning/caution contrast: where defined, where used, ratio, and do the recorded failing values still exist?",
+   "answer": "Three colour sources exist. (1) --zip-warning / --zip-warning-foreground are defined as HSL in frontend/src/zip-design/tokens.css:47-48 (light) and :104-105 (dark) and are referenced nowhere else in frontend/src; there is no caution token in zip-design, index.css or tailwind.config.js. (2) The warning and caution tones actually rendered come from @pr-federation/react 0.3.0 via federationTone(): ConfidenceBadge medium->warning and low->caution (ConfidenceBadge.jsx:13,15), HandoffStatusBadge watching->warning (HandoffStatusBadge.jsx:19). Those badges render on Monitor/Signals/MatterDetail/EntityDetail via SignalCard.jsx:39,41, Matters.jsx:64-65, MatterDetail.jsx:68-69, SignalsTable.jsx:98-99, Pipeline.jsx:62, PipelineItemDetail.jsx:96, Handoff.jsx:97. (3) Amber Tailwind classes are used for the BLOCKED phase badge (ProgramTimeline.jsx:14) and the Geo/Geology domain badge (DomainBadge.jsx:11). No contrast ratio is given: the snapshot contains no hex foreground/background pair for any of these (zip tokens are HSL and unused, Tailwind palette and the federation stylesheet are not in the snapshot; frontend/node_modules is absent). The recorded failure is docs/A11Y_AUDIT.md:36-45, citing --fd-st-warning-fg:#b45309 and --fd-st-caution-fg:#a16207 in node_modules/@pr-federation/react/dist/federation.css. Those values appear nowhere in the snapshot except that document, so their current existence cannot be confirmed or refuted from source. What is confirmed: the dependency is still pinned to 0.3.0 (frontend/package.json:21) and the local tone mappings are unchanged, so nothing in this repo has changed that would fix it.",
+   "status": "UNKNOWN",
+   "evidence": [
+    "frontend/src/zip-design/tokens.css:47",
+    "frontend/src/zip-design/tokens.css:104",
+    "frontend/src/components/lifecycle/ConfidenceBadge.jsx:13",
+    "frontend/src/components/lifecycle/ConfidenceBadge.jsx:15",
+    "frontend/src/components/lifecycle/HandoffStatusBadge.jsx:19",
+    "frontend/src/components/ProgramTimeline.jsx:14",
+    "frontend/src/components/pipeline/DomainBadge.jsx:11",
+    "frontend/package.json:21",
+    "docs/A11Y_AUDIT.md:43"
+   ]
+  },
+  {
+   "question": "Pipeline page responsiveness at narrow widths; horizontal overflow risk?",
+   "answer": "Pipeline.jsx uses cards, not a table. Container 'max-w-7xl mx-auto px-4 py-8 space-y-8' (:101); stats row 'flex flex-wrap gap-4' (:110); domain chips 'flex flex-wrap gap-2' (:129) so the 8 chips wrap rather than scroll; list 'grid gap-3 md:grid-cols-2' (:157), i.e. one column below Tailwind md (768px) and two above; badges 'flex flex-wrap' (:58). There is no overflow-x handling on the page. The shell collapses at 820px (AppShell.module.css:185-188) and sets min-width:0 on workspace/main (AppShell.module.css:113-115; adaptation.css:4-5). Overflow risk is present by source reading: below md the grid has a single implicit auto track and each card link is a grid item with 'block' but no min-w-0 (:49); the title inside is 'truncate' i.e. nowrap (:53) and the min-w-0 sits on an inner flex child (:52), which does not reduce the grid item's content-based minimum. A long title can therefore widen the track beyond the viewport; at md and above grid-cols-2 uses minmax(0,1fr) and the problem disappears. This matches the mobile-only overflow recorded in docs/A11Y_AUDIT.md:59-61, though that document attributes it to the chip bar, which does wrap. Not run, so this is an inference from CSS rules. PipelineItemDetail also has a 'grid grid-cols-2' metadata block with an unbroken monospace item_id (PipelineItemDetail.jsx:146-147) that can spill at narrow widths.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "frontend/src/pages/Pipeline.jsx:101",
+    "frontend/src/pages/Pipeline.jsx:129",
+    "frontend/src/pages/Pipeline.jsx:157",
+    "frontend/src/pages/Pipeline.jsx:49",
+    "frontend/src/pages/Pipeline.jsx:52",
+    "frontend/src/pages/Pipeline.jsx:53",
+    "frontend/src/zip-design/AppShell.module.css:185",
+    "frontend/src/pages/PipelineItemDetail.jsx:146",
+    "docs/A11Y_AUDIT.md:59"
+   ]
+  },
+  {
+   "question": "Handoff page accessibility: labels, focus after submit, error announcement, button names, dry_run default",
+   "answer": "Labels: each checkbox is wrapped in a <label> with visible text (Handoff.jsx:106-111) inside a fieldset with legend 'Destinos' (:102-103); the legend is identical on every card and does not name the item. Focus management: none; after a successful send, load() flips loading and ListState replaces the list with skeletons, unmounting the focused button (Handoff.jsx:63, :29, :84; ListState.jsx:28-36). Error announcement: POST errors render in a span with role=alert (:131); there is no aria-live for success or partial messages (:132-133), and the success message is keyed to 'delivered', which the backend never returns (dispatch.py:259 returns pending_ack/partial/failed), so a successful send shows nothing. The list-load error branch (:31-33) is unreachable because getHandoffs returns [] on failure (pipelineClient.js:46). Loading is announced through ListState role=status (ListState.jsx:30). Button names: text 'Entregar' / 'Entregando…' (:129), not unique per item; disabled while sending or with no target selected (:127). dry_run: defaults to false on both sides. The client sends dry_run: Boolean(options.dryRun) (pipelineClient.js:63) and Handoff passes no options (Handoff.jsx:61); the backend model default is False (server/backend/main.py:148). There is no dry-run control and no confirmation step, so Entregar performs a live repository dispatch.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "frontend/src/pages/Handoff.jsx:102",
+    "frontend/src/pages/Handoff.jsx:106",
+    "frontend/src/pages/Handoff.jsx:63",
+    "frontend/src/pages/Handoff.jsx:131",
+    "frontend/src/pages/Handoff.jsx:132",
+    "frontend/src/pages/Handoff.jsx:126",
+    "frontend/src/pages/Handoff.jsx:61",
+    "frontend/src/api/pipelineClient.js:63",
+    "server/backend/main.py:148",
+    "src/centinelas/route/dispatch.py:259",
+    "frontend/src/components/ListState.jsx:28"
+   ]
+  },
+  {
+   "question": "Is frontend/src/components/Header.jsx dead code with its own nav list?",
+   "answer": "Yes. Nothing imports it: a grep for 'Header' across frontend/src, frontend/tests and frontend/index.html returns only its own export (Header.jsx:66) and a comment in i18n/en.js:6. Layout mounts AppShell and Footer only (Layout.jsx:2-5). Header carries a duplicate navItems list (Header.jsx:9-18) with the same eight targets as AppShell.jsx:19-28, the only hamburger/mobile menu in the codebase (Header.jsx:85-102) and the only caller of permitHomeEntry (Header.jsx:72). It also imports '@/assets/icon-64.png?inline' (Header.jsx:6) and frontend/src/assets does not exist in the snapshot, so it could not be bundled if it were imported. docs/A11Y_AUDIT.md:47-49 and docs/GUI_AUDIT.md:31-35 still describe Header.jsx as the live global header.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "frontend/src/components/Header.jsx:66",
+    "frontend/src/components/Header.jsx:9",
+    "frontend/src/components/Header.jsx:6",
+    "frontend/src/components/Header.jsx:72",
+    "frontend/src/components/Layout.jsx:2",
+    "frontend/src/zip-design/AppShell.jsx:19",
+    "docs/A11Y_AUDIT.md:48"
+   ]
+  }
+ ],
+ "denominator": {
+  "surfaces_total": 48,
+  "surfaces_mounted": 44,
+  "workflows_total": 32,
+  "by_workflow_status": {
+   "COMPLETE": 18,
+   "PARTIAL": 4,
+   "UNREACHABLE": 4,
+   "INTERNAL_ONLY": 6,
+   "BROKEN": 0
+  },
+  "coverage_statement": "Exhaustive: all routes in frontend/src/App.jsx, all sidebar nav items, the shell controls, all backend endpoints in server/backend/main.py and water_disruption_api.py, all exported pipelineClient functions, settings/storage keys found by grep for localStorage/sessionStorage/import.meta.env in frontend/src, dialogs (none exist), context actions (none) and keyboard shortcuts (none; grep for onKeyDown/keydown/onContextMenu/addEventListener returned nothing). Every page file and every non-ui component was read in full. Enumerated but not exhaustive: in-page panels and static cards (e.g. Dashboard info cards, Monitor side cards are folded into their route), individual badges, and backend environment variables outside server/backend and dispatch.py. Not read: the Python package under src/centinelas beyond route/dispatch.py:155-262 and cli.py command declarations, frontend/src/lib/lifecycle.js beyond getConfidenceBand, ui/toast*.jsx internals, launcher scripts beyond the launch line. Nothing was executed; overflow and contrast statements are source inferences."
+ },
+ "unknowns": [
+  "Actual warning/caution colour values and contrast ratios: @pr-federation/react is a release tarball (frontend/package.json:21) and frontend/node_modules is not in the snapshot.",
+  "Desktop same-origin behaviour: prii_desktop is an external package (requirements-desktop.txt:5). SPA paths /sources and /water-disruption share names with backend GET /sources (server/backend/main.py:122) and the /water-disruption router prefix (water_disruption_api.py:48); how deep links or reloads resolve in the desktop build was not determinable.",
+  "Whether receipts ever reach a 'delivered' state through an out-of-band acknowledgement job: grep for 'delivered' in *.py/*.js/*.jsx/*.yml found only Handoff.jsx; .github/workflows/handoff-ack.yml was not read.",
+  "Which i18n keys are missing from frontend/src/lib/i18n/en.js (282 entries) was not cross-checked per t() call.",
+  "Whether lucide-react icons without explicit aria-hidden are hidden from assistive tech depends on the installed library version (not in snapshot).",
+  "Exact Playwright test count depends on .federation/gui-capabilities.json at run time; 10 routes were counted from the manifest at this commit."
+ ]
+}

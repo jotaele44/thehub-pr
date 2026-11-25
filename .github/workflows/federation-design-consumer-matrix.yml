@@ -1,0 +1,215 @@
+name: federation-design-consumer-matrix
+
+# Try a RELEASED @pr-federation/react candidate against every producer that consumes
+# it, before anyone changes a pin. Dispatch it by hand with the release-asset URL and
+# the SHA-256 from that release's SHA256SUMS, for example:
+#
+#   package_url:    https://github.com/jotaele44/thehub-pr/releases/download/federation-design-v0.6.0-rc.1/pr-federation-react-0.6.0-rc.1.tgz
+#   package_sha256: <64 lowercase hex characters>
+#
+# For each producer's main branch it installs the producer's current pin and runs the
+# build and the unit tests (baseline), then installs the candidate over that pin and runs
+# the same two (candidate). The verdict compares the two per step, so a producer that is
+# already red is reported as such instead of being blamed on the candidate.
+#
+# Not covered, on purpose: the producers' six-viewport/axe harness, their GUI-parity
+# suites, and their own verify scripts (those check the producer's pin, so they would
+# fail any candidate by design). A green run means "builds and unit-tests", not "ready
+# to pin"; the producers' own checks decide the latter on the pin PR.
+#
+# Every decision lives in tools/federation_consumer_matrix.py and is tested in
+# tests/test_federation_consumer_matrix.py. Every dynamic value reaches a shell through
+# env, never through an expression.
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_url:
+        description: "Release-asset URL of the candidate tarball (a federation-design-v* release of this repository)"
+        required: true
+        type: string
+      package_sha256:
+        description: "SHA-256 of that tarball, 64 lowercase hex characters (from the release's SHA256SUMS)"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: federation-design-consumer-matrix
+  cancel-in-progress: false
+
+env:
+  PACKAGE_URL: ${{ inputs.package_url }}
+  PACKAGE_SHA256: ${{ inputs.package_sha256 }}
+
+jobs:
+  prepare:
+    name: verify candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.candidate.outputs.version }}
+      file: ${{ steps.candidate.outputs.file }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Validate the candidate URL and checksum
+        id: candidate
+        run: python3 tools/federation_consumer_matrix.py check-inputs --url "$PACKAGE_URL" --sha256 "$PACKAGE_SHA256" >> "$GITHUB_OUTPUT"
+      - name: Download the candidate and verify its bytes
+        env:
+          CANDIDATE_FILE: ${{ steps.candidate.outputs.file }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/candidate"
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-time 180 --output "$RUNNER_TEMP/candidate/$CANDIDATE_FILE" "$PACKAGE_URL"
+          python3 tools/federation_consumer_matrix.py verify-checksum --file "$RUNNER_TEMP/candidate/$CANDIDATE_FILE" --sha256 "$PACKAGE_SHA256"
+
+  consumer:
+    name: ${{ matrix.repo }}
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - repo: aguayluz-pr
+            dir: dashboard
+          - repo: centinelas-pr
+            dir: frontend
+          - repo: moneysweep-pr
+            dir: dashboard
+          - repo: ovnis-pr
+            dir: dashboard
+          - repo: skywatcher-pr
+            dir: frontend
+    env:
+      CONSUMER_REPO: ${{ matrix.repo }}
+      FRONTEND_DIR: consumer/${{ matrix.dir }}
+      CANDIDATE_FILE: ${{ needs.prepare.outputs.file }}
+      CANDIDATE_VERSION: ${{ needs.prepare.outputs.version }}
+      TOOL: ${{ github.workspace }}/hub/tools/federation_consumer_matrix.py
+    steps:
+      - name: Check out the hub (for the decision tool)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: hub
+          persist-credentials: false
+      - name: Check out the producer at main
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: jotaele44/${{ matrix.repo }}
+          ref: main
+          path: consumer
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: consumer/${{ matrix.dir }}/package-lock.json
+      - name: Download the candidate and verify its bytes again in this job
+        run: |
+          mkdir -p "$RUNNER_TEMP/candidate"
+          curl --fail --silent --show-error --location --proto '=https' --proto-redir '=https' --max-time 180 --output "$RUNNER_TEMP/candidate/$CANDIDATE_FILE" "$PACKAGE_URL"
+          python3 "$TOOL" verify-checksum --file "$RUNNER_TEMP/candidate/$CANDIDATE_FILE" --sha256 "$PACKAGE_SHA256"
+
+      # Baseline: the producer exactly as it is today.
+      - name: Baseline, install the current pin
+        id: base_install
+        continue-on-error: true
+        working-directory: consumer/${{ matrix.dir }}
+        run: npm ci --ignore-scripts
+      - name: Baseline, build
+        id: base_build
+        if: steps.base_install.outcome == 'success'
+        continue-on-error: true
+        working-directory: consumer/${{ matrix.dir }}
+        run: npm run build
+      - name: Baseline, unit tests
+        id: base_test
+        if: steps.base_install.outcome == 'success'
+        continue-on-error: true
+        working-directory: consumer/${{ matrix.dir }}
+        run: npm test
+
+      # Candidate: a fresh install, then the candidate over the pin without saving it.
+      - name: Candidate, install over the pin
+        id: cand_install
+        continue-on-error: true
+        working-directory: consumer/${{ matrix.dir }}
+        run: |
+          npm ci --ignore-scripts
+          npm install --no-save --ignore-scripts "$RUNNER_TEMP/candidate/$CANDIDATE_FILE"
+      - name: Candidate, confirm it is what got installed
+        id: cand_installed
+        if: steps.cand_install.outcome == 'success'
+        continue-on-error: true
+        run: python3 "$TOOL" assert-installed --dir "$FRONTEND_DIR" --expect-version "$CANDIDATE_VERSION"
+      - name: Candidate, build
+        id: cand_build
+        if: steps.cand_installed.outcome == 'success'
+        continue-on-error: true
+        working-directory: consumer/${{ matrix.dir }}
+        run: npm run build
+      - name: Candidate, unit tests
+        id: cand_test
+        if: steps.cand_installed.outcome == 'success'
+        continue-on-error: true
+        working-directory: consumer/${{ matrix.dir }}
+        run: npm test
+
+      - name: Record this producer's result
+        if: always()
+        env:
+          B_INSTALL: ${{ steps.base_install.outcome }}
+          B_BUILD: ${{ steps.base_build.outcome }}
+          B_TEST: ${{ steps.base_test.outcome }}
+          C_INSTALL: ${{ steps.cand_install.outcome }}
+          C_INSTALLED: ${{ steps.cand_installed.outcome }}
+          C_BUILD: ${{ steps.cand_build.outcome }}
+          C_TEST: ${{ steps.cand_test.outcome }}
+        run: |
+          python3 "$TOOL" record \
+            --repo "$CONSUMER_REPO" \
+            --package-json "$FRONTEND_DIR/package.json" \
+            --candidate-version "$CANDIDATE_VERSION" \
+            --out "results/$CONSUMER_REPO.json" \
+            --summary-file "$GITHUB_STEP_SUMMARY" \
+            --baseline install="$B_INSTALL" build="$B_BUILD" test="$B_TEST" \
+            --candidate install="$C_INSTALL" installed="$C_INSTALLED" build="$C_BUILD" test="$C_TEST"
+      - name: Keep the result as evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: consumer-result-${{ matrix.repo }}
+          path: results/${{ matrix.repo }}.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Fail unless this producer is a PASS
+        if: always()
+        run: python3 "$TOOL" verdict --result "results/$CONSUMER_REPO.json"
+
+  report:
+    name: overall
+    needs: [prepare, consumer]
+    if: always() && needs.prepare.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Write the overall report
+        env:
+          CANDIDATE_VERSION: ${{ needs.prepare.outputs.version }}
+          CONSUMER_RESULT: ${{ needs.consumer.result }}
+        run: |
+          python3 tools/federation_consumer_matrix.py report \
+            --version "$CANDIDATE_VERSION" \
+            --url "$PACKAGE_URL" \
+            --sha256 "$PACKAGE_SHA256" \
+            --consumer-result "$CONSUMER_RESULT" \
+            --summary-file "$GITHUB_STEP_SUMMARY"
