@@ -1,15 +1,13 @@
 import { copyFileSync, mkdirSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { dirname, join, relative } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { join, relative } from 'node:path'
+import { BUNDLED_STYLES, SEPARATE_STYLES, designRoot, pkgRoot, sourceFiles, stylePath } from './sources.mjs'
 
-const here = dirname(fileURLToPath(import.meta.url))
-const pkgRoot = join(here, '..')
-const designRoot = join(pkgRoot, '..', '..')
 const dist = join(pkgRoot, 'dist')
 const pkg = JSON.parse(readFileSync(join(pkgRoot, 'package.json'), 'utf8'))
 const snapshot = JSON.parse(readFileSync(join(pkgRoot, 'api-snapshot.json'), 'utf8'))
-const styleSources = ['foundation.css', 'primitives.css', 'states.css'].map((name) => join(designRoot, 'styles', name))
+const styleSources = BUNDLED_STYLES.map(stylePath)
+const separateStyles = SEPARATE_STYLES.map((name) => ({ from: stylePath(name), to: join(dist, name) }))
 const assets = [
   { from: join(designRoot, 'tokens', 'federation.tokens.json'), to: join(dist, 'federation.tokens.json') },
   { from: join(designRoot, 'tokens', 'federation.tokens.schema.json'), to: join(dist, 'federation.tokens.schema.json') },
@@ -29,7 +27,7 @@ for (const path of styleSources) {
   }
 }
 writeFileSync(join(dist, 'federation.css'), styleSources.map((path) => readFileSync(path, 'utf8').trim()).join('\n\n') + '\n')
-for (const { from, to } of assets) {
+for (const { from, to } of [...assets, ...separateStyles]) {
   if (!existsSync(from)) {
     console.error(`[prepack] missing canonical asset: ${from}`)
     process.exit(1)
@@ -39,8 +37,8 @@ for (const { from, to } of assets) {
 
 const sha256 = (path) => createHash('sha256').update(readFileSync(path)).digest('hex')
 const sources = [
-  join(pkgRoot, 'package.json'), join(pkgRoot, 'api-snapshot.json'), join(pkgRoot, 'src', 'index.jsx'),
-  join(pkgRoot, 'src', 'semantics.js'), join(designRoot, 'styles', 'federation.css'), ...styleSources, ...assets.map((asset) => asset.from),
+  join(pkgRoot, 'package.json'), join(pkgRoot, 'api-snapshot.json'), ...sourceFiles(),
+  join(designRoot, 'styles', 'federation.css'), ...styleSources, ...separateStyles.map((style) => style.from), ...assets.map((asset) => asset.from),
 ]
 const manifest = {
   schemaVersion: '1.0.0',
@@ -53,4 +51,4 @@ const manifest = {
   mutableReferencesAllowed: false,
 }
 writeFileSync(join(dist, 'release-manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
-console.log(`[prepack] bundled ${styleSources.length} style sources, ${assets.length} canonical assets and deterministic release manifest`)
+console.log(`[prepack] bundled ${styleSources.length} style sources, ${separateStyles.length} separate stylesheets, ${assets.length} canonical assets and deterministic release manifest`)

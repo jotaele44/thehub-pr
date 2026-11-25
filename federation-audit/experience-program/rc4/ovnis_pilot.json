@@ -1,0 +1,117 @@
+{
+ "schema": "federation.experience-program.pilot-comparison/1",
+ "claim_class": "COMPUTED",
+ "repository": "ovnis-pr",
+ "commits": {
+  "before": "a8225db5d226232037c455daf6e941e50d86d136",
+  "after": "0d1e12bcb2a3d4e26ab9d3c1d10c2c89fd440948"
+ },
+ "method": "Chromium, dark colour scheme, at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels, by scripts/runtime/views_pass.js: OVNIS has one address and keeps its views in memory, so the scan loads '/', clicks each view tab (opening the phone menu first where needed) and measures each view. Each view is recorded as the route '/#view:<label>'. Views were opened, not otherwise operated.",
+ "frame": {
+  "before": {
+   "routes": 6,
+   "page_loads": 32,
+   "page_loads_with_an_error": 0,
+   "page_loads_not_200": 0,
+   "page_loads_with_horizontal_overflow": 0,
+   "page_loads_with_an_unnamed_button": 0,
+   "controls_under_24px_summed_over_page_loads": 40,
+   "page_loads_with_console_errors": 0,
+   "page_loads_with_page_errors": 0,
+   "note": "'/#view:<label>' entries are in-memory views, not addresses; the page address stays '/'."
+  },
+  "after": {
+   "routes": 6,
+   "page_loads": 32,
+   "page_loads_with_an_error": 0,
+   "page_loads_not_200": 0,
+   "page_loads_with_horizontal_overflow": 0,
+   "page_loads_with_an_unnamed_button": 0,
+   "controls_under_24px_summed_over_page_loads": 40,
+   "page_loads_with_console_errors": 0,
+   "page_loads_with_page_errors": 0,
+   "note": "'/#view:<label>' entries are in-memory views, not addresses; the page address stays '/'."
+  }
+ },
+ "targeted_rules": {
+  "color-contrast": {
+   "before": {
+    "routes_failing": 6,
+    "distinct_elements": 28
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "button-name": {
+   "before": {
+    "routes_failing": 0,
+    "distinct_elements": 0
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "scrollable-region-focusable": {
+   "before": {
+    "routes_failing": 1,
+    "distinct_elements": 1
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "label-content-name-mismatch": {
+   "before": {
+    "routes_failing": 0,
+    "distinct_elements": 0
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  }
+ },
+ "every_critical_or_serious_rule": {
+  "color-contrast": {
+   "before": {
+    "page_loads": 32,
+    "routes": 6
+   },
+   "after": {
+    "page_loads": 0,
+    "routes": 0
+   }
+  },
+  "link-in-text-block": {
+   "before": {
+    "page_loads": 16,
+    "routes": 5
+   },
+   "after": {
+    "page_loads": 16,
+    "routes": 5
+   }
+  },
+  "scrollable-region-focusable": {
+   "before": {
+    "page_loads": 3,
+    "routes": 1
+   },
+   "after": {
+    "page_loads": 0,
+    "routes": 0
+   }
+  }
+ },
+ "out_of_scope": {
+  "link-in-text-block": "16 page loads over 5 views before and after; not one of the targeted rules for this pass, logged as a lead."
+ }
+}

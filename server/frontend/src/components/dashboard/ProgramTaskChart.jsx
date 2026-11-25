@@ -6,9 +6,9 @@ import { BarChart3 } from "lucide-react";
 
 // Per-program task completion breakdown: Active (Backlog/Ready/Blocked), In Progress (InProgress/Review), Done.
 const SERIES = [
-  { key: "active", label: "Active", color: "hsl(var(--chart-1))" },
-  { key: "inProgress", label: "In Progress", color: "hsl(var(--chart-3))" },
-  { key: "done", label: "Completed", color: "hsl(var(--chart-2))" },
+  { key: "active", label: "Active", color: "var(--chart-1)" },
+  { key: "inProgress", label: "In Progress", color: "var(--chart-3)" },
+  { key: "done", label: "Completed", color: "var(--chart-2)" },
 ];
 
 function bucketOf(status) {
@@ -56,13 +56,13 @@ export default function ProgramTaskChart() {
       ) : (
         <ResponsiveContainer width="100%" height={280}>
           <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-            <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis allowDecimals={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+            <XAxis dataKey="name" tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis allowDecimals={false} tick={{ fill: "var(--muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
             <Tooltip
-              cursor={{ fill: "hsl(var(--accent))", opacity: 0.4 }}
-              contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }}
-              labelStyle={{ color: "hsl(var(--foreground))" }}
+              cursor={{ fill: "var(--accent)", opacity: 0.4 }}
+              contentStyle={{ background: "var(--popover)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }}
+              labelStyle={{ color: "var(--foreground)" }}
               formatter={(value, name, item) => {
                 if (name === "Completed") return [`${value} (${item.payload.pct}%)`, name];
                 return [value, name];

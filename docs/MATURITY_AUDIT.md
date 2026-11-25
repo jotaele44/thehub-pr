@@ -31,7 +31,7 @@ Scored 0–4. 4 = would pass review at a team that ships this for a living.
 
 | Dim | Area | Score | Evidence |
 |---|---|---|---|
-| D1 | Functional completeness | **3** | `hub` CLI has 14 real subcommands; 22 application routes serve; auth surface was dead (fixed below) |
+| D1 | Functional completeness | **3** | `hub` CLI has 15 real subcommands; 22 application routes serve; auth surface was dead (fixed below) |
 | D2 | Data reality | **1** | `data/` is 8 KB — the aggregate has never been run in-tree, so most UI pages render empty |
 | D3 | UI craft | **4** | 29 pages on shared primitives; 30 files handle empty states, 22 handle loading; only repo in the federation with an automated a11y test |
 | D4 | Test & CI coverage | **4** | `388 passed` (pytest, 6.3s) + `16 passed / 7 files` (vitest); Playwright visual harness present |

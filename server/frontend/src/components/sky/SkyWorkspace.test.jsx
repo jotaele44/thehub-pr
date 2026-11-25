@@ -7,10 +7,12 @@ import { MemoryRouter, useLocation } from 'react-router-dom';
 import reference from '@/sky/referenceEphemerides.json';
 import samples from '@/sky/fixtures/swpc-samples.json';
 import { loadSpaceWeather } from '@/sky/spaceWeather';
+import { loadSatelliteElements } from '@/sky/satelliteElements';
 import { twilightClass } from '@/sky/astronomy';
 import SkyWorkspace from './SkyWorkspace';
 
 vi.mock('@/sky/spaceWeather', async (importOriginal) => ({ ...(await importOriginal()), loadSpaceWeather: vi.fn() }));
+vi.mock('@/sky/satelliteElements', async (importOriginal) => ({ ...(await importOriginal()), loadSatelliteElements: vi.fn() }));
 
 const ANSWER_TIME = new Date('2026-10-18T20:55:00Z');
 const respond = (payload) => ({ ok: true, status: 200, json: async () => payload });
@@ -23,6 +25,17 @@ async function realReadings(overrides = {}) {
   const { loadSpaceWeather: actual } = await vi.importActual('@/sky/spaceWeather');
   return { ...(await actual({ fetchImpl: realFetch, now: ANSWER_TIME })), ...overrides };
 }
+
+// CelesTrak is never reached from these tests. Unless a test says otherwise it is unavailable, which leaves the Sun,
+// Moon and planets exactly as they were.
+async function elementsUnavailable() {
+  const { loadSatelliteElements: actual } = await vi.importActual('@/sky/satelliteElements');
+  return actual({ fetchImpl: async () => ({ ok: false, status: 503, json: async () => ({}) }), now: ANSWER_TIME });
+}
+beforeEach(async () => {
+  loadSatelliteElements.mockReset();
+  loadSatelliteElements.mockResolvedValue(await elementsUnavailable());
+});
 
 function Where() {
   const location = useLocation();

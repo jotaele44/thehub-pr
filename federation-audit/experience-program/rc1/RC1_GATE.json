@@ -1,0 +1,267 @@
+{
+  "applications": {
+    "aguayluz-pr": {
+      "citations": {
+        "citations": 828,
+        "file_not_in_snapshot": 6,
+        "line_out_of_range": 0,
+        "note": "Resolved means the cited file exists at the audited commit and has that line. It does not prove the line says what the survey claims.",
+        "resolved": 822,
+        "resolved_ratio": 0.9928,
+        "resolved_via_unique_file_name": 230,
+        "unresolved_samples": [
+          "app.py:59 (no such file)",
+          "app.py:73 (no such file)",
+          "app.py:53 (no such file)",
+          "app.py:256 (no such file)",
+          "3.75:1 (no such file)",
+          "app.py:45 (no such file)"
+        ]
+      },
+      "denominator_matches_survey": true,
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 1,
+          "COMPLETE": 40,
+          "INTERNAL_ONLY": 2,
+          "PARTIAL": 10,
+          "UNREACHABLE": 2
+        },
+        "surfaces_mounted": 91,
+        "surfaces_total": 94,
+        "workflows_that_write": 14,
+        "workflows_total": 55,
+        "workflows_with_test": 33
+      },
+      "problems": [],
+      "state": "PROVISIONAL",
+      "survey_present": true
+    },
+    "centinelas-pr": {
+      "citations": {
+        "citations": 444,
+        "file_not_in_snapshot": 0,
+        "line_out_of_range": 0,
+        "note": "Resolved means the cited file exists at the audited commit and has that line. It does not prove the line says what the survey claims.",
+        "resolved": 444,
+        "resolved_ratio": 1.0,
+        "resolved_via_unique_file_name": 106,
+        "unresolved_samples": []
+      },
+      "denominator_matches_survey": true,
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 0,
+          "COMPLETE": 18,
+          "INTERNAL_ONLY": 6,
+          "PARTIAL": 4,
+          "UNREACHABLE": 4
+        },
+        "surfaces_mounted": 44,
+        "surfaces_total": 48,
+        "workflows_that_write": 10,
+        "workflows_total": 32,
+        "workflows_with_test": 23
+      },
+      "problems": [],
+      "state": "PROVISIONAL",
+      "survey_present": true
+    },
+    "moneysweep-pr": {
+      "citations": {
+        "citations": 562,
+        "file_not_in_snapshot": 0,
+        "line_out_of_range": 0,
+        "note": "Resolved means the cited file exists at the audited commit and has that line. It does not prove the line says what the survey claims.",
+        "resolved": 562,
+        "resolved_ratio": 1.0,
+        "resolved_via_unique_file_name": 0,
+        "unresolved_samples": []
+      },
+      "denominator_matches_survey": true,
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 0,
+          "COMPLETE": 29,
+          "INTERNAL_ONLY": 1,
+          "PARTIAL": 4,
+          "UNREACHABLE": 2
+        },
+        "surfaces_mounted": 56,
+        "surfaces_total": 61,
+        "workflows_that_write": 9,
+        "workflows_total": 36,
+        "workflows_with_test": 22
+      },
+      "problems": [],
+      "state": "PROVISIONAL",
+      "survey_present": true
+    },
+    "mucaro-ai": {
+      "citations": {
+        "citations": 791,
+        "file_not_in_snapshot": 1,
+        "line_out_of_range": 0,
+        "note": "Resolved means the cited file exists at the audited commit and has that line. It does not prove the line says what the survey claims.",
+        "resolved": 790,
+        "resolved_ratio": 0.9987,
+        "resolved_via_unique_file_name": 154,
+        "unresolved_samples": [
+          "127.0.0.1:8000 (no such file)"
+        ]
+      },
+      "denominator_matches_survey": true,
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 0,
+          "COMPLETE": 40,
+          "INTERNAL_ONLY": 0,
+          "PARTIAL": 7,
+          "UNREACHABLE": 4
+        },
+        "surfaces_mounted": 47,
+        "surfaces_total": 47,
+        "workflows_that_write": 31,
+        "workflows_total": 51,
+        "workflows_with_test": 40
+      },
+      "problems": [],
+      "state": "PROVISIONAL",
+      "survey_present": true
+    },
+    "ovnis-pr": {
+      "citations": {
+        "citations": 469,
+        "file_not_in_snapshot": 0,
+        "line_out_of_range": 0,
+        "note": "Resolved means the cited file exists at the audited commit and has that line. It does not prove the line says what the survey claims.",
+        "resolved": 469,
+        "resolved_ratio": 1.0,
+        "resolved_via_unique_file_name": 136,
+        "unresolved_samples": []
+      },
+      "denominator_matches_survey": true,
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 0,
+          "COMPLETE": 28,
+          "INTERNAL_ONLY": 1,
+          "PARTIAL": 6,
+          "UNREACHABLE": 3
+        },
+        "surfaces_mounted": 37,
+        "surfaces_total": 38,
+        "workflows_that_write": 1,
+        "workflows_total": 38,
+        "workflows_with_test": 26
+      },
+      "problems": [],
+      "state": "PROVISIONAL",
+      "survey_present": true
+    },
+    "skywatcher-pr": {
+      "citations": {
+        "citations": 608,
+        "file_not_in_snapshot": 0,
+        "line_out_of_range": 0,
+        "note": "Resolved means the cited file exists at the audited commit and has that line. It does not prove the line says what the survey claims.",
+        "resolved": 608,
+        "resolved_ratio": 1.0,
+        "resolved_via_unique_file_name": 91,
+        "unresolved_samples": []
+      },
+      "denominator_matches_survey": true,
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 5,
+          "COMPLETE": 41,
+          "INTERNAL_ONLY": 2,
+          "PARTIAL": 10,
+          "UNREACHABLE": 1
+        },
+        "surfaces_mounted": 76,
+        "surfaces_total": 85,
+        "workflows_that_write": 16,
+        "workflows_total": 59,
+        "workflows_with_test": 40
+      },
+      "problems": [],
+      "state": "PROVISIONAL",
+      "survey_present": true
+    },
+    "spiderweb-pr": {
+      "citations": {
+        "citations": 460,
+        "file_not_in_snapshot": 1,
+        "line_out_of_range": 0,
+        "note": "Resolved means the cited file exists at the audited commit and has that line. It does not prove the line says what the survey claims.",
+        "resolved": 459,
+        "resolved_ratio": 0.9978,
+        "resolved_via_unique_file_name": 127,
+        "unresolved_samples": [
+          "127.0.0.1:3000 (no such file)"
+        ]
+      },
+      "denominator_matches_survey": true,
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 1,
+          "COMPLETE": 22,
+          "INTERNAL_ONLY": 3,
+          "PARTIAL": 18,
+          "UNREACHABLE": 0
+        },
+        "surfaces_mounted": 42,
+        "surfaces_total": 43,
+        "workflows_that_write": 10,
+        "workflows_total": 44,
+        "workflows_with_test": 29
+      },
+      "problems": [],
+      "state": "PROVISIONAL",
+      "survey_present": true
+    },
+    "thehub-pr": {
+      "citations": {
+        "citations": 630,
+        "file_not_in_snapshot": 0,
+        "line_out_of_range": 0,
+        "note": "Resolved means the cited file exists at the audited commit and has that line. It does not prove the line says what the survey claims.",
+        "resolved": 630,
+        "resolved_ratio": 1.0,
+        "resolved_via_unique_file_name": 0,
+        "unresolved_samples": []
+      },
+      "denominator_matches_survey": true,
+      "denominator_recomputed": {
+        "by_workflow_status": {
+          "BROKEN": 10,
+          "COMPLETE": 24,
+          "INTERNAL_ONLY": 3,
+          "PARTIAL": 6,
+          "UNREACHABLE": 1
+        },
+        "surfaces_mounted": 125,
+        "surfaces_total": 133,
+        "workflows_that_write": 17,
+        "workflows_total": 44,
+        "workflows_with_test": 33
+      },
+      "problems": [],
+      "state": "PROVISIONAL",
+      "survey_present": true
+    }
+  },
+  "gate": "RC1",
+  "generated_at": "2026-11-17T13:53:39+00:00",
+  "schema": "federation.experience-program.gate/1",
+  "state": "PROVISIONAL",
+  "totals": {
+    "surfaces_mounted": 518,
+    "surfaces_total": 549,
+    "workflows_that_write": 108,
+    "workflows_total": 359,
+    "workflows_with_test": 246
+  },
+  "why_not_pass": "The inventory is a source audit of eight commits. No surface was observed at runtime, no survey row was independently re-checked beyond citation resolution and a manual sample, and forms, tables and filters inside pages are enumerated as stated in each survey's coverage_statement, which may be sampled."
+}

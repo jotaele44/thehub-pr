@@ -1,0 +1,2039 @@
+{
+ "repository": "spiderweb-pr",
+ "audited_commit": "9d6af728b48b7bbde5167d8abaacf51f34a0acaa",
+ "frontend": {
+  "dir": "server/frontend",
+  "language": "ts",
+  "framework": "React (version 'latest', package.json:31) + Vite (package.json:34); MapLibre GL, Cesium 1.144.0, @tanstack/react-table 9, Zod",
+  "router": "in-memory",
+  "router_file": "server/frontend/src/App.tsx:49",
+  "shared_design_package": "null — no @pr-federation/* dependency in server/frontend/package.json:17-36; hand-written tokens in src/styles/federation.css (docs/design-system-usage.json:4-9)"
+ },
+ "entry_points": [
+  {
+   "id": "web-dev",
+   "kind": "web",
+   "path": "server/frontend/index.html:29",
+   "note": "Vite dev server port 5173 (vite.config.ts:7); /tiles proxied to Martin on 127.0.0.1:3000 (vite.config.ts:9-13). main.tsx:41 mounts <App/>."
+  },
+  {
+   "id": "backend-main",
+   "kind": "server",
+   "path": "server/backend/main.py:79",
+   "note": "uvicorn server.backend.main:app --port 8000 (main.py:12). No Martin /tiles routes."
+  },
+  {
+   "id": "backend-production",
+   "kind": "server",
+   "path": "server/backend/production.py:3",
+   "note": "Same app + Martin ingress router /tiles and /health/martin-delivery (production.py:6-12)."
+  },
+  {
+   "id": "desktop-adapter",
+   "kind": "launcher",
+   "path": "desktop/launch.py:15",
+   "note": "prii_desktop.launch(DesktopConfig.from_module(config)); APP_IMPORT desktop.app_server:app (desktop/config.py:30); builds frontend with VITE_API_BASE='' and VITE_MUNICIPIOS_DELIVERY=geojson (desktop/config.py:63-66)."
+  },
+  {
+   "id": "desktop-launchers",
+   "kind": "launcher",
+   "path": "PRII-SPIDERWEB.sh:19",
+   "note": "Also PRII-SPIDERWEB.command, PRII-SPIDERWEB.bat, PRII-SPIDERWEB.app/Contents/MacOS/PRII-SPIDERWEB:36; all run desktop/setup.py --ensure then desktop/launch.py."
+  },
+  {
+   "id": "cli-run-all",
+   "kind": "cli",
+   "path": "pyproject.toml:139",
+   "note": "spiderweb-run = run_all:main; also spiderweb-release-check (140) and spiderweb-subsurface (141). Python pipeline CLIs were not audited beyond their use by POST /pipeline/run."
+  },
+  {
+   "id": "cli-query-llm",
+   "kind": "cli",
+   "path": "query_llm.py:9",
+   "note": "Thin wrapper over llm/query_llm.py main; invoked by POST /rag/query (main.py:682)."
+  }
+ ],
+ "surfaces": [
+  {
+   "id": "app-shell",
+   "kind": "workspace",
+   "label": "Spiderweb",
+   "address": null,
+   "component": "server/frontend/src/App.tsx:44",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/main.tsx:46",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Single-page workbench; outer ErrorBoundary recoverBy=reload (main.tsx:45). Data loaded once on mount with mock fallback (App.tsx:87-97); 'Loading PRIIS data…' placeholder App.tsx:206-208; never refetched, so no stale handling."
+  },
+  {
+   "id": "classification-banner",
+   "kind": "notification",
+   "label": "UNCLASSIFIED · DEMO · NOT FOR DISTRIBUTION · PR INTEGRATED INTELLIGENCE SYSTEM V1",
+   "address": null,
+   "component": "server/frontend/src/App.tsx:222",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:222",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Static text; says DEMO even when live data is loaded."
+  },
+  {
+   "id": "command-bar",
+   "kind": "toolbar",
+   "label": "Spiderweb / SPATIAL / OPERATIONAL",
+   "address": null,
+   "component": "server/frontend/src/components/CommandBar.tsx:17",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:224",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Global query form, theme toggle, RUN PIPELINE button, LIVE/DEMO + PIPELINE ACTIVE/STANDBY text (CommandBar.tsx:72-74)."
+  },
+  {
+   "id": "global-query-form",
+   "kind": "search",
+   "label": "QUERY",
+   "address": null,
+   "component": "server/frontend/src/components/CommandBar.tsx:45",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:224",
+   "parent": "command-bar",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Enter submits -> switches to Query module and bumps runSignal (App.tsx:227)."
+  },
+  {
+   "id": "left-rail",
+   "kind": "sidebar",
+   "label": "Modules / Investigations / Sources / Watchlist",
+   "address": null,
+   "component": "server/frontend/src/components/LeftRail.tsx:14",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:234",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Four RailSections with empty text (LeftRail.tsx:39,53,62). Collapsible; visibility:hidden when collapsed (styles/mobile-workbench.css:5-9)."
+  },
+  {
+   "id": "tab-strip",
+   "kind": "toolbar",
+   "label": "Workbench modules",
+   "address": null,
+   "component": "server/frontend/src/App.tsx:243",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:243",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "role=tablist with 6 role=tab buttons (App.tsx:254-269), two chrome-toggle buttons (244-253, 273-282), CURSOR/SEL readout (270-272)."
+  },
+  {
+   "id": "module-command",
+   "kind": "workspace",
+   "label": "Command",
+   "address": null,
+   "component": "server/frontend/src/modules/CommandCenter.tsx:16",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:210",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Lazy (App.tsx:15). Default module (App.tsx:49). Module-level ErrorBoundary keyed on moduleId (App.tsx:287) + Suspense fallback (288)."
+  },
+  {
+   "id": "command-program-timeline",
+   "kind": "timeline",
+   "label": "PROGRAM ACTIVITY / Timeline",
+   "address": null,
+   "component": "server/frontend/src/components/ProgramTimeline.tsx:28",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/CommandCenter.tsx:23",
+   "parent": "module-command",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Declared items hard-coded (CommandCenter.tsx:8-14) merged with localStorage 'federation.programActivity.v1.spiderweb-pr' live events (programActivityEvent.ts:61,229-253). Phase filter buttons + search input; 'Upcoming work' card."
+  },
+  {
+   "id": "command-kpi-cards",
+   "kind": "panel",
+   "label": "Total awarded / Contracts flagged / High-score clusters / Sources",
+   "address": null,
+   "component": "server/frontend/src/modules/CommandCenter.tsx:25",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/CommandCenter.tsx:25",
+   "parent": "module-command",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Four stat cards computed from in-memory data."
+  },
+  {
+   "id": "command-alert-feed",
+   "kind": "table",
+   "label": "Alert feed",
+   "address": null,
+   "component": "server/frontend/src/modules/CommandCenter.tsx:34",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/CommandCenter.tsx:34",
+   "parent": "module-command",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Read-only table; 'No active alerts.' row (CommandCenter.tsx:37). Rows not interactive."
+  },
+  {
+   "id": "command-anomaly-cards",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "server/frontend/src/modules/CommandCenter.tsx:42",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/CommandCenter.tsx:42",
+   "parent": "module-command",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "AnomalyCard per anomaly; click selects and switches to Anomaly module (CommandCenter.tsx:49). No empty text when anomalies=[]"
+  },
+  {
+   "id": "module-finance",
+   "kind": "workspace",
+   "label": "Finance",
+   "address": null,
+   "component": "server/frontend/src/modules/FinanceIntelligence.tsx:34",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:211",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Lazy (App.tsx:16), defers @tanstack/react-table."
+  },
+  {
+   "id": "finance-filter",
+   "kind": "filter",
+   "label": "filter…",
+   "address": null,
+   "component": "server/frontend/src/modules/FinanceIntelligence.tsx:143",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/FinanceIntelligence.tsx:143",
+   "parent": "module-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Global text filter with custom globalFilterFn over ids + display labels (FinanceIntelligence.tsx:108-132)."
+  },
+  {
+   "id": "finance-kpi-cards",
+   "kind": "panel",
+   "label": "Total awarded / Flagged / Amended / Top vendor",
+   "address": null,
+   "component": "server/frontend/src/modules/FinanceIntelligence.tsx:157",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/FinanceIntelligence.tsx:157",
+   "parent": "module-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Cards are computed from the unfiltered dataset, not the filtered rows."
+  },
+  {
+   "id": "finance-contracts-table",
+   "kind": "table",
+   "label": "Contracts",
+   "address": null,
+   "component": "server/frontend/src/modules/FinanceIntelligence.tsx:164",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/FinanceIntelligence.tsx:164",
+   "parent": "module-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "TanStack table role=grid, sortable headers (172-184), row select by click/Enter/Space (198-216), empty rows text (191-196). Not virtualized, not paginated."
+  },
+  {
+   "id": "finance-vendor-concentration",
+   "kind": "panel",
+   "label": "Vendor concentration",
+   "address": null,
+   "component": "server/frontend/src/modules/FinanceIntelligence.tsx:222",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/FinanceIntelligence.tsx:222",
+   "parent": "module-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Vendor buttons select vendor in inspector (226). No empty text."
+  },
+  {
+   "id": "finance-export-csv",
+   "kind": "export",
+   "label": "EXPORT CSV",
+   "address": null,
+   "component": "server/frontend/src/modules/FinanceIntelligence.tsx:150",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/FinanceIntelligence.tsx:150",
+   "parent": "module-finance",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-side CSV of ALL contracts (ignores filter), raw ids (export/csvExport.ts:22-29)."
+  },
+  {
+   "id": "module-spatial",
+   "kind": "workspace",
+   "label": "Spatial",
+   "address": null,
+   "component": "server/frontend/src/modules/SpatialIntelligence.tsx:411",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:212",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Lazy (App.tsx:17). Header: Show/Hide layers, 2D/3D toggle, Terrain, runtime pill (SI:786-816). Fallback note (818-822), graphics-unavailable alert (823-827), layer-data alert (848-852), base-map-tiles note (853-858)."
+  },
+  {
+   "id": "spatial-map",
+   "kind": "map",
+   "label": null,
+   "address": null,
+   "component": "server/frontend/src/modules/SpatialIntelligence.tsx:834",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:834",
+   "parent": "module-spatial",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "MapLibre host (useSpatialRuntime.ts:19) or lazily imported Cesium regional shell (RuntimeFactory.ts:20-23). Site markers are DOM <button> elements with aria-label (SI:531-556). NavigationControl + ScaleControl (MapLibreRuntime.ts:26-27)."
+  },
+  {
+   "id": "spatial-coordinate-readout",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "server/frontend/src/spatial/imagery/CoordinateReadout.tsx:11",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:847",
+   "parent": "module-spatial",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "2D only."
+  },
+  {
+   "id": "spatial-compare-overlay",
+   "kind": "map",
+   "label": "Imagery comparison divider",
+   "address": null,
+   "component": "server/frontend/src/spatial/imagery/CompareOverlay.tsx:12",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:835",
+   "parent": "module-spatial",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Second non-interactive MapLibre map clipped by a role=slider divider; keyboard Arrow/Home/End (CompareOverlay.tsx:108-116). Mounted only when 2D + imagery dataset + compare dataset."
+  },
+  {
+   "id": "spatial-layer-panel",
+   "kind": "sidebar",
+   "label": "Layer control",
+   "address": null,
+   "component": "server/frontend/src/modules/SpatialIntelligence.tsx:860",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:860",
+   "parent": "module-spatial",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Collapsible (L key / header button). Hosts tools, layer toggles, density, imagery, access points, cross-section, top anomalies."
+  },
+  {
+   "id": "spatial-tools-panel",
+   "kind": "panel",
+   "label": "Spatial tools",
+   "address": null,
+   "component": "server/frontend/src/modules/SpatialToolsPanel.tsx:345",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:863",
+   "parent": "spatial-layer-panel",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Off/Measure/Buffer/Nearest, target-layer select, radius buttons, Clear. 2D only. Map-click driven; no keyboard way to place a point."
+  },
+  {
+   "id": "spatial-layer-toggles",
+   "kind": "filter",
+   "label": "Layer control",
+   "address": null,
+   "component": "server/frontend/src/modules/SpatialIntelligence.tsx:868",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:868",
+   "parent": "spatial-layer-panel",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "9 toggles: contracts, infrastructure, sensitive, anomaly, municipios, tracts, places, barrios, gazetteer_pr_domestic_names (SI:459-470). Status text via layerStatusText (160-167). Rendered in 3D mode too although nothing is drawn there."
+  },
+  {
+   "id": "spatial-density-toggle",
+   "kind": "filter",
+   "label": "Gazetteer density",
+   "address": null,
+   "component": "server/frontend/src/modules/SpatialIntelligence.tsx:885",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:885",
+   "parent": "spatial-layer-panel",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Shown only when 2D and municipios on. Error alert with retry (896-901), reconciliation note (902-906), legend (907-912)."
+  },
+  {
+   "id": "spatial-imagery-panel",
+   "kind": "panel",
+   "label": "Aerial imagery",
+   "address": null,
+   "component": "server/frontend/src/spatial/imagery/ImageryPanel.tsx:74",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:916",
+   "parent": "spatial-layer-panel",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Base map toggle, flight select, opacity range, footprints toggle, swipe-compare select, identified-image card, Copy link. Catalog loading/error+retry (ImageryPanel.tsx:93-100)."
+  },
+  {
+   "id": "spatial-access-points-panel",
+   "kind": "panel",
+   "label": "Access points",
+   "address": null,
+   "component": "server/frontend/src/spatial/accessPoints/AccessPointsPanel.tsx:115",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:918",
+   "parent": "spatial-layer-panel",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Two registry toggles (Inland/Off-Shore), status-group filter, legend, not-drawn list, Sources toggle."
+  },
+  {
+   "id": "spatial-access-point-detail",
+   "kind": "panel",
+   "label": "Record <feature_id>",
+   "address": null,
+   "component": "server/frontend/src/spatial/accessPoints/AccessPointDetail.tsx:135",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/spatial/accessPoints/AccessPointsPanel.tsx:161",
+   "parent": "spatial-access-points-panel",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Evidence ladder, dimensions, assertions, sources, Download evidence (JSON), Close."
+  },
+  {
+   "id": "spatial-source-coverage",
+   "kind": "table",
+   "label": "<Registry> — sources",
+   "address": null,
+   "component": "server/frontend/src/spatial/accessPoints/SourceCoveragePanel.tsx:5",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/spatial/accessPoints/AccessPointsPanel.tsx:158",
+   "parent": "spatial-access-points-panel",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Provider x provenance table."
+  },
+  {
+   "id": "spatial-cross-section",
+   "kind": "chart",
+   "label": "Land-to-sea cross-section",
+   "address": null,
+   "component": "server/frontend/src/spatial/transect/ControlCrossSection.tsx:17",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:920",
+   "parent": "spatial-layer-panel",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Loads synthetic control section on demand; TransectProfile SVG (spatial/transect/TransectProfile.tsx:27). Error state keeps the button enabled as a retry (ControlCrossSection.tsx:32-36)."
+  },
+  {
+   "id": "spatial-top-anomalies",
+   "kind": "panel",
+   "label": "Top spatial anomalies",
+   "address": null,
+   "component": "server/frontend/src/modules/SpatialIntelligence.tsx:929",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:929",
+   "parent": "spatial-layer-panel",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "AnomalyCard list; no empty text."
+  },
+  {
+   "id": "module-anomaly",
+   "kind": "workspace",
+   "label": "Anomaly",
+   "address": null,
+   "component": "server/frontend/src/modules/AnomalyWorkbench.tsx:8",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:213",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Lazy (App.tsx:18). Empty state AnomalyWorkbench.tsx:15-22. Cluster queue + detail; falls back to first anomaly on stale selection (12-14)."
+  },
+  {
+   "id": "anomaly-export-csv",
+   "kind": "export",
+   "label": "EXPORT CSV",
+   "address": null,
+   "component": "server/frontend/src/modules/AnomalyWorkbench.tsx:29",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/AnomalyWorkbench.tsx:29",
+   "parent": "module-anomaly",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "export/csvExport.ts:31-37."
+  },
+  {
+   "id": "anomaly-export-brief",
+   "kind": "export",
+   "label": "EXPORT BRIEF",
+   "address": null,
+   "component": "server/frontend/src/modules/AnomalyWorkbench.tsx:30",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/AnomalyWorkbench.tsx:30",
+   "parent": "module-anomaly",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Markdown brief export/evidenceBrief.ts:66-72."
+  },
+  {
+   "id": "module-graph",
+   "kind": "workspace",
+   "label": "Graph",
+   "address": null,
+   "component": "server/frontend/src/modules/InvestigationGraph.tsx:8",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:214",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Lazy (App.tsx:19). Fixed 5-node scaffold built from data.anomalies[0] only (InvestigationGraph.tsx:9,26-32); no graph library. EXPORT GRAPH JSON (41-49)."
+  },
+  {
+   "id": "graph-access-point-relationships",
+   "kind": "chart",
+   "label": "Access-point relationships",
+   "address": null,
+   "component": "server/frontend/src/spatial/accessPoints/AccessPointRelationships.tsx:37",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/InvestigationGraph.tsx:65",
+   "parent": "module-graph",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "On-demand load; hand-written SVG RelationshipGraph + table (components/RelationshipGraph.tsx:57). Error state has no retry control (AccessPointRelationships.tsx:52-62)."
+  },
+  {
+   "id": "module-query",
+   "kind": "workspace",
+   "label": "Query",
+   "address": null,
+   "component": "server/frontend/src/modules/QueryLayer.tsx:7",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:215",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Lazy (App.tsx:20). STUB/RAG LIVE toggle, RUN QUERY/STOP, prompt textarea, error card, RAG response, stub finding, pipeline log. No pending indicator other than the button label."
+  },
+  {
+   "id": "query-pipeline-log",
+   "kind": "panel",
+   "label": "Pipeline log",
+   "address": null,
+   "component": "server/frontend/src/modules/QueryLayer.tsx:188",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/modules/QueryLayer.tsx:188",
+   "parent": "module-query",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Only place the pipeline stdout/err lines are visible; only rendered when Query tab is open."
+  },
+  {
+   "id": "inspector",
+   "kind": "drawer",
+   "label": "INSPECTOR",
+   "address": null,
+   "component": "server/frontend/src/components/Inspector.tsx:10",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:294",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Right drawer; branches for anomaly, contract, site, vendor, agency, source, investigation, event; 'No selection' (11-17) and 'Missing record' (190-196). SelectionKind 'finding' has no branch (types/priis.ts:4)."
+  },
+  {
+   "id": "timeline",
+   "kind": "timeline",
+   "label": "TIMELINE · finance / imagery / reports",
+   "address": null,
+   "component": "server/frontend/src/components/Timeline.tsx:15",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:295",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "role=slider temporal cursor + event buttons. Cursor value is persisted and displayed but no module consumes it for filtering (App.tsx:57,271,295 are the only uses)."
+  },
+  {
+   "id": "module-error-fallback",
+   "kind": "notification",
+   "label": "Something went wrong",
+   "address": null,
+   "component": "server/frontend/src/components/ErrorBoundary.tsx:30",
+   "mounted": true,
+   "mounted_evidence": "server/frontend/src/App.tsx:287",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "RETRY (module) / RELOAD (root)."
+  },
+  {
+   "id": "commandbar-filter-chips",
+   "kind": "filter",
+   "label": null,
+   "address": null,
+   "component": "none (removed)",
+   "mounted": false,
+   "mounted_evidence": null,
+   "parent": "command-bar",
+   "classification": "HISTORICAL_ONLY",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Described in docs/GUI_AUDIT.md:72,277 and docs/FRONTEND_AUDIT.md:236; no `filters` state or chip markup exists in current source (grep of server/frontend/src)."
+  },
+  {
+   "id": "desktop-setup",
+   "kind": "dialog",
+   "label": null,
+   "address": null,
+   "component": "desktop/setup.py:388",
+   "mounted": true,
+   "mounted_evidence": "PRII-SPIDERWEB.sh:19",
+   "parent": null,
+   "classification": "MANIFEST_DECLARED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Console first-run setup (venv, npm build). Window/SPA hosting comes from external package prii_desktop (desktop/launch.py:10), not in this repo — UI of that runtime is UNKNOWN."
+  }
+ ],
+ "workflows": [
+  {
+   "id": "load-dataset",
+   "name": "Load PRIIS dataset with mock fallback",
+   "surface": "app-shell",
+   "ui_action": "Open the app",
+   "frontend_handler": "server/frontend/src/App.tsx:87",
+   "backend_endpoint": "GET /agencies, /vendors, /sites, /contracts, /events, /anomalies, /sources, /investigations, /alerts",
+   "backend_handler": "server/backend/main.py:171-244",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "COMPLETE",
+   "status_evidence": "9 parallel GETs with 8 s timeout (api/client.ts:23,45-64), Zod parseArray, any failure -> bundled mock data (client.ts:101-108, data/mockData.ts), live flag shown as LIVE/DEMO (CommandBar.tsx:73). All-or-nothing: one failing endpoint discards the other eight; no retry/refresh control.",
+   "has_test": true,
+   "test": "server/frontend/src/api/client.test.ts:53"
+  },
+  {
+   "id": "switch-module",
+   "name": "Switch workbench module",
+   "surface": "tab-strip",
+   "ui_action": "Click a tab or a left-rail module button",
+   "frontend_handler": "server/frontend/src/App.tsx:264",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "setModule state (App.tsx:49,264; LeftRail.tsx:33) -> renderModule switch (App.tsx:209-216). State is in memory only; reload returns to Command.",
+   "has_test": true,
+   "test": "server/frontend/src/../tests/gui-runtime-matrix.mjs:226"
+  },
+  {
+   "id": "toggle-chrome",
+   "name": "Collapse/expand rail and inspector",
+   "surface": "tab-strip",
+   "ui_action": "Click « » buttons or press [ / ]",
+   "frontend_handler": "server/frontend/src/App.tsx:247",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "State + localStorage priis_left_collapsed/priis_right_collapsed (App.tsx:123-129,137-153).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "toggle-theme",
+   "name": "Toggle light/dark theme",
+   "surface": "command-bar",
+   "ui_action": "Click ◐ LIGHT / ◑ DARK",
+   "frontend_handler": "server/frontend/src/App.tsx:232",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "dataset.theme + localStorage spiderweb_theme (App.tsx:131-134; theme.ts:3-16).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "global-query",
+   "name": "Submit global query",
+   "surface": "global-query-form",
+   "ui_action": "Type in QUERY and press Enter",
+   "frontend_handler": "server/frontend/src/App.tsx:227",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Switches to Query and bumps runSignal; QueryLayer effect runs it (QueryLayer.tsx:86-94). Runs in whichever mode (STUB/RAG) the freshly mounted QueryLayer defaults to: useRag resets to false on every remount (QueryLayer.tsx:26), so a command-bar submit from another tab always runs the STUB.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "run-pipeline",
+   "name": "Run pipeline",
+   "surface": "command-bar",
+   "ui_action": "Click RUN PIPELINE",
+   "frontend_handler": "server/frontend/src/App.tsx:155",
+   "backend_endpoint": "POST /pipeline/run; GET /pipeline/events/{job_id}; GET /pipeline/status/{job_id}",
+   "backend_handler": "server/backend/main.py:254-297",
+   "writes": true,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "PARTIAL",
+   "status_evidence": "Start -> EventSource stream -> polling fallback traced (client.ts:119-238; App.tsx:172-202). Unauthenticated endpoint spawns `python run_all.py` using PATH `python`, not sys.executable (main.py:257-266). Log lines are only visible in the Query tab (QueryLayer.tsx:188-195); on the other five tabs the only feedback is the button label/colour. Dataset is not reloaded after the run finishes (no refetch in App.tsx:188-192).",
+   "has_test": true,
+   "test": "server/frontend/src/api/resilience.test.ts:58"
+  },
+  {
+   "id": "stop-pipeline",
+   "name": "Stop pipeline",
+   "surface": "command-bar",
+   "ui_action": "Click STOP while running",
+   "frontend_handler": "server/frontend/src/App.tsx:156",
+   "backend_endpoint": "DELETE /pipeline/{job_id}",
+   "backend_handler": "server/backend/main.py:300-307",
+   "writes": true,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "PARTIAL",
+   "status_evidence": "stopPipeline never checks res.ok (client.ts:133-135), so a 404/500 is treated as a successful stop and the UI goes idle (App.tsx:166-170) — contradicting the handler's own comment at App.tsx:160-162. Backend terminate() only; job removed from registry (main.py:305-306).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "finance-filter",
+   "name": "Filter contracts",
+   "surface": "finance-filter",
+   "ui_action": "Type in filter box",
+   "frontend_handler": "server/frontend/src/modules/FinanceIntelligence.tsx:148",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Custom globalFilterFn matches ids and rendered labels (FinanceIntelligence.tsx:108-132); empty-state text (194).",
+   "has_test": true,
+   "test": "server/frontend/src/modules/FinanceIntelligence.test.tsx:40"
+  },
+  {
+   "id": "finance-sort",
+   "name": "Sort contracts",
+   "surface": "finance-contracts-table",
+   "ui_action": "Click a column header",
+   "frontend_handler": "server/frontend/src/modules/FinanceIntelligence.tsx:177",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Sorting works but Agency/Vendor/Site columns sort by the raw foreign-key accessor value (FinanceIntelligence.tsx:67-78) while the cell shows code/name, so the visible order is not alphabetical by what is displayed.",
+   "has_test": true,
+   "test": "server/frontend/src/modules/FinanceIntelligence.test.tsx:8"
+  },
+  {
+   "id": "finance-select-contract",
+   "name": "Select contract row",
+   "surface": "finance-contracts-table",
+   "ui_action": "Click row or Enter/Space",
+   "frontend_handler": "server/frontend/src/modules/FinanceIntelligence.tsx:200",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "setSelection -> Inspector contract branch (Inspector.tsx:46-64).",
+   "has_test": true,
+   "test": "server/frontend/src/components/Inspector.test.tsx:10"
+  },
+  {
+   "id": "finance-export-csv",
+   "name": "Export contracts CSV",
+   "surface": "finance-export-csv",
+   "ui_action": "Click EXPORT CSV",
+   "frontend_handler": "server/frontend/src/modules/FinanceIntelligence.tsx:150",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Blob download (export/csvExport.ts:22-29; export/download.ts:10-17). Exports all contracts regardless of the active filter, with raw agency/vendor/site ids.",
+   "has_test": true,
+   "test": "server/frontend/src/export/csvExport.test.ts:74"
+  },
+  {
+   "id": "anomaly-select",
+   "name": "Select anomaly cluster",
+   "surface": "module-anomaly",
+   "ui_action": "Click a cluster card",
+   "frontend_handler": "server/frontend/src/modules/AnomalyWorkbench.tsx:46",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Selection drives detail pane (AnomalyWorkbench.tsx:12-14) and inspector.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "anomaly-export-csv",
+   "name": "Export anomalies CSV",
+   "surface": "anomaly-export-csv",
+   "ui_action": "Click EXPORT CSV",
+   "frontend_handler": "server/frontend/src/modules/AnomalyWorkbench.tsx:29",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "export/csvExport.ts:31-37.",
+   "has_test": true,
+   "test": "server/frontend/src/export/csvExport.test.ts:179"
+  },
+  {
+   "id": "anomaly-export-brief",
+   "name": "Export evidence brief",
+   "surface": "anomaly-export-brief",
+   "ui_action": "Click EXPORT BRIEF",
+   "frontend_handler": "server/frontend/src/modules/AnomalyWorkbench.tsx:30",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "export/evidenceBrief.ts:13-72. Contracts table in the brief prints the raw vendor id (evidenceBrief.ts:43).",
+   "has_test": true,
+   "test": "server/frontend/src/export/evidenceBrief.test.ts:51"
+  },
+  {
+   "id": "graph-export",
+   "name": "Export investigation graph JSON",
+   "surface": "module-graph",
+   "ui_action": "Click EXPORT GRAPH",
+   "frontend_handler": "server/frontend/src/modules/InvestigationGraph.tsx:41",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Works, but the graph is a fixed 5-node scaffold of data.anomalies[0] only (InvestigationGraph.tsx:9,26-39); missing entities get placeholder ids S-000/C-000/V-000/AG-000 (28-31) which open 'Missing record' in the inspector when clicked (63).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "graph-load-relationships",
+   "name": "Load access-point relationships",
+   "surface": "graph-access-point-relationships",
+   "ui_action": "Click Load relationships",
+   "frontend_handler": "server/frontend/src/spatial/accessPoints/AccessPointRelationships.tsx:39",
+   "backend_endpoint": "GET /v1/access-points/relationships",
+   "backend_handler": "server/backend/access_points_api.py:296",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "PARTIAL",
+   "status_evidence": "Fetch (8 s timeout) -> Zod -> SVG + table traced. After an error the Load button is gone (rendered only in idle, AccessPointRelationships.tsx:52-56) so there is no retry without leaving and re-entering the tab.",
+   "has_test": true,
+   "test": "server/frontend/src/spatial/accessPoints/accessPoints.test.tsx:257"
+  },
+  {
+   "id": "query-stub",
+   "name": "Run stub query",
+   "surface": "module-query",
+   "ui_action": "Click RUN QUERY in STUB mode",
+   "frontend_handler": "server/frontend/src/modules/QueryLayer.tsx:53",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Local adapter ignores the prompt except for the substring 'vieques' and a hard-coded anomaly id A-021 (adapters/queryAdapter.ts:6); otherwise always returns data.anomalies[0]. Result is rendered (QueryLayer.tsx:145-171) but is not a query over the prompt.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "query-rag",
+   "name": "Run RAG LIVE query",
+   "surface": "module-query",
+   "ui_action": "Toggle RAG LIVE, click RUN QUERY",
+   "frontend_handler": "server/frontend/src/modules/QueryLayer.tsx:44",
+   "backend_endpoint": "POST /rag/query",
+   "backend_handler": "server/backend/main.py:708-710",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "PARTIAL",
+   "status_evidence": "Stream, terminal-event, non-zero rc, empty output and truncated stream are all converted to a visible error (client.ts:262-333; QueryLayer.tsx:125-131). Gaps: subprocess stderr is piped and never read or forwarded (main.py:691-705); no in-progress indicator before the first token; STOP does not abort the HTTP request or the subprocess (client.ts:340).",
+   "has_test": true,
+   "test": "server/frontend/src/api/rag-client.test.ts:32"
+  },
+  {
+   "id": "rag-index",
+   "name": "Build RAG index",
+   "surface": null,
+   "ui_action": "(no UI control)",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /rag/index",
+   "backend_handler": "server/backend/main.py:713-724",
+   "writes": true,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "BROKEN",
+   "status_evidence": "Spawns `python ROOT/rag_pipeline.py` (main.py:717) but that file does not exist at the repo root (only llm/rag_pipeline.py); the process exits immediately while the route returns {status:'indexing'}. No frontend caller (grep 'rag/index' in server/frontend/src: none).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "spatial-toggle-backend-layer",
+   "name": "Toggle a backend map layer",
+   "surface": "spatial-layer-toggles",
+   "ui_action": "Click Municipios / Census tracts / Places / Barrios / Natural features",
+   "frontend_handler": "server/frontend/src/modules/SpatialIntelligence.tsx:877",
+   "backend_endpoint": "GET /geo/{layer}.geojson (or GET /tiles/municipios via Martin)",
+   "backend_handler": "server/backend/main.py:461-472",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "PARTIAL",
+   "status_evidence": "Fetch -> addSource/addLayer -> status traced (SI:217-281, 283-367). Stuck/stale status paths exist (see special_adjudications #2). Default municipios delivery is Martin (config.ts:26-27) whose /tiles route exists only in production.py (server/backend/production.py:6), not in main.app.",
+   "has_test": true,
+   "test": "server/frontend/src/modules/SpatialIntelligence.test.ts:9"
+  },
+  {
+   "id": "spatial-toggle-marker-layer",
+   "name": "Toggle marker layers",
+   "surface": "spatial-layer-toggles",
+   "ui_action": "Click Contracts / Infrastructure / Sensitive sites / Anomalies",
+   "frontend_handler": "server/frontend/src/modules/SpatialIntelligence.tsx:877",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Marker effect rebuilds DOM markers from in-memory data (SI:515-563).",
+   "has_test": true,
+   "test": "server/frontend/src/modules/SpatialIntelligence.markers.test.tsx:86"
+  },
+  {
+   "id": "spatial-density",
+   "name": "Gazetteer density choropleth",
+   "surface": "spatial-density-toggle",
+   "ui_action": "Click Gazetteer density",
+   "frontend_handler": "server/frontend/src/modules/SpatialIntelligence.tsx:889",
+   "backend_endpoint": "GET /geo/municipios/density",
+   "backend_handler": "server/backend/main.py:475-547",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "PARTIAL",
+   "status_evidence": "Fetch, strict envelope validation (SI:60-85), feature-state fill, error+retry traced (SI:592-703). Plain fetch with no timeout (SI:614-617): a hung backend leaves 'loading…' permanently.",
+   "has_test": true,
+   "test": "server/frontend/src/modules/SpatialIntelligence.test.ts:24"
+  },
+  {
+   "id": "spatial-2d-3d",
+   "name": "Switch 2D / 3D scene",
+   "surface": "module-spatial",
+   "ui_action": "Click 2D / 3D (regional preview)",
+   "frontend_handler": "server/frontend/src/modules/SpatialIntelligence.tsx:799",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Dynamic import of Cesium, fallback to MapLibre with notice (useSpatialRuntime.ts:86-99; SI:818-822); persisted in priis_spatial_mode (SI:754-756). 3D is an untextured shell without markers/layers (CesiumRegionalRuntime.ts:44-54); layer toggles remain clickable with stale status.",
+   "has_test": true,
+   "test": "server/frontend/src/spatial/runtime/useSpatialRuntime.test.tsx:78"
+  },
+  {
+   "id": "spatial-terrain",
+   "name": "Toggle hillshade terrain",
+   "surface": "module-spatial",
+   "ui_action": "Click Terrain",
+   "frontend_handler": "server/frontend/src/modules/SpatialIntelligence.tsx:809",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "raster-dem from public AWS Terrarium tiles (SI:134,711-744). No error state if tiles are unreachable.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "spatial-tools",
+   "name": "Measure / Buffer / Nearest",
+   "surface": "spatial-tools-panel",
+   "ui_action": "Pick a tool then click the map",
+   "frontend_handler": "server/frontend/src/modules/SpatialToolsPanel.tsx:280",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Turf analysis traced (SpatialToolsPanel.tsx:75-96,215-267). 'Natural features' target uses map.querySourceFeatures (SI:577-581) which returns only features in currently loaded tiles, so counts depend on the viewport. Pointer-only: no keyboard path to set a point.",
+   "has_test": true,
+   "test": "server/frontend/src/modules/SpatialToolsPanel.test.ts:17"
+  },
+  {
+   "id": "spatial-select-site",
+   "name": "Select site marker",
+   "surface": "spatial-map",
+   "ui_action": "Click or keyboard-activate a marker button",
+   "frontend_handler": "server/frontend/src/modules/SpatialIntelligence.tsx:546",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "setSelection site/anomaly; selecting a site flies the camera (SI:565-570).",
+   "has_test": true,
+   "test": "server/frontend/src/modules/SpatialIntelligence.markers.test.tsx:86"
+  },
+  {
+   "id": "imagery-select-flight",
+   "name": "Show NOAA ERI imagery",
+   "surface": "spatial-imagery-panel",
+   "ui_action": "Choose a flight in the select",
+   "frontend_handler": "server/frontend/src/spatial/imagery/ImageryPanel.tsx:108",
+   "backend_endpoint": "GET /imagery/eri/datasets; GET /imagery/eri/{id}/tiles/{z}/{x}/{y}.png; GET /imagery/eri/{id}/footprints.geojson",
+   "backend_handler": "server/backend/eri_imagery.py:501-555",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "PARTIAL",
+   "status_evidence": "Catalog fetch + Zod (eriApi.ts:64-68), raster layer + footprints + status events traced (useEriImagery.ts:46-114). Catalog fetch has no timeout (eriApi.ts:65). Whether MapLibre error events for the footprint GeoJSON source carry sourceId (useEriImagery.ts:85-87) was not verifiable without running; if not, a failed footprint load stays 'loading…'.",
+   "has_test": true,
+   "test": "server/frontend/src/spatial/imagery/ImageryPanel.test.tsx:58"
+  },
+  {
+   "id": "imagery-identify",
+   "name": "Identify an image footprint",
+   "surface": "spatial-imagery-panel",
+   "ui_action": "Click a footprint outline on the map",
+   "frontend_handler": "server/frontend/src/spatial/imagery/useEriImagery.ts:88",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Works for pointer; no keyboard alternative to pick a footprint (map click only).",
+   "has_test": true,
+   "test": "server/frontend/src/spatial/imagery/eriLayers.test.ts:111"
+  },
+  {
+   "id": "imagery-compare",
+   "name": "Swipe compare two flights",
+   "surface": "spatial-compare-overlay",
+   "ui_action": "Choose 'Swipe compare with', drag or arrow the divider",
+   "frontend_handler": "server/frontend/src/spatial/imagery/CompareOverlay.tsx:98",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Mirror map + clip-path divider (CompareOverlay.tsx:38-116).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "imagery-copy-link",
+   "name": "Copy link to this view",
+   "surface": "spatial-imagery-panel",
+   "ui_action": "Click Copy link to this view",
+   "frontend_handler": "server/frontend/src/spatial/imagery/useImageryController.ts:178",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "navigator.clipboard?.writeText; when clipboard is unavailable or rejects nothing is shown (useImageryController.ts:179-182). The copied link restores map camera/imagery only if the recipient opens the Spatial tab manually — the app always starts on Command (App.tsx:49).",
+   "has_test": true,
+   "test": "server/frontend/src/spatial/imagery/viewHash.test.ts:4"
+  },
+  {
+   "id": "access-points-toggle-registry",
+   "name": "Show access-point registry",
+   "surface": "spatial-access-points-panel",
+   "ui_action": "Click Inland / Off-Shore Access Points",
+   "frontend_handler": "server/frontend/src/spatial/accessPoints/AccessPointsPanel.tsx:50",
+   "backend_endpoint": "GET /v1/access-points/{registry}/features",
+   "backend_handler": "server/backend/access_points_api.py:354",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "COMPLETE",
+   "status_evidence": "Paged fetch with timeout + Zod (accessPointsApi.ts:382-459), layers applied, 'loaded' only after map idle (useAccessPointsController.ts:119-136), error alert (AccessPointsPanel.tsx:57-61), truncation alert (64-68).",
+   "has_test": true,
+   "test": "server/frontend/src/spatial/accessPoints/accessPoints.test.tsx:318"
+  },
+  {
+   "id": "access-points-status-filter",
+   "name": "Filter access points by status group",
+   "surface": "spatial-access-points-panel",
+   "ui_action": "Toggle Verified / Candidate / Provisional",
+   "frontend_handler": "server/frontend/src/spatial/accessPoints/AccessPointsPanel.tsx:136",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "statusesForGroups -> applyAccessPointLayers (useAccessPointsController.ts:118,125).",
+   "has_test": true,
+   "test": "server/frontend/src/spatial/accessPoints/accessPoints.test.tsx:107"
+  },
+  {
+   "id": "access-points-evidence",
+   "name": "Open record evidence",
+   "surface": "spatial-access-point-detail",
+   "ui_action": "Click a point on the map or an id in the not-drawn list",
+   "frontend_handler": "server/frontend/src/spatial/accessPoints/useAccessPointsController.ts:212",
+   "backend_endpoint": "GET /v1/access-points/{registry}/features/{feature_id}/evidence",
+   "backend_handler": "server/backend/access_points_api.py:401",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "COMPLETE",
+   "status_evidence": "Evidence fetch/loading/error/ready (useAccessPointsController.ts:211-232; AccessPointDetail.tsx:200-217). Drawn points are selectable by map click only; not-drawn records have list buttons.",
+   "has_test": true,
+   "test": "server/frontend/src/spatial/accessPoints/accessPoints.test.tsx:212"
+  },
+  {
+   "id": "access-points-evidence-download",
+   "name": "Download evidence JSON",
+   "surface": "spatial-access-point-detail",
+   "ui_action": "Click Download evidence (JSON)",
+   "frontend_handler": "server/frontend/src/spatial/accessPoints/AccessPointDetail.tsx:212",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "downloadJson of the fetched evidence document.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "access-points-sources",
+   "name": "View registry source coverage",
+   "surface": "spatial-source-coverage",
+   "ui_action": "Click Sources",
+   "frontend_handler": "server/frontend/src/spatial/accessPoints/AccessPointsPanel.tsx:101",
+   "backend_endpoint": "GET /v1/access-points/{registry}/sources",
+   "backend_handler": "server/backend/access_points_api.py:413",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "COMPLETE",
+   "status_evidence": "useAccessPointsController.ts:233-254; SourceCoveragePanel.tsx:9-46.",
+   "has_test": true,
+   "test": "server/frontend/src/spatial/accessPoints/accessPoints.test.tsx:249"
+  },
+  {
+   "id": "cross-section",
+   "name": "Show control cross-section",
+   "surface": "spatial-cross-section",
+   "ui_action": "Click Show control cross-section",
+   "frontend_handler": "server/frontend/src/spatial/transect/ControlCrossSection.tsx:19",
+   "backend_endpoint": "GET /v1/access-points/controls/cross-section",
+   "backend_handler": "server/backend/access_points_api.py:327",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "COMPLETE",
+   "status_evidence": "Fetch + Zod (transect/transectApi.ts:58-60) -> TransectProfile; synthetic banner.",
+   "has_test": true,
+   "test": "server/frontend/src/spatial/accessPoints/accessPoints.test.tsx:285"
+  },
+  {
+   "id": "inspector-navigate",
+   "name": "Navigate between linked entities",
+   "surface": "inspector",
+   "ui_action": "Click linked entity buttons",
+   "frontend_handler": "server/frontend/src/components/Inspector.tsx:25",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "All branches traced. Event 'Open referenced record' always selects kind 'contract' with refId (Inspector.tsx:182) whatever the event kind; a non-contract refId yields 'Missing record'.",
+   "has_test": true,
+   "test": "server/frontend/src/components/Inspector.test.tsx:10"
+  },
+  {
+   "id": "timeline-cursor",
+   "name": "Move temporal cursor",
+   "surface": "timeline",
+   "ui_action": "Click track or Arrow/Home/End on slider",
+   "frontend_handler": "server/frontend/src/components/Timeline.tsx:86",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Cursor is updated, displayed and persisted (App.tsx:119-121,271) but nothing filters by it — no module receives `cursor` (App.tsx:210-215).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "investigation-select",
+   "name": "Select active investigation",
+   "surface": "left-rail",
+   "ui_action": "Click an investigation",
+   "frontend_handler": "server/frontend/src/components/LeftRail.tsx:46",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Persists priis_investigation and opens inspector; activeInvestigation is not passed to any module (App.tsx:210-215), so it scopes nothing.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "program-timeline-filter",
+   "name": "Filter program activity",
+   "surface": "command-program-timeline",
+   "ui_action": "Click ALL/NOW/NEXT/QUEUED/BLOCKED or type in search",
+   "frontend_handler": "server/frontend/src/components/ProgramTimeline.tsx:134",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "ProgramTimeline.tsx:42-58. Live events in states UNRESOLVED/CONTRADICTED/COMPLETED/SUPERSEDED (17-26) have no filter button and appear only under ALL.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "program-activity-append",
+   "name": "Append live program activity event",
+   "surface": null,
+   "ui_action": "(no UI control)",
+   "frontend_handler": "server/frontend/src/components/programActivityEvent.ts:255",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "appendProgramActivityEvent has no caller in src outside its test (grep).",
+   "has_test": true,
+   "test": "server/frontend/src/components/programActivityEvent.test.ts:47"
+  },
+  {
+   "id": "geo-catalog",
+   "name": "Layer catalog / spatial scene registry",
+   "surface": null,
+   "ui_action": "(no UI control)",
+   "frontend_handler": null,
+   "backend_endpoint": "GET /catalog; GET /spatial/capabilities; GET /spatial/scene; GET /spatial/layers; GET /spatial/boundaries/{id}.geojson",
+   "backend_handler": "server/backend/main.py:550-669",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "Routes exist; no frontend caller (grep in server/frontend/src). The layer panel is hard-coded (SI:104-143), not driven by /catalog despite the route docstring (main.py:552-554).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "access-point-paths",
+   "name": "Access-point path search / registry index / vocabulary / single feature",
+   "surface": null,
+   "ui_action": "(no UI control)",
+   "frontend_handler": null,
+   "backend_endpoint": "GET /v1/access-points; /vocabulary; /paths; /{registry}/features/{feature_id}",
+   "backend_handler": "server/backend/access_points_api.py:285-389",
+   "writes": false,
+   "authorization": "none (no auth dependency on any route; only CORS allow-list server/backend/main.py:81-86)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "fetchAccessPointRegistries / fetchAccessPointVocabulary are exported (accessPointsApi.ts:405-411) but never called by a component; /paths and single-feature have no client function.",
+   "has_test": true,
+   "test": "tests/test_access_points_api.py:1"
+  },
+  {
+   "id": "desktop-launch",
+   "name": "Launch desktop app",
+   "surface": "desktop-setup",
+   "ui_action": "Run PRII-SPIDERWEB.sh/.command/.bat/.app",
+   "frontend_handler": null,
+   "backend_endpoint": "GET /desktop/health",
+   "backend_handler": "desktop/app_server.py:36",
+   "writes": true,
+   "authorization": "UNKNOWN (binding is decided by external prii_desktop)",
+   "status": "PARTIAL",
+   "status_evidence": "Launcher -> desktop/setup.py --ensure -> desktop/launch.py -> prii_desktop.launch (desktop/launch.py:10-16). The runtime package is not in the snapshot, so window creation, port binding and SPA fallback were not traced.",
+   "has_test": true,
+   "test": "tests/test_desktop_app_server.py:34"
+  }
+ ],
+ "navigation": {
+  "registry_file": "server/frontend/src/App.tsx:22",
+  "items": [
+   {
+    "label": "Command",
+    "target": "moduleId=command"
+   },
+   {
+    "label": "Finance",
+    "target": "moduleId=finance"
+   },
+   {
+    "label": "Spatial",
+    "target": "moduleId=spatial"
+   },
+   {
+    "label": "Anomaly",
+    "target": "moduleId=anomaly"
+   },
+   {
+    "label": "Graph",
+    "target": "moduleId=graph"
+   },
+   {
+    "label": "Query",
+    "target": "moduleId=query"
+   }
+  ],
+  "mobile_navigation": "No separate mobile nav component. At max-width 767px the workbench becomes one column; the left rail and inspector become fixed drawers toggled by the same « » tab-strip buttons, and are force-collapsed at startup by writing localStorage (server/frontend/src/main.tsx:36-39; styles/mobile-workbench.css:11-123). The tab strip stays the module navigation with 44px min-height tabs (mobile-workbench.css:86-89). A second, older breakpoint at 720px also exists in styles/app.css:293. Side effect: the startup write overwrites a desktop user's saved collapse preference whenever the window is narrow at load.",
+  "dead_or_unlinked_routes": [
+   "No URL routes exist. The module registry is duplicated: App.tsx:22-29 (tabs) and components/LeftRail.tsx:5-12 (rail) must be kept in sync by hand.",
+   "CommandBar filter chips: HISTORICAL_ONLY (docs/GUI_AUDIT.md:72), absent from source.",
+   "SelectionKind 'finding' (types/priis.ts:4) has no producer and no Inspector branch."
+  ]
+ },
+ "settings": [
+  {
+   "id": "theme",
+   "label": "◐ LIGHT / ◑ DARK",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage spiderweb_theme",
+   "evidence": "server/frontend/src/theme.ts:3"
+  },
+  {
+   "id": "left-rail-collapsed",
+   "label": "Toggle left rail",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage priis_left_collapsed",
+   "evidence": "server/frontend/src/App.tsx:124"
+  },
+  {
+   "id": "inspector-collapsed",
+   "label": "Toggle inspector",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage priis_right_collapsed",
+   "evidence": "server/frontend/src/App.tsx:128"
+  },
+  {
+   "id": "active-investigation",
+   "label": "Investigations",
+   "scope": "WORKSPACE",
+   "storage": "localStorage priis_investigation",
+   "evidence": "server/frontend/src/App.tsx:116"
+  },
+  {
+   "id": "temporal-cursor",
+   "label": "cursor",
+   "scope": "WORKSPACE",
+   "storage": "localStorage priis_cursor",
+   "evidence": "server/frontend/src/App.tsx:120"
+  },
+  {
+   "id": "storage-version",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage priis_storage_version",
+   "evidence": "server/frontend/src/App.tsx:100"
+  },
+  {
+   "id": "spatial-mode",
+   "label": "2D / 3D (regional preview)",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage priis_spatial_mode",
+   "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:755"
+  },
+  {
+   "id": "layer-panel-collapsed",
+   "label": "Show layers / Hide layers",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage spiderweb_layer_collapsed",
+   "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:747"
+  },
+  {
+   "id": "program-activity-live",
+   "label": null,
+   "scope": "WORKSPACE",
+   "storage": "localStorage federation.programActivity.v1.spiderweb-pr (read only by UI)",
+   "evidence": "server/frontend/src/components/programActivityEvent.ts:61"
+  },
+  {
+   "id": "map-view-hash",
+   "label": "Copy link to this view",
+   "scope": "SESSION",
+   "storage": "URL fragment #map=&eri=&op=&cmp=&fp=&base= (history.replaceState)",
+   "evidence": "server/frontend/src/spatial/imagery/useImageryController.ts:148"
+  },
+  {
+   "id": "rag-mode",
+   "label": "STUB / RAG LIVE",
+   "scope": "SESSION",
+   "storage": "none (component state, resets on tab switch)",
+   "evidence": "server/frontend/src/modules/QueryLayer.tsx:26"
+  },
+  {
+   "id": "layer-visibility",
+   "label": "Layer control",
+   "scope": "SESSION",
+   "storage": "none (component state, resets on tab switch)",
+   "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:459"
+  },
+  {
+   "id": "api-base",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "build env VITE_API_BASE",
+   "evidence": "server/frontend/src/config.ts:11"
+  },
+  {
+   "id": "martin-base",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "build env VITE_MARTIN_BASE",
+   "evidence": "server/frontend/src/config.ts:22"
+  },
+  {
+   "id": "municipios-delivery",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "build env VITE_MUNICIPIOS_DELIVERY",
+   "evidence": "server/frontend/src/config.ts:26"
+  },
+  {
+   "id": "tile-url",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "build env VITE_TILE_URL / VITE_TILE_ATTRIBUTION",
+   "evidence": "server/frontend/src/config.ts:49"
+  },
+  {
+   "id": "desktop-data-home",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env SPIDERWEB_DATA_HOME",
+   "evidence": "desktop/config.py:24"
+  }
+ ],
+ "context_actions": [],
+ "keyboard_shortcuts": [
+  {
+   "keys": "[",
+   "action": "Toggle left rail",
+   "scope": "global",
+   "evidence": "server/frontend/src/App.tsx:143"
+  },
+  {
+   "keys": "]",
+   "action": "Toggle inspector",
+   "scope": "global",
+   "evidence": "server/frontend/src/App.tsx:146"
+  },
+  {
+   "keys": "L / l",
+   "action": "Toggle layer panel",
+   "scope": "module-spatial",
+   "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:763"
+  },
+  {
+   "keys": "Enter",
+   "action": "Submit global query",
+   "scope": "global-query-form",
+   "evidence": "server/frontend/src/components/CommandBar.tsx:45"
+  },
+  {
+   "keys": "Enter / Space",
+   "action": "Select focused contract row",
+   "scope": "finance-contracts-table",
+   "evidence": "server/frontend/src/modules/FinanceIntelligence.tsx:209"
+  },
+  {
+   "keys": "ArrowLeft / ArrowRight (Shift = 7 days), Home, End",
+   "action": "Move temporal cursor",
+   "scope": "timeline",
+   "evidence": "server/frontend/src/components/Timeline.tsx:57"
+  },
+  {
+   "keys": "ArrowLeft / ArrowRight (Shift = 10%), Home, End",
+   "action": "Move imagery comparison divider",
+   "scope": "spatial-compare-overlay",
+   "evidence": "server/frontend/src/spatial/imagery/CompareOverlay.tsx:108"
+  }
+ ],
+ "accessibility_source_findings": [
+  {
+   "id": "a11y-single-key-shortcuts",
+   "severity": "moderate",
+   "finding": "Single printable-character shortcuts ([, ], L) are global window listeners with no way to disable or remap them; they are suppressed only for INPUT/TEXTAREA/contentEditable, not for a focused <select> (type-ahead with 'l' in the flight or target-layer select also toggles the layer panel).",
+   "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:760-766",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-tabs-no-roving",
+   "severity": "minor",
+   "finding": "role=tablist/tab without arrow-key navigation or roving tabindex; every tab is a tab stop. aria-controls points at one shared panel.",
+   "evidence": "server/frontend/src/App.tsx:254-268",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-rail-module-state",
+   "severity": "minor",
+   "finding": "Left-rail module buttons expose the active module only through data-active (no aria-current/aria-pressed), unlike the investigation buttons beside them.",
+   "evidence": "server/frontend/src/components/LeftRail.tsx:33",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-map-pointer-only",
+   "severity": "serious",
+   "finding": "Measure/Buffer/Nearest tools, access-point selection for drawn points and imagery footprint identify are driven only by map click events; there is no keyboard or list alternative for drawn records.",
+   "evidence": "server/frontend/src/modules/SpatialToolsPanel.tsx:304-312",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-query-progress",
+   "severity": "moderate",
+   "finding": "A running query has no status region: while pending with no tokens nothing is announced or shown except the button text changing to STOP; streamed RAG text is not in a live region.",
+   "evidence": "server/frontend/src/modules/QueryLayer.tsx:134-142",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-pipeline-status",
+   "severity": "moderate",
+   "finding": "Pipeline state is conveyed by button label and inline colour only (no aria-live); failure text is appended to a log that is visible only in the Query tab.",
+   "evidence": "server/frontend/src/components/CommandBar.tsx:63-74",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-toggle-no-pressed",
+   "severity": "minor",
+   "finding": "2D/3D toggle and ProgramTimeline phase filter buttons carry no aria-pressed (state via data-on / class only).",
+   "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:796-803",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-alert-table-headers",
+   "severity": "minor",
+   "finding": "Alert feed and contracts table headers have no scope attribute; Finance table uses role=grid on rows that are focusable individually without grid arrow-key navigation.",
+   "evidence": "server/frontend/src/modules/FinanceIntelligence.tsx:164",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-graph-svg",
+   "severity": "minor",
+   "finding": "Investigation graph connector SVG has no role/label and node buttons are absolutely positioned by percentage; reading order is DOM order only.",
+   "evidence": "server/frontend/src/modules/InvestigationGraph.tsx:55-63",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-no-skip-link",
+   "severity": "minor",
+   "finding": "No skip-to-content link; keyboard users traverse command bar and (when open) the whole left rail before reaching the module.",
+   "evidence": "server/frontend/src/App.tsx:220-243",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-timeline-valuetext",
+   "severity": "minor",
+   "finding": "Timeline slider aria-valuetext is the raw cursor string, empty until data loads.",
+   "evidence": "server/frontend/src/components/Timeline.tsx:84",
+   "confidence": "high"
+  }
+ ],
+ "backend": {
+  "framework": "FastAPI + sse-starlette + aiosqlite (SQLite)",
+  "app_object": "server/backend/main.py:79",
+  "endpoint_count": {
+   "GET": 31,
+   "POST": 3,
+   "PUT": 0,
+   "PATCH": 0,
+   "DELETE": 1
+  },
+  "endpoints_not_called_by_frontend": [
+   "GET /health",
+   "GET /catalog",
+   "GET /spatial/capabilities",
+   "GET /spatial/scene",
+   "GET /spatial/layers",
+   "GET /spatial/boundaries/{boundary_id}.geojson",
+   "POST /rag/index",
+   "GET /v1/access-points",
+   "GET /v1/access-points/vocabulary",
+   "GET /v1/access-points/paths",
+   "GET /v1/access-points/{registry}/features/{feature_id}",
+   "GET /health/martin-delivery (production.py only)",
+   "GET /desktop/health (desktop/app_server.py only)"
+  ],
+  "frontend_calls_with_no_backend_route": [
+   "GET /tiles/municipios (server/frontend/src/modules/SpatialIntelligence.tsx:328) — route exists only when the app is started via server/backend/production.py:6 or behind the Vite dev proxy (vite.config.ts:9); absent from server.backend.main:app and from the desktop app (desktop/config.py:55-66 switches the desktop build to GeoJSON)",
+   "GET /tiles/municipios/{z}/{x}/{y} (server/frontend/src/config.ts:36-39) — same condition"
+  ]
+ },
+ "tests": {
+  "frontend_unit": "21 files, 157 it/test declarations (it.each counted once) — Vitest + jsdom + Testing Library (server/frontend/vitest.config.ts:29-36; run in .github/workflows/ci.yml:362)",
+  "frontend_e2e": "1 Playwright script server/frontend/tests/gui-runtime-matrix.mjs (3 engines x 6 viewports x 6 modules + keyboard, reduced-motion and density-retry checks; lines 18,199-340,351-413), run by .github/workflows/gui-runtime-matrix.yml:46 against the Vite dev server with mocked fixtures. Not a test-runner suite.",
+  "backend": "200 test_*.py files / 2063 test functions under tests/ (pytest; whole repo, mostly pipeline code). API-facing: tests/test_priis_api.py, test_geo_routes.py, test_access_points_api.py, test_eri_imagery.py, test_rag_command_boundary.py, test_server_smoke.py, test_desktop_app_server.py. No test exercises POST /pipeline/run, DELETE /pipeline/{id}, POST /rag/query streaming or POST /rag/index end to end (grep found only an allow-list mention at tests/test_access_points_api.py:249).",
+  "accessibility_automation": "axe-core in jsdom over a table of component cases, failing on moderate-or-worse (server/frontend/src/a11y.test.tsx:39,149-150); colour contrast cannot be evaluated in jsdom (a11y.test.tsx:29). No axe run in the Playwright matrix was found."
+ },
+ "performance_protections": [
+  {
+   "what": "lazy module chunks (React.lazy x6) behind Suspense",
+   "evidence": "server/frontend/src/App.tsx:15-20"
+  },
+  {
+   "what": "dynamic import of Cesium runtime (+ its widgets.css) only when 3D is requested",
+   "evidence": "server/frontend/src/spatial/runtime/RuntimeFactory.ts:20-23"
+  },
+  {
+   "what": "MapLibre worker emitted as separate asset (?worker&url)",
+   "evidence": "server/frontend/src/spatial/runtime/MapLibreRuntime.ts:2"
+  },
+  {
+   "what": "Cesium static assets copied to public/cesium at postinstall rather than bundled",
+   "evidence": "server/frontend/package.json:15"
+  },
+  {
+   "what": "request timeout 8 s on API/access-point calls",
+   "evidence": "server/frontend/src/api/client.ts:23"
+  },
+  {
+   "what": "AbortController on layer, density and catalog fetches",
+   "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:250"
+  },
+  {
+   "what": "GL circle layer instead of DOM markers for ~2,000 gazetteer points",
+   "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:120-125"
+  },
+  {
+   "what": "resize debounced through requestAnimationFrame / 320 ms timer",
+   "evidence": "server/frontend/src/spatial/runtime/useSpatialRuntime.ts:148-160"
+  },
+  {
+   "what": "useMemo for lookup maps, vendor totals and columns in Finance",
+   "evidence": "server/frontend/src/modules/FinanceIntelligence.tsx:46-93"
+  },
+  {
+   "what": "backend Cache-Control on ERI footprints (1 h) and tiles (24 h) + in-process TileCache",
+   "evidence": "server/backend/eri_imagery.py:485-535"
+  },
+  {
+   "what": "access-point features paged (500 x max 20 pages) with truncation flag",
+   "evidence": "server/frontend/src/spatial/accessPoints/accessPointsApi.ts:430-457"
+  },
+  {
+   "what": "ABSENT: no manualChunks/build.rollupOptions; no list virtualization; no input debounce",
+   "evidence": "server/frontend/vite.config.ts:4-16"
+  }
+ ],
+ "special_adjudications": [
+  {
+   "question": "1. Display-name filtering against raw identifiers",
+   "answer": "The reported defect (Finance filter comparing only raw foreign keys) is fixed: a custom globalFilterFn builds its haystack from contract id, raw agency/vendor/site ids AND agency code/name, vendor name, site name, formatted amount, status and tier, and has tests. Residual mismatches of the same family remain in current source: (a) Finance column SORT still uses the raw accessor values for Agency, Vendor and Site while the cells render code/name, so header sorting orders by V-/A-/S- ids, not by the visible text; (b) the Nearest tool's result label prefers properties.id over properties.name, and the Sites target supplies both, so the user is shown a raw site id; (c) CSV export and the evidence-brief contracts table emit raw vendor/agency/site ids where the table shows names; (d) inspector linked-contract/anomaly lists and the watchlist show ids only. The ProgramTimeline search compares against the same title/detail/category/phase strings it renders (no mismatch). The Finance KPI cards and EXPORT CSV ignore the active filter.",
+   "status": "PARTIAL",
+   "evidence": [
+    "server/frontend/src/modules/FinanceIntelligence.tsx:108-132",
+    "server/frontend/src/modules/FinanceIntelligence.tsx:67-78",
+    "server/frontend/src/modules/FinanceIntelligence.test.tsx:40-66",
+    "server/frontend/src/modules/SpatialToolsPanel.tsx:152-158",
+    "server/frontend/src/modules/SpatialIntelligence.tsx:573-576",
+    "server/frontend/src/export/csvExport.ts:23-27",
+    "server/frontend/src/export/evidenceBrief.ts:43",
+    "server/frontend/src/components/ProgramTimeline.tsx:45-51",
+    "docs/GUI_AUDIT.md:133 (lead)"
+   ]
+  },
+  {
+   "question": "2. Map layer loading that can remain stuck",
+   "answer": "The mechanism named in the old audit (whenStyleReady gated on map.isStyleLoaded) no longer exists; the runtime now resolves `ready` on the style.load event and layer hooks add sources directly. Loading is set at SI:255 (GeoJSON layers) and SI:326 (Martin vector layer); it is cleared by 'source-ready' (263/342), 'loaded' (267/352), 'error' (270/355, and 320 for tile errors) and 'idle' when toggled off (246/313). Paths on which it is NOT cleared: (1) hung request — both hooks use bare fetch with an AbortSignal but no timeout (257, 328), so a backend that accepts the connection and never answers leaves 'loading…' indefinitely; (2) abort/cancel — the catch and the post-await guards return without writing a status (260, 264, 269 / 341, 343, 354); when the cleanup is caused by a 2D→3D switch or a runtime reboot the effect re-runs with mapRef.current === null and returns at 236/303 before any onStatus call, so the last status ('loading…', 'source ready' or 'rendered') stays on the button for as long as 3D is active, and the layer buttons are still rendered in 3D (867-883) while the failure banner is 2D-only (848); (3) 'source-ready' is terminal if map.getSource(sourceId) is already true at 264/343; (4) two hooks write the same 'municipios' key: with Martin delivery the vector hook sets 'loading' and the disabled GeoJSON hook then sets 'idle' in the same commit (313 vs 246, declared at 477-496), so the button reads 'on' rather than 'loading…' until the fetch settles; (5) empty result — an empty FeatureCollection (backend returns one for any allowed layer with no file, main.py:472) is reported as 'rendered' with no empty indication; (6) vector layer 'loaded' is set when the source is added, not when tiles arrive, so missing tiles show 'rendered' unless MapLibre raises an error event carrying sourceId. Unmount is safe (state is discarded; cleanup aborts and removes layers, 275-279). Related flags with the same no-timeout weakness: gazetteer density (614-617) and the ERI catalog (spatial/imagery/eriApi.ts:65) which also suppresses URL-hash writes while loading (useImageryController.ts:135). Access-point registries use fetchWithTimeout but 'Records received; drawing…' never advances when the map is not ready (e.g. WebGL unavailable: activeMode stays 'maplibre' with ready=false, useSpatialRuntime.ts:60-70, so the panel is shown and the draw effect returns at useAccessPointsController.ts:121).",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "server/frontend/src/modules/SpatialIntelligence.tsx:234-281",
+    "server/frontend/src/modules/SpatialIntelligence.tsx:301-367",
+    "server/frontend/src/modules/SpatialIntelligence.tsx:455",
+    "server/frontend/src/modules/SpatialIntelligence.tsx:472-507",
+    "server/frontend/src/modules/SpatialIntelligence.tsx:848-883",
+    "server/frontend/src/spatial/runtime/useSpatialRuntime.ts:60-70",
+    "server/frontend/src/spatial/runtime/useSpatialRuntime.ts:121-129",
+    "server/frontend/src/spatial/runtime/MapLibreRuntime.ts:37-56",
+    "server/frontend/src/modules/SpatialIntelligence.tsx:609-628",
+    "server/frontend/src/spatial/imagery/eriApi.ts:64-68",
+    "server/frontend/src/spatial/accessPoints/useAccessPointsController.ts:106-136",
+    "server/backend/main.py:472",
+    "docs/GUI_AUDIT.md:284-287 (lead)"
+   ]
+  },
+  {
+   "question": "3. RAG stream termination without useful feedback",
+   "answer": "The silent-blank case is fixed in the client and covered by four tests: HTTP error → 'RAG backend returned <status>'; no body → 'returned no response stream'; done event with non-zero rc → 'RAG backend exited with code N'; rc 0 with no data lines → 'completed without producing output'; stream closed without a done event → 'ended without terminal status'; malformed done payload → 'invalid terminal status'; transport error/8 s header timeout → the exception text. Each calls onError then onDone, and QueryLayer renders a role=alert 'Query failed' card with the message plus a hint to switch to STUB; partial output stays visible below it. query_llm.py now exists at the repo root as a wrapper. What is still not useful: (a) the backend opens the subprocess with stderr=PIPE and never reads it, so the reason for a non-zero exit (traceback, missing model/dependency) never reaches the user — only the exit code does; an unread stderr pipe can also fill and block the child, in which case no done event is ever sent; (b) while pending and before the first token the panel shows nothing at all — no response card (needs streamLines.length > 0), no 'No query run yet' card (needs !pending) — only the button reading STOP; there is no overall timeout on the stream; (c) STOP/unmount only sets a cancelled flag: the fetch is not aborted and the generator has no cleanup to terminate the subprocess; (d) query_llm prints progress lines ('Loading model…', 'Retrieving relevant posts…', '====') to stdout, which are streamed to the user as answer text, and any one such line satisfies the 'produced output' check; (e) the error card persists after switching back to STUB until the next run.",
+   "status": "PARTIAL",
+   "evidence": [
+    "server/frontend/src/api/client.ts:249-341",
+    "server/frontend/src/modules/QueryLayer.tsx:42-50",
+    "server/frontend/src/modules/QueryLayer.tsx:125-142",
+    "server/frontend/src/modules/QueryLayer.tsx:175-185",
+    "server/backend/main.py:689-710",
+    "query_llm.py:9-13",
+    "llm/query_llm.py:56",
+    "llm/query_llm.py:138-139",
+    "server/frontend/src/api/rag-client.test.ts:33-66",
+    "docs/GUI_AUDIT.md:191 (lead)"
+   ]
+  },
+  {
+   "question": "4. Lazy-loading of heavy dependencies (must be preserved)",
+   "answer": "Exhaustive list of deferral points in non-test source: (1) six React.lazy module chunks in App.tsx — CommandCenter, FinanceIntelligence (defers @tanstack/react-table), SpatialIntelligence (defers maplibre-gl JS, the @turf/* packages, Zod-based imagery/access-point clients via its static imports), AnomalyWorkbench, InvestigationGraph, QueryLayer — rendered inside one Suspense with a 'Loading module…' fallback and a per-module ErrorBoundary; (2) one dynamic import, RuntimeFactory.createCesiumRuntime → './CesiumRegionalRuntime', which is the only file importing 'cesium' and 'cesium/Build/Cesium/Widgets/widgets.css', so Cesium JS+CSS load only when 3D is requested; (3) MapLibre's worker is imported with ?worker&url so it is a separate emitted asset; (4) Cesium Workers/Assets/ThirdParty/Widgets are copied to public/cesium by the postinstall script and fetched at runtime via CESIUM_BASE_URL='/cesium/'. There is NO manualChunks or any build/rollupOptions block in vite.config.ts — chunking is whatever Rollup derives from the dynamic imports. Caveats that affect what 'lazy' currently means: main.tsx statically imports 'maplibre-gl/dist/maplibre-gl.css' and ten @fontsource CSS files, so MapLibre's CSS is in the entry CSS; InvestigationGraph statically imports AccessPointRelationships → accessPointsApi (Zod), and api/client.ts (entry) imports schemas/priis (Zod), so Zod is in the entry chunk; there is no graph library to defer — both graphs are hand-written SVG. Access-point relationships, the control cross-section, registry features and evidence are lazy at the data level (fetched on demand), not code-split.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "server/frontend/src/App.tsx:13-20",
+    "server/frontend/src/App.tsx:287-291",
+    "server/frontend/src/spatial/runtime/RuntimeFactory.ts:20-23",
+    "server/frontend/src/spatial/runtime/CesiumRegionalRuntime.ts:1-8",
+    "server/frontend/src/spatial/runtime/CesiumRegionalRuntime.ts:20",
+    "server/frontend/src/spatial/runtime/MapLibreRuntime.ts:1-6",
+    "server/frontend/package.json:15",
+    "server/frontend/scripts/copy-cesium-assets.mjs:1",
+    "server/frontend/vite.config.ts:4-16",
+    "server/frontend/src/main.tsx:3-16",
+    "server/frontend/src/modules/SpatialIntelligence.tsx:3-25",
+    "server/frontend/src/modules/FinanceIntelligence.tsx:2-15",
+    "server/frontend/src/modules/InvestigationGraph.tsx:4"
+   ]
+  },
+  {
+   "question": "5. Six modules; nothing reads the URL to select one; existing use of location.hash",
+   "answer": "Confirmed. ModuleId is the union command|finance|spatial|anomaly|graph|query; App holds it in useState initialised to 'command' and changes it only through setModule calls from the tab strip, the left rail, the command-bar submit (→ query), Command Center's OPEN QUERY LAYER button and its anomaly cards (→ anomaly). A grep of non-test source for location/history/URLSearchParams/hashchange/popstate finds no code that derives the module from the URL and no hashchange/popstate listener anywhere; the module is not persisted to localStorage either. The only URL consumers are in the Spatial imagery controller: it parses window.location.hash once at mount for map=zoom/lat/lng, eri, op, cmp, fp, base; rewrites the fragment with history.replaceState on moveend and on imagery state changes (skipped while the catalog is loading); and copies window.location.href for 'Copy link'. formatViewHash deletes only its own six keys and preserves any other fragment keys, and the viewHash header states the fragment is free because the app has no router — so a module key in the fragment would survive, but the Spatial controller only runs while the Spatial tab is mounted and its fragment remains in the address bar after leaving the tab. eriApi also reads window.location.origin, and the root ErrorBoundary calls window.location.reload().",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "server/frontend/src/types/priis.ts:3",
+    "server/frontend/src/App.tsx:22-29",
+    "server/frontend/src/App.tsx:49",
+    "server/frontend/src/App.tsx:209-216",
+    "server/frontend/src/App.tsx:227",
+    "server/frontend/src/App.tsx:264",
+    "server/frontend/src/components/LeftRail.tsx:33",
+    "server/frontend/src/modules/CommandCenter.tsx:22",
+    "server/frontend/src/modules/CommandCenter.tsx:49",
+    "server/frontend/src/spatial/imagery/useImageryController.ts:47",
+    "server/frontend/src/spatial/imagery/useImageryController.ts:129-159",
+    "server/frontend/src/spatial/imagery/useImageryController.ts:179",
+    "server/frontend/src/spatial/imagery/viewHash.ts:1-10",
+    "server/frontend/src/spatial/imagery/viewHash.ts:25",
+    "server/frontend/src/spatial/imagery/viewHash.ts:58-75",
+    "server/frontend/src/spatial/imagery/eriApi.ts:51",
+    "server/frontend/src/components/ErrorBoundary.tsx:59"
+   ]
+  },
+  {
+   "question": "Where the frontend falls back to built-in mock data",
+   "answer": "One place: fetchPriisDataWithFallback catches any rejection from fetchPriisData (network error, 8 s timeout, or any non-2xx on any of the nine entity endpoints) and returns the bundled priisData with live=false. App also seeds its initial state with the same mock object before the fetch resolves. The only indicator is the command-bar text LIVE vs DEMO; the classification banner says DEMO in both cases. A Zod-invalid row is dropped by parseArray rather than triggering fallback, and an empty-but-reachable backend yields live=true with empty tables. Nothing else falls back to fixtures: spatial layers, imagery, access points, RAG and pipeline surface errors instead (spatial/accessPoints/fixtures.ts is imported only by tests).",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "server/frontend/src/api/client.ts:100-108",
+    "server/frontend/src/api/client.ts:7",
+    "server/frontend/src/App.tsx:3",
+    "server/frontend/src/App.tsx:45-46",
+    "server/frontend/src/App.tsx:87-97",
+    "server/frontend/src/data/mockData.ts:1",
+    "server/frontend/src/components/CommandBar.tsx:73",
+    "server/frontend/src/App.tsx:222"
+   ]
+  }
+ ],
+ "denominator": {
+  "surfaces_total": 43,
+  "surfaces_mounted": 42,
+  "workflows_total": 44,
+  "by_workflow_status": {
+   "COMPLETE": 22,
+   "PARTIAL": 18,
+   "BROKEN": 1,
+   "UNREACHABLE": 0,
+   "INTERNAL_ONLY": 3
+  },
+  "coverage_statement": "Exhaustive (every non-test file under server/frontend/src read or grepped, entry traced from index.html → main.tsx → App.tsx): the six modules, navigation items, chrome toggles, localStorage/URL settings, keyboard handlers, context-menu handlers (none exist), dynamic imports, and all FastAPI routes in main.py, eri_imagery.py, access_points_api.py, martin_ingress.py, production.py and desktop/app_server.py. Enumerated but not line-by-line read: spatial/accessPoints/accessPointLayers.ts, spatial/imagery/eriLayers.ts, components/Badges.tsx, schemas/priis.ts, the CSS files (only breakpoints/collapse rules checked), and the bodies of eri_imagery.py/access_points_api.py handlers (decorators and signatures only). Forms/tables/charts/filters inside modules are the significant ones, believed complete for Finance, Anomaly, Graph, Query and Command; in Spatial the individual controls inside ImageryPanel and AccessPointDetail are grouped under their panel surface rather than listed one by one. The Python pipeline (run_all.py and ~200 test files) and the external prii_desktop runtime were not audited. Nothing was executed; no status here is runtime-observed. The one mounted=false surface is historical; desktop-setup is counted as mounted on the strength of the launcher script only."
+ },
+ "unknowns": [
+  "prii_desktop (shared desktop runtime imported at desktop/launch.py:10) is not in the snapshot: window chrome, host/port binding, SPA catch-all and any loopback restriction could not be determined.",
+  "Whether MapLibre error events for GeoJSON/raster sources carry `sourceId` as the handlers at SpatialIntelligence.tsx:320 and useEriImagery.ts:57,86 assume — node_modules is absent and nothing was run.",
+  "Actual bundle composition (which chunk Zod, turf and MapLibre CSS land in) — inferred from static imports; no build was run.",
+  "React/Vite/MapLibre versions: package.json pins them as 'latest' (package.json:28-35); the resolved versions in package-lock.json were not inspected.",
+  "Colour contrast and focus visibility: not assessable from source; docs/A11Y_AUDIT.md claims were not re-verified.",
+  "Whether sse-starlette's CRLF framing and ping comments interact badly with the hand-written SSE parser (client.ts:267-300) — reasoned to be harmless, not executed.",
+  "Whether PATH `python` exists in the packaged desktop environment for POST /pipeline/run (main.py:257)."
+ ]
+}

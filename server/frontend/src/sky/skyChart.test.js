@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALTITUDE_RINGS, CARDINALS, CHART_RADIUS, chartBodies, kpSparkline, labelRect, projectSky } from './skyChart';
+import { ALTITUDE_RINGS, CARDINALS, CHART_RADIUS, chartBodies, chartTrack, kpSparkline, labelRect, projectSky } from './skyChart';
 
 const near = (value, expected) => expect(value).toBeCloseTo(expected, 6);
 
@@ -77,6 +77,66 @@ describe('chartBodies', () => {
   });
 });
 
+describe('satellites on the chart', () => {
+  const sky = {
+    sun: { body: 'Sun', azimuth: 90, altitude: 30, aboveHorizon: true },
+    moon: { body: 'Moon', azimuth: 270, altitude: -10, aboveHorizon: false, illuminatedFraction: 0.2 },
+    planets: [{ body: 'Venus', azimuth: 180, altitude: 10, aboveHorizon: true, magnitude: -4 }],
+  };
+  const satellites = [
+    { body: 'ISS', label: 'ISS', kind: 'satellite', azimuth: 45, altitude: 40, aboveHorizon: true, sunlit: true },
+    { body: 'HST', label: 'HST', kind: 'satellite', azimuth: 200, altitude: -20, aboveHorizon: false, sunlit: false },
+    { body: 'CSS', label: 'CSS', kind: 'satellite', azimuth: 300, altitude: 15, aboveHorizon: true, sunlit: false },
+  ];
+
+  it('plots the ones above the horizon with their own shape and the lit state, and lists the others as below', () => {
+    const { plotted, below } = chartBodies(sky, satellites);
+    expect(plotted.map((b) => b.body)).toEqual(['Sun', 'Venus', 'ISS', 'CSS']);
+    expect(below.map((b) => b.body)).toEqual(['Moon', 'HST']);
+    const iss = plotted.find((b) => b.body === 'ISS');
+    expect(iss).toMatchObject({ kind: 'satellite', shape: 'satellite', sunlit: true });
+    expect(plotted.find((b) => b.body === 'CSS').sunlit).toBe(false);
+    near(iss.x, projectSky(45, 40).x);
+    near(iss.y, projectSky(45, 40).y);
+    // No satellite shares a shape with a body, so meaning never rests on colour.
+    const bodyShapes = new Set(plotted.filter((b) => b.kind !== 'satellite').map((b) => b.shape));
+    expect(bodyShapes.has('satellite')).toBe(false);
+  });
+
+  it('draws only the bodies when there are no satellites, exactly as before', () => {
+    expect(chartBodies(sky).plotted.map((b) => b.body)).toEqual(['Sun', 'Venus']);
+    expect(chartBodies(sky, []).below.map((b) => b.body)).toEqual(['Moon']);
+  });
+
+  it('keeps a satellite label clear of the body it sits next to', () => {
+    const crowded = { ...sky, planets: [{ body: 'Venus', azimuth: 45, altitude: 41, aboveHorizon: true, magnitude: -4 }] };
+    const { plotted } = chartBodies(crowded, [satellites[0]]);
+    const a = labelRect(plotted.find((b) => b.body === 'Venus'));
+    const b = labelRect(plotted.find((b2) => b2.body === 'ISS'));
+    expect(a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1).toBe(false);
+  });
+});
+
+describe('a satellite track across the sky', () => {
+  it('is a path through the projected points, with its ends', () => {
+    const track = chartTrack([{ azimuth: 270, altitude: 10 }, { azimuth: 0, altitude: 60 }, { azimuth: 90, altitude: 10 }]);
+    const a = projectSky(270, 10);
+    const b = projectSky(0, 60);
+    const c = projectSky(90, 10);
+    expect(track.path).toBe(`M${a.x.toFixed(2)},${a.y.toFixed(2)} L${b.x.toFixed(2)},${b.y.toFixed(2)} L${c.x.toFixed(2)},${c.y.toFixed(2)}`);
+    near(track.start.x, a.x);
+    near(track.end.x, c.x);
+  });
+
+  it('draws nothing for fewer than two points, and skips a point that is not above the horizon', () => {
+    expect(chartTrack([])).toBeNull();
+    expect(chartTrack([{ azimuth: 10, altitude: 5 }])).toBeNull();
+    expect(chartTrack([{ azimuth: 10, altitude: -3 }, { azimuth: 20, altitude: -2 }])).toBeNull();
+    const track = chartTrack([{ azimuth: 10, altitude: -3 }, { azimuth: 20, altitude: 5 }, { azimuth: 30, altitude: 8 }]);
+    expect(track.path.startsWith(`M${projectSky(20, 5).x.toFixed(2)}`)).toBe(true);
+  });
+});
+
 describe('label placement', () => {
   const crowded = {
     // The Sun, Mercury and Venus a few degrees apart low in the west, as on 2026-10-18 at San Juan.
@@ -115,6 +175,37 @@ describe('label placement', () => {
 
   it('is deterministic', () => {
     expect(JSON.stringify(chartBodies(crowded).plotted)).toBe(JSON.stringify(chartBodies(crowded).plotted));
+  });
+
+  it('puts a label on the inner side of a body on the western rim, so it is not cut off by the edge of the chart', () => {
+    // The Moon on the horizon in the west (as on 2026-11-03 at San Juan): to its right the label would run past the chart.
+    const rim = { ...crowded, sun: { ...crowded.sun, azimuth: 10, altitude: 70 }, planets: [], moon: { ...crowded.moon, azimuth: 279, altitude: 0.1, aboveHorizon: true } };
+    const { plotted } = chartBodies(rim);
+    const moon = plotted.find((b) => b.body === 'Moon');
+    expect(moon.labelDx).toBeLessThan(0);
+    const rect = labelRect(moon);
+    expect(rect.x1).toBeLessThanOrEqual(125);
+    expect(rect.x0).toBeGreaterThanOrEqual(-125);
+    // The label ends before the glyph starts.
+    expect(rect.x1).toBeLessThanOrEqual(moon.x - 5);
+  });
+
+  it('keeps every label inside the chart, wherever the body is on the horizon', () => {
+    for (let azimuth = 0; azimuth < 360; azimuth += 15) {
+      const edge = {
+        sun: { body: 'Sun', azimuth: 10, altitude: 70, aboveHorizon: true },
+        moon: { body: 'Moon', azimuth: 0, altitude: -5, aboveHorizon: false },
+        planets: [{ body: 'Jupiter', azimuth, altitude: 0.5, aboveHorizon: true, magnitude: -2 }],
+      };
+      const { plotted } = chartBodies(edge, [{ body: 'ISS', label: 'ISS', azimuth: (azimuth + 180) % 360, altitude: 1, aboveHorizon: true, sunlit: true }]);
+      for (const body of plotted) {
+        const rect = labelRect(body);
+        expect(rect.x0, `${body.body} at ${azimuth}`).toBeGreaterThanOrEqual(-125);
+        expect(rect.x1, `${body.body} at ${azimuth}`).toBeLessThanOrEqual(125);
+        expect(rect.y0, `${body.body} at ${azimuth}`).toBeGreaterThanOrEqual(-125);
+        expect(rect.y1, `${body.body} at ${azimuth}`).toBeLessThanOrEqual(125);
+      }
+    }
   });
 });
 

@@ -917,7 +917,9 @@ def test_the_script_runs_as_a_program(tmp_path):
 
 
 def test_the_script_stays_parseable_as_python_3_9():
-    # hub CI runs the suite on 3.9-3.12; this catches 3.10+ syntax on any interpreter.
+    # The Stop hook runs this tool under the contributor's own `python3`, which can be
+    # 3.9 (macOS's system Python) even though the hub's floor is 3.10. This catches
+    # 3.10+ syntax on any interpreter.
     ast.parse(_TOOL.read_text(encoding="utf-8"), feature_version=(3, 9))
 
 

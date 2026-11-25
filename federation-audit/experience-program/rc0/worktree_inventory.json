@@ -1,0 +1,105 @@
+{
+  "claim_class": "FACT",
+  "generated_at": "2026-11-17T12:56:55+00:00",
+  "schema": "federation.experience-program.worktree-inventory/1",
+  "worktrees": [
+    {
+      "local_branches": [
+        "claude/pensive-goodall-bo5l74 746c3085d78895816d0a3fcb714713f1ef5b7be7",
+        "main 88a24e1433df4e584e1bfb347111a6d53f31a8de"
+      ],
+      "repository": "jotaele44/aguayluz-pr",
+      "stashes": 0,
+      "uncommitted": [],
+      "worktrees": [
+        "worktree /home/user/aguayluz-pr\nHEAD 746c3085d78895816d0a3fcb714713f1ef5b7be7\nbranch refs/heads/claude/pensive-goodall-bo5l74"
+      ]
+    },
+    {
+      "local_branches": [
+        "claude/pensive-goodall-bo5l74 378ea43afcc4b116b4a290835ae0dae3eaa26e17",
+        "main d1f7e7154e218c73d8bf6cc62e69ca480f2db624"
+      ],
+      "repository": "jotaele44/centinelas-pr",
+      "stashes": 0,
+      "uncommitted": [],
+      "worktrees": [
+        "worktree /home/user/centinelas-pr\nHEAD 378ea43afcc4b116b4a290835ae0dae3eaa26e17\nbranch refs/heads/claude/pensive-goodall-bo5l74"
+      ]
+    },
+    {
+      "local_branches": [
+        "claude/pensive-goodall-bo5l74 02d668ded416756885d20aa7b8d19aad9fc9feda",
+        "main b0dc1737fb58b4c544c1189a8db7e43338b70188"
+      ],
+      "repository": "jotaele44/moneysweep-pr",
+      "stashes": 0,
+      "uncommitted": [],
+      "worktrees": [
+        "worktree /home/user/moneysweep-pr\nHEAD 02d668ded416756885d20aa7b8d19aad9fc9feda\nbranch refs/heads/claude/pensive-goodall-bo5l74"
+      ]
+    },
+    {
+      "local_branches": [
+        "claude/pensive-goodall-bo5l74 aa384d261fabb5e6859ff765958173944829bb98",
+        "main cf0c9901411fd07656b91f267cc0a274c58d460b"
+      ],
+      "repository": "jotaele44/mucaro-ai",
+      "stashes": 0,
+      "uncommitted": [],
+      "worktrees": [
+        "worktree /home/user/mucaro-ai\nHEAD aa384d261fabb5e6859ff765958173944829bb98\nbranch refs/heads/claude/pensive-goodall-bo5l74"
+      ]
+    },
+    {
+      "local_branches": [
+        "claude/pensive-goodall-bo5l74 f3715d4c7ad034ea57e808c6114fd11df18fb6ff",
+        "main abf48edc0e40cb56a4cc3a52f8fef585be79b915"
+      ],
+      "repository": "jotaele44/ovnis-pr",
+      "stashes": 0,
+      "uncommitted": [],
+      "worktrees": [
+        "worktree /home/user/ovnis-pr\nHEAD f3715d4c7ad034ea57e808c6114fd11df18fb6ff\nbranch refs/heads/claude/pensive-goodall-bo5l74"
+      ]
+    },
+    {
+      "local_branches": [
+        "claude/pensive-goodall-bo5l74 db797d100ef5da03c2dca030a6d6b8e541e7dfaa",
+        "main 0c0b5c8b075e64797777cdaa5d6518ca7823aaf5"
+      ],
+      "repository": "jotaele44/skywatcher-pr",
+      "stashes": 0,
+      "uncommitted": [],
+      "worktrees": [
+        "worktree /home/user/skywatcher-pr\nHEAD db797d100ef5da03c2dca030a6d6b8e541e7dfaa\nbranch refs/heads/claude/pensive-goodall-bo5l74"
+      ]
+    },
+    {
+      "local_branches": [
+        "claude/pensive-goodall-bo5l74 643829d9ff028254461ec227a82be695bc4a9053",
+        "main 451535d7d19e1886dd0c478e1455d53625b85cab"
+      ],
+      "repository": "jotaele44/spiderweb-pr",
+      "stashes": 0,
+      "uncommitted": [],
+      "worktrees": [
+        "worktree /home/user/spiderweb-pr\nHEAD 643829d9ff028254461ec227a82be695bc4a9053\nbranch refs/heads/claude/pensive-goodall-bo5l74"
+      ]
+    },
+    {
+      "local_branches": [
+        "claude/pensive-goodall-bo5l74 4f5c660801b6380ad4b64d39518fa778c9d25c76",
+        "main b9ecc33755ad29882768da511d1d695ed1eb5adb"
+      ],
+      "repository": "jotaele44/thehub-pr",
+      "stashes": 0,
+      "uncommitted": [
+        "?? federation-audit/experience-program/"
+      ],
+      "worktrees": [
+        "worktree /home/user/thehub-pr\nHEAD 4f5c660801b6380ad4b64d39518fa778c9d25c76\nbranch refs/heads/claude/pensive-goodall-bo5l74"
+      ]
+    }
+  ]
+}

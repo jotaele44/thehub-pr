@@ -51,7 +51,7 @@ export default function LiveIndicator({ dataUpdatedAt, isFetching, isError, inte
       <span>updated {ago(dataUpdatedAt)}</span>
       {intervalMs && !degraded && <span className="hidden sm:inline">· auto every {Math.round(intervalMs / 1000)}s</span>}
       {isError && <span className="hidden sm:inline text-status-warning-fg/80">· fetch error, retrying</span>}
-      <Button size="sm" variant="ghost" className="h-7 px-2" onClick={refreshNow}>
+      <Button size="sm" variant="ghost" className="h-7 px-2" aria-label="Refresh now" onClick={refreshNow}>
         <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} />
       </Button>
     </div>
