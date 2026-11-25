@@ -1,0 +1,60 @@
+name: PR Grid V2 Skywatcher N400AH rights gate
+
+on:
+  pull_request:
+    paths:
+      - "registry/spatial/v2/lanes/skywatcher_n400ah_l2.json"
+      - "tests/test_grid_v2_skywatcher_n400ah_lane.py"
+      - ".github/workflows/grid-v2-skywatcher-n400ah-l2.yml"
+  push:
+    branches: [main]
+    paths:
+      - "registry/spatial/v2/lanes/skywatcher_n400ah_l2.json"
+      - "tests/test_grid_v2_skywatcher_n400ah_lane.py"
+      - ".github/workflows/grid-v2-skywatcher-n400ah-l2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-rights-blocked-lane:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97
+        with:
+          python-version: "3.12"
+
+      - name: Validate N400AH blocked-lane invariants
+        run: python -m pip install --disable-pip-version-check pytest && python -m pytest -q tests/test_grid_v2_skywatcher_n400ah_lane.py
+
+      - name: Assert fail-closed public execution policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          lane = json.loads(
+              Path("registry/spatial/v2/lanes/skywatcher_n400ah_l2.json").read_text()
+          )
+          assert lane["State"] == "FROZEN_BLOCKED_RECEIPT"
+          assert lane["Promotion_Blocker_Class"] == "REDISTRIBUTION_RIGHTS_UNVERIFIED"
+          rights = lane["Rights_Gate"]
+          assert rights["Provider_Source_Redistribution_State"] == "UNVERIFIED"
+          assert rights["Raw_Provider_Payloads_Committed"] is False
+          assert rights["Derived_Coordinate_Rows_Committed"] is False
+          assert rights["Per_Cell_Aggregate_Committed"] is False
+          assert rights["Public_Authority_Execution_Permitted"] is False
+
+          observed = lane["Observed"]
+          assert observed["Local_Recomputation_State"] == "PASS"
+          assert observed["Authority_Execution_State"] == "NOT_EXECUTED"
+          assert observed["Interior_Record_Count"] + observed["Outside_Record_Count"] == observed["Input_Record_Count"]
+          assert observed["Binding_Row_Count"] == observed["Interior_Record_Count"]
+          assert observed["Edge_Shared_Record_Count"] == 0
+          assert observed["Corner_Shared_Record_Count"] == 0
+          assert observed["Geometry_Copied"] is False
+          print("N400AH_RIGHTS_BLOCKED_LANE=PASS")
+          PY

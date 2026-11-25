@@ -1,0 +1,101 @@
+{
+  "Schema_Version": "pr-grid-v2-domain-lane/1.0",
+  "Lane_ID": "SKYWATCHER_N400AH_L2_V2",
+  "State": "FROZEN_BLOCKED_RECEIPT",
+  "Producer": "skywatcher-pr",
+  "Domain": "flight_activity",
+  "Grid_Level": "L2",
+  "Grid_ID": "PR_GRID_GEOGRAPHIC_V2",
+  "Grid_Version": "2.0.0-rc1",
+  "Grid_Authority_Repository": "jotaele44/spiderweb-pr",
+  "Grid_Authority_Commit": "0c66e13d14232c0d7cbcbc179b3655904777dc71",
+  "Producer_Repository": "jotaele44/skywatcher-pr",
+  "Producer_Commit": "7f5a3be1fed169d2521cb8c728101246ffb17b6c",
+  "Dataset_ID": "N400AH_STRUCTURED_TRACKS_2026Q2_Q3_v1",
+  "Source_Recovery_Commit": "7812b0795a800e8ff02b6bf54d7313a1879f8e84",
+  "Source_Recovery_Attestation_Path": "data/flight_tracks/N400AH/source_recovery_attestation.json",
+  "Source_Recovery_Attestation_Git_Blob_SHA1": "d36ef10ef3a706f2dba252f8f9ada38f67fa16d6",
+  "Local_Recomputation_Receipt_Path": "data/flight_tracks/N400AH/grid_v2_local_recomputation_receipt.json",
+  "Local_Recomputation_Receipt_Git_Blob_SHA1": "c5b5d9a9945ba53e9ea762a2f3909d6416b13308",
+  "Source_Hash_Ledger_Path": "data/flight_tracks/N400AH/source_hashes.csv",
+  "Source_Hash_Ledger_Git_Blob_SHA1": "cd3a7afe618f3fe29546336aa03dedbdbab679f8",
+  "Source_CRS": "EPSG:4326",
+  "Coordinate_Evidence_State": "VERIFIED_SOURCE_COORDINATE",
+  "Migration_Provenance_Class": "RECOMPUTED_FROM_SOURCE_COORDINATE",
+  "Grid_Manifest_SHA256": "8902af188ad449955119016f5747fe2393c582d9ed552fb03bcaecd9ab510aa4",
+  "Cell_Schema_SHA256": "1c173aee4b21b9baa545b656735155f2236a87c436d467a12132ef53b2592f5d",
+  "Binding_Schema_SHA256": "dabc461e47134b3b150be9aeb23b3d0097563493b33b3187538255e06b16a022",
+  "Mask_Schema_SHA256": "0b31b717d274b19686bf7f47edbabdaec31c86800f2ca7f1e73ffb663600978b",
+  "Geometry_Producer": "spiderweb-pr",
+  "Consumer_Geometry_Mode": "REFERENCE_ONLY",
+  "Expected_Output_State": "CANDIDATE_NOT_CANONICAL",
+  "Promotion_Blocker_ID": "SKYWATCHER-N400AH-RIGHTS-001",
+  "Promotion_Blocker_Class": "REDISTRIBUTION_RIGHTS_UNVERIFIED",
+  "Rights_Gate": {
+    "Repository_Visibility": "PUBLIC",
+    "Provider_Source_Redistribution_State": "UNVERIFIED",
+    "Raw_Provider_Payloads_Committed": false,
+    "Derived_Coordinate_Rows_Committed": false,
+    "Per_Cell_Aggregate_Committed": false,
+    "Public_Authority_Execution_Permitted": false,
+    "Policy": "FAIL_CLOSED_NO_PROVIDER_OR_DERIVED_TRACK_DATA_PUBLICATION_UNTIL_RIGHTS_VERIFIED"
+  },
+  "Source_Identity": {
+    "Original_Source_Archive": {
+      "Name": "N400AH.zip",
+      "SHA256": "fa64d13aa3fc32b36b70e84e591b1a3ededb89bb3335e35dda711bb0182b264e",
+      "Byte_Identity_State": "UNRESOLVED"
+    },
+    "Recovery_Container": {
+      "Name": "Choppers(1).zip",
+      "Bytes": 69753399,
+      "SHA256": "ace93d7f47041df32a987d5d4afd3a236f07e835dd10fbf1e082d38dceee5998",
+      "Container_Comparison_State": "DISTINCT_PAYLOADS"
+    },
+    "Frozen_Provider_Subset": {
+      "Member_Count": 50,
+      "Provider_CSV": 25,
+      "Provider_KML": 25,
+      "Uncompressed_Bytes": 20651134,
+      "Member_Identity_State": "PASS_BYTE_IDENTICAL_SUBSET",
+      "Missing_Members": 0,
+      "Divergent_Members": 0
+    }
+  },
+  "Observed": {
+    "Local_Recomputation_State": "PASS",
+    "Execution_Class": "INDEPENDENT_NUMERIC_RECOMPUTATION_NOT_AUTHORITY_EXECUTION",
+    "Authority_Execution_State": "NOT_EXECUTED",
+    "Authority_Code_Reference_Commit": "b8f5cf303ab7fc2b6ed006edce0fb12e1344a096",
+    "CI_Reproducibility_State": "BLOCKED_REDISTRIBUTION_RIGHTS_UNVERIFIED",
+    "Input_Record_Count": 12455,
+    "Interior_Record_Count": 10875,
+    "Outside_Record_Count": 1580,
+    "Edge_Shared_Record_Count": 0,
+    "Corner_Shared_Record_Count": 0,
+    "Binding_Row_Count": 10875,
+    "Boundary_Snap_Record_Count": 0,
+    "Unique_Bound_L2_Cell_Count": 3211,
+    "Cell_Record_Count_Min": 1,
+    "Cell_Record_Count_Max": 88,
+    "Row_Conservation_Equation": "10875 INTERIOR + 1580 OUTSIDE = 12455 INPUT",
+    "Row_Conservation_State": "PASS",
+    "Geometry_Copied": false,
+    "Candidate_State": "CANDIDATE_NOT_CANONICAL"
+  },
+  "Public_Execution_Policy": {
+    "Allowed": [
+      "receipt_metadata",
+      "hash_ledgers",
+      "count_closure",
+      "state_classification"
+    ],
+    "Prohibited_Until_Rights_Verified": [
+      "raw_provider_payloads",
+      "derived_coordinate_rows",
+      "per_cell_track_aggregates",
+      "public_spiderweb_authority_binding_artifacts"
+    ]
+  },
+  "Promotion_Note": "Do not promote this lane to authority-executed or publicly reproducible until redistribution rights permit handling of the source/derived coordinate rows. Local numeric recomputation remains valid evidence but is not a substitute for Spiderweb authority execution."
+}
