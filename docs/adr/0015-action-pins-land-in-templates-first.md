@@ -5,6 +5,7 @@
 - **Deciders:** PRII federation maintainers
 - **Scope:** all seven PRII federation repositories (defined in `thehub-pr`, rendered into each)
 - **Builds on:** the template-drift gate described in [`federation-templates/README.md`](../../federation-templates/README.md)
+- **Extended by:** [ADR 0016](0016-rendered-pip-manifests-land-in-templates-first.md), the same rule for rendered pip manifests. It also replaces the renderer's refusal of an empty `{{RENDERED_WORKFLOWS}}` with dropping that line.
 
 ## Context
 

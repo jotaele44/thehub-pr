@@ -18,6 +18,12 @@
 version: 2
 updates:
   - package-ecosystem: "pip"
+    # The pip ecosystem also reads requirement files one directory below "/",
+    # so this scan reaches federation-templates/requirements-desktop.txt: a
+    # pywebview bump edits that template and the hub's own
+    # requirements-desktop.txt in one pull request. Producers exclude their
+    # rendered copy. No exclude-paths here, and no second directory for the
+    # templates: that would scan the template twice and split a bump.
     directory: "/"
     schedule:
       interval: "weekly"
@@ -48,6 +54,19 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # Held majors. Each one conflicts with a peer the federation has not
+    # migrated: eslint-plugin-react 7 accepts eslint <= 9, @eslint/js 10
+    # requires eslint 10, and react-day-picker 8 accepts date-fns <= 3, so the
+    # update would fail `npm ci`. Held by semver level, not by version range, so
+    # a repository already on a newer major keeps its minor and patch updates.
+    # Remove an entry once its peer supports the new major.
+    ignore:
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/js"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "date-fns"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     # Dependabot reads every *.yml / *.yaml directly inside a non-root
