@@ -40,6 +40,7 @@ VITE_FEDERATION_MODE=diagnostic
 | `GET /api/research/case/:caseId` | yes — case reconstruction; 404 for a case the Hub does not hold |
 | `GET /api/spatial/features` | yes — Property Map and Digital Twin features by declared precision, each with its time at the recorded precision (`time_start`, `time_end`, `time_basis`, `temporal_state`), plus each feature's `declared_epistemic_class` and `declared_data_stage` (the producer's own declaration, or `null`), an account of records not drawn, the collection's `time_extent`, `undated` and `read_at`, and `store` (how the served store was built: `bounded-sample`, `not_recorded` or `unreadable`) (`bbox`, `category`, `producer`, `include_synthetic`, `limit`); 422 on a bad `bbox` |
 | `GET /api/spatial/intel` | yes — Location Intel: records within `radius_m` of `lat`,`lon`, nearest first, and records naming `municipality`; 422 on a bad parameter |
+| `GET /api/constellation` | yes — Federation Constellation: the stage tour, each app's code components and edges (`registry/constellation.v1.json`) and the content they move (exported totals, stored rows, lineage, sample rows, correlation candidates); `store_status` is `EMPTY` when the store holds no rows |
 | `POST /api/entities/:entity/filter` | yes (a read, despite the verb) |
 | `POST /api/entities/:entity` | yes — **write-guarded** |
 | `PATCH /api/entities/:entity/:id` | yes — **write-guarded** |

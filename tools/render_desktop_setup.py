@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render one producer's real native setup UI for browser-based CI checks."""
+"""Render one producer's real native setup or Launch Pad UI for browser-based CI checks."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import importlib.util
 import sys
 from pathlib import Path
 
-from prii_desktop import DesktopConfig, render_setup_html
+from prii_desktop import DesktopConfig, render_launchpad_html, render_setup_html
 
 
 def load_config(repo: Path) -> DesktopConfig:
@@ -31,12 +31,25 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--page",
+        choices=("setup", "launchpad"),
+        default="setup",
+        help="Which native page to render (default: setup).",
+    )
     args = parser.parse_args()
 
     repo = args.repo.resolve()
     output = args.output.resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(render_setup_html(load_config(repo)), encoding="utf-8")
+    config = load_config(repo)
+    if args.page == "launchpad":
+        if config.launchpad is None:
+            raise SystemExit(f"{repo.name} declares no LAUNCHPAD in desktop/config.py")
+        page = render_launchpad_html(config)
+    else:
+        page = render_setup_html(config)
+    output.write_text(page, encoding="utf-8")
     print(output)
     return 0
 

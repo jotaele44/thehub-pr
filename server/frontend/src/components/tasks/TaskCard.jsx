@@ -60,7 +60,7 @@ export default function TaskCard({ task, role = "admin", onEdit, onStatusChange 
       {lifecycleOpts.length > 0 && (
         <div className="mt-2 pt-2 border-t border-border" onClick={(e) => e.stopPropagation()}>
           <Select onValueChange={(v) => onStatusChange?.(task, v)}>
-            <SelectTrigger className="h-7 text-xs bg-secondary/50 border-border">
+            <SelectTrigger aria-label="Move task to another status" className="h-7 text-xs bg-secondary/50 border-border">
               <SelectValue placeholder="Move to…" />
             </SelectTrigger>
             <SelectContent>

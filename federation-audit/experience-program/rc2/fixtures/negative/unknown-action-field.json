@@ -1,0 +1,16 @@
+{
+  "description": "An unknown field inside an action is rejected.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/actions/1/shortcut_hint",
+      "value": "F2"
+    }
+  ],
+  "expect": [
+    "schema:actions:additionalProperties"
+  ]
+}

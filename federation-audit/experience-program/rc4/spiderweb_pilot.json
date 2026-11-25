@@ -1,0 +1,108 @@
+{
+ "schema": "federation.experience-program.pilot-comparison/1",
+ "claim_class": "COMPUTED",
+ "repository": "spiderweb-pr",
+ "commits": {
+  "before": "e64fb4029d25e5c171f564223c302073c461aeec",
+  "after": "b0427630f2e35741c02c5c93770398dfe83e61fc"
+ },
+ "method": "Chromium, dark colour scheme, the same routes at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels, on a fresh temporary workspace. Pages were loaded, not operated.",
+ "frame": {
+  "before": {
+   "routes": 6,
+   "page_loads": 42,
+   "page_loads_with_an_error": 0,
+   "page_loads_not_200": 0,
+   "routes_that_redirect": [
+    "/#view:Anomaly",
+    "/#view:Command",
+    "/#view:Finance",
+    "/#view:Graph",
+    "/#view:Query",
+    "/#view:Spatial"
+   ],
+   "page_loads_with_horizontal_overflow": 0,
+   "page_loads_with_an_unnamed_button": 0,
+   "controls_under_24px_summed_over_page_loads": 190,
+   "page_loads_with_console_errors": 0,
+   "page_loads_with_page_errors": 0
+  },
+  "after": {
+   "routes": 6,
+   "page_loads": 42,
+   "page_loads_with_an_error": 0,
+   "page_loads_not_200": 0,
+   "routes_that_redirect": [
+    "/#view:Anomaly",
+    "/#view:Command",
+    "/#view:Finance",
+    "/#view:Graph",
+    "/#view:Query",
+    "/#view:Spatial"
+   ],
+   "page_loads_with_horizontal_overflow": 0,
+   "page_loads_with_an_unnamed_button": 0,
+   "controls_under_24px_summed_over_page_loads": 190,
+   "page_loads_with_console_errors": 0,
+   "page_loads_with_page_errors": 0
+  }
+ },
+ "targeted_rules": {
+  "color-contrast": {
+   "before": {
+    "routes_failing": 0,
+    "distinct_elements": 0
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "button-name": {
+   "before": {
+    "routes_failing": 0,
+    "distinct_elements": 0
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "scrollable-region-focusable": {
+   "before": {
+    "routes_failing": 0,
+    "distinct_elements": 0
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "label-content-name-mismatch": {
+   "before": {
+    "routes_failing": 6,
+    "distinct_elements": 6
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  }
+ },
+ "every_critical_or_serious_rule": {
+  "label-content-name-mismatch": {
+   "before": {
+    "page_loads": 27,
+    "routes": 6
+   },
+   "after": {
+    "page_loads": 0,
+    "routes": 0
+   }
+  }
+ }
+}

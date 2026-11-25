@@ -1,7 +1,9 @@
 import React from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
+import SourceMonitorLedger from "@/components/sources/SourceMonitorLedger";
 import MoneySweepFeedTab from "@/components/feed/MoneySweepFeedTab";
 import MoneySweepLeaderboardsTab from "@/components/feed/MoneySweepLeaderboardsTab";
 import StatusChip from "@/components/shared/StatusChip";
@@ -13,10 +15,19 @@ import { GENERIC_STATUS, SEVERITY, CONFIDENCE, REVIEW_STATUS } from "@/lib/chips
 const MODULE = MODULES.find((m) => m.name === "MoneySweep-PR");
 const PROC_TYPES = ["Competitive", "Emergency", "SoleSource", "Grant", "Unknown", "Other"];
 const FLAG_TYPES = ["DuplicateVendor", "UnusualAmount", "EmergencyPattern", "SoleSourcePattern", "MissingData", "RepeatedAward", "TimingAnomaly", "Other"];
+const MONEYSWEEP_TABS = ["feed", "leaderboards", "contracts", "vendors", "flags", "sources"];
 
 const fmtMoney = (n) => (n || n === 0) ? `$${Number(n).toLocaleString()}` : "—";
 
 export default function MoneySweep() {
+  // The tab is URL state, so /moneysweep?tab=sources deep-links the Monitor tab.
+  const [params, setParams] = useSearchParams();
+  const tab = MONEYSWEEP_TABS.includes(params.get("tab")) ? params.get("tab") : "feed";
+  const selectTab = (value) => {
+    const next = new URLSearchParams(params);
+    next.set("tab", value);
+    setParams(next);
+  };
   const contractFields = [
     { key: "contract_id", label: "Contract ID", required: true },
     { key: "title", label: "Title", required: true, full: true },
@@ -81,13 +92,14 @@ export default function MoneySweep() {
   return (
     <div>
       <ModulePageHeader module={MODULE} icon={Banknote} />
-      <Tabs defaultValue="feed">
+      <Tabs value={tab} onValueChange={selectTab}>
         <TabsList className="mb-4 flex h-auto min-h-11 flex-wrap">
           <TabsTrigger value="feed" className="min-h-11">Procurement + Funding Feed</TabsTrigger>
           <TabsTrigger value="leaderboards" className="min-h-11">Leaderboards</TabsTrigger>
           <TabsTrigger value="contracts" className="min-h-11">Contracts</TabsTrigger>
           <TabsTrigger value="vendors" className="min-h-11">Vendors</TabsTrigger>
           <TabsTrigger value="flags" className="min-h-11">Anomaly Flags</TabsTrigger>
+          <TabsTrigger value="sources" className="min-h-11">Monitor</TabsTrigger>
         </TabsList>
         <TabsContent value="feed">
           <MoneySweepFeedTab />
@@ -114,6 +126,9 @@ export default function MoneySweep() {
             addLabel="New Flag" emptyTitle="No anomaly flags"
             emptyDescription="Anomaly detection requires contract/vendor-level enrichment not yet in the canonical federation export — data pending richer MoneySweep-PR intake."
             searchPlaceholder="Search flags…" />
+        </TabsContent>
+        <TabsContent value="sources">
+          <SourceMonitorLedger producer="moneysweep-pr" />
         </TabsContent>
       </Tabs>
     </div>

@@ -1,6 +1,6 @@
 # ADR 0001 — Federated engines, one hub app
 
-- **Status:** Accepted
+- **Status:** Accepted; superseded in part by [ADR 0014](0014-spoke-guis-are-complete-domain-apps.md), which replaces the "diagnostic-only" demotion of producer dashboards. The Hub remains the home of every cross-producer view.
 - **Date:** 2026-07-06
 - **Deciders:** PRII federation maintainers
 - **Scope:** `thehub-pr` and the six PRII producer repositories

@@ -7,6 +7,16 @@ const exactAlias = (find, relative) => ({ find, replacement: fileURLToPath(new U
 
 export default defineConfig({
   plugins: [react()],
+  // Three pages: the component fixtures, the shell fixtures and the control fixtures.
+  build: {
+    rollupOptions: {
+      input: {
+        main: fileURLToPath(new URL('./index.html', here)),
+        shell: fileURLToPath(new URL('./shell.html', here)),
+        controls: fileURLToPath(new URL('./controls.html', here)),
+      },
+    },
+  },
   resolve: {
     alias: [
       exactAlias(/^@pr-federation\/react$/, '../packages/react/src/index.jsx'),

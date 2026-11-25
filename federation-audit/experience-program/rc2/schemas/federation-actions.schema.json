@@ -1,0 +1,358 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jotaele44/thehub-pr/blob/main/federation-audit/experience-program/rc2/schemas/federation-actions.schema.json",
+  "title": "Federation action definition",
+  "description": "One user-invokable action. A single definition feeds every surface it appears on (toolbar, item menu, right-click menu, command palette, Dock menu, keyboard), so an action can never exist on a pointer-only surface alone. Unknown fields are rejected except extension fields named x-*. Cross-document rules (duplicate ids, namespace, binding conflicts) are enforced by scripts/rc2_validate.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "patternProperties": {
+    "^x-[a-z0-9-]+$": {}
+  },
+  "required": [
+    "id",
+    "owning_application",
+    "capability_id",
+    "title",
+    "object_type",
+    "object_class",
+    "selection",
+    "permission",
+    "effect",
+    "availability",
+    "confirmation",
+    "audit_event",
+    "keyboard_binding",
+    "display_surfaces",
+    "error_behavior"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+$",
+      "description": "Stable id, namespaced by the owning application: <application>.<object>.<verb>."
+    },
+    "owning_application": {
+      "type": "string",
+      "enum": [
+        "aguayluz-pr",
+        "centinelas-pr",
+        "moneysweep-pr",
+        "mucaro-ai",
+        "ovnis-pr",
+        "skywatcher-pr",
+        "spiderweb-pr",
+        "thehub-pr"
+      ]
+    },
+    "capability_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "open",
+        "create",
+        "edit",
+        "rename",
+        "delete",
+        "pin",
+        "unpin",
+        "export",
+        "import",
+        "run",
+        "navigate",
+        "other"
+      ]
+    },
+    "object_type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object_class": {
+      "type": "string",
+      "enum": [
+        "user-named",
+        "evidence",
+        "derived",
+        "system"
+      ],
+      "description": "evidence objects carry provenance and may not be renamed."
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "min",
+        "max"
+      ],
+      "properties": {
+        "min": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        }
+      }
+    },
+    "permission": {
+      "type": "string",
+      "enum": [
+        "guest",
+        "operator",
+        "administrator"
+      ]
+    },
+    "effect": {
+      "type": "string",
+      "enum": [
+        "read",
+        "write"
+      ]
+    },
+    "availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predicate",
+        "requires_online"
+      ],
+      "properties": {
+        "predicate": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requires_online": {
+          "type": "boolean"
+        }
+      }
+    },
+    "confirmation": {
+      "type": "string",
+      "enum": [
+        "none",
+        "confirm",
+        "typed-confirm"
+      ]
+    },
+    "audit_event": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1
+    },
+    "keyboard_binding": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^((Mod|Ctrl|Alt|Shift|Meta)\\+)*([A-Z0-9]|F[0-9]{1,2}|Enter|Escape|Delete|Backspace|Space|Tab|Arrow(Up|Down|Left|Right)|[/?.,\\[\\]])$"
+    },
+    "display_surfaces": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "toolbar",
+          "item-menu",
+          "context-menu",
+          "command-palette",
+          "dock-menu",
+          "detail-panel",
+          "keyboard"
+        ]
+      }
+    },
+    "error_behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "on_failure",
+        "preserves_input",
+        "retryable"
+      ],
+      "properties": {
+        "on_failure": {
+          "type": "string",
+          "enum": [
+            "inline",
+            "toast",
+            "dialog"
+          ]
+        },
+        "preserves_input": {
+          "type": "boolean"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "description": "A write is never available to a guest and always leaves an audit event.",
+      "if": {
+        "properties": {
+          "effect": {
+            "const": "write"
+          }
+        },
+        "required": [
+          "effect"
+        ]
+      },
+      "then": {
+        "properties": {
+          "permission": {
+            "enum": [
+              "operator",
+              "administrator"
+            ]
+          },
+          "audit_event": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "description": "Right-click is never the only way to reach an action.",
+      "if": {
+        "properties": {
+          "display_surfaces": {
+            "contains": {
+              "const": "context-menu"
+            }
+          }
+        },
+        "required": [
+          "display_surfaces"
+        ]
+      },
+      "then": {
+        "properties": {
+          "display_surfaces": {
+            "contains": {
+              "enum": [
+                "toolbar",
+                "item-menu",
+                "command-palette",
+                "detail-panel"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "The Dock menu is macOS-only, so it is never the only surface either.",
+      "if": {
+        "properties": {
+          "display_surfaces": {
+            "contains": {
+              "const": "dock-menu"
+            }
+          }
+        },
+        "required": [
+          "display_surfaces"
+        ]
+      },
+      "then": {
+        "properties": {
+          "display_surfaces": {
+            "contains": {
+              "enum": [
+                "toolbar",
+                "item-menu",
+                "command-palette",
+                "detail-panel"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "description": "A keyboard-only action must declare its binding.",
+      "if": {
+        "properties": {
+          "display_surfaces": {
+            "contains": {
+              "const": "keyboard"
+            }
+          }
+        },
+        "required": [
+          "display_surfaces"
+        ]
+      },
+      "then": {
+        "properties": {
+          "keyboard_binding": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "description": "Only user-named objects are renamed; a rename is a write.",
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "rename"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "object_class": {
+            "const": "user-named"
+          },
+          "effect": {
+            "const": "write"
+          }
+        }
+      }
+    },
+    {
+      "description": "A destructive action is confirmed.",
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "delete"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "properties": {
+          "confirmation": {
+            "enum": [
+              "confirm",
+              "typed-confirm"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

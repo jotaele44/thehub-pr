@@ -76,14 +76,17 @@ jobs:
         env:
           PRII_REPO_SLUG: thehub-pr
           PRII_SETUP_FIXTURE: ${{ github.workspace }}/desktop-ui-artifacts/setup.html
+          PRII_LAUNCHPAD_FIXTURE: ${{ github.workspace }}/desktop-ui-artifacts/launchpad.html
           PRII_VISUAL_DIR: ${{ github.workspace }}/desktop-ui-artifacts
         run: |
           python tools/render_desktop_setup.py \
             --repo . --output desktop-ui-artifacts/setup.html
+          python tools/render_desktop_setup.py \
+            --repo . --page launchpad --output desktop-ui-artifacts/launchpad.html
           cd federation-design/test-harness
           npm ci --no-audit --no-fund
           npx playwright install --with-deps chromium
-          npx playwright test tests/desktop-setup.spec.js \
+          npx playwright test tests/desktop-setup.spec.js tests/desktop-launchpad.spec.js \
             --project=tablet-768 --project=desktop-1280
 
       - name: Upload native setup visual evidence

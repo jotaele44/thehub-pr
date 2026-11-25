@@ -46,7 +46,8 @@ _review: &review
 _needs_license: &needs_license
   [ovnis-pr, skywatcher-pr, spiderweb-pr]
 # The six producers, excluding thehub-pr — the hub already has its own server
-# tests, and its backend is the one the producers' shells were modelled on.
+# tests, and its backend is the one the producers' shells were modelled on. Also
+# the audience of baseline/dependabot.yml, whose hub variant differs.
 _producers: &producers
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr]
 # V2 grid consumers that are also producer repositories. Spiderweb is excluded:
@@ -62,6 +63,22 @@ _grid_v2_producer_consumers: &grid_v2_producer_consumers
 # thehub-pr keeps its own variant, which additionally sets no-undef.
 _jsx_frontend: &jsx_frontend
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr]
+# GUI rules (docs/FEDERATION_GUI_STANDARD.md, ADR 0014). These two sets are the
+# ADOPTION LISTS, not the eventual audience: a repository is added here by the
+# hub change that starts its adoption, one repository at a time, because
+# rendering the canonical checker over a producer's own copy before its manifest
+# and fragments are ready would turn that producer's gate red. Until a repo is
+# listed its own copies stand, and federation-template-sync.yml leaves them alone.
+#   _gui_rules — checker, its test, the procedure document. Eventually all seven.
+#   _gui_code  — the parity workflow. Eventually the five in _jsx_frontend;
+#                thehub-pr keeps its own (its e2e mocks the API, with no backend
+#                step) and spiderweb-pr keeps its runtime matrix.
+# Adoption order: moneysweep-pr, centinelas-pr, then the rest.
+# Adopted so far: thehub-pr (rules), moneysweep-pr (rules and workflow).
+_gui_rules: &gui_rules
+  [moneysweep-pr, thehub-pr]
+_gui_code: &gui_code
+  [moneysweep-pr]
 
 targets:
   - template: Fix-Gatekeeper.command
@@ -85,6 +102,10 @@ targets:
     output: PRII-{{APP_SLUG}}.app/Contents/MacOS/PRII-{{APP_SLUG}}
     repos: *standard_shell_launchers
     mode: 0755
+  # A pip manifest: producers' Dependabot excludes it ({{RENDERED_PIP_MANIFESTS}}).
+  # Keep the template directly in federation-templates/, where the hub's own pip
+  # scan of "/" still reaches it and bumps pywebview here and in the hub's
+  # requirements-desktop.txt together.
   - template: requirements-desktop.txt
     output: requirements-desktop.txt
     repos: *desktop
@@ -122,11 +143,22 @@ targets:
     repos: *grid_v2_producer_consumers
 
   # Engineering baseline — supply-chain and dependency hygiene that every repo
-  # in the federation needs identically. Single-sourced here so a fix lands once
-  # instead of seven times, and so template-drift.yml keeps it from rotting.
+  # in the federation needs. Single-sourced here so a fix lands once instead of
+  # seven times, and so template-drift.yml keeps it from rotting.
+  # Dependabot comes in two variants that render to the same path. Producers
+  # exclude the workflows and pip manifests rendered into them
+  # ({{RENDERED_WORKFLOWS}}, {{RENDERED_PIP_MANIFESTS}}, both derived from this
+  # file), because a version bumped in a rendered copy breaks their drift gate.
+  # thehub-pr instead scans the templates themselves, so bumps land in the
+  # template first and reach producers in a sync PR. See the README sections
+  # "Action pins: Dependabot bumps the template, never a copy" and "Pip
+  # manifests: the same rule for requirements-desktop.txt".
   - template: baseline/dependabot.yml
     output: .github/dependabot.yml
-    repos: *all
+    repos: *producers
+  - template: baseline/dependabot.hub.yml
+    output: .github/dependabot.yml
+    repos: [thehub-pr]
   - template: baseline/codeql.yml
     output: .github/workflows/codeql.yml
     repos: *all
@@ -176,6 +208,23 @@ targets:
   - template: baseline/eslint.config.js
     output: "{{FRONTEND_DIR}}/eslint.config.js"
     repos: *jsx_frontend
+
+  # GUI rules. One checker instead of five diverging copies; repo specifics live
+  # in each repository's manifest `discovery` block, so the checker and its test
+  # carry no placeholders. See the _gui_rules / _gui_code comment above before
+  # adding a repository.
+  - template: gui/check_gui_parity.py
+    output: scripts/check_gui_parity.py
+    repos: *gui_rules
+  - template: gui/test_gui_parity.py
+    output: tests/test_gui_parity.py
+    repos: *gui_rules
+  - template: gui/GUI_CAPABILITY_PARITY.md
+    output: docs/GUI_CAPABILITY_PARITY.md
+    repos: *gui_rules
+  - template: gui/gui-capability-parity.yml
+    output: .github/workflows/gui-capability-parity.yml
+    repos: *gui_code
 
   # Governance and contributor surface. Shared because the quality gates became
   # uniform across the federation; anything repo-specific stays in README/docs.
