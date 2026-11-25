@@ -1,0 +1,18 @@
+{
+  "description": "Two applications cannot declare the same application setting.",
+  "base": [
+    "mucaro-ai",
+    "ovnis-pr"
+  ],
+  "patch": [
+    {
+      "doc": 1,
+      "op": "set",
+      "path": "/settings/1/id",
+      "value": "mucaro-ai.navigation.pins"
+    }
+  ],
+  "expect": [
+    "setting-collision"
+  ]
+}

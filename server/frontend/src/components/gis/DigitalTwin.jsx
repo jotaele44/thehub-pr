@@ -14,6 +14,7 @@ import {
 import { categoryColors, featurePaint, precisionStyle } from '@/gis/propertyMap';
 import { downloadText } from '@/lib/download';
 import { cn } from '@/lib/utils';
+import { FederationScrollRegion } from '@pr-federation/react';
 
 // Digital Twin (TWIN-005/150..163, FDX-023/030/031; directive §11). One shared
 // state drives four panels: perspective (Cesium on the uniform-datum CUDEM
@@ -123,7 +124,7 @@ function GeoidStatus({ geoid }) {
 function DetailsPanel({ selected, point, visible, onSelect, selectedId, tilesRead, terrainError, terrain, geoid, counts, timeRange }) {
   const standIn = selected?.properties.geometry_precision === 'REPRESENTATIVE_POINT';
   return (
-    <div className="h-full space-y-3 overflow-y-auto p-3 text-xs">
+    <FederationScrollRegion label="Record details" axis="y" role="group" className="h-full space-y-3 p-3 text-xs">
       {selected ? <SelectedRecord feature={selected} /> : <p className="text-muted-foreground">No record selected.</p>}
       <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
         <dt className="text-muted-foreground">Point</dt>
@@ -167,7 +168,7 @@ function DetailsPanel({ selected, point, visible, onSelect, selectedId, tilesRea
         <h4 id="dt-imagery" className="font-semibold">Imagery provenance</h4>
         <p>{IMAGERY_BASEMAPS.usgsImagery.attribution}. {IMAGERY_BASEMAPS.usgsImagery.note}</p>
       </section>
-    </div>
+    </FederationScrollRegion>
   );
 }
 

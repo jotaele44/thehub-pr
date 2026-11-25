@@ -1,0 +1,16 @@
+{
+  "description": "Two navigation items cannot share an id.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "copy",
+      "path": "/navigation/groups/0/items/0",
+      "to": "/navigation/groups/0/items/-"
+    }
+  ],
+  "expect": [
+    "duplicate-navigation-id"
+  ]
+}
