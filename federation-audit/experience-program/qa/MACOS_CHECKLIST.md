@@ -73,11 +73,30 @@ Measure the delay as you experience it, from double-click to a usable window.
    ls -t $TMPDIR/prii-*-setup.* 2>/dev/null | head
    ```
 
+### 3a. MoneySweep and AguaYLuz cold first start
+
+The baseline's 9.4 s first starts of these two were measured on a container's
+cold disk and are `UNRESOLVED` in `rc8/RC8_GATE.json` until timed on a real
+machine. Only a restart empties the disk cache, so:
+
+1. Restart the Mac. Open nothing else.
+2. Check the setup marker as in step 3 above; if it is missing, launch once,
+   let setup finish, quit, and restart the Mac again.
+3. Double-click `~/Developer/moneysweep-pr/PRII-MONEYSWEEP.app` and time (a),
+   (b) and (c) as in step 3. Quit it and time a second launch.
+4. Restart, and do the same with `~/Developer/aguayluz-pr/PRII-AGUAYLUZ.app`.
+
+Send one block from section 4 per app, and say it was after a restart. The
+budget is 3 s for the first start and 1.5 s for later starts, to the Launch
+Pad. Over that, the two deferred start-up changes in `first_start_diagnosis`
+are worth doing; under it, they are not.
+
 ## 4. What to send back
 
 ```text
 App (repo, and commit from `git -C ~/Developer/<repo> log -1 --format=%h`):
 .setup-complete present before launch: yes / no
+Launched right after a Mac restart: yes / no
 First launch:  Dock tile ___ s | Launch Pad ___ s | content ___ s
 Second launch: Dock tile ___ s | Launch Pad ___ s | content ___ s
 Dock tile name / icon:

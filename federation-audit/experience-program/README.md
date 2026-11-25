@@ -288,7 +288,10 @@ application was changed.
   0.73 s after, with loading pyarrow and numpy's native libraries taking about
   5 s of it. The cost is reading files from this container's cold disk, so
   those two first-start budget results are `UNRESOLVED` until measured on real
-  hardware. Report a cold first start apart from warm ones.
+  hardware. Report a cold first start apart from warm ones. The two start-up
+  changes considered (MoneySweep loading pandas on first use, AguaYLuz moving
+  its import-time data load) are `DEFERRED` until a real-machine first start
+  exceeds the budget; `qa/MACOS_CHECKLIST.md` section 3a says how to measure it.
 - "Initial" JavaScript is what `index.html` references; the rest loads later.
 - Six budgets were adopted after the baseline was taken; `RC8_GATE.json`
   lists them and each application's result. They are bounds for this harness,
