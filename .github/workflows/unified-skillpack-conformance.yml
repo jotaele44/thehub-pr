@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions: {contents: read}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with: {fetch-depth: 0}
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with: {python-version: '3.12'}
       - run: python tools/validate_unified_skillpacks.py --root .
       - run: python -m unittest discover -s tests -p 'test_unified_skillpack_conformance.py'

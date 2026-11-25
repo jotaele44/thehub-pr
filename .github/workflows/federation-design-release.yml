@@ -27,7 +27,7 @@ jobs:
         working-directory: federation-design/packages/react
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
       - name: Unit and contract tests
@@ -62,7 +62,7 @@ jobs:
           tar -xzOf "$tgz" package/dist/federation.css | grep -q '\.fd-shell'
           sha256sum "$tgz" > SHA256SUMS
       - name: Upload candidate artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: federation-design-${{ github.sha }}
           path: |
@@ -82,7 +82,7 @@ jobs:
         working-directory: federation-design/packages/react
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
       - name: Rebuild and verify immutable release artifact
@@ -96,7 +96,7 @@ jobs:
           version=$(node -p "JSON.parse(require('fs').readFileSync('package.json')).version")
           test "$GITHUB_REF_NAME" = "federation-design-v$version"
       - name: Attach immutable tarball and checksum to release
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3 # v3.0.4
         with:
           files: |
             federation-design/packages/react/pr-federation-react-*.tgz
