@@ -1,0 +1,18 @@
+{
+  "description": "Right-click cannot be the only way to reach an action.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/actions/2/display_surfaces",
+      "value": [
+        "context-menu"
+      ]
+    }
+  ],
+  "expect": [
+    "schema:actions:contains"
+  ]
+}

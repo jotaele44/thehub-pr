@@ -76,7 +76,9 @@ package changes.
 
 `data/aggregate/*.jsonl` is a committed bounded sample, so it goes stale as producers publish.
 `.github/workflows/federation-ingest.yml` closes that loop: on each producer
-`repository_dispatch` it re-runs every producer's `export_canonical`, rebuilds the bounded
+`repository_dispatch` (`moneysweep-export`, `aguayluz-export`, `centinelas-export`,
+`spiderweb-export`), and once a day on a schedule as a backstop, it re-runs every
+producer's `export_canonical`, rebuilds the bounded
 fixture, and **opens a pull request** when the data actually changed. Nothing lands on `main`
 without review. Every refresh force-pushes the one `fixture-refresh` branch, so an open
 refresh PR always shows the newest data and a run that cannot open a PR leaves no new branch.
@@ -110,7 +112,10 @@ installs dependencies, later runs work offline):
 - `PRII-THEHUB.bat` (Windows)
 - `PRII-THEHUB.sh` (Linux)
 
-See [`desktop/README.md`](desktop/README.md) for details. The launcher opens
+See [`desktop/README.md`](desktop/README.md) for details. The app opens on its
+**Launch Pad**, where you choose Guest (read-only) or Operator (writes enabled
+for that session), the starting page and the launch options before anything
+runs. The launcher opens
 the hub app with an empty database — the manual steps below (`hub aggregate`,
 `hub correlate`, `hub ingest`) are how you populate it with real federation
 data; they aren't a prerequisite for the app to open.
@@ -155,22 +160,32 @@ writes) are guarded:
 
 Reads are never affected. **Set the token before writes are needed** — without it, there is
 no fallback that lets any caller (including loopback or the Docker bridge address under
-`docker compose up`) through. Caveat: with the token set the
-browser UI cannot currently supply it (see `docs/MATURITY_AUDIT.md`), so token mode
-suits API/CLI callers today.
+`docker compose up`) through. The browser UI supplies the token in one of three ways: the
+desktop Launch Pad's Operator mode sets a one-time token and passes it to the window; loading
+the app with `?write_token=<token>`; or pasting it under Operator Settings. All three keep it
+in tab-scoped session storage (see [`server/frontend/README.md`](server/frontend/README.md)).
 
 `hub ingest` maps the canonical aggregate streams onto the collections the UI reads
 (`sources → UnifiedSources`, `entities → GraphNodes`, `relationships → GraphEdges`,
 `alerts → GovernanceAlerts`, `correlations → CrossoverLinks`); the mapping lives in
 [`src/hub/ingest.py`](src/hub/ingest.py), where `ingest_aggregate` drives the canonical
 streams through `_project_ui` and the `project_*` helpers (`project_producer_collections`,
-`project_crossover_links`, `project_continuity_risks`, `project_livefeed`). Pages backed by these
+`project_crossover_links`, `project_continuity_risks`, `project_livefeed`). It also builds
+`MonitoredSources` with `project_source_monitors`, replacing that collection on each run, from
+the `source_monitors` stream every producer emits
+([ADR 0013](docs/adr/0013-source-monitors-stream.md); canonical rows land in `SourceMonitors`),
+with each source's last success and how that time is known. A producer whose stream rows are
+missing from the aggregate is reported as a gap, not dropped silently. (The ADR 0012 hub-side
+registry reader, `hub source-monitor`, is retired.) The read-only Source Monitor
+(`/source-monitor` and a Monitor tab on each producer page) reads it. Pages backed by these
 collections (Sources, the Spiderweb graph, cross-producer links) render live aggregate data;
 domain-heavy pages that need per-domain fields the aggregate does not yet carry (contracts,
 feeds, cases) stay empty until producers emit that data. If `dist/` is not built, the backend
 runs API-only and the UI can be served separately with `npm --prefix server/frontend run dev`
-(Vite on :5173). The per-producer `dashboard/`/`frontend/` apps are diagnostic-only; the hub
-app is the product.
+(Vite on :5173). The hub app is where every cross-producer view lives. Each producer's own
+`dashboard/`/`frontend/` app is the complete GUI for its domain, built from the shared
+federation template and rules in [`docs/FEDERATION_GUI_STANDARD.md`](docs/FEDERATION_GUI_STANDARD.md)
+([ADR 0014](docs/adr/0014-spoke-guis-are-complete-domain-apps.md)).
 
 After consolidation, `hub project-signs` groups each project's funding awards (by recipient +
 location) into a public-works style **sign** — project title, location, each funding

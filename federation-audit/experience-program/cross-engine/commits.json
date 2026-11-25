@@ -1,0 +1,10 @@
+{
+ "skywatcher-pr": {"commit": "13015707067dfff519c5daaaf40785d5f84fb167", "label": "RC4 after (skywatcher-pr#375)"},
+ "aguayluz-pr": {"commit": "c60587e210e813a29318ebe761eb7b9c2f281370", "label": "RC4 after (aguayluz-pr#420); installed with the pydantic-core pin removed"},
+ "moneysweep-pr": {"commit": "6c9a0fe54ff17ca07344f55528bcb036c9e9e706", "label": "RC4 after (moneysweep-pr#719)"},
+ "centinelas-pr": {"commit": "d96863d1e8ae0df32874a1519acd86f50b25e173", "label": "RC4 after (centinelas-pr#198); installed with the pydantic-core pin removed"},
+ "thehub-pr": {"commit": "28057d867e859bf6b1d0b612b9de3444fe4d883c", "label": "thehub-pr#435 head, includes the tab bar, phone-width and satellite button fixes"},
+ "ovnis-pr": {"commit": "0d1e12bcb2a3d4e26ab9d3c1d10c2c89fd440948", "label": "RC4 after (ovnis-pr#204)"},
+ "spiderweb-pr": {"commit": "9d6af728b48b7bbde5167d8abaacf51f34a0acaa", "label": "RC0-audited commit; main at 5ce5eca does not build (RC4 eighth_application)"},
+ "mucaro-ai": {"commit": "4fc7b87d368064707493f9f745062a612e9cfbfe", "label": "commit of the RC4 Múcaro scan; script policy lifted in the test context"}
+}

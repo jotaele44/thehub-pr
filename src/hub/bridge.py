@@ -25,6 +25,7 @@ _CANDIDATES = [
     ("transactions.jsonl", "transactions"),
     ("observations.jsonl", "observations"),
     ("alerts.jsonl", "alerts"),
+    ("source_monitors.jsonl", "source_monitors"),
 ]
 
 

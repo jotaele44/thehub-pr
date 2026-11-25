@@ -220,14 +220,14 @@ export default function RecentActivity() {
 
       <div className="flex flex-wrap items-center gap-3 mb-8">
         <Select value={severity} onValueChange={setSeverity}>
-          <SelectTrigger className="w-40 h-9"><SelectValue placeholder="Severity" /></SelectTrigger>
+          <SelectTrigger aria-label="Severity" className="w-40 h-9"><SelectValue placeholder="Severity" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All severities</SelectItem>
             {SEVERITIES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={timeWindow} onValueChange={setTimeWindow}>
-          <SelectTrigger className="w-40 h-9"><SelectValue placeholder="Window" /></SelectTrigger>
+          <SelectTrigger aria-label="Time window" className="w-40 h-9"><SelectValue placeholder="Window" /></SelectTrigger>
           <SelectContent>
             {WINDOWS.map((w) => <SelectItem key={w.value} value={w.value}>{w.label}</SelectItem>)}
           </SelectContent>

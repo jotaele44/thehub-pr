@@ -231,6 +231,14 @@ __marimo__/
 # generated federation maintenance rollup (audit artifact, not committed)
 reports/federation_maintenance/
 
+# Aggregates that audit and readiness runs write beside their receipts. A full
+# aggregate is ~117 MB and eight of them were once committed (948 MB of working
+# tree). The receipt, its logs and an aggregate.manifest.json (SHA-256, bytes and
+# record count per file) are the evidence; the bytes themselves are not.
+reports/**/tmp/
+reports/**/aggregate/
+reports/**/post_push_aggregate/
+
 # server entity database (runtime-generated)
 data/hub.db
 

@@ -2,23 +2,27 @@
   "cap_per_stream": 400,
   "collections": {
     "Alerts": 400,
-    "ContinuityRisks": 56,
+    "ContinuityRisks": 74,
     "Contracts": 3,
-    "Correlations": 34,
-    "CrossoverLinks": 16,
-    "Entities": 825,
+    "Correlations": 45,
+    "CrossoverLinks": 23,
+    "Entities": 846,
     "FederationSummary": 1,
     "GovernanceAlerts": 400,
     "GraphEdges": 400,
-    "GraphNodes": 825,
-    "InfrastructureAssets": 143,
-    "LiveFeedItems": 134,
+    "GraphNodes": 846,
+    "InfrastructureAssets": 155,
+    "LiveFeedItems": 140,
+    "MonitoredSources": 347,
     "Observations": 400,
-    "PatternObservations": 165,
-    "PublicMatters": 23,
+    "OutdoorConditions": 20,
+    "PatternObservations": 158,
+    "PublicMatters": 24,
     "Relationships": 400,
+    "SourceMonitorSummary": 1,
+    "SourceMonitors": 347,
     "Sources": 400,
-    "UnifiedCases": 165,
+    "UnifiedCases": 158,
     "UnifiedSources": 400,
     "Vendors": 14
   },
@@ -26,24 +30,24 @@
   "note": "Built by scripts/build_hub_fixture.py from the real aggregate/correlate/ingest pipeline. Records are genuine but truncated: 'sampled' is what this fixture holds, 'actual' is what a full run produced. Counts shown in the UI against this fixture are not federation totals. Streams are sampled round-robin across (producer, record type); 'closure_added' counts entities re-admitted beyond the cap because a surviving relationship or alert refers to them, without which cross-stream projections would drop those rows.",
   "streams": {
     "alerts": {
-      "actual": 4399,
+      "actual": 4603,
       "sampled": 400
     },
     "entities": {
-      "actual": 48224,
-      "closure_added": 425,
-      "sampled": 825
+      "actual": 48168,
+      "closure_added": 446,
+      "sampled": 846
     },
     "observations": {
-      "actual": 572,
+      "actual": 560,
       "sampled": 400
     },
     "relationships": {
-      "actual": 66769,
+      "actual": 66728,
       "sampled": 400
     },
     "sources": {
-      "actual": 43842,
+      "actual": 43767,
       "sampled": 400
     }
   }

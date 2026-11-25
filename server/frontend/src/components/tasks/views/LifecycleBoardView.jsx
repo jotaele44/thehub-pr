@@ -42,7 +42,7 @@ export default function LifecycleBoardView({ board, role, onEdit, onStatusChange
                     {opts.length > 0 && (
                       <div className="mt-1.5" onClick={(e) => e.stopPropagation()}>
                         <Select onValueChange={(v) => onStatusChange?.(t, v)}>
-                          <SelectTrigger className="h-6 text-[11px] bg-secondary/50 border-border"><SelectValue placeholder="Move…" /></SelectTrigger>
+                          <SelectTrigger aria-label="Move task to another status" className="h-6 text-[11px] bg-secondary/50 border-border"><SelectValue placeholder="Move…" /></SelectTrigger>
                           <SelectContent>
                             {opts.map((o) => <SelectItem key={o} value={o} className="text-xs">{o}</SelectItem>)}
                           </SelectContent>
