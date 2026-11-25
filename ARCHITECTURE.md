@@ -22,6 +22,14 @@ git-URL pip dependency — the first time a producer takes a *build-time* depend
 `thehub-pr`. This does not reverse the artifact-only design: it is one shared library with
 no runtime coupling, versioned by tag, bumped one producer at a time.
 
+**A second scoped exception, now ended (ADR 0012): the Source Monitor.** A hub-side registry
+reader (`hub source-monitor`) once read producers' own source registries from a workspace
+checkout, outside the frozen contract. ADR 0013 retired it producer by producer, and it was
+deleted on 2026-11-17 once the last producer (`moneysweep-pr`) emitted the `source_monitors`
+stream. Every producer now reports its sources through that stream; `hub ingest` projects it
+into `MonitoredSources` and flags any producer in its `MONITOR_STREAM_PRODUCERS` set whose
+rows are missing from the aggregate.
+
 ## Data flow
 
 ```
@@ -42,6 +50,9 @@ exports/…/manifest.json + *.jsonl ─(fetch)──▶ hub.validate.validate_pa
                                        │  funding-date / alert / observation footprint)
                                        ▼
                             data/aggregate/correlations.jsonl  (derived federation_relationship rows)
+
+data/aggregate/source_monitors.jsonl ──(hub ingest, ADR 0013)──▶ MonitoredSources + SourceMonitorSummary
+  (every producer emits the stream; an expected producer with no rows is reported as a gap)
 ```
 
 ## Canonical streams & id namespaces
@@ -55,6 +66,7 @@ exports/…/manifest.json + *.jsonl ─(fetch)──▶ hub.validate.validate_pa
 | `transactions` | `txn_[a-f0-9]{32}` | `federation_transaction.schema.json` | optional |
 | `observations` | producer-defined | producer-specific (e.g. airspace) | optional |
 | `alerts` | `alrt_[a-f0-9]{32}` | `federation_alert.schema.json` | optional |
+| `source_monitors` | `mon_[a-f0-9]{32}` | `federation_source_monitor.schema.json` | optional |
 
 Ids are **deterministic functions of row content**, so the same fact emitted by two producers
 collapses to one aggregated row whose `_producers` list records every contributor.
@@ -125,6 +137,17 @@ them. See [`docs/federation/SEARCH_AND_ENTITY_V1.md`](docs/federation/SEARCH_AND
 keeping each date at its recorded precision and each place as the source gives it. It is
 rendered at `/timeline`. See [`docs/federation/EVENT_TIMELINE_V1.md`](docs/federation/EVENT_TIMELINE_V1.md).
 
+`GET /api/constellation` (`hub.constellation`, contract `federation-constellation-v1`) draws the
+seven apps as one graph with two lenses:
+
+- **Code:** each app's components and the CALL / HANDOFF / RESULT edges between them, declared in
+  `registry/constellation.v1.json` and checked against the repo by its tests.
+- **Content:** the records they move, with exported totals, rows stored in this Hub, lineage,
+  sample rows and synthetic correlation candidates.
+
+It is rendered at `/constellation` as an animated stage tour. See
+[`docs/federation/CONSTELLATION_V1.md`](docs/federation/CONSTELLATION_V1.md).
+
 `GET /api/research` (`hub.research_composition`, contract `federation-research-v1`) serves the
 research record OVNIS curates and exports as typed entity rows:
 
@@ -160,6 +183,16 @@ comparison (`/gis?view=aoi-comparison`) tests a study area against disjoint cont
 binomial test and labels the result a background comparison, not a finding. See
 [`docs/federation/SUBSURFACE_AND_CONTROLS_V1.md`](docs/federation/SUBSURFACE_AND_CONTROLS_V1.md).
 
+The Sky workspace (`/skywatcher?view=sky`) computes the Sun, Moon and naked-eye planets for an explicit
+observer and UTC instant in the browser, with astronomy-engine, and reads the latest Kp, solar-wind speed and
+IMF Bz directly from NOAA SWPC. It also places the International Space Station, Hubble and the Chinese space
+station and lists their passes in the next 24 hours, with SGP4 from CelesTrak's current element sets (read once,
+kept two hours); a pass is only a geometric visible-pass candidate, with brightness not estimated. It has no
+backend endpoint, stores nothing and calls no producer; its agreement with JPL Horizons and USNO, with the Vallado
+SGP4 verification set and with an independent Skyfield reference is measured and frozen in the tests, and a product
+or element set that cannot be read is shown as unavailable, never as zero. See
+[`docs/federation/SKY_WORKSPACE_V1.md`](docs/federation/SKY_WORKSPACE_V1.md).
+
 ## Governance
 
 Cross-repository dependencies, contract versions, compatibility dispositions, impact detection,
@@ -185,3 +218,9 @@ Architecture decisions are recorded under [`docs/adr/`](docs/adr/):
 - [ADR 0010 — Change-coupled documentation gate](docs/adr/0010-change-coupled-documentation-gate.md):
   generalize ADR 0004's documentation-drift rule into one shared checker that requires a document
   to change with the paths it covers and forbids new dangling references.
+- [ADR 0012 — Source monitor reads producer registries hub-side](docs/adr/0012-source-monitor-registry-adapter.md):
+  a read-only, fail-soft adapter normalizes producer source registries for the Source Monitor, with
+  producer-level freshness (the export-package age). Superseded by ADR 0013; retired 2026-11-17.
+- [ADR 0013 — Producers report monitored sources in a `source_monitors` stream](docs/adr/0013-source-monitors-stream.md):
+  an optional frozen stream (`federation_export_manifest` 1.1.0) with a per-source last success and its
+  basis. All six producers emit it, and the ADR 0012 registry reader is deleted.

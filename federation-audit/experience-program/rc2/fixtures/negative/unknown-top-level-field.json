@@ -1,0 +1,18 @@
+{
+  "description": "An unknown field is rejected; only x-* extensions pass.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/telemetry",
+      "value": {
+        "enabled": true
+      }
+    }
+  ],
+  "expect": [
+    "schema:contract:additionalProperties"
+  ]
+}

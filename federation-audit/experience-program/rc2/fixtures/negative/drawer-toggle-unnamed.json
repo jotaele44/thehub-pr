@@ -1,0 +1,16 @@
+{
+  "description": "A navigation drawer toggle has an accessible name.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/navigation/mobile/toggle_accessible_name",
+      "value": null
+    }
+  ],
+  "expect": [
+    "schema:navigation:type"
+  ]
+}

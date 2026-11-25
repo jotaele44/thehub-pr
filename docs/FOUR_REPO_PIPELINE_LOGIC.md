@@ -33,6 +33,11 @@ centinelas-pr ──intake drop──► moneysweep-pr ──bundle──► spi
 
 is the *located finance* sub-flow declared in `docs/FEDERATION_TOPOLOGY.md`.
 
+The Federation Constellation (`/constellation`, spec `registry/constellation.v1.json`) draws
+this flow stage by stage. Its components cite the module paths named in this document, and
+`tests/test_constellation.py` fails if a cited path disappears from it. See
+[`docs/federation/CONSTELLATION_V1.md`](federation/CONSTELLATION_V1.md).
+
 ## Stage 1 — Centinelas: find and classify the story
 
 Repo: `centinelas-pr` (production gate: `PRODUCTION`,
