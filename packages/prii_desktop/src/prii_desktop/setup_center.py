@@ -387,10 +387,13 @@ def render_setup_html(config: DesktopConfig) -> str:
     if (!api()) return;
     const state = await api().snapshot();
     $("workspace").value = state.workspace;
-    $("back").hidden = !state.can_return;
+    $("back").hidden = !(state.can_return || state.returns_to_launchpad);
+    $("back").textContent = state.returns_to_launchpad
+      ? "Back to Launch Pad"
+      : "Back to App";
     $("save").textContent = state.can_return
       ? "Save & Restart App"
-      : "Save & Open App";
+      : state.returns_to_launchpad ? "Save & Return to Launch Pad" : "Save & Open App";
     $("repair").textContent = state.can_return
       ? "Repair & Restart App"
       : "Repair Configuration";
@@ -455,6 +458,15 @@ class SetupBridge:
         self._app_url: str | None = None
         self._choose_directory = choose_directory
         self._restart_app = restart_app
+        #: While the app has not started yet, the page Setup hands control back
+        #: to (the Launch Pad). ``None`` once the app is starting or running.
+        self._pending_page: Callable[[], str] | None = None
+
+    def _show_pending_page(self) -> bool:
+        if self._pending_page is None or self._window is None:
+            return False
+        self._window.load_html(self._pending_page())
+        return True
 
     def bind_window(self, window: Any) -> None:
         self._window = window
@@ -471,6 +483,9 @@ class SetupBridge:
             "workspace": workspace,
             "configured": state is not None,
             "can_return": self._app_url is not None,
+            "returns_to_launchpad": (
+                self._app_url is None and self._pending_page is not None
+            ),
             "diagnostics": diagnostics(self.config, workspace),
         }
 
@@ -501,6 +516,8 @@ class SetupBridge:
                 self._restart_app()
             elif self._window is not None:
                 self._window.load_url(self._app_url)
+        else:
+            self._show_pending_page()
         return result
 
     def repair(self, workspace: str | None = None) -> dict[str, Any]:
@@ -528,7 +545,9 @@ class SetupBridge:
         return True
 
     def return_to_app(self) -> bool:
-        if self._window is None or self._app_url is None:
+        if self._app_url is None:
+            return self._show_pending_page()
+        if self._window is None:
             return False
         self._window.load_url(self._app_url)
         return True

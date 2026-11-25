@@ -1,0 +1,113 @@
+{
+  "schema": "federation.experience-program.desktop-conventions/1",
+  "workstream": "WS-D",
+  "source_of_requirement": "Operator screen recording, 2026-11-17 09:02 (20 s). Read frame by frame. It shows another desktop application; nothing in it is a federation application.",
+  "evidence_class": "SOURCE_CONFIRMED by search of each audited snapshot, with the cited lines read; moneysweep-pr and thehub-pr are taken from their RC1 surveys. No application was run.",
+  "capabilities_shown": [
+    {
+      "id": "D1",
+      "name": "Dock icon menu: current window title, Recent list, More submenu",
+      "kind": "native macOS, supplied by the app"
+    },
+    {
+      "id": "D2",
+      "name": "Dock Options (Keep in Dock, Open at Login, Show in Finder), Show All Windows, Hide, Quit",
+      "kind": "native macOS, supplied by the system for a bundled .app"
+    },
+    {
+      "id": "D3",
+      "name": "Navigation groups: Pinned and Recents",
+      "kind": "in-app"
+    },
+    {
+      "id": "D4",
+      "name": "Per-item status mark (idle, running, attention)",
+      "kind": "in-app"
+    },
+    {
+      "id": "D5",
+      "name": "Per-item menu button",
+      "kind": "in-app"
+    },
+    {
+      "id": "D6",
+      "name": "Rename dialog: title, one line of guidance, prefilled field, Cancel, Save",
+      "kind": "in-app"
+    }
+  ],
+  "search_terms": "recent*, pinned, pin<Word>, favorit*, rename*, setTitle, dockMenu; test files excluded",
+  "search_caveat": "Matches on the lucide icon names MapPinned and MapPinOff, and on 'Recent Observations' or 'recentEvents' as a data-recency label, were read and excluded: they are not user pins or user recents.",
+  "applications": {
+    "aguayluz-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": []
+    },
+    "centinelas-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": []
+    },
+    "mucaro-ai": {
+      "recents": "The active conversation is remembered per browser; the conversation list is the natural recents source. No separate recents list.",
+      "pins": "none found",
+      "rename": "Conversations can be renamed.",
+      "evidence": [
+        "frontend/src/App.jsx:53",
+        "frontend/src/api.js:263",
+        "frontend/src/components/ChatView.jsx:419",
+        "backend/app/main.py:805"
+      ]
+    },
+    "ovnis-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": []
+    },
+    "skywatcher-pr": {
+      "recents": "none found",
+      "pins": "Sky Target Finder keeps user favorites in this browser's localStorage. It is the only pin-like feature in the six audited applications.",
+      "rename": "none found",
+      "evidence": [
+        "frontend/src/lib/skyFavorites.js:1",
+        "frontend/src/lib/skyFavorites.js:41"
+      ]
+    },
+    "spiderweb-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": []
+    },
+    "moneysweep-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": [],
+      "source": "rc1/surveys/moneysweep-pr.json special adjudication 5"
+    },
+    "thehub-pr": {
+      "recents": "none found",
+      "pins": "none found",
+      "rename": "none found",
+      "evidence": [],
+      "source": "rc1/surveys/thehub-pr.json special adjudication 6 (status NOT_FOUND)"
+    }
+  },
+  "shared_runtime": {
+    "dock_menu": "none found in packages/prii_desktop (searched dock, NSApp, CFBundle)",
+    "app_identity": "A bundle name is set only in the PyInstaller spec for the frozen build (thehub-pr desktop/pyinstaller.spec:101). The source launchers start a Python process, so the Dock shows Python, and the system's Options and Quit items act on that process.",
+    "state": "D1 and D2 are not implemented. Their runtime behaviour is BLOCKED for verification in this environment (Linux container, no macOS)."
+  },
+  "gap_summary": {
+    "D1": "absent in all audited applications and in the shared runtime",
+    "D2": "available from macOS for the frozen .app only; not verified",
+    "D3": "absent; Skywatcher favorites are the closest existing feature",
+    "D4": "not assessed at RC1; status marks need a per-surface review",
+    "D5": "see context_actions_inventory.json",
+    "D6": "present in mucaro-ai only"
+  }
+}

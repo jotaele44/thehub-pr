@@ -1,0 +1,3540 @@
+{
+ "repository": "aguayluz-pr",
+ "audited_commit": "6e3a4f67de20889abc3d0a48e0b514a4f7087f7a",
+ "frontend": {
+  "dir": "dashboard",
+  "language": "js",
+  "framework": "React 19 + Vite 6 + Tailwind 4 + Radix primitives + TanStack Query 5 (dashboard/package.json:21-46)",
+  "router": "url",
+  "router_file": "dashboard/src/App.jsx:10-11",
+  "shared_design_package": "@pr-federation/react@0.4.0 (dashboard/package.json:20; release tarball federation-design-v0.4.0)"
+ },
+ "entry_points": [
+  {
+   "id": "web-spa",
+   "kind": "web",
+   "path": "dashboard/src/main.jsx:30",
+   "note": "index.html:12-13 -> main.jsx -> App.jsx. BrowserRouter normally; HashRouter when VITE_OFFLINE=1 (App.jsx:10-11)."
+  },
+  {
+   "id": "offline-single-file-export",
+   "kind": "web",
+   "path": "dashboard/package.json:9",
+   "note": "`npm run build:export` produces a single-file build in export-standalone with data from lib/snapshot.json (vite.config.js:55-59; lib/api.js:4,59-62). snapshot.json is 0 bytes in the snapshot."
+  },
+  {
+   "id": "backend-canonical-app",
+   "kind": "server",
+   "path": "server/backend/app.py:58",
+   "note": "FastAPI app composing legacy routes from main.py (minus /readings, /municipios/{name}/summary and legacy /source-intelligence/*) plus 9 routers (app.py:59-78)."
+  },
+  {
+   "id": "backend-legacy-app",
+   "kind": "server",
+   "path": "server/backend/main.py:146",
+   "note": "Legacy FastAPI app; still what lib/api.js:2 and the StatsBar banner (StatsBar.jsx:64) tell operators to run."
+  },
+  {
+   "id": "desktop-launcher",
+   "kind": "launcher",
+   "path": "desktop/launch.py:24",
+   "note": "Delegates to external package prii_desktop (launch.py:19) with desktop/config.py (APP_IMPORT server.backend.app:app, DIST_DIR dashboard/dist; config.py:25-31). prii_desktop source is not in this snapshot."
+  },
+  {
+   "id": "desktop-shell-scripts",
+   "kind": "launcher",
+   "path": "PRII-AGUAYLUZ.sh:1",
+   "note": "Also PRII-AGUAYLUZ.command, .bat and PRII-AGUAYLUZ.app at repo root; contents described in docs/GUI_AUDIT.md §3 only — not opened in this audit."
+  },
+  {
+   "id": "cli",
+   "kind": "cli",
+   "path": "pyproject.toml:58",
+   "note": "`aguayluz = aguayluz.cli:app`; CLI commands not enumerated in this audit."
+  }
+ ],
+ "surfaces": [
+  {
+   "id": "overview",
+   "kind": "route",
+   "label": "Overview",
+   "address": "/",
+   "component": "dashboard/src/pages/OverviewPage.jsx:28",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:61",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "No <h1>/PageHeader. Loading skeleton OverviewPage.jsx:107-118. Fetch errors are swallowed by getJSON fallbacks (lib/api.js:58-70) so no page-level error state; only the global StatsBar banner."
+  },
+  {
+   "id": "map",
+   "kind": "route",
+   "label": "Map",
+   "address": "/map",
+   "component": "dashboard/src/pages/MapPage.jsx:10",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:62",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "No <h1>. Fixed 440px aside (MapPage.jsx:111) with no responsive breakpoint. Query params flyTo/lat/lon (MapPage.jsx:57-59)."
+  },
+  {
+   "id": "assets",
+   "kind": "route",
+   "label": "Assets",
+   "address": "/assets",
+   "component": "dashboard/src/pages/AssetsPage.jsx:8",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:63",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "URL-synced filters (?type,&subtype,&status,&review,&unmapped,&q) AssetsTable.jsx:40-62."
+  },
+  {
+   "id": "alerts",
+   "kind": "route",
+   "label": "Alerts",
+   "address": "/alerts",
+   "component": "dashboard/src/pages/AlertsPage.jsx:128",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:64",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Error state derives from useHealth, not the alerts query (AlertsPage.jsx:132,265-267). URL filters ?module,&status,&review,&tier,&critical,&q (AlertsPage.jsx:25-46)."
+  },
+  {
+   "id": "alert-detail",
+   "kind": "route",
+   "label": null,
+   "address": "/alerts/:id",
+   "component": "dashboard/src/pages/AlertDetailPage.jsx:33",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:65",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Not-found/err branch AlertDetailPage.jsx:49. Reached from alerts list rows (AlertsPage.jsx:75-76) and map alert click (MapPage.jsx:99)."
+  },
+  {
+   "id": "outages",
+   "kind": "route",
+   "label": "Outages",
+   "address": "/outages",
+   "component": "dashboard/src/pages/OutagesPage.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:66",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Thin wrapper over OutagesPanel."
+  },
+  {
+   "id": "monitoring",
+   "kind": "route",
+   "label": "Monitoring",
+   "address": "/monitoring",
+   "component": "dashboard/src/pages/MonitoringPage.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:67",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "WaterMonitoringConsole with fixed 250px layer rail (WaterMonitoringConsole.jsx:17)."
+  },
+  {
+   "id": "cave-karst",
+   "kind": "route",
+   "label": "Cave & Karst",
+   "address": "/cave-karst",
+   "component": "dashboard/src/pages/CaveKarstPage.jsx:97",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:68",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "role=status loading (CaveKarstPage.jsx:90), role=alert error (173,235). Client getJSON returns fallback on failure (lib/cave-karst-api.js:5-16) so the isError branches depend on null data, not query errors."
+  },
+  {
+   "id": "regulatory",
+   "kind": "route",
+   "label": "Regulatory",
+   "address": "/regulatory",
+   "component": "dashboard/src/pages/RegulatoryPage.jsx:96",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:69",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "3 filter selects with aria-labels (RegulatoryPage.jsx:191-208); list/detail master-detail."
+  },
+  {
+   "id": "regulatory-review",
+   "kind": "route",
+   "label": "Regulatory Review",
+   "address": "/regulatory/review",
+   "component": "dashboard/src/pages/RegulatoryReviewPage.jsx:57",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:70",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Page title is 'Regulatory Link Review' (RegulatoryReviewPage.jsx:111). List isError branch (145-148) is effectively unreachable because getRegulatoryLinks swallows failures (lib/regulatory-api.js:21-32)."
+  },
+  {
+   "id": "environmental-exposure",
+   "kind": "route",
+   "label": "Environment",
+   "address": "/environmental-exposure",
+   "component": "dashboard/src/pages/EnvironmentalExposurePage.jsx:147",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:71",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hazard plane, summary tiles, PFAS checkpoint, solid-waste registry, temporal relationships."
+  },
+  {
+   "id": "hydromet",
+   "kind": "route",
+   "label": "NWS Hydromet",
+   "address": "/hydromet",
+   "component": "dashboard/src/pages/HydrometPage.jsx:306",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:72",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": true
+   },
+   "notes": "Rainfall query throws on failure with Retry (HydrometPage.jsx:285-291); gauge 'stale' flags rendered; refresh mutation."
+  },
+  {
+   "id": "aquifer-bands",
+   "kind": "route",
+   "label": "Aquifer Bands",
+   "address": "/aquifer-bands",
+   "component": "dashboard/src/pages/AquiferBandsPage.jsx:247",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:73",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": true
+   },
+   "notes": "Query throws on failure, Retry button (AquiferBandsPage.jsx:294-300). OFFLINE returns EMPTY_AQUIFER_BANDS (lib/aquifer-api.js:19-20). stale_readings counted."
+  },
+  {
+   "id": "water-use",
+   "kind": "route",
+   "label": "Water Use",
+   "address": "/water-use",
+   "component": "dashboard/src/pages/WaterUsePage.jsx:260",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:74",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Retry at WaterUsePage.jsx:309-315; OFFLINE empty payload (lib/water-use-api.js:21-22)."
+  },
+  {
+   "id": "hydro-inventory",
+   "kind": "route",
+   "label": "Hydro Inventory",
+   "address": "/hydro-inventory",
+   "component": "dashboard/src/pages/HydroInventoryPage.jsx:381",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:75",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Section switcher (aria-pressed button group, HydroInventoryPage.jsx:419-421) acting as tabs; Retry inventory (409)."
+  },
+  {
+   "id": "review-queue",
+   "kind": "route",
+   "label": "Review Queue",
+   "address": "/review",
+   "component": "dashboard/src/pages/ReviewPage.jsx:34",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:76",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "No error state: useReviewQueuePaged uses getJSON fallback (lib/api.js:123) so a dead backend reads 'No items match filters' (ReviewPage.jsx:257-259). URL params ?sev,&tier,&offset (ReviewPage.jsx:36-39)."
+  },
+  {
+   "id": "analytics",
+   "kind": "route",
+   "label": "Analytics",
+   "address": "/analytics",
+   "component": "dashboard/src/pages/AnalyticsPage.jsx:13",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:77",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "4 recharts charts (AnalyticsPage.jsx:77,89,101,113); own <h1> at :68. No text alternative for charts found."
+  },
+  {
+   "id": "live-logs",
+   "kind": "route",
+   "label": "Live Logs",
+   "address": "/logs",
+   "component": "dashboard/src/pages/LiveLogsPage.jsx:13",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:78",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "EventSource to /events/stream (LiveLogsPage.jsx:28). Disconnected state shows 'Connecting to event stream…' forever (LiveLogsPage.jsx:84-86); no error text. Not available in OFFLINE build (no guard)."
+  },
+  {
+   "id": "system",
+   "kind": "route",
+   "label": "System & Tools",
+   "address": "/system",
+   "component": "dashboard/src/pages/SystemPage.jsx:85",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:79",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Operator tools, API key, backend configuration, canonical outputs, source corpora panels (SystemPage.jsx:125,191,251,266,274). Also linked from StatsBar (StatsBar.jsx:100-107)."
+  },
+  {
+   "id": "source-intelligence",
+   "kind": "route",
+   "label": "Source Intelligence",
+   "address": "/source-intelligence",
+   "component": "dashboard/src/pages/SourceIntelligencePage.jsx:77",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:80",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Uses getRequiredJSON (throws) so role=alert error at SourceIntelligencePage.jsx:135 is reachable."
+  },
+  {
+   "id": "water-disruption",
+   "kind": "route",
+   "label": "Water & Weather",
+   "address": "/water-disruption",
+   "component": "dashboard/src/pages/WaterDisruption.jsx:1",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:81",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Page is only an <iframe src='/water-disruption/console'> (WaterDisruption.jsx:10-14), relative to the frontend origin. Nested <main> (WaterDisruption.jsx:3) inside layout <main>. No loading/error handling."
+  },
+  {
+   "id": "sector-detail",
+   "kind": "route",
+   "label": null,
+   "address": "/sector/:sector",
+   "component": "dashboard/src/pages/SectorDetailPage.jsx:12",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:82",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Reached from Overview sector cards (OverviewPage.jsx:215). Bar chart + table (SectorDetailPage.jsx:71,100)."
+  },
+  {
+   "id": "event-detail",
+   "kind": "route",
+   "label": null,
+   "address": "/events/:id",
+   "component": "dashboard/src/pages/EventDetailPage.jsx:28",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:83",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Reached from OutagesPanel (OutagesPanel.jsx:105) and Municipio detail (MunicipioDetailPage.jsx:211). ACK control (EventDetailPage.jsx:93-104)."
+  },
+  {
+   "id": "municipio-detail",
+   "kind": "route",
+   "label": null,
+   "address": "/municipios/:name",
+   "component": "dashboard/src/pages/MunicipioDetailPage.jsx:19",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:84",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Reached from map municipio click (MapPage.jsx:97), Overview map panel (MunicipalOverviewMap.jsx:238-239), OutagesPanel (OutagesPanel.jsx:100), Hydromet rainfall table (HydrometPage.jsx:202). Asset rows link to non-existent /assets/:id (MunicipioDetailPage.jsx:235-237)."
+  },
+  {
+   "id": "not-found",
+   "kind": "route",
+   "label": "Page Not Found",
+   "address": "*",
+   "component": "dashboard/src/lib/PageNotFound.jsx:4",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:85",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "'Go Home' button (PageNotFound.jsx:23-28)."
+  },
+  {
+   "id": "app-shell",
+   "kind": "workspace",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/layout/DashboardLayout.jsx:10",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:60",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Sidebar + optional mobile header + StatsBar + <main><Outlet/></main> + AiQueryPanel (DashboardLayout.jsx:18-44). No skip link, no <header> landmark."
+  },
+  {
+   "id": "sidebar-desktop",
+   "kind": "sidebar",
+   "label": "Main",
+   "address": null,
+   "component": "dashboard/src/components/layout/Sidebar.jsx:188",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/layout/DashboardLayout.jsx:18",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Always-visible 256px panel at >=768px (Sidebar.jsx:188-204; hooks/use-mobile.js:3). 3 groups rendered as <section><h2>."
+  },
+  {
+   "id": "mobile-nav-drawer",
+   "kind": "drawer",
+   "label": "Navigation",
+   "address": null,
+   "component": "dashboard/src/components/layout/Sidebar.jsx:152",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/layout/DashboardLayout.jsx:18",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Full-screen fixed <aside> with role=tablist group tabs (Sidebar.jsx:148-185). Escape closes (141-146). Not role=dialog, no aria-modal, no focus trap/return."
+  },
+  {
+   "id": "mobile-header",
+   "kind": "toolbar",
+   "label": "AguaYLuz-PR",
+   "address": null,
+   "component": "dashboard/src/components/layout/DashboardLayout.jsx:26",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/layout/DashboardLayout.jsx:25",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hamburger button aria-label='Open navigation' (DashboardLayout.jsx:27-33). Container is a <div>, not <header>."
+  },
+  {
+   "id": "stats-bar",
+   "kind": "toolbar",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/StatsBar.jsx:23",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/layout/DashboardLayout.jsx:39",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": true
+   },
+   "notes": "KPI strip on every route; overflow-x-auto (StatsBar.jsx:70). 'Fallback cached' KPI when backend down (StatsBar.jsx:97)."
+  },
+  {
+   "id": "backend-down-banner",
+   "kind": "notification",
+   "label": "Backend unreachable — data may be stale.",
+   "address": null,
+   "component": "dashboard/src/components/StatsBar.jsx:61",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/StatsBar.jsx:61",
+   "parent": "stats-bar",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": true
+   },
+   "notes": "Dismissible (StatsBar.jsx:65). No role=alert/aria-live. Text names server.backend.main:app, not the canonical app.py (StatsBar.jsx:64)."
+  },
+  {
+   "id": "ai-query-panel",
+   "kind": "panel",
+   "label": "Ask AI",
+   "address": null,
+   "component": "dashboard/src/components/AiQueryPanel.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/layout/DashboardLayout.jsx:44",
+   "parent": "app-shell",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Fixed launcher + floating 360px panel on every route (AiQueryPanel.jsx:34-44). Close and send buttons icon-only with no accessible name (AiQueryPanel.jsx:50,104); input has placeholder only (95-103). Offline answer string lib/api.js:183."
+  },
+  {
+   "id": "toaster",
+   "kind": "notification",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/ui/toaster.jsx:11",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/App.jsx:90",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hand-rolled <div> toasts (ui/toast.jsx:10-52), no role=status/alert or aria-live; close button icon-only, no name, opacity-0 until hover/focus (ui/toast.jsx:66-78). TOAST_REMOVE_DELAY=1000000ms (ui/use-toast.jsx:5)."
+  },
+  {
+   "id": "route-error-boundary",
+   "kind": "panel",
+   "label": "<label> failed to render.",
+   "address": null,
+   "component": "dashboard/src/components/ErrorBoundary.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/MapPage.jsx:117",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Per-panel boundary with Retry (ErrorBoundary.jsx:22-37); used on 14 pages. No app-level boundary around <Routes> in App.jsx:55-91."
+  },
+  {
+   "id": "map-asset-map",
+   "kind": "map",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/AssetMap.jsx:285",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/MapPage.jsx:71",
+   "parent": "map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "MapLibre GL 6. Container div has no role/aria-label (AssetMap.jsx:758). External raster tiles OSM/Esri, glyphs demotiles.maplibre.org, AWS terrain (AssetMap.jsx:25-42). No base-tile error handling."
+  },
+  {
+   "id": "map-layer-panel",
+   "kind": "panel",
+   "label": "Layers",
+   "address": null,
+   "component": "dashboard/src/components/AssetMap.jsx:760",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/AssetMap.jsx:760",
+   "parent": "map-asset-map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "11 aria-pressed toggle buttons (AssetMap.jsx:765-775), municipio fill mode Off/Drought/Density/Rainfall (780-783), density error + Retry (795-801), critical-only and review-only toggles (816-832), basemap Map/Satellite buttons without aria-pressed (834-847)."
+  },
+  {
+   "id": "map-nws-overlays",
+   "kind": "panel",
+   "label": "NWS live overlays · display only",
+   "address": null,
+   "component": "dashboard/src/components/NwsOverlayToggles.jsx:14",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/AssetMap.jsx:814",
+   "parent": "map-layer-panel",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "2 aria-pressed toggles, per-overlay aria-live status loading/live/error (NwsOverlayToggles.jsx:22-40)."
+  },
+  {
+   "id": "map-spatial-tools",
+   "kind": "panel",
+   "label": "Spatial tools",
+   "address": null,
+   "component": "dashboard/src/components/SpatialToolsPanel.jsx:286",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/AssetMap.jsx:956",
+   "parent": "map-asset-map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Measure/buffer/nearest; requires map click (SpatialToolsPanel.jsx:230-252) — no keyboard input path."
+  },
+  {
+   "id": "map-legend",
+   "kind": "panel",
+   "label": "Asset type",
+   "address": null,
+   "component": "dashboard/src/components/AssetMap.jsx:852",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/AssetMap.jsx:852",
+   "parent": "map-asset-map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Colour-swatch legends for asset type, alert severity, gauges, drought, rainfall, density (AssetMap.jsx:852-940)."
+  },
+  {
+   "id": "map-intelligence-note",
+   "kind": "panel",
+   "label": "Map intelligence",
+   "address": null,
+   "component": "dashboard/src/components/AssetMap.jsx:942",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/AssetMap.jsx:942",
+   "parent": "map-asset-map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Static guidance text."
+  },
+  {
+   "id": "map-assets-aside",
+   "kind": "table",
+   "label": "Assets",
+   "address": null,
+   "component": "dashboard/src/components/AssetsTable.jsx:83",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/MapPage.jsx:118",
+   "parent": "map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Same AssetsTable as /assets without URL sync; the non-map alternative for asset markers."
+  },
+  {
+   "id": "map-coverage-footer",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/MapPage.jsx:104",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/MapPage.jsx:104",
+   "parent": "map",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "'N of M assets mapped · X without geometry'."
+  },
+  {
+   "id": "asset-detail-sheet",
+   "kind": "drawer",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/AssetDetail.jsx:68",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/AssetsPage.jsx:20",
+   "parent": "assets",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix Dialog-based Sheet (ui/sheet.jsx:3,50-55 with sr-only Close). Also mounted at MapPage.jsx:123. Show on map, Flag for review, raw JSON toggle (AssetDetail.jsx:79-95,141-144)."
+  },
+  {
+   "id": "assets-table",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/AssetsTable.jsx:244",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/AssetsPage.jsx:17",
+   "parent": "assets",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Virtualized (AssetsTable.jsx:131); sortable headers with aria-sort + Enter/Space (248-255); rows tabIndex=0 Enter/Space (267-273)."
+  },
+  {
+   "id": "assets-filters",
+   "kind": "filter",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/AssetsTable.jsx:183",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/AssetsTable.jsx:183",
+   "parent": "assets-table",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Search, type/subtype/status selects (aria-labelled, 199-216), review-only and unmapped-only toggles (221-234), clear (190)."
+  },
+  {
+   "id": "assets-csv-export",
+   "kind": "export",
+   "label": "assets.csv",
+   "address": null,
+   "component": "dashboard/src/components/AssetsTable.jsx:193",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/AssetsTable.jsx:193",
+   "parent": "assets-table",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-side CSV of filtered rows (lib/csv.js)."
+  },
+  {
+   "id": "overview-coverage-tiles",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/OverviewPage.jsx:126",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/OverviewPage.jsx:126",
+   "parent": "overview",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "4 StatTiles (OverviewPage.jsx:126-144) + unmapped/critical inline links (155-158)."
+  },
+  {
+   "id": "overview-municipal-map",
+   "kind": "map",
+   "label": "Puerto Rico Municipal Conditions",
+   "address": null,
+   "component": "dashboard/src/components/MunicipalOverviewMap.jsx:53",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/OverviewPage.jsx:166",
+   "parent": "overview",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Pure SVG choropleth, 78 focusable path role=button with aria-label + Enter/Space (MunicipalOverviewMap.jsx:163-174); 'focus:outline-none' with no replacement indicator (175). Metric button group (121-136). Detail aside aria-live (193)."
+  },
+  {
+   "id": "overview-program-timeline",
+   "kind": "timeline",
+   "label": "PROGRAM ACTIVITY",
+   "address": null,
+   "component": "dashboard/src/components/ProgramTimeline.jsx:34",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/OverviewPage.jsx:177",
+   "parent": "overview",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Filter chips, sort toggle, search input without label (ProgramTimeline.jsx:43-51). Merges localStorage events (ProgramTimeline.jsx:19)."
+  },
+  {
+   "id": "overview-ai-recap",
+   "kind": "panel",
+   "label": "AI Status Recap",
+   "address": null,
+   "component": "dashboard/src/pages/OverviewPage.jsx:181",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/OverviewPage.jsx:181",
+   "parent": "overview",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "POST /ai/query; result text inline (OverviewPage.jsx:196-199)."
+  },
+  {
+   "id": "overview-send-alert",
+   "kind": "panel",
+   "label": "Send Alert",
+   "address": null,
+   "component": "dashboard/src/pages/OverviewPage.jsx:189",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/OverviewPage.jsx:189",
+   "parent": "overview",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "POST /notify; any failure (incl. 401) toasts 'No channels configured' (OverviewPage.jsx:85-89)."
+  },
+  {
+   "id": "overview-sector-cards",
+   "kind": "panel",
+   "label": "Infrastructure Sectors",
+   "address": null,
+   "component": "dashboard/src/pages/OverviewPage.jsx:207",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/OverviewPage.jsx:207",
+   "parent": "overview",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Links to /sector/:key (OverviewPage.jsx:215)."
+  },
+  {
+   "id": "overview-reservoir-chart",
+   "kind": "chart",
+   "label": "Reservoir Levels (last 30 readings)",
+   "address": null,
+   "component": "dashboard/src/pages/OverviewPage.jsx:241",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/OverviewPage.jsx:241",
+   "parent": "overview",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "useReadings({kind:'reservoir'}) with no metric (OverviewPage.jsx:43); app.py /readings raises 400 metric_required for reservoir (server/backend/app.py:256-258; main.py:67-75), getJSON falls back to [] so the empty branch (OverviewPage.jsx:253) always shows."
+  },
+  {
+   "id": "overview-recent-events",
+   "kind": "panel",
+   "label": "Recent Events",
+   "address": null,
+   "component": "dashboard/src/pages/OverviewPage.jsx:257",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/OverviewPage.jsx:257",
+   "parent": "overview",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "alerts-list",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/AlertsPage.jsx:265",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/AlertsPage.jsx:265",
+   "parent": "alerts",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Virtualized list of <Link> rows (AlertsPage.jsx:161,75-76); 'Load N more' (292-299)."
+  },
+  {
+   "id": "alerts-filters",
+   "kind": "filter",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/AlertsPage.jsx:197",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/AlertsPage.jsx:197",
+   "parent": "alerts",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Search input, facet selects with aria-label (AlertsPage.jsx:53-54), critical toggle aria-pressed (203-206), clear (214-218)."
+  },
+  {
+   "id": "alerts-csv-export",
+   "kind": "export",
+   "label": "alerts.csv",
+   "address": null,
+   "component": "dashboard/src/pages/AlertsPage.jsx:181",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/AlertsPage.jsx:181",
+   "parent": "alerts",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "outages-panel",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/OutagesPanel.jsx:24",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/OutagesPage.jsx:11",
+   "parent": "outages",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Search + type select (trigger has no aria-label, OutagesPanel.jsx:67-68); grouped by area with links to /municipios and /events (100,105). LUMA status via /outages/status."
+  },
+  {
+   "id": "monitoring-layer-rail",
+   "kind": "sidebar",
+   "label": "Water layers",
+   "address": null,
+   "component": "dashboard/src/components/WaterMonitoringConsole.jsx:15",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/WaterMonitoringConsole.jsx:104",
+   "parent": "monitoring",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Buttons select a layer; selected state shown by colour only, no aria-pressed/aria-current (WaterMonitoringConsole.jsx:23-27)."
+  },
+  {
+   "id": "hydro-map-workspace",
+   "kind": "map",
+   "label": "Hydrologic map workspace",
+   "address": null,
+   "component": "dashboard/src/components/HydroMapWorkspace.jsx:47",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/WaterMonitoringConsole.jsx:61",
+   "parent": "monitoring",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "MapLibre; 11 labelled checkboxes in role=group (HydroMapWorkspace.jsx:141-147); role=alert layer errors (157-160); offline/failed placeholder (150-153). No popups/click interaction."
+  },
+  {
+   "id": "monitoring-charts",
+   "kind": "chart",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/MonitoringCharts.jsx:1",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/WaterMonitoringConsole.jsx:89",
+   "parent": "monitoring",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Only when layer is certifiable. Range buttons without aria-pressed (MonitoringCharts.jsx:151); series/site/aquifer selects aria-labelled (155,160,171)."
+  },
+  {
+   "id": "aquifer-series-chart",
+   "kind": "chart",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/AquiferSeriesChart.jsx:10",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/MonitoringCharts.jsx:188",
+   "parent": "monitoring-charts",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "incident-operations-console",
+   "kind": "form",
+   "label": "Incident operations",
+   "address": null,
+   "component": "dashboard/src/components/IncidentOperationsConsole.jsx:9",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/components/WaterMonitoringConsole.jsx:90",
+   "parent": "monitoring",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Incident list + actor/reason inputs (aria-label) + 6 transition buttons (IncidentOperationsConsole.jsx:57-69); role=alert error (71)."
+  },
+  {
+   "id": "review-decision-controls",
+   "kind": "toolbar",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/ReviewPage.jsx:225",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/ReviewPage.jsx:225",
+   "parent": "review-queue",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Per-row AI suggest (icon-only, title only), Accept, Reject, Skip (aria-label) (ReviewPage.jsx:226-247)."
+  },
+  {
+   "id": "review-batch-toolbar",
+   "kind": "toolbar",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/ReviewPage.jsx:148",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/ReviewPage.jsx:148",
+   "parent": "review-queue",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Approve all / Reject all / Skip all on selected rows (ReviewPage.jsx:148-163); select-all (179-186)."
+  },
+  {
+   "id": "review-filters",
+   "kind": "filter",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/ReviewPage.jsx:167",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/ReviewPage.jsx:167",
+   "parent": "review-queue",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Severity and tier selects; triggers have no aria-label (ReviewPage.jsx:168,172). Pagination (262-274)."
+  },
+  {
+   "id": "review-csv-export",
+   "kind": "export",
+   "label": "review-queue.csv",
+   "address": null,
+   "component": "dashboard/src/pages/ReviewPage.jsx:164",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/ReviewPage.jsx:164",
+   "parent": "review-queue",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Icon-only button, title only (ReviewPage.jsx:164-166)."
+  },
+  {
+   "id": "regulatory-review-queue",
+   "kind": "panel",
+   "label": "Candidate queue",
+   "address": null,
+   "component": "dashboard/src/pages/RegulatoryReviewPage.jsx:151",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/RegulatoryReviewPage.jsx:151",
+   "parent": "regulatory-review",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "aria-pressed candidate buttons (RegulatoryReviewPage.jsx:158-162); decision-state filter select aria-labelled (132-133)."
+  },
+  {
+   "id": "regulatory-review-decision-form",
+   "kind": "form",
+   "label": "Record a decision",
+   "address": null,
+   "component": "dashboard/src/pages/RegulatoryReviewPage.jsx:248",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/RegulatoryReviewPage.jsx:248",
+   "parent": "regulatory-review",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Actor + rationale labelled inputs (252-271); Approve/Reject/Mark needs review (274-299)."
+  },
+  {
+   "id": "system-operator-tools",
+   "kind": "panel",
+   "label": "Operator tools",
+   "address": null,
+   "component": "dashboard/src/pages/SystemPage.jsx:125",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/SystemPage.jsx:125",
+   "parent": "system",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Run federation export, Send status alert, Open status report link (SystemPage.jsx:128-180); each states its precondition."
+  },
+  {
+   "id": "system-api-key-form",
+   "kind": "settings",
+   "label": "API key",
+   "address": null,
+   "component": "dashboard/src/pages/SystemPage.jsx:191",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/SystemPage.jsx:191",
+   "parent": "system",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Password input aria-label 'API secret key', Set/Replace/Clear (SystemPage.jsx:200-240)."
+  },
+  {
+   "id": "system-status-panels",
+   "kind": "panel",
+   "label": "Backend configuration",
+   "address": null,
+   "component": "dashboard/src/pages/SystemPage.jsx:251",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/SystemPage.jsx:251",
+   "parent": "system",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Backend configuration, Canonical outputs, Source corpora (SystemPage.jsx:251,266,274)."
+  },
+  {
+   "id": "hydromet-source-health",
+   "kind": "panel",
+   "label": "Source health",
+   "address": null,
+   "component": "dashboard/src/pages/HydrometPage.jsx:367",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/HydrometPage.jsx:371",
+   "parent": "hydromet",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "SourceCard with 'Refresh now' (HydrometPage.jsx:109-118) and FAIL receipt role=alert (103)."
+  },
+  {
+   "id": "hydromet-gauges-table",
+   "kind": "table",
+   "label": "NWPS river gauges",
+   "address": null,
+   "component": "dashboard/src/pages/HydrometPage.jsx:138",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/HydrometPage.jsx:406",
+   "parent": "hydromet",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": true
+   },
+   "notes": "aria-label table; flooding-only toggle aria-pressed (HydrometPage.jsx:390-393). Non-map alternative to the map's River gauges layer."
+  },
+  {
+   "id": "hydromet-rainfall-table",
+   "kind": "table",
+   "label": "Stage IV rainfall by municipio",
+   "address": null,
+   "component": "dashboard/src/pages/HydrometPage.jsx:186",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/HydrometPage.jsx:299",
+   "parent": "hydromet",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Window button group + data-day select (HydrometPage.jsx:245-260). Non-map alternative to the map's Rainfall fill."
+  },
+  {
+   "id": "aquifer-wells-table",
+   "kind": "table",
+   "label": "Aquifer observation wells",
+   "address": null,
+   "component": "dashboard/src/pages/AquiferBandsPage.jsx:109",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/AquiferBandsPage.jsx:309",
+   "parent": "aquifer-bands",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": true
+   },
+   "notes": "Band bars role=img with aria-label (AquiferBandsPage.jsx:70-71); <details> band edges (93-94)."
+  },
+  {
+   "id": "water-use-tables",
+   "kind": "table",
+   "label": "Public-supply withdrawals by source",
+   "address": null,
+   "component": "dashboard/src/pages/WaterUsePage.jsx:71",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/WaterUsePage.jsx:309",
+   "parent": "water-use",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Three tables with aria-label and th scope=row (WaterUsePage.jsx:71,144,195); year button group (179-185)."
+  },
+  {
+   "id": "hydro-inventory-sections",
+   "kind": "tab",
+   "label": "Inventory section",
+   "address": null,
+   "component": "dashboard/src/pages/HydroInventoryPage.jsx:419",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/HydroInventoryPage.jsx:419",
+   "parent": "hydro-inventory",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Sections aquifers/wells/springs/surface/infrastructure/wetlands/…/sources rendered at HydroInventoryPage.jsx:427-437; search + source filter + pagination (243-246,278-280)."
+  },
+  {
+   "id": "hydro-feature-detail",
+   "kind": "panel",
+   "label": "Feature detail",
+   "address": null,
+   "component": "dashboard/src/pages/HydroInventoryPage.jsx:136",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/HydroInventoryPage.jsx:439",
+   "parent": "hydro-inventory",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Inline panel with 'Close detail' (HydroInventoryPage.jsx:143)."
+  },
+  {
+   "id": "env-hazard-plane",
+   "kind": "table",
+   "label": "Puerto Rico Hazard & Advisory Plane",
+   "address": null,
+   "component": "dashboard/src/pages/EnvironmentalExposurePage.jsx:207",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/EnvironmentalExposurePage.jsx:207",
+   "parent": "environmental-exposure",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "role=status / role=alert (221,223)."
+  },
+  {
+   "id": "env-solid-waste-registry",
+   "kind": "table",
+   "label": "Solid-waste sites (vertedero registry)",
+   "address": null,
+   "component": "dashboard/src/pages/EnvironmentalExposurePage.jsx:58",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/EnvironmentalExposurePage.jsx:389",
+   "parent": "environmental-exposure",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Retry button (EnvironmentalExposurePage.jsx:82)."
+  },
+  {
+   "id": "env-temporal-relationships",
+   "kind": "table",
+   "label": "Temporal relationships",
+   "address": null,
+   "component": "dashboard/src/pages/EnvironmentalExposurePage.jsx:393",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/EnvironmentalExposurePage.jsx:393",
+   "parent": "environmental-exposure",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "cave-karst-master-detail",
+   "kind": "panel",
+   "label": "Pilot assets",
+   "address": null,
+   "component": "dashboard/src/pages/CaveKarstPage.jsx:195",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/CaveKarstPage.jsx:195",
+   "parent": "cave-karst",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "aria-pressed asset buttons (202-205); detail sections hydrologic/infrastructure/coordinate/gaps/alerts/history/edges/provenance (263-371)."
+  },
+  {
+   "id": "regulatory-master-detail",
+   "kind": "panel",
+   "label": "Observation list",
+   "address": null,
+   "component": "dashboard/src/pages/RegulatoryPage.jsx:219",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/RegulatoryPage.jsx:219",
+   "parent": "regulatory",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "aria-pressed observation buttons (226-229); identifiers/payload/receipt detail (287-311)."
+  },
+  {
+   "id": "source-intelligence-source-table",
+   "kind": "table",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/SourceIntelligencePage.jsx:207",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/SourceIntelligencePage.jsx:207",
+   "parent": "source-intelligence",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Native <select> wrapped in <label> (SourceIntelligencePage.jsx:57-65); open-family buttons (305-311)."
+  },
+  {
+   "id": "analytics-charts",
+   "kind": "chart",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/AnalyticsPage.jsx:77",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/AnalyticsPage.jsx:77",
+   "parent": "analytics",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Events by type, events by municipality, assets by type, assets by status pie."
+  },
+  {
+   "id": "live-logs-stream",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/LiveLogsPage.jsx:71",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/LiveLogsPage.jsx:71",
+   "parent": "live-logs",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Text filter (no label), type select (no aria-label, LiveLogsPage.jsx:62), Pause/Resume autoscroll (65-68)."
+  },
+  {
+   "id": "water-disruption-console-iframe",
+   "kind": "panel",
+   "label": "Water disruption validation console",
+   "address": null,
+   "component": "dashboard/src/pages/WaterDisruption.jsx:10",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/WaterDisruption.jsx:10",
+   "parent": "water-disruption",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Backend-rendered static HTML (server/backend/water_disruption_api.py:105-124) with links to JSON endpoints; no forms."
+  },
+  {
+   "id": "event-ack-control",
+   "kind": "toolbar",
+   "label": "ACK",
+   "address": null,
+   "component": "dashboard/src/pages/EventDetailPage.jsx:93",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/EventDetailPage.jsx:93",
+   "parent": "event-detail",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "PATCH resolution_status=resolved; no onError handler (EventDetailPage.jsx:97-100)."
+  },
+  {
+   "id": "municipio-flood-document",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/MunicipioDetailPage.jsx:104",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/MunicipioDetailPage.jsx:104",
+   "parent": "municipio-detail",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Opens /municipios/{name}/flood-document/file (MunicipioDetailPage.jsx:94,139) or fallback source URL (149)."
+  },
+  {
+   "id": "sector-status-chart-table",
+   "kind": "chart",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/pages/SectorDetailPage.jsx:71",
+   "mounted": true,
+   "mounted_evidence": "dashboard/src/pages/SectorDetailPage.jsx:71",
+   "parent": "sector-detail",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": ""
+  },
+  {
+   "id": "review-queue-rail-panel",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/ReviewQueue.jsx:19",
+   "mounted": false,
+   "mounted_evidence": "none — no importer other than its own file (grep 'ReviewQueue' in dashboard/src: only StatsBar's useReviewQueue hook)",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Read-only review list component; not imported by any page or by App.jsx."
+  },
+  {
+   "id": "review-record-card",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/ReviewRecordCard.jsx:10",
+   "mounted": false,
+   "mounted_evidence": "none — imported only by ReviewQueue.jsx:10 and ReviewRecordCard.test.jsx:4",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Reachable only through the unmounted ReviewQueue; ReviewPage uses inline markup instead (ReviewPage.jsx:194-256)."
+  },
+  {
+   "id": "ui-tabs-primitive",
+   "kind": "tab",
+   "label": null,
+   "address": null,
+   "component": "dashboard/src/components/ui/tabs.jsx:1",
+   "mounted": false,
+   "mounted_evidence": "none — no importer found (grep '<Tabs|TabsTrigger' in pages/components matched only ui/tabs.jsx)",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radix Tabs wrapper shipped but unused."
+  }
+ ],
+ "workflows": [
+  {
+   "id": "review-decide",
+   "name": "Accept / reject / skip a review-queue record",
+   "surface": "review-decision-controls",
+   "ui_action": "Click Accept/Reject/Skip on a row, or press A/R/S on the cursor row",
+   "frontend_handler": "dashboard/src/pages/ReviewPage.jsx:60",
+   "backend_endpoint": "POST /review-queue/{ref}/decision",
+   "backend_handler": "server/backend/main.py:842",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "PARTIAL",
+   "status_evidence": "UI->useDecision (lib/hooks.js:85-107)->postDecision (lib/api.js:149-159)->handler traced, but (1) decision stored only in process memory `_decisions` (server/backend/main.py:343-344,848) and never written to outputs/review_queue.json; (2) 'skip' is stored but not filtered out (server/backend/main.py:831) so the optimistically removed row returns on refetch; (3) postDecision only checks 401 and returns res.json() for any other status (lib/api.js:157-158), so a 400/404/500 JSON body is toasted as 'Marked <decision>'; (4) no confirmation, no undo.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "review-batch-decide",
+   "name": "Batch approve / reject / skip selected records",
+   "surface": "review-batch-toolbar",
+   "ui_action": "Select rows, click Approve all / Reject all / Skip all",
+   "frontend_handler": "dashboard/src/pages/ReviewPage.jsx:104",
+   "backend_endpoint": "POST /review-queue/{ref}/decision",
+   "backend_handler": "server/backend/main.py:842",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "PARTIAL",
+   "status_evidence": "Sequential per-ref calls resolve on both success and error (ReviewPage.jsx:109), then toast 'Batch <decision> · N items processed' unconditionally (ReviewPage.jsx:113): failures are not reported. Same in-memory persistence as review-decide.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "review-ai-suggest",
+   "name": "Ask AI for a recommendation on a record",
+   "surface": "review-decision-controls",
+   "ui_action": "Click the bot icon on a row",
+   "frontend_handler": "dashboard/src/pages/ReviewPage.jsx:68",
+   "backend_endpoint": "POST /ai/query",
+   "backend_handler": "server/backend/main.py:1158",
+   "writes": false,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "COMPLETE",
+   "status_evidence": "handleAiSuggest->postAiQuery (lib/api.js:182-198) -> answer or error string rendered under the row (ReviewPage.jsx:249-254). Depends on ANTHROPIC_API_KEY on the backend (server/backend/main.py:461).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "review-filter-page",
+   "name": "Filter and page the review queue",
+   "surface": "review-filters",
+   "ui_action": "Change severity/tier select, click prev/next",
+   "frontend_handler": "dashboard/src/pages/ReviewPage.jsx:39",
+   "backend_endpoint": "GET /review-queue",
+   "backend_handler": "server/backend/main.py:821",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "URL params -> useReviewQueuePaged (ReviewPage.jsx:49-54) -> server-side severity/tier/offset/limit (server/backend/main.py:821-839) -> rows rendered (ReviewPage.jsx:193-256).",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:257"
+  },
+  {
+   "id": "review-export-csv",
+   "name": "Export current review page as CSV",
+   "surface": "review-csv-export",
+   "ui_action": "Click download icon",
+   "frontend_handler": "dashboard/src/pages/ReviewPage.jsx:164",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Client-side downloadCSV of current page items (ReviewPage.jsx:164; lib/csv.js).",
+   "has_test": true,
+   "test": "dashboard/src/lib/csv.test.js:1"
+  },
+  {
+   "id": "regulatory-link-decide",
+   "name": "Approve / reject / mark-needs-review a regulatory link candidate",
+   "surface": "regulatory-review-decision-form",
+   "ui_action": "Enter actor + rationale, click Approve / Reject / Mark needs review",
+   "frontend_handler": "dashboard/src/pages/RegulatoryReviewPage.jsx:92",
+   "backend_endpoint": "POST /regulatory/links/{candidate_id}/decide",
+   "backend_handler": "server/backend/regulatory_api.py:189",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "COMPLETE",
+   "status_evidence": "submitDecision->postRegulatoryLinkDecision (lib/regulatory-api.js:69-89; 401/422/!ok throw) -> handler validates state, blocks approval with contradictions (422), writes via write_regulatory_links (server/backend/regulatory_api.py:190-219; src/aguayluz/regulatory_db.py:156-159, JSONL merge) -> success toast + query invalidation, or destructive toast with err.message (RegulatoryReviewPage.jsx:97-102).",
+   "has_test": true,
+   "test": "tests/test_regulatory_api.py:187; dashboard/src/pages/RegulatoryReviewPage.test.jsx:66"
+  },
+  {
+   "id": "regulatory-link-browse",
+   "name": "Browse candidate links by decision state",
+   "surface": "regulatory-review-queue",
+   "ui_action": "Pick a decision state, select a candidate",
+   "frontend_handler": "dashboard/src/pages/RegulatoryReviewPage.jsx:66",
+   "backend_endpoint": "GET /regulatory/links, GET /regulatory/links/{candidate_id}",
+   "backend_handler": "server/backend/regulatory_api.py:157",
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Works when backend is up; when it is down getJSON returns {total:0,items:[]} (lib/regulatory-api.js:21-32,56-59) so linksQuery.isError is never true and the page shows 'No candidates match the current filter' instead of the unavailable alert (RegulatoryReviewPage.jsx:143-154).",
+   "has_test": true,
+   "test": "dashboard/src/pages/RegulatoryReviewPage.test.jsx:58"
+  },
+  {
+   "id": "regulatory-observations-browse",
+   "name": "Browse regulatory observations",
+   "surface": "regulatory-master-detail",
+   "ui_action": "Filter by provider/family/freshness, select an observation",
+   "frontend_handler": "dashboard/src/pages/RegulatoryPage.jsx:101",
+   "backend_endpoint": "GET /regulatory/summary, /regulatory/observations, /regulatory/observations/{id}",
+   "backend_handler": "server/backend/regulatory_api.py:100",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Queries at RegulatoryPage.jsx:97-119 -> handlers server/backend/regulatory_api.py:100,120,141 -> list/detail rendered (219-311).",
+   "has_test": true,
+   "test": "dashboard/src/pages/RegulatoryPage.test.jsx:1"
+  },
+  {
+   "id": "asset-browse-filter",
+   "name": "Search, filter, sort and select assets",
+   "surface": "assets-table",
+   "ui_action": "Type in search, pick filters, click a column header or row",
+   "frontend_handler": "dashboard/src/components/AssetsTable.jsx:84",
+   "backend_endpoint": "GET /assets",
+   "backend_handler": "server/backend/main.py:423",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useAssets (AssetsPage.jsx:9) -> client-side filter/sort/virtualize (AssetsTable.jsx:84-131) -> row select opens AssetDetail (AssetsPage.jsx:17-20).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "asset-flag-review",
+   "name": "Flag / unflag an asset for review",
+   "surface": "asset-detail-sheet",
+   "ui_action": "Click the flag button in the asset sheet",
+   "frontend_handler": "dashboard/src/components/AssetDetail.jsx:58",
+   "backend_endpoint": "PATCH /assets/{asset_id}",
+   "backend_handler": "server/backend/main.py:471",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "PARTIAL",
+   "status_evidence": "useFlagAsset (lib/hooks.js:132-140) -> patchAsset (lib/api.js:215-226) -> handler stores patch only in in-memory `_asset_patches` (server/backend/main.py:346,477-479). No onError handler in the UI (AssetDetail.jsx:61-64): a 401/404/network failure produces no message. GET /assets does not obviously merge patches — UNKNOWN whether the flag is visible after invalidation.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "asset-show-on-map",
+   "name": "Fly to an asset on the map",
+   "surface": "asset-detail-sheet",
+   "ui_action": "Click 'Show on map'",
+   "frontend_handler": "dashboard/src/components/AssetDetail.jsx:45",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "navigate('/map?flyTo&lat&lon') (AssetDetail.jsx:48) -> MapPage parses params (MapPage.jsx:57-59,100) -> AssetMap flyTo prop.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "asset-events",
+   "name": "View events linked to an asset",
+   "surface": "asset-detail-sheet",
+   "ui_action": "Open an asset",
+   "frontend_handler": "dashboard/src/components/AssetDetail.jsx:16",
+   "backend_endpoint": "GET /assets/{asset_id}/events",
+   "backend_handler": "server/backend/main.py:437",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useAssetEvents (lib/hooks.js:40) -> handler main.py:437 -> list in sheet.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "assets-export-csv",
+   "name": "Export filtered assets as CSV",
+   "surface": "assets-csv-export",
+   "ui_action": "Click download icon",
+   "frontend_handler": "dashboard/src/components/AssetsTable.jsx:193",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "downloadCSV('assets.csv', rows, …) (AssetsTable.jsx:193).",
+   "has_test": true,
+   "test": "dashboard/src/lib/csv.test.js:1"
+  },
+  {
+   "id": "map-layer-toggle",
+   "name": "Toggle map layers, fill mode and basemap",
+   "surface": "map-layer-panel",
+   "ui_action": "Click layer / fill / basemap buttons",
+   "frontend_handler": "dashboard/src/components/AssetMap.jsx:765",
+   "backend_endpoint": "GET /assets.geojson, /municipios.geojson, /barrios.geojson, /events, /alerts.geojson, /hydromet/gauges.geojson, /municipios/event_density, /readings, /hydromet/rainfall, /summary/coverage",
+   "backend_handler": "server/backend/main.py:484",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "State `layers` (AssetMap.jsx:304) drives layer visibility/paint; data loaded by MapPage hooks (MapPage.jsx:11-31).",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:163; dashboard/src/components/AssetMap.test.jsx:1"
+  },
+  {
+   "id": "map-select-asset",
+   "name": "Select an asset from a map marker",
+   "surface": "map-asset-map",
+   "ui_action": "Click an asset dot",
+   "frontend_handler": "dashboard/src/components/AssetMap.jsx:547",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "map.on('click','assets-dot') (AssetMap.jsx:547) -> onSelect -> MapPage.selectByProps (MapPage.jsx:61-63) -> AssetDetail (MapPage.jsx:123). Pointer-only; keyboard equivalent is the aside AssetsTable.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "map-select-municipio",
+   "name": "Open a municipio record from the map",
+   "surface": "map-asset-map",
+   "ui_action": "Click a municipio polygon",
+   "frontend_handler": "dashboard/src/components/AssetMap.jsx:558",
+   "backend_endpoint": "GET /municipios/{name}/summary",
+   "backend_handler": "server/backend/app.py:199",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "click 'muni-fill' -> navigate /municipios/:name (MapPage.jsx:95-98).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "map-select-alert",
+   "name": "Open an alert from the map",
+   "surface": "map-asset-map",
+   "ui_action": "Click an alert dot",
+   "frontend_handler": "dashboard/src/components/AssetMap.jsx:544",
+   "backend_endpoint": "GET /alerts/{alert_id}",
+   "backend_handler": "server/backend/main.py:1115",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "click 'alerts-dot' -> navigate /alerts/:id (MapPage.jsx:99).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "map-nws-overlay",
+   "name": "Show live NWS radar / warnings overlay",
+   "surface": "map-nws-overlays",
+   "ui_action": "Toggle NWS radar / NWS warnings",
+   "frontend_handler": "dashboard/src/components/AssetMap.jsx:814",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Raster tiles requested by the browser directly from mapservices.weather.noaa.gov (lib/nws-cloudgis-overlays.js:10-36); load/error status from map events (AssetMap.jsx:477-487) rendered aria-live (NwsOverlayToggles.jsx:36).",
+   "has_test": true,
+   "test": "dashboard/src/components/NwsOverlayToggles.test.jsx:1"
+  },
+  {
+   "id": "map-spatial-tools",
+   "name": "Measure / buffer / nearest on the map",
+   "surface": "map-spatial-tools",
+   "ui_action": "Enable Spatial tools, pick a mode, click the map",
+   "frontend_handler": "dashboard/src/components/SpatialToolsPanel.jsx:230",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Client-side turf computations on visible features (AssetMap.jsx:745-753; SpatialToolsPanel.jsx:122-252). Pointer-only input.",
+   "has_test": true,
+   "test": "dashboard/src/components/SpatialToolsPanel.test.jsx:1"
+  },
+  {
+   "id": "map-density-retry",
+   "name": "Retry event-density aggregate",
+   "surface": "map-layer-panel",
+   "ui_action": "Click 'Retry density'",
+   "frontend_handler": "dashboard/src/components/AssetMap.jsx:801",
+   "backend_endpoint": "GET /municipios/event_density",
+   "backend_handler": "server/backend/main.py:509",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "getRequiredJSON throws (lib/api.js:104) -> error text + Retry (AssetMap.jsx:795-801).",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:163"
+  },
+  {
+   "id": "alerts-browse",
+   "name": "Filter and open alerts",
+   "surface": "alerts-list",
+   "ui_action": "Search / facet filter / critical toggle / click row / Load more",
+   "frontend_handler": "dashboard/src/pages/AlertsPage.jsx:157",
+   "backend_endpoint": "GET /alerts, /alerts/facets, /alerts/gaps",
+   "backend_handler": "server/backend/main.py:998",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useAlertsPaged (AlertsPage.jsx:157) -> server filters (server/backend/main.py:998-1050) -> virtualized Link rows -> /alerts/:id.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "alert-detail-view",
+   "name": "View an alert and its dependencies",
+   "surface": "alert-detail",
+   "ui_action": "Open /alerts/:id",
+   "frontend_handler": "dashboard/src/pages/AlertDetailPage.jsx:35",
+   "backend_endpoint": "GET /alerts/{alert_id}, /alerts/dependencies",
+   "backend_handler": "server/backend/main.py:1115",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useAlert/useAlertDependencies (AlertDetailPage.jsx:35-37); linked assets route to map or filtered assets (26-31).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "alerts-export-csv",
+   "name": "Export alerts as CSV",
+   "surface": "alerts-csv-export",
+   "ui_action": "Click export",
+   "frontend_handler": "dashboard/src/pages/AlertsPage.jsx:184",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "downloadCSV('alerts.csv', items, …) (AlertsPage.jsx:184).",
+   "has_test": true,
+   "test": "dashboard/src/lib/csv.test.js:1"
+  },
+  {
+   "id": "outages-browse",
+   "name": "Browse outages and events",
+   "surface": "outages-panel",
+   "ui_action": "Search / filter by type / open event or municipio",
+   "frontend_handler": "dashboard/src/components/OutagesPanel.jsx:25",
+   "backend_endpoint": "GET /events, /outages/status",
+   "backend_handler": "server/backend/main.py:749",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useEventsPaged + useLumaOutageStatus (OutagesPanel.jsx:25-27) -> grouped list with links.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "event-ack",
+   "name": "Acknowledge (resolve) an event",
+   "surface": "event-ack-control",
+   "ui_action": "Click ACK",
+   "frontend_handler": "dashboard/src/pages/EventDetailPage.jsx:96",
+   "backend_endpoint": "PATCH /events/{event_id}",
+   "backend_handler": "server/backend/main.py:736",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "PARTIAL",
+   "status_evidence": "useAckEvent (lib/hooks.js:121-130) -> patchEvent (lib/api.js:202-213) -> patch stored only in in-memory `_event_patches` (server/backend/main.py:345,742-744; merged on GET main.py:731). No onError (EventDetailPage.jsx:97-100): a 401 or failure shows nothing.",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:99"
+  },
+  {
+   "id": "monitoring-series",
+   "name": "Select monitoring layer / series / site / range",
+   "surface": "monitoring-charts",
+   "ui_action": "Click a water layer, choose series/site/aquifer, pick range",
+   "frontend_handler": "dashboard/src/components/MonitoringCharts.jsx:67",
+   "backend_endpoint": "GET /readings, /hydro/features, /hydro/aquifer-wells, /hydro/aquifer-series",
+   "backend_handler": "server/backend/app.py:279",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useReadingsEnvelope (MonitoringCharts.jsx:67) -> app.py /readings (metric-safe) -> LineChart (215).",
+   "has_test": true,
+   "test": "dashboard/tests/gui-parity.spec.mjs:129"
+  },
+  {
+   "id": "hydro-map-layers",
+   "name": "Toggle hydrologic map layers",
+   "surface": "hydro-map-workspace",
+   "ui_action": "Tick layer checkboxes",
+   "frontend_handler": "dashboard/src/components/HydroMapWorkspace.jsx:144",
+   "backend_endpoint": "GET /hydro/aquifers.geojson, /hydro/geo/{name}.geojson, /hydro/points.geojson, /hydro/stream-tiles",
+   "backend_handler": "server/backend/hydro_inventory_api.py:221",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Checkbox -> visible state -> setLayoutProperty (HydroMapWorkspace.jsx:127-135); sources added at 74-82.",
+   "has_test": true,
+   "test": "dashboard/src/components/HydroMapWorkspace.test.jsx:1"
+  },
+  {
+   "id": "incident-transition",
+   "name": "Transition a monitoring incident",
+   "surface": "incident-operations-console",
+   "ui_action": "Select incident, edit actor/reason, click a transition",
+   "frontend_handler": "dashboard/src/components/IncidentOperationsConsole.jsx:27",
+   "backend_endpoint": "POST /monitoring/incidents/{incident_id}/transitions",
+   "backend_handler": "server/backend/app.py:380",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "PARTIAL",
+   "status_evidence": "fetch at IncidentOperationsConsole.jsx:30-34; non-2xx shown in role=alert (35-39,71) but the fetch is not in try/catch so a network failure is an unhandled rejection with no UI message. Incidents only exist after POST /monitoring/incidents/bootstrap (server/backend/app.py:348), which the UI never calls (empty-state text IncidentOperationsConsole.jsx:55).",
+   "has_test": true,
+   "test": "tests/test_monitoring_phase3.py:101"
+  },
+  {
+   "id": "hydromet-refresh",
+   "name": "Refresh a hydromet source",
+   "surface": "hydromet-source-health",
+   "ui_action": "Click 'Refresh now'",
+   "frontend_handler": "dashboard/src/pages/HydrometPage.jsx:327",
+   "backend_endpoint": "POST /hydromet/refresh/{source_id}",
+   "backend_handler": "server/backend/hydromet_api.py:296",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "COMPLETE",
+   "status_evidence": "useHydrometRefresh (lib/hydromet-hooks.js:47-57) -> postHydrometRefresh (lib/hydromet-api.js:55-76; 401/409/!ok throw) -> toast success/failure (HydrometPage.jsx:327-332), queries invalidated.",
+   "has_test": true,
+   "test": "tests/test_hydromet_api.py:87; dashboard/src/pages/HydrometPage.test.jsx:1"
+  },
+  {
+   "id": "hydromet-rainfall",
+   "name": "View Stage IV rainfall by window/day",
+   "surface": "hydromet-rainfall-table",
+   "ui_action": "Pick window, pick data day, Retry",
+   "frontend_handler": "dashboard/src/pages/HydrometPage.jsx:229",
+   "backend_endpoint": "GET /hydromet/rainfall",
+   "backend_handler": "server/backend/hydromet_api.py:214",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useRainfall (HydrometPage.jsx:229) throws on failure -> PanelState error + Retry (285-291).",
+   "has_test": true,
+   "test": "dashboard/tests/nws-hydromet.spec.mjs:1"
+  },
+  {
+   "id": "hydromet-gauges",
+   "name": "View NWPS gauges",
+   "surface": "hydromet-gauges-table",
+   "ui_action": "Toggle flooding-only, follow linked asset",
+   "frontend_handler": "dashboard/src/pages/HydrometPage.jsx:309",
+   "backend_endpoint": "GET /hydromet/gauges, /hydromet/summary, /hydromet/sources",
+   "backend_handler": "server/backend/hydromet_api.py:170",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useRiverGauges({flooding_only}) (HydrometPage.jsx:309) -> table (138-172).",
+   "has_test": true,
+   "test": "dashboard/tests/nws-hydromet.spec.mjs:1"
+  },
+  {
+   "id": "aquifer-bands-view",
+   "name": "View aquifer condition bands",
+   "surface": "aquifer-wells-table",
+   "ui_action": "Open page, Retry",
+   "frontend_handler": "dashboard/src/pages/AquiferBandsPage.jsx:248",
+   "backend_endpoint": "GET /aquifer/bands",
+   "backend_handler": "server/backend/aquifer_api.py:52",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useAquiferBands (5-min refetch, lib/aquifer-hooks.js:6-12) -> table; Retry (AquiferBandsPage.jsx:300).",
+   "has_test": true,
+   "test": "dashboard/tests/aquifer-bands.spec.mjs:1"
+  },
+  {
+   "id": "water-use-view",
+   "name": "View USGS water-use estimates",
+   "surface": "water-use-tables",
+   "ui_action": "Open page, pick year",
+   "frontend_handler": "dashboard/src/pages/WaterUsePage.jsx:261",
+   "backend_endpoint": "GET /water-use/estimates",
+   "backend_handler": "server/backend/water_use_api.py:71",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "useWaterUseEstimates -> 3 tables; Retry (WaterUsePage.jsx:315).",
+   "has_test": true,
+   "test": "dashboard/tests/water-use.spec.mjs:1"
+  },
+  {
+   "id": "hydro-inventory-browse",
+   "name": "Browse the hydro feature inventory",
+   "surface": "hydro-inventory-sections",
+   "ui_action": "Pick section, search, filter by source, page, open a feature",
+   "frontend_handler": "dashboard/src/pages/HydroInventoryPage.jsx:237",
+   "backend_endpoint": "GET /hydro/inventory/summary, /hydro/features, /hydro/features/{id}, /hydro/conflicts, /hydro/candidates",
+   "backend_handler": "server/backend/hydro_inventory_api.py:109",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Hooks (lib/hydro-inventory-hooks.js:9-20) -> tables (HydroInventoryPage.jsx:196,253) -> FeatureDetail (136-145,439).",
+   "has_test": true,
+   "test": "dashboard/tests/hydro-inventory.spec.mjs:1"
+  },
+  {
+   "id": "env-exposure-view",
+   "name": "View environmental exposure graph and hazard plane",
+   "surface": "environmental-exposure",
+   "ui_action": "Open page, Retry solid-waste list",
+   "frontend_handler": "dashboard/src/pages/EnvironmentalExposurePage.jsx:148",
+   "backend_endpoint": "GET /environmental-exposure/summary, /entities, /relationships, /integrity; GET /hazards/summary, /events, /integrity",
+   "backend_handler": "server/backend/environmental_exposure_api.py:159",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Queries EnvironmentalExposurePage.jsx:37,148-168; hazard router reaches the app via environmental_exposure_api.py:15-18.",
+   "has_test": true,
+   "test": "dashboard/tests/solid-waste-registry.spec.mjs:1; dashboard/tests/hazard-advisory.spec.mjs:1"
+  },
+  {
+   "id": "cave-karst-view",
+   "name": "Browse cave & karst registry",
+   "surface": "cave-karst-master-detail",
+   "ui_action": "Select an asset",
+   "frontend_handler": "dashboard/src/pages/CaveKarstPage.jsx:98",
+   "backend_endpoint": "GET /cave-karst/summary, /assets, /assets/{id}, /status-history, /provenance, /edges, /alerts",
+   "backend_handler": "server/backend/cave_karst_api.py:163",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "7 queries (CaveKarstPage.jsx:98-131) -> detail sections.",
+   "has_test": true,
+   "test": "dashboard/src/pages/CaveKarstPage.test.jsx:1"
+  },
+  {
+   "id": "source-intelligence-view",
+   "name": "Inspect source coverage and governance",
+   "surface": "source-intelligence-source-table",
+   "ui_action": "Open page, pick a source family",
+   "frontend_handler": "dashboard/src/pages/SourceIntelligencePage.jsx:78",
+   "backend_endpoint": "GET /source-intelligence/{summary,domains,sources,coverage,products,routes,route-governance}",
+   "backend_handler": "server/backend/source_intelligence_api.py:80",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Promise bundle query (SourceIntelligencePage.jsx:78) -> router re-included by app.py:73 (legacy copy filtered app.py:53-64).",
+   "has_test": true,
+   "test": "dashboard/src/pages/SourceIntelligencePage.test.jsx:1"
+  },
+  {
+   "id": "run-export",
+   "name": "Run federation export",
+   "surface": "system-operator-tools",
+   "ui_action": "Click 'Run federation export'",
+   "frontend_handler": "dashboard/src/pages/SystemPage.jsx:132",
+   "backend_endpoint": "POST /admin/run-export",
+   "backend_handler": "server/backend/main.py:1123",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "COMPLETE",
+   "status_evidence": "useRunExport (lib/hooks.js:109-119) -> postRunExport throws on non-2xx (lib/api.js:160-180) -> success/failure toast with detail (SystemPage.jsx:133-134).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "send-status-alert-system",
+   "name": "Send status alert (System page)",
+   "surface": "system-operator-tools",
+   "ui_action": "Click 'Send status alert'",
+   "frontend_handler": "dashboard/src/pages/SystemPage.jsx:104",
+   "backend_endpoint": "POST /notify",
+   "backend_handler": "server/backend/main.py:1347",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "COMPLETE",
+   "status_evidence": "postNotify (lib/api.js:230-245) -> toast with result.error on failure (SystemPage.jsx:113-115); disabled with stated reason when no channel/key (SystemPage.jsx:99-101,166-171).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "send-status-alert-overview",
+   "name": "Send status alert (Overview)",
+   "surface": "overview-send-alert",
+   "ui_action": "Click 'Send Alert'",
+   "frontend_handler": "dashboard/src/pages/OverviewPage.jsx:79",
+   "backend_endpoint": "POST /notify",
+   "backend_handler": "server/backend/main.py:1347",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "PARTIAL",
+   "status_evidence": "Works, but every failure — including a 401 from key auth — is reported as 'No channels configured' (OverviewPage.jsx:85-89); result.error is discarded.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "ai-status-recap",
+   "name": "AI status recap",
+   "surface": "overview-ai-recap",
+   "ui_action": "Click 'AI Status Recap'",
+   "frontend_handler": "dashboard/src/pages/OverviewPage.jsx:181",
+   "backend_endpoint": "POST /ai/query",
+   "backend_handler": "server/backend/main.py:1158",
+   "writes": false,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "COMPLETE",
+   "status_evidence": "handleSummarize -> postAiQuery -> inline text (OverviewPage.jsx:196-199).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "ai-ask",
+   "name": "Ask AI free-text question",
+   "surface": "ai-query-panel",
+   "ui_action": "Open 'Ask AI', type, Enter or send",
+   "frontend_handler": "dashboard/src/components/AiQueryPanel.jsx:12",
+   "backend_endpoint": "POST /ai/query",
+   "backend_handler": "server/backend/main.py:1158",
+   "writes": false,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "COMPLETE",
+   "status_evidence": "submit (AiQueryPanel.jsx:12-23) -> answer or error appended to transcript (20).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "set-api-key",
+   "name": "Set / replace / clear the write API key",
+   "surface": "system-api-key-form",
+   "ui_action": "Paste key and submit, or Clear",
+   "frontend_handler": "dashboard/src/pages/SystemPage.jsx:201",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "other — client-only; value stored in sessionStorage (lib/api.js:20-39)",
+   "status": "COMPLETE",
+   "status_evidence": "Form submit -> setApiKey (SystemPage.jsx:201-207) -> authHeaders on every mutating call (lib/api.js:43-48). Key is not validated against the backend on entry.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "open-status-report",
+   "name": "Open the HTML status report",
+   "surface": "system-operator-tools",
+   "ui_action": "Click 'Open status report'",
+   "frontend_handler": "dashboard/src/pages/SystemPage.jsx:176",
+   "backend_endpoint": "GET /export/report.html",
+   "backend_handler": "server/backend/main.py:1220",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Anchor target=_blank to API_BASE/export/report.html (lib/api.js:228). Also EventDetailPage.jsx:107.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "live-logs",
+   "name": "Watch the live event stream",
+   "surface": "live-logs-stream",
+   "ui_action": "Open /logs, filter, pause autoscroll",
+   "frontend_handler": "dashboard/src/pages/LiveLogsPage.jsx:27",
+   "backend_endpoint": "GET /events/stream",
+   "backend_handler": "server/backend/main.py:706",
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "EventSource -> setEvents (LiveLogsPage.jsx:28-34). onerror only flips `connected` (30) and the UI keeps saying 'Connecting to event stream…' (84-86); JSON parse errors are swallowed (32).",
+   "has_test": true,
+   "test": "tests/test_backend_events_stream.py:1"
+  },
+  {
+   "id": "overview-municipio-select",
+   "name": "Inspect a municipio from the Overview SVG map",
+   "surface": "overview-municipal-map",
+   "ui_action": "Click or Enter/Space on a municipio, switch metric",
+   "frontend_handler": "dashboard/src/components/MunicipalOverviewMap.jsx:169",
+   "backend_endpoint": "GET /municipios/summary, /municipios.geojson, /municipios/{name}/summary",
+   "backend_handler": "server/backend/main.py:582",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "onSelect -> selectedMunicipioGeoid -> useMunicipioSummary (OverviewPage.jsx:36-42) -> detail aside (MunicipalOverviewMap.jsx:193-245).",
+   "has_test": true,
+   "test": "dashboard/src/components/MunicipalOverviewMap.test.jsx:1"
+  },
+  {
+   "id": "overview-reservoir-chart",
+   "name": "Reservoir levels chart",
+   "surface": "overview-reservoir-chart",
+   "ui_action": "Open Overview",
+   "frontend_handler": "dashboard/src/pages/OverviewPage.jsx:43",
+   "backend_endpoint": "GET /readings?kind=reservoir",
+   "backend_handler": "server/backend/app.py:279",
+   "writes": false,
+   "authorization": "none",
+   "status": "BROKEN",
+   "status_evidence": "Request carries no `metric` (lib/hooks.js:50-56; OverviewPage.jsx:43); reservoir is metric_required (server/backend/main.py:67-75) so app.py raises 400 (app.py:256-258); getJSON turns that into [] (lib/api.js:65,117) and the chart always shows the 'No reservoir data' branch (OverviewPage.jsx:253). The chart also reads fields timestamp/date/level_pct (OverviewPage.jsx:101-104) rather than observed_date.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "municipio-detail-view",
+   "name": "View a municipio record",
+   "surface": "municipio-detail",
+   "ui_action": "Open /municipios/:name, open flood document, follow event links",
+   "frontend_handler": "dashboard/src/pages/MunicipioDetailPage.jsx:22",
+   "backend_endpoint": "GET /municipios/{name}/summary, /assets?municipio=, /events?municipio=, /municipios/{name}/flood-document/file",
+   "backend_handler": "server/backend/app.py:199",
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "Summary, events and flood-document traced (MunicipioDetailPage.jsx:22-24,94,211); asset rows link to /assets/{asset_id} (235-237) for which App.jsx defines no route (App.jsx:61-85) so they land on PageNotFound.",
+   "has_test": true,
+   "test": "dashboard/src/pages/MunicipioDetailPage.test.jsx:1"
+  },
+  {
+   "id": "sector-detail-view",
+   "name": "View a sector",
+   "surface": "sector-detail",
+   "ui_action": "Click a sector card on Overview",
+   "frontend_handler": "dashboard/src/pages/SectorDetailPage.jsx:20",
+   "backend_endpoint": "GET /assets, /events, /summary/sectors",
+   "backend_handler": "server/backend/main.py:857",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Client-side filtering by sector (SectorDetailPage.jsx:25-35) -> chart + table.",
+   "has_test": true,
+   "test": "dashboard/src/pages/SectorDetailPage.test.jsx:1"
+  },
+  {
+   "id": "analytics-view",
+   "name": "View analytics charts",
+   "surface": "analytics-charts",
+   "ui_action": "Open /analytics",
+   "frontend_handler": "dashboard/src/pages/AnalyticsPage.jsx:14",
+   "backend_endpoint": "GET /assets, /events",
+   "backend_handler": "server/backend/main.py:423",
+   "writes": false,
+   "authorization": "none",
+   "status": "COMPLETE",
+   "status_evidence": "Client aggregation (AnalyticsPage.jsx:18-48) of at most 500 events (DEFAULT_EVENT_LIMIT, lib/hooks.js:26-30) — charts describe the sample, not the corpus.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "water-disruption-console",
+   "name": "Open the water-disruption validation console",
+   "surface": "water-disruption-console-iframe",
+   "ui_action": "Open /water-disruption",
+   "frontend_handler": "dashboard/src/pages/WaterDisruption.jsx:10",
+   "backend_endpoint": "GET /water-disruption/console",
+   "backend_handler": "server/backend/water_disruption_api.py:105",
+   "writes": false,
+   "authorization": "none",
+   "status": "PARTIAL",
+   "status_evidence": "iframe src is the relative '/water-disruption/console' (WaterDisruption.jsx:11), not API_BASE; vite.config.js:60-62 defines no proxy, so under `npm run dev` (frontend :5173, API :8000 per lib/api.js:5) the iframe loads the SPA itself. Resolves only when frontend and backend share an origin (desktop wrapper, desktop/config.py:25-31; make_desktop_app lives in external prii_desktop, not in this snapshot). In the HashRouter offline export it cannot resolve at all.",
+   "has_test": true,
+   "test": "tests/test_water_disruption_api.py:11"
+  },
+  {
+   "id": "water-disruption-writes",
+   "name": "Water-disruption intake / validation / transition / merge / split / retraction",
+   "surface": "water-disruption-console-iframe",
+   "ui_action": "none in the dashboard",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /water-disruption/{intake,validation/{id},incidents/{id}/transition,incidents/{id}/merge,incidents/{id}/split,retractions}",
+   "backend_handler": "server/backend/water_disruption_api.py:126",
+   "writes": true,
+   "authorization": "none — no _require_key dependency on these routes (server/backend/water_disruption_api.py:126-209); Idempotency-Key header required",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "No caller in dashboard/src (grep 'water-disruption' matches only Sidebar.jsx:36 and WaterDisruption.jsx:11); console HTML has links only (server/backend/water_disruption_api.py:105-124).",
+   "has_test": true,
+   "test": "tests/test_water_disruption_api.py:18"
+  },
+  {
+   "id": "monitoring-incident-bootstrap",
+   "name": "Bootstrap monitoring incidents",
+   "surface": "incident-operations-console",
+   "ui_action": "none in the dashboard",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /monitoring/incidents/bootstrap",
+   "backend_handler": "server/backend/app.py:348",
+   "writes": true,
+   "authorization": "key — Bearer API_SECRET_KEY via _require_key; no-op when env var unset (server/backend/main.py:168-174)",
+   "status": "INTERNAL_ONLY",
+   "status_evidence": "No frontend caller; UI text tells the operator to bootstrap 'through the authenticated API' (IncidentOperationsConsole.jsx:55).",
+   "has_test": true,
+   "test": "tests/test_monitoring_phase3.py:101"
+  },
+  {
+   "id": "review-queue-rail",
+   "name": "Read-only review list panel",
+   "surface": "review-queue-rail-panel",
+   "ui_action": "n/a",
+   "frontend_handler": "dashboard/src/components/ReviewQueue.jsx:19",
+   "backend_endpoint": "GET /review-queue",
+   "backend_handler": "server/backend/main.py:821",
+   "writes": false,
+   "authorization": "none",
+   "status": "UNREACHABLE",
+   "status_evidence": "Component is not imported by any page or App.jsx (only self-reference and ReviewRecordCard import, ReviewQueue.jsx:10).",
+   "has_test": true,
+   "test": "dashboard/src/components/ReviewRecordCard.test.jsx:4"
+  },
+  {
+   "id": "program-activity-append",
+   "name": "Append a live program-activity event",
+   "surface": "overview-program-timeline",
+   "ui_action": "n/a",
+   "frontend_handler": "dashboard/src/components/programActivityEvent.js:64",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": true,
+   "authorization": "none",
+   "status": "UNREACHABLE",
+   "status_evidence": "appendProgramActivityEvent has no caller outside its own module/test (grep in dashboard/src); ProgramTimeline only reads (ProgramTimeline.jsx:19).",
+   "has_test": true,
+   "test": "dashboard/src/components/programActivityEvent.test.js:1"
+  }
+ ],
+ "navigation": {
+  "registry_file": "dashboard/src/components/layout/Sidebar.jsx:13",
+  "items": [
+   {
+    "label": "Overview",
+    "target": "/"
+   },
+   {
+    "label": "Map",
+    "target": "/map"
+   },
+   {
+    "label": "Alerts",
+    "target": "/alerts"
+   },
+   {
+    "label": "Alerts › Outages",
+    "target": "/outages"
+   },
+   {
+    "label": "Alerts › Monitoring",
+    "target": "/monitoring"
+   },
+   {
+    "label": "Assets",
+    "target": "/assets"
+   },
+   {
+    "label": "Water & Weather",
+    "target": "/water-disruption"
+   },
+   {
+    "label": "Water & Weather › NWS Hydromet",
+    "target": "/hydromet"
+   },
+   {
+    "label": "Water & Weather › Aquifer Bands",
+    "target": "/aquifer-bands"
+   },
+   {
+    "label": "Water & Weather › Water Use",
+    "target": "/water-use"
+   },
+   {
+    "label": "Water & Weather › Hydro Inventory",
+    "target": "/hydro-inventory"
+   },
+   {
+    "label": "Environment",
+    "target": "/environmental-exposure"
+   },
+   {
+    "label": "Environment › Cave & Karst",
+    "target": "/cave-karst"
+   },
+   {
+    "label": "Regulatory",
+    "target": "/regulatory"
+   },
+   {
+    "label": "Regulatory › Regulatory Review",
+    "target": "/regulatory/review"
+   },
+   {
+    "label": "Review Queue",
+    "target": "/review"
+   },
+   {
+    "label": "Analytics",
+    "target": "/analytics"
+   },
+   {
+    "label": "Source Intelligence",
+    "target": "/source-intelligence"
+   },
+   {
+    "label": "Live Logs",
+    "target": "/logs"
+   },
+   {
+    "label": "System & Tools",
+    "target": "/system"
+   }
+  ],
+  "mobile_navigation": "Below 768px (dashboard/src/hooks/use-mobile.js:3) a header hamburger (DashboardLayout.jsx:27-33, aria-label 'Open navigation') opens a full-screen fixed drawer (Sidebar.jsx:148-185) with three group tabs (role=tablist/tab, aria-selected), a close button (aria-label 'Close navigation') and the selected group's rows as cards with sub-links; link click or Escape closes it (Sidebar.jsx:136,141-146). Not a modal dialog: no focus trap/restore, no aria-modal. Covered by dashboard/tests/mobile-navigation.spec.mjs:41,62.",
+  "dead_or_unlinked_routes": [
+   "/assets/:id — linked from dashboard/src/pages/MunicipioDetailPage.jsx:237 but no such route in App.jsx (falls to PageNotFound)",
+   "/alerts/:id, /events/:id, /municipios/:name, /sector/:sector — routed (App.jsx:65,82-84) and reachable only through in-page links, not the sidebar",
+   "/water-disruption — routed and linked, but its iframe target resolves only when frontend and backend share an origin (WaterDisruption.jsx:11)"
+  ]
+ },
+ "settings": [
+  {
+   "id": "api-key",
+   "label": "API key (API secret key)",
+   "scope": "SECRET",
+   "storage": "sessionStorage key 'aguayluz_api_key'",
+   "evidence": "dashboard/src/lib/api.js:20-39; dashboard/src/pages/SystemPage.jsx:200-240"
+  },
+  {
+   "id": "program-activity-events",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage key 'federation.programActivity.v1.<producerId>' (read-only from the UI)",
+   "evidence": "dashboard/src/components/programActivityEvent.js:3,51-75; dashboard/src/components/ProgramTimeline.jsx:19"
+  },
+  {
+   "id": "review-filters-url",
+   "label": "Review severity / tier / offset",
+   "scope": "SESSION",
+   "storage": "none — URL query params sev, tier, offset",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:24-39"
+  },
+  {
+   "id": "asset-filters-url",
+   "label": "Asset filters",
+   "scope": "SESSION",
+   "storage": "none — URL query params type, subtype, status, review, unmapped, q (only on /assets; component state on /map)",
+   "evidence": "dashboard/src/components/AssetsTable.jsx:40-62"
+  },
+  {
+   "id": "alert-filters-url",
+   "label": "Alert filters",
+   "scope": "SESSION",
+   "storage": "none — URL query params module, status, review, tier, critical, q",
+   "evidence": "dashboard/src/pages/AlertsPage.jsx:25-46"
+  },
+  {
+   "id": "logs-type-url",
+   "label": "Live log event type",
+   "scope": "SESSION",
+   "storage": "none — URL query param type",
+   "evidence": "dashboard/src/pages/LiveLogsPage.jsx:14-20"
+  },
+  {
+   "id": "map-layer-state",
+   "label": "Map layers / fill mode / basemap / terrain / NWS overlays",
+   "scope": "SESSION",
+   "storage": "none — React state, reset on navigation",
+   "evidence": "dashboard/src/components/AssetMap.jsx:304-313"
+  },
+  {
+   "id": "hydro-map-layer-state",
+   "label": "Hydrologic map layers",
+   "scope": "SESSION",
+   "storage": "none — React state",
+   "evidence": "dashboard/src/components/HydroMapWorkspace.jsx:50"
+  },
+  {
+   "id": "theme",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "none — hard-coded dark (data-theme='dark'), no toggle",
+   "evidence": "dashboard/src/main.jsx:14-15; dashboard/index.html:2"
+  },
+  {
+   "id": "vite-api-base",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env VITE_API_BASE (build time; default http://localhost:8000)",
+   "evidence": "dashboard/src/lib/api.js:5"
+  },
+  {
+   "id": "vite-offline",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env VITE_OFFLINE=1 (HashRouter + embedded snapshot)",
+   "evidence": "dashboard/src/App.jsx:10-11; dashboard/src/lib/api.js:9; dashboard/package.json:9"
+  },
+  {
+   "id": "vite-sentry-dsn",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env VITE_SENTRY_DSN (session replay with maskAllText:false when set)",
+   "evidence": "dashboard/src/main.jsx:17-28"
+  },
+  {
+   "id": "backend-api-secret-key",
+   "label": null,
+   "scope": "SECRET",
+   "storage": "env API_SECRET_KEY (backend)",
+   "evidence": "server/backend/main.py:163-174"
+  },
+  {
+   "id": "backend-allowed-origins",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env ALLOWED_ORIGINS (backend CORS)",
+   "evidence": "server/backend/main.py:149-160"
+  },
+  {
+   "id": "backend-ai-and-notify-channels",
+   "label": null,
+   "scope": "SECRET",
+   "storage": "env ANTHROPIC_API_KEY, SLACK_WEBHOOK_URL, NTFY_TOPIC, SMTP_* (backend); surfaced read-only as booleans on System page",
+   "evidence": "server/backend/main.py:460-461; dashboard/src/pages/OverviewPage.jsx:88; dashboard/src/pages/SystemPage.jsx:99-101"
+  },
+  {
+   "id": "desktop-data-home",
+   "label": null,
+   "scope": "GLOBAL_USER",
+   "storage": "env AGUAYLUZ_DATA_HOME (desktop wrapper)",
+   "evidence": "desktop/config.py:20"
+  }
+ ],
+ "context_actions": [],
+ "keyboard_shortcuts": [
+  {
+   "keys": "J / ArrowDown",
+   "action": "Move review cursor down",
+   "scope": "review-queue",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:128"
+  },
+  {
+   "keys": "K / ArrowUp",
+   "action": "Move review cursor up",
+   "scope": "review-queue",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:129"
+  },
+  {
+   "keys": "A",
+   "action": "Accept cursor record (immediate write, no confirmation)",
+   "scope": "review-queue",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:130-135"
+  },
+  {
+   "keys": "R",
+   "action": "Reject cursor record (immediate write, no confirmation)",
+   "scope": "review-queue",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:130-135"
+  },
+  {
+   "keys": "S",
+   "action": "Skip cursor record",
+   "scope": "review-queue",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:130-135"
+  },
+  {
+   "keys": "/",
+   "action": "Focus asset search",
+   "scope": "assets-table (window listener; active on /assets and /map)",
+   "evidence": "dashboard/src/components/AssetsTable.jsx:146-150"
+  },
+  {
+   "keys": "j / k",
+   "action": "Select next / previous asset row (opens detail sheet)",
+   "scope": "assets-table (window listener; active on /assets and /map)",
+   "evidence": "dashboard/src/components/AssetsTable.jsx:151-161"
+  },
+  {
+   "keys": "Enter / Space",
+   "action": "Sort by focused column header; open focused asset row",
+   "scope": "assets-table",
+   "evidence": "dashboard/src/components/AssetsTable.jsx:255,273"
+  },
+  {
+   "keys": "Enter / Space",
+   "action": "Select focused municipio path",
+   "scope": "overview-municipal-map",
+   "evidence": "dashboard/src/components/MunicipalOverviewMap.jsx:170-174"
+  },
+  {
+   "keys": "Escape",
+   "action": "Close mobile navigation drawer",
+   "scope": "mobile-nav-drawer",
+   "evidence": "dashboard/src/components/layout/Sidebar.jsx:141-146"
+  },
+  {
+   "keys": "Escape",
+   "action": "Close asset detail sheet (in addition to Radix Dialog's own handling)",
+   "scope": "asset-detail-sheet",
+   "evidence": "dashboard/src/components/AssetDetail.jsx:51-56"
+  },
+  {
+   "keys": "Enter",
+   "action": "Submit AI question",
+   "scope": "ai-query-panel",
+   "evidence": "dashboard/src/components/AiQueryPanel.jsx:25-30"
+  }
+ ],
+ "accessibility_source_findings": [
+  {
+   "id": "no-skip-link",
+   "severity": "serious",
+   "finding": "No skip-to-content link anywhere; keyboard users tab through the 20-link desktop sidebar and the StatsBar before reaching <main> on every route.",
+   "evidence": "dashboard/src/components/layout/DashboardLayout.jsx:17-45 (grep -i 'skip' in dashboard/src and index.html found no skip link)",
+   "confidence": "high"
+  },
+  {
+   "id": "review-single-key-destructive",
+   "severity": "serious",
+   "finding": "Single-character shortcuts A/R/S write a review decision immediately with no confirmation, no undo and no way to disable or remap (WCAG 2.1.4). The handler only ignores input/textarea/combobox targets, so the keys fire while focus is on any button or link on the page.",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:21-22,125-139",
+   "confidence": "high"
+  },
+  {
+   "id": "review-cursor-not-exposed",
+   "severity": "serious",
+   "finding": "The review 'cursor' row that A/R/S act on is a non-focusable <div> styled by border only; it has no tabindex, aria-current/aria-selected or live announcement, so assistive-technology users cannot tell which record a shortcut will decide. It is also independent of DOM focus.",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:194-204",
+   "confidence": "high"
+  },
+  {
+   "id": "toast-not-announced",
+   "severity": "serious",
+   "finding": "Toasts are plain <div>s with no role=status/alert or aria-live, yet they are the only success/failure feedback for review decisions, regulatory decisions, export, notify, hydromet refresh and API-key changes. The toast close button is icon-only with no accessible name and is opacity-0 until hover/focus.",
+   "evidence": "dashboard/src/components/ui/toast.jsx:10-52,66-78; dashboard/src/components/ui/toaster.jsx:15-31",
+   "confidence": "high"
+  },
+  {
+   "id": "review-select-unlabelled",
+   "severity": "serious",
+   "finding": "Review Queue severity and tier Select triggers (role=combobox) have no aria-label. Same defect on the Live Logs type filter and the Outages type filter.",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:168,172; dashboard/src/pages/LiveLogsPage.jsx:62; dashboard/src/components/OutagesPanel.jsx:68",
+   "confidence": "high"
+  },
+  {
+   "id": "ai-panel-unnamed-controls",
+   "severity": "serious",
+   "finding": "AI panel close button and send button are icon-only with no accessible name; the text input has only a placeholder; the panel is not a dialog/region, has no label and no focus management on open/close.",
+   "evidence": "dashboard/src/components/AiQueryPanel.jsx:44,50-52,95-110",
+   "confidence": "high"
+  },
+  {
+   "id": "mobile-drawer-not-modal",
+   "severity": "serious",
+   "finding": "Mobile navigation is a full-screen fixed <aside> without role=dialog/aria-modal, focus is not moved into it or returned on close, and background content stays in the tab order. Group tabs use role=tab/tablist without tabpanel, aria-controls or arrow-key handling.",
+   "evidence": "dashboard/src/components/layout/Sidebar.jsx:148-185",
+   "confidence": "high"
+  },
+  {
+   "id": "map-page-fixed-width",
+   "severity": "serious",
+   "finding": "Map page uses a fixed 440px non-shrinking aside beside a flex-1 min-w-0 map with no responsive breakpoint, and a 250px layer panel over the map; at phone widths the map column collapses. Monitoring has the same pattern with a fixed 250px layer rail.",
+   "evidence": "dashboard/src/pages/MapPage.jsx:69-70,111; dashboard/src/components/AssetMap.jsx:760; dashboard/src/components/WaterMonitoringConsole.jsx:17",
+   "confidence": "medium"
+  },
+  {
+   "id": "map-canvas-unlabelled",
+   "severity": "serious",
+   "finding": "The main map container has no role or accessible name, and marker/polygon selection, hover popups and all spatial tools are pointer-only (map.on('click'/'mouseenter')).",
+   "evidence": "dashboard/src/components/AssetMap.jsx:758,506-558; dashboard/src/components/SpatialToolsPanel.jsx:230-252",
+   "confidence": "high"
+  },
+  {
+   "id": "municipal-map-focus-hidden",
+   "severity": "serious",
+   "finding": "78 focusable SVG municipio paths remove the focus outline (focus:outline-none) and provide no alternative focus style; they also add 78 tab stops with no roving tabindex.",
+   "evidence": "dashboard/src/components/MunicipalOverviewMap.jsx:163-177",
+   "confidence": "high"
+  },
+  {
+   "id": "basemap-buttons-no-state",
+   "severity": "moderate",
+   "finding": "Basemap Map/Satellite buttons expose the active choice by colour only (no aria-pressed), unlike the other layer toggles. Monitoring range buttons and water-layer rail buttons have the same gap.",
+   "evidence": "dashboard/src/components/AssetMap.jsx:834-847; dashboard/src/components/MonitoringCharts.jsx:151; dashboard/src/components/WaterMonitoringConsole.jsx:23-27",
+   "confidence": "high"
+  },
+  {
+   "id": "missing-h1",
+   "severity": "moderate",
+   "finding": "Overview and Map routes render no <h1> (neither uses PageHeader); the desktop sidebar's <h2> group headings precede any page heading in DOM order.",
+   "evidence": "dashboard/src/pages/OverviewPage.jsx:120-126; dashboard/src/pages/MapPage.jsx:68-125; dashboard/src/components/layout/Sidebar.jsx:199",
+   "confidence": "high"
+  },
+  {
+   "id": "nested-main",
+   "severity": "moderate",
+   "finding": "WaterDisruption renders its own <main> inside the layout's <main>, producing nested main landmarks.",
+   "evidence": "dashboard/src/pages/WaterDisruption.jsx:3; dashboard/src/components/layout/DashboardLayout.jsx:40",
+   "confidence": "high"
+  },
+  {
+   "id": "no-banner-landmark",
+   "severity": "minor",
+   "finding": "Mobile header and StatsBar are <div>s; there is no <header>/banner landmark. Backend-down banner has no role=alert/aria-live.",
+   "evidence": "dashboard/src/components/layout/DashboardLayout.jsx:26; dashboard/src/components/StatsBar.jsx:60-69",
+   "confidence": "high"
+  },
+  {
+   "id": "mobile-active-not-styled",
+   "severity": "moderate",
+   "finding": "In the mobile drawer the top-level NavLink ignores isActive for styling (always 'text-xl text-sky-700'); the current page is conveyed only by react-router's implicit aria-current, with no visible indication for top-level items.",
+   "evidence": "dashboard/src/components/layout/Sidebar.jsx:90-97",
+   "confidence": "high"
+  },
+  {
+   "id": "icon-buttons-title-only",
+   "severity": "moderate",
+   "finding": "Several icon-only buttons rely on `title` alone for a name: Review CSV export, Review AI-suggest, Assets CSV export.",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:164-166,226-237; dashboard/src/components/AssetsTable.jsx:193",
+   "confidence": "medium"
+  },
+  {
+   "id": "select-checkbox-not-checkbox",
+   "severity": "moderate",
+   "finding": "Review row selection and 'Select all on page' are plain buttons swapping icons; no role=checkbox/aria-checked/aria-pressed, and every row's button has the same name 'Select record'.",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:179-186,206-214",
+   "confidence": "high"
+  },
+  {
+   "id": "approve-disabled-reason-title-only",
+   "severity": "moderate",
+   "finding": "Regulatory 'Approve' is disabled when contradictions exist and the reason is given only through a title attribute on a disabled button (not focusable, not announced); the form itself gives no inline reason for disabled Reject/Needs-review when actor/rationale are empty.",
+   "evidence": "dashboard/src/pages/RegulatoryReviewPage.jsx:274-299",
+   "confidence": "medium"
+  },
+  {
+   "id": "muted-text-contrast",
+   "severity": "serious",
+   "finding": "text-slate-500/600 on slate-900/950 backgrounds is still used throughout for captions and metadata (previously measured 3.75:1 in docs/A11Y_AUDIT.md); not re-measured here.",
+   "evidence": "dashboard/src/components/layout/Sidebar.jsx:193; dashboard/src/components/common/PageHeader.jsx:8; dashboard/src/components/StatsBar.jsx:16",
+   "confidence": "medium"
+  },
+  {
+   "id": "link-colour-only",
+   "severity": "serious",
+   "finding": "Inline links inside slate-500 paragraph text are distinguished by colour only (no underline).",
+   "evidence": "dashboard/src/pages/OverviewPage.jsx:155,158",
+   "confidence": "high"
+  },
+  {
+   "id": "small-touch-targets",
+   "severity": "moderate",
+   "finding": "Controls are sized below 44px by class: h-7 (28px) review buttons, 16px select icons, px-2 py-1 map chips, p-1.5 hamburger.",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:179,206,238-246; dashboard/src/components/AssetMap.jsx:278; dashboard/src/components/layout/DashboardLayout.jsx:30",
+   "confidence": "medium"
+  },
+  {
+   "id": "charts-no-text-alternative",
+   "severity": "moderate",
+   "finding": "Recharts charts on Analytics, Overview, Sector and Monitoring have no aria-label, summary or data table alternative (Sector has a separate asset table only).",
+   "evidence": "dashboard/src/pages/AnalyticsPage.jsx:77-128; dashboard/src/pages/OverviewPage.jsx:244; dashboard/src/components/MonitoringCharts.jsx:215",
+   "confidence": "medium"
+  },
+  {
+   "id": "no-reduced-motion",
+   "severity": "minor",
+   "finding": "No prefers-reduced-motion handling in app CSS; map easeTo/fly animations and animate-pulse/animate-spin are unconditional.",
+   "evidence": "dashboard/src/index.css:1-68; dashboard/src/components/AssetMap.jsx:741",
+   "confidence": "medium"
+  },
+  {
+   "id": "unlabelled-inputs",
+   "severity": "moderate",
+   "finding": "Search inputs with placeholder only: Live Logs filter, Outages search, Assets search, ProgramTimeline search; MonitoringCharts 'include polygon' checkbox label UNKNOWN (line 178 not opened in full).",
+   "evidence": "dashboard/src/pages/LiveLogsPage.jsx:60; dashboard/src/components/OutagesPanel.jsx:66; dashboard/src/components/AssetsTable.jsx:183-189; dashboard/src/components/ProgramTimeline.jsx:51",
+   "confidence": "medium"
+  },
+  {
+   "id": "table-headers-no-scope",
+   "severity": "minor",
+   "finding": "Hand-written tables on Environmental Exposure, Hydromet and Source Intelligence use <th> without scope; Water Use / Hydro Inventory do set scope=row.",
+   "evidence": "dashboard/src/pages/EnvironmentalExposurePage.jsx:102-108; dashboard/src/pages/HydrometPage.jsx:141-146; dashboard/src/pages/SourceIntelligencePage.jsx:210-214",
+   "confidence": "medium"
+  }
+ ],
+ "backend": {
+  "framework": "FastAPI (server/backend/app.py:10,58)",
+  "app_object": "server/backend/app.py:58",
+  "endpoint_count": {
+   "GET": 93,
+   "POST": 14,
+   "PUT": 0,
+   "PATCH": 2,
+   "DELETE": 0
+  },
+  "endpoints_not_called_by_frontend": [
+   "GET /outages/status/changes",
+   "GET /auth/status",
+   "GET /monitoring/health",
+   "GET /monitoring/alerts",
+   "GET /monitoring/alert-operations",
+   "GET /monitoring/incidents/{incident_id}/timeline",
+   "GET /monitoring/incidents/escalations/candidates",
+   "GET /monitoring/incidents/notification-outbox",
+   "GET /export/monitoring.json",
+   "GET /export/federation/monitoring-alerts.json",
+   "GET /export/federation/monitoring-incident-events.json",
+   "GET /environmental-exposure/entities/{entity_id}",
+   "GET /water-disruption/intake/{candidate_id}",
+   "GET /water-disruption/validation-queue",
+   "GET /water-disruption/incidents",
+   "GET /water-disruption/incidents/{incident_id}",
+   "POST /monitoring/incidents/bootstrap",
+   "POST /water-disruption/intake",
+   "POST /water-disruption/validation/{candidate_id}",
+   "POST /water-disruption/incidents/{incident_id}/transition",
+   "POST /water-disruption/incidents/{incident_id}/merge",
+   "POST /water-disruption/incidents/{incident_id}/split",
+   "POST /water-disruption/retractions",
+   "GET /hydromet/refresh/status (client function exists at dashboard/src/lib/hydromet-api.js:51 but has no caller)",
+   "GET /regulatory/receipts/{receipt_id} (client function at dashboard/src/lib/regulatory-api.js:51-54 has no caller)",
+   "GET /hazards/sources and GET /hazards/relationships (client functions at dashboard/src/lib/environmental-exposure-api.js:66-73 have no caller)"
+  ],
+  "frontend_calls_with_no_backend_route": [
+   "GET /water-disruption/console requested from the FRONTEND origin, not API_BASE (dashboard/src/pages/WaterDisruption.jsx:11) — the route exists on the backend (server/backend/water_disruption_api.py:105) but is unreachable from the Vite dev origin; no other unmatched call found",
+   "GET /readings?kind=reservoir without metric (dashboard/src/pages/OverviewPage.jsx:43) — route exists but rejects the call with 400 (server/backend/app.py:256-258)"
+  ]
+ },
+ "tests": {
+  "frontend_unit": "31 test files, 205 it()/test() declarations by regex under dashboard/src — Vitest 4 + Testing Library + jsdom (dashboard/package.json:12; dashboard/vitest.config.js)",
+  "frontend_e2e": "8 Playwright spec files under dashboard/tests with 23 test() declarations by regex (gui-parity.spec.mjs generates more via loops); run by `npm run test:gui-parity` (dashboard/package.json:14) and .github/workflows/gui-capability-parity.yml:88",
+  "backend": "171 pytest files under tests/ with 1593 `def test_` functions by regex (runner config not inspected beyond pyproject.toml)",
+  "accessibility_automation": "vitest-axe matchers registered in dashboard/src/test/setup.js:2-5 and asserted (toHaveNoViolations) in 8 page tests: Regulatory, RegulatoryReview, WaterUse, EnvironmentalExposure, CaveKarst, Hydromet, HydroInventory, AquiferBands (e.g. dashboard/src/pages/RegulatoryReviewPage.test.jsx:103-108). No axe coverage for ReviewPage, MapPage/AssetMap, Overview, Assets, Alerts, System, Sidebar/DashboardLayout or AiQueryPanel; no @axe-core/playwright in the Playwright specs. docs/a11y-evidence/*.png are historical screenshots."
+ },
+ "performance_protections": [
+  {
+   "what": "lazy route / code split — all 25 route components via React.lazy + Suspense skeleton",
+   "evidence": "dashboard/src/App.jsx:16-40,58"
+  },
+  {
+   "what": "virtualized list — assets table rows",
+   "evidence": "dashboard/src/components/AssetsTable.jsx:131"
+  },
+  {
+   "what": "virtualized list — alerts list",
+   "evidence": "dashboard/src/pages/AlertsPage.jsx:161"
+  },
+  {
+   "what": "cache — TanStack Query defaults staleTime 60s, retry 1, no refetch on focus",
+   "evidence": "dashboard/src/lib/query-client.js:3-11"
+  },
+  {
+   "what": "cache — static hydro inventory and water-use queries staleTime Infinity",
+   "evidence": "dashboard/src/lib/hydro-inventory-hooks.js:7; dashboard/src/lib/water-use-hooks.js:5-9"
+  },
+  {
+   "what": "request cap — events and alerts default limit 500; alerts 'Load more' paging",
+   "evidence": "dashboard/src/lib/hooks.js:26,62; dashboard/src/pages/AlertsPage.jsx:292-299"
+  },
+  {
+   "what": "request timeout — AbortSignal.timeout(8000) on reads",
+   "evidence": "dashboard/src/lib/api.js:64,81"
+  },
+  {
+   "what": "server pagination — review queue 25 per page",
+   "evidence": "dashboard/src/pages/ReviewPage.jsx:18,49-54"
+  },
+  {
+   "what": "lazy map layers — stream/wetland GeoJSON tiles added only when toggled on; NWS overlays make no request until enabled",
+   "evidence": "dashboard/src/components/HydroMapWorkspace.jsx:101-125; dashboard/src/components/AssetMap.jsx:306-308"
+  },
+  {
+   "what": "backend cache — mtime-keyed JSON/JSONL file cache",
+   "evidence": "server/backend/main.py:177-181"
+  },
+  {
+   "what": "debounce — none found (search inputs filter on every keystroke; alert search writes URL params per keystroke)",
+   "evidence": "dashboard/src/pages/AlertsPage.jsx:36-45; dashboard/src/components/AssetsTable.jsx:185"
+  }
+ ],
+ "special_adjudications": [
+  {
+   "question": "1a. Historical (docs/A11Y_AUDIT.md §4.1): mobile hamburger button has no accessible name — cited dashboard/src/components/layout/DashboardLayout.jsx ~line 35",
+   "answer": "Fixed. The button now carries aria-label='Open navigation'.",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/components/layout/DashboardLayout.jsx:27-33"
+   ]
+  },
+  {
+   "question": "1b. Historical (A11Y_AUDIT §4.2): ReviewPage severity/tier Select triggers have no accessible name — cited dashboard/src/pages/ReviewPage.jsx:167-174",
+   "answer": "Still present. Both SelectTriggers have only className; no aria-label.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/pages/ReviewPage.jsx:168",
+    "dashboard/src/pages/ReviewPage.jsx:172"
+   ]
+  },
+  {
+   "question": "1c. Historical (A11Y_AUDIT §4.2): same missing aria-label on LiveLogsPage.jsx:62 and OutagesPanel.jsx:67",
+   "answer": "Still present on both.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/pages/LiveLogsPage.jsx:62",
+    "dashboard/src/components/OutagesPanel.jsx:68"
+   ]
+  },
+  {
+   "question": "1d. Historical (A11Y_AUDIT §4.2): same defect in orphaned components/ReviewQueue.jsx:56,60",
+   "answer": "Still present in source and the component is still unmounted, so it is not user-reachable.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/components/ReviewQueue.jsx:56",
+    "dashboard/src/components/ReviewQueue.jsx:60"
+   ]
+  },
+  {
+   "question": "1e. Historical (A11Y_AUDIT §4.3): mobile sidebar renders open by default, scrim blocks the hamburger, no Escape handler — cited contexts/SidebarContext.jsx and DashboardLayout.jsx",
+   "answer": "Fixed. `open` defaults to false, the mobile drawer returns null when closed, there is no scrim, a labelled close button exists and Escape closes the drawer. (The `collapsed` state and collapse chevron cited in the old audit no longer exist.)",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/contexts/SidebarContext.jsx:10",
+    "dashboard/src/components/layout/Sidebar.jsx:141-146",
+    "dashboard/src/components/layout/Sidebar.jsx:148-149",
+    "dashboard/src/components/layout/Sidebar.jsx:170-176"
+   ]
+  },
+  {
+   "question": "1f. Historical (A11Y_AUDIT §4.4): systemic color-contrast — text-slate-500/600 on slate-900/950 (example: sidebar 'PR Monitor' caption)",
+   "answer": "The cited pattern is still in source, including the exact example caption. Contrast was not re-measured (nothing was run).",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/components/layout/Sidebar.jsx:193",
+    "dashboard/src/components/common/PageHeader.jsx:8",
+    "dashboard/src/components/StatsBar.jsx:16"
+   ]
+  },
+  {
+   "question": "1g. Historical (A11Y_AUDIT §4.5): link-in-text-block — Overview inline links styled by colour only",
+   "answer": "Still present: both links have colour classes only, no underline.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/pages/OverviewPage.jsx:155",
+    "dashboard/src/pages/OverviewPage.jsx:158"
+   ]
+  },
+  {
+   "question": "1h. Historical (A11Y_AUDIT §4.6): touch targets below 44px (hamburger p-1.5, map chips, review Accept/Reject h-7, select-all, monitoring range and incident-transition buttons, Ask AI launcher, Overview AI/Send buttons)",
+   "answer": "The cited small-size classes are still in source for every listed control except the sidebar collapse chevron, which was removed. Rendered sizes not re-measured.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/components/layout/DashboardLayout.jsx:30",
+    "dashboard/src/components/AssetMap.jsx:278",
+    "dashboard/src/pages/ReviewPage.jsx:238-246",
+    "dashboard/src/pages/ReviewPage.jsx:179",
+    "dashboard/src/components/MonitoringCharts.jsx:151",
+    "dashboard/src/components/IncidentOperationsConsole.jsx:68",
+    "dashboard/src/components/AiQueryPanel.jsx:34-36",
+    "dashboard/src/pages/OverviewPage.jsx:181-195"
+   ]
+  },
+  {
+   "question": "1i. Historical (docs/GUI_AUDIT.md §4.1): MunicipioDetailPage asset rows link to non-existent /assets/:id",
+   "answer": "Still present; App.jsx has no /assets/:id route.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/pages/MunicipioDetailPage.jsx:235-237",
+    "dashboard/src/App.jsx:63"
+   ]
+  },
+  {
+   "question": "1j. Historical (GUI_AUDIT §4.2): WaterDisruption iframe uses a frontend-relative src and breaks under split-port dev",
+   "answer": "Still present: src='/water-disruption/console', no Vite proxy.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/pages/WaterDisruption.jsx:11",
+    "dashboard/vite.config.js:60-62"
+   ]
+  },
+  {
+   "question": "1k. Historical (GUI_AUDIT §4.3): Overview 'Reservoir Levels' chart never renders because /readings requires metric for reservoir",
+   "answer": "Still present: hook sends kind only; backend raises 400 metric_required.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/pages/OverviewPage.jsx:43",
+    "server/backend/app.py:256-258",
+    "server/backend/main.py:75"
+   ]
+  },
+  {
+   "question": "1l. Historical (GUI_AUDIT §4.4): MapLibre style missing `glyphs` so cluster counts do not render",
+   "answer": "Fixed in source: BASE_STYLE now declares glyphs (served from the external host demotiles.maplibre.org, so labels still depend on network).",
+   "status": "CONFIRMED_FIXED",
+   "evidence": [
+    "dashboard/src/components/AssetMap.jsx:29"
+   ]
+  },
+  {
+   "question": "1m. Historical (GUI_AUDIT §4.5): React warning — toast.jsx spreads onOpenChange onto a plain <div>",
+   "answer": "Toast is still a plain <div> that spreads all props (toast.jsx:44-52) and use-toast still passes onOpenChange into each toast object (use-toast.jsx:131), which Toaster spreads via {...props} (toaster.jsx:16-18). Whether React 19 still warns was not observed.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/components/ui/toast.jsx:44-52",
+    "dashboard/src/components/ui/use-toast.jsx:131",
+    "dashboard/src/components/ui/toaster.jsx:16-18"
+   ]
+  },
+  {
+   "question": "1n. Historical (GUI_AUDIT §4.6): components/ReviewQueue.jsx is dead/orphaned",
+   "answer": "Still orphaned; no importer.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/components/ReviewQueue.jsx:19",
+    "dashboard/src/components/ReviewRecordCard.jsx:10"
+   ]
+  },
+  {
+   "question": "2a. Navigation: sidebar groups and items vs routes",
+   "answer": "NAV_GROUPS has 3 groups — Monitor (Overview, Map, Alerts > Outages, Monitoring), Data (Assets, Water & Weather > NWS Hydromet, Aquifer Bands, Water Use, Hydro Inventory; Environment > Cave & Karst; Regulatory > Regulatory Review), Tools (Review Queue, Analytics, Source Intelligence, Live Logs, System & Tools) — 12 rows + 8 sub-links = 20 targets, each matching a route in App.jsx. The 4 parameterised routes (/alerts/:id, /sector/:sector, /events/:id, /municipios/:name) are not in the nav and are reached by in-page links. No nav target lacks a route. One in-page link targets a route that does not exist (/assets/:id). The 'Water & Weather' row label points at /water-disruption, whose page title is 'Water Disruption Validation Console'; 'Regulatory Review' opens a page titled 'Regulatory Link Review'.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/components/layout/Sidebar.jsx:13-68",
+    "dashboard/src/App.jsx:61-85",
+    "dashboard/src/pages/MunicipioDetailPage.jsx:237",
+    "dashboard/src/pages/WaterDisruption.jsx:5",
+    "dashboard/src/pages/RegulatoryReviewPage.jsx:111"
+   ]
+  },
+  {
+   "question": "2b. Navigation: mobile behaviour",
+   "answer": "Below 768px (window.innerWidth/matchMedia) the sidebar is not rendered until the header hamburger (aria-label 'Open navigation') sets open=true. It then renders a full-screen fixed white <aside aria-label='Navigation'> with a role=tablist of the 3 groups, a round close button (aria-label 'Close navigation') and a <nav> listing the active group's rows as large cards with descriptions and sub-links. Clicking any link closes the drawer; Escape closes it; reopening selects the group containing the current path. Gaps: no role=dialog/aria-modal, no focus move/trap/restore, tabs lack tabpanel/aria-controls/arrow keys, and background content remains reachable.",
+   "status": "PARTIAL",
+   "evidence": [
+    "dashboard/src/hooks/use-mobile.js:3-11",
+    "dashboard/src/components/layout/DashboardLayout.jsx:25-37",
+    "dashboard/src/components/layout/Sidebar.jsx:131-146",
+    "dashboard/src/components/layout/Sidebar.jsx:148-185",
+    "dashboard/tests/mobile-navigation.spec.mjs:41"
+   ]
+  },
+  {
+   "question": "2c. Navigation: skip link",
+   "answer": "None. No skip-to-content link or equivalent in the layout, index.html or any component (searched 'skip' case-insensitively in dashboard/src and dashboard/index.html; only review 'Skip' controls matched).",
+   "status": "NOT_FOUND",
+   "evidence": [
+    "dashboard/src/components/layout/DashboardLayout.jsx:17-45",
+    "dashboard/index.html:11-14"
+   ]
+  },
+  {
+   "question": "2d. Navigation: landmark structure",
+   "answer": "Desktop: <aside> containing <nav aria-label='Main'> with three <section><h2>; one <main> wrapping the route Outlet. Mobile: <aside aria-label='Navigation'> containing <nav aria-label='<Group> pages'>. No <header>/banner and no <footer>; the mobile header and the StatsBar are <div>s outside <main>; the floating AI panel is outside <main> with no landmark or label. /water-disruption nests a second <main>. Overview and Map have no <h1>; other pages get one from PageHeader or their own markup.",
+   "status": "PARTIAL",
+   "evidence": [
+    "dashboard/src/components/layout/Sidebar.jsx:188-204",
+    "dashboard/src/components/layout/Sidebar.jsx:152,178",
+    "dashboard/src/components/layout/DashboardLayout.jsx:26,39-44",
+    "dashboard/src/pages/WaterDisruption.jsx:3",
+    "dashboard/src/components/common/PageHeader.jsx:7"
+   ]
+  },
+  {
+   "question": "2e. Navigation: current-page indication (aria-current)",
+   "answer": "The source never sets aria-current explicitly. All nav links are react-router-dom NavLink, which by library default adds aria-current='page' on the active link (library behaviour, not verified at runtime). Visual indication: desktop rows and sub-links get 'bg-sky-500/15 text-sky-400' when active; on mobile, sub-links get font-semibold but top-level rows have no active styling. Parent rows use prefix matching, so /alerts stays 'active' on /alerts/:id; Overview and Regulatory use `end`. On /outages or /monitoring the parent 'Alerts' row is not marked active (prefix does not match).",
+   "status": "PARTIAL",
+   "evidence": [
+    "dashboard/src/components/layout/Sidebar.jsx:86-102",
+    "dashboard/src/components/layout/Sidebar.jsx:108-121",
+    "dashboard/src/components/layout/Sidebar.jsx:18,47"
+   ]
+  },
+  {
+   "question": "3a. Review Queue (/review): decision controls, names, keyboard, confirmation, failed-write reporting, persistence",
+   "answer": "Controls per row: select toggle (button, aria-label 'Select record'/'Deselect record'), AI-suggest (icon-only, title 'Ask AI for a recommendation', no aria-label), Accept (visible text), Reject (visible text), Skip (icon-only, aria-label 'Skip'). Header when rows are selected: 'Approve all', 'Reject all', 'Skip all'; plus 'Select all on page'/'Deselect all'. All are native <button>s, so Tab/Enter/Space work. Global window shortcuts: J/K or arrows move a visual cursor, A/R/S decide the cursor row; ignored only inside input/textarea/combobox/contenteditable. Confirmation: none for single, keyboard or batch decisions; no undo. Optimistic removal with rollback on error (lib/hooks.js:89-101). Failure reporting: a thrown error (401 or network/timeout) shows a destructive toast titled only 'Decision failed' — the error message, which distinguishes 'key missing' from 'key rejected', is discarded. Any other HTTP status is NOT detected: postDecision returns res.json() without checking res.ok, so a 400/404/500 with a JSON body yields the success toast 'Marked <decision>'. Batch reports 'N items processed' regardless of individual failures. Toasts have no live region. Persistence: the backend keeps decisions only in the module-level dict `_decisions` ('survives only until server restart'); nothing is written to outputs/review_queue.json or any ledger, no actor is recorded, and 'skip' is stored but not excluded from GET /review-queue, so a skipped row reappears after the refetch. Authorization: Bearer API_SECRET_KEY when that env var is set, otherwise open.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/pages/ReviewPage.jsx:60-66",
+    "dashboard/src/pages/ReviewPage.jsx:104-114",
+    "dashboard/src/pages/ReviewPage.jsx:125-139",
+    "dashboard/src/pages/ReviewPage.jsx:148-163",
+    "dashboard/src/pages/ReviewPage.jsx:206-247",
+    "dashboard/src/lib/api.js:149-159",
+    "dashboard/src/lib/hooks.js:85-107",
+    "server/backend/main.py:343-344",
+    "server/backend/main.py:831",
+    "server/backend/main.py:842-849",
+    "dashboard/src/components/ui/toast.jsx:44-52"
+   ]
+  },
+  {
+   "question": "3b. Regulatory Review (/regulatory/review): decision controls, names, keyboard, confirmation, failed-write reporting, persistence",
+   "answer": "Controls: decision-state filter Select (aria-label 'Filter by decision state'); candidate list of <button aria-pressed>; form with labelled 'Actor' text input and 'Rationale' textarea; three buttons with visible text — 'Approve', 'Reject' (destructive variant), 'Mark needs review'. All native controls, keyboard operable; no shortcuts. Guards instead of a confirmation dialog: all three are disabled until actor and rationale are non-empty and while submitting; Approve is additionally disabled when the candidate has contradictions (reason exposed only as a title attribute). No confirm step and no undo, but a later decision can overwrite. Failure reporting: postRegulatoryLinkDecision throws on 401 (key missing vs rejected), 422 (lists contradiction details) and any other non-2xx ('Decision failed (status)'), and the page shows a destructive toast 'Decision failed' with err.message; rationale is kept on failure and cleared on success. Network errors also reach the catch. Toast has no live region. Read failures are masked: list fetch failures return an empty list so the page says 'No candidates match the current filter'. Persistence: NOT memory-only — the handler writes the decided row (decision_state, decided_at, decided_by, decision_rationale) through write_regulatory_links, which schema-validates and rewrites the links JSONL. Authorization: Bearer API_SECRET_KEY when set.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/pages/RegulatoryReviewPage.jsx:89-106",
+    "dashboard/src/pages/RegulatoryReviewPage.jsx:132-133",
+    "dashboard/src/pages/RegulatoryReviewPage.jsx:158-162",
+    "dashboard/src/pages/RegulatoryReviewPage.jsx:252-299",
+    "dashboard/src/lib/regulatory-api.js:69-89",
+    "dashboard/src/lib/regulatory-api.js:21-32",
+    "server/backend/regulatory_api.py:189-219",
+    "src/aguayluz/regulatory_db.py:156-159",
+    "tests/test_regulatory_api.py:187"
+   ]
+  },
+  {
+   "question": "4a. GIS: maps present and library",
+   "answer": "Three map surfaces. (1) /map AssetMap — maplibre-gl ^6.11.2, raster basemaps from tile.openstreetmap.org and Esri World Imagery, glyphs from demotiles.maplibre.org, AWS Terrarium DEM, optional NOAA/NWS CloudGIS raster overlays; turf.js for spatial tools. (2) /monitoring HydroMapWorkspace — maplibre-gl with OSM raster and backend GeoJSON sources. (3) Overview MunicipalOverviewMap — hand-built SVG choropleth, no map library, no tiles.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/package.json:41",
+    "dashboard/src/components/AssetMap.jsx:2,25-42,364",
+    "dashboard/src/components/HydroMapWorkspace.jsx:2,17,60",
+    "dashboard/src/components/MunicipalOverviewMap.jsx:149-186",
+    "dashboard/src/lib/nws-cloudgis-overlays.js:10"
+   ]
+  },
+  {
+   "question": "4b. GIS: how layers are toggled",
+   "answer": "/map: an HTML overlay panel of native <button aria-pressed> chips — Power, Water, Wastewater, Other, Municipios, Barrios, Events (sample), Alerts, River gauges, Terrain, Spatial tools — plus a single-select municipio fill (Off/Drought/Density/Rainfall, aria-pressed), 'Life-safety critical alerts only' (shown when Alerts on), 'Review-needed assets only', two NWS overlay toggles (aria-pressed, with aria-live load status) and basemap Map/Satellite buttons (no aria-pressed). State is React component state, not persisted. /monitoring: 11 native labelled checkboxes in role=group 'Map layers'. Overview: metric button group (aria-pressed) recolours the SVG.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "dashboard/src/components/AssetMap.jsx:272-283",
+    "dashboard/src/components/AssetMap.jsx:304",
+    "dashboard/src/components/AssetMap.jsx:765-783",
+    "dashboard/src/components/AssetMap.jsx:816-847",
+    "dashboard/src/components/NwsOverlayToggles.jsx:22-40",
+    "dashboard/src/components/HydroMapWorkspace.jsx:141-147",
+    "dashboard/src/components/MunicipalOverviewMap.jsx:121-136"
+   ]
+  },
+  {
+   "question": "4c. GIS: keyboard access to map controls",
+   "answer": "All layer/basemap/tool controls are native buttons, checkboxes or a <select>, so they are in the tab order and operable with Enter/Space. MapLibre's NavigationControl (zoom buttons) is added on both maps and the Map constructor does not disable MapLibre's default keyboard handler (library defaults; not observed at runtime). Not keyboard reachable: selecting an asset/alert/gauge/municipio on the map, hover popups, cluster expansion, and the measure/buffer/nearest tools — all bound to pointer events only. The map container on /map has no role or aria-label (HydroMapWorkspace's has aria-label 'Hydrologic map'). The SVG Overview map is fully keyboard operable (tabIndex=0, role=button, Enter/Space) but suppresses the focus outline.",
+   "status": "PARTIAL",
+   "evidence": [
+    "dashboard/src/components/AssetMap.jsx:364-366",
+    "dashboard/src/components/AssetMap.jsx:506-558",
+    "dashboard/src/components/AssetMap.jsx:758",
+    "dashboard/src/components/SpatialToolsPanel.jsx:230-252",
+    "dashboard/src/components/HydroMapWorkspace.jsx:66,155",
+    "dashboard/src/components/MunicipalOverviewMap.jsx:163-177"
+   ]
+  },
+  {
+   "question": "4d. GIS: non-map alternative for the same data",
+   "answer": "Assets: yes — the same page mounts AssetsTable beside the map (keyboard-selectable rows opening the same detail sheet) and /assets offers the full table with an 'unmapped only' filter; the map footer states mapped vs unmapped counts. Alerts: /alerts list. River gauges: /hydromet gauges table. Rainfall fill: /hydromet rainfall table. Municipios: Overview SVG map and /municipios/:name records, but there is no plain municipio list/table and no table of drought category or event density per municipio (the density panel shows only matched/unresolved/total counts). Events: /outages list. Barrios, terrain, NWS radar/warnings overlays: no alternative. Spatial-tool results are text in the tools panel but can only be produced by clicking the map. HydroMapWorkspace layers: /hydro-inventory tables cover aquifers, wells, springs, surface water, infrastructure and wetlands.",
+   "status": "PARTIAL",
+   "evidence": [
+    "dashboard/src/pages/MapPage.jsx:104-121",
+    "dashboard/src/components/AssetsTable.jsx:267-273",
+    "dashboard/src/pages/AlertsPage.jsx:265",
+    "dashboard/src/pages/HydrometPage.jsx:138,186",
+    "dashboard/src/components/AssetMap.jsx:795-807",
+    "dashboard/src/pages/HydroInventoryPage.jsx:427-437"
+   ]
+  },
+  {
+   "question": "4e. GIS: tile / network failure handling",
+   "answer": "/map: no handling for basemap, glyph or terrain tile failure — the only map 'error' listener filters to NWS overlay sources and ignores everything else; there is no offline/blank-basemap message and no try/catch around map construction. Data layers are attached on 'style.load' rather than 'load' so they still draw when raster tiles never arrive (stated in a code comment). NWS overlays do report per-overlay loading/live/error text in an aria-live region, and tile URLs carry a 5-minute cache-busting bucket. Data-fetch failure: event density shows the error with a 'Retry density' button; rainfall error text is passed in as a prop; assets/municipios/alerts/gauges GeoJSON failures silently become empty FeatureCollections (getJSON fallback) and the map just shows fewer features. /monitoring HydroMapWorkspace: construction is wrapped in try/catch ('Map unavailable: …'), every map error (including tile errors) is collected into a role=alert list (max 6), and the offline export shows an explicit placeholder. Overview SVG map: no tiles; shows 'Municipal geometry is unavailable.' when geometry is missing and a contract warning when not exactly 78 features.",
+   "status": "PARTIAL",
+   "evidence": [
+    "dashboard/src/components/AssetMap.jsx:368-370",
+    "dashboard/src/components/AssetMap.jsx:477-487",
+    "dashboard/src/components/AssetMap.jsx:795-801",
+    "dashboard/src/lib/api.js:100-101,146",
+    "dashboard/src/lib/nws-cloudgis-overlays.js:45-48",
+    "dashboard/src/components/NwsOverlayToggles.jsx:5-9,36",
+    "dashboard/src/components/HydroMapWorkspace.jsx:57-72,150-161",
+    "dashboard/src/components/MunicipalOverviewMap.jsx:101-107,140-145"
+   ]
+  }
+ ],
+ "unknowns": [
+  "Runtime behaviour of anything: nothing was built, run or rendered. Contrast ratios, rendered control sizes, focus-ring visibility and MapLibre/NavLink default behaviours (keyboard handler, aria-current) are inferred from source and library defaults.",
+  "prii_desktop (make_desktop_app / launch) is an external package not present in the snapshot, so how the desktop wrapper serves dashboard/dist alongside the API, and whether it binds to loopback only, could not be traced (desktop/launch.py:19; desktop/app_server.py:16).",
+  "Root launcher scripts (PRII-AGUAYLUZ.sh/.command/.bat/.app) and desktop/setup.py were not opened; described only from docs/GUI_AUDIT.md §3.",
+  "Whether GET /assets merges `_asset_patches` so a 'Flag for review' becomes visible after refetch — main.py:423-436 was not read.",
+  "Exact effective route table of server.backend.app:app including FastAPI's automatic /docs, /redoc and /openapi.json; endpoint counts are from decorator grep with the three legacy filters in app.py:45-65 applied by hand.",
+  "Whether the 422 body shape for FastAPI validation errors on /regulatory/links/{id}/decide (e.g. empty actor) is handled sensibly by the client's contradictions parsing (lib/regulatory-api.js:78-86) — client blocks empty values first.",
+  "Pages read by targeted grep rather than line-by-line: CaveKarst, Regulatory, EnvironmentalExposure, Hydromet, AquiferBands, WaterUse, HydroInventory, SourceIntelligence, Analytics, SectorDetail, AlertDetail, AlertsPage, OutagesPanel, MonitoringCharts, AssetDetail, AssetsTable, SpatialToolsPanel (hook part), ProgramTimeline. Interactive controls, headings, ARIA and data hooks were enumerated; purely presentational branches may be missed.",
+  "CLI entry point (aguayluz.cli:app) commands and the src/aguayluz package were out of the UI trace and not enumerated.",
+  "dashboard/src/lib/snapshot.json is empty (0 bytes) in the snapshot; whether the offline export populates it at build time and which endpoints it then covers was not traced."
+ ],
+ "denominator": {
+  "surfaces_total": 94,
+  "surfaces_mounted": 91,
+  "workflows_total": 55,
+  "by_workflow_status": {
+   "COMPLETE": 40,
+   "PARTIAL": 10,
+   "BROKEN": 1,
+   "UNREACHABLE": 2,
+   "INTERNAL_ONLY": 2
+  },
+  "coverage_statement": "Exhaustive (read line by line or fully grepped): routes in App.jsx (24 + wildcard), sidebar navigation registry, layout shell, mobile navigation, keyboard shortcuts (all keydown/onKeyDown handlers in dashboard/src), context actions (none: no onContextMenu/long-press handlers found), browser storage use, backend route decorators in server/backend/*.py, all client fetch call sites, ReviewPage, RegulatoryReviewPage, MapPage, AssetMap controls, HydroMapWorkspace, MunicipalOverviewMap, WaterMonitoringConsole, IncidentOperationsConsole, AiQueryPanel, StatsBar, toast stack. Dialogs: the only dialog-type surface is the AssetDetail sheet (Radix Dialog); no other Dialog/Sheet/Tabs usage exists. Sampled (significant ones enumerated via targeted grep, not exhaustive): in-page forms, tables, charts and filters on the data pages listed in `unknowns`; states_handled flags for those surfaces reflect the branches found by grep. Backend handler bodies were read only for the write endpoints and /readings; read endpoints were matched by path only."
+ }
+}

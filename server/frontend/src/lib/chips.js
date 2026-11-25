@@ -284,9 +284,9 @@ export const AQI_CATEGORY = {
   UNAVAILABLE: SLATE,
 };
 
-// --- Source Monitor (ADR 0012) ----------------------------------------------
-// Declared status is what a producer registry says about a source, normalized
-// by `hub source-monitor`; it is not a health check. Keyed by display label
+// --- Source Monitor (ADR 0013) ----------------------------------------------
+// Declared status is what a producer says about a source in its source_monitors
+// stream (`declared_status`); it is not a health check. Keyed by display label
 // (formatLabel in lib/sourceMonitor.js turns `not_active` into "not active").
 export const MONITOR_STATUS = {
   active: GREEN,
@@ -297,8 +297,9 @@ export const MONITOR_STATUS = {
   unknown: NEUTRAL,
 };
 
-// Freshness is producer-level: the age of the producer's last export package
-// against the source's cadence window (see lib/sourceMonitor.js).
+// Freshness compares a source's age with its cadence window, measured from the
+// source's own last success when its producer reports one (ADR 0013) and otherwise
+// from the producer's last export package (see lib/sourceMonitor.js).
 export const FRESHNESS = {
   Fresh: GREEN,
   Due: AMBER,

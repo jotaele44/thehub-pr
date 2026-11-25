@@ -81,11 +81,15 @@ vectors:
       mutation: prohibited_by_fed_max
       commands: []
     blockers:
-      - seven_repository_frontend_rollout_requires_repo_specific_implementation_and_visual_acceptance
+      - shared_shell_not_yet_released_in_pr_federation_react
+      - producer_adoption_pending_one_repository_at_a_time_and_visual_acceptance
     invariants:
       issue_checklist_open: true
       repo_count_target: 7
       validator_only_not_completion: true
+      governing_standard: docs/FEDERATION_GUI_STANDARD.md
+      governing_adr: docs/adr/0014-spoke-guis-are-complete-domain-apps.md
+      rules_adopted_repo_count: 1
 
   - vector_id: BUILD_SKYWATCHER_NON_SYNTHETIC_EXPORT
     repo: jotaele44/skywatcher-pr

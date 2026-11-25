@@ -1,0 +1,21 @@
+{
+  "description": "An application setting cannot take a federation.* id.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/settings/1/id",
+      "value": "federation.navigation.pins"
+    },
+    {
+      "op": "set",
+      "path": "/navigation/groups/1/setting_id",
+      "value": "federation.navigation.pins"
+    }
+  ],
+  "expect": [
+    "schema:settings:not"
+  ]
+}

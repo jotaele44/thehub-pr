@@ -11,6 +11,15 @@ from __future__ import annotations
 from .appserver import attach_spa, desktop_controls_script, make_desktop_app
 from .config import DesktopConfig
 from .launcher import launch
+from .launchpad import (
+    ACCESS_MODE_ENV,
+    DesktopBridge,
+    GuestGuard,
+    LaunchPadSpec,
+    install_guest_guard,
+    launchpad_spec,
+    render_launchpad_html,
+)
 from .setup_center import (
     SetupBridge,
     application_support_dir,
@@ -20,7 +29,14 @@ from .setup_center import (
 )
 
 __all__ = [
+    "ACCESS_MODE_ENV",
+    "DesktopBridge",
     "DesktopConfig",
+    "GuestGuard",
+    "LaunchPadSpec",
+    "install_guest_guard",
+    "launchpad_spec",
+    "render_launchpad_html",
     "SetupBridge",
     "application_support_dir",
     "attach_spa",
@@ -31,4 +47,4 @@ __all__ = [
     "render_setup_html",
     "setup_complete",
 ]
-__version__ = "0.2.0"
+__version__ = "0.3.0"
