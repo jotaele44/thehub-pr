@@ -9,6 +9,9 @@ import reference from '../sky/referenceEphemerides.json';
 import { loadSpaceWeather } from '../sky/spaceWeather';
 import { loadSatelliteElements } from '../sky/satelliteElements';
 import { lookAt } from '../sky/satellites';
+import { computeHorizon, destination, elevationAngle, radiusOfCurvature, DEFAULT_REFRACTION_K } from '../sky/exclusion/horizon';
+import { lineOfSight } from '../sky/exclusion/lineOfSight';
+import { terrainFromCudem } from '../sky/exclusion/terrain';
 
 const runLive = process.env.GIS_LIVE_PROVIDER_TESTS === '1';
 const live = runLive ? describe : describe.skip;
@@ -123,6 +126,82 @@ live('live authoritative GIS providers', () => {
     expect(offshore.metres).toBeLessThan(0);
     console.log('GIS_LIVE_DEM', JSON.stringify({ sourceId: CUDEM_PR.sourceId, summit: peak, offshore }));
   }, 120000);
+
+  it('the terrain horizon and line of sight read real CUDEM: a plausible horizon at San Juan and at the summit, and the two engines agree on real ground', async () => {
+    // Not a truth test: no keyless independent horizon exists to hold this to. It checks what must hold on real ground:
+    // the datum logic puts a summit above its surroundings and the coast near the sea, the sea to the north is not an
+    // obstruction, and two different implementations (a profile and a horizon) agree on every target tried.
+    const places = {
+      sanJuan: { lat: 18.4663, lon: -66.1057, aboveGroundMetres: 2 },
+      summit: { lat: 18.172281, lon: -66.5916862, aboveGroundMetres: 2 },
+    };
+    const receipts = {};
+    const horizons = {};
+    for (const [name, place] of Object.entries(places)) {
+      let terrain;
+      try {
+        terrain = await terrainFromCudem(place, { radiusKm: 40 });
+      } catch (error) {
+        console.log('GIS_LIVE_UNAVAILABLE', JSON.stringify({ sourceId: CUDEM_PR.sourceId, place: name, error: String(error) }));
+        return;
+      }
+      const horizon = computeHorizon(terrain, place, { maxRangeKm: 40 });
+      horizons[name] = { terrain, horizon, place };
+      receipts[name] = { ground: horizon.observer.groundMetres, tiles: terrain.tilesRead.length, ...horizon.summary, northHorizon: horizon.elevationAt(0), southHorizon: horizon.elevationAt(180) };
+    }
+    const { sanJuan, summit } = horizons;
+    expect(sanJuan.horizon.observer.groundMetres).toBeGreaterThan(-5);
+    expect(sanJuan.horizon.observer.groundMetres).toBeLessThan(80);
+    // Nothing can be lower than the sea horizon for this eye: water is the lowest ground there is (bathymetry is raised to the
+    // surface), so a horizon under it would mean the datum logic or the clamp is wrong. (This is a coastal point with real
+    // relief within 100 m; it is not a flat beach, so the horizon is not asserted to be near zero.)
+    const reff = 6371008.8 / (1 - DEFAULT_REFRACTION_K);
+    const eyeDip = (Math.acos(reff / (reff + sanJuan.horizon.observer.eyeMetres)) * 180) / Math.PI;
+    for (const ray of sanJuan.horizon.rays) if (ray.elevation !== null) expect(ray.elevation).toBeGreaterThan(-eyeDip - 0.05);
+    // and offshore, past CUDEM's bathymetry, there is no data, which is carried as incomplete and never as clear
+    receipts.sanJuanNorth = { elevation: sanJuan.horizon.elevationAt(0), complete: sanJuan.horizon.rays[0].complete, eyeDipDegrees: eyeDip };
+    // the Cordillera to the south rises into the sky, but not by degrees
+    expect(sanJuan.horizon.summary.maxElevation).toBeGreaterThan(0.3);
+    expect(sanJuan.horizon.summary.maxElevation).toBeLessThan(4);
+    // Puerto Rico's highest point: its horizon is below the horizontal almost everywhere
+    expect(summit.horizon.observer.groundMetres).toBeGreaterThan(1100);
+    expect(summit.horizon.observer.groundMetres).toBeLessThan(1400);
+    const around = summit.horizon.rays.filter((r) => r.elevation !== null).map((r) => r.elevation).sort((a, b) => a - b);
+    expect(around.length).toBeGreaterThan(600);
+    expect(around[Math.floor(around.length / 2)]).toBeLessThan(-0.2);
+    expect(around[around.length - 1]).toBeLessThan(1.5);
+    // Line of sight and horizon agree on real ground, for targets 2 to 25 km away, except within a hair of the boundary: the
+    // profile samples the line every 25 m and the horizon every 20 to 100 m, and 3 m terrain changes by metres between
+    // samples. Measured over 2000 targets while writing this: 6 disagreements, all within 3.1 m (0.008 degrees) of the
+    // boundary, the same at 0.25 and 0.5 degree azimuth steps. A band of 0.02 degrees is allowed and counted, not hidden.
+    const BOUNDARY_BAND_DEGREES = 0.02;
+    let seed = 20261104;
+    const random = () => { seed = (seed * 1664525 + 1013904223) % 4294967296; return seed / 4294967296; };
+    const { terrain, horizon, place } = sanJuan;
+    let compared = 0;
+    let nearBoundary = 0;
+    let disagreements = 0;
+    let obstructed = 0;
+    for (let i = 0; i < 400; i += 1) {
+      const azimuth = random() * 360;
+      const distance = 2000 + random() * 23000;
+      const height = 50 + random() * 900;
+      const radius = radiusOfCurvature(place.lat, azimuth);
+      const to = { ...destination(place.lon, place.lat, azimuth, distance, radius), heightMetres: height };
+      const los = lineOfSight(terrain, { lon: place.lon, lat: place.lat, heightMetres: horizon.observer.eyeMetres }, to, { stepMetres: 25 });
+      if (los.state === 'UNKNOWN') continue;
+      compared += 1;
+      const state = horizon.assess(azimuth, elevationAngle(distance, height, horizon.observer.eyeMetres, radius / (1 - DEFAULT_REFRACTION_K)), { distanceMetres: distance });
+      if (los.state === 'OBSTRUCTED') obstructed += 1;
+      if (state === los.state) continue;
+      if (Math.abs((los.minClearanceMetres / distance) * (180 / Math.PI)) < BOUNDARY_BAND_DEGREES) nearBoundary += 1; else disagreements += 1;
+    }
+    receipts.agreement = { targets: 400, compared, nearBoundary, disagreements, obstructed, bandDegrees: BOUNDARY_BAND_DEGREES };
+    console.log('GIS_LIVE_HORIZON', JSON.stringify({ sourceId: CUDEM_PR.sourceId, receipts }));
+    expect(disagreements).toBe(0);
+    expect(compared).toBeGreaterThan(250);
+    expect(obstructed).toBeGreaterThan(20);
+  }, 240000);
 
   it('NOAA NGS GEOID18 (PROJ mirror) agrees with NGS\'s own geoid service across Puerto Rico and the USVI', async () => {
     const grid = await openGeoid();

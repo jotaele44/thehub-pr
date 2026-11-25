@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import ModulePageHeader from "@/components/shared/ModulePageHeader";
 import EntityLedger from "@/components/shared/EntityLedger";
+import SourceMonitorLedger from "@/components/sources/SourceMonitorLedger";
 import ModuleMapTab from "@/components/shared/ModuleMapTab";
 import IntelligenceWorkspace from "@/components/intelligence/IntelligenceWorkspace";
 import StatusChip from "@/components/shared/StatusChip";
@@ -18,7 +19,7 @@ const SkyWorkspace = lazy(() => import("@/components/sky/SkyWorkspace"));
 const MODULE = MODULES.find((m) => m.name === "Skywatcher-PR");
 // The view is URL state: /skywatcher?view=sky opens the Sky workspace (with ?lat&lon&elev&tz&t for the observer and
 // the time); the Workspace tab stays the default, so existing /skywatcher links keep working.
-const SKYWATCHER_VIEWS = ["workspace", "sky", "events", "map", "corr"];
+const SKYWATCHER_VIEWS = ["workspace", "sky", "events", "map", "corr", "sources"];
 const SKY_PARAMS = ["lat", "lon", "elev", "tz", "t"];
 const EVENT_TYPES = ["Aviation", "Launch", "Satellite", "Drone", "MilitaryExercise", "WeatherBalloon", "SensorReport", "Other"];
 const CORR_TYPES = ["Temporal", "Spatial", "TemporalSpatial", "SourceBased", "RuledOut", "Other"];
@@ -85,6 +86,7 @@ export default function Skywatcher() {
           <TabsTrigger value="events">Airspace Events</TabsTrigger>
           <TabsTrigger value="map">Map View</TabsTrigger>
           <TabsTrigger value="corr">Correlation Reviews</TabsTrigger>
+          <TabsTrigger value="sources">Monitor</TabsTrigger>
         </TabsList>
         <TabsContent value="workspace">
           <IntelligenceWorkspace adapter={INTELLIGENCE_ADAPTERS.skywatcher} />
@@ -121,6 +123,9 @@ export default function Skywatcher() {
             addLabel="New Review" emptyTitle="No reviews"
             emptyDescription="Correlation review records aren't in the canonical federation export yet — data pending richer Skywatcher-PR intake."
             searchPlaceholder="Search reviews…" />
+        </TabsContent>
+        <TabsContent value="sources">
+          <SourceMonitorLedger producer="skywatcher-pr" />
         </TabsContent>
       </Tabs>
     </div>

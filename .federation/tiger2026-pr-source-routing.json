@@ -1,0 +1,110 @@
+{
+  "schema_version": "tiger2026-pr-federation-routing/1.0",
+  "authority": "US Census Bureau",
+  "root": "https://www2.census.gov/geo/tiger/TIGER2026/",
+  "evidence_scope": "DIRECTORY_INDEX_ONLY",
+  "registration_status": "DISCOVERED_NOT_INGESTED",
+  "canonical_owner": "Spiderweb-PR",
+  "source_pr": {
+    "repository": "jotaele44/spiderweb-pr",
+    "pull_request": 453,
+    "candidate_head": "81fe66539be3ecf4353c6e635cab9843e5a57799",
+    "merged_head": null,
+    "source_inventory": "data/tiger/2026/pr_source_inventory.csv",
+    "national_candidate_inventory": "data/tiger/2026/us_candidate_inventory.csv"
+  },
+  "inventory": {
+    "directory_count": 49,
+    "pr_specific_zip_archives": 796,
+    "municipio_scoped_archives": 780,
+    "pr_statewide_archives": 16,
+    "national_unverified_candidates": 17,
+    "municipio_fips_count": 78
+  },
+  "consumers": [
+    {
+      "repository": "aguayluz-pr",
+      "layers": [
+        "AREAWATER",
+        "LINEARWATER",
+        "ROADS",
+        "COUSUB",
+        "SUBBARRIO"
+      ],
+      "contract": "hydrology-utility-spatial-reference",
+      "pin_state": "BLOCKED_UNMERGED_SOURCE",
+      "data_consumption": "NOT_ENABLED"
+    },
+    {
+      "repository": "skywatcher-pr",
+      "layers": [
+        "PLACE",
+        "POINTLM",
+        "ROADS",
+        "COUSUB"
+      ],
+      "contract": "geolocation-and-administrative-reference",
+      "pin_state": "BLOCKED_UNMERGED_SOURCE",
+      "data_consumption": "NOT_ENABLED"
+    },
+    {
+      "repository": "ovnis-pr",
+      "layers": [
+        "COUSUB",
+        "SUBBARRIO",
+        "TRACT",
+        "PLACE"
+      ],
+      "contract": "case-spatial-join-reference",
+      "pin_state": "BLOCKED_UNMERGED_SOURCE",
+      "data_consumption": "NOT_ENABLED"
+    },
+    {
+      "repository": "moneysweep-pr",
+      "layers": [
+        "COUSUB",
+        "PLACE",
+        "TRACT",
+        "BG"
+      ],
+      "contract": "award-performance-geoid-crosswalk",
+      "pin_state": "BLOCKED_UNMERGED_SOURCE",
+      "data_consumption": "NOT_ENABLED"
+    },
+    {
+      "repository": "centinelas-pr",
+      "layers": [
+        "COUSUB",
+        "PLACE",
+        "TRACT"
+      ],
+      "contract": "matter-geospatial-context",
+      "pin_state": "BLOCKED_UNMERGED_SOURCE",
+      "data_consumption": "NOT_ENABLED"
+    },
+    {
+      "repository": "mucaro-ai",
+      "layers": [
+        "COUSUB",
+        "TRACT",
+        "AREAWATER"
+      ],
+      "contract": "versioned-validated-spatial-fixtures",
+      "pin_state": "BLOCKED_UNMERGED_SOURCE",
+      "data_consumption": "NOT_ENABLED"
+    }
+  ],
+  "gate_states": {
+    "source_sha256": "OPEN",
+    "source_bytes": "OPEN",
+    "zip_schema": "OPEN",
+    "geometry_crs": "OPEN",
+    "national_membership": "OPEN",
+    "spiderweb_merged_head": "OPEN",
+    "consumer_pin_parity": "OPEN",
+    "thehub_lockstep": "BLOCKED",
+    "promotion": "WITHHELD"
+  },
+  "prior_vintage_policy": "Preserve TIGER2025 independent snapshot; no automatic supersession",
+  "certification": "WITHHELD"
+}

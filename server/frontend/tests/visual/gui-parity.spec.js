@@ -25,16 +25,50 @@ async function mockApi(page, handlers = {}) {
 }
 
 test.describe('federation shell', () => {
-  test('primary navigation rail is present and marks the active module', async ({ page }) => {
+  test('one primary navigation is exposed and marks exactly the current page', async ({ page }) => {
     await mockApi(page);
     await page.goto('/sources', { waitUntil: 'networkidle' });
-    // Below the lg breakpoint the rail collapses into the responsive mobile menu.
-    const menu = page.getByRole('button', { name: 'Open navigation menu' });
-    if (await menu.isVisible()) await menu.click();
-    const nav = page.locator('nav[aria-label="Primary"]:visible').first();
-    await expect(nav).toBeVisible();
-    const active = nav.getByRole('link', { name: 'Sources' });
-    await expect(active).toHaveClass(/bg-sidebar-accent/);
+    // The shared shell renders the sidebar from 768px up, which covers both
+    // projects, and a bottom bar below that; only one is ever exposed.
+    const navs = page.locator('nav[aria-label="Primary"]:visible');
+    await expect(navs).toHaveCount(1);
+    const current = navs.first().locator('[aria-current="page"]');
+    await expect(current).toHaveCount(1);
+    await expect(current).toHaveAccessibleName('Sources');
+    // /source-monitor shares a prefix with /sources but is its own entry.
+    await page.goto('/source-monitor', { waitUntil: 'networkidle' });
+    await expect(navs.first().locator('[aria-current="page"]')).toHaveAccessibleName('Source Monitor');
+  });
+
+  test('the skip link is the first stop and lands on the page content', async ({ page }) => {
+    await mockApi(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('main')).toBeFocused();
+  });
+
+  test('a phone gets a bottom bar of at most five entries, with the rest behind More', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await mockApi(page);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    const nav = page.locator('nav[aria-label="Primary"]:visible');
+    await expect(nav).toHaveCount(1);
+    const entries = nav.locator('li');
+    expect(await entries.count()).toBeLessThanOrEqual(5);
+    // Sources is not one of the first four, so More reports the current page.
+    const more = nav.getByRole('button', { name: 'More' });
+    await expect(more).toHaveAttribute('aria-current', 'page');
+    await more.click();
+    const sheet = page.getByRole('dialog', { name: 'More' });
+    await expect(sheet.getByRole('link', { name: 'Sources', exact: true })).toHaveAttribute('aria-current', 'page');
+    // The command palette trigger lives in the sidebar header; on a phone it is here.
+    await expect(sheet.getByRole('button', { name: /Search & commands/ })).toBeVisible();
+    await sheet.getByRole('link', { name: 'Gates', exact: true }).click();
+    await expect(page).toHaveURL(/\/gates$/);
+    await expect(sheet).toBeHidden();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   });
 });
 
@@ -60,6 +94,28 @@ test.describe('provenance inspector', () => {
     await page.goto('/evidence/Entities/missing', { waitUntil: 'networkidle' });
     await expect(page.getByRole('alert')).toContainText('The Hub holds no Entities record missing');
     await expect(page.locator('[data-evidence-axis]')).toHaveCount(0);
+  });
+});
+
+test.describe('AguaYLuz outdoor conditions', () => {
+  test('is reachable from the AguaYLuz module and says why a cell has no value', async ({ page }) => {
+    const rows = [
+      { id: 'ent_out_sj', municipality: 'San Juan', level: 'ELEVATED', rip_current_state: 'REPORTED', rip_current_risk: 'HIGH',
+        surf_ft: '5–7', air_quality_state: 'NOT_CONFIGURED', _producers: ['aguayluz-pr'] },
+      { id: 'ent_out_x', municipality: 'Ponce', level: 'ELEVATED', _producers: ['skywatcher-pr'] },
+    ];
+    await mockApi(page, { '/entities/OutdoorConditions': rows });
+
+    await page.goto('/aguayluz', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Outdoor Conditions' }).click();
+    const panel = page.getByRole('tabpanel');
+
+    await expect(panel.getByText(/Conditions context, not safety advice/)).toBeVisible();
+    const row = panel.getByRole('row', { name: /San Juan/ });
+    await expect(row.getByText('HIGH')).toBeVisible();
+    await expect(row.getByText('5–7 ft')).toBeVisible();
+    await expect(row.getByText('NOT_CONFIGURED')).toBeVisible();
+    await expect(panel.getByText('Ponce')).toHaveCount(0);
   });
 });
 
@@ -349,9 +405,9 @@ const COMPOSITION = {
   limits: { relationships: 200, linked_records: 200 },
 };
 
+// The sidebar is rendered from 768px up, so at both project widths the primary
+// navigation is on screen and needs no opening.
 async function openPrimaryNav(page) {
-  const menu = page.getByRole('button', { name: 'Open navigation menu' });
-  if (await menu.isVisible()) await menu.click();
   return page.locator('nav[aria-label="Primary"]:visible').first();
 }
 
@@ -897,6 +953,7 @@ const SKY_REFERENCE = readJson('../../src/sky/referenceEphemerides.json');
 const SWPC_SAMPLES = readJson('../../src/sky/fixtures/swpc-samples.json');
 const SATELLITE_ELEMENTS = readJson('../../src/sky/fixtures/satellite-elements.json');
 const SATELLITE_REFERENCE = readJson('../../src/sky/fixtures/satelliteReference.json');
+const AIRCRAFT_REFERENCE = readJson('../../src/sky/exclusion/fixtures/aircraftReference.json');
 
 // NOAA SWPC answers cross-origin reads; the sandbox browser cannot reach it, so the real payloads frozen in the
 // fixture are served with the same CORS header.
@@ -1027,10 +1084,10 @@ test.describe('sky workspace', () => {
 
     // A pass track appears on the chart and goes away again.
     await expect(page.locator('[data-sky-track]')).toHaveCount(0);
-    await rows.nth(2).getByRole('button', { name: /^Show the ISS track/ }).click();
+    await rows.nth(2).getByRole('button', { name: /^Show track: ISS/ }).click();
     await expect(page.locator('[data-sky-track="ISS"] path')).toBeVisible();
     await expect(page.locator('[data-sky-track-key]')).toContainText('Hollow dot: rise. Filled dot: set.');
-    await rows.nth(2).getByRole('button', { name: /^Hide the ISS track/ }).click();
+    await rows.nth(2).getByRole('button', { name: /^Hide track: ISS/ }).click();
     await expect(page.locator('[data-sky-track]')).toHaveCount(0);
 
     // Hubble's elements did not load: it is listed as failed with the reason, and nothing is placed for it.
@@ -1048,6 +1105,107 @@ test.describe('sky workspace', () => {
     expect(celestrak).toHaveLength(3);
   });
 
+  test('rules out the ordinary: lists the station for a sight line aimed at it, refuses tracks with no declaration, compares a supplied track, and downloads a receipt that sends nothing', async ({ page }) => {
+    test.setTimeout(120000);
+    const requests = [];
+    page.on('request', (request) => requests.push({ url: request.url(), method: request.method() }));
+    await page.clock.install({ time: new Date('2026-11-04T09:00:00Z') });
+    await mockApi(page);
+    await mockSwpc(page);
+    await mockCelesTrak(page);
+    const lit = SATELLITE_REFERENCE.satellites.ISS.observers['San Juan'].looks.find((look) => look.sunlit && look.elevation > 20);
+    await page.goto('/skywatcher?view=sky&t=2026-11-04T09:30:42Z', { waitUntil: 'networkidle' });
+    const panel = page.locator('[data-sky-exclusion]');
+    await expect(panel).toBeVisible();
+    await expect(panel.locator('[data-exclusion-note]')).toContainText('Absence of an identified ordinary explanation is not evidence of an extraordinary one.');
+    await expect(panel.locator('[data-exclusion-satellites]')).toContainText('3 of 3 element sets loaded above');
+
+    // An empty form is refused, in words, at the field that decides the answer.
+    const run = panel.getByRole('button', { name: 'Check against ordinary explanations' });
+    await run.click();
+    await expect(panel.getByText(/The time \(UTC\) is required/)).toBeVisible();
+    await expect(panel.getByLabel('Reported at (UTC)')).toBeFocused();
+    await expect(panel.locator('[data-testid="conclusion-headline"]')).toHaveCount(0);
+
+    // A sight line aimed at the station, from the observer and time above.
+    await panel.getByRole('button', { name: 'Start from the observer and time above' }).click();
+    await expect(panel.getByLabel('Reported at (UTC)')).toHaveValue('2026-11-04T09:30:42Z');
+    await panel.getByLabel(/Uncertainty in that time/).fill('5');
+    await panel.getByLabel('Sight line azimuth (°)').fill(String(lit.azimuth));
+    await panel.getByLabel('Sight line elevation (°)').fill(String(lit.elevation));
+    await panel.getByLabel('Azimuth reference').selectOption('TRUE');
+    await panel.getByLabel(/Tolerance/).fill('1.5');
+    await run.click();
+    await expect(panel.locator('[data-testid="conclusion-headline"]')).toHaveText(/^\d+ ORDINARY CANDIDATES? LISTED$/);
+    await expect(panel.locator('[data-testid="certification"]')).toHaveText('NOT_CERTIFIED');
+    const iss = panel.locator('[data-testid="candidates"] [data-candidate="International Space Station"]');
+    await expect(iss).toHaveCount(1);
+    await expect(iss.locator('[data-testid="candidate-basis"]')).toHaveText('MODELLED');
+    await expect(iss).toContainText('Lit by the Sun and the sky is dark: a visible-pass candidate (geometry only)');
+    await expect(panel.locator('[data-testid="conclusion-text"]')).toContainText('Each is a geometric coincidence, not an identification');
+    await expect(panel.locator('[data-exclusion-chart] svg')).toBeVisible();
+    await expect(panel.locator('[data-exclusion-chart] [data-exclusion-sightline="cone"] [data-exclusion-outline="start"]')).toBeVisible();
+    await expect(panel.locator('[data-exclusion-chart] [data-exclusion-sightline="cone"] [data-exclusion-centre]')).toBeVisible();
+    await expect(panel.locator('[data-exclusion-object][data-candidate="true"]')).not.toHaveCount(0);
+    await expect(panel.locator('[data-exclusion-not-checked]')).toContainText('No aircraft tracks were supplied.');
+    await expect(panel.locator('[data-exclusion-not-checked]')).toContainText('The terrain option was not turned on.');
+
+    // A tracks file with no declaration is refused by name; with one, it is compared, and a window it has no data for says so.
+    const csv = ['time,lat,lon,altitude,id', ...Object.values(AIRCRAFT_REFERENCE.tracks).flatMap((track) => track.rows.map((r) => `${r.time},${r.lat},${r.lon},${r.altitude_m},${track.id}`))].join('\n');
+    await panel.getByLabel('Tracks file').setInputFiles({ name: 'tracks.csv', mimeType: 'text/csv', buffer: Buffer.from(csv) });
+    await expect(panel.locator('[data-exclusion-file]')).toContainText('tracks.csv');
+    await run.click();
+    await expect(panel.getByText(/Say where the tracks came from/)).toBeVisible();
+    await expect(panel.getByLabel('Where the tracks came from')).toBeFocused();
+    await panel.getByLabel('Where the tracks came from').fill('synthetic tracks of the reference fixture');
+    await panel.getByLabel('Altitude reference').selectOption('ELLIPSOID');
+    await panel.getByLabel('Altitude unit').selectOption('m');
+    await run.click();
+    const quality = panel.locator('[data-testid="track-quality"]');
+    await expect(quality).toBeVisible();
+    await expect(quality.locator('[data-track="A"]')).toContainText('Not compared:');
+    await expect(quality.locator('[data-track="A"]')).toContainText('No data is not the same as no aircraft');
+
+    // The same tracks, a sight line on aircraft A at 12:02:04: it is listed as a candidate with the basis it rests on.
+    const pass = AIRCRAFT_REFERENCE.scenarios.find((scenario) => scenario.name === 'A pass through the sight line');
+    await panel.getByLabel('Reported at (UTC)').fill(pass.time);
+    await panel.getByLabel(/Uncertainty in that time/).fill('10');
+    await panel.getByLabel('Sight line azimuth (°)').fill(String(pass.azimuth));
+    await panel.getByLabel('Sight line elevation (°)').fill(String(pass.elevation));
+    await panel.getByLabel(/Tolerance/).fill(String(pass.tolerance_deg));
+    await panel.getByLabel(/Height above the WGS84 ellipsoid/).fill(String(AIRCRAFT_REFERENCE.observer.height));
+    await panel.getByLabel(/Observer latitude/).fill(String(AIRCRAFT_REFERENCE.observer.lat));
+    await panel.getByLabel(/Observer longitude/).fill(String(AIRCRAFT_REFERENCE.observer.lon));
+    await run.click();
+    const trackA = panel.locator('[data-testid="candidates"] [data-candidate="A"]');
+    await expect(trackA).toHaveCount(1);
+    await expect(trackA.locator('[data-testid="candidate-basis"]')).toHaveText(/OBSERVED|INTERPOLATED/);
+    await expect(trackA).toContainText('not evidence of intent');
+    await expect(quality.locator('[data-track="B"]')).toContainText('gapped');
+
+    // The receipt downloads under its own name, says what it is, and its digest is the one on the page.
+    const [download] = await Promise.all([page.waitForEvent('download'), panel.getByRole('button', { name: 'Download the receipt (JSON)' }).click()]);
+    expect(download.suggestedFilename()).toMatch(/^sky-exclusion-20261104T120204Z-[0-9a-f]{12}\.json$/);
+    const receipt = JSON.parse(readFileSync(await download.path(), 'utf8'));
+    expect(receipt).toMatchObject({ contract: 'sky-exclusion-v1', certification: { status: 'NOT_CERTIFIED' } });
+    expect(receipt.candidates.map((candidate) => candidate.id)).toContain('A');
+    expect(receipt.blindSpots.length).toBe(8);
+    expect(JSON.stringify(receipt)).not.toMatch(/anomal|UFO|UAP|extraterrestrial|unexplained/i);
+    await expect(panel.locator('[data-testid="digest"]')).toHaveText(receipt.contentDigest);
+    expect(download.suggestedFilename()).toContain(receipt.contentDigest.slice(0, 12));
+
+    // Nothing typed or loaded here left the browser: the only requests are the app's own, and SWPC and CelesTrak reads, and none carries the file.
+    // Hosts are compared exactly, not by pattern: a pattern such as /celestrak.org/ would also accept https://evil.example/celestrak.org.
+    const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1']);
+    const READ_HOSTS = new Set(['services.swpc.noaa.gov', 'celestrak.org']);
+    const hostOf = (url) => new URL(url).hostname;
+    const outside = requests.filter((r) => !LOCAL_HOSTS.has(hostOf(r.url)));
+    expect(outside.length).toBeGreaterThan(0);
+    expect(outside.filter((r) => r.method !== 'GET' || !READ_HOSTS.has(hostOf(r.url)))).toEqual([]);
+    expect(requests.filter((r) => r.method !== 'GET' && !new URL(r.url).pathname.startsWith('/api/'))).toEqual([]);
+    expect(requests.filter((r) => /tracks\.csv|sky-exclusion/.test(r.url))).toEqual([]);
+  });
+
   test('refuses an observer it cannot compute for, in words, with no readout', async ({ page }) => {
     await mockApi(page);
     await mockSwpc(page);
@@ -1055,5 +1213,174 @@ test.describe('sky workspace', () => {
     await page.goto('/skywatcher?view=sky&lat=95&lon=-66&t=2026-10-16T00:30:00Z', { waitUntil: 'networkidle' });
     await expect(page.getByRole('alert').first()).toContainText('Latitude must be between -90 and 90 degrees.');
     await expect(page.locator('[data-sky-sun]')).toHaveCount(0);
+  });
+});
+
+// Source Monitor (ADR 0013): read-only MonitoredSources rows projected by
+// `hub ingest` from each producer's source_monitors stream. Timestamps are relative
+// to now because freshness is computed against the viewer's clock.
+const daysAgo = (days) => new Date(Date.now() - days * 86400000).toISOString();
+const STREAM_ADAPTER = 'source_monitors stream (producer export)';
+const MONITOR_ROWS = [
+  {
+    id: 'ovnis-pr:SRC-0001', monitor_id: 'ovnis-pr:SRC-0001', producer: 'ovnis-pr', source_id: 'SRC-0001',
+    name: 'AARO Case Archive', producer_family: 'USAF', evidence_tier: 'T1', cadence: 'yearly',
+    cadence_window_seconds: 366 * 86400, status: 'active', origin: 'stream',
+    last_success_basis: 'NOT_RECORDED', last_success_at: null, producer_last_package_at: daysAgo(10),
+    lineage: { registry_path: 'data/reference/source_registry.csv', adapter: STREAM_ADAPTER }, observed_at: daysAgo(10),
+  },
+  {
+    id: 'moneysweep-pr:usaspending_prime', monitor_id: 'moneysweep-pr:usaspending_prime', producer: 'moneysweep-pr',
+    source_id: 'usaspending_prime', name: 'usaspending_prime', producer_family: 'federal', evidence_tier: null,
+    cadence: 'weekly', cadence_window_seconds: 7 * 86400, status: 'partial', origin: 'stream',
+    last_success_basis: 'NOT_RECORDED', last_success_at: null, producer_last_package_at: daysAgo(30),
+    lineage: { registry_path: 'reports/source_registry_status.csv', adapter: STREAM_ADAPTER }, observed_at: daysAgo(30),
+  },
+];
+const MONITOR_SUMMARY = [{
+  id: 'source_monitor_summary', schema_version: 'prii_source_monitor_v1',
+  generated_at: daysAgo(0), total: 2, error_count: 1, stream_producers: ['moneysweep-pr', 'ovnis-pr'],
+  producers: {
+    'moneysweep-pr': { origin: 'stream', count: 1, package_created_at: daysAgo(30), registries: ['reports/source_registry_status.csv'], excluded: {}, errors: [] },
+    'ovnis-pr': { origin: 'stream', count: 1, package_created_at: daysAgo(10), registries: ['data/reference/source_registry.csv'], excluded: {}, errors: [] },
+    'centinelas-pr': { origin: 'stream', count: 0, package_created_at: null, registries: [], excluded: {}, errors: ['reports through the source_monitors stream, but this aggregate has no rows from it'] },
+  },
+}];
+// Detail fragment first: mockApi matches the first fragment the URL contains.
+const MONITOR_API = {
+  '/entities/MonitoredSources/moneysweep-pr': MONITOR_ROWS[1],
+  '/entities/MonitoredSources': MONITOR_ROWS,
+  '/entities/SourceMonitorSummary': MONITOR_SUMMARY,
+};
+
+test.describe('source monitor', () => {
+  test('is reachable from navigation, leads with stale sources and opens a read-only detail', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    await page.goto('/sources', { waitUntil: 'networkidle' });
+    await (await openPrimaryNav(page)).getByRole('link', { name: 'Source Monitor', exact: true }).click();
+    await expect(page).toHaveURL(/\/source-monitor$/);
+    await expect(page.getByRole('heading', { name: 'Source Monitor' })).toBeVisible();
+    // An expected producer missing from the aggregate is reported per producer, not hidden.
+    await expect(page.getByText('reports through the source_monitors stream, but this aggregate has no rows from it')).toBeVisible();
+
+    const rows = page.locator('table').last().locator('tbody tr');
+    await expect(rows).toHaveCount(2);
+    await expect(rows.first()).toContainText('moneysweep-pr');
+    await expect(rows.first()).toContainText('Stale');
+    await expect(rows.nth(1)).toContainText('Fresh');
+    await expect(page.getByRole('main').getByRole('button', { name: /^New/ })).toHaveCount(0);
+
+    await rows.first().click();
+    await expect(page).toHaveURL(/\/source-monitor\/moneysweep-pr%3Ausaspending_prime$/);
+    await expect(page.getByRole('heading', { name: 'usaspending_prime' })).toBeVisible();
+    await expect(page.getByText('Reported by the producer in its source_monitors stream.', { exact: false })).toBeVisible();
+    await expect(page.getByText('source_monitors stream', { exact: true })).toBeVisible();
+    await expect(page.getByText('reports/source_registry_status.csv')).toBeVisible();
+    // Opened from the federation table, the way back is the federation view.
+    await page.getByRole('link', { name: 'Back to Source Monitor', exact: true }).click();
+    await expect(page).toHaveURL(/\/source-monitor$/);
+  });
+
+  test('each producer page carries the same table scoped to that producer', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Monitor', exact: true }).click();
+    const panel = page.getByRole('tabpanel', { name: 'Monitor' });
+    await expect(panel.locator('tbody tr')).toHaveCount(1);
+    await expect(panel).toContainText('usaspending_prime');
+    await expect(panel).not.toContainText('AARO Case Archive');
+
+    await page.goto('/ovnis?tab=sources', { waitUntil: 'networkidle' });
+    const ovnis = page.getByRole('tabpanel', { name: 'Monitor' });
+    await expect(ovnis.locator('tbody tr')).toHaveCount(1);
+    await expect(ovnis).toContainText('AARO Case Archive');
+  });
+
+  test('each producer deep link opens its Monitor tab', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    // Skywatcher keeps its tab in ?view=; the other producer pages in ?tab=.
+    const links = {
+      '/aguayluz?tab=sources': 'aguayluz-pr',
+      '/centinelas?tab=sources': 'centinelas-pr',
+      '/moneysweep?tab=sources': 'moneysweep-pr',
+      '/ovnis?tab=sources': 'ovnis-pr',
+      '/skywatcher?view=sources': 'skywatcher-pr',
+      '/spiderweb?tab=sources': 'spiderweb-pr',
+    };
+    for (const [link, producer] of Object.entries(links)) {
+      await page.goto(link, { waitUntil: 'networkidle' });
+      await expect(page.getByRole('tab', { name: 'Monitor', exact: true }), link).toHaveAttribute('aria-selected', 'true');
+      const panel = page.getByRole('tabpanel', { name: 'Monitor' });
+      await expect(panel, link).toContainText('Sources this producer monitors');
+      const held = MONITOR_ROWS.filter((r) => r.producer === producer);
+      if (held.length) await expect(panel.locator('tbody tr'), link).toHaveCount(held.length);
+      else await expect(panel, link).toContainText(`No sources from ${producer} in the hub.`);
+    }
+  });
+
+  test('a source opened from a producer Monitor tab leads back to that tab', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    await page.goto('/moneysweep', { waitUntil: 'networkidle' });
+    await page.getByRole('tab', { name: 'Monitor', exact: true }).click();
+    await expect(page).toHaveURL(/\/moneysweep\?tab=sources$/);
+
+    await page.getByRole('tabpanel', { name: 'Monitor' }).locator('tbody tr').first().click();
+    await expect(page).toHaveURL(/\/source-monitor\/moneysweep-pr%3Ausaspending_prime$/);
+    await expect(page.getByRole('heading', { name: 'usaspending_prime' })).toBeVisible();
+    await expect(page.getByRole('main').getByRole('link', { name: 'moneysweep-pr', exact: true }))
+      .toHaveAttribute('href', '/moneysweep?tab=sources');
+
+    await page.getByRole('link', { name: 'Back to the MoneySweep-PR Monitor tab' }).click();
+    await expect(page).toHaveURL(/\/moneysweep\?tab=sources$/);
+    await expect(page.getByRole('tab', { name: 'Monitor', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tabpanel', { name: 'Monitor' }).locator('tbody tr')).toHaveCount(1);
+  });
+
+  test('the Family filter narrows the table to one family', async ({ page }) => {
+    await mockApi(page, MONITOR_API);
+    await page.goto('/source-monitor', { waitUntil: 'networkidle' });
+    const rows = page.locator('table').last().locator('tbody tr');
+    await expect(rows).toHaveCount(2);
+
+    await page.getByRole('combobox', { name: 'Family' }).click();
+    // The options are the families in the rows, not a fixed list.
+    await expect(page.getByRole('option')).toHaveText(['All Family', 'federal', 'USAF']);
+    await page.getByRole('option', { name: 'federal', exact: true }).click();
+    await expect(rows).toHaveCount(1);
+    await expect(rows.first()).toContainText('usaspending_prime');
+
+    await page.getByRole('combobox', { name: 'Family' }).click();
+    await page.getByRole('option', { name: 'All Family', exact: true }).click();
+    await expect(rows).toHaveCount(2);
+  });
+
+  test('a stream row is measured from its own last success (ADR 0013)', async ({ page }) => {
+    const streamRow = {
+      id: 'aguayluz-pr:nwps_gauges', monitor_id: 'aguayluz-pr:nwps_gauges', producer: 'aguayluz-pr',
+      source_id: 'nwps_gauges', name: 'NWPS river gauges', producer_family: 'HYDROMETEOROLOGY', evidence_tier: null,
+      cadence: 'realtime', cadence_window_seconds: 7200, status: 'unknown', origin: 'stream',
+      producer_last_package_at: daysAgo(30), last_success_basis: 'OUTPUT_DERIVED',
+      last_success_at: new Date(Date.now() - 3600 * 1000).toISOString(),
+      lineage: { registry_path: 'config/hydromet_sources.v1.json', adapter: 'source_monitors stream (producer export)' },
+    };
+    await mockApi(page, {
+      '/entities/MonitoredSources': [streamRow],
+      '/entities/SourceMonitorSummary': [{
+        id: 'source_monitor_summary', total: 1, error_count: 0, generated_at: daysAgo(0), stream_producers: ['aguayluz-pr'],
+        producers: { 'aguayluz-pr': { origin: 'stream', count: 1, package_created_at: daysAgo(30), registries: ['config/hydromet_sources.v1.json'], excluded: {}, errors: [] } },
+      }],
+    });
+    await page.goto('/source-monitor', { waitUntil: 'networkidle' });
+    await expect(page.locator('[data-origin="stream"]')).toHaveText('source_monitors stream');
+    const row = page.locator('table').last().locator('tbody tr').first();
+    // The package is 30 days old, but the source itself succeeded an hour ago.
+    await expect(row).toContainText('Fresh');
+    await expect(row.locator('[data-freshness-kind="last_success"]')).toHaveText('last success · from outputs');
+  });
+
+  test('a source dropped from its stream is reported, not substituted', async ({ page }) => {
+    await mockApi(page, { '/entities/MonitoredSources/ovnis-pr': { __status: 404, detail: 'MonitoredSources/ovnis-pr:GONE not found' } });
+    await page.goto('/source-monitor/ovnis-pr%3AGONE', { waitUntil: 'networkidle' });
+    await expect(page.getByText('Monitored source not found')).toBeVisible();
   });
 });

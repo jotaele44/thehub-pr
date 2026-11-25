@@ -1,0 +1,16 @@
+{
+  "description": "null is not accepted where a value is required.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/application/display_name",
+      "value": null
+    }
+  ],
+  "expect": [
+    "schema:contract:type"
+  ]
+}

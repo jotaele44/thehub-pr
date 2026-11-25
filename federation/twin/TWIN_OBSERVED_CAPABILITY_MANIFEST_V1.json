@@ -1562,7 +1562,7 @@
       "phase": 6,
       "delivery_state": "ALREADY_PRESENT",
       "tests": [],
-      "notes": null,
+      "notes": "Phase 6: the Hub's Sky workspace does not read this feed. Its aircraft comparison takes tracks the person loads from a file (TWIN-117); a live read would need an OpenSky OAuth proxy, which is not built (OpenSky answers cross-origin reads only for its own origin, and the Hub does not proxy by decision).",
       "live_bundle_corroboration": null
     },
     {
@@ -1589,7 +1589,7 @@
       "phase": 6,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": "Existing query is bbox-bounded; a radius census must state its coverage denominator. Callsign ≠ aircraft identity.",
+      "notes": "Existing query is bbox-bounded; a radius census must state its coverage denominator. Callsign ≠ aircraft identity. Phase 6: not built in the Hub; it needs the live feed above and a stated coverage denominator, and the Sky workspace compares only tracks the person supplies.",
       "live_bundle_corroboration": null
     },
     {
@@ -4183,7 +4183,7 @@
       "phase": 6,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Phase 6: deferred. A contact count needs a live aircraft feed (see TWIN-040) and a stated coverage denominator; the Sky workspace compares only tracks the person supplies, and a count of those would say nothing about the airspace.",
       "live_bundle_corroboration": null
     },
     {
@@ -4604,9 +4604,15 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": null,
+      "delivery_state": "PARTIAL_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/exclusion/aircraftTracks.test.js",
+        "server/frontend/src/sky/exclusion/aircraftExclusion.test.js",
+        "server/frontend/src/sky/exclusion/runExclusion.test.js",
+        "server/frontend/src/components/sky/ExclusionPanel.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-C): aircraft state from tracks the person supplies, as CSV (time, lat, lon, altitude, optional id and callsign) or GeoJSON, read in the browser and never uploaded. The source, the altitude reference (ellipsoid, mean sea level with a declared geoid separation, or barometric with a declared uncertainty) and the unit must be declared; a row without an altitude is rejected, not read as ground level. Not delivered: the Skywatcher federation export is not consumed (in the Skywatcher repository as read for this change it holds three observations, each one point at a single instant, 2026-07-06T22:50:00Z, georeferenced from a screenshot icon with a 7 km uncertainty: not a trajectory), and no live feed is read (OpenSky answers cross-origin reads only for its own origin, and the Hub does not proxy by decision). A callsign is carried as a label, not an identity.",
       "live_bundle_corroboration": null
     },
     {
@@ -4632,9 +4638,21 @@
       },
       "producer_diagnostic_gui": "skywatcher-pr frontend/ (diagnostic, ADR 0001)",
       "phase": 6,
-      "delivery_state": "DEFERRED",
-      "tests": [],
-      "notes": "Absence of an identified ordinary explanation is not proof of an extraordinary one.",
+      "delivery_state": "IMPLEMENTED_RUN_2",
+      "tests": [
+        "server/frontend/src/sky/exclusion/observation.test.js",
+        "server/frontend/src/sky/exclusion/celestialExclusion.test.js",
+        "server/frontend/src/sky/exclusion/satelliteExclusion.test.js",
+        "server/frontend/src/sky/exclusion/aircraftExclusion.test.js",
+        "server/frontend/src/sky/exclusion/horizon.test.js",
+        "server/frontend/src/sky/exclusion/reconstruction.test.js",
+        "server/frontend/src/sky/exclusion/runExclusion.test.js",
+        "server/frontend/src/sky/exclusion/exclusionForm.test.js",
+        "server/frontend/src/sky/exclusion/exclusionView.test.js",
+        "server/frontend/src/components/sky/ExclusionPanel.test.jsx",
+        "server/frontend/tests/visual/gui-parity.spec.js"
+      ],
+      "notes": "Run 2 (Phase 6, P6-C): the \"Rule out the ordinary\" section of the Sky workspace (/skywatcher?view=sky). A reported sight line (UTC time with an uncertainty, an observer, an azimuth with a declared true or magnetic reference, and a tolerance or a camera field of view, optionally moving) is checked in the browser against the Sun, Moon, naked-eye planets and 288 stars to V 3.5, the three satellites the workspace tracks, aircraft tracks the person supplies, and the terrain where CUDEM covers it. The answer is a sky-exclusion-v1 receipt, NOT_CERTIFIED, that ends in one of three plain statements (NO ORDINARY CANDIDATE IDENTIFIED, ORDINARY CANDIDATES LISTED each as a geometric coincidence, or NOT ASSESSED), lists what was not checked and eight ordinary explanations this check cannot assess, and is downloaded as JSON with a SHA-256 digest anyone can recompute. Nothing entered is stored, sent or made a case. Bounds, stated in the page: Uranus, Neptune, comets, asteroids and fainter stars are not checked; satellites are three objects from current elements (a past event cannot be reproduced); aircraft come only from a file the person loads; terrain is Puerto Rico only and bare earth. Absence of an identified ordinary explanation is not proof of an extraordinary one.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -7004,7 +7022,7 @@
       "phase": 6,
       "delivery_state": "DEFERRED",
       "tests": [],
-      "notes": null,
+      "notes": "Phase 6: deferred. No signals or electromagnetic finding has been recorded for this to support. The Sky workspace's space-weather readings are context for ruling out ordinary explanations, not finding support, and are not offered as one.",
       "search_terms_without_equivalent": [
         "skyfield",
         "astropy",
@@ -8626,11 +8644,11 @@
     "by_delivery_state": {
       "ALREADY_PRESENT": 14,
       "BLOCKED": 4,
-      "DEFERRED": 68,
-      "IMPLEMENTED_RUN_2": 95,
+      "DEFERRED": 66,
+      "IMPLEMENTED_RUN_2": 96,
       "IMPLEMENTED_THIS_RUN": 16,
       "NOT_APPLICABLE": 5,
-      "PARTIAL_RUN_2": 16,
+      "PARTIAL_RUN_2": 17,
       "PARTIAL_THIS_RUN": 5
     },
     "census_closed": true

@@ -1,0 +1,16 @@
+{
+  "description": "A global setting has no owning application.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/settings/0/owning_application",
+      "value": "mucaro-ai"
+    }
+  ],
+  "expect": [
+    "schema:settings:type"
+  ]
+}

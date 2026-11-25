@@ -1,0 +1,16 @@
+{
+  "description": "A missing value is never presented as zero.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/evidence/missing_value_presentation",
+      "value": "zero"
+    }
+  ],
+  "expect": [
+    "schema:contract:enum"
+  ]
+}

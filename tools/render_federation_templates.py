@@ -11,6 +11,21 @@ Inputs (all under ``thehub-pr/federation-templates/``):
   - ``producers.vars.yaml`` — program_id -> {app_slug, npm_dir, ...},
   - ``targets.yaml`` — template -> output path + which repos receive it.
 
+Two placeholders are derived from targets.yaml instead of read from the vars
+file, so the producers' Dependabot config can exclude exactly the files the hub
+renders into them (a dependency bumped in a rendered copy breaks that repo's
+drift gate, so those bumps happen in the template, never in a copy):
+
+  - ``{{RENDERED_WORKFLOWS}}`` — the ``.github/workflows/`` files rendered into
+    the repo, for the github-actions ecosystem;
+  - ``{{RENDERED_PIP_MANIFESTS}}`` — the rendered files Dependabot's pip
+    ecosystem would read as manifests (``requirements-desktop.txt`` in the
+    desktop producers).
+
+Each renders as the inside of a quoted YAML flow sequence. A repo whose list is
+empty gets the template line ``<key>: ["{{PLACEHOLDER}}"]`` removed whole rather
+than an empty pattern; the placeholder anywhere else is refused.
+
 Each producer is a sibling checkout of thehub-pr (federation convention), so the
 default target root is ``<thehub-parent>/<program_id>``.
 
@@ -30,13 +45,27 @@ from __future__ import annotations
 import argparse
 import re
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import yaml
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]           # thehub-pr/
 _TEMPLATES = _REPO_ROOT / "federation-templates"
 _TEMPLATE_REF_PATH = Path(".github/workflows/template-drift.yml")
+_WORKFLOWS_DIR = ".github/workflows"
+# Derived from targets.yaml, not read from producers.vars.yaml (see _subs_for).
+_RENDERED_WORKFLOWS = "{{RENDERED_WORKFLOWS}}"
+_RENDERED_PIP_MANIFESTS = "{{RENDERED_PIP_MANIFESTS}}"
+# What Dependabot's pip ecosystem reads under `directory: "/"`, from
+# dependabot-core python/lib/dependabot/python/shared_file_fetcher.rb and
+# file_fetcher.rb: *.txt / *.in files at the root and one directory below it
+# (req_txt_and_in_files, req_files_for_dir), and these names at the root only.
+_PIP_REQUIREMENT_SUFFIXES = (".txt", ".in")
+_PIP_ROOT_MANIFESTS = frozenset({
+    "Pipfile", "Pipfile.lock", "pdm.lock", "poetry.lock",
+    "pyproject.toml", "setup.cfg", "setup.py",
+})
+_SAFE_PATH = re.compile(r"[A-Za-z0-9_./-]+")
 _FULL_SHA = re.compile(r"[0-9a-f]{40}")
 _TEMPLATE_REF_LINE = re.compile(
     rb"^(?P<prefix>[ \t]*PRII_TEMPLATE_REF:[ \t]*)"
@@ -115,6 +144,136 @@ def _targets_for(program_id: str, targets: list[dict]) -> list[tuple[str, str, i
     return out
 
 
+def _resolve_output(output_tmpl: str, subs: dict[str, str]) -> str:
+    """Substitute placeholders (e.g. ``{{APP_SLUG}}``) in a target's output path."""
+    rel = output_tmpl
+    for placeholder, value in subs.items():
+        rel = rel.replace(placeholder, value)
+    return rel
+
+
+def _rendered_paths(program_id: str, targets: list[dict], subs: dict[str, str],
+                    kind: str, keep) -> list[str]:
+    """Sorted repo-relative outputs rendered into one repo that ``keep`` accepts.
+
+    Shared by the derived Dependabot lists. Each list is spliced into a
+    double-quoted YAML string, so a path that needs quoting would corrupt the
+    config rather than fail loudly; it is refused instead.
+    """
+    out = set()
+    for _template, output_tmpl, _mode in _targets_for(program_id, targets):
+        rel = PurePosixPath(_resolve_output(output_tmpl, subs))
+        if not keep(rel):
+            continue
+        if not _SAFE_PATH.fullmatch(str(rel)):
+            raise SystemExit(
+                f"error: {program_id}: rendered {kind} path {rel!s} has "
+                "characters that cannot be listed in dependabot.yml unescaped"
+            )
+        out.add(str(rel))
+    return sorted(out)
+
+
+def _rendered_workflows(program_id: str, targets: list[dict],
+                        subs: dict[str, str]) -> list[str]:
+    """Repo-relative paths of the GitHub workflows rendered into one repo.
+
+    These are the files Dependabot must never edit in a producer: a pin bumped
+    in a rendered copy diverges from its template and turns the drift gate red.
+    The producers' ``.github/dependabot.yml`` excludes exactly this list, and
+    computing it from targets.yaml means a repository that adopts another
+    workflow template (``_gui_code``, say) is excluded from bumping it on the
+    same render, without anyone having to remember a second list.
+    """
+    return _rendered_paths(
+        program_id, targets, subs, "workflow",
+        lambda rel: str(rel.parent) == _WORKFLOWS_DIR and rel.suffix in (".yml", ".yaml"),
+    )
+
+
+def _is_pip_manifest(rel: PurePosixPath) -> bool:
+    """Whether Dependabot's pip ecosystem, scanning ``/``, would read ``rel``.
+
+    It reads every ``*.txt`` / ``*.in`` file at the root and one directory
+    below it, keeping those named like requirements or whose lines all parse as
+    requirements, and a fixed set of manifest names at the root. Excluding a
+    rendered ``.txt`` that turns out not to be a manifest costs nothing, so the
+    content test is not reproduced here.
+    """
+    if rel.suffix in _PIP_REQUIREMENT_SUFFIXES and len(rel.parts) <= 2:
+        return True
+    return len(rel.parts) == 1 and rel.name in _PIP_ROOT_MANIFESTS
+
+
+def _rendered_pip_manifests(program_id: str, targets: list[dict],
+                            subs: dict[str, str]) -> list[str]:
+    """Repo-relative paths of the rendered files Dependabot's pip ecosystem reads.
+
+    The same rule as the workflows, for Python dependencies: a requirement
+    bumped in a rendered copy (``pywebview`` in ``requirements-desktop.txt``,
+    say) diverges from its template and fails that repo's drift gate. The
+    producers' pip ecosystem excludes exactly this list.
+    """
+    return _rendered_paths(program_id, targets, subs, "pip manifest", _is_pip_manifest)
+
+
+# Each derived placeholder and the function that computes its list for a repo.
+_DERIVED = {
+    _RENDERED_WORKFLOWS: _rendered_workflows,
+    _RENDERED_PIP_MANIFESTS: _rendered_pip_manifests,
+}
+
+
+def _subs_for(program_id: str, vars_for_repo: dict,
+              targets: list[dict]) -> tuple[dict[str, str], frozenset[str]]:
+    """Every placeholder for one repo, and the derived ones that came out empty.
+
+    The ``_DERIVED`` placeholders are computed from targets.yaml rather than
+    read from producers.vars.yaml. Each renders as the inside of a YAML flow
+    sequence of double-quoted strings, so a template writes
+    ``["{{RENDERED_WORKFLOWS}}"]`` and stays valid YAML before rendering as well
+    as after (the hub's Dependabot parses the template files themselves). A vars
+    key of the same name would silently win over the derived value, so it is
+    rejected instead. An empty list gets no substitution: ``render_repo`` drops
+    the line that holds it (see ``_drop_empty_list_lines``).
+    """
+    subs = _placeholders(vars_for_repo)
+    for placeholder in _DERIVED:
+        if placeholder in subs:
+            raise SystemExit(
+                f"error: {program_id}: producers.vars.yaml defines a key that fills "
+                f"{placeholder}, which the renderer derives from "
+                "targets.yaml — rename the key"
+            )
+    empty = set()
+    for placeholder, derive in _DERIVED.items():
+        paths = derive(program_id, targets, subs)
+        if paths:
+            subs[placeholder] = '", "'.join(paths)
+        else:
+            empty.add(placeholder)
+    return subs, frozenset(empty)
+
+
+def _drop_empty_list_lines(raw: bytes, empty: frozenset[str]) -> bytes:
+    """Remove each ``<key>: ["{{P}}"]`` line whose derived list ``P`` is empty.
+
+    Rendering ``exclude-paths: [""]`` would hand Dependabot a pattern that
+    matches nothing while looking deliberate, and whether its config schema
+    accepts ``[]`` is unverified. Nothing to exclude means no key at all, so the
+    whole line goes. Only that exact line shape is removed: the placeholder anywhere
+    else is left in place, and ``render_repo`` refuses it as unresolved.
+    """
+    for placeholder in sorted(empty):
+        line = re.compile(
+            rb'^[ \t]*[A-Za-z0-9_-]+:[ \t]*\["' + re.escape(placeholder.encode())
+            + rb'"\][ \t]*(?:\r?\n|\Z)',
+            re.MULTILINE,
+        )
+        raw = line.sub(b"", raw)
+    return raw
+
+
 def _manage_template_ref(repo_root: Path, template_ref: str, check: bool) -> bool:
     """Write or check the producer verifier's frozen canonical-template SHA.
 
@@ -166,19 +325,24 @@ def render_repo(program_id: str, vars_for_repo: dict, repo_root: Path,
                 targets: list[dict], check: bool,
                 template_ref: str | None = None) -> list[str]:
     """Write (or --check) every target for one repo. Returns list of drifted paths."""
-    subs = _placeholders(vars_for_repo)
+    subs, empty = _subs_for(program_id, vars_for_repo, targets)
     drift = []
     for template, output_tmpl, mode in _targets_for(program_id, targets):
-        content = _render_bytes(template, subs)
+        content = _drop_empty_list_lines(_render_bytes(template, subs), empty)
         missing = _unresolved(content)
+        stranded = sorted(empty.intersection(missing))
+        if stranded:
+            raise SystemExit(
+                f"error: {program_id}: {template} uses {', '.join(stranded)}, "
+                "which is empty for this repo, outside a whole "
+                '`<key>: ["{{...}}"]` line — only such a line can be omitted'
+            )
         if missing:
             raise SystemExit(
                 f"error: {program_id}: {template} has unresolved placeholder(s) "
                 f"{', '.join(missing)} — add the key to producers.vars.yaml"
             )
-        rel = output_tmpl
-        for placeholder, value in subs.items():
-            rel = rel.replace(placeholder, value)
+        rel = _resolve_output(output_tmpl, subs)
         dest = repo_root / rel
         if check:
             # A file this gate cannot read or stat is not in its expected state,

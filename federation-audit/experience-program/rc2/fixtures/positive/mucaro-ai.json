@@ -1,0 +1,361 @@
+{
+  "x-fixture-note": "Illustrative fixture for testing the contract schemas. It is NOT a declaration made by this application and NOT an audit result; values are chosen to exercise the rules.",
+  "contract": {
+    "name": "federation-experience",
+    "version": "1.0.0"
+  },
+  "application": {
+    "id": "mucaro-ai",
+    "display_name": "Mucaro AI",
+    "repository": "jotaele44/mucaro-ai",
+    "role": "assistant",
+    "source_commit": "593bdd813686048a881cb3af61f4fbb9d211a52d"
+  },
+  "capabilities": [
+    {
+      "id": "chat",
+      "title": "Chat",
+      "audience": "guest"
+    },
+    {
+      "id": "conversations",
+      "title": "Conversations",
+      "audience": "operator"
+    },
+    {
+      "id": "sources",
+      "title": "Sources",
+      "audience": "guest"
+    },
+    {
+      "id": "settings",
+      "title": "Settings",
+      "audience": "operator"
+    }
+  ],
+  "navigation": {
+    "application": "mucaro-ai",
+    "addressing": "in-memory",
+    "groups": [
+      {
+        "id": "workspaces",
+        "label": "Workspaces",
+        "kind": "static",
+        "items": [
+          {
+            "id": "chat",
+            "label": "Chat",
+            "target": "workspace:chat",
+            "capability_id": "chat",
+            "keyboard_binding": null
+          },
+          {
+            "id": "sources",
+            "label": "Sources",
+            "target": "workspace:sources",
+            "capability_id": "sources",
+            "keyboard_binding": null
+          },
+          {
+            "id": "settings",
+            "label": "Settings",
+            "target": "workspace:settings",
+            "capability_id": "settings",
+            "keyboard_binding": "Mod+,"
+          }
+        ]
+      },
+      {
+        "id": "pinned",
+        "label": "Pinned",
+        "kind": "pinned",
+        "object_types": [
+          "conversation"
+        ],
+        "max_items": 10,
+        "overflow": "scroll",
+        "setting_id": "mucaro-ai.navigation.pins"
+      },
+      {
+        "id": "recent",
+        "label": "Recent",
+        "kind": "recent",
+        "object_types": [
+          "conversation"
+        ],
+        "max_items": 5,
+        "overflow": "more-submenu",
+        "setting_id": "mucaro-ai.navigation.recents"
+      }
+    ],
+    "mobile": {
+      "pattern": "drawer",
+      "toggle_accessible_name": "Open workspaces"
+    }
+  },
+  "actions": [
+    {
+      "id": "mucaro-ai.conversation.open",
+      "owning_application": "mucaro-ai",
+      "capability_id": "chat",
+      "title": "Open conversation",
+      "kind": "open",
+      "object_type": "conversation",
+      "object_class": "user-named",
+      "selection": {
+        "min": 1,
+        "max": 1
+      },
+      "permission": "guest",
+      "effect": "read",
+      "availability": {
+        "predicate": "conversation.exists",
+        "requires_online": false
+      },
+      "confirmation": "none",
+      "audit_event": null,
+      "keyboard_binding": null,
+      "display_surfaces": [
+        "item-menu",
+        "context-menu",
+        "command-palette",
+        "dock-menu"
+      ],
+      "error_behavior": {
+        "on_failure": "inline",
+        "preserves_input": true,
+        "retryable": true
+      }
+    },
+    {
+      "id": "mucaro-ai.conversation.rename",
+      "owning_application": "mucaro-ai",
+      "capability_id": "conversations",
+      "title": "Rename conversation",
+      "kind": "rename",
+      "object_type": "conversation",
+      "object_class": "user-named",
+      "selection": {
+        "min": 1,
+        "max": 1
+      },
+      "permission": "operator",
+      "effect": "write",
+      "availability": {
+        "predicate": "conversation.exists",
+        "requires_online": false
+      },
+      "confirmation": "none",
+      "audit_event": "conversation.renamed",
+      "keyboard_binding": "F2",
+      "display_surfaces": [
+        "item-menu",
+        "context-menu",
+        "keyboard"
+      ],
+      "error_behavior": {
+        "on_failure": "inline",
+        "preserves_input": true,
+        "retryable": true
+      }
+    },
+    {
+      "id": "mucaro-ai.conversation.delete",
+      "owning_application": "mucaro-ai",
+      "capability_id": "conversations",
+      "title": "Delete conversation",
+      "kind": "delete",
+      "object_type": "conversation",
+      "object_class": "user-named",
+      "selection": {
+        "min": 1,
+        "max": null
+      },
+      "permission": "operator",
+      "effect": "write",
+      "availability": {
+        "predicate": "conversation.exists",
+        "requires_online": false
+      },
+      "confirmation": "confirm",
+      "audit_event": "conversation.deleted",
+      "keyboard_binding": null,
+      "display_surfaces": [
+        "item-menu",
+        "context-menu"
+      ],
+      "error_behavior": {
+        "on_failure": "dialog",
+        "preserves_input": true,
+        "retryable": true
+      }
+    },
+    {
+      "id": "mucaro-ai.conversation.pin",
+      "owning_application": "mucaro-ai",
+      "capability_id": "conversations",
+      "title": "Pin conversation",
+      "kind": "pin",
+      "object_type": "conversation",
+      "object_class": "user-named",
+      "selection": {
+        "min": 1,
+        "max": 1
+      },
+      "permission": "guest",
+      "effect": "read",
+      "availability": {
+        "predicate": "conversation.not_pinned",
+        "requires_online": false
+      },
+      "confirmation": "none",
+      "audit_event": null,
+      "keyboard_binding": null,
+      "display_surfaces": [
+        "item-menu",
+        "context-menu"
+      ],
+      "error_behavior": {
+        "on_failure": "toast",
+        "preserves_input": true,
+        "retryable": true
+      },
+      "x-note": "Pinning changes only this user's navigation list, not the conversation."
+    }
+  ],
+  "settings": [
+    {
+      "id": "federation.appearance.theme",
+      "scope": "GLOBAL_USER",
+      "owning_application": null,
+      "title": "Theme",
+      "value_type": "enum",
+      "choices": [
+        "system",
+        "light",
+        "dark"
+      ],
+      "default": "system",
+      "storage": "federation-profile",
+      "applies": "immediately"
+    },
+    {
+      "id": "mucaro-ai.navigation.pins",
+      "scope": "APPLICATION_USER",
+      "owning_application": "mucaro-ai",
+      "title": "Pinned conversations",
+      "value_type": "id-list",
+      "max_items": 10,
+      "default": [],
+      "storage": "app-local-storage",
+      "applies": "immediately"
+    },
+    {
+      "id": "mucaro-ai.navigation.recents",
+      "scope": "APPLICATION_USER",
+      "owning_application": "mucaro-ai",
+      "title": "Recent conversations",
+      "value_type": "id-list",
+      "max_items": 20,
+      "default": [],
+      "storage": "app-local-storage",
+      "applies": "immediately"
+    },
+    {
+      "id": "mucaro-ai.model.api-key",
+      "scope": "SECRET",
+      "owning_application": "mucaro-ai",
+      "title": "Model API key",
+      "value_type": "string",
+      "default": null,
+      "storage": "process-environment",
+      "applies": "next-launch"
+    },
+    {
+      "id": "mucaro-ai.model.live-mode",
+      "scope": "ADMINISTRATIVE",
+      "owning_application": "mucaro-ai",
+      "title": "Allow live model calls",
+      "value_type": "boolean",
+      "default": false,
+      "storage": "process-environment",
+      "applies": "next-launch"
+    }
+  ],
+  "interaction": {
+    "keyboard_complete": true,
+    "touch_alternatives": true,
+    "minimum_target_css_px": 44,
+    "focus_visible": true
+  },
+  "accessibility": {
+    "target": "WCAG 2.2 AA",
+    "automated_scan": "OPEN",
+    "manual_review": "BLOCKED",
+    "known_failures": []
+  },
+  "evidence": {
+    "provenance_fields": [
+      "source_id",
+      "source_hash",
+      "retrieved_at"
+    ],
+    "missing_value_presentation": "explicit-unknown",
+    "renameable_object_types": [
+      "conversation"
+    ]
+  },
+  "states": {
+    "loading": {
+      "supported": true,
+      "presentation": "Starting indicator in the shell"
+    },
+    "empty": {
+      "supported": true,
+      "presentation": "Prompt heading in an empty chat"
+    },
+    "error": {
+      "supported": true,
+      "presentation": "Inline banner with Retry"
+    },
+    "offline": {
+      "supported": true,
+      "presentation": "Local service not reachable banner"
+    },
+    "stale": {
+      "supported": false,
+      "presentation": null
+    }
+  },
+  "authorization": {
+    "modes": [
+      "guest",
+      "operator"
+    ],
+    "write_guard": "operator token",
+    "guest_can_write": false
+  },
+  "compatibility": {
+    "application": "mucaro-ai",
+    "contract_version": "1.0.0",
+    "min_contract_version": "1.0.0",
+    "max_contract_version": "1.99.0",
+    "shared_packages": [],
+    "desktop_runtime": null,
+    "independent_startup": true,
+    "federation_runtime_required": false
+  },
+  "integration": {
+    "recovery": {
+      "failed_backend": "Banner with Retry; automatic retry after 15 seconds",
+      "interrupted_request": "Partial answer kept; run can be resumed"
+    },
+    "deep_links": false
+  },
+  "performance": {
+    "instrumented_metrics": [
+      "cold-start",
+      "time-to-usable-shell"
+    ]
+  }
+}

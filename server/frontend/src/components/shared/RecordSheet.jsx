@@ -54,7 +54,7 @@ export default function RecordSheet({ open, onOpenChange, title, fields, initial
               <Label className="text-xs">{f.label}{f.required && <span className="text-status-danger-fg"> *</span>}</Label>
               {f.type === "select" ? (
                 <Select value={form[f.key] ?? ""} onValueChange={(v) => set(f.key, v)}>
-                  <SelectTrigger className="bg-background border-border"><SelectValue placeholder={f.placeholder || "Select…"} /></SelectTrigger>
+                  <SelectTrigger aria-label={f.label} className="bg-background border-border"><SelectValue placeholder={f.placeholder || "Select…"} /></SelectTrigger>
                   <SelectContent>
                     {f.options.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
                   </SelectContent>

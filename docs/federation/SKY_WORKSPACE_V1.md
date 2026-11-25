@@ -3,8 +3,9 @@
 TheHub's Sky workspace is the `sky` view of the Skywatcher page, opened at `/skywatcher?view=sky`. It shows
 what is above an observer at a chosen UTC instant (the Sun, the Moon and the five naked-eye planets, when they
 rise and set, how dark it is, the Moon's phase), the International Space Station, Hubble and the Chinese space
-station (where they are, and their passes in the next 24 hours) and the latest space weather (Kp, solar-wind
-speed, IMF Bz).
+station (where they are, and their passes in the next 24 hours), the latest space weather (Kp, solar-wind
+speed, IMF Bz) and a "Rule out the ordinary" check: a reported sight line compared with all of that, with aircraft
+tracks the person supplies and with the terrain.
 
 Under ADR 0001 TheHub is the only product GUI, and under ADR 0006 the Hub, not Skywatcher, owns external
 acquisition. So the sky is computed here, in the browser, and nothing is stored or sent to a producer. The page is
@@ -12,8 +13,8 @@ context for ruling out ordinary explanations. It is not an observation, a case o
 rule out the ordinary before promoting an unexplained result, and the absence of an identified ordinary
 explanation is not evidence of an extraordinary one.
 
-This document covers Phase 6, P6-A (the sky and space weather) and P6-B (satellites). The exclusion engine,
-horizon and line of sight (P6-C) are a separate change.
+This document covers Phase 6, P6-A (the sky and space weather), P6-B (satellites) and P6-C (the exclusion check,
+horizon, line of sight, field of view, clock alignment and the receipt).
 
 ## What is computed, and where
 
@@ -26,6 +27,8 @@ horizon and line of sight (P6-C) are a separate change.
 | Satellite view | `server/frontend/src/sky/satelliteView.js` | `satelliteSnapshot`, `chartSatellites`, `upcomingPasses`, `passTrack`: what the panel and the chart show, as pure functions |
 | Chart geometry | `server/frontend/src/sky/skyChart.js` | The all-sky chart's projection, satellites and pass tracks on it, and the Kp sparkline, as pure functions |
 | View | `server/frontend/src/components/sky/SkyWorkspace.jsx`, `SatellitesPanel.jsx`, `format.js` | Controls, readout, chart, satellites, space weather; mounted by `server/frontend/src/pages/Skywatcher.jsx` |
+| Exclusion engines | `server/frontend/src/sky/exclusion/` | The "Rule out the ordinary" check (P6-C), below: `observation.js`, `geometry.js`, `frustum.js`, `refraction.js`, `stars.js` with `starCatalog.json`, `celestialExclusion.js`, `satelliteExclusion.js`, `aircraftTracks.js`, `aircraftExclusion.js`, `terrain.js`, `horizon.js`, `lineOfSight.js`, `clockAlignment.js`, `reconstruction.js` |
+| Exclusion view | `server/frontend/src/sky/exclusion/exclusionForm.js`, `exclusionView.js`, `runExclusion.js`; `server/frontend/src/components/sky/ExclusionPanel.jsx` | The form as data, the chart's geometry, the run end to end, and the panel; the panel is its own lazy chunk |
 
 The workspace has no backend endpoint and writes nothing, so its capability `sky-workspace` is classified
 `client_only` in `.federation/gui-capabilities.json`.
@@ -170,7 +173,10 @@ modules are separate catalogue objects). It is not "all satellites". Space-Track
   penumbra, no atmosphere.
 - **Passes.** The passes above 10° in the 24 hours from the chosen instant (a pass already under way, or still going
   at the end, is followed to its ends), each with rise, culmination and set found to about 0.1 s, maximum
-  elevation, the three azimuths, duration and the confidence of its element age. The track of a pass can be drawn
+  elevation, the three azimuths, duration and the confidence of its element age. The search samples the elevation every 20
+  seconds, so a pass that clears the minimum for less than one step could fall between two samples; the sampled peaks that sit
+  just below the minimum are refined, so a pass is found even when it clears the minimum by a few thousandths of a degree
+  (found by the automated review of #407 and reproduced: before the fix, a minimum 0.02° below a pass's peak lost the pass). The track of a pass can be drawn
   on the chart, from 30 seconds before it rises above 10° to 30 seconds after it falls below.
 - **Visible-pass candidate.** A pass is labelled "Visible-pass candidate (geometry only; brightness not
   estimated)" when, at some moment of it, the satellite is above 10°, sunlit, and the observer's geometric Sun
@@ -237,6 +243,110 @@ plain JavaScript SGP4, so `vite.config.js` resolves the two specifiers that runt
 called. Without that alias the build emits a 309 KB Emscripten module nothing loads. With it the main bundle is
 unchanged (326,344 B) and the lazy Sky chunk grows from 85,180 B to 130,077 B; the E2E asserts no `.wasm` request.
 
+## Rule out the ordinary (P6-C)
+
+The section "Rule out the ordinary" takes a reported sight line and says which ordinary things were in it. It is a
+check, not a finding: it lists geometric coincidences, never identifications, and ends in one of three plain
+statements.
+
+**What is entered.** A UTC time with an uncertainty (left blank it is recorded as undeclared, and the check is for
+that instant only), an observer (latitude, longitude, and a height above the WGS84 ellipsoid, blank recorded as
+undeclared, 0 m used), a direction (an azimuth with a declared reference, true or magnetic with the declination, never
+assumed, and an elevation), and how close counts: a tolerance in degrees, or a camera field of view (horizontal and
+vertical field, roll), optionally moving along a great circle between a start and an end direction. The window checked
+is the time plus or minus the uncertainty, up to six hours. Everything entered is held in the page: it is not stored,
+not put in the link, not sent anywhere and not made a case. The page never asks the browser for a location, and the
+"start from the observer and time above" button copies the time, latitude and longitude only: the workspace's
+elevation is a height above sea level and the check takes a height above the ellipsoid (about 43 m lower in Puerto
+Rico), so it is not copied.
+
+**What is checked.**
+
+| Check | What it compares | What it states about itself |
+|---|---|---|
+| Celestial (`celestialExclusion.js`) | The Sun, Moon, five naked-eye planets and 288 stars brighter than V 3.5 (d3-celestial, from Hipparcos, BSD-3-Clause, notice kept; J2000 with no proper motion, parallax or aberration) over the whole window, as an observer sees them (apparent, with standard refraction) | Not every star; not Uranus, Neptune, comets or asteroids; visibility against the sky is not judged (the daylight class is given) |
+| Satellites (`satelliteExclusion.js`) | The ISS, Hubble and the Chinese space station from the current element sets, closest approach to 0.1 s, the moments inside the sight line, whether the Sun lit it and whether the sky was dark | Three objects, not all satellites; brightness is not estimated; an object whose elements did not load, or that is more than 14 days from an element epoch (so any past observation), is NOT_CHECKED with the reason |
+| Aircraft (`aircraftTracks.js`, `aircraftExclusion.js`) | Tracks the person loads (CSV or GeoJSON, read in the browser, never uploaded) against the sight line over the whole window | See below |
+| Terrain (`terrain.js`, `horizon.js`, `lineOfSight.js`) | NOAA CUDEM (Puerto Rico, 1/9 arc-second, PRVD02 heights, bare earth) read from NOAA's public tiles when the option is on: a horizon per azimuth and a line of sight, with the Earth's curvature and a declared refraction coefficient (0.13 by default) | Puerto Rico only; buildings and trees are not in it; a direction with no data is UNKNOWN, not clear |
+
+**Aircraft tracks.** The source, the altitude reference (the WGS84 ellipsoid; mean sea level with a declared geoid
+separation; or barometric with a declared uncertainty, because a pressure altitude is not a geometric height) and the
+unit must be declared, and a row with no altitude is rejected, not read as ground level. A report is OBSERVED. A
+position between two reports no more than the gap length apart (30 s by default) is INTERPOLATED on a straight line.
+A longer interval, or one that would need more than 1,000 m/s, is a GAP and is never filled in, and nothing is
+extrapolated before the first report or after the last. A track that has no data in the window is NOT_CHECKED
+("no data is not the same as no aircraft"). Each track gets a quality in the vocabulary of the Skywatcher flight
+session schema (`continuous`, `gapped`, `sparse_evidence`, `single_point`, with `gap_count`) and the Skywatcher
+eligibility rule of at least two valid observations; Skywatcher assigns `track_quality` from the source and the point
+count, so the gap length and the speed bound are this workspace's own declared policy, recorded in every result. The
+quality is coverage and never a judgement of the flight. Optional position and altitude uncertainties are carried
+through: an aircraft outside the sight line that could be inside it given the declared uncertainty is listed
+separately and is not counted as a candidate; an undeclared uncertainty is not zero. A callsign is a label the file
+carries, not an identity, and a track in a sight line is a geometric coincidence, not targeting. Terrain hides an
+aircraft only if the terrain is nearer than the aircraft.
+
+**The terrain horizon.** For every 0.5 degrees of azimuth the ground is walked outward (20 to 100 m steps, to 40 km by
+default in the page) and the highest elevation angle is kept, with a running maximum by distance so that a target with a distance
+is hidden only by terrain nearer than it. Heights stay in CUDEM's own datum (PRVD02), so no ellipsoidal conversion is
+needed for the horizon; water is the water surface, not the sea floor. A ray that meets a cell with no data is
+incomplete, and a body above its terrain angle is then UNKNOWN: only terrain that is there can make a body OBSTRUCTED.
+The horizon is drawn on the chart as a shaded band, with a dotted arc outside the rim where the data runs out.
+
+**Clock alignment (`clockAlignment.js`).** Events from several sources go on one UTC timeline as
+`skywatcher-multisensor-replay-v1` does: the union of the timestamps, no interpolation, gaps declared with a reason,
+overlapping gaps refused. Clock offsets are declared with their basis (a non-zero offset with no basis is refused) and
+are never inferred, and a source with nothing at a timestamp is NO_REPORT, which is missing data and not zero. The page
+applies only the clock offset declared for the tracks file; aligning further sources has no form yet (FDX-038 is
+partial). Its digest is not a Skywatcher replay digest.
+
+**The receipt (`reconstruction.js`).** Contract `sky-exclusion-v1`, `NOT_CERTIFIED`. It holds the observation as entered,
+the candidates (each with its basis: MODELLED for a body or satellite computed from an ephemeris or elements, OBSERVED
+or INTERPOLATED for an aircraft), everything that was not checked or only partly (including terrain, when no horizon was
+used), eight ordinary explanations this kind of check can never rule in or out (aircraft not in the data, other
+satellites, balloons and drones, meteors and atmospheric light, optical effects, birds and insects, objects beyond the
+checked sets, and error in the report), the terrain horizon and the alignment summary, and a reconstruction of the sky at
+the reported instant. The conclusion is one of: `NO_ORDINARY_CANDIDATE_IDENTIFIED` (the sentence "NO ORDINARY CANDIDATE
+IDENTIFIED among the sets that were checked", the sets, and the reminder that the absence of an identified ordinary
+explanation is not evidence of an extraordinary one); `ORDINARY_CANDIDATES_LISTED` (each a geometric coincidence, not an
+identification, with nothing said about intent); or `NOT_ASSESSED` (nothing could be checked, so nothing is ruled out). No
+text in it claims an anomaly or says what was seen. It is downloaded as JSON under a name carrying the time and the first
+12 hex digits of its SHA-256, which is of the body as stable JSON (sorted keys, compact) without `generatedAt`, so the same
+inputs give the same digest and anyone can recompute it from the file; where the browser offers no SHA-256 the digest is
+null and says so.
+
+### How the exclusion engines are held to references
+
+| Piece | Held to | Measured |
+|---|---|---|
+| Geodetic to look angles (`geometry.js`) | Skyfield 1.55's WGS84 model, 40 cases at five observers and heights from -100 m to 15 km | 9e-12 degrees, 1e-9 m; asserted to 1e-9 degrees and 1e-6 m |
+| Stars (`stars.js`) | The US Naval Observatory celestial navigation service, 12 site-instants and 336 star observations | Altitude and direction within 0.04 degrees, largest 0.026 (Alpha Centauri's proper motion, which the catalogue does not apply), mean 0.0036 |
+| Aircraft look angles and passes | Skyfield for reports and for straight-line positions between them (to 9e-12 degrees), and a dense 1 ms scan for the closest approach and the moments inside the sight line | Minimum separation within 6e-7 degrees (the scan's own resolution), entry and exit within 1 ms; asserted to 2e-6 degrees and 3 ms |
+| Satellites in a sight line | The independent Skyfield reference for the ISS look at San Juan | The station is found within 0.05 degrees of where the reference puts it |
+| Sea horizon, ridge | Closed forms: minus acos(R_eff / (R_eff + h)) for the sea; the elevation of a ridge's near edge over the curve | Within 0.003 degrees (sea) and the sampling step (ridge) |
+| Horizon | A second algorithm that scans every cell of a height grid instead of walking rays | Within 0.1 degrees everywhere, mean under 0.02 |
+| Line of sight | The sea-horizon sum of two eyes, a ridge over the curve, and the horizon engine on 600 random targets over synthetic hills | The threshold within half a percent; no disagreement with the horizon on 600 targets |
+| Live CUDEM (outage tolerant, `GIS_LIVE_PROVIDER_TESTS=1`) | Real tiles at San Juan and at Puerto Rico's highest point | See below |
+
+Every one of these was also checked the other way: a change that fills a gap, drops the interpolation, ignores the
+curvature, treats missing data as clear, or lets a nearer ridge hide nothing makes a test fail.
+
+What the live CUDEM check showed, on 2026-11-04. At San Juan (18.4663, -66.1057) CUDEM puts the ground at 7.4 m
+(PRVD02). Due north is the open Atlantic, but the horizon there is +1.24 degrees, not near zero: the terrain within 100 m
+of that coastal point rises above the 9.4 m eye (shoreline relief; the highest horizon in any direction is 3.05 degrees,
+0.22 km away). Beyond about 4 km offshore CUDEM has no data, so the rays over the sea are incomplete and a body above them
+is UNKNOWN, not clear. At the island's summit (CUDEM ground 1,330.7 m) the horizon is below the horizontal in every
+direction that has data (at most -0.56 degrees). The profile-based line of sight and the horizon engine disagreed on 6 of 1,572 real-terrain targets with data in a
+probe of 2,000 while this was written, all within 3.1 m (0.008 degrees) of the boundary and the same at 0.25 and 0.5
+degree azimuth steps: the profile is sampled every 25 m, the horizon every 20 to 100 m, and 3 m terrain changes by metres
+between samples. The live test over 400 targets allows a band of 0.02 degrees around the boundary, counts what falls in
+it, and requires no disagreement outside it. No keyless independent horizon exists to hold this to: PVGIS's horizon service was tried
+and reports 3.4 to 4.2 degrees over open sea, which is not physical, so it is not used.
+
+Bundle: the main bundle is 326,377 B against 326,344 B on main (the preload map names one more shared chunk); the lazy Sky
+chunk is 132,182 B; the exclusion panel and its engines are their own lazy chunk of 110,552 B, loaded when the Sky tab
+opens, and the CUDEM reader and the GeoTIFF library come only when the terrain option is used (a 3,052 B terrain chunk over
+the 58,722 B `cudem` chunk).
+
 ## The chart
 
 The all-sky chart (`svg[data-sky-chart]`) is the sky as seen looking up: north at the top, east at the left, the
@@ -254,8 +364,17 @@ under the chart, so all seven bodies and every satellite with a position are alw
 - **A live camera** (TWIN-121 stays blocked: no authoritative Puerto Rico sky-camera source has been identified).
 - **Satellite brightness**, and any prediction that a satellite will be seen: a visible-pass candidate is geometry
   only. **All satellites**, other than the three named; **past passes** (no historical element sets).
-- **Exclusion, horizon, line of sight, frustum and reconstruction** (P6-C); **aircraft** (Skywatcher's export is synthetic, OpenSky does not allow browser reads, and the Hub does
-  not proxy it by decision).
+- **Live aircraft and Skywatcher's tracks.** The aircraft check takes tracks the person loads (TWIN-117 is partial). OpenSky
+  answers cross-origin reads only for its own origin (asked with a foreign `Origin` it replies
+  `access-control-allow-origin: https://opensky-network.org`), and the Hub does not proxy it by decision. Skywatcher's
+  federation export is not consumed: in the repository as read for this change it holds three observations, each one point
+  at a single instant, georeferenced from a screenshot icon with a 7 km uncertainty, which is not a trajectory. An ADS-B
+  contact census (TWIN-041, TWIN-107) needs the live feed and a stated coverage denominator.
+- **A standalone point-to-point line-of-sight tool** (FDX-032 is partial: the engine exists and adjudicates terrain in the
+  check, but the page has no tool for it), **a time scrubber or animation** (FDX-040 is partial: the page shows the
+  instant and the window result), **aligning sources other than the tracks file** (FDX-038 is partial), **satellite
+  brightness and past passes** (FDX-035 is partial).
+- **Terrain outside Puerto Rico**, and anything above bare earth.
 - **Space weather history or a time machine.** Only the latest reading is shown.
 - **Daylight-saving or named time zones.** A fixed offset only.
 
@@ -274,6 +393,17 @@ under the chart, so all seven bodies and every satellite with a position are alw
   their agreement is not a check of the SGP4 model against reality. The shadow is a cylinder (no penumbra), and the
   Sun is rotated to the equator of date rather than to TEME exactly. The Chinese space station is the Tianhe core
   module's element set, used for the station.
+- The exclusion check has not been run on a real reported observation, because none exists in the Federation: its
+  scenarios are built from computed positions and held to independent references, not to an event. Both Skyfield and the
+  engines implement the same straight-line interpolation and SGP4 model, so agreement shows the arithmetic and the
+  scanning are right, not that an aircraft flies straight between reports or that SGP4 matches reality.
+- The checked sets are small next to what can be in a sky (see the eight blind spots in every receipt), and a body in a
+  sight line is a coincidence: the check cannot say what was seen.
+- Terrain: bare earth, a 3 m DEM read as a 33 m grid within 5 km of the observer and a 223 m grid beyond, no keyless independent horizon to hold it to, and CUDEM's
+  bathymetry ends a few kilometres offshore. The refraction coefficient (0.13) is the standard value; real air varies from
+  about 0 to 0.25 and more over water.
+- The star catalogue has no proper motion (up to 0.026 degrees for the worst case), and its names come from the catalogue's
+  own name table.
 - Element sets are retrieved when the page opens and are two hours old at most before a reload; the age policy is a
   stated policy, and a pass near the 14-day limit is low confidence, not wrong or right.
 
@@ -281,12 +411,13 @@ under the chart, so all seven bodies and every satellite with a position are alw
 
 | Kind | Files |
 |---|---|
-| Unit | `server/frontend/src/sky/astronomy.test.js`, `server/frontend/src/sky/spaceWeather.test.js`, `server/frontend/src/sky/skyChart.test.js`, `server/frontend/src/sky/satellites.test.js`, `server/frontend/src/sky/satelliteElements.test.js`, `server/frontend/src/sky/satelliteView.test.js`, `server/frontend/src/components/sky/SkyWorkspace.test.jsx`, `server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx` |
-| Frozen references | `server/frontend/src/sky/referenceEphemerides.json`, `server/frontend/src/sky/fixtures/swpc-samples.json` (real NOAA payloads), `server/frontend/src/sky/fixtures/satellite-elements.json` (a real CelesTrak answer), `server/frontend/src/sky/fixtures/satelliteReference.json` (Skyfield and sgp4), `server/frontend/src/sky/fixtures/vallado/` (the Vallado verification set) |
-| Live | `server/frontend/src/gis/liveProviders.test.js` (NOAA SWPC, JPL Horizons, USNO and CelesTrak, behind `GIS_LIVE_PROVIDER_TESTS=1`) |
+| Unit | `server/frontend/src/sky/astronomy.test.js`, `server/frontend/src/sky/spaceWeather.test.js`, `server/frontend/src/sky/skyChart.test.js`, `server/frontend/src/sky/satellites.test.js`, `server/frontend/src/sky/satelliteElements.test.js`, `server/frontend/src/sky/satelliteView.test.js`, `server/frontend/src/components/sky/SkyWorkspace.test.jsx`, `server/frontend/src/components/sky/SkyWorkspaceSatellites.test.jsx`, `server/frontend/src/components/sky/ExclusionPanel.test.jsx`, and one test file for each engine in `server/frontend/src/sky/exclusion/` (`observation`, `geometry`, `frustum`, `refraction`, `stars`, `celestialExclusion`, `satelliteExclusion`, `aircraftTracks`, `aircraftExclusion`, `terrain`, `horizon`, `lineOfSight`, `terrainIntegration`, `clockAlignment`, `reconstruction`, `exclusionForm`, `exclusionView`, `runExclusion`) |
+| Frozen references | `server/frontend/src/sky/referenceEphemerides.json`, `server/frontend/src/sky/fixtures/swpc-samples.json` (real NOAA payloads), `server/frontend/src/sky/fixtures/satellite-elements.json` (a real CelesTrak answer), `server/frontend/src/sky/fixtures/satelliteReference.json` (Skyfield and sgp4), `server/frontend/src/sky/fixtures/vallado/` (the Vallado verification set), `server/frontend/src/sky/exclusion/fixtures/` (Skyfield geometry, USNO celestial navigation, Skyfield and a dense scan for aircraft), `server/frontend/src/sky/exclusion/starCatalog.json` (d3-celestial, BSD-3-Clause, with its notice) |
+| Live | `server/frontend/src/gis/liveProviders.test.js` (NOAA SWPC, JPL Horizons, USNO, CelesTrak and NOAA CUDEM, behind `GIS_LIVE_PROVIDER_TESTS=1`) |
 | E2E | `server/frontend/tests/visual/gui-parity.spec.js` ("sky workspace") |
 
-The E2E serves the real SWPC payloads and the CelesTrak element sets with the CORS header the providers send, fixes
+The E2E also aims a sight line at the station and at a supplied track, refuses a tracks file with no declaration, downloads the
+receipt and asserts that nothing typed or loaded left the browser. It serves the real SWPC payloads and the CelesTrak element sets with the CORS header the providers send, fixes
 the page's clock, holds the Sun's altitude to the frozen Horizons value, holds the station's passes to the Skyfield
 reference, and asserts one request per satellite and no WebAssembly request. The sandbox Chromium used in CI cannot
 reach NOAA or CelesTrak.

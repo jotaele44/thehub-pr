@@ -1,0 +1,16 @@
+{
+  "description": "Pins are stored per application and user.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/settings/1/scope",
+      "value": "WORKSPACE"
+    }
+  ],
+  "expect": [
+    "nav-setting-scope"
+  ]
+}
