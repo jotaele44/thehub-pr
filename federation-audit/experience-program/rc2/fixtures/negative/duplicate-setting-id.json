@@ -1,0 +1,16 @@
+{
+  "description": "Two settings cannot share an id.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "copy",
+      "path": "/settings/1",
+      "to": "/settings/-"
+    }
+  ],
+  "expect": [
+    "duplicate-setting-id"
+  ]
+}

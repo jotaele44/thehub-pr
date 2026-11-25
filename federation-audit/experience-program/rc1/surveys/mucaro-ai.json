@@ -1,0 +1,2349 @@
+{
+ "repository": "mucaro-ai",
+ "audited_commit": "593bdd813686048a881cb3af61f4fbb9d211a52d",
+ "frontend": {
+  "dir": "frontend",
+  "language": "js",
+  "framework": "React 19.2.1 + Vite 7.3.7 (frontend/package.json:13-16)",
+  "router": "in-memory",
+  "router_file": "frontend/src/App.jsx:47",
+  "shared_design_package": null,
+  "shared_design_package_evidence": "frontend/package.json:11-16 lists only @vitejs/plugin-react, vite, react, react-dom; styling is the local frontend/src/styles.css"
+ },
+ "entry_points": [
+  {
+   "id": "web-root",
+   "kind": "web",
+   "path": "frontend/src/main.jsx:6",
+   "note": "createRoot renders <App/>; HTML shell frontend/index.html:16-17 with a strict CSP (frontend/index.html:11)."
+  },
+  {
+   "id": "fastapi-app",
+   "kind": "server",
+   "path": "backend/app/main.py:1266",
+   "note": "app = create_app(settings); serves frontend/dist at / when built (backend/app/main.py:1260-1262)."
+  },
+  {
+   "id": "cli",
+   "kind": "cli",
+   "path": "backend/app/cli.py:8983",
+   "note": "Console script 'mucaro' (pyproject.toml:45); scripts/mucaro.py:14 wrapper."
+  },
+  {
+   "id": "desktop-shell",
+   "kind": "launcher",
+   "path": "backend/app/desktop_shell.py:353",
+   "note": "Console script 'mucaro-desktop' (pyproject.toml:46); pywebview window 1280x840, min_size (420, 560) (backend/app/desktop_shell.py:271). Packaged entry packaging/macos/desktop_entry.py:27."
+  },
+  {
+   "id": "launch-app",
+   "kind": "launcher",
+   "path": "scripts/launch_app.py:363",
+   "note": "Source launcher (also phone access); native window in scripts/native_window.py:319 with WINDOW_MIN_SIZE (420, 560) (scripts/native_window.py:25)."
+  },
+  {
+   "id": "one-click",
+   "kind": "launcher",
+   "path": "scripts/one_click.py:467",
+   "note": "Double-click launchers 'Mucaro AI.command' (line 6 execs scripts/one_click.sh), 'Mucaro AI.cmd', 'Mucaro AI.exe'."
+  },
+  {
+   "id": "dev-start",
+   "kind": "launcher",
+   "path": "scripts/dev_start.py:34",
+   "note": "Developer start; Vite dev server proxies API paths to 127.0.0.1:8000 (frontend/vite.config.js:6-17)."
+  }
+ ],
+ "surfaces": [
+  {
+   "id": "shell-sidebar",
+   "kind": "sidebar",
+   "label": "Primary (nav landmark)",
+   "address": null,
+   "component": "frontend/src/App.jsx:239",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:239",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Brand, New chat, 6 workspace buttons, Background tasks, conversation filter+list. inert while token gate is shown (App.jsx:239)."
+  },
+  {
+   "id": "conversation-list",
+   "kind": "search",
+   "label": "Filter conversations / Conversations",
+   "address": null,
+   "component": "frontend/src/App.jsx:266",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:266-293",
+   "parent": "shell-sidebar",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Client-side title filter (App.jsx:235); empty texts 'No matches.'/'No conversations yet.' (App.jsx:291). Thread markers from threadActivity.js. Load errors are swallowed (App.jsx:86-88)."
+  },
+  {
+   "id": "mobile-bar",
+   "kind": "toolbar",
+   "label": "Open navigation / Mucaro",
+   "address": null,
+   "component": "frontend/src/App.jsx:297",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:297-315",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "display:none above 760px (styles.css:245-247), flex at <=760px (styles.css:1241). Hamburger with aria-expanded and attention dot."
+  },
+  {
+   "id": "service-banner",
+   "kind": "notification",
+   "label": "Mucaro's local service is not reachable.",
+   "address": null,
+   "component": "frontend/src/App.jsx:316",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:316-321",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "role=alert; 'Reconnecting…' when a previously healthy service goes quiet; Retry button. 'Starting…' text while checking (App.jsx:322)."
+  },
+  {
+   "id": "live-region",
+   "kind": "notification",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/App.jsx:345",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:345",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Single sr-only role=status aria-live=polite region fed by announce() (App.jsx:76-79)."
+  },
+  {
+   "id": "token-gate",
+   "kind": "form",
+   "label": "Enter the access token / Phone access is turned off",
+   "address": null,
+   "component": "frontend/src/components/TokenGate.jsx:9",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:323",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Replaces workspaces when health.state==='locked'. Rejected-token alert (TokenGate.jsx:55-59), show/hide toggle, remember checkbox."
+  },
+  {
+   "id": "ws-chat",
+   "kind": "workspace",
+   "label": "Chat",
+   "address": "in-memory view='chat'",
+   "component": "frontend/src/components/ChatView.jsx:90",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:324-337",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "Default view (App.jsx:47). In-memory view state; address not in URL."
+  },
+  {
+   "id": "ws-workbench",
+   "kind": "workspace",
+   "label": "Workbench",
+   "address": "in-memory view='workbench'",
+   "component": "frontend/src/components/workspaces/WorkbenchWorkspace.jsx:6",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:338",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Plan-only compiler form; never approves or executes (WorkbenchWorkspace.jsx:61)."
+  },
+  {
+   "id": "ws-sources",
+   "kind": "workspace",
+   "label": "Sources",
+   "address": "in-memory view='sources'",
+   "component": "frontend/src/components/workspaces/SourcesWorkspace.jsx:7",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:339",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "No loading state: shows 'No sources yet' while the first load is in flight (SourcesWorkspace.jsx:82)."
+  },
+  {
+   "id": "ws-memory",
+   "kind": "workspace",
+   "label": "Memory",
+   "address": "in-memory view='memory'",
+   "component": "frontend/src/components/workspaces/MemoryWorkspace.jsx:6",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:340",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "No loading state: 'Nothing remembered.' shows during first load (MemoryWorkspace.jsx:82)."
+  },
+  {
+   "id": "ws-provenance",
+   "kind": "workspace",
+   "label": "Provenance",
+   "address": "in-memory view='provenance'",
+   "component": "frontend/src/components/workspaces/ProvenanceWorkspace.jsx:5",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:341",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Read-only. Only controls are native <details> disclosures per record. No loading state, refresh, filter, pagination or link to the run."
+  },
+  {
+   "id": "ws-settings",
+   "kind": "workspace",
+   "label": "Settings",
+   "address": "in-memory view='settings'",
+   "component": "frontend/src/components/workspaces/SettingsWorkspace.jsx:7",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:342",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Default model, retrieval strategy, token, offline capability list."
+  },
+  {
+   "id": "chat-header",
+   "kind": "toolbar",
+   "label": "Model: … / Repository / Conversation menu",
+   "address": null,
+   "component": "frontend/src/components/ChatView.jsx:400",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:400-431",
+   "parent": "ws-chat",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Model and Repository toggles only when a conversation exists (ChatView.jsx:405)."
+  },
+  {
+   "id": "conversation-menu",
+   "kind": "context-menu",
+   "label": "Conversation menu",
+   "address": null,
+   "component": "frontend/src/components/ChatView.jsx:20",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:416",
+   "parent": "ws-chat",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "role=menu with Rename, Copy transcript, Background tasks, Delete…. No Escape, arrow-key or outside-click handling (ChatView.jsx:51-61)."
+  },
+  {
+   "id": "model-setup",
+   "kind": "settings",
+   "label": "Model for this chat / Default model for new chats",
+   "address": null,
+   "component": "frontend/src/components/ModelSetup.jsx:44",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:447",
+   "parent": "ws-chat",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Also mounted at ChatView.jsx:453 (new chat) and SettingsWorkspace.jsx:30. Provider radio group, server address, API key, model select, consent and agent switches."
+  },
+  {
+   "id": "repo-setup",
+   "kind": "form",
+   "label": "Repository for this chat",
+   "address": null,
+   "component": "frontend/src/components/RepoSetup.jsx:17",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:448",
+   "parent": "ws-chat",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Also inside a <details> on a new chat (ChatView.jsx:455-458)."
+  },
+  {
+   "id": "execution-entry-card",
+   "kind": "panel",
+   "label": "GOAL/PLAN mode · revision (Proceed/Adjust or Execute/Revise)",
+   "address": null,
+   "component": "frontend/src/components/ExecutionEntryCard.jsx:23",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:435-446",
+   "parent": "ws-chat",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": true
+   },
+   "notes": "Rendered only when GET /conversations/{id}/execution-entry returns an entry. Stale source identity disables the primary action (ExecutionEntryCard.jsx:64-72)."
+  },
+  {
+   "id": "run-block",
+   "kind": "panel",
+   "label": null,
+   "address": null,
+   "component": "frontend/src/components/RunBlock.jsx:258",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:480-491",
+   "parent": "ws-chat",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "One article per run, aria-busy while RUNNING (RunBlock.jsx:273). Status chip, plan disclosure, tool summary, answer bubble, citations, warnings, error, interruption."
+  },
+  {
+   "id": "approval-card",
+   "kind": "form",
+   "label": "Permission request for <tool>",
+   "address": null,
+   "component": "frontend/src/components/RunBlock.jsx:24",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/RunBlock.jsx:321-323",
+   "parent": "run-block",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Deny / Allow once; arguments (diff view for patches) and argument digest."
+  },
+  {
+   "id": "question-card",
+   "kind": "form",
+   "label": "Question from Mucaro",
+   "address": null,
+   "component": "frontend/src/components/RunBlock.jsx:65",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/RunBlock.jsx:325",
+   "parent": "run-block",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Radio options plus optional freeform 'Other'. No dismiss control."
+  },
+  {
+   "id": "citations",
+   "kind": "panel",
+   "label": "Citations",
+   "address": null,
+   "component": "frontend/src/components/RunBlock.jsx:238",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/RunBlock.jsx:352",
+   "parent": "run-block",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Citation chips open the Evidence sheet."
+  },
+  {
+   "id": "message-actions",
+   "kind": "toolbar",
+   "label": "Message actions",
+   "address": null,
+   "component": "frontend/src/components/MessageActions.jsx:72",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/MessageActions.jsx:248",
+   "parent": "run-block",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Icon buttons with aria-label: Copy, Edit, Read aloud (if speechSynthesis), Save, Share (answers only)."
+  },
+  {
+   "id": "message-editor",
+   "kind": "form",
+   "label": "Edit message text",
+   "address": null,
+   "component": "frontend/src/components/MessageActions.jsx:151",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/RunBlock.jsx:275",
+   "parent": "run-block",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Inline display-only revision editor; also for legacy turns (ChatView.jsx:468)."
+  },
+  {
+   "id": "code-block",
+   "kind": "panel",
+   "label": "Copy this block",
+   "address": null,
+   "component": "frontend/src/components/RichText.jsx:7",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/RichText.jsx:57",
+   "parent": "run-block",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Fenced code with copy button; pre is focusable (RichText.jsx:31)."
+  },
+  {
+   "id": "next-vector-picker",
+   "kind": "form",
+   "label": "Choose the next vector",
+   "address": null,
+   "component": "frontend/src/components/NextVectorPicker.jsx:12",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:492-502",
+   "parent": "ws-chat",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Shown after the last run COMPLETED with nothing active or queued."
+  },
+  {
+   "id": "stream-paused-notice",
+   "kind": "notification",
+   "label": "Live updates paused after repeated failures.",
+   "address": null,
+   "component": "frontend/src/components/ChatView.jsx:510",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:510-517",
+   "parent": "ws-chat",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": true,
+    "stale": false
+   },
+   "notes": "role=status with Resume button after 10 consecutive stream failures (ChatView.jsx:17,166-167)."
+  },
+  {
+   "id": "chat-composer",
+   "kind": "form",
+   "label": "Message Mucaro",
+   "address": null,
+   "component": "frontend/src/components/Composer.jsx:56",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:519-536",
+   "parent": "ws-chat",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Auto-growing textarea, draft persisted per conversation, Stop and Send/Queue buttons."
+  },
+  {
+   "id": "chat-queue",
+   "kind": "panel",
+   "label": "Queued messages",
+   "address": null,
+   "component": "frontend/src/components/Composer.jsx:11",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/Composer.jsx:122-128",
+   "parent": "chat-composer",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Edit / Cancel per queued run."
+  },
+  {
+   "id": "mode-picker",
+   "kind": "filter",
+   "label": "Mode: Plan / Ask first / Auto (local read-only)",
+   "address": null,
+   "component": "frontend/src/components/Composer.jsx:145",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/Composer.jsx:145-170",
+   "parent": "chat-composer",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "role=listbox popup of role=option buttons; modes from GET /work-runs/modes. No Escape/arrow keys."
+  },
+  {
+   "id": "dlg-background-tasks",
+   "kind": "drawer",
+   "label": "Background tasks",
+   "address": null,
+   "component": "frontend/src/components/TasksDrawer.jsx:31",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/App.jsx:344",
+   "parent": null,
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Sheet side=right. Opened from sidebar (App.jsx:263) and conversation menu (ChatView.jsx:58). 'No tasks yet.' also shows while loading (TasksDrawer.jsx:54)."
+  },
+  {
+   "id": "dlg-tool-activity",
+   "kind": "drawer",
+   "label": "Tool activity",
+   "address": null,
+   "component": "frontend/src/components/RunBlock.jsx:168",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/RunBlock.jsx:384",
+   "parent": "run-block",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Sheet side=right; per-call status, input, output, error."
+  },
+  {
+   "id": "dlg-evidence",
+   "kind": "drawer",
+   "label": "Evidence [n]",
+   "address": null,
+   "component": "frontend/src/components/EvidencePanel.jsx:6",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:537",
+   "parent": "ws-chat",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Sheet side=right; source identity, trust, cited chunk, provenance record."
+  },
+  {
+   "id": "dlg-rename-conversation",
+   "kind": "dialog",
+   "label": "Rename conversation",
+   "address": null,
+   "component": "frontend/src/components/ChatView.jsx:63",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:62-80",
+   "parent": "conversation-menu",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Sheet side=center; data-autofocus title input."
+  },
+  {
+   "id": "dlg-delete-conversation",
+   "kind": "dialog",
+   "label": "Delete conversation?",
+   "address": null,
+   "component": "frontend/src/components/ChatView.jsx:82",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ChatView.jsx:81-85",
+   "parent": "conversation-menu",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "ConfirmSheet; Cancel ('Keep it') holds initial focus."
+  },
+  {
+   "id": "dlg-remove-source",
+   "kind": "dialog",
+   "label": "Remove this source?",
+   "address": null,
+   "component": "frontend/src/components/workspaces/SourcesWorkspace.jsx:121",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/workspaces/SourcesWorkspace.jsx:120-126",
+   "parent": "ws-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "ConfirmSheet."
+  },
+  {
+   "id": "dlg-delete-memory",
+   "kind": "dialog",
+   "label": "Delete this memory?",
+   "address": null,
+   "component": "frontend/src/components/workspaces/MemoryWorkspace.jsx:106",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/workspaces/MemoryWorkspace.jsx:105-118",
+   "parent": "ws-memory",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "ConfirmSheet."
+  },
+  {
+   "id": "dlg-revoke-folder",
+   "kind": "dialog",
+   "label": "Revoke folder access?",
+   "address": null,
+   "component": "frontend/src/components/DirectoryIntake.jsx:186",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/DirectoryIntake.jsx:185-191",
+   "parent": "directory-intake",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "ConfirmSheet."
+  },
+  {
+   "id": "dlg-save-answer",
+   "kind": "dialog",
+   "label": "Save answer",
+   "address": null,
+   "component": "frontend/src/components/MessageActions.jsx:14",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/MessageActions.jsx:146",
+   "parent": "message-actions",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Sheet side=center; Markdown, plain text and export-record downloads."
+  },
+  {
+   "id": "dlg-execution-receipt",
+   "kind": "dialog",
+   "label": "Execution receipt",
+   "address": null,
+   "component": "frontend/src/components/ExecutionEntryCard.jsx:155",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ExecutionEntryCard.jsx:154-173",
+   "parent": "execution-entry-card",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Sheet side=center; read-only decision receipt."
+  },
+  {
+   "id": "dlg-adjust-revise",
+   "kind": "dialog",
+   "label": "Adjust goal / Revise plan",
+   "address": null,
+   "component": "frontend/src/components/ExecutionEntryCard.jsx:176",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/ExecutionEntryCard.jsx:175-198",
+   "parent": "execution-entry-card",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Sheet side=center; data-autofocus textarea; error text renders behind the sheet on the card (ExecutionEntryCard.jsx:152)."
+  },
+  {
+   "id": "workbench-form",
+   "kind": "form",
+   "label": "Objective / Capability scope / Source commit / Profile / Network / Local model hardware / Platforms",
+   "address": null,
+   "component": "frontend/src/components/workspaces/WorkbenchWorkspace.jsx:67",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/workspaces/WorkbenchWorkspace.jsx:67-146",
+   "parent": "ws-workbench",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Result panel is aria-live=polite (WorkbenchWorkspace.jsx:149)."
+  },
+  {
+   "id": "sources-upload",
+   "kind": "import",
+   "label": "Add a file",
+   "address": null,
+   "component": "frontend/src/components/workspaces/SourcesWorkspace.jsx:69",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/workspaces/SourcesWorkspace.jsx:69-76",
+   "parent": "ws-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "sr-only file input inside a label styled as a button; Rebuild index button beside it has no error handling (SourcesWorkspace.jsx:73)."
+  },
+  {
+   "id": "directory-intake",
+   "kind": "form",
+   "label": "Add a folder from this Mac / Directory Access",
+   "address": null,
+   "component": "frontend/src/components/DirectoryIntake.jsx:11",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/workspaces/SourcesWorkspace.jsx:78-81",
+   "parent": "ws-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": true,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Inside a collapsed <details>. Inline 'Confirm Directory Access' block (DirectoryIntake.jsx:152-166) is not a dialog. Error div has no role (DirectoryIntake.jsx:142)."
+  },
+  {
+   "id": "source-list",
+   "kind": "table",
+   "label": "Sources list with inline detail",
+   "address": null,
+   "component": "frontend/src/components/workspaces/SourcesWorkspace.jsx:83",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/workspaces/SourcesWorkspace.jsx:83-119",
+   "parent": "ws-sources",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Row button aria-expanded; detail shows SHA-256, type, trust, processor, warnings, chunks."
+  },
+  {
+   "id": "memory-form-list",
+   "kind": "form",
+   "label": "Remember / Kind / Scope + memory list",
+   "address": null,
+   "component": "frontend/src/components/workspaces/MemoryWorkspace.jsx:50",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/workspaces/MemoryWorkspace.jsx:50-104",
+   "parent": "ws-memory",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": true,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "On/Off checkbox and Delete per row."
+  },
+  {
+   "id": "settings-token-form",
+   "kind": "settings",
+   "label": "Local access token",
+   "address": null,
+   "component": "frontend/src/components/workspaces/SettingsWorkspace.jsx:48",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/workspaces/SettingsWorkspace.jsx:48-72",
+   "parent": "ws-settings",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": false,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "Hidden behind an explanatory note when the token is launch-managed (SettingsWorkspace.jsx:51-52)."
+  },
+  {
+   "id": "settings-offline-list",
+   "kind": "panel",
+   "label": "What works offline",
+   "address": null,
+   "component": "frontend/src/components/workspaces/SettingsWorkspace.jsx:74",
+   "mounted": true,
+   "mounted_evidence": "frontend/src/components/workspaces/SettingsWorkspace.jsx:74-83",
+   "parent": "ws-settings",
+   "classification": "SOURCE_CONFIRMED",
+   "states_handled": {
+    "loading": false,
+    "empty": false,
+    "error": true,
+    "offline": false,
+    "stale": false
+   },
+   "notes": "From GET /offline-manifest."
+  }
+ ],
+ "workflows": [
+  {
+   "id": "send-message",
+   "name": "Send a message",
+   "surface": "chat-composer",
+   "ui_action": "Type in the composer and press Enter or Send",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:280",
+   "backend_endpoint": "POST /conversations/{conversation_id}/messages",
+   "backend_handler": "backend/app/main.py:977",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "Composer.send (Composer.jsx:93) -> ChatView.send (ChatView.jsx:280-312) -> api.sendMessage (api.js:274) -> submit_message (main.py:980); run then loaded and followed (ChatView.jsx:299-302).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:636"
+  },
+  {
+   "id": "create-conversation",
+   "name": "Start a new conversation on first send",
+   "surface": "chat-composer",
+   "ui_action": "New chat, then send the first message",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:286",
+   "backend_endpoint": "POST /conversations",
+   "backend_handler": "backend/app/main.py:755",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "Created lazily with draft model and optional repo (ChatView.jsx:285-292); App switches to it via onConversationCreated (App.jsx:328).",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:388"
+  },
+  {
+   "id": "stream-answer",
+   "name": "Follow a run's live event stream",
+   "surface": "run-block",
+   "ui_action": "Automatic after send / on opening a conversation",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:133",
+   "backend_endpoint": "GET /work-runs/{run_id}/events/stream",
+   "backend_handler": "backend/app/main.py:1060",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "PARTIAL",
+   "status_evidence": "Stream parsed in api.js:171-226 and merged by seq (ChatView.jsx:141-147); text_delta events concatenated into the answer (feed.js:83-85). Defect by source reading (not run): on a 'final'/'approval_request'/'question'/'error' event the client replaces the run's event list with GET /work-runs/{id}/events (ChatView.jsx:148-150, 127-131), which is called with no limit (api.js:280) and the endpoint defaults to limit=500 (main.py:1051). A live-streamed answer emits one text_delta event per provider delta (work_runs.py:1217-1219, model_router.py:1000), so a run with more than 500 events is cut to its first 500 after completion and on every reload (ChatView.jsx:196-206 catches up once, then the same replacement happens). No test exercises a run with more than 500 events.",
+   "has_test": true,
+   "test": "backend/tests/test_work_runs.py:485"
+  },
+  {
+   "id": "stop-run",
+   "name": "Stop the current turn",
+   "surface": "chat-composer",
+   "ui_action": "Press Stop while a run is active",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:314",
+   "backend_endpoint": "POST /work-runs/{run_id}/stop",
+   "backend_handler": "backend/app/main.py:1070",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "PARTIAL",
+   "status_evidence": "UI -> api.stopRun (api.js:282) -> stop_run (work_runs.py:581). Waiting runs are finalized at once (work_runs.py:609-613). A RUNNING run only records cancel_requested (work_runs.py:603); it is honoured between phases and inside the tools phase (work_runs.py:773, 921). The answer phase has no checkpoint and _complete sets COMPLETED unconditionally (work_runs.py:1204-1290, 1363-1371), so Stop pressed while the answer is streaming does not abort generation. The client does not abort its own stream either (ChatView.jsx:314-323).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:414"
+  },
+  {
+   "id": "queue-message",
+   "name": "Queue a message behind the active turn",
+   "surface": "chat-composer",
+   "ui_action": "Send while a run is active (button reads Queue)",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:280",
+   "backend_endpoint": "POST /conversations/{conversation_id}/messages",
+   "backend_handler": "backend/app/main.py:977",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "Same handler; QUEUED result refreshes the queue list (ChatView.jsx:299-305) and announces 'Message queued.' (ChatView.jsx:307).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:407"
+  },
+  {
+   "id": "edit-queued-message",
+   "name": "Edit a queued message",
+   "surface": "chat-queue",
+   "ui_action": "Edit, change text, Save",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:529",
+   "backend_endpoint": "PATCH /work-runs/{run_id}",
+   "backend_handler": "backend/app/main.py:1077",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "QueuedItem form (Composer.jsx:18-37) -> api.editQueuedRun with expected_version (api.js:283) -> edit_queued_run (main.py:1080).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:408"
+  },
+  {
+   "id": "cancel-queued-message",
+   "name": "Cancel a queued message",
+   "surface": "chat-queue",
+   "ui_action": "Cancel on a queued row",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:325",
+   "backend_endpoint": "POST /work-runs/{run_id}/stop",
+   "backend_handler": "backend/app/main.py:1070",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "QUEUED runs become CANCELLED immediately (work_runs.py:589-595).",
+   "has_test": true,
+   "test": "backend/tests/test_work_runs.py:507"
+  },
+  {
+   "id": "tool-approve",
+   "name": "Allow a tool request once",
+   "surface": "approval-card",
+   "ui_action": "Press 'Allow once' on the permission card",
+   "frontend_handler": "frontend/src/components/RunBlock.jsx:28",
+   "backend_endpoint": "POST /tools/requests/{tool_call_id}/approve",
+   "backend_handler": "backend/app/main.py:1170",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "api.approveTool sends arguments_sha256 (api.js:285); approve_tool_call checks pending + digest, sets APPROVED, appends a hash-chained audit event (tools.py:1194-1233); run resumed (main.py:331-335, 1177). approved_by is the constant 'api' (main.py:1180).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:340"
+  },
+  {
+   "id": "tool-deny",
+   "name": "Deny a tool request",
+   "surface": "approval-card",
+   "ui_action": "Press 'Deny' on the permission card",
+   "frontend_handler": "frontend/src/components/RunBlock.jsx:28",
+   "backend_endpoint": "POST /tools/requests/{tool_call_id}/deny",
+   "backend_handler": "backend/app/main.py:1187",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "api.denyTool (api.js:286) -> deny_tool_call (tools.py:1236-1260); denied_by is the constant 'api' (main.py:1197).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:369"
+  },
+  {
+   "id": "answer-question",
+   "name": "Answer a question from Mucaro",
+   "surface": "question-card",
+   "ui_action": "Choose an option or Other, Submit",
+   "frontend_handler": "frontend/src/components/RunBlock.jsx:73",
+   "backend_endpoint": "POST /interactions/{interaction_id}/resolve",
+   "backend_handler": "backend/app/main.py:903",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "Payload carries expected_version (RunBlock.jsx:79-82); receipt 'You chose:' rendered (RunBlock.jsx:326-337).",
+   "has_test": true,
+   "test": "backend/tests/test_work_runs.py:249"
+  },
+  {
+   "id": "dismiss-question",
+   "name": "Dismiss a pending question",
+   "surface": "question-card",
+   "ui_action": "No control",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /interactions/{interaction_id}/dismiss",
+   "backend_handler": "backend/app/main.py:924",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "UNREACHABLE",
+   "status_evidence": "No frontend caller: api.js has no dismiss function and QuestionCard has only Submit (RunBlock.jsx:117-121).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "execution-entry-decide",
+   "name": "Proceed / Execute an approved execution entry",
+   "surface": "execution-entry-card",
+   "ui_action": "Press the primary action on the entry card",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:334",
+   "backend_endpoint": "POST /execution-entry/artifacts/{artifact_id}/{revision}/decisions",
+   "backend_handler": "backend/app/main.py:472",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "PARTIAL",
+   "status_evidence": "Decision path is traced: perform (ExecutionEntryCard.jsx:75-89) -> decideExecutionEntry (ChatView.jsx:334-347, api.js:269) -> decide_entry (main.py:480; persisted at execution_entry.py:859). But the GUI cannot create an entry (POST /execution-entry/artifacts, main.py:417) or move one to VECTOR_READY/PLAN_APPROVED (POST …/state, main.py:453): neither is in api.js, and the only callers in the repo are the rendered-QA script (qa/rendered/rendered_qa.mjs:592, 697). The card therefore appears only for entries created through the API.",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:713"
+  },
+  {
+   "id": "execution-entry-adjust",
+   "name": "Adjust goal / Revise plan",
+   "surface": "dlg-adjust-revise",
+   "ui_action": "Press Adjust/Revise, edit text, Save new revision",
+   "frontend_handler": "frontend/src/components/ExecutionEntryCard.jsx:180",
+   "backend_endpoint": "POST /execution-entry/artifacts/{artifact_id}/{revision}/decisions",
+   "backend_handler": "backend/app/main.py:472",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "PARTIAL",
+   "status_evidence": "Creates a new candidate revision (execution_entry.py:672-711). The GUI has no control to promote that candidate to ready (POST …/state is not called from the frontend), so the primary action stays disabled with 'Requires … with every mandatory gate PASS' (ExecutionEntryCard.jsx:68-72).",
+   "has_test": true,
+   "test": "backend/tests/test_execution_entry_api.py:68"
+  },
+  {
+   "id": "execution-entry-resume",
+   "name": "Resume an interrupted execution",
+   "surface": "execution-entry-card",
+   "ui_action": "Press Resume",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:349",
+   "backend_endpoint": "POST /execution-entry/decisions/{decision_id}/resume",
+   "backend_handler": "backend/app/main.py:503",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "resumeExecutionEntry (ChatView.jsx:349-355) -> resume_interrupted_entry_decision (main.py:510). Errors thrown by onResume are not caught in the card (ExecutionEntryCard.jsx:118).",
+   "has_test": true,
+   "test": "backend/tests/test_execution_entry.py:122"
+  },
+  {
+   "id": "execution-entry-inspect",
+   "name": "Inspect the execution receipt",
+   "surface": "dlg-execution-receipt",
+   "ui_action": "Press Inspect",
+   "frontend_handler": "frontend/src/components/ExecutionEntryCard.jsx:109",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-only)",
+   "status": "COMPLETE",
+   "status_evidence": "Renders decision fields already loaded with the entry context (ExecutionEntryCard.jsx:154-173).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:713"
+  },
+  {
+   "id": "planning-gate-approve",
+   "name": "Planning-to-Execution Gate: plan and approve",
+   "surface": "ws-workbench",
+   "ui_action": "No control",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /approve",
+   "backend_handler": "backend/app/main.py:630",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "UNREACHABLE",
+   "status_evidence": "POST /plan (main.py:528) and POST /approve (main.py:630) have no frontend caller (api.js:228-314). The Workbench calls POST /workbench/plan, which runs the gate with approval_state NOT_REQUESTED and returns execution_authorized false (main.py:571-576, 592-598).",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:57"
+  },
+  {
+   "id": "rename-conversation",
+   "name": "Rename a conversation",
+   "surface": "dlg-rename-conversation",
+   "ui_action": "Conversation menu > Rename > Save",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:27",
+   "backend_endpoint": "PATCH /conversations/{conversation_id}",
+   "backend_handler": "backend/app/main.py:805",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "submitRename -> api.renameConversation (ChatView.jsx:418-421).",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:388"
+  },
+  {
+   "id": "delete-conversation",
+   "name": "Delete a conversation",
+   "surface": "dlg-delete-conversation",
+   "ui_action": "Conversation menu > Delete… > Delete permanently",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:422",
+   "backend_endpoint": "DELETE /conversations/{conversation_id}",
+   "backend_handler": "backend/app/main.py:818",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "ConfirmSheet.confirm (ConfirmSheet.jsx:10-22) -> api.deleteConversation.",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:396"
+  },
+  {
+   "id": "copy-transcript",
+   "name": "Copy the transcript",
+   "surface": "conversation-menu",
+   "ui_action": "Conversation menu > Copy transcript",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:43",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-only)",
+   "status": "COMPLETE",
+   "status_evidence": "copyText with selection fallback (clipboard.js:33-44); announced.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "set-chat-model",
+   "name": "Change the model of a chat",
+   "surface": "model-setup",
+   "ui_action": "Model button, pick provider/model",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:372",
+   "backend_endpoint": "PUT /conversations/{conversation_id}/model",
+   "backend_handler": "backend/app/main.py:789",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "Optimistic update then api.setConversationModel (ChatView.jsx:377-383).",
+   "has_test": true,
+   "test": "backend/tests/test_open_model_chat.py:327"
+  },
+  {
+   "id": "detect-models",
+   "name": "Save a model server address and detect models",
+   "surface": "model-setup",
+   "ui_action": "Enter server address, Detect models",
+   "frontend_handler": "frontend/src/components/ModelSetup.jsx:90",
+   "backend_endpoint": "PUT /models/settings",
+   "backend_handler": "backend/app/main.py:952",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "api.saveModelSettings (ModelSetup.jsx:98) -> save_model_settings (main.py:955).",
+   "has_test": true,
+   "test": "backend/tests/test_open_model_chat.py:327"
+  },
+  {
+   "id": "bind-repository",
+   "name": "Bind a repository to a chat",
+   "surface": "repo-setup",
+   "ui_action": "Repository button, enter folder, Use this repository",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:386",
+   "backend_endpoint": "PUT /conversations/{conversation_id}/repo",
+   "backend_handler": "backend/app/main.py:762",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "RepoSetup.submit (RepoSetup.jsx:27-44) -> saveRepo (ChatView.jsx:386-395).",
+   "has_test": true,
+   "test": "backend/tests/test_agent_coding.py:285"
+  },
+  {
+   "id": "edit-message",
+   "name": "Edit a message (display-only revision)",
+   "surface": "message-editor",
+   "ui_action": "Edit icon, change text, Save edit",
+   "frontend_handler": "frontend/src/components/ChatView.jsx:364",
+   "backend_endpoint": "PATCH /conversations/{conversation_id}/messages/{message_key}",
+   "backend_handler": "backend/app/main.py:993",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "EditableMessage.save (MessageActions.jsx:185-199) -> saveMessageEdit (ChatView.jsx:364-370) -> edit_conversation_message (main.py:1021). The UI says the original is 'preserved in provenance' (ChatView.jsx:368, MessageActions.jsx:233) but no surface shows the original text.",
+   "has_test": true,
+   "test": "backend/tests/test_message_edits.py:41"
+  },
+  {
+   "id": "copy-message",
+   "name": "Copy a message",
+   "surface": "message-actions",
+   "ui_action": "Copy icon",
+   "frontend_handler": "frontend/src/components/MessageActions.jsx:82",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-only)",
+   "status": "COMPLETE",
+   "status_evidence": "copyText; check-mark feedback and announcement.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "read-aloud",
+   "name": "Read a message aloud",
+   "surface": "message-actions",
+   "ui_action": "Speaker icon",
+   "frontend_handler": "frontend/src/components/MessageActions.jsx:92",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-only)",
+   "status": "COMPLETE",
+   "status_evidence": "speechSynthesis; button only when the API exists (MessageActions.jsx:77).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "save-answer",
+   "name": "Save an answer as a file",
+   "surface": "dlg-save-answer",
+   "ui_action": "Save icon, pick a format",
+   "frontend_handler": "frontend/src/components/MessageActions.jsx:19",
+   "backend_endpoint": "GET /exports/{run_id}/files/{kind}",
+   "backend_handler": "backend/app/main.py:1249",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "Markdown/plain text built client-side (MessageActions.jsx:19-25); export records fetched as blob (MessageActions.jsx:27-39, api.js:313).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:268"
+  },
+  {
+   "id": "share-answer",
+   "name": "Share an answer",
+   "surface": "message-actions",
+   "ui_action": "Share icon",
+   "frontend_handler": "frontend/src/components/MessageActions.jsx:106",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-only)",
+   "status": "COMPLETE",
+   "status_evidence": "navigator.share with fallback to download (files.js:91-104).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "open-citation",
+   "name": "Open a citation's evidence",
+   "surface": "dlg-evidence",
+   "ui_action": "Press a citation chip",
+   "frontend_handler": "frontend/src/components/RunBlock.jsx:247",
+   "backend_endpoint": "GET /sources/{source_id}",
+   "backend_handler": "backend/app/main.py:702",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "setCitation (ChatView.jsx:485) -> EvidencePanel loads the source (EvidencePanel.jsx:11).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:332"
+  },
+  {
+   "id": "start-next-vector",
+   "name": "Start a suggested next vector",
+   "surface": "next-vector-picker",
+   "ui_action": "Select an option, Start selected vector",
+   "frontend_handler": "frontend/src/components/NextVectorPicker.jsx:40",
+   "backend_endpoint": "POST /conversations/{conversation_id}/messages",
+   "backend_handler": "backend/app/main.py:977",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "onStart -> send(prompt,'ask',key) (ChatView.jsx:500); idempotency key reused on retry (NextVectorPicker.jsx:48-55).",
+   "has_test": true,
+   "test": "backend/tests/test_vector_relay.py:300"
+  },
+  {
+   "id": "view-background-tasks",
+   "name": "List runs, view a transcript, load more",
+   "surface": "dlg-background-tasks",
+   "ui_action": "Background tasks; View transcript; Load more",
+   "frontend_handler": "frontend/src/components/TasksDrawer.jsx:37",
+   "backend_endpoint": "GET /work-runs",
+   "backend_handler": "backend/app/main.py:1038",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "api.workRuns paginated by before_seq (TasksDrawer.jsx:39-41); transcript from GET /work-runs/{id}/events (TasksDrawer.jsx:15), text_delta filtered out; transcript load errors render as an empty list.",
+   "has_test": true,
+   "test": "backend/tests/test_workbench_api.py:83"
+  },
+  {
+   "id": "workbench-compile",
+   "name": "Compile a workbench plan",
+   "surface": "workbench-form",
+   "ui_action": "Fill Objective, Compile plan",
+   "frontend_handler": "frontend/src/components/workspaces/WorkbenchWorkspace.jsx:24",
+   "backend_endpoint": "POST /workbench/plan",
+   "backend_handler": "backend/app/main.py:534",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "api.workbenchPlan (WorkbenchWorkspace.jsx:30) -> workbench_plan (main.py:535); writes one execution_gates row (main.py:576); result rendered (WorkbenchWorkspace.jsx:148-205).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:504"
+  },
+  {
+   "id": "upload-source",
+   "name": "Add a file to the source library",
+   "surface": "sources-upload",
+   "ui_action": "Add a file, choose a file",
+   "frontend_handler": "frontend/src/components/workspaces/SourcesWorkspace.jsx:35",
+   "backend_endpoint": "POST /ingest",
+   "backend_handler": "backend/app/main.py:639",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "api.ingest multipart with 120 s timeout (api.js:295-299).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:1181"
+  },
+  {
+   "id": "reindex-sources",
+   "name": "Rebuild the index",
+   "surface": "sources-upload",
+   "ui_action": "Rebuild index",
+   "frontend_handler": "frontend/src/components/workspaces/SourcesWorkspace.jsx:73",
+   "backend_endpoint": "POST /sources/reindex",
+   "backend_handler": "backend/app/main.py:710",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "PARTIAL",
+   "status_evidence": "Happy path traced; the promise chain has no catch and no busy state, so a failure shows nothing and leaves an unhandled rejection (SourcesWorkspace.jsx:73).",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:481"
+  },
+  {
+   "id": "inspect-source",
+   "name": "Inspect a source",
+   "surface": "source-list",
+   "ui_action": "Press a source row",
+   "frontend_handler": "frontend/src/components/workspaces/SourcesWorkspace.jsx:86",
+   "backend_endpoint": "GET /sources/{source_id}",
+   "backend_handler": "backend/app/main.py:702",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "selected -> api.source (SourcesWorkspace.jsx:30-33).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:476"
+  },
+  {
+   "id": "remove-source",
+   "name": "Remove a source",
+   "surface": "dlg-remove-source",
+   "ui_action": "Remove source, Remove permanently",
+   "frontend_handler": "frontend/src/components/workspaces/SourcesWorkspace.jsx:53",
+   "backend_endpoint": "DELETE /sources/{source_id}",
+   "backend_handler": "backend/app/main.py:714",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "ConfirmSheet keeps errors inside the sheet (ConfirmSheet.jsx:17-20).",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:506"
+  },
+  {
+   "id": "directory-check",
+   "name": "Check access to a folder",
+   "surface": "directory-intake",
+   "ui_action": "Enter a path, Check Access",
+   "frontend_handler": "frontend/src/components/DirectoryIntake.jsx:29",
+   "backend_endpoint": "POST /permissions/directories/check",
+   "backend_handler": "backend/app/main.py:677",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "api.checkDirectoryPermission (DirectoryIntake.jsx:35).",
+   "has_test": true,
+   "test": "backend/tests/test_api_auth_boundary.py:29"
+  },
+  {
+   "id": "directory-grant",
+   "name": "Grant folder access",
+   "surface": "directory-intake",
+   "ui_action": "Grant Access / Grant and Ingest",
+   "frontend_handler": "frontend/src/components/DirectoryIntake.jsx:51",
+   "backend_endpoint": "POST /permissions/directories/grant",
+   "backend_handler": "backend/app/main.py:684",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "Inline confirm block (DirectoryIntake.jsx:152-166).",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:304"
+  },
+  {
+   "id": "directory-ingest",
+   "name": "Ingest a folder path",
+   "surface": "directory-intake",
+   "ui_action": "Ingest Path",
+   "frontend_handler": "frontend/src/components/DirectoryIntake.jsx:72",
+   "backend_endpoint": "POST /ingest-path",
+   "backend_handler": "backend/app/main.py:654",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "api.ingestPath (DirectoryIntake.jsx:78).",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:299"
+  },
+  {
+   "id": "directory-revoke",
+   "name": "Revoke folder access",
+   "surface": "dlg-revoke-folder",
+   "ui_action": "Revoke, Revoke access",
+   "frontend_handler": "frontend/src/components/DirectoryIntake.jsx:94",
+   "backend_endpoint": "POST /permissions/directories/revoke",
+   "backend_handler": "backend/app/main.py:691",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "revokeGrant swallows its own error into the panel, so the confirm sheet closes even on failure (DirectoryIntake.jsx:101-104).",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:319"
+  },
+  {
+   "id": "memory-add",
+   "name": "Save a memory",
+   "surface": "memory-form-list",
+   "ui_action": "Fill Remember, Save",
+   "frontend_handler": "frontend/src/components/workspaces/MemoryWorkspace.jsx:26",
+   "backend_endpoint": "POST /memory",
+   "backend_handler": "backend/app/main.py:1116",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "api.remember with scope and scope_id (MemoryWorkspace.jsx:30).",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:191"
+  },
+  {
+   "id": "memory-toggle",
+   "name": "Turn a memory on or off",
+   "surface": "memory-form-list",
+   "ui_action": "Toggle the On/Off checkbox",
+   "frontend_handler": "frontend/src/components/workspaces/MemoryWorkspace.jsx:96",
+   "backend_endpoint": "PATCH /memory/{memory_id}",
+   "backend_handler": "backend/app/main.py:1130",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "PARTIAL",
+   "status_evidence": "Happy path traced; no catch, so a failed toggle (e.g. 409 ERROR_MEMORY_SCOPE_INVALID, main.py:1135-1141) shows nothing (MemoryWorkspace.jsx:96).",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:203"
+  },
+  {
+   "id": "memory-delete",
+   "name": "Delete a memory",
+   "surface": "dlg-delete-memory",
+   "ui_action": "Delete, Delete memory",
+   "frontend_handler": "frontend/src/components/workspaces/MemoryWorkspace.jsx:108",
+   "backend_endpoint": "DELETE /memory/{memory_id}",
+   "backend_handler": "backend/app/main.py:1144",
+   "writes": true,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "ConfirmSheet.",
+   "has_test": true,
+   "test": "backend/tests/test_api.py:212"
+  },
+  {
+   "id": "memory-export",
+   "name": "Export memory",
+   "surface": "ws-memory",
+   "ui_action": "No control",
+   "frontend_handler": null,
+   "backend_endpoint": "GET /memory/export",
+   "backend_handler": "backend/app/main.py:1151",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "UNREACHABLE",
+   "status_evidence": "api.exportMemory exists (api.js:311) but nothing calls it.",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "provenance-view",
+   "name": "Inspect the tool-action ledger",
+   "surface": "ws-provenance",
+   "ui_action": "Open Provenance; expand a Record",
+   "frontend_handler": "frontend/src/components/workspaces/ProvenanceWorkspace.jsx:10",
+   "backend_endpoint": "GET /tools/summary",
+   "backend_handler": "backend/app/main.py:1222",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "Promise.all of api.toolSummary and api.toolCalls (ProvenanceWorkspace.jsx:11) -> summarize_tool_calls + verify_tool_audit_chain (main.py:1223-1225, tools.py:1064-1082, 1120-1126) and list_tool_calls (main.py:1159-1161). Real persisted data; rendered at ProvenanceWorkspace.jsx:27-58. Read-only by design.",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:495"
+  },
+  {
+   "id": "settings-default-model",
+   "name": "Set the default model for new chats",
+   "surface": "ws-settings",
+   "ui_action": "Pick a provider/model in Settings",
+   "frontend_handler": "frontend/src/components/workspaces/SettingsWorkspace.jsx:33",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-only)",
+   "status": "COMPLETE",
+   "status_evidence": "Stored in localStorage 'mucaro.options' (App.jsx:227); sent as options with each message (ChatView.jsx:294).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "settings-retrieval",
+   "name": "Choose the retrieval strategy",
+   "surface": "ws-settings",
+   "ui_action": "Strategy select",
+   "frontend_handler": "frontend/src/components/workspaces/SettingsWorkspace.jsx:42",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-only)",
+   "status": "COMPLETE",
+   "status_evidence": "Stored in 'mucaro.options' and sent in message options (ChatView.jsx:294).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "settings-save-token",
+   "name": "Save the access token",
+   "surface": "settings-token-form",
+   "ui_action": "Enter token, Save",
+   "frontend_handler": "frontend/src/components/workspaces/SettingsWorkspace.jsx:58",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-only)",
+   "status": "PARTIAL",
+   "status_evidence": "Stores the token on this device (api.js:233-247) and announces 'Token saved'; it is not verified against the service, and the announcement is the only feedback (SettingsWorkspace.jsx:58-62).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "token-gate-submit",
+   "name": "Unlock with an access token",
+   "surface": "token-gate",
+   "ui_action": "Enter token, Continue",
+   "frontend_handler": "frontend/src/App.jsx:123",
+   "backend_endpoint": "GET /health",
+   "backend_handler": "backend/app/main.py:387",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "submitToken -> checkHealth (App.jsx:107-118); 401 -> rejected alert (TokenGate.jsx:55-59).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:778"
+  },
+  {
+   "id": "service-retry",
+   "name": "Retry / reconnect to the local service",
+   "surface": "service-banner",
+   "ui_action": "Press Retry (also automatic every 15 s)",
+   "frontend_handler": "frontend/src/App.jsx:200",
+   "backend_endpoint": "GET /health",
+   "backend_handler": "backend/app/main.py:387",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "COMPLETE",
+   "status_evidence": "pollHealth and visibility/online/pageshow handlers (App.jsx:135-198); reconnect counter makes ChatView drop and re-follow streams (ChatView.jsx:236-241).",
+   "has_test": true,
+   "test": "qa/rendered/rendered_qa.mjs:1919"
+  },
+  {
+   "id": "filter-conversations",
+   "name": "Filter the conversation list",
+   "surface": "conversation-list",
+   "ui_action": "Type in Filter conversations",
+   "frontend_handler": "frontend/src/App.jsx:269",
+   "backend_endpoint": null,
+   "backend_handler": null,
+   "writes": false,
+   "authorization": "none (client-only)",
+   "status": "COMPLETE",
+   "status_evidence": "Client-side substring filter (App.jsx:235).",
+   "has_test": false,
+   "test": null
+  },
+  {
+   "id": "probe-models",
+   "name": "Probe a model server without saving",
+   "surface": "model-setup",
+   "ui_action": "No control",
+   "frontend_handler": null,
+   "backend_endpoint": "POST /models/probe",
+   "backend_handler": "backend/app/main.py:960",
+   "writes": false,
+   "authorization": "token when an operator token is configured (X-Mucaro-Token / Bearer), otherwise loopback-only with Host/Origin guard; remote peers always need a token (backend/app/main.py:323-333, backend/app/auth.py:29, backend/app/auth.py:74, backend/app/auth.py:135)",
+   "status": "UNREACHABLE",
+   "status_evidence": "api.probeModels exists (api.js:252) but nothing calls it.",
+   "has_test": false,
+   "test": null
+  }
+ ],
+ "navigation": {
+  "registry_file": "frontend/src/App.jsx:13",
+  "items": [
+   {
+    "label": "New chat",
+    "target": "view=chat with no active conversation (frontend/src/App.jsx:244)"
+   },
+   {
+    "label": "Chat",
+    "target": "ChatView (frontend/src/App.jsx:324)"
+   },
+   {
+    "label": "Workbench",
+    "target": "WorkbenchWorkspace (frontend/src/App.jsx:338)"
+   },
+   {
+    "label": "Sources",
+    "target": "SourcesWorkspace (frontend/src/App.jsx:339)"
+   },
+   {
+    "label": "Memory",
+    "target": "MemoryWorkspace (frontend/src/App.jsx:340)"
+   },
+   {
+    "label": "Provenance",
+    "target": "ProvenanceWorkspace (frontend/src/App.jsx:341)"
+   },
+   {
+    "label": "Settings",
+    "target": "SettingsWorkspace (frontend/src/App.jsx:342)"
+   },
+   {
+    "label": "Background tasks",
+    "target": "TasksDrawer sheet (frontend/src/App.jsx:263, 344)"
+   },
+   {
+    "label": "<conversation title>",
+    "target": "openConversation(id) -> Chat (frontend/src/App.jsx:276)"
+   },
+   {
+    "label": "saved memory count link in an answer",
+    "target": "Memory workspace (frontend/src/components/RunBlock.jsx:226, frontend/src/App.jsx:335)"
+   }
+  ],
+  "mobile_navigation": "One breakpoint at max-width 760px (frontend/src/styles.css:1213): the grid becomes one column, the sidebar becomes a fixed off-canvas panel min(300px, 86vw) moved out with translateX(-102%) (styles.css:1218-1226) and slid in by the .nav-open class (styles.css:1228-1231) with a click-to-close scrim (styles.css:1233-1239, App.jsx:295). A top bar with a hamburger button (aria-label 'Open navigation', aria-expanded) appears (styles.css:1241-1248, App.jsx:297-315). Choosing a workspace, a conversation or Background tasks closes the panel (App.jsx:232, 255, 263). The closed panel is only translated, not hidden or inert, there is no Escape handler, no focus move and no close button inside it.",
+  "dead_or_unlinked_routes": [
+   "None in the frontend: every entry in WORKSPACES is mounted (App.jsx:324-342). The view is not in the URL, so no workspace is deep-linkable and a reload always returns to Chat (App.jsx:47).",
+   "Vite dev proxy lists API prefixes the frontend never calls: /security, /chunks, /runs, /workspaces, /validate, /plan, /approve, /ask (frontend/vite.config.js:7-9)."
+  ]
+ },
+ "settings": [
+  {
+   "id": "default-model",
+   "label": "Default model for new chats (provider, model, allow_live, agent)",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage 'mucaro.options'",
+   "evidence": "frontend/src/App.jsx:58, frontend/src/App.jsx:227, frontend/src/components/workspaces/SettingsWorkspace.jsx:30-35"
+  },
+  {
+   "id": "retrieval-strategy",
+   "label": "Retrieval > Strategy",
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage 'mucaro.options'",
+   "evidence": "frontend/src/components/workspaces/SettingsWorkspace.jsx:42"
+  },
+  {
+   "id": "top-k",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage 'mucaro.options' (default 5, no UI control)",
+   "evidence": "frontend/src/App.jsx:21"
+  },
+  {
+   "id": "chat-model",
+   "label": "Model for this chat",
+   "scope": "WORKSPACE",
+   "storage": "backend (PUT /conversations/{id}/model)",
+   "evidence": "frontend/src/components/ChatView.jsx:372-384, backend/app/main.py:789"
+  },
+  {
+   "id": "allow-live",
+   "label": "Allow sending my questions and source excerpts to this server",
+   "scope": "WORKSPACE",
+   "storage": "part of the chat model / 'mucaro.options'",
+   "evidence": "frontend/src/components/ModelSetup.jsx:196"
+  },
+  {
+   "id": "agent-actions",
+   "label": "Let the model propose actions…",
+   "scope": "WORKSPACE",
+   "storage": "part of the chat model / 'mucaro.options'",
+   "evidence": "frontend/src/components/ModelSetup.jsx:203"
+  },
+  {
+   "id": "model-server-url",
+   "label": "Server address (local / remote)",
+   "scope": "GLOBAL_USER",
+   "storage": "backend (PUT /models/settings)",
+   "evidence": "frontend/src/components/ModelSetup.jsx:96-98, backend/app/main.py:952"
+  },
+  {
+   "id": "remote-api-key",
+   "label": "API key",
+   "scope": "SECRET",
+   "storage": "backend (PUT /models/settings); never echoed, only api_key_configured",
+   "evidence": "frontend/src/components/ModelSetup.jsx:97, frontend/src/components/ModelSetup.jsx:162"
+  },
+  {
+   "id": "chat-repository",
+   "label": "Repository for this chat (folder, container image, GitHub repo)",
+   "scope": "WORKSPACE",
+   "storage": "backend (PUT /conversations/{id}/repo)",
+   "evidence": "frontend/src/components/ChatView.jsx:386-395, backend/app/main.py:762"
+  },
+  {
+   "id": "operator-token",
+   "label": "Local access token / Access token",
+   "scope": "SECRET",
+   "storage": "sessionStorage 'mucaro.sessionToken' (default), localStorage 'mucaro.operatorToken' (remember), sessionStorage 'mucaro.launchToken' (from #token= fragment)",
+   "evidence": "frontend/src/api.js:4-6, frontend/src/api.js:233-247, frontend/src/components/workspaces/SettingsWorkspace.jsx:60, frontend/src/components/TokenGate.jsx:83"
+  },
+  {
+   "id": "execution-mode",
+   "label": "Mode: Plan / Ask first / Auto (local read-only)",
+   "scope": "SESSION",
+   "storage": "none (React state, resets to 'ask')",
+   "evidence": "frontend/src/components/ChatView.jsx:100, frontend/src/components/Composer.jsx:3"
+  },
+  {
+   "id": "active-conversation",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage 'mucaro.activeConversation'",
+   "evidence": "frontend/src/App.jsx:53, frontend/src/App.jsx:205"
+  },
+  {
+   "id": "seen-results",
+   "label": null,
+   "scope": "APPLICATION_USER",
+   "storage": "localStorage 'mucaro.seenResults'",
+   "evidence": "frontend/src/App.jsx:52, frontend/src/App.jsx:213"
+  },
+  {
+   "id": "composer-draft",
+   "label": null,
+   "scope": "WORKSPACE",
+   "storage": "localStorage 'mucaro.draft.<conversationId|new>'",
+   "evidence": "frontend/src/components/Composer.jsx:57-84"
+  },
+  {
+   "id": "active-view",
+   "label": null,
+   "scope": "SESSION",
+   "storage": "none (React state; not persisted, not in URL)",
+   "evidence": "frontend/src/App.jsx:47"
+  },
+  {
+   "id": "memory-enabled",
+   "label": "On / Off per memory",
+   "scope": "APPLICATION_USER",
+   "storage": "backend (PATCH /memory/{id})",
+   "evidence": "frontend/src/components/workspaces/MemoryWorkspace.jsx:96"
+  },
+  {
+   "id": "directory-grants",
+   "label": "Granted Directories",
+   "scope": "ADMINISTRATIVE",
+   "storage": "backend (/permissions/directories/*)",
+   "evidence": "frontend/src/components/DirectoryIntake.jsx:51-107"
+  },
+  {
+   "id": "api-base",
+   "label": null,
+   "scope": "ADMINISTRATIVE",
+   "storage": "env VITE_API_BASE at build time",
+   "evidence": "frontend/src/api.js:3"
+  }
+ ],
+ "context_actions": [
+  {
+   "id": "conversation-menu",
+   "trigger": "menu-button",
+   "object": "open conversation (Rename, Copy transcript, Background tasks, Delete…)",
+   "has_non_mouse_alternative": true,
+   "evidence": "frontend/src/components/ChatView.jsx:51-60"
+  },
+  {
+   "id": "message-actions",
+   "trigger": "menu-button",
+   "object": "message (Copy, Edit, Read aloud, Save, Share) — always-visible icon buttons, not a popup",
+   "has_non_mouse_alternative": true,
+   "evidence": "frontend/src/components/MessageActions.jsx:116-145"
+  },
+  {
+   "id": "code-block-copy",
+   "trigger": "menu-button",
+   "object": "fenced code block",
+   "has_non_mouse_alternative": true,
+   "evidence": "frontend/src/components/RichText.jsx:26"
+  },
+  {
+   "id": "none-right-click",
+   "trigger": "right-click",
+   "object": "none: no onContextMenu, long-press or touch handlers exist in frontend/src (searched onContextMenu, contextmenu, touchstart, long-press)",
+   "has_non_mouse_alternative": true,
+   "evidence": "frontend/src/App.jsx:1"
+  }
+ ],
+ "keyboard_shortcuts": [
+  {
+   "keys": "Enter",
+   "action": "Send the message (hardware keyboard only)",
+   "scope": "chat-composer",
+   "evidence": "frontend/src/components/Composer.jsx:106-116"
+  },
+  {
+   "keys": "Shift+Enter",
+   "action": "Insert a new line",
+   "scope": "chat-composer",
+   "evidence": "frontend/src/components/Composer.jsx:113"
+  },
+  {
+   "keys": "Cmd/Ctrl+Enter",
+   "action": "Send the message (also on touch keyboards)",
+   "scope": "chat-composer",
+   "evidence": "frontend/src/components/Composer.jsx:108-112"
+  },
+  {
+   "keys": "Enter on a coarse pointer",
+   "action": "Inserts a new line; Send button submits",
+   "scope": "chat-composer",
+   "evidence": "frontend/src/components/Composer.jsx:7, frontend/src/components/Composer.jsx:113"
+  },
+  {
+   "keys": "Escape",
+   "action": "Close the open sheet/dialog",
+   "scope": "all Sheet dialogs",
+   "evidence": "frontend/src/components/Sheet.jsx:28-30"
+  },
+  {
+   "keys": "Tab / Shift+Tab",
+   "action": "Cycle focus inside the open sheet",
+   "scope": "all Sheet dialogs",
+   "evidence": "frontend/src/components/Sheet.jsx:31-42"
+  },
+  {
+   "keys": "Escape",
+   "action": "Cancel a message edit",
+   "scope": "message-editor",
+   "evidence": "frontend/src/components/MessageActions.jsx:202-204"
+  },
+  {
+   "keys": "Cmd/Ctrl+Enter",
+   "action": "Save a message edit",
+   "scope": "message-editor",
+   "evidence": "frontend/src/components/MessageActions.jsx:205-207"
+  },
+  {
+   "keys": "Tab to 'Skip to content', Enter",
+   "action": "Move focus to main",
+   "scope": "global",
+   "evidence": "frontend/src/App.jsx:238, frontend/src/App.jsx:296"
+  },
+  {
+   "keys": "(none)",
+   "action": "There are no global accelerators: the only document-level key listener is the Sheet's (searched addEventListener('keydown' and onKeyDown across frontend/src)",
+   "scope": "global",
+   "evidence": "frontend/src/components/Sheet.jsx:45"
+  }
+ ],
+ "accessibility_source_findings": [
+  {
+   "id": "a11y-mobile-nav-not-hidden",
+   "severity": "serious",
+   "finding": "At <=760px (which the 420px-wide desktop window reaches) the closed navigation panel is only translated off-screen; it is not display:none, visibility:hidden or inert. Its ~10+ buttons stay in the tab order and the accessibility tree, so keyboard focus disappears off-screen before reaching the page content. When open it is not a dialog: no focus move into it, no focus trap, no Escape, no close button, and the toggle keeps the label 'Open navigation'.",
+   "evidence": "frontend/src/styles.css:1218-1231, frontend/src/App.jsx:239, frontend/src/App.jsx:295-306",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-streamed-answer-truncation",
+   "severity": "serious",
+   "finding": "Functional, affects all users: runs with more than 500 events are reloaded with only the first 500 (see workflow stream-answer), which removes the tail of a long live-streamed answer and its citations.",
+   "evidence": "frontend/src/api.js:280, backend/app/main.py:1051, frontend/src/components/ChatView.jsx:148-150",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-menu-pattern",
+   "severity": "moderate",
+   "finding": "The conversation menu declares role=menu/menuitem but implements none of the pattern: focus is not moved into it, there is no arrow-key navigation, Escape or outside-click close; it stays open until an item or the toggle is pressed.",
+   "evidence": "frontend/src/components/ChatView.jsx:51-61",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-mode-listbox",
+   "severity": "moderate",
+   "finding": "The mode picker is a ul role=listbox whose children are plain li elements wrapping button role=option (invalid ownership), with no arrow keys, Escape or active-descendant; it works as a list of buttons by Tab only.",
+   "evidence": "frontend/src/components/Composer.jsx:146-169",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-focus-return-lost",
+   "severity": "moderate",
+   "finding": "Sheet returns focus to the element focused when it mounted. For sheets opened from the conversation menu (Rename, Delete, Background tasks) that element is a menu item that has already been unmounted, so focus falls to the document body on close. Same for the approval card: after Allow/Deny the card unmounts and nothing receives focus.",
+   "evidence": "frontend/src/components/Sheet.jsx:13, frontend/src/components/Sheet.jsx:49, frontend/src/components/ChatView.jsx:56-59, frontend/src/components/RunBlock.jsx:321-323",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-focus-trap-leak",
+   "severity": "moderate",
+   "finding": "The trap's focusable selector omits <summary> and matches elements inside closed <details> (e.g. pre[tabindex=0]). In sheets that end with disclosures (Tool activity, Evidence) the computed last item can be an unfocusable hidden element, so Tab from the last visible control can leave the dialog; the page behind is not inert or aria-hidden (aria-modal only).",
+   "evidence": "frontend/src/components/Sheet.jsx:3, frontend/src/components/Sheet.jsx:32-41, frontend/src/components/RunBlock.jsx:180-194, frontend/src/components/Sheet.jsx:55-56",
+   "confidence": "medium"
+  },
+  {
+   "id": "a11y-view-change-silent",
+   "severity": "moderate",
+   "finding": "Switching workspace does not move focus, change document.title or announce; a screen-reader user gets only aria-current on the pressed button. The page title is always 'Mucaro AI'.",
+   "evidence": "frontend/src/App.jsx:250-259, frontend/index.html:13",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-approval-not-focused",
+   "severity": "moderate",
+   "finding": "A pending approval is announced through the polite live region ('Waiting for your approval.') but focus is not moved to the card and it is not a live region itself; the user must find it in the feed. Deny and Allow once are native buttons, so keyboard activation works.",
+   "evidence": "frontend/src/components/ChatView.jsx:268-273, frontend/src/components/RunBlock.jsx:44-61",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-false-empty-states",
+   "severity": "minor",
+   "finding": "Provenance, Sources, Memory and Background tasks show their empty text while the first load is still in flight (no loading state).",
+   "evidence": "frontend/src/components/workspaces/ProvenanceWorkspace.jsx:59, frontend/src/components/workspaces/SourcesWorkspace.jsx:82, frontend/src/components/workspaces/MemoryWorkspace.jsx:82, frontend/src/components/TasksDrawer.jsx:54",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-directory-intake-errors",
+   "severity": "minor",
+   "finding": "DirectoryIntake errors render in a div with no role=alert, its buttons have no type attribute, and the status badge is raw status code text; the section is titled 'Add a folder from this Mac' on every platform.",
+   "evidence": "frontend/src/components/DirectoryIntake.jsx:139-142, frontend/src/components/workspaces/SourcesWorkspace.jsx:79",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-silent-failures",
+   "severity": "minor",
+   "finding": "Rebuild index and the memory On/Off toggle have no error handling; a failure is invisible and inaudible.",
+   "evidence": "frontend/src/components/workspaces/SourcesWorkspace.jsx:73, frontend/src/components/workspaces/MemoryWorkspace.jsx:96",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-entry-error-behind-sheet",
+   "severity": "minor",
+   "finding": "When Adjust/Revise fails, the error text is rendered on the card behind the modal sheet, not inside it.",
+   "evidence": "frontend/src/components/ExecutionEntryCard.jsx:152, frontend/src/components/ExecutionEntryCard.jsx:175-198",
+   "confidence": "high"
+  },
+  {
+   "id": "a11y-positive-baseline",
+   "severity": "minor",
+   "finding": "Present in source: skip link, lang=en, global :focus-visible outline, prefers-reduced-motion, prefers-color-scheme, 16px fields and 44px targets at <=900px or coarse pointers, labelled form fields, role=alert on errors, one polite live region.",
+   "evidence": "frontend/src/App.jsx:238, frontend/index.html:2, frontend/src/styles.css:74-78, frontend/src/styles.css:1299, frontend/src/styles.css:24, frontend/src/styles.css:1317-1331",
+   "confidence": "high"
+  }
+ ],
+ "backend": {
+  "framework": "FastAPI 0.141.1 (pyproject.toml:11)",
+  "app_object": "backend/app/main.py:1266",
+  "endpoint_count": {
+   "GET": 37,
+   "POST": 30,
+   "PUT": 3,
+   "PATCH": 4,
+   "DELETE": 3
+  },
+  "endpoint_count_note": "77 routes declared with @app.<method> inside create_app (backend/app/main.py:387-1256); no APIRouter or include_router is used. Static frontend mounted at / when frontend/dist exists (backend/app/main.py:1262).",
+  "endpoints_not_called_by_frontend": [
+   "GET /security",
+   "POST /execution-entry/artifacts",
+   "GET /execution-entry/artifacts/{artifact_id}",
+   "POST /execution-entry/artifacts/{artifact_id}/{revision}/state",
+   "GET /execution-entry/decisions/{decision_id}",
+   "POST /plan",
+   "POST /approve",
+   "GET /chunks",
+   "POST /ask",
+   "POST /conversations/{conversation_id}/ask",
+   "GET /conversations/{conversation_id}/envelope",
+   "GET /conversations/{conversation_id}/interactions",
+   "GET /conversations/{conversation_id}/interactions/pending",
+   "POST /conversations/{conversation_id}/interactions",
+   "POST /interactions/{interaction_id}/dismiss",
+   "POST /models/probe",
+   "GET /work-runs/{run_id}",
+   "GET /runs",
+   "GET /runs/summary",
+   "GET /runs/{run_id}",
+   "GET /memory/export",
+   "GET /tools",
+   "POST /tools/requests",
+   "POST /tools/requests/{tool_call_id}/run",
+   "POST /tools/requests/{tool_call_id}/cancel",
+   "GET /tools/audit",
+   "GET /workspaces",
+   "POST /workspaces",
+   "GET /exports/{run_id}",
+   "POST /validate"
+  ],
+  "frontend_calls_with_no_backend_route": []
+ },
+ "tests": {
+  "frontend_unit": "28 node:test cases in 2 files, pure functions only (frontend/tests/nextVectorOptions.test.mjs, frontend/tests/threadActivity.test.mjs; runner 'node --test', frontend/package.json:10). No component tests.",
+  "frontend_e2e": "Playwright 1.65.0 scripts, not a test runner: qa/rendered/rendered_qa.mjs (147 check() call sites, desktop 1440x900 and iPhone 390x844 plus 393/430/720 entry-card widths) and qa/rendered/relay_qa.mjs (24 check() call sites); workflow .github/workflows/rendered-qa.yml.",
+  "backend": "about 1821 test functions in 190 test modules under backend/tests (pytest 9.1.1, pyproject.toml:33); counted by grep, not run.",
+  "accessibility_automation": "@axe-core/playwright 4.11.0 in qa/rendered/rendered_qa.mjs:130-133, failing only on serious/critical; run on empty chat, answer, save sheet, sources, workbench, settings and execution-entry states (rendered_qa.mjs:165, 174, 264, 481, 538, 546, 694). Provenance and Memory have no axe run. One Escape/focus-return check (rendered_qa.mjs:322-332)."
+ },
+ "performance_protections": [
+  {
+   "what": "Activity poll only while a run is busy and the tab is visible; light endpoint without transcripts",
+   "evidence": "frontend/src/App.jsx:218-224, backend/app/main.py:749-753"
+  },
+  {
+   "what": "Health poll returns the same state object when nothing changed (no re-render); skipped while hidden",
+   "evidence": "frontend/src/App.jsx:135-166"
+  },
+  {
+   "what": "Request timeouts 30 s / 5 s health / 120 s upload; 25 s stream idle watchdog",
+   "evidence": "frontend/src/api.js:9-13"
+  },
+  {
+   "what": "Stream retry with exponential backoff and jitter, capped at 30 s, paused after 10 failures",
+   "evidence": "frontend/src/components/ChatView.jsx:17, frontend/src/components/ChatView.jsx:166-178"
+  },
+  {
+   "what": "Event de-duplication by seq and resume from last seq",
+   "evidence": "frontend/src/components/ChatView.jsx:145, frontend/src/components/ChatView.jsx:204-205"
+  },
+  {
+   "what": "Paginated background-task list (20 per page, Load more)",
+   "evidence": "frontend/src/api.js:281, frontend/src/components/TasksDrawer.jsx:78-82"
+  },
+  {
+   "what": "Memoised run derivation",
+   "evidence": "frontend/src/components/ChatView.jsx:248-254"
+  },
+  {
+   "what": "Server-side event stream wakes on commit instead of busy polling; 10 s keep-alive",
+   "evidence": "backend/app/work_runs.py:1414-1434"
+  },
+  {
+   "what": "NOT PRESENT: no lazy routes or code splitting (all workspaces statically imported), no list virtualisation, no debounce on the conversation filter, no pagination of conversations, sources, memory or tool calls",
+   "evidence": "frontend/src/App.jsx:3-11, frontend/src/App.jsx:235, frontend/src/components/workspaces/ProvenanceWorkspace.jsx:14"
+  }
+ ],
+ "special_adjudications": [
+  {
+   "question": "1. Six workspaces: exact list and mounted component for each",
+   "answer": "Confirmed, exactly six, in this order in the WORKSPACES registry: Chat -> ChatView; Workbench -> WorkbenchWorkspace; Sources -> SourcesWorkspace; Memory -> MemoryWorkspace; Provenance -> ProvenanceWorkspace; Settings -> SettingsWorkspace. Each is rendered only when health.state is 'ok' and view equals its id. 'Background tasks' is a seventh item in the same nav list but opens a drawer, not a workspace. While the service wants a token, TokenGate replaces all six.",
+   "status": "CONFIRMED_PRESENT",
+   "evidence": [
+    "frontend/src/App.jsx:13-20",
+    "frontend/src/App.jsx:324",
+    "frontend/src/App.jsx:338",
+    "frontend/src/App.jsx:339",
+    "frontend/src/App.jsx:340",
+    "frontend/src/App.jsx:341",
+    "frontend/src/App.jsx:342",
+    "frontend/src/App.jsx:262-264",
+    "frontend/src/App.jsx:323"
+   ]
+  },
+  {
+   "question": "2. Provenance workspace: fully functional, partial or presentational; ledger reconciliation",
+   "answer": "Functional but read-only and narrow; not presentational. It has no props, no buttons, inputs, links or handlers of its own: the only controls are one native <details>/<summary> 'Record' per tool call. On mount it makes two calls. GET /tools/summary returns counts by status computed from the stored tool-call records plus a live verification of the hash-chained audit log; the UI shows 'Verified (N events)' or the broken status and reason in error styling. GET /tools/requests returns every stored tool call; the UI lists them newest first with status, tool name, created time and, behind the disclosure, requested_by, approved_by, denied_by, argument digest, run id and raw arguments/result JSON. Both are real persisted data. Limits: loaded once (no refresh, filter, pagination, loading state or link to the run); the audit events themselves (GET /tools/audit) are never shown; 'who decided' is the constant 'api' for every GUI decision and 'policy:auto-local-read-only' for auto approvals; it shows nothing about source provenance, message-edit originals (which the chat UI says are 'preserved in provenance') or execution-entry receipts. Acceptance ledger is _architecture/release/acceptance_ledger_v1.json. TGT-032 'Provenance inspection' (IMPLEMENTED / PASS, note 'Verified audit chain, per-action records behind disclosure') matches the component exactly; its positive gate is a rendered check that waits for 'Verified (N events)' and then records a literal true. TGT-014 'Governed tool execution' lists the component and is supported by a rendered check that the Record shows requested_by 'model'. TGT-003 'Specialized workspaces' (PARTIAL / OPEN) says 'Sources/Memory/Settings exist; GIS/OCR/Code/Provenance/Artifacts surfaces absent': stale and contradicted by current source and by TGT-032, since Provenance and Workbench are both mounted. INV-018 'Provenance' (PARTIAL / PROVISIONAL) is about backend provenance records on ingested sources, not this workspace; those records are shown in the Evidence sheet and Sources detail, not here. MATRIX-015 lists provenance among 70 rendered checks; no axe run covers the Provenance view. No acceptance or ledger entries about Provenance were found in .mucaro/ or qa/ other than the rendered script.",
+   "status": "PARTIAL",
+   "evidence": [
+    "frontend/src/components/workspaces/ProvenanceWorkspace.jsx:5-17",
+    "frontend/src/components/workspaces/ProvenanceWorkspace.jsx:27-36",
+    "frontend/src/components/workspaces/ProvenanceWorkspace.jsx:37-59",
+    "frontend/src/api.js:287-288",
+    "backend/app/main.py:1159-1161",
+    "backend/app/main.py:1222-1225",
+    "backend/app/main.py:1227-1229",
+    "backend/app/tools.py:1064-1082",
+    "backend/app/tools.py:1120-1126",
+    "backend/app/main.py:1180",
+    "backend/app/main.py:1197",
+    "backend/app/work_runs.py:852",
+    "frontend/src/components/ChatView.jsx:368",
+    "_architecture/release/acceptance_ledger_v1.json:1702",
+    "_architecture/release/acceptance_ledger_v1.json:1258",
+    "_architecture/release/acceptance_ledger_v1.json:987",
+    "_architecture/release/acceptance_ledger_v1.json:802",
+    "_architecture/release/acceptance_ledger_v1.json:2220",
+    "qa/rendered/rendered_qa.mjs:493-495",
+    "qa/rendered/rendered_qa.mjs:920-925"
+   ]
+  },
+  {
+   "question": "3. Mobile: breakpoints and narrow-viewport behaviour (window min 420x560); workspace switcher and background-tasks drawer",
+   "answer": "Three media rules. (a) max-width 760px: single-column shell, off-canvas sidebar, top bar with hamburger, tighter paddings, execution-entry buttons stretch to 44px, user bubble 92% wide, and every Sheet becomes a bottom sheet (full width, max-height 88vh, rounded top). (b) max-width 900px or pointer:coarse: 16px form fields and 44px minimum control height. (c) prefers-reduced-motion. Safe-area insets are applied to sidebar, top bar, composer and sheet body. The native window minimum (420x560) is below 760px, so the desktop app shows the phone layout when narrowed. The workspace switcher has no separate mobile form: it is the same six buttons inside the off-canvas sidebar, reached through the hamburger; picking one closes the panel. Background tasks is a button in that panel (and in the conversation menu); on a narrow screen it opens as a bottom sheet over the page, with focus trap, Escape and backdrop close from Sheet. No workspace has its own breakpoint rules; they rely on flex wrapping. Gaps: the closed panel stays focusable (see accessibility findings), no Escape or close button for the panel, composer Enter inserts a newline on coarse pointers by design. Rendered evidence exists for 390x844 and 393/430/720 widths only; nothing renders at 420x560, and the ledger marks software-keyboard avoidance OPEN (MOB-F01).",
+   "status": "PARTIAL",
+   "evidence": [
+    "frontend/src/styles.css:1213-1297",
+    "frontend/src/styles.css:1317-1331",
+    "frontend/src/styles.css:1299",
+    "frontend/src/styles.css:149",
+    "frontend/src/styles.css:905",
+    "frontend/src/styles.css:1035",
+    "scripts/native_window.py:25",
+    "backend/app/desktop_shell.py:271",
+    "frontend/src/App.jsx:247-265",
+    "frontend/src/App.jsx:297-315",
+    "frontend/src/components/TasksDrawer.jsx:52",
+    "frontend/src/components/Composer.jsx:7",
+    "qa/rendered/rendered_qa.mjs:1886",
+    "_architecture/release/acceptance_ledger_v1.json:2432"
+   ]
+  },
+  {
+   "question": "4. Keyboard: shortcuts, composer behaviour, focus order, reachability",
+   "answer": "Shortcuts are local only (listed in keyboard_shortcuts); there are no global accelerators and none for switching workspace. Composer: Enter sends, Shift+Enter is a newline, Cmd/Ctrl+Enter always sends; on a coarse pointer Enter is a newline and only the button or Cmd/Ctrl+Enter sends. IME safe: the handler returns early when event.nativeEvent.isComposing is true or keyCode is 229. Empty text cannot be sent; focus returns to the textarea after sending. Focus order follows the DOM: skip link, sidebar (New chat, six workspaces, Background tasks, filter, conversations), then main (hamburger on narrow screens, service banner Retry, workspace content); in Chat: Model, Repository, conversation menu, feed controls, queued items, textarea, Mode, Stop, Send. All six workspaces and the tasks drawer are native buttons, so every workspace is reachable by keyboard alone at desktop width. At <=760px they are still reachable, but through an off-screen panel whose focus is invisible unless the hamburger is pressed first. View changes do not move focus.",
+   "status": "PARTIAL",
+   "evidence": [
+    "frontend/src/components/Composer.jsx:93-116",
+    "frontend/src/components/Composer.jsx:176",
+    "frontend/src/components/MessageActions.jsx:201-209",
+    "frontend/src/components/Sheet.jsx:28-45",
+    "frontend/src/App.jsx:238-296",
+    "frontend/src/styles.css:1218-1231",
+    "frontend/src/components/ChatView.jsx:400-431"
+   ]
+  },
+  {
+   "question": "5. Modals/drawers: role, aria-modal, labelling, focus trap, Escape, focus return",
+   "answer": "Eleven overlays, all built on one Sheet component: Background tasks, Tool activity, Evidence [n] (right drawers / bottom sheets); Rename conversation, Delete conversation?, Remove this source?, Delete this memory?, Revoke folder access?, Save answer, Execution receipt, Adjust goal / Revise plan (centred). Sheet gives each role=dialog, aria-modal=true, aria-labelledby pointing at its h2 title, a labelled close button, initial focus on a data-autofocus field or the dialog itself, a Tab/Shift+Tab trap, Escape to close, backdrop mousedown to close, and focus return to the element focused at mount. Confirm sheets focus the cancel button and ignore close while busy. Weaknesses: the background is not inert; the trap selector omits summary and can pick hidden elements; focus return fails when the opener was a menu item that has unmounted. Three overlays are not dialogs: the mobile navigation panel, the conversation menu (role=menu) and the mode picker (role=listbox); none has Escape, a trap or focus return. The inline 'Confirm Directory Access' block is not a dialog.",
+   "status": "PARTIAL",
+   "evidence": [
+    "frontend/src/components/Sheet.jsx:11-66",
+    "frontend/src/components/ConfirmSheet.jsx:24-32",
+    "frontend/src/App.jsx:344",
+    "frontend/src/components/RunBlock.jsx:170",
+    "frontend/src/components/EvidencePanel.jsx:21",
+    "frontend/src/components/ChatView.jsx:63",
+    "frontend/src/components/ChatView.jsx:82",
+    "frontend/src/components/workspaces/SourcesWorkspace.jsx:121",
+    "frontend/src/components/workspaces/MemoryWorkspace.jsx:106",
+    "frontend/src/components/DirectoryIntake.jsx:186",
+    "frontend/src/components/MessageActions.jsx:42",
+    "frontend/src/components/ExecutionEntryCard.jsx:155",
+    "frontend/src/components/ExecutionEntryCard.jsx:176",
+    "frontend/src/components/ChatView.jsx:51-61",
+    "frontend/src/components/Composer.jsx:146-169",
+    "frontend/src/components/DirectoryIntake.jsx:152-166"
+   ]
+  },
+  {
+   "question": "6. Streaming: rendering, cancel, mid-stream error or disconnect, partial output",
+   "answer": "Rendering: the client reads server-sent events with fetch, de-duplicates by seq and concatenates text_delta events into the answer, rendered as inert text with fenced code blocks; the run article is aria-busy while RUNNING and the feed auto-scrolls only when already near the bottom. The streaming text is not a live region; 'Answer complete.' is announced at the end. Save and Share appear only on terminal runs; Copy and Edit are offered while still streaming. Cancel: Stop calls POST /work-runs/{id}/stop. Waiting runs stop at once; a running run is flagged and stops at the next phase boundary, but the answer phase has no checkpoint, so Stop does not interrupt text that is already streaming and the run still ends COMPLETED. Model/provider error mid-answer: the backend records error and final(FAILED) events; text_delta events already written stay in the log, so the partial text remains above an alert showing category, status and detail, and 'The turn failed.' is announced. Disconnect: a stream that fails, closes without an end event or is silent for 25 s is retried with backoff (reloading the run from the event log each time); after 10 failures a 'Live updates paused' notice with Resume appears; the app-level banner shows 'Reconnecting…' from the 15 s health poll, and returning to the page or regaining network forces a re-follow. Partial output is preserved because events are persisted server-side. A service restart marks running runs INTERRUPTED. Defect by source reading: runs with more than 500 events are reloaded truncated to the first 500 (see workflow stream-answer).",
+   "status": "PARTIAL",
+   "evidence": [
+    "frontend/src/api.js:171-226",
+    "frontend/src/components/ChatView.jsx:133-183",
+    "frontend/src/feed.js:83-85",
+    "frontend/src/components/RunBlock.jsx:273",
+    "frontend/src/components/RunBlock.jsx:339-351",
+    "frontend/src/components/RunBlock.jsx:368-379",
+    "frontend/src/components/ChatView.jsx:263-273",
+    "frontend/src/components/ChatView.jsx:314-323",
+    "backend/app/work_runs.py:581-614",
+    "backend/app/work_runs.py:763-774",
+    "backend/app/work_runs.py:1217-1240",
+    "backend/app/work_runs.py:734-745",
+    "backend/app/work_runs.py:1401-1434",
+    "frontend/src/components/ChatView.jsx:510-517",
+    "frontend/src/App.jsx:316-321",
+    "backend/app/work_runs.py:652",
+    "frontend/src/api.js:280",
+    "backend/app/main.py:1051"
+   ]
+  },
+  {
+   "question": "7. Approval workflows: Planning-to-Execution Gate and tool-request approval",
+   "answer": "Tool-request approval is complete. The card is a labelled region ('Permission request for <tool>') showing the tool, who asked, arguments (patches as a diff) and the argument digest, with native Deny and Allow once buttons. They POST /tools/requests/{id}/approve or /deny with arguments_sha256. The backend refuses a non-pending call or a digest mismatch, stores status with approved_by/denied_by and a timestamp on the tool-call record, appends a hash-chained audit event, and resumes the run. Both buttons work from the keyboard; the waiting state is announced ('Waiting for your approval.') and the decision is announced ('Allowed/Denied <tool>.') through the polite live region, and the conversation list shows 'Needs your approval'. Focus is not moved to the card and is lost when it disappears. The actor recorded is the constant 'api'. The Planning-to-Execution Gate named in README and docs/EXECUTION_GATE.md (POST /plan, POST /approve) has no GUI: the Workbench only compiles a plan with approval NOT_REQUESTED and states that nothing is executed. The GUI gate that does exist is the execution-entry card: Proceed/Execute and Adjust/Revise post a decision bound to artifact, revision, expected version, source commit and an idempotency key; the decision and receipt hashes are persisted and shown in the Execution receipt sheet. The primary button is natively disabled with an aria-describedby reason until the entry is ready and the source identity is current, it activates from the keyboard, and 'Execution started.' is announced. But the GUI can neither create an entry nor mark one ready, so this gate is usable only for entries prepared through the API.",
+   "status": "PARTIAL",
+   "evidence": [
+    "frontend/src/components/RunBlock.jsx:24-63",
+    "frontend/src/api.js:285-286",
+    "backend/app/main.py:1170-1202",
+    "backend/app/tools.py:1194-1260",
+    "backend/app/tools.py:1042-1061",
+    "frontend/src/components/ChatView.jsx:268-273",
+    "frontend/src/threadActivity.js:6",
+    "README.md:3",
+    "docs/EXECUTION_GATE.md:1",
+    "backend/app/main.py:528-532",
+    "backend/app/main.py:630-637",
+    "frontend/src/components/workspaces/WorkbenchWorkspace.jsx:61",
+    "frontend/src/components/ExecutionEntryCard.jsx:63-148",
+    "frontend/src/components/ChatView.jsx:334-347",
+    "backend/app/main.py:417",
+    "backend/app/main.py:453",
+    "backend/app/main.py:472-494",
+    "backend/app/execution_entry.py:859",
+    "qa/rendered/rendered_qa.mjs:592",
+    "qa/rendered/rendered_qa.mjs:697",
+    "qa/rendered/rendered_qa.mjs:633-637",
+    "qa/rendered/rendered_qa.mjs:711-714"
+   ]
+  }
+ ],
+ "denominator": {
+  "surfaces_total": 47,
+  "surfaces_mounted": 47,
+  "workflows_total": 51,
+  "by_workflow_status": {
+   "COMPLETE": 40,
+   "PARTIAL": 7,
+   "BROKEN": 0,
+   "UNREACHABLE": 4,
+   "INTERNAL_ONLY": 0
+  },
+  "coverage_statement": "Exhaustive: every file under frontend/src was read in full (App, api, feed, files, clipboard, all 22 components) except Icons.jsx, nextVectorOptions.js and the lower part of threadActivity.js, which hold no surfaces; workspaces, navigation items, dialogs/drawers, settings, context actions, keyboard handlers and all 77 backend routes in backend/app/main.py are enumerated exhaustively. Forms, lists and panels inside each workspace are enumerated to the level of each distinct control group (believed exhaustive for controls, not for every read-only field). Backend handlers were read for auth, execution entry, workbench plan, conversations, messages, work-run events/stream/stop, memory, tools and exports; deeper modules (cli.py, model_router.py, execution_entry.py, GIS/OCR/coding) were sampled by grep only. Test references were found by grep and not executed; has_test=false means no test was found by the searches run, not proof of absence. Nothing was run, so every status is from source reading."
+ },
+ "unknowns": [
+  "Runtime behaviour of the >500-event truncation and of Stop during a streaming answer was derived from source only; neither was executed.",
+  "Whether focus is actually lost after sheets opened from the conversation menu close depends on browser handling of focus() on a detached node; not run.",
+  "Colour contrast and rendered layout at exactly 420x560 were not assessed; rendered QA in the repo covers 390, 393, 430, 720 and 1440 widths only.",
+  "Whether the CLI can create or approve execution-entry artifacts: grep for create_entry_artifact/transition_entry_artifact/decide_entry found callers only in backend/app/main.py; backend/app/cli.py (9015 lines) was not read in full.",
+  "Exact pass/fail state of the test suites and of rendered QA at this commit: not run; evidence files under _architecture/release/evidence are for older commits.",
+  "Backend test count (1821) is a grep of 'def test_' lines and may differ from pytest's collected count (parametrisation)."
+ ]
+}

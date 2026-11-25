@@ -46,6 +46,9 @@ class DesktopConfig:
     #: Test/dev override. Production defaults to the platform's application
     #: support directory and never writes inside the signed .app bundle.
     state_dir: Path | None = None
+    #: Optional Launch Pad declaration (see ``prii_desktop.launchpad``). ``None``
+    #: keeps the pre-Launch-Pad behaviour: the window opens straight into the app.
+    launchpad: Mapping[str, object] | None = None
     #: Extra pip specs / build env are handled by the vendored setup.py, not here.
     extra: Mapping[str, object] = field(default_factory=dict)
 
@@ -76,4 +79,5 @@ class DesktopConfig:
             data_env_var=getattr(module, "DATA_ENV_VAR", "PRII_DATA_HOME"),
             setup_action=getattr(module, "SETUP_ACTION", None),
             attach_frontend=bool(getattr(module, "ATTACH_FRONTEND", True)),
+            launchpad=getattr(module, "LAUNCHPAD", None),
         )

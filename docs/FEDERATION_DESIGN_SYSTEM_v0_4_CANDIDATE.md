@@ -22,6 +22,12 @@ The candidate retains all v0.3 component exports, status aliases, CSS class alia
 
 ## Non-goals
 
+> These were the non-goals of the v0.4 candidate. "No AppShell implementation yet" is
+> superseded: the shell is specified in
+> [`FEDERATION_GUI_STANDARD.md`](FEDERATION_GUI_STANDARD.md) §4 and is scheduled for the
+> 0.6 package line
+> ([`FEDERATION_DESIGN_SYSTEM_v0_6_CANDIDATE.md`](FEDERATION_DESIGN_SYSTEM_v0_6_CANDIDATE.md)).
+
 - No AppShell implementation yet
 - No table/form/dialog or map renderer packages
 - No consumer package bumps

@@ -1,0 +1,43 @@
+{
+  "kind": "removed-aggregate-manifest",
+  "note": "The aggregate this run produced was committed here in full and has been removed to keep the repository small. This manifest preserves what it contained: SHA-256, byte size and record count per file. Regenerate an aggregate with `hub aggregate`; these exact bytes remain in git history at the commit before the removal.",
+  "original_path": "reports/moneysweep-live-readiness/20260901T015715Z_moneysweep_live_readiness_continuation/aggregate",
+  "total_bytes": 117779638,
+  "files": [
+    {
+      "name": "alerts.jsonl",
+      "sha256": "1904c707501cfd3b53b2bceeecec9dff667ef250022795f21a053afb955d4416",
+      "bytes": 4527252,
+      "records": 4338
+    },
+    {
+      "name": "entities.jsonl",
+      "sha256": "700a0f36d5184c0a8aec87e40d68aabc90a1e5528671482dcc56b3a0c2e0aa02",
+      "bytes": 39403771,
+      "records": 47484
+    },
+    {
+      "name": "graph_summary.json",
+      "sha256": "1534d56dcb70a5812a3479fd523270ca3aa3f0283fd26dd29c47d8dd2126aaa0",
+      "bytes": 1016
+    },
+    {
+      "name": "observations.jsonl",
+      "sha256": "c02297fa3c9ba52bfec5f3293f28c3e78e31f147efe20856b89d2158ea92f4a3",
+      "bytes": 571653,
+      "records": 574
+    },
+    {
+      "name": "relationships.jsonl",
+      "sha256": "4e2e3afea1cb27696d520343af0ce66243a65ed346c4df880f93d8bec959ff9a",
+      "bytes": 44874122,
+      "records": 66037
+    },
+    {
+      "name": "sources.jsonl",
+      "sha256": "a44a82fe20872b0df6f954092c37995a3872e1a151ad2458dac237770936203d",
+      "bytes": 28401824,
+      "records": 43953
+    }
+  ]
+}

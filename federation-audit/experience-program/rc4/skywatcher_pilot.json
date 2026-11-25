@@ -1,0 +1,134 @@
+{
+ "schema": "federation.experience-program.pilot-comparison/1",
+ "claim_class": "COMPUTED",
+ "repository": "skywatcher-pr",
+ "commits": {
+  "before": "a2176990606048a6b918daacdb8bce027e58a903",
+  "after": "13015707067dfff519c5daaaf40785d5f84fb167"
+ },
+ "method": "Chromium, dark colour scheme, the same routes at 320, 390, 430, 768, 1280, 1440 and 1920 CSS pixels, on a fresh temporary workspace. Pages were loaded, not operated.",
+ "frame": {
+  "before": {
+   "routes": 22,
+   "page_loads": 154,
+   "page_loads_with_an_error": 0,
+   "page_loads_not_200": 0,
+   "routes_that_redirect": [
+    "/forgot-password",
+    "/login",
+    "/register",
+    "/reset-password"
+   ],
+   "page_loads_with_horizontal_overflow": 0,
+   "page_loads_with_an_unnamed_button": 66,
+   "controls_under_24px_summed_over_page_loads": 870,
+   "page_loads_with_console_errors": 0,
+   "page_loads_with_page_errors": 0
+  },
+  "after": {
+   "routes": 22,
+   "page_loads": 154,
+   "page_loads_with_an_error": 0,
+   "page_loads_not_200": 0,
+   "routes_that_redirect": [
+    "/forgot-password",
+    "/login",
+    "/register",
+    "/reset-password"
+   ],
+   "page_loads_with_horizontal_overflow": 0,
+   "page_loads_with_an_unnamed_button": 0,
+   "controls_under_24px_summed_over_page_loads": 870,
+   "page_loads_with_console_errors": 0,
+   "page_loads_with_page_errors": 0
+  }
+ },
+ "targeted_rules": {
+  "color-contrast": {
+   "before": {
+    "routes_failing": 0,
+    "distinct_elements": 0
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "button-name": {
+   "before": {
+    "routes_failing": 22,
+    "distinct_elements": 1
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "scrollable-region-focusable": {
+   "before": {
+    "routes_failing": 22,
+    "distinct_elements": 10
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  },
+  "label-content-name-mismatch": {
+   "before": {
+    "routes_failing": 1,
+    "distinct_elements": 7
+   },
+   "after": {
+    "routes_failing": 0,
+    "distinct_elements": 0,
+    "elements": []
+   }
+  }
+ },
+ "every_critical_or_serious_rule": {
+  "button-name": {
+   "before": {
+    "page_loads": 66,
+    "routes": 22
+   },
+   "after": {
+    "page_loads": 0,
+    "routes": 0
+   }
+  },
+  "label-content-name-mismatch": {
+   "before": {
+    "page_loads": 6,
+    "routes": 1
+   },
+   "after": {
+    "page_loads": 0,
+    "routes": 0
+   }
+  },
+  "link-in-text-block": {
+   "before": {
+    "page_loads": 13,
+    "routes": 2
+   },
+   "after": {
+    "page_loads": 13,
+    "routes": 2
+   }
+  },
+  "scrollable-region-focusable": {
+   "before": {
+    "page_loads": 100,
+    "routes": 22
+   },
+   "after": {
+    "page_loads": 0,
+    "routes": 0
+   }
+  }
+ }
+}

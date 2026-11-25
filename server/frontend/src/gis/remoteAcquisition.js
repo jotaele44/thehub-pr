@@ -104,8 +104,13 @@ async function acquireArcGisFeatureLayer(source, options) {
   if (!Number.isInteger(pageSize) || pageSize <= 0) throw new Error('source pageSize must be a positive integer');
   const countUrl = buildUrl(`${source.endpoint.replace(/\/$/, '')}/query`, { f: 'json', returnCountOnly: true, where });
   const { rawText: rawCount } = await fetchSourceText(source, countUrl, options);
-  const expectedCount = Number(parseJson(rawCount, 'count query').count);
-  if (!Number.isInteger(expectedCount) || expectedCount < 0) throw new Error('count gate failed; provider did not return a non-negative integer count');
+  const countResponse = parseJson(rawCount, 'count query');
+  const expectedCount = Number(countResponse?.count);
+  if (!Number.isInteger(expectedCount) || expectedCount < 0) {
+    // ArcGIS reports query failures as HTTP 200 with an `error` object; name it so the gate says why.
+    const providerError = countResponse?.error ? `: provider error ${countResponse.error.code ?? ''} ${countResponse.error.message ?? ''}`.trimEnd() : `: ${String(rawCount).slice(0, 200)}`;
+    throw new Error(`count gate failed; provider did not return a non-negative integer count${providerError}`);
+  }
   if (source.expectedFeatureCount !== undefined && expectedCount !== source.expectedFeatureCount) throw new Error(`count gate failed; registry expected ${source.expectedFeatureCount}, provider reported ${expectedCount}`);
   const rawPages = []; const pageUrls = []; const features = [];
   for (let resultOffset = 0; resultOffset < expectedCount; resultOffset += pageSize) {

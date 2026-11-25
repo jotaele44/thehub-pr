@@ -1,0 +1,88 @@
+{
+  "schema": "federation.experience-program.gate/1",
+  "gate": "RC2",
+  "contract": {
+    "name": "federation-experience",
+    "version": "1.0.0"
+  },
+  "state": "PROVISIONAL",
+  "why_not_pass": "The contract is defined and its rules are tested, but no application has adopted it and nobody other than its author has reviewed it. The two positive fixtures are illustrative documents written to exercise the rules; they are not declarations by those applications and not audit results.",
+  "schemas_sha256": {
+    "federation-actions.schema.json": "e1a32ffcf516c4460fd71330932b5242a39d15568cf1e08404667f2dc2031c60",
+    "federation-compatibility.schema.json": "d8b660ed9dd981b4a7311a48e3d2c1fcadb4ca5dd66b14cd290122b59c76e10e",
+    "federation-experience.contract.schema.json": "78acecc5c7fb2c8bef2891d3d51c0ff89f9310bfce2b968cf897130c2fa502ad",
+    "federation-navigation.schema.json": "f498a6043ababca23cfeca50d450b5e07607ea5548673d618d9de5916728b114",
+    "federation-settings.schema.json": "d60f523b2788807f0238ece3f72e077859f40e9cdcea5e3cf8e950680e4fc1f0"
+  },
+  "checks": {
+    "five_schemas_well_formed": {
+      "state": "PASS",
+      "evidence": "tests/test_experience_contract.py::test_there_are_five_well_formed_schemas"
+    },
+    "positive_fixtures_accepted": {
+      "state": "PASS",
+      "count": 2
+    },
+    "negative_fixtures_rejected_for_stated_reason": {
+      "state": "PASS",
+      "count": 39,
+      "note": "Each is a patch on a clean base, so the patch is the only cause. 35 trip exactly the targeted rule; 4 also trip a namespace rule that the same change necessarily violates."
+    },
+    "unknown_field_handling": {
+      "state": "PASS",
+      "rule": "rejected everywhere except x-* extension fields"
+    },
+    "null_handling": {
+      "state": "PASS",
+      "rule": "accepted only where a property declares it"
+    },
+    "duplicate_id_rejection": {
+      "state": "PASS",
+      "covers": [
+        "action",
+        "setting",
+        "navigation",
+        "capability",
+        "application"
+      ]
+    },
+    "conflict_detection": {
+      "state": "PASS",
+      "covers": [
+        "keyboard binding",
+        "cross-application action id",
+        "cross-application setting id",
+        "redefined global setting",
+        "deep links vs in-memory navigation"
+      ]
+    },
+    "version_validation": {
+      "state": "PASS",
+      "covers": [
+        "unsupported major",
+        "contract outside declared range",
+        "malformed version"
+      ]
+    },
+    "deterministic_serialization": {
+      "state": "PASS",
+      "rule": "sorted keys, compact separators, UTF-8, array order preserved, NaN refused"
+    },
+    "python_3_9": {
+      "state": "OPEN",
+      "note": "The hub supports Python 3.9. The suite was run locally on 3.13 only; CI runs 3.9 to 3.12."
+    },
+    "adopted_by_an_application": {
+      "state": "OPEN"
+    },
+    "reviewed_by_someone_other_than_the_author": {
+      "state": "BLOCKED"
+    }
+  },
+  "ws_d_coverage": {
+    "dock_menu_and_item_menu_as_display_surfaces": "federation-actions.schema.json display_surfaces",
+    "pinned_and_recent_groups": "federation-navigation.schema.json groups[].kind with max_items, overflow and setting_id",
+    "per_user_pins_and_recents": "federation-settings.schema.json id-list at APPLICATION_USER scope, enforced by nav-setting-scope",
+    "rename": "federation-actions.schema.json kind=rename requires object_class user-named; rename-not-declared ties it to evidence.renameable_object_types"
+  }
+}

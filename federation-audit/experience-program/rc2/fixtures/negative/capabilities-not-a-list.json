@@ -1,0 +1,16 @@
+{
+  "description": "A section of the wrong type is reported, and the other checks still run instead of failing on it.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/capabilities",
+      "value": null
+    }
+  ],
+  "expect": [
+    "schema:contract:type"
+  ]
+}

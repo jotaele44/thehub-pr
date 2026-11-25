@@ -1,5 +1,11 @@
 # Federation Design System v1
 
+> The rules a GUI change follows, including the shell contract, the token rule and the
+> adoption procedure, are in [`FEDERATION_GUI_STANDARD.md`](FEDERATION_GUI_STANDARD.md)
+> ([ADR 0014](adr/0014-spoke-guis-are-complete-domain-apps.md)). Where this document and
+> the standard differ, the standard governs. This document remains the component and
+> accessibility contract for the design-system package.
+
 ## Mission
 Normalize visual style, formatting, interaction semantics, and accessibility across the seven federation repositories without erasing domain identity.
 
@@ -39,12 +45,13 @@ Components must consume semantic tokens only. Hard-coded repository colors are p
 ## Repository migration order
 
 1. `thehub-pr`: reference implementation and integration contract
-2. `spiderweb-pr`: shared shell and map-control normalization
-3. `skywatcher-pr`: dense operational panels, tables, map timeline
-4. `moneysweep-pr`: tables, status semantics, forms, reports
-5. `centinelas-pr`: alerts, source cards, monitoring states
-6. `aguayluz-pr`: environmental layers and observation panels
-7. `ovnis-pr`: case records, evidence badges, map and timeline
+2. `moneysweep-pr`: first pilot; tables, status semantics, forms, reports
+3. `centinelas-pr`: second pilot; alerts, source cards, monitoring states
+4. `skywatcher-pr`: dense operational panels, tables, map timeline
+5. `aguayluz-pr`: environmental layers and observation panels
+6. `ovnis-pr`: case records, evidence badges, map and timeline
+7. `spiderweb-pr`: rules and tokens only; it keeps its TypeScript stack and workbench
+   layout (FEDERATION_GUI_STANDARD.md §1)
 
 ## Required migration procedure per repository
 
@@ -83,6 +90,14 @@ Token and component changes require:
 - migration note for breaking changes
 - visual-regression update rationale
 - validation against at least `thehub-pr` and one map-heavy repository
+
+### Trying a released candidate against the producers
+
+`thehub-pr` consumes the package from source (`file:../../federation-design/packages/react`), so its own CI covers it. The producers consume a release tarball, and no job in this repository built them against a candidate before a pin PR did. `.github/workflows/federation-design-consumer-matrix.yml` closes that gap. It runs only when dispatched by hand, with the release-asset URL and the SHA-256 of a released candidate (a pre-release is enough), and it reads nothing but public repositories with a read-only token.
+
+For each producer that depends on the package (`aguayluz-pr`, `centinelas-pr`, `moneysweep-pr`, `ovnis-pr`, `skywatcher-pr`) it checks out `main`, builds and unit-tests the producer on its current pin, installs the candidate over the pin, repeats, and compares the two per step. A producer that is already red is reported as such instead of being blamed on the candidate, and a candidate that is not what got installed is a failure. `spiderweb-pr` declares no dependency and is reported as not exercised, never as passed. The decision logic is `tools/federation_consumer_matrix.py`, tested in `tests/test_federation_consumer_matrix.py`.
+
+A green run means the candidate builds and passes each producer's unit tests. It does not run a producer's six-viewport/axe harness, GUI-parity suite or `verify:*` scripts (those check the producer's own pin, so they would fail any candidate by design), and it does not replace migrating one repository at a time: the pin PR's own checks decide that.
 
 ## Current limitation
 
