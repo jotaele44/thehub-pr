@@ -1,26 +1,29 @@
 #!/bin/sh
+# Rendered from thehub-pr/federation-templates/PRII-APP.sh — do not hand-edit.
 # Launcher (Linux). Double-click where your file manager allows executing
-# scripts, or run ./PRII-THEHUB.sh. First run installs dependencies (needs
-# internet once); later runs start the app directly and work offline.
+# scripts, or run ./PRII-THEHUB.sh. Finds a Python and hands over to
+# desktop/setup.py, which sets the app up on first run and starts it.
+# Options are passed through: run with --help to see them.
 set -eu
 cd "$(dirname "$0")"
 
-if ! command -v python3 >/dev/null 2>&1; then
-  echo "Python 3 is required (e.g. sudo apt install python3 python3-venv)."
-  exit 1
-fi
-
-LOG="$(mktemp "${TMPDIR:-/tmp}/prii-thehub-pr-setup.XXXXXX")"
-if ! python3 desktop/setup.py --ensure >"$LOG" 2>&1; then
-  cat "$LOG"
-  echo
-  echo "Setup failed. If Node.js is missing, install it from https://nodejs.org and re-run this launcher."
-  echo "Full log: $LOG"
+# Newest Python first; every candidate is checked against the 3.10 floor.
+PYTHON=""
+for candidate in python3.14 python3.13 python3.12 python3.11 python3.10 python3; do
+  if command -v "$candidate" >/dev/null 2>&1 \
+    && "$candidate" -c 'import sys; raise SystemExit(sys.version_info < (3, 10))' 2>/dev/null; then
+    PYTHON="$candidate"
+    break
+  fi
+done
+if [ -z "$PYTHON" ]; then
+  echo "Python 3.10 or newer is required (for example: sudo apt install python3 python3-venv)."
+  echo "Se requiere Python 3.10 o posterior (por ejemplo: sudo apt install python3 python3-venv)."
   if [ -t 0 ]; then
-    printf '%s' "Press Enter to close… "
+    printf '%s' "Press Enter to close / Presione Intro para cerrar… "
     read -r _
   fi
   exit 1
 fi
-rm -f "$LOG"
-exec .venv/bin/python desktop/launch.py "$@"
+
+exec "$PYTHON" desktop/setup.py --launch "$@"

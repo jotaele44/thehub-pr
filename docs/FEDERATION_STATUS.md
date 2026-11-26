@@ -1,10 +1,10 @@
 # PRII Federation — Gap-Closure Status
 
 _Authoritative status of the Puerto Rico Integrated Intelligence (PRII) federation._
-_Last updated: 2026-11-14 (`thehub-pr`'s Hub CI now reports one aggregate `ci-required`
-status that `main` can require — see Part 15 below). Prior update: 2026-10-29
-(`centinelas-pr`'s scheduled data pushes reach `main` again, each recording its own
-`docs-sync` status — see Part 13)._
+_Last updated: 2026-11-26 (the blocked-gaps table now names the `SYNC_PAT` write access
+that automatic template-sync PRs wait on). Prior update: 2026-11-14 (`thehub-pr`'s Hub
+CI now reports one aggregate `ci-required` status that `main` can require — see
+Part 15 below)._
 
 The federation is **artifact-based**: producers emit a discovery manifest
 (`federation.json`) plus a canonical export package (`sources/entities/
@@ -246,6 +246,7 @@ Each item below is **code-ready** unless noted; the missing item is named.
 | ECW photomosaic extents | PRIIS | A GDAL ECW driver/plugin or external ECW→GeoTIFF conversion before remaining mosaics can be ingested. |
 | `docs-sync` required on `main` | aguayluz | Held until `refresh.yml` either opens a pull request or records `docs-sync` on its commit before pushing (as `centinelas-pr/scripts/push_to_main.sh` does); then an administrator runs `tools/require_docs_sync.py --apply`, since repository settings are outside what a template or CI can change. |
 | Fixture-refresh PR from `federation-ingest.yml` | thehub | Repository setting: Settings → Actions → General → Workflow permissions → "Allow GitHub Actions to create and approve pull requests" (or a `SYNC_PAT` secret). Until then each run updates the `fixture-refresh` branch but cannot open its PR. |
+| Template-sync PRs from `federation-template-sync.yml` | thehub → the six producers | A `SYNC_PAT` that can write to every producer: Contents, Pull requests and Workflows: Read and write (`federation-templates/README.md`, "Auto-propagation"). As of 2026-11-26 the secret is set, but each producer refuses its pushes (HTTP 403), so template changes reach the producers only through hand-made sync PRs. |
 | `ci-required` required on `main` | thehub | Repository setting: add the `ci-required` status to the `main-required-checks` ruleset. Do this only after fixture-refresh pull requests can run CI (the `SYNC_PAT` secret): a pull request opened with the built-in Actions token runs no workflows, so it would wait on `ci-required` forever. |
 | Repo deletion | `jotaele44/Aerospace-Intelligence-Tool` | `gh auth refresh -s delete_repo` then `gh repo delete … --yes`. Content preserved in `skywatcher-pr` archive/provenance notes. |
 | Repo deletion | `jorgegonzalez44/Puerto-Rico-Airspace-Intelligence-Tool` | Delete from the **jorgegonzalez44** account after confirming no unsalvaged material remains. |

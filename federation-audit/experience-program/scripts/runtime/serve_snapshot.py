@@ -37,7 +37,14 @@ def build_app(root: Path, name: str):
 
     config = DesktopConfig.from_module(config_module)
     config.state_dir = Path(tempfile.mkdtemp(prefix=f"{name}-rt-"))
-    configure(config, config.state_dir / "ws")
+    workspace = (config.state_dir / "ws").resolve()
+    if name == "centinelas-pr":
+        # configure() seeds the workspace, so allow it before setup runs.
+        roots = os.environ.get("CENTINELAS_DATA_ROOTS")
+        os.environ["CENTINELAS_DATA_ROOTS"] = (
+            os.pathsep.join((roots, str(workspace))) if roots else str(workspace)
+        )
+    configure(config, workspace)
     apply_environment(config)
     if name == "moneysweep-pr":
         # Its launcher bootstraps the workspace before handing over to the runtime.
