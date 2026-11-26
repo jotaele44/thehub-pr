@@ -65,6 +65,11 @@ distribution channel, not a replacement for the launcher above.
   summary, readiness check, start pages, the read-only POSTs a guest may call,
   and its options. The screen itself lives in the shared runtime
   ([`packages/prii_desktop`](../packages/prii_desktop/README.md#the-launch-pad)).
+- The native window has a menu bar (Go, Tools, Window, Help, plus extra items in
+  the app menu), and on macOS a Dock tile menu and a right-click menu. The **Go**
+  entries are the Launch Pad's start pages, so they follow `LAUNCHPAD` in
+  `desktop/config.py` with nothing else to configure; the rest comes from the
+  shared runtime ([Menus](../packages/prii_desktop/README.md#menus)).
 - `desktop/setup.py` is idempotent one-time setup (`--force` to redo).
 
 ## Command line

@@ -1174,6 +1174,7 @@ class DesktopBridge(SetupBridge):
         *,
         argv: Sequence[str] = (),
         reopen_launchpad: Callable[[], None] | None = None,
+        menus: Callable[[], Any] | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(config, **kwargs)
@@ -1181,6 +1182,9 @@ class DesktopBridge(SetupBridge):
 
         self._argv = tuple(argv)
         self._reopen_launchpad = reopen_launchpad
+        # Returns the menu controller (or None). Kept private: pywebview exposes
+        # every public attribute of this object to page JavaScript.
+        self._menus = menus
         self._session: Session | None = None
         #: Set once the user presses Launch (or closes the window).
         self.launch_requested = threading.Event()
@@ -1242,3 +1246,14 @@ class DesktopBridge(SetupBridge):
             return False
         self._reopen_launchpad()
         return True
+
+    def show_context_menu(self, link: str = "") -> bool:
+        """Right-click in the page: open the native context menu (macOS only).
+
+        ``link`` is the address under the pointer, or empty. Returns ``False``
+        where there is no native menu, so the page can keep its own behaviour.
+        """
+        controller = self._menus() if self._menus is not None else None
+        if controller is None:
+            return False
+        return bool(controller.popup_context(link if isinstance(link, str) else ""))
