@@ -17,8 +17,12 @@
 # and receive the bump in a template sync PR.
 version: 2
 updates:
-  - package-ecosystem: "pip"
-    # The pip ecosystem also reads requirement files one directory below "/",
+  # "uv" here, because the hub commits uv.lock: the uv updater rewrites
+  # pyproject.toml and uv.lock together, where a pip bump would leave the lock
+  # stale (python_ecosystem in producers.vars.yaml, ADR 0017).
+  - package-ecosystem: "uv"
+    # The Python ecosystem (pip and uv share the fetcher) also reads
+    # requirement files one directory below "/",
     # so this scan reaches federation-templates/requirements-desktop.txt: a
     # pywebview bump edits that template and the hub's own
     # requirements-desktop.txt in one pull request. Producers exclude their

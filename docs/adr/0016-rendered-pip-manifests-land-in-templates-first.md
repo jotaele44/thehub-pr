@@ -5,6 +5,7 @@
 - **Deciders:** PRII federation maintainers
 - **Scope:** all seven PRII federation repositories (defined in `thehub-pr`, rendered into each)
 - **Builds on:** [ADR 0015](0015-action-pins-land-in-templates-first.md)
+- **Extended by:** [ADR 0017](0017-dependabot-updates-uv-lock-with-its-manifest.md), which runs this entry as the `uv` ecosystem in repositories that commit `uv.lock`. Everything said here of "the pip ecosystem" holds for it too: the two share the file fetcher.
 
 ## Context
 
