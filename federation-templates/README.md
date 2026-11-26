@@ -1,7 +1,8 @@
 # federation-templates — canonical shared boilerplate
 
 Single source of truth for the non-Python boilerplate that every PRII repo used
-to copy: the `Fix-Gatekeeper.command` and `PRII-<APP>.{command,bat,sh}` launchers,
+to copy: the `Fix-Gatekeeper.command` and `PRII-<APP>.{command,bat,sh}` launchers
+with the shared `desktop/setup.py` behind them,
 `requirements-desktop.txt` (desktop producers), and the shared
 `schemas/federation_export_manifest.schema.json` contract. `baseline/` holds the
 engineering and governance baseline (CI workflows, pre-commit, contributor docs)
@@ -20,6 +21,42 @@ reads as manifests (see
 template writes each as `key: ["{{…}}"]`; where the list is empty for a repo, the
 renderer leaves that whole line out, and it refuses the placeholder anywhere else.
 
+## The shared launcher
+
+Six repos (all but `moneysweep-pr`) render the same launcher, and it is split
+so that almost none of it is shell:
+
+| File | Job |
+|---|---|
+| `PRII-APP.command`, `PRII-APP.sh`, `PRII-APP.bat` | Find the newest Python that is 3.10 or later and run `desktop/setup.py --launch`, passing options through. Nothing else. |
+| `PRII-APP.app/Contents/MacOS/PRII-APP` | The same for a Finder double-click, where there is no window to print to: it starts a set-up app directly and otherwise opens `Contents/Resources/first-run-setup.command` in Terminal. Keeps the App Translocation guard. |
+| `desktop/setup.py` | Everything else: setup steps, finding or downloading Node.js, noticing changed requirements, repairing a failed start, options, the preferences file, English and Spanish messages, logs. Standard library only, because it runs before anything is installed. |
+
+Per-app values come from each repo's own `desktop/config.py`, which is not
+rendered. `setup.py` reads these, all optional:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `REQUIREMENT_FILES` | `[requirements-desktop.txt]` | Installed into the private `.venv` |
+| `EXTRA_PIP_SPECS` | `[]` | Extra `pip install` arguments (e.g. an editable install) |
+| `MIN_PYTHON` | `(3, 10)` | Floor checked before setup |
+| `NODE_MAJOR` | `22` | Oldest Node accepted; also the release line downloaded |
+| `BUILD_FRONTEND` | `True` | `False` skips Node and the dashboard build |
+| `FRONTEND_DIR`, `DIST_DIR` | — | Dashboard source and build output |
+| `EXTRA_BUILD_ENV` | `{}` | Environment for the dashboard build |
+| `SETUP_VERSION` | `1` | Change it to make every installation set up again |
+| `DEFAULT_LANGUAGE` | — | `"en"` or `"es"` when the system language is neither |
+| `POST_SETUP`, `BEFORE_LAUNCH` | — | `"module:function"` run with the private Python after setup, and before every start |
+
+To change launcher behaviour, edit `desktop/setup.py` here and its tests in
+`tests/test_desktop_setup_template.py`. The `launcher-smoke.yml` workflow runs
+the real launchers on macOS, Windows and Linux against the hub's own app.
+
+`moneysweep-pr` renders the previous launchers from `legacy/` and keeps its
+own `desktop/setup.py`, which installs from an offline wheelhouse and a
+committed prebuilt dashboard. It adopts the shared launcher once those are
+supported here; until then do not edit `legacy/` except to fix a defect.
+
 ## Edit once, then re-render
 
 1. Edit the template here (e.g. `PRII-APP.sh`, or the shared schema).
@@ -37,16 +74,42 @@ renderer leaves that whole line out, and it refuses the placeholder anywhere els
 
 `.github/workflows/federation-template-sync.yml` closes the write side: on a
 change to `federation-templates/` (or manual dispatch) it re-renders every
-producer, rebinds that producer's drift gate to the exact TheHub commit used for
-the render, and **opens a sync PR** on any that drifted. The binding and rendered
-payload therefore advance together instead of comparing new files against an
-older frozen template snapshot. It's **dry-run by default**
-— without an operator-provided `SYNC_PAT` secret (contents + PR write on the
-producers) it only renders and prints the drift, opening nothing. Set `SYNC_PAT`
-to turn on the automatic per-producer PRs. Until then, edit a template → run
-`render_federation_templates.py --all` locally and commit per repo (each repo's
-`template-drift.yml` keeps them honest). This is also the route by which action-pin
-bumps reach the producers; see the next section.
+producer and rebinds that producer's drift gate to the exact TheHub commit used
+for the render. The binding and rendered payload therefore advance together
+instead of comparing new files against an older frozen template snapshot.
+`tools/federation_template_sync_pr.sh` then decides, per producer:
+
+| After the render | Result |
+|---|---|
+| Nothing changed | A notice. |
+| Only the `PRII_TEMPLATE_REF` value in `template-drift.yml` moved | A notice and no PR. The rendered files already match, so the producer keeps its current pin until a template change reaches it. |
+| A rendered file changed or was added | The standing branch `federation-template-sync` is regenerated from the producer's `main` and force-pushed, and its open PR is updated, or a PR is opened. There is never more than one. Don't push to that branch by hand: the next run replaces it. To refresh a PR that went stale against `main`, re-run the workflow. |
+
+When nothing or only the pin changed but a sync PR is still open, the job warns
+that it is stale; close it.
+
+It's **dry-run by default** — without an operator-provided `SYNC_PAT` secret it
+only renders and prints the drift, opening nothing. To turn on the automatic
+per-producer PRs, set `SYNC_PAT` to a token that can write to every producer.
+For a fine-grained token:
+
+- **Repository access:** all six producers, plus `thehub-pr`, because
+  `federation-ingest.yml` uses the same secret there.
+- **Permissions:** Contents, Pull requests and Workflows: Read and write.
+  Workflows is required because every sync edits
+  `.github/workflows/template-drift.yml`.
+- A classic token instead needs the `repo` and `workflow` scopes.
+
+With `SYNC_PAT` set, each job first dry-runs a push to its producer, even when
+nothing drifted. If that push is refused, the job fails before changing anything,
+with an error naming the repository and those permissions. A dry run cannot
+exercise the Workflows or Pull requests permission; a refusal there fails the job
+at the real push or PR call with the same message.
+
+Without the token, edit a template → run `render_federation_templates.py --all`
+locally and commit per repo (each repo's `template-drift.yml` keeps them honest).
+This is also the route by which action-pin bumps reach the producers; see the
+next section.
 
 ## Action pins: Dependabot bumps the template, never a copy
 
@@ -67,11 +130,13 @@ What happens when an action publishes a release:
    directories") that edits each affected template together with the hub's
    copy. The hub's drift gate stays green. Review and merge it like any other.
 2. The merge touches `federation-templates/**`, so `federation-template-sync.yml`
-   re-renders every producer and rebinds its `PRII_TEMPLATE_REF` to the merged
-   commit. With `SYNC_PAT` set it opens a sync PR on each producer that drifted.
-   Without it, it only prints the drift, and someone runs
+   re-renders every producer at the merged commit. With `SYNC_PAT` set it opens
+   or updates the `federation-template-sync` PR on each producer whose rendered
+   files changed, rebinding its `PRII_TEMPLATE_REF` to that commit. Producers the
+   bump does not touch get no PR and keep their pin. Without it, it only prints
+   the drift, and someone runs
    `render_federation_templates.py --repo <id> --template-ref <merged sha>` for
-   each producer and opens those PRs.
+   each affected producer and opens those PRs.
 3. Until a producer merges its sync PR, its drift gate keeps checking against its
    old pin, so it stays green on the old action version.
 

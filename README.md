@@ -105,8 +105,9 @@ workflow will use it automatically.
 
 ## Desktop app
 
-Double-click launchers at the repo root start the local desktop app (first run
-installs dependencies, later runs work offline):
+Double-click launchers at the repo root start the local desktop app. The first
+run sets the app up by itself (it needs the internet once and shows numbered
+steps); later runs start directly and work offline:
 
 - `PRII-THEHUB.command` (macOS) / `PRII-THEHUB.app`
 - `PRII-THEHUB.bat` (Windows)
