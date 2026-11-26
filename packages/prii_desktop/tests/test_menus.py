@@ -260,8 +260,9 @@ def test_dock_menu_hides_the_workspace_before_setup(tmp_path):
 
 def test_dock_menu_is_never_leading_or_trailing_with_a_separator(tmp_path):
     for configured in (True, False):
-        h = Harness(tmp_path / str(configured), configured=configured) if False else Harness(
-            tmp_path, configured=configured)
+        root = tmp_path / str(configured)
+        root.mkdir()
+        h = Harness(root, configured=configured)
         entries = h.controller.dock_entries()
         assert entries[0] is not SEPARATOR and entries[-1] is not SEPARATOR
 
