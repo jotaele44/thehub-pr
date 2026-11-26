@@ -140,6 +140,29 @@ Keeping it working:
 `tests/test_render_federation_templates.py` enforces each of these that a test can
 see from the hub.
 
+### Which Python ecosystem: uv where the repo commits uv.lock
+
+The Python entry in both Dependabot templates is
+`package-ecosystem: "{{PYTHON_ECOSYSTEM}}"`, filled from `python_ecosystem` in
+`producers.vars.yaml` ([ADR 0017](../docs/adr/0017-dependabot-updates-uv-lock-with-its-manifest.md)):
+
+| `python_ecosystem` | Repositories | Lockfile |
+|---|---|---|
+| `uv` | thehub-pr, spiderweb-pr, skywatcher-pr, aguayluz-pr, centinelas-pr | `uv.lock` (`lock_cmd` is `uv lock --check`) |
+| `pip` | moneysweep-pr, ovnis-pr | `requirements.lock`, compiled by `uv pip compile` |
+
+Dependabot's pip updater rewrites `pyproject.toml` and requirement files but never
+`uv.lock`, so in a uv-locked repository each of its bumps left the lock stale and
+`uv lock --check` red (skywatcher-pr `e562433`). The uv updater reads the same files
+the pip one does, through the same fetcher, so everything above still holds: it scans
+one directory down, it honours `exclude-paths`, and it bumps plain requirement files.
+It also rewrites `uv.lock` together with `pyproject.toml`.
+
+A repository that adopts `uv.lock` changes `lock_cmd` to `uv lock --check` and
+`python_ecosystem` to `uv` in the same edit; a test fails if the two disagree.
+Switching an existing repository leaves its open `dependabot/pip/*` pull requests
+behind. Close them: the uv run reopens each update with `uv.lock` included.
+
 ## Npm: held majors
 
 Both Dependabot templates carry the same npm block, and that block `ignore`s the
