@@ -37,16 +37,42 @@ renderer leaves that whole line out, and it refuses the placeholder anywhere els
 
 `.github/workflows/federation-template-sync.yml` closes the write side: on a
 change to `federation-templates/` (or manual dispatch) it re-renders every
-producer, rebinds that producer's drift gate to the exact TheHub commit used for
-the render, and **opens a sync PR** on any that drifted. The binding and rendered
-payload therefore advance together instead of comparing new files against an
-older frozen template snapshot. It's **dry-run by default**
-— without an operator-provided `SYNC_PAT` secret (contents + PR write on the
-producers) it only renders and prints the drift, opening nothing. Set `SYNC_PAT`
-to turn on the automatic per-producer PRs. Until then, edit a template → run
-`render_federation_templates.py --all` locally and commit per repo (each repo's
-`template-drift.yml` keeps them honest). This is also the route by which action-pin
-bumps reach the producers; see the next section.
+producer and rebinds that producer's drift gate to the exact TheHub commit used
+for the render. The binding and rendered payload therefore advance together
+instead of comparing new files against an older frozen template snapshot.
+`tools/federation_template_sync_pr.sh` then decides, per producer:
+
+| After the render | Result |
+|---|---|
+| Nothing changed | A notice. |
+| Only the `PRII_TEMPLATE_REF` value in `template-drift.yml` moved | A notice and no PR. The rendered files already match, so the producer keeps its current pin until a template change reaches it. |
+| A rendered file changed or was added | The standing branch `federation-template-sync` is regenerated from the producer's `main` and force-pushed, and its open PR is updated, or a PR is opened. There is never more than one. Don't push to that branch by hand: the next run replaces it. To refresh a PR that went stale against `main`, re-run the workflow. |
+
+When nothing or only the pin changed but a sync PR is still open, the job warns
+that it is stale; close it.
+
+It's **dry-run by default** — without an operator-provided `SYNC_PAT` secret it
+only renders and prints the drift, opening nothing. To turn on the automatic
+per-producer PRs, set `SYNC_PAT` to a token that can write to every producer.
+For a fine-grained token:
+
+- **Repository access:** all six producers, plus `thehub-pr`, because
+  `federation-ingest.yml` uses the same secret there.
+- **Permissions:** Contents, Pull requests and Workflows: Read and write.
+  Workflows is required because every sync edits
+  `.github/workflows/template-drift.yml`.
+- A classic token instead needs the `repo` and `workflow` scopes.
+
+With `SYNC_PAT` set, each job first dry-runs a push to its producer, even when
+nothing drifted. If that push is refused, the job fails before changing anything,
+with an error naming the repository and those permissions. A dry run cannot
+exercise the Workflows or Pull requests permission; a refusal there fails the job
+at the real push or PR call with the same message.
+
+Without the token, edit a template → run `render_federation_templates.py --all`
+locally and commit per repo (each repo's `template-drift.yml` keeps them honest).
+This is also the route by which action-pin bumps reach the producers; see the
+next section.
 
 ## Action pins: Dependabot bumps the template, never a copy
 
@@ -67,11 +93,13 @@ What happens when an action publishes a release:
    directories") that edits each affected template together with the hub's
    copy. The hub's drift gate stays green. Review and merge it like any other.
 2. The merge touches `federation-templates/**`, so `federation-template-sync.yml`
-   re-renders every producer and rebinds its `PRII_TEMPLATE_REF` to the merged
-   commit. With `SYNC_PAT` set it opens a sync PR on each producer that drifted.
-   Without it, it only prints the drift, and someone runs
+   re-renders every producer at the merged commit. With `SYNC_PAT` set it opens
+   or updates the `federation-template-sync` PR on each producer whose rendered
+   files changed, rebinding its `PRII_TEMPLATE_REF` to that commit. Producers the
+   bump does not touch get no PR and keep their pin. Without it, it only prints
+   the drift, and someone runs
    `render_federation_templates.py --repo <id> --template-ref <merged sha>` for
-   each producer and opens those PRs.
+   each affected producer and opens those PRs.
 3. Until a producer merges its sync PR, its drift gate keeps checking against its
    old pin, so it stays green on the old action version.
 
