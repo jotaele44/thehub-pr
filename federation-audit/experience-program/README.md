@@ -385,9 +385,14 @@ written down here rather than claimed.
   - a launch that finds the setup marker or the built frontend missing reruns
     the full setup (170.8 s once).
   That this is the startup delay the user reported is an inference, and is
-  marked as one. Reading the Dock on screen needs Accessibility permission that
-  the Mac refused, so the on-screen name and menu are still to be confirmed with
-  `MACOS_CHECKLIST.md`.
+  marked as one. On 2026-11-21 the Dock could not be read (Accessibility
+  permission was refused). On 2026-11-24 the Mac was linked to a session and one
+  launch of `PRII-THEHUB.app` was read on screen (`on_screen_2026_11_24`): the
+  Dock tile is labelled `PRII-THEHUB` with a blue network icon, which corrects
+  the earlier expectation of a Python tile, while the menu bar name and the
+  application menu say `Python`. The Dock tile's menu, Open at Login and the
+  Cmd-Tab entry were not seen and are still to be confirmed with
+  `MACOS_CHECKLIST.md`. The macOS gate entries stay `BLOCKED`.
 
 ## Re-running
 

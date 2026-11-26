@@ -10,13 +10,22 @@ What was measured on your Mac on 2026-11-21 is recorded in
   spiderweb-pr have no setup marker on your Mac, so their next launch takes the
   slow path. For centinelas-pr and aguayluz-pr, a fresh setup currently fails on a
   pin conflict (`pydantic-core`).
-- **App identity.** The running app is `Python` (`org.python.python`), not TheHub
-  (`pr.prii.thehub.launcher`). The bundle hands over to the venv's Python, so the
-  bundle's name and icon are lost.
+- **App identity.** The running application is `Python` (`org.python.python`),
+  not TheHub (`pr.prii.thehub.launcher`): the bundle hands over to the venv's
+  Python. On 2026-11-24 the Dock and menu bar were read on screen with the Mac
+  linked to a session, and the two surfaces disagree. The **Dock tile** is
+  labelled `PRII-THEHUB` and shows a blue network icon, so the bundle's name and
+  icon do reach the Dock. The **menu bar** name and the application menu say
+  `Python` (About Python, Quit Python). The 2026-11-21 expectation that the Dock
+  would read `Python` was wrong for the tile.
 - **Dock menu and Open at Login.** The desktop runtime defines neither. No PRII
-  app is a login item.
+  app is a login item. The tile's menu itself has not been seen: right-clicking
+  it on 2026-11-24 showed nothing in the session's screenshots.
 
-The steps below close what could not be done remotely. Run them in Terminal.
+Steps 2.1 and 2.2 (tile name and icon, menu bar name) are done for TheHub as
+above; still open are step 2.2's **Cmd-Tab** entry, step 2.3 and step 2.4 (the
+Dock menu and **Open at Login**), and the producer-app repeat. The steps below
+close what could not be done remotely. Run them in Terminal.
 
 ## 1. Allow the Dock to be read (once, optional)
 

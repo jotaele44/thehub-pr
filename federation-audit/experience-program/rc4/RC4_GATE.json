@@ -103,8 +103,8 @@
   "cross-engine/commits.json": "5641ee58a720b7eacc3024b9eae0adc6e5135a4f240269589d23631b59f5b0f2",
   "cross-engine/routes.json": "0ebb124808e053c987aa990c5f88038d17f74d1cb46d7f82da3e87de8a166d32",
   "qa/INDEPENDENT_REVIEW_PACKET.md": "83b7908147fa7091cb996f8068a3411bcef89f0177f5ab4d8dd382fec3c96ad6",
-  "qa/macos_observations.json": "a0c49eebc578fbd0704fee988ebd55d2df7472d610edc4a9912e5deb58b7905d",
-  "qa/MACOS_CHECKLIST.md": "90de84254a355cb3e94142fe5b83151393e8da88f041f7b20126013225ceb904",
+  "qa/macos_observations.json": "e5c05bb3abdab31641f9dea9eca17fccae0ad478697806e91c79120a0aea009b",
+  "qa/MACOS_CHECKLIST.md": "3a0eaef67eb946f3260a764548af783c4f5684fdb9dc906197490fb377ed9b3b",
   "qa/manual/README.md": "6480eddd38e3dd0d63bfa2363c89bc6088638c20bd35086969d697edd34c223f",
   "qa/manual/design-system-controls.md": "c82da0577998a2be1ceaa58a85729f236ba2c9f8c42b77607214e95f2e853839",
   "qa/manual/skywatcher.md": "594ff66318c7394a8989a674bb6284b377eb37d07fd28a467dbca6c049643314",
@@ -510,8 +510,8 @@
   "macos": {
    "state": "BLOCKED",
    "evidence": "qa/macos_observations.json",
-   "next_step": "qa/MACOS_CHECKLIST.md",
-   "measured": "On the user's Mac: the running app is Python (org.python.python), not TheHub; the desktop runtime defines no Dock menu and no login item; a launch without the setup marker reran full setup in 170.8 s; warm backend start about 1.7 s. On-screen Dock name and menu not seen (Accessibility permission refused)."
+   "next_step": "qa/MACOS_CHECKLIST.md steps 2.2 (Cmd-Tab entry only), 2.3 and 2.4: Dock menu entries, Open at Login, app switcher.",
+   "measured": "On the user's Mac: the running application is Python (org.python.python), not TheHub; the desktop runtime defines no Dock menu and no login item; a launch without the setup marker reran full setup in 170.8 s; warm backend start about 1.7 s. Read on screen on 2026-11-24 (one Mac, one launch): the Dock tile is labelled PRII-THEHUB with a blue network icon, while the menu bar name and application menu say Python. The Dock tile's menu and the Cmd-Tab entry were not seen."
   }
  },
  "script_revisions": {
