@@ -1,7 +1,8 @@
 # federation-templates — canonical shared boilerplate
 
 Single source of truth for the non-Python boilerplate that every PRII repo used
-to copy: the `Fix-Gatekeeper.command` and `PRII-<APP>.{command,bat,sh}` launchers,
+to copy: the `Fix-Gatekeeper.command` and `PRII-<APP>.{command,bat,sh}` launchers
+with the shared `desktop/setup.py` behind them,
 `requirements-desktop.txt` (desktop producers), and the shared
 `schemas/federation_export_manifest.schema.json` contract. `baseline/` holds the
 engineering and governance baseline (CI workflows, pre-commit, contributor docs)
@@ -19,6 +20,42 @@ reads as manifests (see
 [Pip manifests](#pip-manifests-the-same-rule-for-requirements-desktoptxt)). A
 template writes each as `key: ["{{…}}"]`; where the list is empty for a repo, the
 renderer leaves that whole line out, and it refuses the placeholder anywhere else.
+
+## The shared launcher
+
+Six repos (all but `moneysweep-pr`) render the same launcher, and it is split
+so that almost none of it is shell:
+
+| File | Job |
+|---|---|
+| `PRII-APP.command`, `PRII-APP.sh`, `PRII-APP.bat` | Find the newest Python that is 3.10 or later and run `desktop/setup.py --launch`, passing options through. Nothing else. |
+| `PRII-APP.app/Contents/MacOS/PRII-APP` | The same for a Finder double-click, where there is no window to print to: it starts a set-up app directly and otherwise opens `Contents/Resources/first-run-setup.command` in Terminal. Keeps the App Translocation guard. |
+| `desktop/setup.py` | Everything else: setup steps, finding or downloading Node.js, noticing changed requirements, repairing a failed start, options, the preferences file, English and Spanish messages, logs. Standard library only, because it runs before anything is installed. |
+
+Per-app values come from each repo's own `desktop/config.py`, which is not
+rendered. `setup.py` reads these, all optional:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `REQUIREMENT_FILES` | `[requirements-desktop.txt]` | Installed into the private `.venv` |
+| `EXTRA_PIP_SPECS` | `[]` | Extra `pip install` arguments (e.g. an editable install) |
+| `MIN_PYTHON` | `(3, 10)` | Floor checked before setup |
+| `NODE_MAJOR` | `22` | Oldest Node accepted; also the release line downloaded |
+| `BUILD_FRONTEND` | `True` | `False` skips Node and the dashboard build |
+| `FRONTEND_DIR`, `DIST_DIR` | — | Dashboard source and build output |
+| `EXTRA_BUILD_ENV` | `{}` | Environment for the dashboard build |
+| `SETUP_VERSION` | `1` | Change it to make every installation set up again |
+| `DEFAULT_LANGUAGE` | — | `"en"` or `"es"` when the system language is neither |
+| `POST_SETUP`, `BEFORE_LAUNCH` | — | `"module:function"` run with the private Python after setup, and before every start |
+
+To change launcher behaviour, edit `desktop/setup.py` here and its tests in
+`tests/test_desktop_setup_template.py`. The `launcher-smoke.yml` workflow runs
+the real launchers on macOS, Windows and Linux against the hub's own app.
+
+`moneysweep-pr` renders the previous launchers from `legacy/` and keeps its
+own `desktop/setup.py`, which installs from an offline wheelhouse and a
+committed prebuilt dashboard. It adopts the shared launcher once those are
+supported here; until then do not edit `legacy/` except to fix a defect.
 
 ## Edit once, then re-render
 
