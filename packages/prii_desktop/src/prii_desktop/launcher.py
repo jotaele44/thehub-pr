@@ -38,6 +38,7 @@ from pathlib import Path
 
 from .appserver import make_desktop_app
 from .config import DesktopConfig
+from .menus import MenuController, install_native_menus, pywebview_menu
 from .launchpad import (
     DesktopBridge,
     Session,
@@ -400,6 +401,46 @@ def _session_target(
     return session_url(base, session.start_route, query)
 
 
+def _install_menus(
+    config: DesktopConfig,
+    spec,
+    bridge: DesktopBridge,
+    window,
+    lock_file: Path,
+    argv: list[str],
+    holder: dict[str, MenuController],
+) -> list:
+    """Build the menu bar and the macOS-only Dock and right-click menus.
+
+    Menus are a convenience: any failure here is written to the launcher log and
+    leaves the window exactly as it was before menus existed.
+    """
+
+    def note(message: str) -> None:
+        log(message)
+        _record_failure(config, message)
+
+    try:
+        controller = MenuController(
+            config,
+            spec,
+            window=lambda: window,
+            app_url=lambda: bridge.app_url,
+            open_setup=bridge.open_setup,
+            open_launchpad=bridge.open_launchpad if spec is not None else None,
+            restart=lambda: restart_process(lock_file, argv),
+            record=note,
+        )
+        holder["controller"] = controller
+        controller.native = install_native_menus(controller, note)
+        controller.watch_window(window, context_menu=controller.native is not None)
+        return pywebview_menu(controller.menu_bar(), controller.run)
+    except Exception as exc:  # noqa: BLE001
+        holder.pop("controller", None)
+        note(f"menu: not installed: {type(exc).__name__}: {exc}")
+        return []
+
+
 def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None:
     """Run first-launch setup, the Launch Pad, and the producer in one window."""
     import webview
@@ -411,6 +452,7 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
     )
     spec = launchpad_spec(config)
     show_pad = should_show(config, argv)
+    menu_holder: dict[str, MenuController] = {}
     bridge = DesktopBridge(
         config,
         argv=argv,
@@ -418,6 +460,7 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
         reopen_launchpad=(
             (lambda: reopen_launchpad(lock_file, argv)) if spec is not None else None
         ),
+        menus=lambda: menu_holder.get("controller"),
     )
     if show_pad:
         bridge.await_launch()
@@ -437,6 +480,7 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
         min_size=(760, 560),
     )
     bridge.bind_window(window)
+    menu_bar = _install_menus(config, spec, bridge, window, lock_file, argv, menu_holder)
     runtime: dict[str, object] = {}
     window_closed = threading.Event()
 
@@ -466,7 +510,7 @@ def _run_window(config: DesktopConfig, lock_file: Path, argv: list[str]) -> None
                 session.start_route = requested
         start_app(config, lock_file, bridge, window, argv, runtime, session)
 
-    webview.start(on_ready)
+    webview.start(on_ready, menu=menu_bar)
     server = runtime.get("server")
     if server is not None:
         finish(server, lock_file)

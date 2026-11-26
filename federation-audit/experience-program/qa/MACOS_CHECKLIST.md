@@ -18,9 +18,12 @@ What was measured on your Mac on 2026-11-21 is recorded in
   icon do reach the Dock. The **menu bar** name and the application menu say
   `Python` (About Python, Quit Python). The 2026-11-21 expectation that the Dock
   would read `Python` was wrong for the tile.
-- **Dock menu and Open at Login.** The desktop runtime defines neither. No PRII
-  app is a login item. The tile's menu itself has not been seen: right-clicking
-  it on 2026-11-24 showed nothing in the session's screenshots.
+- **Dock menu and Open at Login.** At the heads measured the desktop runtime
+  defined neither. A Dock menu has since been added to the shared runtime (see
+  *Menus* in `packages/prii_desktop/README.md`); it has not been seen on screen.
+  The runtime still defines no login item, and no PRII app is a login item. The
+  tile's menu itself has not been seen: right-clicking it on 2026-11-24 showed
+  nothing in the session's screenshots.
 
 Steps 2.1 and 2.2 (tile name and icon, menu bar name) are done for TheHub as
 above; still open are step 2.2's **Cmd-Tab** entry, step 2.3 and step 2.4 (the
@@ -50,6 +53,14 @@ Quit any running TheHub first (its window → Quit; or `pkill -f "desktop/launch
    - **Cmd-Tab switcher**: what name and icon?
    - **Menu bar**, the bold app name next to the Apple menu: `TheHub` or `Python`?
 3. Right-click the Dock tile and record **every entry in the menu**, in order.
+   On a checkout that includes the menus change, TheHub's own entries should come
+   first: Show TheHub, Launch Pad…, Setup & Diagnostics…, then (once the app page
+   has loaded) Go To ▸, Reload Page and Open Page in Browser, then Show Workspace
+   in Finder, Show Logs in Finder (only if a log exists) and Restart TheHub; macOS
+   then adds Options, Show All Windows, Hide and Quit. That is what the code is
+   meant to produce, not an observation: write down what you see, including
+   anything missing or extra. Also open the menu bar (Go, Tools, Window, Help)
+   and right-click inside the window.
 4. Right-click → Options: is **Open at Login** offered? Do **not** tick it. If you
    tick it to test, also check System Settings → General → Login Items: does it
    list `Python` or `TheHub`? Untick afterwards.

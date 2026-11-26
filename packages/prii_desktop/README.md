@@ -10,6 +10,8 @@ Shared self-contained desktop runtime for federation applications:
   [The Launch Pad](#the-launch-pad).
 - `SetupBridge` provides a native folder picker, local diagnostics, idempotent
   repair, and an always-available in-app setup entry point.
+- **Menus** (`prii_desktop.menus`): a menu bar, a Dock tile menu and a right-click
+  menu, with no per-app configuration. See [Menus](#menus).
 - `make_desktop_app(config)` imports the producer backend and serves its built
   frontend same-origin, including client-route fallback.
 - Per-user state and the single-instance lock live in Application Support on
@@ -110,6 +112,44 @@ or options can be changed.
 
 `tools/render_desktop_setup.py --page launchpad` renders a producer's real page
 for browser checks.
+
+## Menus
+
+Every app gets the same three menus, built by `MenuController` from one list of
+actions. A producer declares nothing: the **Go** entries are the Launch Pad's
+`start_pages`, so an app without a Launch Pad simply has no page list.
+
+| Surface | Where | What it holds |
+| --- | --- | --- |
+| Menu bar | all platforms (pywebview's `menu=`) | App menu: Setup & Diagnostics, Launch Pad, Restart. **Go**: Back, Forward, Reload Page, Start Page, then every start page. **Tools**: Copy Page Address, Open Page in Browser, Show Workspace and App Data in the file manager. **Window**: Minimize, Bring to Front. **Help**: Open Launcher Log, Show Logs, Copy Diagnostics Summary. |
+| Dock tile menu | macOS | Show *App*, Launch Pad, Setup & Diagnostics; once the app page is up, Go To (a submenu of the start pages), Reload Page, Open Page in Browser; Show Workspace, Show Logs (once a log exists); Restart. macOS adds Options, Show All Windows, Hide and Quit below. |
+| Right-click | macOS | Cut, Copy, Paste, Select All; Open Link / Copy Link Address when the pointer is on a web link; on the app page also Back, Forward, Reload Page, Copy Page Address, Open Page in Browser and Go To; then Launch Pad and Setup & Diagnostics. |
+
+How it behaves:
+
+- **State.** The Dock and right-click menus are built each time they open, so they
+  only offer what works now (page actions appear only while the app itself is
+  showing, not Setup, the Launch Pad or an error page). The menu bar is fixed by
+  pywebview, so its page actions do nothing outside the app page instead.
+- **Credentials.** Copy Page Address and Open Page in Browser remove the Operator
+  credential parameter (`LAUNCHPAD.operator.url_param`) from the address. The Go
+  entries load declared pages on the app's own origin with no credential in the
+  address (the app keeps it in the page's session storage); Start Page reloads the
+  session's original address, exactly as the first load did. Copy Diagnostics
+  Summary contains no environment and no credential.
+- **Page hook.** pywebview empties WebKit's own context menu, so on macOS each
+  page gets a small script (`CONTEXT_MENU_JS`) that asks the bridge's
+  `show_context_menu` for the native menu. It stands down if the page handles
+  `contextmenu` itself, or if the bridge is missing.
+- **No shortcuts.** pywebview's menu items carry no key equivalents, so these
+  entries have no keyboard shortcuts; Edit and View come from pywebview.
+- **Fails soft.** The macOS-only parts import PyObjC lazily and swap in a subclass
+  of pywebview's application delegate rather than patching any of its methods. If
+  anything about pywebview or PyObjC is not as expected, the reason is appended to
+  `<app state dir>/logs/launcher.log` and the window opens as it did before.
+- **Not exposed to pages.** pywebview exposes every public attribute of the bridge
+  to page JavaScript, so the controller is held privately; `show_context_menu`
+  is the only menu call a page can make, and it can only open a menu.
 
 The package is installed as a local editable dependency while developing and
 is frozen into each release app by PyInstaller.

@@ -381,7 +381,10 @@ written down here rather than claimed.
   pull-request heads. It establishes:
   - the running app is the venv's Python (`org.python.python`), not the bundle's
     identity;
-  - the desktop runtime defines no Dock menu and no login item;
+  - the desktop runtime defined no Dock menu and no login item at the heads
+    measured (a Dock menu, menu bar entries and a right-click menu were added
+    afterwards, in `packages/prii_desktop`; none has been observed on screen
+    yet, and there is still no login item);
   - a launch that finds the setup marker or the built frontend missing reruns
     the full setup (170.8 s once).
   That this is the startup delay the user reported is an inference, and is

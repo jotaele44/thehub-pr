@@ -474,6 +474,11 @@ class SetupBridge:
     def set_app_url(self, url: str) -> None:
         self._app_url = url
 
+    @property
+    def app_url(self) -> str | None:
+        """Where the app was loaded from, or ``None`` before it has started."""
+        return self._app_url
+
     def snapshot(self) -> dict[str, Any]:
         state = read_state(self.config)
         workspace = (
