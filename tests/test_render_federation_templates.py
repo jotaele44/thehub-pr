@@ -56,12 +56,40 @@ def test_every_repo_in_targets_has_vars():
             assert repo in known, f"{repo} in targets.yaml but missing from vars"
 
 
-def test_spiderweb_keeps_enriched_shell_launchers_repo_owned():
+_LAUNCHER_TEMPLATES = {
+    "PRII-APP.command",
+    "PRII-APP.sh",
+    "PRII-APP.bat",
+    "PRII-APP.app/Contents/MacOS/PRII-APP",
+    "PRII-APP.app/Contents/Resources/first-run-setup.command",
+    "desktop/setup.py",
+}
+
+
+def test_shared_launcher_and_its_setup_are_adopted_together():
+    """The thin launchers only work with the shared desktop/setup.py (they call
+    its --launch), so a repo gets all of them or none of them."""
+    repos = {repo for t in _targets() for repo in t["repos"]}
+    for repo in repos:
+        managed = {t["template"] for t in _targets() if repo in t["repos"]}
+        adopted = managed & _LAUNCHER_TEMPLATES
+        assert adopted in (set(), _LAUNCHER_TEMPLATES), (repo, sorted(adopted))
+
+
+def test_moneysweep_keeps_the_previous_launchers():
+    managed = {t["template"] for t in _targets() if "moneysweep-pr" in t["repos"]}
+    assert not managed & _LAUNCHER_TEMPLATES
+    assert {t for t in managed if t.startswith("legacy/")} == {
+        "legacy/PRII-APP.command",
+        "legacy/PRII-APP.sh",
+        "legacy/PRII-APP.bat",
+        "legacy/PRII-APP.app/Contents/MacOS/PRII-APP",
+    }
+
+
+def test_spiderweb_is_back_under_the_shared_launcher():
     managed = {t["template"] for t in _targets() if "spiderweb-pr" in t["repos"]}
-    assert "PRII-APP.command" not in managed
-    assert "PRII-APP.sh" not in managed
-    assert "PRII-APP.app/Contents/MacOS/PRII-APP" not in managed
-    assert "PRII-APP.bat" in managed
+    assert _LAUNCHER_TEMPLATES <= managed
 
 
 def test_slug_substitution_renders_to_tmp(tmp_path):
@@ -78,15 +106,42 @@ def test_slug_substitution_renders_to_tmp(tmp_path):
     assert (tmp_path / "schemas" / "federation_export_manifest.schema.json").is_file()
 
 
-def test_rendered_launchers_remove_only_successful_setup_logs(tmp_path):
+def test_rendered_launchers_hand_over_to_the_shared_setup(tmp_path):
     subprocess.run(
         [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
         check=True, capture_output=True,
     )
+    app = tmp_path / "PRII-OVNIS.app" / "Contents"
     launchers = (
         tmp_path / "PRII-OVNIS.sh",
         tmp_path / "PRII-OVNIS.command",
-        tmp_path / "PRII-OVNIS.app" / "Contents" / "MacOS" / "PRII-OVNIS",
+        tmp_path / "PRII-OVNIS.bat",
+        app / "MacOS" / "PRII-OVNIS",
+        app / "Resources" / "first-run-setup.command",
+    )
+    for launcher in launchers:
+        source = launcher.read_text(encoding="utf-8")
+        assert re.search(r"desktop[/\\]setup\.py --launch", source), launcher
+        assert "Rendered from thehub-pr/federation-templates/" in source.replace("\n# ", " ")
+    assert (tmp_path / "desktop" / "setup.py").is_file()
+    assert os.access(app / "Resources" / "first-run-setup.command", os.X_OK)
+    # The two macOS scripts must agree on the log folder: the setup window reads
+    # the "start failed" note the app launcher's run leaves there.
+    folder = 'export PRII_LOG_DIR="$HOME/Library/Logs/PRII/ovnis-pr"'
+    assert folder in (app / "MacOS" / "PRII-OVNIS").read_text()
+    assert folder in (app / "Resources" / "first-run-setup.command").read_text()
+
+
+def test_legacy_launchers_remove_only_successful_setup_logs(tmp_path):
+    """moneysweep-pr still renders the previous launchers (see targets.yaml)."""
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "moneysweep-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    launchers = (
+        tmp_path / "PRII-MONEYSWEEP.sh",
+        tmp_path / "PRII-MONEYSWEEP.command",
+        tmp_path / "PRII-MONEYSWEEP.app" / "Contents" / "MacOS" / "PRII-MONEYSWEEP",
     )
     for launcher in launchers:
         source = launcher.read_text(encoding="utf-8")
@@ -96,6 +151,7 @@ def test_rendered_launchers_remove_only_successful_setup_logs(tmp_path):
         launch = source.index("exec .venv/bin/python desktop/launch.py")
 
         assert setup < retained_failure_log < cleanup < launch, launcher
+    assert not (tmp_path / "desktop" / "setup.py").exists()
 
 
 def test_rendered_templates_do_not_require_hub_sibling_paths(tmp_path):
@@ -637,6 +693,15 @@ def _entry(config: dict, ecosystem: str) -> dict:
     return entry
 
 
+_PYTHON_ECOSYSTEMS = ("pip", "uv", "{{PYTHON_ECOSYSTEM}}")
+
+
+def _python_entry(config: dict) -> dict:
+    """The one Python entry: pip or uv once rendered, the placeholder before."""
+    (entry,) = [u for u in config["updates"] if u["package-ecosystem"] in _PYTHON_ECOSYSTEMS]
+    return entry
+
+
 def _workflow_targets() -> list[dict]:
     return [t for t in _targets() if t["output"].startswith(".github/workflows/")]
 
@@ -744,10 +809,10 @@ def test_both_dependabot_templates_agree_outside_the_actions_scope():
     assert _entry(producer, "npm") == _entry(hub, "npm")
     # Producers exclude their rendered pip manifests; the hub excludes nothing,
     # because its scan has to keep reaching the requirements templates.
-    producer_pip = dict(_entry(producer, "pip"))
+    producer_pip = dict(_python_entry(producer))
     excluded = producer_pip.pop("exclude-paths", None)
     assert excluded == ["{{RENDERED_PIP_MANIFESTS}}"]
-    assert producer_pip == _entry(hub, "pip")
+    assert producer_pip == _python_entry(hub)
     for key in ("schedule", "open-pull-requests-limit", "labels", "commit-message"):
         assert _actions_entry(producer)[key] == _actions_entry(hub)[key], key
 
@@ -953,7 +1018,7 @@ def test_producer_dependabot_never_touches_a_rendered_pip_manifest(program_id, t
     mod = _renderer()
     mod.render_repo(program_id, _vars()[program_id], tmp_path, _targets(), False)
     config = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
-    pip = _entry(config, "pip")
+    pip = _python_entry(config)
     assert pip["directory"] == "/" and "directories" not in pip
     derived = mod._rendered_pip_manifests(program_id, _targets(), mod._placeholders(_vars()[program_id]))
     if derived:
@@ -970,7 +1035,7 @@ def test_hub_pip_scan_reaches_every_pip_manifest_template():
     # would silently stop being bumped; a second directory or an exclude-paths
     # entry would split or drop the bump.
     config = yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text())
-    pip = _entry(config, "pip")
+    pip = _python_entry(config)
     assert pip["directory"] == "/"
     assert "directories" not in pip and "exclude-paths" not in pip
     templates = _pip_manifest_targets()
@@ -1020,3 +1085,44 @@ def test_a_pywebview_bump_in_the_template_reaches_producers_only_by_sync(tmp_pat
     mod.render_repo("thehub-pr", _vars()["thehub-pr"], hub, _targets(), False)
     assert mod.render_repo("thehub-pr", _vars()["thehub-pr"], hub, _targets(), True) == []
     assert mod.render_repo("centinelas-pr", _vars()["centinelas-pr"], producer, _targets(), True) == [_DESKTOP_REQUIREMENTS]
+
+
+# ── Python ecosystem: uv where the repo commits uv.lock ───────────────────────
+#
+# Dependabot's pip updater rewrites pyproject.toml and requirement files but
+# never uv.lock, so in a uv-locked repo each pip bump left the lock stale
+# (skywatcher-pr e562433 turned its `uv lock --check` job red). The uv updater
+# rewrites the same files and uv.lock together. ADR 0017.
+
+
+@pytest.mark.parametrize("program_id", sorted(_vars()))
+def test_python_ecosystem_follows_the_lockfile(program_id):
+    vars_ = _vars()[program_id]
+    assert vars_.get("python_ecosystem") in ("pip", "uv"), program_id
+    # lock_cmd is what the repo's CI and CONTRIBUTING use to keep its lock in
+    # step, so it says which lockfile the repo commits.
+    locks_with_uv = vars_["lock_cmd"] == "uv lock --check"
+    assert (vars_["python_ecosystem"] == "uv") == locks_with_uv, program_id
+
+
+def test_both_dependabot_templates_take_the_ecosystem_from_the_vars():
+    for name in ("dependabot.yml", "dependabot.hub.yml"):
+        text = (_TEMPLATES / "baseline" / name).read_text()
+        config = yaml.safe_load(text)
+        assert _python_entry(config)["package-ecosystem"] == "{{PYTHON_ECOSYSTEM}}", name
+        for literal in ('package-ecosystem: "pip"', 'package-ecosystem: "uv"'):
+            assert literal not in text, f"{name}: {literal}"
+
+
+@pytest.mark.parametrize("program_id", _PRODUCERS)
+def test_producer_dependabot_uses_its_python_ecosystem(program_id, tmp_path):
+    mod = _renderer()
+    mod.render_repo(program_id, _vars()[program_id], tmp_path, _targets(), False)
+    config = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
+    assert _python_entry(config)["package-ecosystem"] == _vars()[program_id]["python_ecosystem"]
+
+
+def test_hub_dependabot_updates_its_uv_lock():
+    config = yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text())
+    assert (_HUB / "uv.lock").is_file()
+    assert _python_entry(config)["package-ecosystem"] == "uv"

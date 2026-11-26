@@ -288,7 +288,11 @@ application was changed.
   0.73 s after, with loading pyarrow and numpy's native libraries taking about
   5 s of it. The cost is reading files from this container's cold disk, so
   those two first-start budget results are `UNRESOLVED` until measured on real
-  hardware. Report a cold first start apart from warm ones.
+  hardware. Report a cold first start apart from warm ones. The two start-up
+  changes considered (MoneySweep loading pandas on first use, AguaYLuz moving
+  its import-time data load) are `DEFERRED` until a real-machine backend start
+  exceeds the budget, timed from pressing Launch, since the backend loads only
+  after the Launch Pad; `qa/MACOS_CHECKLIST.md` section 3a says how to measure it.
 - "Initial" JavaScript is what `index.html` references; the rest loads later.
 - Six budgets were adopted after the baseline was taken; `RC8_GATE.json`
   lists them and each application's result. They are bounds for this harness,
@@ -381,9 +385,14 @@ written down here rather than claimed.
   - a launch that finds the setup marker or the built frontend missing reruns
     the full setup (170.8 s once).
   That this is the startup delay the user reported is an inference, and is
-  marked as one. Reading the Dock on screen needs Accessibility permission that
-  the Mac refused, so the on-screen name and menu are still to be confirmed with
-  `MACOS_CHECKLIST.md`.
+  marked as one. On 2026-11-21 the Dock could not be read (Accessibility
+  permission was refused). On 2026-11-24 the Mac was linked to a session and one
+  launch of `PRII-THEHUB.app` was read on screen (`on_screen_2026_11_24`): the
+  Dock tile is labelled `PRII-THEHUB` with a blue network icon, which corrects
+  the earlier expectation of a Python tile, while the menu bar name and the
+  application menu say `Python`. The Dock tile's menu, Open at Login and the
+  Cmd-Tab entry were not seen and are still to be confirmed with
+  `MACOS_CHECKLIST.md`. The macOS gate entries stay `BLOCKED`.
 
 ## Re-running
 

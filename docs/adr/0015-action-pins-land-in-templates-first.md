@@ -47,7 +47,7 @@ Three facts about Dependabot (checked against the dependabot-core source, `githu
   - no hub group carries `update-types`;
   - every YAML file in a scanned directory parses;
   - an identical edit to a template and the hub's copy keeps `--check` clean.
-- Every template bump needs a sync round to reach the producers. Without the `SYNC_PAT` secret the sync workflow is a dry run, and someone has to render and open those pull requests by hand.
+- Every template bump needs a sync round to reach the producers it changes. The sync workflow keeps one standing `federation-template-sync` pull request per producer and opens none where only `PRII_TEMPLATE_REF` would move. Without the `SYNC_PAT` secret it is a dry run, and someone has to render and open those pull requests by hand. A `SYNC_PAT` that cannot write to a producer fails that producer's job, before any change when the dry-run push already shows it.
 - `exclude-paths` does not cover security updates. A Dependabot security PR in a producer can still edit a rendered workflow; its drift gate fails, and the fix is to close it and let the hub's security group bump the template.
 - A workflow template placed outside `baseline/` or `gui/` has to be added to the hub's `directories` (a test fails until it is). Every YAML file in those directories must stay valid YAML before rendering, or the hub's Dependabot update fails.
 
