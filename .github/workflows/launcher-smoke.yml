@@ -1,0 +1,103 @@
+name: Launcher smoke
+
+# Runs the real double-click launchers on macOS, Windows and Linux: each one
+# finds a Python, hands over to desktop/setup.py, which installs the app from
+# nothing, builds the dashboard and starts it far enough to answer its health
+# check (--smoke). The unit tests cover the logic with the slow parts replaced;
+# this is the only place the .bat and the macOS scripts actually execute.
+
+on:
+  pull_request:
+    paths:
+      - "PRII-THEHUB.*"
+      - "PRII-THEHUB.app/**"
+      - "desktop/**"
+      - "federation-templates/PRII-APP.*"
+      - "federation-templates/PRII-APP.app/**"
+      - "federation-templates/desktop/**"
+      - "requirements-desktop.txt"
+      - "constraints-desktop.txt"
+      - "tests/test_desktop_setup_template.py"
+      - ".github/workflows/launcher-smoke.yml"
+  push:
+    branches: [main]
+    paths:
+      - "federation-templates/PRII-APP.*"
+      - "federation-templates/PRII-APP.app/**"
+      - "federation-templates/desktop/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  launcher:
+    name: launcher (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    env:
+      THEHUB_DATA_HOME: ${{ github.workspace }}/.smoke-data
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      - name: Launcher, first run (Linux)
+        if: runner.os == 'Linux'
+        run: ./PRII-THEHUB.sh --smoke
+      - name: Launcher, first run (macOS)
+        if: runner.os == 'macOS'
+        run: ./PRII-THEHUB.command --smoke
+      - name: Launcher, first run (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: PRII-THEHUB.bat --smoke < NUL
+
+      # A second start must skip setup entirely and be quick.
+      - name: Launcher, second run (Linux)
+        if: runner.os == 'Linux'
+        run: ./PRII-THEHUB.sh --smoke --offline
+      - name: Launcher, second run (macOS)
+        if: runner.os == 'macOS'
+        run: ./PRII-THEHUB.command --smoke --offline
+      - name: Launcher, second run (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: PRII-THEHUB.bat --smoke --offline < NUL
+
+      - name: Options and languages
+        shell: bash
+        run: |
+          py=.venv/bin/python; [ -x "$py" ] || py=.venv/Scripts/python.exe
+          "$py" desktop/setup.py --version
+          "$py" desktop/setup.py --lang es --help
+          "$py" desktop/setup.py --ensure
+
+      # The macOS scripts with stubbed `open`, and everything else, on the
+      # platform they are written for.
+      - name: Launcher tests
+        shell: bash
+        run: |
+          py=.venv/bin/python; [ -x "$py" ] || py=.venv/Scripts/python.exe
+          "$py" -m pip install --quiet pytest pyyaml
+          "$py" -m pytest tests/test_desktop_setup_template.py -q
+
+      - name: Setup and launch logs
+        if: failure()
+        shell: bash
+        run: |
+          for d in "$HOME/Library/Logs/PRII" "$LOCALAPPDATA/PRII" "$HOME/.local/state/prii"; do
+            [ -d "$d" ] && find "$d" -type f -name '*.log' -print -exec tail -n 80 {} \;
+          done || true

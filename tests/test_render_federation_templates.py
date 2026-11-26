@@ -56,12 +56,40 @@ def test_every_repo_in_targets_has_vars():
             assert repo in known, f"{repo} in targets.yaml but missing from vars"
 
 
-def test_spiderweb_keeps_enriched_shell_launchers_repo_owned():
+_LAUNCHER_TEMPLATES = {
+    "PRII-APP.command",
+    "PRII-APP.sh",
+    "PRII-APP.bat",
+    "PRII-APP.app/Contents/MacOS/PRII-APP",
+    "PRII-APP.app/Contents/Resources/first-run-setup.command",
+    "desktop/setup.py",
+}
+
+
+def test_shared_launcher_and_its_setup_are_adopted_together():
+    """The thin launchers only work with the shared desktop/setup.py (they call
+    its --launch), so a repo gets all of them or none of them."""
+    repos = {repo for t in _targets() for repo in t["repos"]}
+    for repo in repos:
+        managed = {t["template"] for t in _targets() if repo in t["repos"]}
+        adopted = managed & _LAUNCHER_TEMPLATES
+        assert adopted in (set(), _LAUNCHER_TEMPLATES), (repo, sorted(adopted))
+
+
+def test_moneysweep_keeps_the_previous_launchers():
+    managed = {t["template"] for t in _targets() if "moneysweep-pr" in t["repos"]}
+    assert not managed & _LAUNCHER_TEMPLATES
+    assert {t for t in managed if t.startswith("legacy/")} == {
+        "legacy/PRII-APP.command",
+        "legacy/PRII-APP.sh",
+        "legacy/PRII-APP.bat",
+        "legacy/PRII-APP.app/Contents/MacOS/PRII-APP",
+    }
+
+
+def test_spiderweb_is_back_under_the_shared_launcher():
     managed = {t["template"] for t in _targets() if "spiderweb-pr" in t["repos"]}
-    assert "PRII-APP.command" not in managed
-    assert "PRII-APP.sh" not in managed
-    assert "PRII-APP.app/Contents/MacOS/PRII-APP" not in managed
-    assert "PRII-APP.bat" in managed
+    assert _LAUNCHER_TEMPLATES <= managed
 
 
 def test_slug_substitution_renders_to_tmp(tmp_path):
@@ -78,15 +106,42 @@ def test_slug_substitution_renders_to_tmp(tmp_path):
     assert (tmp_path / "schemas" / "federation_export_manifest.schema.json").is_file()
 
 
-def test_rendered_launchers_remove_only_successful_setup_logs(tmp_path):
+def test_rendered_launchers_hand_over_to_the_shared_setup(tmp_path):
     subprocess.run(
         [sys.executable, str(_RENDER), "--repo", "ovnis-pr", "--repo-root", str(tmp_path)],
         check=True, capture_output=True,
     )
+    app = tmp_path / "PRII-OVNIS.app" / "Contents"
     launchers = (
         tmp_path / "PRII-OVNIS.sh",
         tmp_path / "PRII-OVNIS.command",
-        tmp_path / "PRII-OVNIS.app" / "Contents" / "MacOS" / "PRII-OVNIS",
+        tmp_path / "PRII-OVNIS.bat",
+        app / "MacOS" / "PRII-OVNIS",
+        app / "Resources" / "first-run-setup.command",
+    )
+    for launcher in launchers:
+        source = launcher.read_text(encoding="utf-8")
+        assert re.search(r"desktop[/\\]setup\.py --launch", source), launcher
+        assert "Rendered from thehub-pr/federation-templates/" in source.replace("\n# ", " ")
+    assert (tmp_path / "desktop" / "setup.py").is_file()
+    assert os.access(app / "Resources" / "first-run-setup.command", os.X_OK)
+    # The two macOS scripts must agree on the log folder: the setup window reads
+    # the "start failed" note the app launcher's run leaves there.
+    folder = 'export PRII_LOG_DIR="$HOME/Library/Logs/PRII/ovnis-pr"'
+    assert folder in (app / "MacOS" / "PRII-OVNIS").read_text()
+    assert folder in (app / "Resources" / "first-run-setup.command").read_text()
+
+
+def test_legacy_launchers_remove_only_successful_setup_logs(tmp_path):
+    """moneysweep-pr still renders the previous launchers (see targets.yaml)."""
+    subprocess.run(
+        [sys.executable, str(_RENDER), "--repo", "moneysweep-pr", "--repo-root", str(tmp_path)],
+        check=True, capture_output=True,
+    )
+    launchers = (
+        tmp_path / "PRII-MONEYSWEEP.sh",
+        tmp_path / "PRII-MONEYSWEEP.command",
+        tmp_path / "PRII-MONEYSWEEP.app" / "Contents" / "MacOS" / "PRII-MONEYSWEEP",
     )
     for launcher in launchers:
         source = launcher.read_text(encoding="utf-8")
@@ -96,6 +151,7 @@ def test_rendered_launchers_remove_only_successful_setup_logs(tmp_path):
         launch = source.index("exec .venv/bin/python desktop/launch.py")
 
         assert setup < retained_failure_log < cleanup < launch, launcher
+    assert not (tmp_path / "desktop" / "setup.py").exists()
 
 
 def test_rendered_templates_do_not_require_hub_sibling_paths(tmp_path):
