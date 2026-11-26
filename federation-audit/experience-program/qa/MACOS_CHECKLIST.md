@@ -82,14 +82,19 @@ machine. Only a restart empties the disk cache, so:
 1. Restart the Mac. Open nothing else.
 2. Check the setup marker as in step 3 above; if it is missing, launch once,
    let setup finish, quit, and restart the Mac again.
-3. Double-click `~/Developer/moneysweep-pr/PRII-MONEYSWEEP.app` and time (a),
-   (b) and (c) as in step 3. Quit it and time a second launch.
+3. Double-click `~/Developer/moneysweep-pr/PRII-MONEYSWEEP.app` and time (a)
+   and (b) as in step 3. As soon as the Launch Pad shows, press **Launch**
+   without changing anything, and time (d): from pressing Launch to the app
+   content. Quit it and time a second launch the same way.
 4. Restart, and do the same with `~/Developer/aguayluz-pr/PRII-AGUAYLUZ.app`.
 
-Send one block from section 4 per app, and say it was after a restart. The
-budget is 3 s for the first start and 1.5 s for later starts, to the Launch
-Pad. Over that, the two deferred start-up changes in `first_start_diagnosis`
-are worth doing; under it, they are not.
+The application's backend, and the imports the deferred changes would move,
+load only after you press Launch: the Launch Pad appears before them. So the
+budget, 3 s for the first start and 1.5 s for later starts, applies to (d),
+not to (b). Send one block from section 4 per app, with the (d) line filled
+in, and say it was after a restart. If (d) is over budget, the two deferred
+start-up changes in `first_start_diagnosis` are worth doing; under it, they
+are not.
 
 ## 4. What to send back
 
@@ -99,6 +104,7 @@ App (repo, and commit from `git -C ~/Developer/<repo> log -1 --format=%h`):
 Launched right after a Mac restart: yes / no
 First launch:  Dock tile ___ s | Launch Pad ___ s | content ___ s
 Second launch: Dock tile ___ s | Launch Pad ___ s | content ___ s
+Launch pressed → content (d), 3a only: first ___ s | second ___ s
 Dock tile name / icon:
 Cmd-Tab name / icon:
 Menu-bar app name:

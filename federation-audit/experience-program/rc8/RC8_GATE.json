@@ -249,7 +249,7 @@
      }
     ],
     "no_change": "No code changed in moneysweep-pr.",
-    "revisit_when": "A real-machine cold first start (qa/MACOS_CHECKLIST.md section 3) exceeds first_start_ms."
+    "revisit_when": "A real-machine cold backend start, timed from pressing Launch to the app content (qa/MACOS_CHECKLIST.md section 3a), exceeds first_start_ms."
    },
    {
     "follow_up": "aguayluz-pr: look into the module-level work in server/backend/main.py.",
@@ -270,7 +270,7 @@
      }
     ],
     "no_change": "No code changed in aguayluz-pr.",
-    "revisit_when": "A real-machine cold first start (qa/MACOS_CHECKLIST.md section 3) exceeds first_start_ms, or later_start_ms is exceeded."
+    "revisit_when": "A real-machine cold backend start, timed from pressing Launch to the app content (qa/MACOS_CHECKLIST.md section 3a), exceeds first_start_ms, or later_start_ms is exceeded."
    }
   ]
  },
