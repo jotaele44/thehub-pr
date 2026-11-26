@@ -59,11 +59,11 @@
    "evidence": "qa/macos_observations.json",
    "measured": {
     "claim_class": "FACT / COMPUTED",
-    "app_identity": "PRII-THEHUB.app declares TheHub / pr.prii.thehub.launcher, but the launcher execs the venv's Python; the running process is Python (org.python.python). The bundle identity does not reach the Dock.",
-    "dock_menu": "No Dock menu is defined in packages/prii_desktop or desktop/.",
+    "app_identity": "PRII-THEHUB.app declares TheHub / pr.prii.thehub.launcher, but the launcher execs the venv's Python; the running application is Python (org.python.python). Read on screen on 2026-11-24 (one Mac, one launch): the Dock tile is labelled PRII-THEHUB and shows a blue network icon, while the menu bar name and the application menu say Python. The bundle's name and icon reach the Dock tile; its identifier does not reach the running application, and the menu bar still says Python.",
+    "dock_menu": "No Dock menu is defined in packages/prii_desktop or desktop/. The tile's menu was not seen: right-clicking it on 2026-11-24 showed nothing in the session's screenshots.",
     "open_at_login": "No login item is registered by the runtime; none is set on the measured Mac."
    },
-   "next_step": "qa/MACOS_CHECKLIST.md steps 1-2 for the on-screen name, icon and Dock menu. The state can only become FAIL or PASS after that, and PASS needs a change that gives the running process the app identity."
+   "next_step": "qa/MACOS_CHECKLIST.md steps 2.2 (Cmd-Tab entry only), 2.3 and 2.4 for the Dock menu entries, Open at Login and the app switcher; the tile name, icon and menu bar name are already read. The state can only become FAIL or PASS after that, and PASS needs a change that gives the running process the app identity (the menu bar and application menu still say Python)."
   }
  },
  "checks": {
@@ -138,8 +138,8 @@
   "cross-engine/engine_matrix.json": "e143f994b264e9067b19a71a1f841a6e9a9989d1039fa5642c4d7bf568b39ec6",
   "qa/INDEPENDENT_REVIEW_PACKET.md": "83b7908147fa7091cb996f8068a3411bcef89f0177f5ab4d8dd382fec3c96ad6",
   "qa/manual/design-system-controls.md": "c82da0577998a2be1ceaa58a85729f236ba2c9f8c42b77607214e95f2e853839",
-  "qa/macos_observations.json": "a0c49eebc578fbd0704fee988ebd55d2df7472d610edc4a9912e5deb58b7905d",
-  "qa/MACOS_CHECKLIST.md": "fc45d3a8ae914898efcf70a410d4403246596c2db84d60c6d45d7c9e108448e1",
+  "qa/macos_observations.json": "e5c05bb3abdab31641f9dea9eca17fccae0ad478697806e91c79120a0aea009b",
+  "qa/MACOS_CHECKLIST.md": "3a0eaef67eb946f3260a764548af783c4f5684fdb9dc906197490fb377ed9b3b",
   "cross-engine/recheck_20261124.json": "9b60da17eab48e8d76c34031c492ca8a4435b85c234358646d72049d9c002367"
  },
  "certification": "WITHHELD",

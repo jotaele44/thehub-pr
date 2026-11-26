@@ -10,13 +10,22 @@ What was measured on your Mac on 2026-11-21 is recorded in
   spiderweb-pr have no setup marker on your Mac, so their next launch takes the
   slow path. For centinelas-pr and aguayluz-pr, a fresh setup currently fails on a
   pin conflict (`pydantic-core`).
-- **App identity.** The running app is `Python` (`org.python.python`), not TheHub
-  (`pr.prii.thehub.launcher`). The bundle hands over to the venv's Python, so the
-  bundle's name and icon are lost.
+- **App identity.** The running application is `Python` (`org.python.python`),
+  not TheHub (`pr.prii.thehub.launcher`): the bundle hands over to the venv's
+  Python. On 2026-11-24 the Dock and menu bar were read on screen with the Mac
+  linked to a session, and the two surfaces disagree. The **Dock tile** is
+  labelled `PRII-THEHUB` and shows a blue network icon, so the bundle's name and
+  icon do reach the Dock. The **menu bar** name and the application menu say
+  `Python` (About Python, Quit Python). The 2026-11-21 expectation that the Dock
+  would read `Python` was wrong for the tile.
 - **Dock menu and Open at Login.** The desktop runtime defines neither. No PRII
-  app is a login item.
+  app is a login item. The tile's menu itself has not been seen: right-clicking
+  it on 2026-11-24 showed nothing in the session's screenshots.
 
-The steps below close what could not be done remotely. Run them in Terminal.
+Steps 2.1 and 2.2 (tile name and icon, menu bar name) are done for TheHub as
+above; still open are step 2.2's **Cmd-Tab** entry, step 2.3 and step 2.4 (the
+Dock menu and **Open at Login**), and the producer-app repeat. The steps below
+close what could not be done remotely. Run them in Terminal.
 
 ## 1. Allow the Dock to be read (once, optional)
 
@@ -73,13 +82,38 @@ Measure the delay as you experience it, from double-click to a usable window.
    ls -t $TMPDIR/prii-*-setup.* 2>/dev/null | head
    ```
 
+### 3a. MoneySweep and AguaYLuz cold first start
+
+The baseline's 9.4 s first starts of these two were measured on a container's
+cold disk and are `UNRESOLVED` in `rc8/RC8_GATE.json` until timed on a real
+machine. Only a restart empties the disk cache, so:
+
+1. Restart the Mac. Open nothing else.
+2. Check the setup marker as in step 3 above; if it is missing, launch once,
+   let setup finish, quit, and restart the Mac again.
+3. Double-click `~/Developer/moneysweep-pr/PRII-MONEYSWEEP.app` and time (a)
+   and (b) as in step 3. As soon as the Launch Pad shows, press **Launch**
+   without changing anything, and time (d): from pressing Launch to the app
+   content. Quit it and time a second launch the same way.
+4. Restart, and do the same with `~/Developer/aguayluz-pr/PRII-AGUAYLUZ.app`.
+
+The application's backend, and the imports the deferred changes would move,
+load only after you press Launch: the Launch Pad appears before them. So the
+budget, 3 s for the first start and 1.5 s for later starts, applies to (d),
+not to (b). Send one block from section 4 per app, with the (d) line filled
+in, and say it was after a restart. If (d) is over budget, the two deferred
+start-up changes in `first_start_diagnosis` are worth doing; under it, they
+are not.
+
 ## 4. What to send back
 
 ```text
 App (repo, and commit from `git -C ~/Developer/<repo> log -1 --format=%h`):
 .setup-complete present before launch: yes / no
+Launched right after a Mac restart: yes / no
 First launch:  Dock tile ___ s | Launch Pad ___ s | content ___ s
 Second launch: Dock tile ___ s | Launch Pad ___ s | content ___ s
+Launch pressed → content (d), 3a only: first ___ s | second ___ s
 Dock tile name / icon:
 Cmd-Tab name / icon:
 Menu-bar app name:
