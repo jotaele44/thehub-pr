@@ -637,6 +637,15 @@ def _entry(config: dict, ecosystem: str) -> dict:
     return entry
 
 
+_PYTHON_ECOSYSTEMS = ("pip", "uv", "{{PYTHON_ECOSYSTEM}}")
+
+
+def _python_entry(config: dict) -> dict:
+    """The one Python entry: pip or uv once rendered, the placeholder before."""
+    (entry,) = [u for u in config["updates"] if u["package-ecosystem"] in _PYTHON_ECOSYSTEMS]
+    return entry
+
+
 def _workflow_targets() -> list[dict]:
     return [t for t in _targets() if t["output"].startswith(".github/workflows/")]
 
@@ -744,10 +753,10 @@ def test_both_dependabot_templates_agree_outside_the_actions_scope():
     assert _entry(producer, "npm") == _entry(hub, "npm")
     # Producers exclude their rendered pip manifests; the hub excludes nothing,
     # because its scan has to keep reaching the requirements templates.
-    producer_pip = dict(_entry(producer, "pip"))
+    producer_pip = dict(_python_entry(producer))
     excluded = producer_pip.pop("exclude-paths", None)
     assert excluded == ["{{RENDERED_PIP_MANIFESTS}}"]
-    assert producer_pip == _entry(hub, "pip")
+    assert producer_pip == _python_entry(hub)
     for key in ("schedule", "open-pull-requests-limit", "labels", "commit-message"):
         assert _actions_entry(producer)[key] == _actions_entry(hub)[key], key
 
@@ -953,7 +962,7 @@ def test_producer_dependabot_never_touches_a_rendered_pip_manifest(program_id, t
     mod = _renderer()
     mod.render_repo(program_id, _vars()[program_id], tmp_path, _targets(), False)
     config = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
-    pip = _entry(config, "pip")
+    pip = _python_entry(config)
     assert pip["directory"] == "/" and "directories" not in pip
     derived = mod._rendered_pip_manifests(program_id, _targets(), mod._placeholders(_vars()[program_id]))
     if derived:
@@ -970,7 +979,7 @@ def test_hub_pip_scan_reaches_every_pip_manifest_template():
     # would silently stop being bumped; a second directory or an exclude-paths
     # entry would split or drop the bump.
     config = yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text())
-    pip = _entry(config, "pip")
+    pip = _python_entry(config)
     assert pip["directory"] == "/"
     assert "directories" not in pip and "exclude-paths" not in pip
     templates = _pip_manifest_targets()
@@ -1020,3 +1029,44 @@ def test_a_pywebview_bump_in_the_template_reaches_producers_only_by_sync(tmp_pat
     mod.render_repo("thehub-pr", _vars()["thehub-pr"], hub, _targets(), False)
     assert mod.render_repo("thehub-pr", _vars()["thehub-pr"], hub, _targets(), True) == []
     assert mod.render_repo("centinelas-pr", _vars()["centinelas-pr"], producer, _targets(), True) == [_DESKTOP_REQUIREMENTS]
+
+
+# ── Python ecosystem: uv where the repo commits uv.lock ───────────────────────
+#
+# Dependabot's pip updater rewrites pyproject.toml and requirement files but
+# never uv.lock, so in a uv-locked repo each pip bump left the lock stale
+# (skywatcher-pr e562433 turned its `uv lock --check` job red). The uv updater
+# rewrites the same files and uv.lock together. ADR 0017.
+
+
+@pytest.mark.parametrize("program_id", sorted(_vars()))
+def test_python_ecosystem_follows_the_lockfile(program_id):
+    vars_ = _vars()[program_id]
+    assert vars_.get("python_ecosystem") in ("pip", "uv"), program_id
+    # lock_cmd is what the repo's CI and CONTRIBUTING use to keep its lock in
+    # step, so it says which lockfile the repo commits.
+    locks_with_uv = vars_["lock_cmd"] == "uv lock --check"
+    assert (vars_["python_ecosystem"] == "uv") == locks_with_uv, program_id
+
+
+def test_both_dependabot_templates_take_the_ecosystem_from_the_vars():
+    for name in ("dependabot.yml", "dependabot.hub.yml"):
+        text = (_TEMPLATES / "baseline" / name).read_text()
+        config = yaml.safe_load(text)
+        assert _python_entry(config)["package-ecosystem"] == "{{PYTHON_ECOSYSTEM}}", name
+        for literal in ('package-ecosystem: "pip"', 'package-ecosystem: "uv"'):
+            assert literal not in text, f"{name}: {literal}"
+
+
+@pytest.mark.parametrize("program_id", _PRODUCERS)
+def test_producer_dependabot_uses_its_python_ecosystem(program_id, tmp_path):
+    mod = _renderer()
+    mod.render_repo(program_id, _vars()[program_id], tmp_path, _targets(), False)
+    config = yaml.safe_load((tmp_path / ".github" / "dependabot.yml").read_text())
+    assert _python_entry(config)["package-ecosystem"] == _vars()[program_id]["python_ecosystem"]
+
+
+def test_hub_dependabot_updates_its_uv_lock():
+    config = yaml.safe_load((_HUB / ".github" / "dependabot.yml").read_text())
+    assert (_HUB / "uv.lock").is_file()
+    assert _python_entry(config)["package-ecosystem"] == "uv"
