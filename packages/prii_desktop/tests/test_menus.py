@@ -9,6 +9,7 @@ import os
 import shutil
 import subprocess
 import sys
+from unittest import mock
 
 import pytest
 
@@ -87,20 +88,23 @@ class Harness:
         self.setup, self.launchpad, self.restarted = [], [], []
         self.app_url = app_url
         spec = pad.launchpad_spec(self.config)
-        self.controller = MenuController(
-            self.config,
-            spec,
-            window=lambda: self.window,
-            app_url=lambda: self.app_url,
-            open_setup=lambda: self.setup.append(1),
-            open_launchpad=(lambda: self.launchpad.append(1)) if spec else None,
-            restart=lambda: self.restarted.append(1),
-            record=self.notes.append,
-            platform=platform,
-            run_command=self.commands.append,
-            copy_text=(lambda text: self.copied.append(text) or True) if copy else None,
-            open_url=self.opened.append,
-        )
+        # With no injected copier the controller falls back to the platform's real
+        # one (pbcopy on a Mac). A test must never reach the real clipboard.
+        with mock.patch.object(menus, "_copy_command", return_value=None):
+            self.controller = MenuController(
+                self.config,
+                spec,
+                window=lambda: self.window,
+                app_url=lambda: self.app_url,
+                open_setup=lambda: self.setup.append(1),
+                open_launchpad=(lambda: self.launchpad.append(1)) if spec else None,
+                restart=lambda: self.restarted.append(1),
+                record=self.notes.append,
+                platform=platform,
+                run_command=self.commands.append,
+                copy_text=(lambda text: self.copied.append(text) or True) if copy else None,
+                open_url=self.opened.append,
+            )
 
     def on_app_page(self):
         self.controller.note_loaded(APP + "/map")
