@@ -232,6 +232,46 @@
   "follow_ups_chosen": [
    "moneysweep-pr: load pandas, pyarrow and numpy on first use instead of at start.",
    "aguayluz-pr: look into the module-level work in server/backend/main.py."
+  ],
+  "follow_up_outcomes": [
+   {
+    "follow_up": "moneysweep-pr: load pandas, pyarrow and numpy on first use instead of at start.",
+    "state": "DEFERRED",
+    "decided_by": "the user, on 2026-11-25, as recommended",
+    "findings": [
+     {
+      "claim_class": "FACT",
+      "finding": "29 modules reached at start import pandas at the top, and main.py reads its CSV data with pandas when it is imported, by design. Deferring the imports alone would not keep pandas out of the start; the data load would have to move too, which changes behaviour."
+     },
+     {
+      "claim_class": "HYPOTHESIS",
+      "finding": "The slow first start is the cold disk (see findings). On real hardware it may already be within the 3000 ms budget, in which case the change buys little."
+     }
+    ],
+    "no_change": "No code changed in moneysweep-pr.",
+    "revisit_when": "A real-machine cold backend start, timed from pressing Launch to the app content (qa/MACOS_CHECKLIST.md section 3a), exceeds first_start_ms."
+   },
+   {
+    "follow_up": "aguayluz-pr: look into the module-level work in server/backend/main.py.",
+    "state": "DEFERRED",
+    "decided_by": "the user, on 2026-11-25, as recommended",
+    "findings": [
+     {
+      "claim_class": "COMPUTED",
+      "finding": "server/backend/main.py parses about 50,000 JSONL rows when it is imported (514 of 690 ms, warm)."
+     },
+     {
+      "claim_class": "FACT",
+      "finding": "Its module globals have about 60 references, 13 test files patch them, and _events is documented as an import-time snapshot. Moving the load is not a mechanical change."
+     },
+     {
+      "claim_class": "HYPOTHESIS",
+      "finding": "As for moneysweep-pr, the slow first start is the cold disk; the warm cost is about 0.5 s."
+     }
+    ],
+    "no_change": "No code changed in aguayluz-pr.",
+    "revisit_when": "A real-machine cold backend start, timed from pressing Launch to the app content (qa/MACOS_CHECKLIST.md section 3a), exceeds first_start_ms, or later_start_ms is exceeded."
+   }
   ]
  },
  "cls_precision_correction": {
