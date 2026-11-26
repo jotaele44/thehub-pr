@@ -591,22 +591,24 @@ def test_app_opens_the_setup_window_on_first_run(tmp_path):
 @posix_only
 def test_setup_window_hands_over_to_setup_py_with_the_app_path(tmp_path):
     stage = _stage_app(tmp_path, "", set_up=False)
-    record = tmp_path / "python-args.txt"
-    for name in ("python3", "python3.14", "python3.13", "python3.12", "python3.11", "python3.10"):
-        stub = stage["tools"] / name
-        # Passes the launcher's version check, then records the real call.
-        stub.write_text(
-            '#!/bin/sh\n[ "$1" = "-c" ] && exit 0\n'
-            f'echo "$@" > "{record}"; echo "$PRII_LOG_DIR" >> "{record}"\n'
-        )
-        stub.chmod(0o755)
+    record = tmp_path / "setup-call.json"
+    # Whichever Python the script finds (it prefers Homebrew's over anything on
+    # PATH, so a stub python would be bypassed) runs this stand-in setup.py.
+    (stage["repo"] / "desktop" / "setup.py").write_text(
+        "import json, os, sys\n"
+        f"json.dump({{'argv': sys.argv, 'log': os.environ.get('PRII_LOG_DIR')}},"
+        f" open({str(record)!r}, 'w'))\n"
+    )
     script = stage["repo"] / "PRII-APP.app" / "Contents" / "Resources" / "first-run-setup.command"
     result = _run(stage, script)
     assert result.returncode == 0, result.stdout + result.stderr
-    args, log_dir = record.read_text().splitlines()
-    assert args == f"desktop/setup.py --launch --handoff {stage['repo'] / 'PRII-APP.app'}"
+    call = json.loads(record.read_text())
+    assert call["argv"][:3] == ["desktop/setup.py", "--launch", "--handoff"]
+    assert Path(call["argv"][3]).resolve() == (stage["repo"] / "PRII-APP.app").resolve()
     # The same folder the app launcher uses, so the "start failed" note is shared.
-    assert log_dir.startswith(str(stage["home"] / "Library" / "Logs" / "PRII"))
+    assert Path(call["log"]).resolve().is_relative_to(
+        (stage["home"] / "Library" / "Logs" / "PRII").resolve()
+    )
 
 
 @posix_only
