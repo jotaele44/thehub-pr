@@ -647,22 +647,41 @@ def _fake_webview(monkeypatch, drive):
         def __init__(self, html):
             super().__init__()
             self.pages.append(html)
-            self.events = types.SimpleNamespace(closed=_ClosedEvent())
+            self.events = types.SimpleNamespace(
+                closed=_ClosedEvent(), loaded=_ClosedEvent()
+            )
 
     def create_window(_title, html, js_api, **_kwargs):
         state["window"], state["bridge"] = Window(html), js_api
         return state["window"]
 
-    def start(on_ready):
+    def start(on_ready, menu=None):
+        state["menu"] = menu
         worker = threading.Thread(target=on_ready)
         worker.start()
         drive(state)
         worker.join(timeout=10)
         assert not worker.is_alive(), "the window flow never finished"
 
+    class Menu:
+        def __init__(self, title, items=()):
+            self.title, self.items = title, list(items)
+
+    class MenuAction:
+        def __init__(self, title, function):
+            self.title, self.function = title, function
+
+    class MenuSeparator:
+        pass
+
     module = types.ModuleType("webview")
     module.create_window, module.start = create_window, start
+    menu_module = types.ModuleType("webview.menu")
+    menu_module.Menu, menu_module.MenuAction = Menu, MenuAction
+    menu_module.MenuSeparator = MenuSeparator
+    module.menu = menu_module
     monkeypatch.setitem(sys.modules, "webview", module)
+    monkeypatch.setitem(sys.modules, "webview.menu", menu_module)
     return state
 
 
@@ -849,3 +868,55 @@ def test_package_entry_point_dispatches(capsys):
 
     assert main([]) == 2
     assert "launchpad --check" in capsys.readouterr().out
+
+
+# ── menus in the window flow ──────────────────────────────────────────────────
+
+
+def test_window_gets_a_menu_bar_and_tracks_its_pages(tmp_path, monkeypatch):
+    config = _config(tmp_path)
+    monkeypatch.setattr(launch, "start_app", lambda *_a, **_k: None)
+    monkeypatch.setattr(launch.sys, "platform", "linux")
+    seen = {}
+
+    def drive(state):
+        seen["menu"] = [m.title for m in state["menu"]]
+        seen["loaded_handlers"] = len(state["window"].events.loaded)
+        # No native menus off a Mac: the page keeps its own right-click behaviour.
+        seen["context"] = state["bridge"].show_context_menu("https://example.test/")
+        state["bridge"].launchpad_launch({"mode": "guest"})
+
+    _fake_webview(monkeypatch, drive)
+    launch._run_window(config, tmp_path / ".running", [])
+    assert seen == {
+        "menu": ["Go", "Tools", "Window", "Help"],
+        "loaded_handlers": 1,
+        "context": False,
+    }
+
+
+def test_a_menu_failure_never_stops_the_window(tmp_path, monkeypatch):
+    config = _config(tmp_path)
+    started = []
+    monkeypatch.setattr(
+        launch, "start_app",
+        lambda _c, _l, _b, _w, _argv, _r, session=None: started.append(session),
+    )
+
+    def broken(*_args, **_kwargs):
+        raise RuntimeError("menus are broken")
+
+    monkeypatch.setattr(launch, "MenuController", broken)
+    seen = {}
+
+    def drive(state):
+        seen["menu"] = state["menu"]
+        seen["context"] = state["bridge"].show_context_menu("")
+        state["bridge"].launchpad_launch({"mode": "guest"})
+
+    _fake_webview(monkeypatch, drive)
+    launch._run_window(config, tmp_path / ".running", [])
+    assert len(started) == 1  # the app still started
+    assert seen == {"menu": [], "context": False}
+    log = (tmp_path / "state" / "logs" / "launcher.log").read_text()
+    assert "menu: not installed: RuntimeError: menus are broken" in log

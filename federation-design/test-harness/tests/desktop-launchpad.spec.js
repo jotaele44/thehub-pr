@@ -80,6 +80,19 @@ test('launch pad is accessible, responsive, and sends the chosen session', async
   await expect(page.getByRole('radio', { name: /Guest/ })).toBeChecked()
   await expect(page.locator('#option-api_key')).toBeDisabled()
   await expect(page.locator('#unlock')).toBeHidden()
+
+  // While an option is locked for a guest, its label and help text must stay
+  // readable in both colour schemes; only the disabled control is dimmed.
+  for (const colorScheme of ['light', 'dark']) {
+    await page.emulateMedia({ colorScheme })
+    const guestAxe = await new AxeBuilder({ page }).analyze()
+    const guestBlocking = guestAxe.violations.filter(
+      ({ impact }) => impact === 'critical' || impact === 'serious',
+    )
+    expect(guestBlocking, `${colorScheme}: ${JSON.stringify(guestBlocking, null, 2)}`).toEqual([])
+  }
+  await page.emulateMedia({ colorScheme: 'light' })
+
   await page.getByRole('radio', { name: /Operator/ }).check()
   await expect(page.locator('#option-api_key')).toBeEnabled()
   await expect(page.getByLabel('Operator passphrase')).toBeVisible()

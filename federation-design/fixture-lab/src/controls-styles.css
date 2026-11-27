@@ -1,0 +1,6 @@
+.lab-section{margin:1.5rem 0;min-width:0}
+.lab-section h2{font-size:1rem;margin:0 0 .5rem}
+.lab-row{display:flex;flex-wrap:wrap;align-items:center;gap:1rem}
+.lab-scroll{max-height:7rem;margin:.5rem 0;padding:0 .75rem;border:1px solid var(--fd-border);border-radius:var(--fd-radius-md);background:var(--fd-surface)}
+.lab-grid{max-width:22rem}
+.lab-grid .fd-gis-grid{max-height:10rem}

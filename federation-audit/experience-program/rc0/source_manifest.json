@@ -1,0 +1,248 @@
+{
+  "claim_class": "COMPUTED",
+  "generated_at": "2026-11-17T12:56:55+00:00",
+  "method": "SHA-256 of each tracked blob's content read from Git objects at audited_ref. Line format: '<sha256>  <git mode>  <path>', sorted by path bytes. manifest_sha256 is the SHA-256 of that listing.",
+  "repositories": [
+    {
+      "audited_ref": "origin/main",
+      "commit": "6e3a4f67de20889abc3d0a48e0b514a4f7087f7a",
+      "executables": 20,
+      "gitlinks": 0,
+      "lockfiles": [
+        {
+          "path": "dashboard/package-lock.json",
+          "sha256": "294463c52480e7641fbf89399512e36b4a99c15ed4cff09ab064e2ce5c5ec358"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "74946dec4082c8a3c44f3fc7118baf5412ce79db325b797a3527ba21f8c11a86"
+        }
+      ],
+      "manifest_file": "manifests/aguayluz-pr.sha256",
+      "manifest_sha256": "82cd34f10d733bfb35b894d860903cd241642df438de09cc547c26297e41521a",
+      "path_conservation": {
+        "conserved": true,
+        "ls_tree_name_count": 2650,
+        "manifest_line_count": 2650
+      },
+      "repository": "jotaele44/aguayluz-pr",
+      "symlinks": 0,
+      "total_bytes": 140318892,
+      "tracked_files": 2650,
+      "tracked_paths": 2650
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit": "893a06f4a50655bcfae90469e15677c5f665d7a6",
+      "executables": 6,
+      "gitlinks": 0,
+      "lockfiles": [
+        {
+          "path": "frontend/package-lock.json",
+          "sha256": "78898f438fd9fa9a410cba0283f87de7df7b0f159e535d532e460e9a44f8465a"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "f06d28d100831511b05bffd159b1db939f040ff3ecaa57a3bc07d5cd22d13f85"
+        }
+      ],
+      "manifest_file": "manifests/centinelas-pr.sha256",
+      "manifest_sha256": "5068704312a2e497c5719543309b67f84321345943873e0bfac2bbefe29b05d3",
+      "path_conservation": {
+        "conserved": true,
+        "ls_tree_name_count": 1471,
+        "manifest_line_count": 1471
+      },
+      "repository": "jotaele44/centinelas-pr",
+      "symlinks": 0,
+      "total_bytes": 130150380,
+      "tracked_files": 1471,
+      "tracked_paths": 1471
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit": "956bb498796c698230d2a2de722d316945777f62",
+      "executables": 7,
+      "gitlinks": 0,
+      "lockfiles": [
+        {
+          "path": "dashboard/package-lock.json",
+          "sha256": "029e3435ac323c4c659493421d5745cadb638516b87d686d55125f0cc8684288"
+        },
+        {
+          "path": "requirements.lock",
+          "sha256": "cd013460e181d920982e5556ae4bf2c4878e7ce066ca2925bb784e34fe60712d"
+        }
+      ],
+      "manifest_file": "manifests/moneysweep-pr.sha256",
+      "manifest_sha256": "c08da38f45761e57502e9f57253ca835391bda203507fa7f4d7054fd3255c0e3",
+      "path_conservation": {
+        "conserved": true,
+        "ls_tree_name_count": 2634,
+        "manifest_line_count": 2634
+      },
+      "repository": "jotaele44/moneysweep-pr",
+      "symlinks": 0,
+      "total_bytes": 66348408,
+      "tracked_files": 2634,
+      "tracked_paths": 2634
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit": "593bdd813686048a881cb3af61f4fbb9d211a52d",
+      "executables": 31,
+      "gitlinks": 0,
+      "lockfiles": [
+        {
+          "path": "frontend/package-lock.json",
+          "sha256": "4253ef4ba81bdaf3c556b059184de4f6e703c01f377ebaf31c24dcd38074d0bc"
+        },
+        {
+          "path": "qa/rendered/package-lock.json",
+          "sha256": "944574833e9db62d0bc489cee624ce3c6eb2140baa03604188a4db75c71a34f3"
+        }
+      ],
+      "manifest_file": "manifests/mucaro-ai.sha256",
+      "manifest_sha256": "be8e4ab113ac04cd28cab724924796f5fab66e566b82bd16c4722c0006bf4b95",
+      "path_conservation": {
+        "conserved": true,
+        "ls_tree_name_count": 743,
+        "manifest_line_count": 743
+      },
+      "repository": "jotaele44/mucaro-ai",
+      "symlinks": 0,
+      "total_bytes": 11766315,
+      "tracked_files": 743,
+      "tracked_paths": 743
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit": "a8225db5d226232037c455daf6e941e50d86d136",
+      "executables": 6,
+      "gitlinks": 0,
+      "lockfiles": [
+        {
+          "path": "dashboard/package-lock.json",
+          "sha256": "ace444228648d4364899b4ce5e0451bad2e4b7a4aadb81697c63edad24c4881b"
+        },
+        {
+          "path": "requirements.lock",
+          "sha256": "1a21ef87e91e4d8624000358bdf52e6d398aac98098430e57a4a2b4f0662b98e"
+        }
+      ],
+      "manifest_file": "manifests/ovnis-pr.sha256",
+      "manifest_sha256": "7a36aa4d7fcce74f0ba0b7f0ce2654fb08cb54ca545088b352934cad1d63fa9d",
+      "path_conservation": {
+        "conserved": true,
+        "ls_tree_name_count": 478,
+        "manifest_line_count": 478
+      },
+      "repository": "jotaele44/ovnis-pr",
+      "symlinks": 0,
+      "total_bytes": 25716676,
+      "tracked_files": 478,
+      "tracked_paths": 478
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit": "a2176990606048a6b918daacdb8bce027e58a903",
+      "executables": 19,
+      "gitlinks": 0,
+      "lockfiles": [
+        {
+          "path": "frontend/package-lock.json",
+          "sha256": "9d36da6141acc0ede6a317e3aeedd45954913707d2cbfcbd6b17ea9fb04c906f"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "2770e266f0ee125f16baedc2f2fc2c113ebe868421721723ce0cdb3dd1825959"
+        }
+      ],
+      "manifest_file": "manifests/skywatcher-pr.sha256",
+      "manifest_sha256": "42ba77419cc985ab1d4773dc5aaf71c4bc70507a8b77218cfb50842930edffe5",
+      "path_conservation": {
+        "conserved": true,
+        "ls_tree_name_count": 1436,
+        "manifest_line_count": 1436
+      },
+      "repository": "jotaele44/skywatcher-pr",
+      "symlinks": 0,
+      "total_bytes": 35557662,
+      "tracked_files": 1436,
+      "tracked_paths": 1436
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit": "9d6af728b48b7bbde5167d8abaacf51f34a0acaa",
+      "executables": 12,
+      "gitlinks": 0,
+      "lockfiles": [
+        {
+          "path": "server/frontend/package-lock.json",
+          "sha256": "c770dca052ceba12269dd5981130fffe47c6bffc6c8bbb851e8687702eae6f7f"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "00fa60e0fbfffe307841b9714cf4edef03e75b23ec5f7489436c4947b92553e2"
+        }
+      ],
+      "manifest_file": "manifests/spiderweb-pr.sha256",
+      "manifest_sha256": "7e87b07a7014e0d63401ef42fd42329751f3065f3524552abbe3fecf07dda4db",
+      "path_conservation": {
+        "conserved": true,
+        "ls_tree_name_count": 1485,
+        "manifest_line_count": 1485
+      },
+      "repository": "jotaele44/spiderweb-pr",
+      "symlinks": 0,
+      "total_bytes": 34540830,
+      "tracked_files": 1485,
+      "tracked_paths": 1485
+    },
+    {
+      "audited_ref": "origin/main",
+      "commit": "4f5c660801b6380ad4b64d39518fa778c9d25c76",
+      "executables": 18,
+      "gitlinks": 0,
+      "lockfiles": [
+        {
+          "path": "federation-audit/playwright/package-lock.json",
+          "sha256": "47003f817bdfcddaad23415ea58e2e1f3c5f65080a0393196f6cc48d559a21dc"
+        },
+        {
+          "path": "federation-audit/runtime/requirements.lock",
+          "sha256": "a16cdaad2ebad277b2947e8ae7ee9b103d96f728f27254ddce05e23bd83afead"
+        },
+        {
+          "path": "federation-design/fixture-lab/package-lock.json",
+          "sha256": "90f58489cd6c36fde305ce37853137fd202a4007913800721678dae8c92545fc"
+        },
+        {
+          "path": "federation-design/test-harness/package-lock.json",
+          "sha256": "01995e07f5657bc7587287bd320b4df0a8d21a513548a1151863b35d81747538"
+        },
+        {
+          "path": "server/frontend/package-lock.json",
+          "sha256": "7e07f11cd235c41230aa4b69d83c0d8f908e95e74333f3af5ca5dd1c6fd1eda9"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "a5d4488823d3c3d20cdebe54477a968bcdb6e33305b7965cc94d9f6876c95945"
+        }
+      ],
+      "manifest_file": "manifests/thehub-pr.sha256",
+      "manifest_sha256": "0fae68f19f956078ec9c76ef958645e39e43673103acb0b27ef84f7fc2a8e6c1",
+      "path_conservation": {
+        "conserved": true,
+        "ls_tree_name_count": 1810,
+        "manifest_line_count": 1810
+      },
+      "repository": "jotaele44/thehub-pr",
+      "symlinks": 0,
+      "total_bytes": 55620069,
+      "tracked_files": 1810,
+      "tracked_paths": 1810
+    }
+  ],
+  "schema": "federation.experience-program.source-manifest/1"
+}

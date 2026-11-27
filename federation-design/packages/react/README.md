@@ -64,6 +64,59 @@ function Layout({ children }) {
   at 1280px and above and a modal drawer below.
 - `flattenFederationNav(nav)` lists every entry for a command palette.
 
+### Pinned and recent groups
+
+A registry group with `kind: 'pinned'` or `kind: 'recent'` declares no items.
+It reserves a place for entries the host supplies at render time:
+
+```jsx
+const nav = defineFederationNav([
+  { label: 'Records', items: [/* ... */] },
+  { kind: 'pinned', label: 'Pinned' },
+  { kind: 'recent', label: 'Recent', maxItems: 5, overflow: 'more-submenu' },
+])
+
+<FederationAppShell
+  nav={nav}
+  collections={{
+    pinned: [{ id: 'case-12', label: 'Budget review', path: '/cases/12',
+      status: { kind: 'spinner', tone: 'info', label: 'Running' },
+      actions: [{ id: 'rename', label: 'Rename', onSelect: openRename }] }],
+    recent: recentCases,
+  }}
+/>
+```
+
+- The shell stores nothing. The application owns the lists, where they are
+  saved, and what each action does.
+- `maxItems` (1 to 50, default 5) entries are shown. `overflow` decides the
+  rest: `'more-submenu'` puts them behind a "More (n)" disclosure, `'scroll'`
+  shows all of them in a box sized to `maxItems`, `'none'` drops them.
+- A collection with no entries is not drawn. Two groups of the same kind need
+  an `id` each, which is then the key in `collections`.
+- An entry that is open is marked `aria-current="true"`. It is never a second
+  current page; only a registry item is `aria-current="page"`.
+- On a small screen, collections never take a slot on the bottom bar. They
+  appear behind "More".
+
+## Controls
+
+| Component | Use |
+|---|---|
+| `FederationDialog` | A modal on the native `<dialog>`. Requires `title`. Focus goes to the element marked `data-autofocus` and returns to the opener. |
+| `FederationRenameDialog` | Rename something the person named. `onRename(name)` does the write; if it throws, the message is shown and the dialog stays open. |
+| `FederationTextField` | A labelled input. `help` and `error` are tied to it. |
+| `FederationMenu` | A button that opens a menu of `items`: `[{ id, label, onSelect, disabled, destructive }]`. |
+| `FederationItemMenu` | The "…" menu of one list item. Requires `itemLabel`; its name is "Actions for <item>". |
+| `FederationStatusMark` | A dot, spinner or alert. Requires `label`, the status in words. |
+| `FederationScrollRegion` | A named scrolling box that becomes a tab stop when nothing inside it can take focus. |
+| `FederationResponsiveLabel` | A button label that is clipped, not removed, on small screens, so it stays the button's name. |
+
+Rename is for objects whose name the person owns. A record's identity or an
+evidence citation is not renamed with it.
+
+These exports are unfrozen: their API may change before 0.6.0.
+
 ## shadcn bridge
 
 `shadcn-bridge.css` makes the shadcn variables (`--background`, `--primary`,
@@ -105,7 +158,7 @@ npm run verify
 npm pack
 ```
 
-`verify` checks the API snapshot against the package's real exports in both directions, token/schema alignment, accessibility source contracts, WCAG AA contrast for light and dark token pairs, reduced-motion behavior, and the consumer test matrix. `npm pack` creates a self-contained tarball and deterministic release manifest.
+`verify` checks the API snapshot against the package's real exports in both directions, token/schema alignment, accessibility source contracts, WCAG AA contrast for light and dark token pairs and for the accent roles of every repository, reduced-motion behavior, and the consumer test matrix. `npm pack` creates a self-contained tarball and deterministic release manifest.
 
 ## Pinning and release policy
 

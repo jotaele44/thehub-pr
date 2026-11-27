@@ -1,15 +1,24 @@
 name: Federation template sync (propagate)
 
 # Completes the "edit the template once" loop for the shared federation
-# boilerplate (federation-templates/): re-render each producer's launchers /
-# requirements-desktop.txt / shared schema and, when they drift from the
-# canonical templates, open a PR on that producer to update them.
+# boilerplate (federation-templates/): re-render each producer's copies (the
+# launchers, shared schema, engineering baseline and governance files) and, when
+# they drift from the canonical templates, open a PR on that producer to update
+# them. This is also how action-pin bumps reach the producers: their Dependabot
+# skips the rendered workflows, and the hub's Dependabot bumps the templates
+# (federation-templates/README.md, "Action pins").
 #
-# Cross-repo writes need an operator-provided SYNC_PAT secret (contents:write +
-# pull-requests:write on the producer repos). WITHOUT it this workflow is a
-# DRY RUN: it renders, prints the drift, and opens nothing — mirroring
-# mcp-cross-repo-sync.yml. Each producer's own template-drift.yml is the
-# read-only guard; this is the optional write-side automation.
+# Cross-repo writes need an operator-provided SYNC_PAT secret: a fine-grained
+# token whose repository access includes every producer below, with Contents,
+# Pull requests and Workflows set to Read and write (a sync always edits
+# .github/workflows/template-drift.yml). WITHOUT it this workflow is a DRY RUN:
+# it renders, prints the drift, and opens nothing — mirroring
+# mcp-cross-repo-sync.yml. With it, tools/federation_template_sync_pr.sh first
+# dry-runs a push to each producer (a refusal fails that job, naming the
+# permissions above), then skips producers whose only change would be the
+# PRII_TEMPLATE_REF pin, and keeps one standing federation-template-sync branch
+# and PR per producer, force-pushed and updated on each run. Each producer's own
+# template-drift.yml is the read-only guard; this is the write-side automation.
 
 on:
   workflow_dispatch: {}
@@ -62,50 +71,10 @@ jobs:
           --repo ${{ matrix.repo }} --repo-root ${{ matrix.repo }}
           --template-ref ${{ github.sha }}
 
-      - name: Open a sync PR if the producer drifted
+      - name: Open or update the producer's sync PR if it drifted
+        working-directory: ${{ matrix.repo }}
         env:
+          REPO: ${{ matrix.repo }}
+          HUB_SHA: ${{ github.sha }}
           GH_TOKEN: ${{ secrets.SYNC_PAT }}
-        run: |
-          cd "${{ matrix.repo }}"
-          # --porcelain also reports untracked files, so a newly added rendered
-          # target (which `git diff` would miss) still counts as drift.
-          if [ -z "$(git status --porcelain)" ]; then
-            echo "::notice::${{ matrix.repo }} already matches the canonical templates."
-            exit 0
-          fi
-          echo "Drift detected in ${{ matrix.repo }}:"
-          git status --short
-          if [ -z "$GH_TOKEN" ]; then
-            # A dry run that found drift must not read as a quiet success: the
-            # producer keeps running older shared files until someone acts.
-            echo "::warning::${{ matrix.repo }} drifted from the canonical templates, but SYNC_PAT is absent — dry run; no PR opened."
-            {
-              echo "### ${{ matrix.repo }}: drift not propagated (dry run)"
-              echo
-              echo "SYNC_PAT is not set, so no sync PR was opened. Re-render locally with"
-              echo "\`python tools/render_federation_templates.py --repo ${{ matrix.repo }} --repo-root ../${{ matrix.repo }} --template-ref ${{ github.sha }}\`"
-              echo "and open the PR by hand, or set SYNC_PAT. Files that would change:"
-              echo
-              echo '```'
-              git status --short
-              echo '```'
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-          branch="federation-template-sync-${{ github.run_id }}"
-          git config user.name  "prii-federation-bot"
-          git config user.email "noreply@github.com"
-          git checkout -b "$branch"
-          git add -A   # include newly-created rendered files, not just modified ones
-          git commit -m "chore: sync shared federation boilerplate from thehub-pr
-
-          Re-rendered launchers / requirements-desktop.txt / federation_export_manifest
-          schema and rebound the producer drift gate to this exact thehub commit
-          via render_federation_templates.py.
-          Automated by thehub-pr federation-template-sync."
-          git push -u origin "$branch"
-          gh pr create \
-            --repo "jotaele44/${{ matrix.repo }}" \
-            --base main --head "$branch" \
-            --title "Sync shared federation boilerplate from thehub-pr" \
-            --body "Automated re-render of the shared launcher/desktop/schema boilerplate from \`thehub-pr/federation-templates\`, including the producer drift gate's exact TheHub commit binding. The canonical template changed; this brings ${{ matrix.repo }}'s copies back in sync so its template-drift check passes."
+        run: bash "$GITHUB_WORKSPACE/thehub-pr/tools/federation_template_sync_pr.sh"

@@ -15,25 +15,29 @@
   },
   "producers": {
     "aguayluz-pr": {
-      "alerts": 4397,
-      "entities": 46224,
-      "relationships": 65178,
-      "sources": 38993
+      "alerts": 4608,
+      "entities": 46169,
+      "relationships": 65122,
+      "source_monitors": 31,
+      "sources": 38912
     },
     "centinelas-pr": {
-      "entities": 100,
-      "observations": 100,
-      "sources": 6
+      "entities": 77,
+      "observations": 77,
+      "source_monitors": 87,
+      "sources": 11
     },
     "moneysweep-pr": {
       "entities": 207,
       "relationships": 66,
+      "source_monitors": 167,
       "sources": 4508
     },
     "ovnis-pr": {
       "entities": 1266,
       "observations": 470,
       "relationships": 1147,
+      "source_monitors": 26,
       "sources": 280
     },
     "skywatcher-pr": {
@@ -41,19 +45,22 @@
       "entities": 6,
       "observations": 2,
       "relationships": 4,
+      "source_monitors": 4,
       "sources": 2
     },
     "spiderweb-pr": {
-      "entities": 427,
-      "relationships": 374,
-      "sources": 53
+      "entities": 434,
+      "relationships": 379,
+      "source_monitors": 32,
+      "sources": 55
     }
   },
   "streams": {
-    "alerts": 4399,
-    "entities": 48224,
-    "observations": 572,
-    "relationships": 66769,
-    "sources": 43842
+    "alerts": 4610,
+    "entities": 48153,
+    "observations": 549,
+    "relationships": 66718,
+    "source_monitors": 347,
+    "sources": 43768
   }
 }

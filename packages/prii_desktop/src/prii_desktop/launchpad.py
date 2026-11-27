@@ -984,7 +984,10 @@ _PAGE = r"""<!doctype html>
       color:var(--ink); background:var(--field); font:inherit; }
     .option { padding:12px 0; border-top:1px solid var(--line); }
     .option:first-of-type { border-top:0; padding-top:4px; }
-    .option.locked { opacity:.55; }
+    /* A locked (Operator-only, Guest mode) option dims its control only. Its
+       label and help text keep full contrast: they stay readable, and the
+       help text says the option is available in Operator mode. */
+    .option.locked :is(input, select) { opacity:.55; cursor:not-allowed; }
     .check { display:flex; gap:10px; align-items:flex-start; font-weight:650; cursor:pointer; }
     .check input { width:18px; height:18px; margin-top:2px; flex:0 0 18px;
       accent-color:var(--brand-strong); }
@@ -1250,6 +1253,7 @@ class DesktopBridge(SetupBridge):
         *,
         argv: Sequence[str] = (),
         reopen_launchpad: Callable[[], None] | None = None,
+        menus: Callable[[], Any] | None = None,
         **kwargs: Any,
     ) -> None:
         super().__init__(config, **kwargs)
@@ -1257,6 +1261,9 @@ class DesktopBridge(SetupBridge):
 
         self._argv = tuple(argv)
         self._reopen_launchpad = reopen_launchpad
+        # Returns the menu controller (or None). Kept private: pywebview exposes
+        # every public attribute of this object to page JavaScript.
+        self._menus = menus
         self._session: Session | None = None
         #: Set once the user presses Launch (or closes the window).
         self.launch_requested = threading.Event()
@@ -1319,6 +1326,16 @@ class DesktopBridge(SetupBridge):
         self._reopen_launchpad()
         return True
 
+    def show_context_menu(self, link: str = "") -> bool:
+        """Right-click in the page: open the native context menu (macOS only).
+
+        ``link`` is the address under the pointer, or empty. Returns ``False``
+        where there is no native menu, so the page can keep its own behaviour.
+        """
+        controller = self._menus() if self._menus is not None else None
+        if controller is None:
+            return False
+        return bool(controller.popup_context(link if isinstance(link, str) else ""))
 
 # ── Offline check ─────────────────────────────────────────────────────────────
 

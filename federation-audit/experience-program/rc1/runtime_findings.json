@@ -1,0 +1,2283 @@
+{
+  "findings": [
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 17,
+      "repository": "aguayluz-pr",
+      "route": "/",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "aguayluz-pr",
+      "route": "/",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "aguayluz-pr",
+      "route": "/map",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 33,
+      "repository": "aguayluz-pr",
+      "route": "/assets",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 38,
+      "repository": "aguayluz-pr",
+      "route": "/alerts",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "aguayluz-pr",
+      "route": "/outages",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 20,
+      "repository": "aguayluz-pr",
+      "route": "/outages",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 30,
+      "repository": "aguayluz-pr",
+      "route": "/monitoring",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "aguayluz-pr",
+      "route": "/monitoring",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "aguayluz-pr",
+      "route": "/monitoring",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 47,
+      "repository": "aguayluz-pr",
+      "route": "/cave-karst",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 22,
+      "repository": "aguayluz-pr",
+      "route": "/regulatory",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 14,
+      "repository": "aguayluz-pr",
+      "route": "/regulatory/review",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 30,
+      "repository": "aguayluz-pr",
+      "route": "/environmental-exposure",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "aguayluz-pr",
+      "route": "/environmental-exposure",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 36,
+      "repository": "aguayluz-pr",
+      "route": "/hydromet",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 48,
+      "repository": "aguayluz-pr",
+      "route": "/aquifer-bands",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 31,
+      "repository": "aguayluz-pr",
+      "route": "/water-use",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 3,
+      "repository": "aguayluz-pr",
+      "route": "/water-use",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 35,
+      "repository": "aguayluz-pr",
+      "route": "/hydro-inventory",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "aguayluz-pr",
+      "route": "/review",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 14,
+      "repository": "aguayluz-pr",
+      "route": "/review",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 13,
+      "repository": "aguayluz-pr",
+      "route": "/analytics",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "aguayluz-pr",
+      "route": "/analytics",
+      "rule": "svg-img-alt"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "aguayluz-pr",
+      "route": "/logs",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 31,
+      "repository": "aguayluz-pr",
+      "route": "/logs",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "aguayluz-pr",
+      "route": "/logs",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 43,
+      "repository": "aguayluz-pr",
+      "route": "/system",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 30,
+      "repository": "aguayluz-pr",
+      "route": "/source-intelligence",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 12,
+      "repository": "aguayluz-pr",
+      "route": "/water-disruption",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "aguayluz-pr",
+      "route": "/water-disruption",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 6,
+      "repository": "centinelas-pr",
+      "route": "/dashboard",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/dashboard",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/monitor",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/signals",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/tabla",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/matters",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/entidades",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/sources",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/pipeline",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 2975,
+      "repository": "centinelas-pr",
+      "route": "/pipeline",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/handoff",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/water-disruption",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "centinelas-pr",
+      "route": "/autores",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=activity",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=contracts",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=leaderboards",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=entities",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=entities",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=government-changes",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=graph",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=graph",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=municipios",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=campaign-finance",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=data-sources",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=api-keys",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "moneysweep-pr",
+      "route": "/?tab=ownership",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "ovnis-pr",
+      "route": "/",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "ovnis-pr",
+      "route": "/",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "ovnis-pr",
+      "route": "/",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "skywatcher-pr",
+      "route": "/",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/console",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/console",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/console"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/observations",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/observations",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/observations",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/observations"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/aircraft",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/aircraft",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/aircraft"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/fr24",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/fr24",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/fr24"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/routes",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "skywatcher-pr",
+      "route": "/routes",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/routes"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/infrastructure",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/infrastructure",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/infrastructure"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/airports",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/airports",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "skywatcher-pr",
+      "route": "/airports",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/airports"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/review",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "skywatcher-pr",
+      "route": "/review",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/review"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/export",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 5,
+      "repository": "skywatcher-pr",
+      "route": "/export",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/export"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/readiness",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "skywatcher-pr",
+      "route": "/readiness",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/readiness"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/calibration",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 5,
+      "repository": "skywatcher-pr",
+      "route": "/calibration",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/calibration"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/analysis",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 3,
+      "repository": "skywatcher-pr",
+      "route": "/analysis",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/analysis"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/spatial-truth",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/spatial-truth",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/spatial-truth"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/flight-archive",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/flight-archive",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/flight-archive"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/space-track",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 3,
+      "repository": "skywatcher-pr",
+      "route": "/space-track",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/space-track"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/space-track/sky",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 7,
+      "repository": "skywatcher-pr",
+      "route": "/space-track/sky",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/space-track/sky",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/space-track/sky"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/sky-cameras",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/sky-cameras",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/sky-cameras"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/login",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "skywatcher-pr",
+      "route": "/login",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/login"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/register",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "skywatcher-pr",
+      "route": "/register",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/register"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/forgot-password",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "skywatcher-pr",
+      "route": "/forgot-password",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/forgot-password"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "skywatcher-pr",
+      "route": "/reset-password",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "skywatcher-pr",
+      "route": "/reset-password",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "skywatcher-pr",
+      "route": "/reset-password"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 5,
+      "repository": "spiderweb-pr",
+      "route": "/",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "thehub-pr",
+      "route": "/",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/programs",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/apps",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 113,
+      "repository": "thehub-pr",
+      "route": "/apps",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/operations",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/cases",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/sources",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/source-monitor",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 11,
+      "repository": "thehub-pr",
+      "route": "/tasks",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/tasks",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/gates",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/integrations",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/operator-settings",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/exports",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/readiness",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/readiness",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/transition",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 5,
+      "repository": "thehub-pr",
+      "route": "/crossover",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 25,
+      "repository": "thehub-pr",
+      "route": "/crossover",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "thehub-pr",
+      "route": "/crossover",
+      "rule": "label"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/crossover",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 377,
+      "repository": "thehub-pr",
+      "route": "/crossover",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/constellation",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "thehub-pr",
+      "route": "/anomaly-overlap",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/anomaly-overlap",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/hub",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/hub",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/project-signs",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/research",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/dictionary",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/manifest",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/gis",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/gis",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 172,
+      "repository": "thehub-pr",
+      "route": "/gis",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/search",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/timeline",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/spiderweb",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 12,
+      "repository": "thehub-pr",
+      "route": "/spiderweb",
+      "widths": [
+        1280
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/ovnis",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 245,
+      "repository": "thehub-pr",
+      "route": "/ovnis",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/aguayluz",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 12,
+      "repository": "thehub-pr",
+      "route": "/aguayluz",
+      "widths": [
+        1280
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/moneysweep",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/moneysweep",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 17,
+      "repository": "thehub-pr",
+      "route": "/moneysweep",
+      "widths": [
+        320
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "thehub-pr",
+      "route": "/moneysweep"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/skywatcher",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 12,
+      "repository": "thehub-pr",
+      "route": "/skywatcher",
+      "widths": [
+        1280
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/centinelas",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=workspace",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 12,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=workspace",
+      "widths": [
+        1280
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=feed",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=feed",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 40,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=feed",
+      "widths": [
+        320
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=feed"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=assets",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=alerts",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=risks",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=outdoor",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/aguayluz?tab=sources",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/moneysweep?tab=feed",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/moneysweep?tab=feed",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 17,
+      "repository": "thehub-pr",
+      "route": "/moneysweep?tab=feed",
+      "widths": [
+        320
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 1,
+      "repository": "thehub-pr",
+      "route": "/moneysweep?tab=feed"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/moneysweep?tab=leaderboards",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/moneysweep?tab=leaderboards",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/moneysweep?tab=contracts",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/moneysweep?tab=vendors",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/moneysweep?tab=flags",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/moneysweep?tab=sources",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/spiderweb?tab=workspace",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 12,
+      "repository": "thehub-pr",
+      "route": "/spiderweb?tab=workspace",
+      "widths": [
+        1280
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/spiderweb?tab=nodes",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/spiderweb?tab=map",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/spiderweb?tab=edges",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/spiderweb?tab=sources",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/skywatcher?view=workspace",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 12,
+      "repository": "thehub-pr",
+      "route": "/skywatcher?view=workspace",
+      "widths": [
+        1280
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/skywatcher?view=sky",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 13,
+      "repository": "thehub-pr",
+      "route": "/skywatcher?view=sky",
+      "rule": "label-content-name-mismatch"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/skywatcher?view=events",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/skywatcher?view=map",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/skywatcher?view=corr",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/skywatcher?view=sources",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/centinelas?tab=matters",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/centinelas?tab=map",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/centinelas?tab=sources",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/ovnis?tab=patterns",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 245,
+      "repository": "thehub-pr",
+      "route": "/ovnis?tab=patterns",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/ovnis?tab=witness",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 245,
+      "repository": "thehub-pr",
+      "route": "/ovnis?tab=witness",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/ovnis?tab=reports",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 245,
+      "repository": "thehub-pr",
+      "route": "/ovnis?tab=reports",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/ovnis?tab=showlog",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 245,
+      "repository": "thehub-pr",
+      "route": "/ovnis?tab=showlog",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/ovnis?tab=sources",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 245,
+      "repository": "thehub-pr",
+      "route": "/ovnis?tab=sources",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=programs",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control?tab=programs",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=cases",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control?tab=cases",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=sources",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control?tab=sources",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=dictionary",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control?tab=dictionary",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=tasks",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 11,
+      "repository": "thehub-pr",
+      "route": "/control?tab=tasks",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control?tab=tasks",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=gates",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control?tab=gates",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=integrations",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control?tab=integrations",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=exports",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control?tab=exports",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=readiness",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=readiness",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control?tab=readiness",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/control?tab=manifest",
+      "rule": "aria-valid-attr-value"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/control?tab=manifest",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/research?tab=topics",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/research?tab=hypotheses",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/research?tab=contradictions",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/research?tab=candidates",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/research?tab=queue",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "thehub-pr",
+      "route": "/research?tab=assistant",
+      "rule": "button-name"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/research?tab=assistant",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 188,
+      "repository": "thehub-pr",
+      "route": "/research?tab=assistant",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "unnamed-button",
+      "max_count": 2,
+      "repository": "thehub-pr",
+      "route": "/research?tab=assistant"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/gis?view=property-map",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/gis?view=property-map",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 172,
+      "repository": "thehub-pr",
+      "route": "/gis?view=property-map",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/gis?view=digital-twin",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 2,
+      "repository": "thehub-pr",
+      "route": "/gis?view=digital-twin",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/gis?view=digital-twin",
+      "rule": "scrollable-region-focusable"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 172,
+      "repository": "thehub-pr",
+      "route": "/gis?view=digital-twin",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/gis?view=interpretive-layers",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/gis?view=interpretive-layers",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 172,
+      "repository": "thehub-pr",
+      "route": "/gis?view=interpretive-layers",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/gis?view=aoi-comparison",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/gis?view=aoi-comparison",
+      "rule": "link-in-text-block"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "horizontal-overflow",
+      "max_px": 172,
+      "repository": "thehub-pr",
+      "route": "/gis?view=aoi-comparison",
+      "widths": [
+        320,
+        390,
+        430
+      ]
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 4,
+      "repository": "thehub-pr",
+      "route": "/search?q=",
+      "rule": "color-contrast"
+    },
+    {
+      "evidence_class": "OBSERVED_RUNTIME",
+      "kind": "axe",
+      "max_nodes": 1,
+      "repository": "thehub-pr",
+      "route": "/launcher",
+      "rule": "color-contrast"
+    }
+  ],
+  "generated_at": "2026-11-17T14:22:39+00:00",
+  "note": "Observed in Chromium on a fresh workspace. axe rows are critical or serious only; max_nodes is the largest node count seen at any width.",
+  "schema": "federation.experience-program.runtime-findings/1"
+}

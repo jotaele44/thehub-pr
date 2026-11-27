@@ -18,7 +18,7 @@ export default function AnomalyOverlap() {
     <div className="flex flex-col gap-1.5">
       <span className="text-xs text-muted-foreground">{label}</span>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+        <SelectTrigger aria-label={label} className="w-48"><SelectValue /></SelectTrigger>
         <SelectContent>
           {MODULE_OPTIONS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
         </SelectContent>

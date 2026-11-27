@@ -13,10 +13,62 @@ federation-launcher page (`/launcher`), which can also open sibling federation
 checkouts (`PRII-<NAME>.app`/`.sh`/`.bat` in `../<repo>`) if you have any
 checked out next to `thehub-pr`. Neither launcher requires the other.
 
-The **first run** needs an internet connection once: it creates a private
-`.venv`, installs the Python dependencies, and builds the frontend (requires
-Python 3.10+ and Node.js to be installed). Every later run starts instantly
-and **works offline**.
+The **first run** needs an internet connection once. The launcher sets the app
+up by itself and shows numbered steps while it does: it creates a private
+`.venv`, installs the Python dependencies, and builds the frontend. On macOS
+the `.app` opens a Terminal window for this and then reopens itself. Python
+3.10+ must be installed; if it is not, the launcher opens the Python download
+page. Node.js does not have to be installed: a suitable copy is used when one
+is found, otherwise the current Node 22 release is downloaded into a private
+`.node/` folder after its checksum is verified. Every later run starts
+directly and **works offline**.
+
+The launcher also looks after the installation: when an update changes the
+requirements it reinstalls before starting, and when a set-up app fails to
+start it reinstalls once and tries again, showing the error if that does not
+help. Nothing asks you to type a command.
+
+## Launcher options and preferences
+
+Every launcher accepts the same options (for example
+`./PRII-THEHUB.command --browser`); anything it does not recognise is passed
+on to the app.
+
+| Option | Effect |
+|---|---|
+| `--browser` | Open in the default browser instead of the app window |
+| `--no-window` | Run the server only and print its address |
+| `--reinstall` | Reinstall the components and rebuild the dashboard |
+| `--reset` | Delete `.venv` and `.node` first, then set up again |
+| `--offline` | Never use the network; start with what is installed |
+| `--verbose` | Show the full output of every setup step |
+| `--lang en` / `--lang es` | Language of the launcher's messages |
+| `--version`, `--help` | Version information; the full list |
+
+Messages are in English or Spanish, following the system language unless
+`--lang`, the `PRII_LANG` environment variable or the preferences file says
+otherwise. `PRII_OFFLINE=1` is the same as `--offline`.
+
+Personal choices that should survive updates go in a `launcher.json`
+preferences file, which is never committed (`--help` prints its exact path:
+`~/Library/Application Support/PRII/thehub/` on macOS, `%APPDATA%\PRII\thehub\`
+on Windows, `~/.config/prii/thehub/` on Linux):
+
+```json
+{
+  "language": "es",
+  "window": "browser",
+  "data_home": "~/PRII-data",
+  "check_on_start": false
+}
+```
+
+`check_on_start: false` skips the "did the requirements change" check. An
+unknown key is ignored and a value that is not allowed is reported and
+skipped, so a typo never stops the app from starting.
+
+Setup and start output is kept in `~/Library/Logs/PRII/` (macOS),
+`%LOCALAPPDATA%\PRII\` (Windows) or `~/.local/state/prii/` (Linux).
 
 ## The Launch Pad
 
@@ -69,12 +121,16 @@ distribution channel, not a replacement for the launcher above.
   and its options. The screen itself lives in the shared runtime
   ([`packages/prii_desktop`](../packages/prii_desktop/README.md#the-launch-pad)).
   Validate it with `python -m prii_desktop launchpad --check` from the repo root.
-- `desktop/setup.py` is idempotent one-time setup (`--force` to redo).
+- `desktop/setup.py` is the shared launcher logic, rendered from
+  `federation-templates/desktop/setup.py`: setup, start, repair, options,
+  preferences and languages. The launchers only find a Python and run it.
 
 ## Command line
 
 ```bash
-python desktop/setup.py          # one-time setup
+python desktop/setup.py          # set up if needed (does not start the app)
+python desktop/setup.py --launch # set up if needed, then start
+python desktop/setup.py --help   # every option
 .venv/bin/python desktop/launch.py              # native window
 .venv/bin/python desktop/launch.py --route /launcher  # federation launcher page
 .venv/bin/python desktop/launch.py --skip-launchpad    # straight into the app

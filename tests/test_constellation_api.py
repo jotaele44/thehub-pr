@@ -14,11 +14,14 @@ pytest.importorskip("httpx")
 from fastapi.testclient import TestClient  # noqa: E402
 
 import server.backend.main as backend_main  # noqa: E402
+from hub._schemas import STREAM_ID_FIELD  # noqa: E402
 from hub.constellation import SAMPLE_LIMIT  # noqa: E402
 from hub.ingest import ingest_aggregate  # noqa: E402
 
 AGGREGATE = Path(__file__).resolve().parents[1] / "data" / "aggregate"
 SUMMARY = json.loads((AGGREGATE / "graph_summary.json").read_text())
+# Every canonical stream the committed aggregate carries, with its id field.
+STREAM_FILES = {stream: key for stream, key in STREAM_ID_FIELD.items() if (AGGREGATE / f"{stream}.jsonl").exists()}
 
 
 @pytest.fixture(scope="module")
@@ -43,7 +46,7 @@ def _content(body):
 
 def _stored_rows():
     counts: Counter = Counter()
-    for stream in ("sources", "entities", "relationships", "observations", "alerts"):
+    for stream in STREAM_FILES:
         for line in (AGGREGATE / f"{stream}.jsonl").read_text().splitlines():
             for producer in json.loads(line).get("_producers") or []:
                 counts[(producer, stream)] += 1
@@ -71,8 +74,7 @@ def test_stored_counts_are_the_rows_the_store_holds(body):
 
 def test_samples_are_real_stored_rows(body):
     ids = {json.loads(line).get(key)
-           for stream, key in (("sources", "source_id"), ("entities", "entity_id"), ("relationships", "relationship_id"),
-                               ("observations", "observation_id"), ("alerts", "alert_id"), ("correlations", "relationship_id"))
+           for stream, key in (*STREAM_FILES.items(), ("correlations", "relationship_id"))
            for line in (AGGREGATE / f"{stream}.jsonl").read_text().splitlines()}
     sampled = [s for n in body["lenses"]["content"]["nodes"] for s in n.get("samples") or []]
     assert sampled

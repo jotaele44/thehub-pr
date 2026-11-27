@@ -1,14 +1,33 @@
-# Rendered from thehub-pr/federation-templates/baseline/dependabot.yml.
+# Rendered from thehub-pr/federation-templates/baseline/dependabot.hub.yml.
 # Edit the template there and re-render (tools/render_federation_templates.py);
 # do not hand-edit this file — template-drift.yml fails the build if you do.
 #
 # Three ecosystems, because a dependency reaches this repo three ways: Python
 # packages, the dashboard/frontend npm tree, and the actions CI runs. Minor and
-# patch bumps are grouped so the weekly PR volume stays reviewable; majors still
-# arrive as individual PRs since they need a human read.
+# patch bumps of pip and npm are grouped so the weekly PR volume stays
+# reviewable; their majors still arrive as individual PRs since they need a
+# human read.
+#
+# This is thehub-pr's variant of baseline/dependabot.yml. The hub owns the
+# workflow templates, so its actions ecosystem is where their pins are bumped:
+# it scans the template directories as well as .github/workflows/. The hub
+# renders those same templates into its own .github/workflows/, so a bump has
+# to edit the template and the hub's copy in one pull request or the hub's
+# template-drift.yml goes red. Producers exclude their rendered copies instead
+# and receive the bump in a template sync PR.
 version: 2
 updates:
-  - package-ecosystem: "pip"
+  # "uv" here, because the hub commits uv.lock: the uv updater rewrites
+  # pyproject.toml and uv.lock together, where a pip bump would leave the lock
+  # stale (python_ecosystem in producers.vars.yaml, ADR 0017).
+  - package-ecosystem: "uv"
+    # The Python ecosystem (pip and uv share the fetcher) also reads
+    # requirement files one directory below "/",
+    # so this scan reaches federation-templates/requirements-desktop.txt: a
+    # pywebview bump edits that template and the hub's own
+    # requirements-desktop.txt in one pull request. Producers exclude their
+    # rendered copy. No exclude-paths here, and no second directory for the
+    # templates: that would scan the template twice and split a bump.
     directory: "/"
     schedule:
       interval: "weekly"
@@ -39,9 +58,28 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    # Held majors. Each one conflicts with a peer the federation has not
+    # migrated: eslint-plugin-react 7 accepts eslint <= 9, @eslint/js 10
+    # requires eslint 10, and react-day-picker 8 accepts date-fns <= 3, so the
+    # update would fail `npm ci`. Held by semver level, not by version range, so
+    # a repository already on a newer major keeps its minor and patch updates.
+    # Remove an entry once its peer supports the new major.
+    ignore:
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@eslint/js"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "date-fns"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
-    directory: "/"
+    # Dependabot reads every *.yml / *.yaml directly inside a non-root
+    # directory as a workflow, so each template there must stay valid YAML.
+    # Add a directory here when a workflow template is added outside these.
+    directories:
+      - "/"
+      - "/federation-templates/baseline"
+      - "/federation-templates/gui"
     schedule:
       interval: "weekly"
       day: "monday"
@@ -51,8 +89,18 @@ updates:
       - "ci"
     commit-message:
       prefix: "ci"
+    # One group for version updates and one for security updates, neither with
+    # update-types, so that no bump can be split. A template and its rendered
+    # copy have to move in the same pull request, but ungrouped updates become
+    # one pull request per directory, and a group split by update-types can put
+    # one bump into two: Dependabot judges the semver level per directory
+    # against the lowest pin it finds there, and the hub's own workflows still
+    # pin older majors than the templates do.
     groups:
-      actions-minor-patch:
-        update-types:
-          - "minor"
-          - "patch"
+      actions:
+        patterns:
+          - "*"
+      actions-security:
+        applies-to: "security-updates"
+        patterns:
+          - "*"

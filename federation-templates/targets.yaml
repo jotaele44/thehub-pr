@@ -8,12 +8,18 @@ schema_version: prii_federation_template_targets_v1
 
 _all: &all
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
-# Spiderweb's macOS/Linux shell launchers and .app executable intentionally add
-# repo-specific setup-failure, AppTranslocation, and Node.js diagnostics. Keep
-# those three files outside byte-identical shared launcher governance rather than
-# overwriting useful behavior to satisfy drift.
-_standard_shell_launchers: &standard_shell_launchers
-  [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, thehub-pr]
+# The shared launcher: thin scripts that find a Python and hand over to the
+# shared desktop/setup.py, which does setup, start, repair, languages, options
+# and preferences. Six of seven repos.
+_launcher: &launcher
+  [aguayluz-pr, centinelas-pr, ovnis-pr, skywatcher-pr, spiderweb-pr, thehub-pr]
+# moneysweep-pr keeps the previous launchers (legacy/) and its own
+# desktop/setup.py: that setup installs from an offline wheelhouse and a
+# committed prebuilt dashboard and runs preflight checks, none of which the
+# shared setup does yet. Rendering the shared one over it would break a working
+# app, so it adopts later, once those features are generalised.
+_legacy_launcher: &legacy_launcher
+  [moneysweep-pr]
 _desktop: &desktop
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr]
 # moneysweep-pr keeps its own pip-audit workflow: it is tailored to that repo's
@@ -46,7 +52,8 @@ _review: &review
 _needs_license: &needs_license
   [ovnis-pr, skywatcher-pr, spiderweb-pr]
 # The six producers, excluding thehub-pr — the hub already has its own server
-# tests, and its backend is the one the producers' shells were modelled on.
+# tests, and its backend is the one the producers' shells were modelled on. Also
+# the audience of baseline/dependabot.yml, whose hub variant differs.
 _producers: &producers
   [aguayluz-pr, centinelas-pr, moneysweep-pr, ovnis-pr, skywatcher-pr, spiderweb-pr]
 # V2 grid consumers that are also producer repositories. Spiderweb is excluded:
@@ -85,22 +92,49 @@ targets:
     repos: *all
   - template: PRII-APP.command
     output: PRII-{{APP_SLUG}}.command
-    repos: *standard_shell_launchers
+    repos: *launcher
   - template: PRII-APP.bat
     output: PRII-{{APP_SLUG}}.bat
-    repos: *all
+    repos: *launcher
   - template: PRII-APP.sh
     output: PRII-{{APP_SLUG}}.sh
-    repos: *standard_shell_launchers
-  # The executable inside the .app bundle. mode is required: it has no suffix,
-  # so the renderer's .sh/.command extension rule cannot see it, and a first
-  # render into a fresh checkout would leave it 0644 — a bundle that will not
-  # launch while its content still compares equal. Spiderweb's executable is
-  # intentionally repo-specific and therefore excluded from this shared target.
+    repos: *launcher
+  # The two scripts inside the .app bundle. mode is required: the executable
+  # has no suffix, so the renderer's .sh/.command extension rule cannot see it,
+  # and a first render into a fresh checkout would leave it 0644 — a bundle
+  # that will not launch while its content still compares equal.
   - template: PRII-APP.app/Contents/MacOS/PRII-APP
     output: PRII-{{APP_SLUG}}.app/Contents/MacOS/PRII-{{APP_SLUG}}
-    repos: *standard_shell_launchers
+    repos: *launcher
     mode: 0755
+  - template: PRII-APP.app/Contents/Resources/first-run-setup.command
+    output: PRII-{{APP_SLUG}}.app/Contents/Resources/first-run-setup.command
+    repos: *launcher
+    mode: 0755
+  # Setup, start and repair logic shared by every launcher above. Per-app
+  # values stay in each repo's own desktop/config.py.
+  - template: desktop/setup.py
+    output: desktop/setup.py
+    repos: *launcher
+  # The previous launchers, for the one repo that has not adopted the shared
+  # setup (see _legacy_launcher).
+  - template: legacy/PRII-APP.command
+    output: PRII-{{APP_SLUG}}.command
+    repos: *legacy_launcher
+  - template: legacy/PRII-APP.bat
+    output: PRII-{{APP_SLUG}}.bat
+    repos: *legacy_launcher
+  - template: legacy/PRII-APP.sh
+    output: PRII-{{APP_SLUG}}.sh
+    repos: *legacy_launcher
+  - template: legacy/PRII-APP.app/Contents/MacOS/PRII-APP
+    output: PRII-{{APP_SLUG}}.app/Contents/MacOS/PRII-{{APP_SLUG}}
+    repos: *legacy_launcher
+    mode: 0755
+  # A pip manifest: producers' Dependabot excludes it ({{RENDERED_PIP_MANIFESTS}}).
+  # Keep the template directly in federation-templates/, where the hub's own pip
+  # scan of "/" still reaches it and bumps pywebview here and in the hub's
+  # requirements-desktop.txt together.
   - template: requirements-desktop.txt
     output: requirements-desktop.txt
     repos: *desktop
@@ -138,11 +172,22 @@ targets:
     repos: *grid_v2_producer_consumers
 
   # Engineering baseline — supply-chain and dependency hygiene that every repo
-  # in the federation needs identically. Single-sourced here so a fix lands once
-  # instead of seven times, and so template-drift.yml keeps it from rotting.
+  # in the federation needs. Single-sourced here so a fix lands once instead of
+  # seven times, and so template-drift.yml keeps it from rotting.
+  # Dependabot comes in two variants that render to the same path. Producers
+  # exclude the workflows and pip manifests rendered into them
+  # ({{RENDERED_WORKFLOWS}}, {{RENDERED_PIP_MANIFESTS}}, both derived from this
+  # file), because a version bumped in a rendered copy breaks their drift gate.
+  # thehub-pr instead scans the templates themselves, so bumps land in the
+  # template first and reach producers in a sync PR. See the README sections
+  # "Action pins: Dependabot bumps the template, never a copy" and "Pip
+  # manifests: the same rule for requirements-desktop.txt".
   - template: baseline/dependabot.yml
     output: .github/dependabot.yml
-    repos: *all
+    repos: *producers
+  - template: baseline/dependabot.hub.yml
+    output: .github/dependabot.yml
+    repos: [thehub-pr]
   - template: baseline/codeql.yml
     output: .github/workflows/codeql.yml
     repos: *all

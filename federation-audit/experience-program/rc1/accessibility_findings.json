@@ -1,0 +1,962 @@
+{
+  "audited_commits": {
+    "aguayluz-pr": "6e3a4f67de20889abc3d0a48e0b514a4f7087f7a",
+    "centinelas-pr": "893a06f4a50655bcfae90469e15677c5f665d7a6",
+    "moneysweep-pr": "956bb498796c698230d2a2de722d316945777f62",
+    "mucaro-ai": "593bdd813686048a881cb3af61f4fbb9d211a52d",
+    "ovnis-pr": "a8225db5d226232037c455daf6e941e50d86d136",
+    "skywatcher-pr": "a2176990606048a6b918daacdb8bce027e58a903",
+    "spiderweb-pr": "9d6af728b48b7bbde5167d8abaacf51f34a0acaa",
+    "thehub-pr": "4f5c660801b6380ad4b64d39518fa778c9d25c76"
+  },
+  "evidence_class": "SOURCE_CONFIRMED at best. Nothing in this file was observed at runtime; no application was started for this inventory.",
+  "findings": [
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/layout/DashboardLayout.jsx:17-45 (grep -i 'skip' in dashboard/src and index.html found no skip link)",
+      "finding": "No skip-to-content link anywhere; keyboard users tab through the 20-link desktop sidebar and the StatsBar before reaching <main> on every route.",
+      "id": "no-skip-link",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:21-22,125-139",
+      "finding": "Single-character shortcuts A/R/S write a review decision immediately with no confirmation, no undo and no way to disable or remap (WCAG 2.1.4). The handler only ignores input/textarea/combobox targets, so the keys fire while focus is on any button or link on the page.",
+      "id": "review-single-key-destructive",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:194-204",
+      "finding": "The review 'cursor' row that A/R/S act on is a non-focusable <div> styled by border only; it has no tabindex, aria-current/aria-selected or live announcement, so assistive-technology users cannot tell which record a shortcut will decide. It is also independent of DOM focus.",
+      "id": "review-cursor-not-exposed",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/ui/toast.jsx:10-52,66-78; dashboard/src/components/ui/toaster.jsx:15-31",
+      "finding": "Toasts are plain <div>s with no role=status/alert or aria-live, yet they are the only success/failure feedback for review decisions, regulatory decisions, export, notify, hydromet refresh and API-key changes. The toast close button is icon-only with no accessible name and is opacity-0 until hover/focus.",
+      "id": "toast-not-announced",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:168,172; dashboard/src/pages/LiveLogsPage.jsx:62; dashboard/src/components/OutagesPanel.jsx:68",
+      "finding": "Review Queue severity and tier Select triggers (role=combobox) have no aria-label. Same defect on the Live Logs type filter and the Outages type filter.",
+      "id": "review-select-unlabelled",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/AiQueryPanel.jsx:44,50-52,95-110",
+      "finding": "AI panel close button and send button are icon-only with no accessible name; the text input has only a placeholder; the panel is not a dialog/region, has no label and no focus management on open/close.",
+      "id": "ai-panel-unnamed-controls",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/layout/Sidebar.jsx:148-185",
+      "finding": "Mobile navigation is a full-screen fixed <aside> without role=dialog/aria-modal, focus is not moved into it or returned on close, and background content stays in the tab order. Group tabs use role=tab/tablist without tabpanel, aria-controls or arrow-key handling.",
+      "id": "mobile-drawer-not-modal",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/pages/MapPage.jsx:69-70,111; dashboard/src/components/AssetMap.jsx:760; dashboard/src/components/WaterMonitoringConsole.jsx:17",
+      "finding": "Map page uses a fixed 440px non-shrinking aside beside a flex-1 min-w-0 map with no responsive breakpoint, and a 250px layer panel over the map; at phone widths the map column collapses. Monitoring has the same pattern with a fixed 250px layer rail.",
+      "id": "map-page-fixed-width",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/AssetMap.jsx:758,506-558; dashboard/src/components/SpatialToolsPanel.jsx:230-252",
+      "finding": "The main map container has no role or accessible name, and marker/polygon selection, hover popups and all spatial tools are pointer-only (map.on('click'/'mouseenter')).",
+      "id": "map-canvas-unlabelled",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/MunicipalOverviewMap.jsx:163-177",
+      "finding": "78 focusable SVG municipio paths remove the focus outline (focus:outline-none) and provide no alternative focus style; they also add 78 tab stops with no roving tabindex.",
+      "id": "municipal-map-focus-hidden",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/AssetMap.jsx:834-847; dashboard/src/components/MonitoringCharts.jsx:151; dashboard/src/components/WaterMonitoringConsole.jsx:23-27",
+      "finding": "Basemap Map/Satellite buttons expose the active choice by colour only (no aria-pressed), unlike the other layer toggles. Monitoring range buttons and water-layer rail buttons have the same gap.",
+      "id": "basemap-buttons-no-state",
+      "repository": "aguayluz-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/OverviewPage.jsx:120-126; dashboard/src/pages/MapPage.jsx:68-125; dashboard/src/components/layout/Sidebar.jsx:199",
+      "finding": "Overview and Map routes render no <h1> (neither uses PageHeader); the desktop sidebar's <h2> group headings precede any page heading in DOM order.",
+      "id": "missing-h1",
+      "repository": "aguayluz-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/WaterDisruption.jsx:3; dashboard/src/components/layout/DashboardLayout.jsx:40",
+      "finding": "WaterDisruption renders its own <main> inside the layout's <main>, producing nested main landmarks.",
+      "id": "nested-main",
+      "repository": "aguayluz-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/layout/DashboardLayout.jsx:26; dashboard/src/components/StatsBar.jsx:60-69",
+      "finding": "Mobile header and StatsBar are <div>s; there is no <header>/banner landmark. Backend-down banner has no role=alert/aria-live.",
+      "id": "no-banner-landmark",
+      "repository": "aguayluz-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/layout/Sidebar.jsx:90-97",
+      "finding": "In the mobile drawer the top-level NavLink ignores isActive for styling (always 'text-xl text-sky-700'); the current page is conveyed only by react-router's implicit aria-current, with no visible indication for top-level items.",
+      "id": "mobile-active-not-styled",
+      "repository": "aguayluz-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:164-166,226-237; dashboard/src/components/AssetsTable.jsx:193",
+      "finding": "Several icon-only buttons rely on `title` alone for a name: Review CSV export, Review AI-suggest, Assets CSV export.",
+      "id": "icon-buttons-title-only",
+      "repository": "aguayluz-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:179-186,206-214",
+      "finding": "Review row selection and 'Select all on page' are plain buttons swapping icons; no role=checkbox/aria-checked/aria-pressed, and every row's button has the same name 'Select record'.",
+      "id": "select-checkbox-not-checkbox",
+      "repository": "aguayluz-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/pages/RegulatoryReviewPage.jsx:274-299",
+      "finding": "Regulatory 'Approve' is disabled when contradictions exist and the reason is given only through a title attribute on a disabled button (not focusable, not announced); the form itself gives no inline reason for disabled Reject/Needs-review when actor/rationale are empty.",
+      "id": "approve-disabled-reason-title-only",
+      "repository": "aguayluz-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/components/layout/Sidebar.jsx:193; dashboard/src/components/common/PageHeader.jsx:8; dashboard/src/components/StatsBar.jsx:16",
+      "finding": "text-slate-500/600 on slate-900/950 backgrounds is still used throughout for captions and metadata (previously measured 3.75:1 in docs/A11Y_AUDIT.md); not re-measured here.",
+      "id": "muted-text-contrast",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/OverviewPage.jsx:155,158",
+      "finding": "Inline links inside slate-500 paragraph text are distinguished by colour only (no underline).",
+      "id": "link-colour-only",
+      "repository": "aguayluz-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/pages/ReviewPage.jsx:179,206,238-246; dashboard/src/components/AssetMap.jsx:278; dashboard/src/components/layout/DashboardLayout.jsx:30",
+      "finding": "Controls are sized below 44px by class: h-7 (28px) review buttons, 16px select icons, px-2 py-1 map chips, p-1.5 hamburger.",
+      "id": "small-touch-targets",
+      "repository": "aguayluz-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/pages/AnalyticsPage.jsx:77-128; dashboard/src/pages/OverviewPage.jsx:244; dashboard/src/components/MonitoringCharts.jsx:215",
+      "finding": "Recharts charts on Analytics, Overview, Sector and Monitoring have no aria-label, summary or data table alternative (Sector has a separate asset table only).",
+      "id": "charts-no-text-alternative",
+      "repository": "aguayluz-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/index.css:1-68; dashboard/src/components/AssetMap.jsx:741",
+      "finding": "No prefers-reduced-motion handling in app CSS; map easeTo/fly animations and animate-pulse/animate-spin are unconditional.",
+      "id": "no-reduced-motion",
+      "repository": "aguayluz-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/pages/LiveLogsPage.jsx:60; dashboard/src/components/OutagesPanel.jsx:66; dashboard/src/components/AssetsTable.jsx:183-189; dashboard/src/components/ProgramTimeline.jsx:51",
+      "finding": "Search inputs with placeholder only: Live Logs filter, Outages search, Assets search, ProgramTimeline search; MonitoringCharts 'include polygon' checkbox label UNKNOWN (line 178 not opened in full).",
+      "id": "unlabelled-inputs",
+      "repository": "aguayluz-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/pages/EnvironmentalExposurePage.jsx:102-108; dashboard/src/pages/HydrometPage.jsx:141-146; dashboard/src/pages/SourceIntelligencePage.jsx:210-214",
+      "finding": "Hand-written tables on Environmental Exposure, Hydromet and Source Intelligence use <th> without scope; Water Use / Hydro Inventory do set scope=row.",
+      "id": "table-headers-no-scope",
+      "repository": "aguayluz-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/pages/Handoff.jsx:63; frontend/src/pages/Handoff.jsx:29; frontend/src/components/ListState.jsx:28",
+      "finding": "After a successful Entregar, load() sets loading=true and ListState swaps the whole list for skeletons, unmounting the focused button; nothing restores focus (no .focus() call exists in frontend/src). Keyboard and screen-reader users are dropped to the document start on a page that can hold hundreds of cards.",
+      "id": "a11y-handoff-focus-loss",
+      "repository": "centinelas-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/pages/Handoff.jsx:131-133; src/centinelas/route/dispatch.py:259",
+      "finding": "Handoff success is not announced: the confirmation span has no live region and is keyed to status 'delivered', which the backend never returns (it returns pending_ack/partial/failed). Only errors use role=alert.",
+      "id": "a11y-handoff-success-silent",
+      "repository": "centinelas-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/pages/Handoff.jsx:103; frontend/src/pages/Handoff.jsx:126-130",
+      "finding": "Every card repeats the same button name 'Entregar' and the same group legend 'Destinos' with no reference to the item title, so controls are indistinguishable in a controls list.",
+      "id": "a11y-handoff-ambiguous-names",
+      "repository": "centinelas-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/components/lifecycle/ConfidenceBadge.jsx:13-15; frontend/src/components/lifecycle/HandoffStatusBadge.jsx:19; frontend/package.json:21; docs/A11Y_AUDIT.md:43",
+      "finding": "ConfidenceBadge maps medium->warning and low->caution, HandoffStatusBadge maps watching->warning, onto @pr-federation/react 0.3.0 tones that the repo's own audit records as failing contrast. The mapping is unchanged and the package pin is unchanged; the CSS values themselves are not in the snapshot.",
+      "id": "a11y-warning-caution-contrast",
+      "repository": "centinelas-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/pages/Pipeline.jsx:157; frontend/src/pages/Pipeline.jsx:49-53",
+      "finding": "Below the md breakpoint the Pipeline card grid has one implicit auto column; each card is a grid item with default min-width:auto containing a nowrap (truncate) title, so a long title can widen the track past the viewport.",
+      "id": "a11y-pipeline-mobile-overflow",
+      "repository": "centinelas-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/pages/Home.jsx:14; frontend/src/zip-design/AppShell.jsx:83",
+      "finding": "Home renders a <main> inside the shell's <main>, giving two nested main landmarks.",
+      "id": "a11y-nested-main",
+      "repository": "centinelas-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/zip-design/AppShell.jsx:38-59",
+      "finding": "No skip-to-content link; on narrow screens the brand plus 8 nav links precede the content on every page.",
+      "id": "a11y-no-skip-link",
+      "repository": "centinelas-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/ProgramTimeline.jsx:58-61",
+      "finding": "Program timeline search input has no accessible name other than its placeholder; the wrapping label contains only an icon.",
+      "id": "a11y-timeline-search-unlabelled",
+      "repository": "centinelas-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/pages/Pipeline.jsx:130-146; frontend/src/components/ProgramTimeline.jsx:50; frontend/src/zip-design/AppShell.jsx:80",
+      "finding": "Filter chips (Pipeline domains, timeline phases) and the theme button convey selection by colour/glyph only; no aria-pressed or aria-current.",
+      "id": "a11y-toggle-state-not-exposed",
+      "repository": "centinelas-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/pages/Handoff.jsx:75-80; frontend/src/pages/PipelineItemDetail.jsx:52-63; frontend/src/pages/WaterDisruption.jsx:24-28; frontend/src/lib/LanguageContext.jsx:18",
+      "finding": "Pages bypass the i18n helper: Handoff is hard-coded Spanish, PipelineItemDetail, WaterDisruption, ProgramTimeline and ErrorBoundary are hard-coded English, while html lang follows the toggle. Content language can disagree with the declared language.",
+      "id": "a11y-mixed-language",
+      "repository": "centinelas-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/pages/Pipeline.jsx:117-127; frontend/src/pages/Pipeline.jsx:150; frontend/src/pages/PipelineItemDetail.jsx:52",
+      "finding": "Pipeline and PipelineItemDetail loading, empty and backend-unreachable messages are plain elements without role=status/alert, unlike the ListState pages.",
+      "id": "a11y-pipeline-status-not-announced",
+      "repository": "centinelas-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/zip-design/AppShell.module.css:160-161; frontend/src/components/ui/button.jsx:24; frontend/src/pages/Pipeline.jsx:133",
+      "finding": "Topbar buttons are 34px high, the shadcn Button default is h-9 (36px), and Pipeline chips use py-1 text-sm; all below a 44px target.",
+      "id": "a11y-touch-targets",
+      "repository": "centinelas-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/pages/SignalsTable.jsx:72-83",
+      "finding": "Signals table has no caption and th cells have no scope; its horizontal scroll container is not keyboard focusable.",
+      "id": "a11y-table-semantics",
+      "repository": "centinelas-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/lifecycle/ConfidenceBadge.jsx:24; frontend/src/components/lifecycle/EvidenceTierBadge.jsx:7; frontend/src/components/pipeline/DomainBadge.jsx:31",
+      "finding": "Badge explanations (confidence band, evidence tier, routing target) are exposed only through title attributes.",
+      "id": "a11y-title-only-info",
+      "repository": "centinelas-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/pages/PipelineItemDetail.jsx:122",
+      "finding": "Dispatch error text uses text-red-700 with no dark-mode variant.",
+      "id": "a11y-hardcoded-red",
+      "repository": "centinelas-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/SortHead.jsx:11",
+      "finding": "Sortable column headers are <th> elements with an onClick only: no tabIndex, no inner <button>, no key handler. Sorting in Contracts and Entities is pointer-only. aria-sort is set correctly.",
+      "id": "sort-headers-not-keyboard-operable",
+      "repository": "moneysweep-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/TypeFilterSelect.jsx:16",
+      "finding": "TypeFilterSelect renders a Radix SelectTrigger with no aria-label and no associated label; used on Entities and Relationships. This is the button-name finding from docs/A11Y_AUDIT.md:105-114 and is still present in current source.",
+      "id": "type-filter-select-unnamed",
+      "repository": "moneysweep-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/Dashboard.jsx:47",
+      "finding": "Dashboard root is a <div> with a <header>; there is no <main> element or role=main anywhere in the shipped app (grep '<main' in dashboard/src matches only the visual-test atlas).",
+      "id": "no-main-landmark",
+      "repository": "moneysweep-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/CampaignFinance.jsx:31",
+      "finding": "Campaign Finance (3 tables), Ownership and Gov Changes build their header rows from TableCell (<td>) instead of TableHead (<th>), so columns have no header semantics. The change-candidates table has no header row at all.",
+      "id": "table-headers-are-td",
+      "repository": "moneysweep-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/OwnershipDeepDive.jsx:89",
+      "finding": "Same issue in the ownership holders table and the government-changes table (dashboard/src/components/GovernmentChanges.jsx:29-34); dashboard/src/components/GovernmentChangeCandidates.jsx:11-20 has body rows only.",
+      "id": "table-headers-are-td-ownership",
+      "repository": "moneysweep-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/components/ContractsTable.jsx:77",
+      "finding": "Contract and entity rows are <tr role=\"button\" tabIndex=0>, which replaces row semantics for assistive tech, and use focus:outline-hidden with only a background tint as the focus indicator. Keyboard activation (Enter/Space) is implemented.",
+      "id": "row-as-button",
+      "repository": "moneysweep-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/ProgramTimeline.jsx:49",
+      "finding": "Activity search input sits in a <label> containing only an icon, so its accessible name comes from the placeholder alone; outline is removed (outline-hidden). Phase filter buttons expose selection by colour only (no aria-pressed).",
+      "id": "activity-search-placeholder-only",
+      "repository": "moneysweep-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/FinancialLeaderboards.jsx:100",
+      "finding": "Every ranking row has a button named just 'Inspect' (no entity in the name) at min-h-9 (36px, under the 44px target the federation harness requires); the ranking <table> has no caption and its <th> cells no scope.",
+      "id": "leaderboard-inspect-buttons-ambiguous",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/CampaignFinance.jsx:174",
+      "finding": "Filter inputs/selects and the API-key Save button use h-7 (28px) heights: dashboard/src/components/ContractsTable.jsx:50, dashboard/src/components/EntitiesTable.jsx:50, dashboard/src/components/CampaignFinance.jsx:174,185,203, dashboard/src/components/OwnershipDeepDive.jsx:41, dashboard/src/components/ApiKeysPanel.jsx:48,53, dashboard/src/components/TypeFilterSelect.jsx:16.",
+      "id": "small-filter-controls",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/ApiKeysPanel.jsx:60",
+      "finding": "API-key save failure is rendered as a plain <p> with no role=alert/aria-live.",
+      "id": "api-key-save-error-not-announced",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/FinancialLeaderboards.jsx:94",
+      "finding": "Top Entities 'Loading ranking…' text has no role=status/aria-live (its error does have role=alert at line 93).",
+      "id": "leaderboards-loading-not-announced",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/main.jsx:16",
+      "finding": "Theme is hard-coded to dark at boot and in index.html; no theme toggle or light theme in the shipped app.",
+      "id": "dark-theme-only",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/components/MunicipalityAggregates.jsx:33",
+      "finding": "recharts BarChart has no accessible name/description; the same counts are available as text in the list directly below (lines 47-53).",
+      "id": "chart-without-text-alternative",
+      "repository": "moneysweep-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/scripts/run-federation-pilot-visual-checks.mjs:14",
+      "finding": "No automated accessibility check runs against any real dashboard tab. The only axe run targets the fixture page federation-pilot-atlas.html; vitest-axe matchers are registered (dashboard/src/test/setup.js:2-5) but no test calls axe()/toHaveNoViolations (grep in dashboard/src returns nothing).",
+      "id": "tab-coverage-gap-in-a11y-automation",
+      "repository": "moneysweep-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/styles.css:1218-1231, frontend/src/App.jsx:239, frontend/src/App.jsx:295-306",
+      "finding": "At <=760px (which the 420px-wide desktop window reaches) the closed navigation panel is only translated off-screen; it is not display:none, visibility:hidden or inert. Its ~10+ buttons stay in the tab order and the accessibility tree, so keyboard focus disappears off-screen before reaching the page content. When open it is not a dialog: no focus move into it, no focus trap, no Escape, no close button, and the toggle keeps the label 'Open navigation'.",
+      "id": "a11y-mobile-nav-not-hidden",
+      "repository": "mucaro-ai",
+      "severity": "serious"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/api.js:280, backend/app/main.py:1051, frontend/src/components/ChatView.jsx:148-150",
+      "finding": "Functional, affects all users: runs with more than 500 events are reloaded with only the first 500 (see workflow stream-answer), which removes the tail of a long live-streamed answer and its citations.",
+      "id": "a11y-streamed-answer-truncation",
+      "repository": "mucaro-ai",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/ChatView.jsx:51-61",
+      "finding": "The conversation menu declares role=menu/menuitem but implements none of the pattern: focus is not moved into it, there is no arrow-key navigation, Escape or outside-click close; it stays open until an item or the toggle is pressed.",
+      "id": "a11y-menu-pattern",
+      "repository": "mucaro-ai",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/Composer.jsx:146-169",
+      "finding": "The mode picker is a ul role=listbox whose children are plain li elements wrapping button role=option (invalid ownership), with no arrow keys, Escape or active-descendant; it works as a list of buttons by Tab only.",
+      "id": "a11y-mode-listbox",
+      "repository": "mucaro-ai",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/components/Sheet.jsx:13, frontend/src/components/Sheet.jsx:49, frontend/src/components/ChatView.jsx:56-59, frontend/src/components/RunBlock.jsx:321-323",
+      "finding": "Sheet returns focus to the element focused when it mounted. For sheets opened from the conversation menu (Rename, Delete, Background tasks) that element is a menu item that has already been unmounted, so focus falls to the document body on close. Same for the approval card: after Allow/Deny the card unmounts and nothing receives focus.",
+      "id": "a11y-focus-return-lost",
+      "repository": "mucaro-ai",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/components/Sheet.jsx:3, frontend/src/components/Sheet.jsx:32-41, frontend/src/components/RunBlock.jsx:180-194, frontend/src/components/Sheet.jsx:55-56",
+      "finding": "The trap's focusable selector omits <summary> and matches elements inside closed <details> (e.g. pre[tabindex=0]). In sheets that end with disclosures (Tool activity, Evidence) the computed last item can be an unfocusable hidden element, so Tab from the last visible control can leave the dialog; the page behind is not inert or aria-hidden (aria-modal only).",
+      "id": "a11y-focus-trap-leak",
+      "repository": "mucaro-ai",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/App.jsx:250-259, frontend/index.html:13",
+      "finding": "Switching workspace does not move focus, change document.title or announce; a screen-reader user gets only aria-current on the pressed button. The page title is always 'Mucaro AI'.",
+      "id": "a11y-view-change-silent",
+      "repository": "mucaro-ai",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/ChatView.jsx:268-273, frontend/src/components/RunBlock.jsx:44-61",
+      "finding": "A pending approval is announced through the polite live region ('Waiting for your approval.') but focus is not moved to the card and it is not a live region itself; the user must find it in the feed. Deny and Allow once are native buttons, so keyboard activation works.",
+      "id": "a11y-approval-not-focused",
+      "repository": "mucaro-ai",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/workspaces/ProvenanceWorkspace.jsx:59, frontend/src/components/workspaces/SourcesWorkspace.jsx:82, frontend/src/components/workspaces/MemoryWorkspace.jsx:82, frontend/src/components/TasksDrawer.jsx:54",
+      "finding": "Provenance, Sources, Memory and Background tasks show their empty text while the first load is still in flight (no loading state).",
+      "id": "a11y-false-empty-states",
+      "repository": "mucaro-ai",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/DirectoryIntake.jsx:139-142, frontend/src/components/workspaces/SourcesWorkspace.jsx:79",
+      "finding": "DirectoryIntake errors render in a div with no role=alert, its buttons have no type attribute, and the status badge is raw status code text; the section is titled 'Add a folder from this Mac' on every platform.",
+      "id": "a11y-directory-intake-errors",
+      "repository": "mucaro-ai",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/workspaces/SourcesWorkspace.jsx:73, frontend/src/components/workspaces/MemoryWorkspace.jsx:96",
+      "finding": "Rebuild index and the memory On/Off toggle have no error handling; a failure is invisible and inaudible.",
+      "id": "a11y-silent-failures",
+      "repository": "mucaro-ai",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/ExecutionEntryCard.jsx:152, frontend/src/components/ExecutionEntryCard.jsx:175-198",
+      "finding": "When Adjust/Revise fails, the error text is rendered on the card behind the modal sheet, not inside it.",
+      "id": "a11y-entry-error-behind-sheet",
+      "repository": "mucaro-ai",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/App.jsx:238, frontend/index.html:2, frontend/src/styles.css:74-78, frontend/src/styles.css:1299, frontend/src/styles.css:24, frontend/src/styles.css:1317-1331",
+      "finding": "Present in source: skip link, lang=en, global :focus-visible outline, prefers-reduced-motion, prefers-color-scheme, 16px fields and 44px targets at <=900px or coarse pointers, labelled form fields, role=alert on errors, one polite live region.",
+      "id": "a11y-positive-baseline",
+      "repository": "mucaro-ai",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/CaseGrid.jsx:319",
+      "finding": "On desktop the only ways to open a case are a mouse click on a <tr> that has no tabIndex, role or key handler, or a click on a map canvas point. The case detail cannot be opened from the keyboard or by a screen-reader user in the desktop shell.",
+      "id": "desktop-case-rows-not-keyboard-operable",
+      "repository": "ovnis-pr",
+      "severity": "blocker"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/Dashboard.jsx:26",
+      "finding": "A failed or still-pending /cases or /geojson request is presented as real emptiness ('0 of 0 cases', 'No cases found', '0 mapped sightings'). Only the small header text says 'backend unreachable'. Statistics and Candidates do distinguish the two states through QueryState.",
+      "id": "cases-outage-shown-as-empty",
+      "repository": "ovnis-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/CaseMap.jsx:343",
+      "finding": "The MapLibre container has no role or accessible name, and points, clusters and all three spatial tools respond only to pointer clicks. The Cases list is a text equivalent for the points themselves, but not for measure, buffer or nearest.",
+      "id": "map-has-no-accessible-name-or-keyboard-selection",
+      "repository": "ovnis-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/StatsPanel.jsx:38",
+      "finding": "Both Recharts bar charts expose their per-decade and per-tier values only as SVG bars and hover tooltips; there is no table, list or accessibilityLayer. Only Total/Mapped/Unmapped are available as text.",
+      "id": "charts-have-no-text-equivalent",
+      "repository": "ovnis-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/lib/locale.js:137",
+      "finding": "Switching to Español sets <html lang='es'> while Statistics, Candidates, Activity, map controls, spatial tools, error states and the sheet 'Close' label stay English, so a screen reader pronounces them with the wrong language.",
+      "id": "untranslated-content-under-lang-es",
+      "repository": "ovnis-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/CaseDetail.jsx:38",
+      "finding": "Evidence tier and confidence are bare badges ('T3', '0.2') with no visible or accessible label saying which is which; meaning is carried by position and colour. Confidence arrives as a number, so confidenceTone's high/medium/low palette never matches and every badge is slate.",
+      "id": "case-detail-badges-unlabelled",
+      "repository": "ovnis-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/components/CaseDetail.jsx:25",
+      "finding": "CaseDetail sets no onCloseAutoFocus and is not opened from a focusable trigger on desktop (table row or map canvas), so focus has no meaningful element to return to on close. The More sheet does restore focus explicitly.",
+      "id": "case-detail-focus-not-restored-on-desktop",
+      "repository": "ovnis-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/components/ProgramTimeline.jsx:43",
+      "finding": "Programme-timeline phase filter buttons show the active filter by class only (no aria-pressed), the search input is named only by its placeholder, and decorative icons lack aria-hidden.",
+      "id": "activity-filter-state-colour-only",
+      "repository": "ovnis-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/components/SpatialToolsPanel.jsx:302",
+      "finding": "Controls reachable in the mobile shell without a 44px minimum: timeline filter and sort buttons (min-h-9), spatial-tool mode, radius and Clear buttons, the map 'Clear date filter' × and 'Retry density' link-button, the QueryState Retry button, and MapLibre's zoom control (no CSS override in index.css).",
+      "id": "mobile-targets-below-44px",
+      "repository": "ovnis-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/components/CaseGrid.jsx:183",
+      "finding": "The case-list scroll container and the table wrapper are overflow-auto with no tabindex, so the region cannot be focused for keyboard scrolling.",
+      "id": "scroll-region-not-focusable",
+      "repository": "ovnis-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/Dashboard.jsx:95",
+      "finding": "The mobile branch wraps content in <main>; the desktop branch uses <div> and <aside> only. There is no skip link in either.",
+      "id": "desktop-shell-has-no-main-landmark",
+      "repository": "ovnis-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/components/CaseGrid.jsx:344",
+      "finding": "In the desktop table the 'no coordinates' icon passes a title prop to an SVG and has no aria-label, unlike the mobile card which uses aria-label.",
+      "id": "table-missing-coords-icon-unnamed",
+      "repository": "ovnis-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "dashboard/src/components/SpatialToolsPanel.jsx:286",
+      "finding": "The mapped-count legend and the spatial tools panel are both absolutely positioned at bottom-2 left-2 of the map area, so they occupy the same corner when tools are open.",
+      "id": "legend-overlaps-spatial-tools",
+      "repository": "ovnis-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "dashboard/src/pages/Dashboard.jsx:64",
+      "finding": "The health dot conveys up/down by colour and pulse only; it is acceptable because the adjacent text (sr-only on mobile) states the same thing.",
+      "id": "health-dot-colour-only",
+      "repository": "ovnis-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/skywatcher/Layout.jsx:30-35",
+      "finding": "Mobile navigation toggle is an icon-only <button> (h-8 w-8 = 32x32 CSS px) with no aria-label, no visible/sr-only text, no aria-expanded, no aria-controls, no type attribute",
+      "id": "a11y-mobile-toggle-unlabeled",
+      "repository": "skywatcher-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/skywatcher/Layout.jsx:19-26",
+      "finding": "Mobile nav overlay is a plain fixed div: no role=dialog/aria-modal, no focus move/trap/return, no Escape handler, backdrop is a click-only div; background content stays in tab order",
+      "id": "a11y-mobile-nav-not-modal",
+      "repository": "skywatcher-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/skywatcher/SideDrawer.jsx:4-34",
+      "finding": "SideDrawer (all 7 detail drawers) has no role=dialog, aria-modal, aria-labelledby; no focus trap; focus is not moved in on open nor returned on close. Only Escape + backdrop click are handled",
+      "id": "a11y-side-drawer-semantics",
+      "repository": "skywatcher-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/skywatcher/SideDrawer.jsx:22-27",
+      "finding": "SideDrawer close button is icon-only (X) with no accessible name; 32x32 px",
+      "id": "a11y-drawer-close-unlabeled",
+      "repository": "skywatcher-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/pages/Observations.jsx:199",
+      "finding": "Data-table rows open drawers via <tr onClick> with no tabIndex/role/keyboard handler: Dashboard.jsx:165, Observations.jsx:199, Aircraft.jsx:86, FR24Intake.jsx:76, Routes.jsx:262. Observation, capture and route detail (and their review actions) are unreachable by keyboard from these tables",
+      "id": "a11y-clickable-rows",
+      "repository": "skywatcher-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/skywatcher/Toolbar.jsx:8-13",
+      "finding": "Shared SearchInput has placeholder only - no label/aria-label (FilterSelect does have aria-label)",
+      "id": "a11y-search-input-unlabeled",
+      "repository": "skywatcher-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/pages/Routes.jsx:168-169",
+      "finding": "V4 recurrence inputs rely on placeholder only",
+      "id": "a11y-routes-inputs-unlabeled",
+      "repository": "skywatcher-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/pages/FlightArchive.jsx:269-276",
+      "finding": "role=tablist/tab with aria-selected but no role=tabpanel, aria-controls, roving tabindex or arrow-key support (FlightArchive.jsx:269-276; SkyTargetFinder.jsx:425-436)",
+      "id": "a11y-tabs-incomplete",
+      "repository": "skywatcher-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/components/skywatcher/Toolbar.jsx:12",
+      "finding": "Inputs/selects set focus:outline-hidden with only a faint border-colour change (focus:border-primary/50) as the focus indicator",
+      "id": "a11y-focus-outline-hidden",
+      "repository": "skywatcher-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/pages/Aircraft.jsx:49-50",
+      "finding": "Cards/Table view toggle conveys state by colour only (no aria-pressed)",
+      "id": "a11y-view-toggle-state",
+      "repository": "skywatcher-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/components/skywatcher/PuertoRicoMapShell.jsx:258",
+      "finding": "Map feature inspection, console coordinate selection and spatial tools are map-click only; console map container is a div with aria-label but no role",
+      "id": "a11y-map-pointer-only",
+      "repository": "skywatcher-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/ui/toast.jsx:63-75",
+      "finding": "ToastClose button is icon-only without accessible name",
+      "id": "a11y-toast-close-unlabeled",
+      "repository": "skywatcher-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/src/components/skywatcher/LoadingState.jsx:6-8",
+      "finding": "LoadingState spinner has no role=status/aria-live",
+      "id": "a11y-loading-not-announced",
+      "repository": "skywatcher-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/components/skywatcher/Sidebar.jsx:56",
+      "finding": "No skip-to-content link; <nav> has no aria-label; page title/heading management on route change not found (ScrollToTop is unmounted)",
+      "id": "a11y-no-skip-link-or-nav-label",
+      "repository": "skywatcher-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "frontend/src/components/skywatcher/drawers/CaptureDetailDrawer.jsx:104",
+      "finding": "Several controls are below 44px (and some below 24px): mobile toggle 32px (Layout.jsx:32), drawer close 32px (SideDrawer.jsx:24), copy-hash icon button h-3 w-3 with no padding (CaptureDetailDrawer.jsx:104)",
+      "id": "a11y-small-touch-targets",
+      "repository": "skywatcher-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "frontend/package.json:101",
+      "finding": "vitest-axe is declared as a devDependency (frontend/package.json:101) but no test imports it (grep 'axe' in frontend/src and frontend/tests finds no vitest-axe usage); no axe/a11y assertion exists in the frontend suites",
+      "id": "a11y-automation-absent",
+      "repository": "skywatcher-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:760-766",
+      "finding": "Single printable-character shortcuts ([, ], L) are global window listeners with no way to disable or remap them; they are suppressed only for INPUT/TEXTAREA/contentEditable, not for a focused <select> (type-ahead with 'l' in the flight or target-layer select also toggles the layer panel).",
+      "id": "a11y-single-key-shortcuts",
+      "repository": "spiderweb-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/App.tsx:254-268",
+      "finding": "role=tablist/tab without arrow-key navigation or roving tabindex; every tab is a tab stop. aria-controls points at one shared panel.",
+      "id": "a11y-tabs-no-roving",
+      "repository": "spiderweb-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/LeftRail.tsx:33",
+      "finding": "Left-rail module buttons expose the active module only through data-active (no aria-current/aria-pressed), unlike the investigation buttons beside them.",
+      "id": "a11y-rail-module-state",
+      "repository": "spiderweb-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/modules/SpatialToolsPanel.tsx:304-312",
+      "finding": "Measure/Buffer/Nearest tools, access-point selection for drawn points and imagery footprint identify are driven only by map click events; there is no keyboard or list alternative for drawn records.",
+      "id": "a11y-map-pointer-only",
+      "repository": "spiderweb-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/modules/QueryLayer.tsx:134-142",
+      "finding": "A running query has no status region: while pending with no tokens nothing is announced or shown except the button text changing to STOP; streamed RAG text is not in a live region.",
+      "id": "a11y-query-progress",
+      "repository": "spiderweb-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/CommandBar.tsx:63-74",
+      "finding": "Pipeline state is conveyed by button label and inline colour only (no aria-live); failure text is appended to a log that is visible only in the Query tab.",
+      "id": "a11y-pipeline-status",
+      "repository": "spiderweb-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/modules/SpatialIntelligence.tsx:796-803",
+      "finding": "2D/3D toggle and ProgramTimeline phase filter buttons carry no aria-pressed (state via data-on / class only).",
+      "id": "a11y-toggle-no-pressed",
+      "repository": "spiderweb-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "server/frontend/src/modules/FinanceIntelligence.tsx:164",
+      "finding": "Alert feed and contracts table headers have no scope attribute; Finance table uses role=grid on rows that are focusable individually without grid arrow-key navigation.",
+      "id": "a11y-alert-table-headers",
+      "repository": "spiderweb-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "server/frontend/src/modules/InvestigationGraph.tsx:55-63",
+      "finding": "Investigation graph connector SVG has no role/label and node buttons are absolutely positioned by percentage; reading order is DOM order only.",
+      "id": "a11y-graph-svg",
+      "repository": "spiderweb-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/App.tsx:220-243",
+      "finding": "No skip-to-content link; keyboard users traverse command bar and (when open) the whole left rail before reaching the module.",
+      "id": "a11y-no-skip-link",
+      "repository": "spiderweb-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/Timeline.tsx:84",
+      "finding": "Timeline slider aria-valuetext is the raw cursor string, empty until data loads.",
+      "id": "a11y-timeline-valuetext",
+      "repository": "spiderweb-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/shared/SearchableTable.jsx:58",
+      "finding": "SearchableTable rows open the edit sheet via onClick on <tr> with no tabIndex, role or key handler, so editing any ledger record (Programs, Cases, Sources, Gates, Integrations, Dictionary, Manifest, every EntityLedger tab) is impossible by keyboard.",
+      "id": "table-rows-mouse-only",
+      "repository": "thehub-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/shared/RecordSheet.jsx:29",
+      "finding": "Entity create/update promises are neither awaited by RecordSheet nor caught by EntityLedger/page handlers; a 401/503 from the write guard produces no visible or announced error.",
+      "id": "write-errors-silent",
+      "repository": "thehub-pr",
+      "severity": "serious"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/layout/Sidebar.jsx:47",
+      "finding": "The only pointer trigger for the command palette is in the sidebar, which is hidden below lg; MobileNav and HubHeader have none, so on narrow/touch layouts the palette (and its coordinate/evidence-ref commands) needs a hardware keyboard.",
+      "id": "palette-no-touch-trigger",
+      "repository": "thehub-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/notifications/NotificationBell.jsx:20",
+      "finding": "Notification bell toggles a popover without aria-expanded/aria-controls, Escape handling or focus management; dismissal is a click-only full-screen backdrop div.",
+      "id": "notification-popover-semantics",
+      "repository": "thehub-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/hooks/useEntityData.js:13",
+      "finding": "useEntityData seeds initialData: [] so isLoading is never true and isError is not rendered by ledger tables; users see 'No records' while loading or when the API fails.",
+      "id": "loading-masked-as-empty",
+      "repository": "thehub-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/components/shared/SearchableTable.jsx:47",
+      "finding": "Sortable column headers are plain buttons with icon-only direction; no aria-sort on the header cell.",
+      "id": "sort-state-not-exposed",
+      "repository": "thehub-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "server/frontend/src/pages/ControlLedgers.jsx:54",
+      "finding": "/control renders its PageHeader h1 and then a whole page component with its own PageHeader h1.",
+      "id": "duplicate-h1-control-ledgers",
+      "repository": "thehub-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "high",
+      "evidence": "server/frontend/src/zip-design/HubHeader.jsx:9",
+      "finding": "At >=lg two ThemeToggle buttons (HubHeader and Sidebar) and two navigation regions with overlapping links are rendered.",
+      "id": "duplicate-theme-toggles",
+      "repository": "thehub-pr",
+      "severity": "minor"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "server/frontend/src/pages/Operations.jsx:319",
+      "finding": "Deleting a stored operation secret fires immediately with no confirmation.",
+      "id": "secret-delete-no-confirm",
+      "repository": "thehub-pr",
+      "severity": "moderate"
+    },
+    {
+      "confidence": "medium",
+      "evidence": "server/frontend/src/components/notifications/NotificationBell.jsx:30",
+      "finding": "Notification badge uses bg-red-600/bg-blue-600 instead of federation tone tokens; criticality is colour-only on the badge.",
+      "id": "hardcoded-badge-colours",
+      "repository": "thehub-pr",
+      "severity": "minor"
+    }
+  ],
+  "generated_at": "2026-11-17T13:53:39+00:00",
+  "method": "Source reading only. No axe scan, screen reader or device was used for these rows; each is a lead to confirm at runtime.",
+  "schema": "federation.experience-program.accessibility-findings/1"
+}

@@ -1,0 +1,16 @@
+{
+  "description": "A supported state says how it is shown.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/states/error/presentation",
+      "value": null
+    }
+  ],
+  "expect": [
+    "schema:contract:type"
+  ]
+}

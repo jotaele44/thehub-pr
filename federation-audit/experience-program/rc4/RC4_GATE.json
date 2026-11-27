@@ -1,0 +1,528 @@
+{
+ "schema": "federation.experience-program.gate/1",
+ "gate": "RC4",
+ "state": "PROVISIONAL",
+ "thehub_rescan": {
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/thehub_rescan.json",
+  "commits": {
+   "audited": "4f5c660801b6380ad4b64d39518fa778c9d25c76",
+   "rescanned": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3"
+  },
+  "coverage": "86 routes, 602 page loads, Chromium, every route answered and rendered at every width.",
+  "contrast": "Routes failing went from 86 to 1; distinct failing elements from 26 to 1. thehub-pr#432 removed the Hub's own sidebar, which held them.",
+  "unchanged": "Unnamed buttons (8 elements on 12 routes) and unfocusable scroll regions (3 elements on 3 routes) are the same before and after.",
+  "horizontal_overflow": {
+   "audited": {
+    "320": 17,
+    "390": 14,
+    "430": 14,
+    "1280": 6
+   },
+   "rescanned": {
+    "320": 17,
+    "390": 14,
+    "430": 14,
+    "768": 7
+   },
+   "reading": "The 12px overflow on six routes at 1280px is gone. Seven routes now overflow at 768px (/crossover and the six /ovnis tabs), where none did before. Overflow at 320 to 430px is unchanged. The new 768px overflow appeared between the two commits; which change caused it is not established here."
+  }
+ },
+ "hypothesis_check": {
+  "stated_before_the_rescan": "TheHub's contrast failures drop sharply after #432.",
+  "result": "Confirmed by the rescan."
+ },
+ "evidence_currency": {
+  "aguayluz-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "centinelas-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "moneysweep-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "mucaro-ai": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "ovnis-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "skywatcher-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  },
+  "spiderweb-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none",
+   "rescanned_at": "e64fb4029d25e5c171f564223c302073c461aeec"
+  },
+  "thehub-pr": {
+   "evidence_is_current_main": true,
+   "frontend_changed_on_main_since_evidence": "none"
+  }
+ },
+ "pilot_recommendation": {
+  "claim_class": "INFERENCE",
+  "first": "skywatcher-pr",
+  "why": "Its evidence is on current main. It has 18 distinct failing elements in 10 style signatures, and three of them fail on all 22 routes (the unnamed mobile menu button and the scrolling status strip), so a small change is verifiable on every route. It pins release 0.3.0, so the pilot also exercises moving a pin, which every other producer will need.",
+  "second": "aguayluz-pr",
+  "why_second": "The largest gain: 222 distinct contrast elements on 19 of 20 routes. They fall into 57 style signatures and 32 colour pairs, so it is a larger and more repetitive change, better done after the adoption path is proven once.",
+  "not_recommended_first": {
+   "thehub-pr": "After #432 it has 12 distinct failing elements left and a new 768px overflow that should be understood first.",
+   "spiderweb-pr": "Its frontend changed on main since the evidence was taken, and it has one addressable route.",
+   "mucaro-ai, ovnis-pr": "One addressable route each; the scan says little about them."
+  },
+  "decision_needed": "The pilot application is the user's choice.",
+  "status": "All eight done: Skywatcher, AguaYLuz, MoneySweep, Centinelas, TheHub, OVNIS and Spiderweb fixed in their own code; M\u00facaro scanned with every view open and needed no change."
+ },
+ "blocked": [
+  "independent QA",
+  "screen reader and touch devices",
+  "macOS Dock menu and app identity (on-screen confirmation)"
+ ],
+ "artifacts_sha256": {
+  "rc4/thehub_rescan.json": "8649de2f6762cf7feee513a15b884e5db09fef795c9e315c3abe64db6dc4ef9a",
+  "rc4/RC4_PLAN_INPUT.json": "17e80dbdefbcc720a7d9a3e6ce9b499dbdaf71416cc2ce68a9d800782a31587b",
+  "rc4/skywatcher_pilot.json": "567d29b7361dc45b0fa13a19b430f07da7be1d3f3886cbeadec5a97c6213b38d",
+  "rc4/aguayluz_pilot.json": "f1042aa0aa9611a735f407caedd4466107591171987f44d4ec4adb1c264579d2",
+  "rc4/aguayluz_water_use_before_after.png": "b7e1c47b8a50bf323d7d2deef12731b6b3197ee4d8e780e786673725a6f7d98d",
+  "rc4/moneysweep_pilot.json": "dedf61a76c716624ef953b6fa740fa6a32d5d867241fa23d0b64660df8cc9c40",
+  "rc4/centinelas_pilot.json": "fbfd76cb94cdd9a39ff4b48d876ecdf4a12fc7c871ac754fbce56712ac3f08f2",
+  "rc4/thehub_pilot.json": "54f85b71cf3593ebf319d91eb029f35e36db789f6f8043010eda175ad8168ed1",
+  "rc4/thehub_overflow.json": "0bfa9fed4bb44c84acbb06dc8bb951c5a2cdf4b65f1e78650a5de13b5ed6ac01",
+  "rc4/ovnis_pilot.json": "d151ee40ff7f6ff5e37848ff8e2cb65475b7c740de44031932755cf59aaf171a",
+  "rc4/mucaro_scan.json": "21bd36142e5820b5f17d4fc6038d1df0db0b3aa61907f3df17c4794bb05a62f5",
+  "scripts/runtime/views_pass.js": "865985b6244ee88bb714d6afb63e093cdfc8e5fda894ec4a8f20391f1ac6ff53",
+  "cross-engine/engine_matrix.json": "e143f994b264e9067b19a71a1f841a6e9a9989d1039fa5642c4d7bf568b39ec6",
+  "cross-engine/commits.json": "5641ee58a720b7eacc3024b9eae0adc6e5135a4f240269589d23631b59f5b0f2",
+  "cross-engine/routes.json": "0ebb124808e053c987aa990c5f88038d17f74d1cb46d7f82da3e87de8a166d32",
+  "qa/INDEPENDENT_REVIEW_PACKET.md": "83b7908147fa7091cb996f8068a3411bcef89f0177f5ab4d8dd382fec3c96ad6",
+  "qa/macos_observations.json": "e5c05bb3abdab31641f9dea9eca17fccae0ad478697806e91c79120a0aea009b",
+  "qa/MACOS_CHECKLIST.md": "752b218c589e18a870c5f6c8b78ca9132d7faf9086d0fd34993bcba262a2a9fb",
+  "qa/manual/README.md": "6480eddd38e3dd0d63bfa2363c89bc6088638c20bd35086969d697edd34c223f",
+  "qa/manual/design-system-controls.md": "c82da0577998a2be1ceaa58a85729f236ba2c9f8c42b77607214e95f2e853839",
+  "qa/manual/skywatcher.md": "594ff66318c7394a8989a674bb6284b377eb37d07fd28a467dbca6c049643314",
+  "qa/manual/aguayluz.md": "13d5a50ff42c5821647d757fffc6daded5f13bc89610c4d6a5d1afbe5fbdc575",
+  "qa/manual/moneysweep.md": "27de9c77d7951aa23870ae0172f4a4c3752b1a8ff5cb9c7df82e03e5263b5da0",
+  "qa/manual/centinelas.md": "2f391052c56e5c91f44bd6bb2dc83cf971c5f1967547749fda45a372b9ba965c",
+  "qa/manual/thehub.md": "f736048c0f8d6650a37277f25e80395a14330f696732e5e54ab1680dab621da3",
+  "rc4/spiderweb_pilot.json": "17c4a0d01292b0390911ce6a27f70bfbca882e1ff22e3a579ad639a4bdcb196d",
+  "rc4/spiderweb_states.json": "ef7d7272296af1671746ab31675c79193416efbb0cb9f0f5dd761cdebb276838",
+  "rc4/states/spiderweb-pr.json": "cd15df18347096bdd902cfef3ecf3f1c288b12152152ebdb3bdf6054073b5f29",
+  "cross-engine/recheck_20261124.json": "9b60da17eab48e8d76c34031c492ca8a4435b85c234358646d72049d9c002367",
+  "cross-engine/recheck_20261124_commits.json": "cf33972f9639d64f0d7d0603722343952ab2bb4b32ae0413fb824de56afdb45d"
+ },
+ "certification": "WITHHELD",
+ "why_not_pass": "All eight applications are scanned in Chromium by the author and seven of them fixed. Pages and views were loaded or opened, not operated; no keyboard walk-through, screen reader or touch device was used; Firefox and WebKit were run against all eight applications; the engine-specific failures found in two were fixed and re-checked (cross_engine); surfaces that depend on live external data were seen only when that data happened to load; skywatcher-pr#375, aguayluz-pr#420, moneysweep-pr#719, ovnis-pr#204 and spiderweb-pr#473 are merged; centinelas-pr#198 and this pull request are not; nobody independent has reviewed them.",
+ "pilot": {
+  "repository": "skywatcher-pr",
+  "pull_request": "https://github.com/jotaele44/skywatcher-pr/pull/375",
+  "scope": "App-local fixes only, as chosen: no shared-package release, no pin move.",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/skywatcher_pilot.json",
+  "commits": {
+   "before": "a2176990606048a6b918daacdb8bce027e58a903",
+   "after": "13015707067dfff519c5daaaf40785d5f84fb167"
+  },
+  "coverage": "22 routes at 7 widths, 154 page loads, before and after. Four sign-in routes redirect to / by design, before and after.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "0 -> 0",
+   "button-name": "1 -> 0",
+   "scrollable-region-focusable": "10 -> 0",
+   "label-content-name-mismatch": "7 -> 0"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "button-name": "66 -> 0",
+   "label-content-name-mismatch": "6 -> 0",
+   "link-in-text-block": "13 -> 13",
+   "scrollable-region-focusable": "100 -> 0"
+  },
+  "not_fixed": "link-in-text-block: 13 page loads on 2 routes, unchanged. It was not in the pilot's scope.",
+  "no_regression_observed": "Horizontal overflow 0 before and after; page errors 0; console errors 0; controls under 24px unchanged (870 summed over page loads).",
+  "changes": [
+   "Mobile navigation toggle: accessible name that follows state, aria-expanded, 44px target.",
+   "lib/scrollRegion.js applied to every app-authored scrolling container (32 places), not only the 10 the scan caught.",
+   "Sky Target Finder rows: the button holds only the target name; the detail line is its description; click area unchanged."
+  ],
+  "tests": "141 unit tests pass (9 new), eslint clean, GUI parity ratchet passes, 26 of 26 CI checks on head 1301570.",
+  "corrections_during_the_pilot": [
+   "Dropping the target buttons' aria-label broke seven existing tests that rely on the exact name; the row was restructured instead.",
+   "The first restructure left the name button 20px tall; the scan counted it under the 24px minimum and it was raised to 24px. Rows are 4px taller.",
+   "One parity-baseline entry was updated because the toggle's fingerprint changed; a full baseline regeneration was tried and reverted as too broad."
+  ],
+  "deviation_from_plan": "The plan said the Sky Target Finder change would have no visible effect; rows are 4px taller. The plan named a ScrollRegion component; a ref helper was used so only opening tags change.",
+  "merged": {
+   "at": "2026-11-22T05:25:59Z"
+  }
+ },
+ "second_application": {
+  "repository": "aguayluz-pr",
+  "pull_request": "https://github.com/jotaele44/aguayluz-pr/pull/420",
+  "user_decisions": [
+   "Raise the failing dim text to slate-400.",
+   "Fix all scanned failures, not contrast only."
+  ],
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/aguayluz_pilot.json",
+  "commits": {
+   "before": "6e3a4f67de20889abc3d0a48e0b514a4f7087f7a",
+   "after": "c60587e210e813a29318ebe761eb7b9c2f281370"
+  },
+  "coverage": "20 routes at 7 widths, 140 page loads, before and after. No route redirects.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "222 -> 0",
+   "button-name": "1 -> 0",
+   "scrollable-region-focusable": "6 -> 0",
+   "label-content-name-mismatch": "0 -> 0"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "button-name": "21 -> 0",
+   "color-contrast": "129 -> 0",
+   "link-in-text-block": "14 -> 14",
+   "scrollable-region-focusable": "25 -> 0",
+   "svg-img-alt": "7 -> 7"
+  },
+  "not_fixed": "link-in-text-block (14 page loads on 3 routes) and svg-img-alt (7 page loads on 1 route), both unchanged. Neither was in scope.",
+  "no_regression_observed": "Horizontal overflow 0 before and after; page errors 0; controls under 24px unchanged (4096 summed over page loads); console errors on 7 page loads before and after.",
+  "changes": [
+   "312 uses of text-slate-500/600/700 in 40 files now use text-slate-400; a test keeps the failing shades from returning as text colours.",
+   "Live log timestamps: opacity-50 removed.",
+   "Selected range button: sky-600 to sky-700, plus aria-pressed.",
+   "Six unnamed filter select boxes named (the scan saw one; the other five had the same defect).",
+   "lib/scrollRegion.js applied to all 44 app-authored scrolling containers."
+  ],
+  "visible_change": "Dim text is the same grey as muted text across the app. rc4/aguayluz_water_use_before_after.png shows one page, before above and after below.",
+  "tests": "277 unit tests pass, eslint clean, GUI parity ratchet passes, three Python test files that read the dashboard source pass.",
+  "ci": "Not fully green. On the code head c60587e, 24 checks passed and 4 were cancelled by the next push. On the following head 9131d38 (a test-stub change), 24 passed and one job, certify-source-product-denominators, failed with a DNS resolution error while fetching a remote source; that job passed on the two previous heads. It has not been re-run.",
+  "limits": "The scan ran on a workspace with little data on most pages. Text that appears only with data is covered by the class replacement and its test, not by the scan.",
+  "deviation_from_plan": "The helper was not copied unchanged: it gained an optional second argument for an element that already has a ref. One parity-baseline entry was updated because a control's class changed. A code-scanning note about the helper led to a change in an unrelated test's ResizeObserver stub.",
+  "merged": {
+   "at": "2026-11-22T05:21:48Z"
+  }
+ },
+ "third_application": {
+  "repository": "moneysweep-pr",
+  "pull_request": "https://github.com/jotaele44/moneysweep-pr/pull/719",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/moneysweep_pilot.json",
+  "commits": {
+   "before": "956bb498796c698230d2a2de722d316945777f62",
+   "after": "6c9a0fe54ff17ca07344f55528bcb036c9e9e706"
+  },
+  "coverage": "12 routes at 7 widths, 84 page loads, before and after.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "0 -> 0",
+   "button-name": "1 -> 0",
+   "scrollable-region-focusable": "2 -> 0",
+   "label-content-name-mismatch": "0 -> 0"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "button-name": "14 -> 0",
+   "scrollable-region-focusable": "54 -> 0"
+  },
+  "changes": [
+   "TypeFilterSelect takes a label; both callers name it.",
+   "lib/scrollRegion.js applied to all 16 app-authored scrolling containers."
+  ],
+  "no_regression_observed": "Every frame measure is identical before and after (overflow, errors, undersized controls, console errors).",
+  "tests": "98 unit tests pass (8 new), eslint clean, GUI parity ratchet and template-boundary test pass.",
+  "merged": {
+   "at": "2026-11-22T05:23:32Z"
+  }
+ },
+ "fourth_application": {
+  "repository": "centinelas-pr",
+  "pull_request": "https://github.com/jotaele44/centinelas-pr/pull/198",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/centinelas_pilot.json",
+  "commits": {
+   "before": "893a06f4a50655bcfae90469e15677c5f665d7a6",
+   "after": "d96863d1e8ae0df32874a1519acd86f50b25e173"
+  },
+  "coverage": "12 routes at 7 widths, 84 page loads, before and after.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "2 -> 0",
+   "button-name": "0 -> 0",
+   "scrollable-region-focusable": "0 -> 0",
+   "label-content-name-mismatch": "2 -> 0"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "color-contrast": "7 -> 0",
+   "label-content-name-mismatch": "84 -> 0"
+  },
+  "changes": [
+   "Phase pills: a passing shade per theme (700 on light, 400 on dark).",
+   "Brand link named by its visible text; language toggle's name starts with the code it shows."
+  ],
+  "not_from_this_change": "Undersized controls summed over page loads rose from 2732 to 2788, all on /handoff, where the page also rendered more text than at the audited commit (20,049 against 19,645 characters at 1280px). The fix did not touch that page; the scanned branch carries more commits than the audited main. The cause was not traced further.",
+  "light_theme": "The pill fix covers the light theme by reasoning from the shades; only the dark theme was scanned.",
+  "tests": "50 unit tests pass, eslint clean, GUI parity ratchet passes; the GUI contract is re-bound to the fix commit."
+ },
+ "fifth_application": {
+  "repository": "thehub-pr",
+  "pull_request": "https://github.com/jotaele44/thehub-pr/pull/435",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/thehub_pilot.json",
+  "commits": {
+   "before": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3",
+   "after": "978007b7812ecf9ef33c26e005231f9a877e005f"
+  },
+  "coverage": "86 routes at 7 widths, 602 page loads, before (main after #432) and after.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "1 -> 0",
+   "button-name": "8 -> 0",
+   "scrollable-region-focusable": "3 -> 0",
+   "label-content-name-mismatch": "0 -> 3"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "aria-valid-attr-value": "77 -> 77",
+   "button-name": "84 -> 0",
+   "color-contrast": "7 -> 0",
+   "label": "7 -> 7",
+   "label-content-name-mismatch": "0 -> 2",
+   "link-in-text-block": "35 -> 35",
+   "scrollable-region-focusable": "15 -> 0"
+  },
+  "changes": [
+   "13 select boxes named (the scan caught 5).",
+   "Icon-only buttons named: feed refresh, two send buttons, memory panel close, GitHub link; the tasks view toggle keeps its label as the name below 640px.",
+   "Three scroll containers, including the shared Table wrapper, use FederationScrollRegion: the first application use of the RC3 control primitives.",
+   "Launcher note colour raised to 7:1."
+  ],
+  "exposed_by_the_scan": {
+   "what": "Three label-content-name-mismatch elements on /skywatcher?view=sky: the satellite pass buttons showed 'Show track' but were named 'Show the ISS track for the pass rising at ...'. Not caused by this change; that file was not touched.",
+   "why_new": "The buttons exist only when the browser has fetched satellite elements from CelesTrak. This sandbox reached CelesTrak intermittently: the before-scan saw no passes, the after-scan saw them at 2 of 7 widths.",
+   "fixed_in": "commit cce4832: the name starts with the visible text ('Show track: ISS, pass rising at ...').",
+   "verified_by": "The sky unit tests (54 pass), which render the pass buttons from fixture elements and select them by the new name. A targeted browser re-scan was attempted and found no pass buttons on the page in either run, so it confirms nothing and is not counted.",
+   "state": "PROVISIONAL"
+  },
+  "frame": "Page loads with an unnamed button 28 -> 7; overflow, errors and undersized controls unchanged.",
+  "tests": "Frontend 830 pass, eslint clean, GUI parity ratchet and GUI/backend audit pass; design-system package tests 79 pass."
+ },
+ "layout_regression": {
+  "repository": "thehub-pr",
+  "evidence": "rc4/thehub_overflow.json",
+  "claim_class": "COMPUTED",
+  "result": "Overflow at 768px: 7 routes -> 0 (tab bar fix). Then at every width: 7 routes -> 0, page loads with overflow 19 -> 0 (phone-width fix). Over both steps, page loads with overflow: 52 -> 0 across 86 routes at 7 widths.",
+  "fix": "The shared tab bar (server/frontend/src/components/ui/tabs.jsx) scrolls sideways instead of widening the page. The GIS view switcher and the crossover date group wrap, and the App Center evidence badge breaks long words.",
+  "no_regression_observed": "Every critical or serious accessibility rule is unchanged or lower after each step; label 7 -> 0 page loads after the phone-width fix; errors 0 throughout.",
+  "not_attributable": "label-content-name-mismatch on /skywatcher?view=sky was 2 page loads in the previous scan and 0 in this one. The pass-button fix is in this build, but those buttons appear only when live satellite data loads, so the 0 is not counted as evidence of the fix.",
+  "commits": {
+   "before": "95c6c99c57dfdd909f57da17c3adb3ba1740cac3",
+   "tab_bar_fix": "d2fa3e32bff7cb4db49f2b647bf160dd123a6d3c",
+   "phone_width_fix": "766080d203b94a45af92958a540f09b5b88b3b64"
+  }
+ },
+ "sixth_application": {
+  "repository": "ovnis-pr",
+  "pull_request": "https://github.com/jotaele44/ovnis-pr/pull/204",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/ovnis_pilot.json",
+  "commits": {
+   "before": "a8225db5d226232037c455daf6e941e50d86d136",
+   "after": "0d1e12bcb2a3d4e26ab9d3c1d10c2c89fd440948"
+  },
+  "coverage": "6 in-memory views at 7 widths, 32 view loads, before and after, by scripts/runtime/views_pass.js.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "28 -> 0",
+   "button-name": "0 -> 0",
+   "scrollable-region-focusable": "1 -> 0",
+   "label-content-name-mismatch": "0 -> 0"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "color-contrast": "32 -> 0",
+   "link-in-text-block": "16 -> 16",
+   "scrollable-region-focusable": "3 -> 0"
+  },
+  "changes": [
+   "Dark-theme muted text raised from 50% to 58% lightness.",
+   "27 dim-text uses (slate-500/600/700) moved to slate-400, as in AguaYLuz.",
+   "Seven scroll containers, including the shared Table wrapper, made keyboard-reachable with the scrollRegion helper, as in the other small apps."
+  ],
+  "not_in_scope": "link-in-text-block, unchanged.",
+  "merged": {
+   "at": "2026-11-22T05:22:10Z",
+   "merge_commit": "5ff1ac237c53aa7b37648ea812df8fa44861a70a"
+  }
+ },
+ "seventh_application": {
+  "repository": "mucaro-ai",
+  "claim_class": "COMPUTED",
+  "evidence": "rc4/mucaro_scan.json",
+  "commit": "4fc7b87d368064707493f9f745062a612e9cfbfe",
+  "result": "7 in-memory views at 7 widths, 49 view loads: zero axe violations of any impact, no overflow, no unnamed buttons. No change made.",
+  "caveat": "The app's strict script policy was lifted in the test browser only, to inject axe-core.",
+  "rescan_at_main": {
+   "commit": "870b46bb7f4194c6ef8a7996a1d15fed95bcf391",
+   "result": "10 workspaces (incl. the new GIS, OCR, Code, Artifacts) and Background tasks at 7 widths, 77 view loads: zero axe violations of any impact, no overflow, no unnamed buttons. Opened, not operated."
+  },
+  "results_scan": {
+   "commit": "870b46bb7f4194c6ef8a7996a1d15fed95bcf391",
+   "result": "One inspection run in each new workspace through the UI (GIS, OCR with Tesseract, Code; Artifacts then listed 2 reports and 1 answer). With the results showing, 77 view loads at 7 widths: zero axe violations of any impact, no overflow, no unnamed buttons."
+  }
+ },
+ "eighth_application": {
+  "repository": "spiderweb-pr",
+  "pull_request": "https://github.com/jotaele44/spiderweb-pr/pull/473",
+  "claim_class": "COMPUTED",
+  "evidence": [
+   "rc4/spiderweb_pilot.json",
+   "rc4/spiderweb_states.json"
+  ],
+  "commits": {
+   "before": "e64fb4029d25e5c171f564223c302073c461aeec",
+   "after": "b0427630f2e35741c02c5c93770398dfe83e61fc"
+  },
+  "previously_blocked": "main at 5ce5eca did not build (Cesium missing exports). spiderweb-pr#468 aligned the Cesium overrides; main at e64fb40 builds, so this is the first scan of current main.",
+  "coverage": "6 in-memory module views at 7 widths (42 view loads) by scripts/runtime/views_pass.js, plus 7 further states (43 loads: a timeline event, a contract, an anomaly cluster and a graph node selected; the light theme; a stub query run; the Spatial layer panel) by scripts/runtime/states_pass.js with rc4/states/spiderweb-pr.json. Before and after, Chromium, dark colour scheme.",
+  "targeted_rules_distinct_elements": {
+   "color-contrast": "0 -> 0",
+   "button-name": "0 -> 0",
+   "scrollable-region-focusable": "0 -> 0",
+   "label-content-name-mismatch": "6 -> 0 (views), 6 -> 0 (states)"
+  },
+  "every_critical_or_serious_rule_page_loads": {
+   "label-content-name-mismatch": "27 -> 0 (views), 31 -> 0 (states)"
+  },
+  "elements_before": [
+   "Timeline event buttons DEMO-EV-1 to DEMO-EV-5: visible text 'T3 DEMO-EV-1', name 'Event DEMO-EV-1: ...' (768 px and up, every view)",
+   "Spatial 'Recenter PR' button named 'Recenter map on Puerto Rico' (every width)"
+  ],
+  "changes": [
+   "Event buttons are named '<tier> <id> event: <label> on <time>', which starts with the visible text and keeps the label and time.",
+   "'Recenter PR' is named 'Recenter PR: recenter the map on Puerto Rico'.",
+   "Timeline.test.tsx asserts the property; jsdom cannot evaluate the axe rule, which passes the old code there."
+  ],
+  "not_in_scope": "region and landmark-unique (moderate) still fire, unchanged.",
+  "limits": "Below 768 px the app hides the rails, inspector and timeline (display: none), so event buttons and selection states exist from 768 px only. spiderweb-pr has no check_gui_parity.py and no gui_backend_contract.json: no parity run and no audit-bind commit.",
+  "merged": {
+   "at": "2026-11-23T15:50:11Z",
+   "merge_commit": "7c65cfeef93e70a07448f4d86a2798894a7acd99",
+   "note": "commits.after is the commit scanned. The merge into main also brings spiderweb main changes made after e64fb40, which this scan did not cover."
+  }
+ },
+ "cross_engine": {
+  "state": "PASS",
+  "claim_class": "COMPUTED",
+  "evidence": "cross-engine/engine_matrix.json",
+  "engines": {
+   "chromium": "157.0.8103.78",
+   "firefox": "155.0",
+   "webkit": "26.6"
+  },
+  "coverage": "8 applications, one build each (cross-engine/commits.json). Page and view loads: Chromium 1187, Firefox 1187, WebKit 1187, at 7 widths, dark scheme, axe-core 4.14.1, Playwright 1.63.0 headless in a Linux container.",
+  "result": "All 8 applications rendered every route or view they render in Chromium, with no engine-specific overflow or accessibility rule, except: Firefox on aguayluz-pr (/map blank) and ovnis-pr (the app falls to its error screen after the Map view), both because the map fails without WebGL; and WebKit on ovnis-pr, which surfaces a missing map worker that fails silently in Chromium. Every finding is in application map code; none is on a shared design-system element. Re-checked 2026-11-24 after the fixes merged: nothing beyond Chromium on either application (recheck).",
+  "findings": [
+   {
+    "engine": "firefox",
+    "repository": "aguayluz-pr",
+    "beyond_chromium": [
+     "page_loads_with_page_errors: 7 against 0 in Chromium",
+     "routes not rendered only here: ['/map']"
+    ],
+    "root_cause": "/map renders nothing: the map library throws 'GPUInitializationError: WebGL2 is required' as an uncaught page error. This headless Firefox has no WebGL2; Chromium's software WebGL renders the map. The engine difference is this environment's, but the blank page is the application's handling of a missing WebGL2.",
+    "claim_class": "COMPUTED (counts); FACT (reproduced cause)",
+    "status": "RESOLVED (see recheck)"
+   },
+   {
+    "engine": "firefox",
+    "repository": "ovnis-pr",
+    "beyond_chromium": [
+     "page_loads_with_an_error: 8 against 0 in Chromium",
+     "routes not rendered only here: ['/#view:Candidates', '/#view:More']"
+    ],
+    "root_cause": "After the Map view, switching to any other view replaces the whole app with its error screen ('can't access property \"destroy\", this.painter is undefined'): the map could not create a WebGL context, map.remove() at dashboard/src/components/CaseMap.jsx:244 throws on unmount, and the only ErrorBoundary (App.jsx:22) wraps the navigation too. The view pass then could not reach 'Candidates' and 'More' at 320-768 px (8 view loads). Reproduced by hand in Firefox; not reproduced in Chromium or WebKit.",
+    "claim_class": "COMPUTED (counts); FACT (reproduced cause)",
+    "status": "RESOLVED (see recheck)"
+   },
+   {
+    "engine": "webkit",
+    "repository": "ovnis-pr",
+    "beyond_chromium": [
+     "page_loads_with_page_errors: 7 against 0 in Chromium"
+    ],
+    "root_cause": "SyntaxError: Unexpected token '<' on 7 view loads: the build has no maplibre-gl-worker.mjs, so /assets/maplibre-gl-worker.mjs is answered with the SPA's index.html. Chromium requests the same file, gets the same HTML and fails silently (reproduced by hand), so this is a build defect present in every engine that only WebKit reports.",
+    "claim_class": "COMPUTED (counts); FACT (reproduced cause)",
+    "status": "RESOLVED (see recheck)"
+   }
+  ],
+  "not_findings": "Firefox reported fewer link-in-text-block page loads than Chromium on skywatcher-pr (13 -> 0) and aguayluz-pr (14 -> 7). Fewer is not evidence of a fix; axe's evaluation of that rule depends on computed styles that differ by engine.",
+  "limits": "WebKit here is Playwright's Linux WebKit build, not Safari on macOS or iOS. Firefox here has no WebGL2. Pages and views were loaded or opened, not operated. aguayluz-pr and centinelas-pr were installed with the pydantic-core pin removed from constraints-desktop.txt, because the pinned set does not resolve (see below).",
+  "why_not_pass": null,
+  "recheck": {
+   "claim_class": "COMPUTED (counts); FACT (commits, causes checked)",
+   "evidence": "cross-engine/recheck_20261124.json",
+   "date": "2026-11-24",
+   "commits": {
+    "aguayluz-pr": "e2c99741 (main after aguayluz-pr#423 and #428)",
+    "ovnis-pr": "2b24861 (main after ovnis-pr#205)"
+   },
+   "coverage": "Same method and versions as the first pass (Chromium 157, Firefox 155, WebKit 26.6, 7 widths, axe-core 4.14.1). Page or view loads: Chromium 172, Firefox 172, WebKit 172. Both apps installed from their own pins, without the pydantic-core workaround the first pass needed.",
+   "result": "Neither application shows anything beyond Chromium in Firefox or WebKit: every route and view rendered, no page errors, no view-switch errors.",
+   "findings_resolved": [
+    {
+     "engine": "firefox",
+     "repository": "aguayluz-pr",
+     "by": "aguayluz-pr#423",
+     "observed": "/map renders at all seven widths (3300-3702 characters; 0 before) with no page errors."
+    },
+    {
+     "engine": "firefox",
+     "repository": "ovnis-pr",
+     "by": "ovnis-pr#205",
+     "observed": "All six views open at all widths; 0 view-switch errors (8 before)."
+    },
+    {
+     "engine": "webkit",
+     "repository": "ovnis-pr",
+     "by": "ovnis-pr#205",
+     "observed": "No page errors (7 before); /assets/maplibre-gl-worker-*.js now answers 200 text/javascript (text/html before)."
+    }
+   ]
+  },
+  "state_scope": "For the builds recorded: the first-pass commits of six applications (cross-engine/commits.json) and the rechecked mains of aguayluz-pr and ovnis-pr. A later commit of any application is not covered."
+ },
+ "desktop_setup_pin_conflict": {
+  "claim_class": "FACT",
+  "statement": "constraints-desktop.txt pins pydantic==2.13.5 with pydantic-core==2.48.0. pydantic 2.13.5 requires pydantic-core==2.46.5, so `python3 desktop/setup.py` fails with ResolutionImpossible ('Cannot install fastapi'). This holds for aguayluz-pr at c60587e and for centinelas-pr at d96863d and on current main (pin since d55eb47). thehub-pr and spiderweb-pr pin the consistent pair 2.13.4 / 2.46.4.",
+  "effect": "A fresh desktop setup of either application cannot complete; its .app launcher shows 'First-run setup could not finish'."
+ },
+ "manual_checks": {
+  "independent_review": {
+   "state": "BLOCKED",
+   "reviewer": null,
+   "next_step": "qa/INDEPENDENT_REVIEW_PACKET.md: a person other than the author, or a reviewer the user designates, reviews items 1-6 and fills in the sign-off. Self-review by the author does not count."
+  },
+  "screen_reader": {
+   "state": "BLOCKED",
+   "next_step": "qa/manual/<application>.md with VoiceOver (macOS, iOS), NVDA (Windows) and Voice Control; results recorded per configuration."
+  },
+  "touch_devices": {
+   "state": "BLOCKED",
+   "next_step": "qa/manual/<application>.md touch steps on an iPhone (Safari) and an Android phone (Chrome)."
+  },
+  "macos": {
+   "state": "BLOCKED",
+   "evidence": "qa/macos_observations.json",
+   "next_step": "qa/MACOS_CHECKLIST.md steps 2.2 (Cmd-Tab entry only), 2.3 and 2.4: Dock menu entries, Open at Login, app switcher.",
+   "measured": "On the user's Mac: the running application is Python (org.python.python), not TheHub; the desktop runtime defines no Dock menu and no login item; a launch without the setup marker reran full setup in 170.8 s; warm backend start about 1.7 s. Read on screen on 2026-11-24 (one Mac, one launch): the Dock tile is labelled PRII-THEHUB with a blue network icon, while the menu bar name and application menu say Python. The Dock tile's menu and the Cmd-Tab entry were not seen."
+  }
+ },
+ "script_revisions": {
+  "scripts/runtime/views_pass.js": {
+   "sha256_used_for_rc4_evidence": "ede6f72b76e825cdaa0bd6ffb97b605bf15a94aa4330aa6394ca1af6a7941fe6",
+   "sha256_current": "865985b6244ee88bb714d6afb63e093cdfc8e5fda894ec4a8f20391f1ac6ff53",
+   "change": "GUI_ENGINE selects chromium, firefox or webkit (default chromium) and the output records engine and browser_version. With GUI_ENGINE unset the pass behaves as the version that produced rc4/ovnis_pilot.json and rc4/mucaro_scan.json."
+  },
+  "scripts/runtime/states_pass.js": {
+   "sha256_used_for_rc4_evidence": "610ab192a5f67d862fb21ba5c002b5b71ee94ad50388ecf17b467bae52b2d537",
+   "change": "New. Opens named UI states (a short click sequence each) on a single-address application and records them as /#state:<name>, read unchanged by rc3_runtime_detail.py and rc4_pilot_compare.py."
+  }
+ }
+}

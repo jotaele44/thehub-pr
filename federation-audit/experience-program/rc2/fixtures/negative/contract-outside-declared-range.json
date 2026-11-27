@@ -1,0 +1,16 @@
+{
+  "description": "The contract version sits inside the declared range.",
+  "base": [
+    "mucaro-ai"
+  ],
+  "patch": [
+    {
+      "op": "set",
+      "path": "/compatibility/min_contract_version",
+      "value": "1.1.0"
+    }
+  ],
+  "expect": [
+    "version-range"
+  ]
+}

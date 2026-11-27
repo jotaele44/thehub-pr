@@ -1,7 +1,8 @@
 # federation-templates — canonical shared boilerplate
 
 Single source of truth for the non-Python boilerplate that every PRII repo used
-to copy: the `Fix-Gatekeeper.command` and `PRII-<APP>.{command,bat,sh}` launchers,
+to copy: the `Fix-Gatekeeper.command` and `PRII-<APP>.{command,bat,sh}` launchers
+with the shared `desktop/setup.py` behind them,
 `requirements-desktop.txt` (desktop producers), and the shared
 `schemas/federation_export_manifest.schema.json` contract. `baseline/` holds the
 engineering and governance baseline (CI workflows, pre-commit, contributor docs)
@@ -10,7 +11,51 @@ and the docs-sync rule described below.
 Placeholders are `{{UPPER_CASE}}` keys taken from each repo's entry in
 `producers.vars.yaml` (every key is documented at the top of that file, and the
 renderer refuses to write a file with one left unresolved); which template renders
-where lives in `targets.yaml`.
+where lives in `targets.yaml`. Two placeholders are derived from `targets.yaml`
+instead of read from the vars file: `{{RENDERED_WORKFLOWS}}` lists the
+`.github/workflows/` files rendered into the repo (see
+[Action pins](#action-pins-dependabot-bumps-the-template-never-a-copy) below), and
+`{{RENDERED_PIP_MANIFESTS}}` lists the rendered files Dependabot's pip ecosystem
+reads as manifests (see
+[Pip manifests](#pip-manifests-the-same-rule-for-requirements-desktoptxt)). A
+template writes each as `key: ["{{…}}"]`; where the list is empty for a repo, the
+renderer leaves that whole line out, and it refuses the placeholder anywhere else.
+
+## The shared launcher
+
+Six repos (all but `moneysweep-pr`) render the same launcher, and it is split
+so that almost none of it is shell:
+
+| File | Job |
+|---|---|
+| `PRII-APP.command`, `PRII-APP.sh`, `PRII-APP.bat` | Find the newest Python that is 3.10 or later and run `desktop/setup.py --launch`, passing options through. Nothing else. |
+| `PRII-APP.app/Contents/MacOS/PRII-APP` | The same for a Finder double-click, where there is no window to print to: it starts a set-up app directly and otherwise opens `Contents/Resources/first-run-setup.command` in Terminal. Keeps the App Translocation guard. |
+| `desktop/setup.py` | Everything else: setup steps, finding or downloading Node.js, noticing changed requirements, repairing a failed start, options, the preferences file, English and Spanish messages, logs. Standard library only, because it runs before anything is installed. |
+
+Per-app values come from each repo's own `desktop/config.py`, which is not
+rendered. `setup.py` reads these, all optional:
+
+| Key | Default | Meaning |
+|---|---|---|
+| `REQUIREMENT_FILES` | `[requirements-desktop.txt]` | Installed into the private `.venv` |
+| `EXTRA_PIP_SPECS` | `[]` | Extra `pip install` arguments (e.g. an editable install) |
+| `MIN_PYTHON` | `(3, 10)` | Floor checked before setup |
+| `NODE_MAJOR` | `22` | Oldest Node accepted; also the release line downloaded |
+| `BUILD_FRONTEND` | `True` | `False` skips Node and the dashboard build |
+| `FRONTEND_DIR`, `DIST_DIR` | — | Dashboard source and build output |
+| `EXTRA_BUILD_ENV` | `{}` | Environment for the dashboard build |
+| `SETUP_VERSION` | `1` | Change it to make every installation set up again |
+| `DEFAULT_LANGUAGE` | — | `"en"` or `"es"` when the system language is neither |
+| `POST_SETUP`, `BEFORE_LAUNCH` | — | `"module:function"` run with the private Python after setup, and before every start |
+
+To change launcher behaviour, edit `desktop/setup.py` here and its tests in
+`tests/test_desktop_setup_template.py`. The `launcher-smoke.yml` workflow runs
+the real launchers on macOS, Windows and Linux against the hub's own app.
+
+`moneysweep-pr` renders the previous launchers from `legacy/` and keeps its
+own `desktop/setup.py`, which installs from an offline wheelhouse and a
+committed prebuilt dashboard. It adopts the shared launcher once those are
+supported here; until then do not edit `legacy/` except to fix a defect.
 
 ## Edit once, then re-render
 
@@ -29,17 +74,44 @@ where lives in `targets.yaml`.
 
 `.github/workflows/federation-template-sync.yml` closes the write side: on a
 change to `federation-templates/` (or manual dispatch) it re-renders every
-producer, rebinds that producer's drift gate to the exact TheHub commit used for
-the render, and **opens a sync PR** on any that drifted. The binding and rendered
-payload therefore advance together instead of comparing new files against an
-older frozen template snapshot. It's **dry-run by default**
-— without an operator-provided `SYNC_PAT` secret (contents + PR write on the
-producers) it only renders and prints the drift, opening nothing. Set `SYNC_PAT`
-to turn on the automatic per-producer PRs. Until then, edit a template → run
-`render_federation_templates.py --all` locally and commit per repo (each repo's
-`template-drift.yml` keeps them honest). A dry run that finds drift raises a
-warning and lists the files that would change, and the re-render command, in the
-run's job summary.
+producer and rebinds that producer's drift gate to the exact TheHub commit used
+for the render. The binding and rendered payload therefore advance together
+instead of comparing new files against an older frozen template snapshot.
+`tools/federation_template_sync_pr.sh` then decides, per producer:
+
+| After the render | Result |
+|---|---|
+| Nothing changed | A notice. |
+| Only the `PRII_TEMPLATE_REF` value in `template-drift.yml` moved | A notice and no PR. The rendered files already match, so the producer keeps its current pin until a template change reaches it. |
+| A rendered file changed or was added | The standing branch `federation-template-sync` is regenerated from the producer's `main` and force-pushed, and its open PR is updated, or a PR is opened. There is never more than one. Don't push to that branch by hand: the next run replaces it. To refresh a PR that went stale against `main`, re-run the workflow. |
+
+When nothing or only the pin changed but a sync PR is still open, the job warns
+that it is stale; close it.
+
+It's **dry-run by default** — without an operator-provided `SYNC_PAT` secret it
+only renders and prints the drift, opening nothing. A dry run that finds drift
+raises a warning and writes the files that would change, with the re-render
+command, to the run's job summary, so it never reads as a quiet success. To turn on the automatic
+per-producer PRs, set `SYNC_PAT` to a token that can write to every producer.
+For a fine-grained token:
+
+- **Repository access:** all six producers, plus `thehub-pr`, because
+  `federation-ingest.yml` uses the same secret there.
+- **Permissions:** Contents, Pull requests and Workflows: Read and write.
+  Workflows is required because every sync edits
+  `.github/workflows/template-drift.yml`.
+- A classic token instead needs the `repo` and `workflow` scopes.
+
+With `SYNC_PAT` set, each job first dry-runs a push to its producer, even when
+nothing drifted. If that push is refused, the job fails before changing anything,
+with an error naming the repository and those permissions. A dry run cannot
+exercise the Workflows or Pull requests permission; a refusal there fails the job
+at the real push or PR call with the same message.
+
+Without the token, edit a template → run `render_federation_templates.py --all`
+locally and commit per repo (each repo's `template-drift.yml` keeps them honest).
+This is also the route by which action-pin bumps reach the producers; see the
+next section.
 
 ### Seeing how far producers lag
 
@@ -50,6 +122,145 @@ how many hub commits its `PRII_TEMPLATE_REF` is behind `main`, and whether it
 declares a Launch Pad. It reads producers' `main` from GitHub, or sibling
 checkouts with `--root ..`. `maintenance.yml` runs it weekly and warns about any
 desktop producer on an older runtime; `--strict` makes that an exit code.
+
+## Action pins: Dependabot bumps the template, never a copy
+
+The `uses:` pins in a rendered workflow belong to its template. If Dependabot bumps
+one in a rendered copy, that repository stops matching the template and its
+`template-drift.yml` fails once the bump merges. That happened in spiderweb-pr#410,
+and thehub-pr#446 repaired it by hand. Two Dependabot configs keep every action
+bump on the template side ([ADR 0015](../docs/adr/0015-action-pins-land-in-templates-first.md)):
+
+| Repository | Config template | Actions ecosystem |
+|---|---|---|
+| The six producers | `baseline/dependabot.yml` | `directory: "/"` with `exclude-paths: ["{{RENDERED_WORKFLOWS}}"]`. The renderer fills in exactly the `.github/workflows/` files `targets.yaml` renders into that repository, so Dependabot never edits them there. Every other workflow, `template-drift.yml` included, keeps its bumps. |
+| `thehub-pr` | `baseline/dependabot.hub.yml` | `directories: ["/", "/federation-templates/baseline", "/federation-templates/gui"]`, so the templates themselves are scanned. One group for version updates and one for security updates, neither limited by `update-types`, so each bump edits a template and the hub's own rendered copy in the same pull request. |
+
+What happens when an action publishes a release:
+
+1. The hub's weekly Dependabot run opens one pull request ("… across 3
+   directories") that edits each affected template together with the hub's
+   copy. The hub's drift gate stays green. Review and merge it like any other.
+2. The merge touches `federation-templates/**`, so `federation-template-sync.yml`
+   re-renders every producer at the merged commit. With `SYNC_PAT` set it opens
+   or updates the `federation-template-sync` PR on each producer whose rendered
+   files changed, rebinding its `PRII_TEMPLATE_REF` to that commit. Producers the
+   bump does not touch get no PR and keep their pin. Without it, it only prints
+   the drift, and someone runs
+   `render_federation_templates.py --repo <id> --template-ref <merged sha>` for
+   each affected producer and opens those PRs.
+3. Until a producer merges its sync PR, its drift gate keeps checking against its
+   old pin, so it stays green on the old action version.
+
+Keeping it working:
+
+- A workflow template added outside `baseline/` and `gui/` needs its directory
+  listed in `dependabot.hub.yml`; `tests/test_render_federation_templates.py`
+  fails until it is.
+- Dependabot parses every `*.yml` / `*.yaml` directly inside a scanned directory
+  as a workflow, and one that does not parse fails the whole actions update. Keep
+  each template valid YAML before rendering: write a list placeholder inside
+  quotes, as `["{{RENDERED_WORKFLOWS}}"]` does.
+- Never put a placeholder in a `uses:` line, so that Dependabot's edit to a
+  template and to the hub's copy is the same edit.
+- `exclude-paths` applies to version updates only. A Dependabot *security* PR in
+  a producer can still edit a rendered workflow, and its drift gate will fail.
+  Close it and let the bump come from the hub, whose security group edits the
+  template and the hub's copy together.
+
+`ignore` entries were the other option considered. They match a dependency by name
+across a repository, not by file, and the same actions also run in workflows that
+are not rendered (setup-uv in `ci.yml`, for one), so ignoring them would stop
+legitimate bumps.
+
+## Pip manifests: the same rule for requirements-desktop.txt
+
+`requirements-desktop.txt` is rendered into the five desktop producers, and
+Dependabot's pip ecosystem reads it there. A `pywebview` floor bumped in that copy
+would fail the producer's `template-drift.yml` exactly as an action pin does, so
+the pip side follows the same rule ([ADR 0016](../docs/adr/0016-rendered-pip-manifests-land-in-templates-first.md)):
+
+| Repository | Pip ecosystem |
+|---|---|
+| The six producers | `directory: "/"` with `exclude-paths: ["{{RENDERED_PIP_MANIFESTS}}"]`. The renderer fills in the rendered files the pip ecosystem would read: `.txt` / `.in` files at the root or one directory down, and `pyproject.toml`, `setup.py`, `setup.cfg`, `Pipfile`, `Pipfile.lock`, `poetry.lock`, `pdm.lock` at the root. Today that is `requirements-desktop.txt` in the five desktop producers. spiderweb-pr renders none, so its config has no pip `exclude-paths` at all. |
+| `thehub-pr` | `directory: "/"`, no `exclude-paths`. The pip ecosystem reads requirement files one directory below the root too, so it reaches `federation-templates/requirements-desktop.txt` as well as the hub's own `requirements-desktop.txt`, and bumps `pywebview` in both in one pull request (as it did in `f1cfad5`). |
+
+What happens when `pywebview` publishes a release:
+
+1. The hub's weekly Dependabot run opens a pull request that edits the template and
+   the hub's `requirements-desktop.txt` together. The hub renders no copy of this
+   template, so its drift gate is unaffected. Review and merge it.
+2. The merge touches `federation-templates/**`, and the change reaches each desktop
+   producer in a template sync PR, as described for action pins above.
+
+Keeping it working:
+
+- Keep pip-manifest templates directly in `federation-templates/`. One directory
+  deeper (`baseline/`, say) is out of the hub's pip scan, and nothing would bump the
+  template. Do not add a second pip directory for the templates either: the template
+  would be scanned twice, and an ungrouped bump would split into two pull requests.
+- Never put a placeholder on a registry requirement line. It may trail a direct
+  reference (`name @ url`), which Dependabot parses but never bumps, as
+  `{{DESKTOP_EXTRA_REQUIREMENTS}}` does.
+- The template's `pywebview` line must stay identical to the one in the hub's
+  `requirements-desktop.txt`, so the hub tests the floor producers ship.
+- No file in a producer may `-r` or `-c` a rendered manifest. Dependabot refuses a
+  requirements file that references an excluded one, and that fails the producer's
+  whole pip update, not just that file.
+- `exclude-paths` applies to version updates only, as on the actions side. Close a
+  Dependabot security PR that edits a rendered `requirements-desktop.txt` and bump
+  the template instead.
+- If the hub's pip run stops opening pull requests (check *Insights → Dependency
+  graph → Dependabot*), bump by hand: edit the template and the hub's
+  `requirements-desktop.txt` in one commit.
+
+`tests/test_render_federation_templates.py` enforces each of these that a test can
+see from the hub.
+
+### Which Python ecosystem: uv where the repo commits uv.lock
+
+The Python entry in both Dependabot templates is
+`package-ecosystem: "{{PYTHON_ECOSYSTEM}}"`, filled from `python_ecosystem` in
+`producers.vars.yaml` ([ADR 0017](../docs/adr/0017-dependabot-updates-uv-lock-with-its-manifest.md)):
+
+| `python_ecosystem` | Repositories | Lockfile |
+|---|---|---|
+| `uv` | thehub-pr, spiderweb-pr, skywatcher-pr, aguayluz-pr, centinelas-pr | `uv.lock` (`lock_cmd` is `uv lock --check`) |
+| `pip` | moneysweep-pr, ovnis-pr | `requirements.lock`, compiled by `uv pip compile` |
+
+Dependabot's pip updater rewrites `pyproject.toml` and requirement files but never
+`uv.lock`, so in a uv-locked repository each of its bumps left the lock stale and
+`uv lock --check` red (skywatcher-pr `e562433`). The uv updater reads the same files
+the pip one does, through the same fetcher, so everything above still holds: it scans
+one directory down, it honours `exclude-paths`, and it bumps plain requirement files.
+It also rewrites `uv.lock` together with `pyproject.toml`.
+
+A repository that adopts `uv.lock` changes `lock_cmd` to `uv lock --check` and
+`python_ecosystem` to `uv` in the same edit; a test fails if the two disagree.
+Switching an existing repository leaves its open `dependabot/pip/*` pull requests
+behind. Close them: the uv run reopens each update with `uv.lock` included.
+
+## Npm: held majors
+
+Both Dependabot templates carry the same npm block, and that block `ignore`s the
+majors of a few packages whose peers the federation has not migrated. Proposing
+them only produces pull requests that fail `npm ci`: skywatcher-pr merged two of
+them, and its `main` went red.
+
+| Held major | Why | Lift when |
+|---|---|---|
+| `eslint` 10 | `eslint-plugin-react` 7 accepts eslint up to 9 | `eslint-plugin-react` declares eslint 10 support |
+| `@eslint/js` 10 | it requires eslint 10 | the `eslint` hold is lifted |
+| `date-fns` 4 | `react-day-picker` 8 accepts date-fns up to 3 | the last repository using react-day-picker 8 moves to 9 |
+
+Each hold is by semver level (`update-types: ["version-update:semver-major"]`),
+never by version range, so a repository already on the newer major keeps its
+minor and patch updates. spiderweb-pr runs eslint 10 without
+`eslint-plugin-react`, and a `>=10` range would freeze it.
+
+To lift a hold, delete its entry from both `baseline/dependabot.yml` and
+`baseline/dependabot.hub.yml`, which must stay identical outside the actions
+scope, and re-pin the producers.
 
 ## Documentation stays true (docs-sync)
 
