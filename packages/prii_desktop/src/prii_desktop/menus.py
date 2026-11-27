@@ -713,7 +713,7 @@ def install_native_menus(
 
         browser_view = cocoa.BrowserView
         native = NativeMenus(controller, record)
-        base = browser_view.AppDelegate
+        base: Any = browser_view.AppDelegate  # a pyobjc class, untyped
         if getattr(base, "_prii_dock_menu", False):
             return native
 

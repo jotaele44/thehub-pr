@@ -2,4 +2,4 @@
 pywebview>=6.2.1
 # Shared federation runtime pinned to an immutable TheHub commit so generated
 # repositories install independently without requiring a sibling checkout.
-prii-desktop @ https://github.com/jotaele44/thehub-pr/archive/dc79dc003815432b3f8bfc8f9bff532f6c47e622.zip#subdirectory=packages/prii_desktop{{DESKTOP_EXTRA_REQUIREMENTS}}
+prii-desktop @ https://github.com/jotaele44/thehub-pr/archive/92d91b480fca7f398cf3b70d21932594b54809a9.zip#subdirectory=packages/prii_desktop{{DESKTOP_EXTRA_REQUIREMENTS}}

@@ -89,7 +89,9 @@ When nothing or only the pin changed but a sync PR is still open, the job warns
 that it is stale; close it.
 
 It's **dry-run by default** — without an operator-provided `SYNC_PAT` secret it
-only renders and prints the drift, opening nothing. To turn on the automatic
+only renders and prints the drift, opening nothing. A dry run that finds drift
+raises a warning and writes the files that would change, with the re-render
+command, to the run's job summary, so it never reads as a quiet success. To turn on the automatic
 per-producer PRs, set `SYNC_PAT` to a token that can write to every producer.
 For a fine-grained token:
 
@@ -110,6 +112,16 @@ Without the token, edit a template → run `render_federation_templates.py --all
 locally and commit per repo (each repo's `template-drift.yml` keeps them honest).
 This is also the route by which action-pin bumps reach the producers; see the
 next section.
+
+### Seeing how far producers lag
+
+A producer's drift gate compares it with the hub commit it pinned, so it stays
+green however old that pin is. `tools/federation_pin_report.py` shows the lag:
+each producer's `prii-desktop` pin against the one in `requirements-desktop.txt`,
+how many hub commits its `PRII_TEMPLATE_REF` is behind `main`, and whether it
+declares a Launch Pad. It reads producers' `main` from GitHub, or sibling
+checkouts with `--root ..`. `maintenance.yml` runs it weekly and warns about any
+desktop producer on an older runtime; `--strict` makes that an exit code.
 
 ## Action pins: Dependabot bumps the template, never a copy
 

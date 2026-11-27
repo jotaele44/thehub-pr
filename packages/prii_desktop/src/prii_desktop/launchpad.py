@@ -66,7 +66,7 @@ import re
 import secrets
 import tempfile
 import time
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Mapping, MutableMapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -84,6 +84,10 @@ from .setup_center import (
 
 #: Set for the backend for the lifetime of a Launch Pad session.
 ACCESS_MODE_ENV = "PRII_ACCESS_MODE"
+#: The Launch Pad's ledger of what it changed in the environment, so a restart
+#: can put the shell's environment back (see ``scrub_managed_environment``).
+MANAGED_ENV = "PRII_LAUNCHPAD_MANAGED"
+ORIGINAL_ENV = "PRII_LAUNCHPAD_ORIGINAL"
 GUEST = "guest"
 OPERATOR = "operator"
 
@@ -202,7 +206,7 @@ class LaunchPadSpec:
                 raise ValueError(
                     "LAUNCHPAD operator_only options need an operator declaration"
                 )
-        reserved = {ACCESS_MODE_ENV} | (
+        reserved = {ACCESS_MODE_ENV, MANAGED_ENV, ORIGINAL_ENV} | (
             {operator.token_env} if operator and operator.token_env else set()
         )
         clash = sorted(item.env for item in options if item.env in reserved)
@@ -237,8 +241,8 @@ class LaunchPadSpec:
 
 def _compile_allow(pattern: str) -> tuple[str | None, "re.Pattern[str]"]:
     """``"[METHOD ]/path"``; ``*`` is one path segment, ``**`` is any depth."""
-    method, _space, path = pattern.rpartition(" ")
-    method = method.strip().upper() or None
+    prefix, _space, path = pattern.rpartition(" ")
+    method = prefix.strip().upper() or None
     if method is not None and method not in _UNSAFE_METHODS:
         raise ValueError(f"LAUNCHPAD guest_guard allow has a bad method: {pattern!r}")
     if not path.startswith("/"):
@@ -561,47 +565,122 @@ def _env_value(option: Option, value: Any) -> str | None:
     return value or None
 
 
+def _read_ledger(env: Mapping[str, str]) -> tuple[list[str], dict[str, str]]:
+    names = [
+        name
+        for name in env.get(MANAGED_ENV, "").split(",")
+        if _ENV_NAME.fullmatch(name)
+    ]
+    try:
+        raw = json.loads(env.get(ORIGINAL_ENV) or "{}")
+    except ValueError:
+        raw = {}
+    original = {
+        str(name): value
+        for name, value in (raw.items() if isinstance(raw, dict) else ())
+        if _ENV_NAME.fullmatch(str(name)) and isinstance(value, str)
+    }
+    return names, original
+
+
+def scrub_managed_environment(
+    environ: MutableMapping[str, str] | None = None,
+) -> MutableMapping[str, str]:
+    """Undo every variable a Launch Pad session set, restoring the shell's values.
+
+    ``apply_session`` keeps a ledger (``PRII_LAUNCHPAD_MANAGED`` and
+    ``PRII_LAUNCHPAD_ORIGINAL``) of what it changed. A process restarted with
+    ``os.execv`` inherits the environment, so without this an Operator write
+    credential, a secret the user typed, or an option value would leak into the
+    next session -- including a Guest one. Returns the environment it scrubbed.
+    """
+    env = os.environ if environ is None else environ
+    names, original = _read_ledger(env)
+    for name in names:
+        env.pop(name, None)
+    env.update(original)
+    env.pop(MANAGED_ENV, None)
+    env.pop(ORIGINAL_ENV, None)
+    return env
+
+
 def apply_session(
     spec: LaunchPadSpec,
     session: Session,
     *,
     override: bool = True,
-    environ: dict[str, str] | None = None,
+    environ: MutableMapping[str, str] | None = None,
 ) -> dict[str, str]:
     """Write the session into the environment the backend is about to inherit.
 
     Returns the query parameters the app URL must carry (the write credential,
     when the producer's UI takes it that way). ``override=False`` is the headless
     path: an explicitly exported shell variable wins over a stored preference.
+
+    Whatever a previous session in this process family set is undone first (see
+    :func:`scrub_managed_environment`), so each session starts from the shell's
+    own environment, and every change made here is recorded for the next scrub.
     """
     env = os.environ if environ is None else environ
+    scrub_managed_environment(env)
+    managed: list[str] = []
+    original: dict[str, str] = {}
+
+    def record(name: str) -> None:
+        if name not in managed:
+            managed.append(name)
+            if name in env:
+                original[name] = env[name]
+
+    def put(name: str, value: str) -> None:
+        record(name)
+        env[name] = value
+
+    def drop(name: str) -> None:
+        if name in env:
+            record(name)
+            env.pop(name)
+
+    guest = session.mode == GUEST
     for option in spec.options:
+        # A guest never inherits an operator-only capability, not even one the
+        # shell exported: that would defeat the point of the mode.
+        withheld = option.operator_only and guest
         if option.kind == "secret":
             secret = session.secrets.get(option.id)
-            if secret:
-                env[option.env] = secret
+            if withheld:
+                drop(option.env)
+            elif secret:
+                put(option.env, secret)
             continue
         if option.id not in session.options:
             continue
         value = _env_value(option, session.options[option.id])
-        if not override and option.env in env:
+        if not (override or withheld) and option.env in env:
             continue
         if value is None:
-            if override:
-                env.pop(option.env, None)
+            if override or withheld:
+                drop(option.env)
         else:
-            env[option.env] = value
+            put(option.env, value)
 
     query: dict[str, str] = {}
-    if session.mode is None:
-        return query
-    env[ACCESS_MODE_ENV] = session.mode
-    operator = spec.operator
-    if session.mode == OPERATOR and operator and operator.token_env:
-        token = env.get(operator.token_env) or secrets.token_urlsafe(32)
-        env[operator.token_env] = token
-        if operator.url_param:
-            query[operator.url_param] = token
+    if session.mode is not None:
+        put(ACCESS_MODE_ENV, session.mode)
+        operator = spec.operator
+        if session.mode == OPERATOR and operator and operator.token_env:
+            # After the scrub, a token still present came from the shell: keep
+            # it. Otherwise mint one that dies with this session.
+            token = env.get(operator.token_env)
+            if not token:
+                token = secrets.token_urlsafe(32)
+                put(operator.token_env, token)
+            if operator.url_param:
+                query[operator.url_param] = token
+
+    if managed:
+        env[MANAGED_ENV] = ",".join(managed)
+        env[ORIGINAL_ENV] = json.dumps(original, sort_keys=True)
     return query
 
 
@@ -1257,3 +1336,85 @@ class DesktopBridge(SetupBridge):
         if controller is None:
             return False
         return bool(controller.popup_context(link if isinstance(link, str) else ""))
+
+# ── Offline check ─────────────────────────────────────────────────────────────
+
+
+def check_declaration(config: DesktopConfig, *, run_status: bool = True) -> list[str]:
+    """Problems with a producer's ``LAUNCHPAD``, without starting anything.
+
+    The launcher refuses to start on an invalid declaration, so producers run
+    this in CI (``python -m prii_desktop launchpad --check``). Unlike
+    :func:`status_rows`, a failing status provider is reported, not swallowed.
+    """
+    try:
+        spec = launchpad_spec(config)
+    except ValueError as exc:
+        return [str(exc)]
+    if spec is None or not run_status or spec.status is None:
+        return []
+    problems: list[str] = []
+    try:
+        provider = _resolve_status(spec)
+        produced = list(provider() or []) if provider is not None else []
+    except Exception as exc:  # noqa: BLE001 - reported to the caller
+        return [f"status provider raised {type(exc).__name__}: {exc}"]
+    for index, row in enumerate(produced):
+        if not isinstance(row, Mapping) or "label" not in row:
+            problems.append(f"status row {index} is not a mapping with a label")
+        elif str(row.get("status", "info")) not in _STATUSES:
+            problems.append(
+                f"status row {row['label']!r} has status {row.get('status')!r}; "
+                f"use one of {', '.join(_STATUSES)}"
+            )
+    return problems
+
+
+def load_config(repo_root: Path, module_name: str = "desktop.config") -> DesktopConfig:
+    """Import a producer's config module from ``repo_root`` as ``DesktopConfig``."""
+    import sys
+
+    root = str(repo_root.resolve())
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    return DesktopConfig.from_module(importlib.import_module(module_name))
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        prog="python -m prii_desktop launchpad",
+        description="Validate a producer's Launch Pad declaration offline.",
+    )
+    parser.add_argument("--check", action="store_true", required=True,
+                        help="validate the declaration and exit")
+    parser.add_argument("--repo-root", type=Path, default=Path.cwd(),
+                        help="producer repository root (default: current directory)")
+    parser.add_argument("--module", default="desktop.config",
+                        help="config module to import (default: desktop.config)")
+    parser.add_argument("--no-status", action="store_true",
+                        help="skip calling the readiness status provider")
+    args = parser.parse_args(argv)
+    try:
+        config = load_config(args.repo_root, args.module)
+    except Exception as exc:  # noqa: BLE001 - reported, not raised
+        print(f"FAIL  could not load {args.module}: {type(exc).__name__}: {exc}")
+        return 1
+    problems = check_declaration(config, run_status=not args.no_status)
+    if problems:
+        for problem in problems:
+            print(f"FAIL  {config.app_title}: {problem}")
+        return 1
+    spec = launchpad_spec(config)
+    if spec is None:
+        print(f"ok    {config.app_title}: no Launch Pad declared")
+        return 0
+    modes = "guest/operator" if spec.has_modes else "single mode"
+    print(
+        f"ok    {config.app_title}: Launch Pad valid ({len(spec.start_pages)} start "
+        f"pages, {len(spec.options)} options, {modes}, "
+        f"{len(spec.guest_allow)} guest-allowed routes)"
+    )
+    return 0
+

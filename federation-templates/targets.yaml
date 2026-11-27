@@ -230,6 +230,14 @@ targets:
     output: tests/test_server_smoke.py
     repos: *producers
 
+  # The Launch Pad declaration check (prii_desktop >= 0.4.0). Every repo with a
+  # desktop wrapper, the hub and spiderweb-pr included: it skips where there is
+  # no desktop/config.py or the installed runtime predates the check, so it is
+  # safe to render before a producer has adopted the Launch Pad.
+  - template: baseline/test_launchpad_declaration.py
+    output: tests/test_launchpad_declaration.py
+    repos: *all
+
   # The frontend lint config. It stops shared lint coverage from drifting apart
   # and gives the CI lint gates a single source of truth.
   # {{FRONTEND_DIR}} rather than {{NPM_DIR}}: the latter carries a leading slash

@@ -18,7 +18,7 @@
 #   3. Only the PRII_TEMPLATE_REF value in template-drift.yml moved: notice,
 #      exit 0, no PR. The rendered files already match, so the producer keeps
 #      its current pin until a template change actually reaches it.
-#   4. Drift and no token: dry-run notice, exit 0.
+#   4. Drift and no token: dry-run warning and job summary, exit 0.
 #   5. Drift and a token: commit, force-push the standing branch
 #      "federation-template-sync", then update its open PR or open one.
 # Steps 2 and 3 warn when a sync PR is still open, because it no longer carries
@@ -96,9 +96,21 @@ if only_pin_moved; then
   exit 0
 fi
 
-# 4. Dry run.
+# 4. Dry run. Drift that is not propagated must not read as a quiet success:
+# the producer keeps running older shared files until someone acts.
 if [ -z "$GH_TOKEN" ]; then
-  echo "::notice::SYNC_PAT absent — dry run; no PR opened. Set SYNC_PAT to enable propagation."
+  echo "::warning::$REPO drifted from thehub-pr@$HUB_SHORT, but SYNC_PAT is absent — dry run; no PR opened. Set SYNC_PAT to enable propagation."
+  {
+    echo "### $REPO: drift not propagated (dry run)"
+    echo
+    echo "SYNC_PAT is not set, so no sync PR was opened. Re-render with"
+    echo "\`python tools/render_federation_templates.py --repo $REPO --repo-root ../$REPO --template-ref $HUB_SHA\`"
+    echo "and open the PR by hand, or set SYNC_PAT. Files that would change:"
+    echo
+    echo '```'
+    git status --short
+    echo '```'
+  } >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
   exit 0
 fi
 

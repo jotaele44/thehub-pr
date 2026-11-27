@@ -117,6 +117,8 @@ def _run(repo: Path, *, token: str = "", open_pr: str = "", gh_fail: bool = Fals
         "GH_LOG": str(log),
         "OPEN_PR": open_pr,
         "GH_FAIL": "1" if gh_fail else "0",
+        # Never the runner's own job summary when the suite runs in Actions.
+        "GITHUB_STEP_SUMMARY": str(repo.parent / "summary.md"),
     })
     result = subprocess.run(["bash", str(SCRIPT)], cwd=repo, env=env,
                             text=True, capture_output=True, check=False)
@@ -214,6 +216,19 @@ def test_drift_without_token_is_a_dry_run(producer: Path) -> None:
     assert "dry run; no PR opened" in result.stdout
     assert calls == []
     assert _remote_branch(producer) == ""
+
+
+def test_dry_run_with_drift_warns_and_writes_the_job_summary(producer: Path) -> None:
+    _template_change(producer)
+    result, calls = _run(producer)
+    summary = producer.parent / "summary.md"
+    assert result.returncode == 0, result.stderr
+    assert "::warning::example-pr drifted" in result.stdout
+    text = summary.read_text()
+    assert "example-pr: drift not propagated (dry run)" in text
+    assert f"--template-ref {HUB_SHA}" in text
+    assert "codeql.yml" in text
+    assert calls == []
 
 
 def test_drift_opens_one_pr_on_the_standing_branch(producer: Path) -> None:
