@@ -8,12 +8,13 @@ producer commands. Each producer is expected to have written
 from __future__ import annotations
 
 import json
-import warnings
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
 import jsonschema
+from referencing import Registry as SchemaRegistry
+from referencing import Resource
 
 from .._schemas import load_schema
 from ..federation_status import _producer_base
@@ -28,17 +29,11 @@ def _report_validator() -> "jsonschema.Draft7Validator":
     """Draft-07 validator for maintenance_report with the finding $ref resolvable."""
     report_schema = load_schema("maintenance_report.schema.json")
     finding_schema = load_schema("maintenance_finding.schema.json")
-    store = {
-        report_schema["$id"]: report_schema,
-        finding_schema["$id"]: finding_schema,
-    }
-    # RefResolver is deprecated in jsonschema>=4.18 but is the only cross-file
-    # resolver available across the declared floor (jsonschema>=4.0). Suppress
-    # the deprecation locally; behaviour is unchanged.
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore", DeprecationWarning)
-        resolver = jsonschema.RefResolver.from_schema(report_schema, store=store)
-    return jsonschema.Draft7Validator(report_schema, resolver=resolver)
+    registry: SchemaRegistry = SchemaRegistry().with_resources(
+        (schema["$id"], Resource.from_contents(schema))
+        for schema in (report_schema, finding_schema)
+    )
+    return jsonschema.Draft7Validator(report_schema, registry=registry)
 
 
 def validate_report(data: Any) -> List[str]:

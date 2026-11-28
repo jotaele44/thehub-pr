@@ -1337,7 +1337,7 @@ requires-dist = [
     { name = "cryptography", marker = "extra == 'server'", specifier = ">=41" },
     { name = "fastapi", marker = "extra == 'server'", specifier = ">=0.100" },
     { name = "httpx2", marker = "extra == 'dev'" },
-    { name = "jsonschema", specifier = ">=4.0" },
+    { name = "jsonschema", specifier = ">=4.18" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.10,<2.4" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5" },
