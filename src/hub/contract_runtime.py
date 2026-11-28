@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 import jsonschema
+from referencing import Registry, Resource
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_DIR = REPO_ROOT / "schemas" / "contracts"
@@ -47,13 +48,13 @@ def validate_contract(name: str, payload: Mapping[str, Any]) -> None:
     the network.
     """
     schema = _load_contract(name)
-    store = {}
+    resources = []
     for other_name in CONTRACT_FILES:
         other = _load_contract(other_name)
         if "$id" in other:
-            store[other["$id"]] = other
-    resolver = jsonschema.RefResolver.from_schema(schema, store=store)
-    jsonschema.Draft202012Validator(schema, resolver=resolver).validate(dict(payload))
+            resources.append((other["$id"], Resource.from_contents(other)))
+    registry: Registry = Registry().with_resources(resources)
+    jsonschema.Draft202012Validator(schema, registry=registry).validate(dict(payload))
 
 
 def _stable_id(prefix: str, *parts: str) -> str:
